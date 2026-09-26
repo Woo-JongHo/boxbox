@@ -1,7 +1,7 @@
 {
 	"name": "woo-readability",
 	"description": "표형 가독성 규칙으로 TypeScript 제품 파일을 한 파일씩 조사·수정·검증하는 woo-code-readability 스킬과 읽기 전용 검사자 에이전트를 제공한다.",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"author": { "name": "Woo-JongHo" },
 	"keywords": ["readability", "typescript", "code-style", "align", "skill"],
 	"skills": "./skills",

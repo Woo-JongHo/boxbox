@@ -28,8 +28,9 @@ function collectOperands(node: Node, source: SourceFile, op: string): Node[] {
 	const walk = (current: Node): void => {
 		const inner = unwrap(current);
 		if (operatorOf(inner, source) === op) {
-			walk(inner.left);
-			walk(inner.right);
+			const binary = inner as unknown as { left: Node; right: Node };
+			walk(binary.left);
+			walk(binary.right);
 		} else out.push(current);
 	};
 	walk(node);

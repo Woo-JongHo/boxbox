@@ -94,7 +94,12 @@ description: TypeScript 제품 파일에서 긴 예외 요소를 구조적으로
 
 ## 자동 검사
 
-스크립트는 언어별 폴더로 나뉜다. `scripts/common/`은 언어 무관 유틸(표시 폭 계산 등)만 두고, `scripts/typescript/`는 TypeScript AST·LSP 전용 도구를 번호 순서(00→06)로 둔다. 새 언어가 추가되면 `scripts/<언어>/`가 형제로 생긴다.
+스크립트는 언어별 폴더로 나뉜다. `scripts/common/`은 언어 무관 엔진(문자열·주석 마스킹, 표 탐지·최소폭 정렬, 표시 폭 계산)을 두고, `scripts/typescript/`는 TypeScript AST·LSP 전용 도구를 번호 순서(00→08)로 둔다. `scripts/<python|java|go|rust|javascript|c|cpp>/`는 공통 엔진을 쓰는 라인 프로파일러(01_group-regions·06_align-tables)로, 각 언어의 구조체 필드·객체·딕셔너리·enum 상수·import 블록 같은 반복 행을 표로 잠근다. 문자열·주석 내부는 마스킹해 구조 오판을 막고, 무손실 분해에 실패한 행과 확신 없는 행은 거부한다 — 거부는 안전 방향이다.
+
+```bash
+bun <SKILL>/scripts/go/06_align-tables.ts --file <대상 파일> [--write] [--min-rows 3]
+bun <SKILL>/scripts/python/01_group-regions.ts --file <대상 파일>
+```
 
 **STEP0 — import 선언 정규화.** 제품 파일의 본문 표를 검사하기 전에 선언부를 먼저 통일한다. 값과 타입이 한 named import에 섞이면 값 선언과 `import type` 선언으로 분리한다. named specifier가 하나면 항상 한 줄로 두고, 둘 이상은 완성된 한 줄의 표시 폭이 120 이하일 때 한 줄로 접는다. 120을 넘을 때만 항목별 여러 줄로 내리며 닫는 `}`와 `from`은 같은 줄에 둔다. 같은 선언 블록의 한 줄 import들은 실제 최장 선언부를 기준으로 `from` 시작 열을 맞춘다. type-only import는 런타임 의존성이 아니므로 값 import와 구조를 섞지 않는다.
 

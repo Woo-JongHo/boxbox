@@ -255,7 +255,7 @@ function detectCaseClause(source: SourceFile, node: Node): readonly RowBoundary[
 	if (statements.length > 0) {
 		const call = firstCallOf(statements[0]!);
 		if (call) {
-			const paren = tokenAfter(source, call.expression.getEnd(), "(");
+			const paren = tokenAfter(source, (call as unknown as { expression: Node }).expression.getEnd(), "(");
 			if (paren !== undefined) boundaries.push({ axis: "call-paren", from: paren, at: paren, insert: true });
 		}
 		const last = statements.at(-1)!;

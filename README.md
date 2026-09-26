@@ -13,7 +13,18 @@ caveman·ponytail과 같은 부류의 에이전트 스킬 플러그인이며, SK
 | `codex/readability-inspector.toml` | Codex 읽기 전용 에이전트 정의(`sandbox_mode = "read-only"`) |
 | `.claude-plugin/` | 플러그인·마켓플레이스 매니페스트(Claude Code와 호환 도구가 인식) |
 | `docs/agent-portability.md` | 에이전트별 스킬 발견 경로·설치 방식·검증 상태 |
+| `docs/www-pilot-2026-09-26.md` | 99_www 파일럿 측정 — `;`·`=` 어긋남의 원인 분류 |
 | `install.sh` | 에이전트별 디렉터리에 symlink/copy로 설치·제거 |
+
+## 지원 언어
+
+- **TypeScript** — AST·LSP 기반 검사기(`scripts/typescript/`, 표 종류 등록부 grid-kinds)
+- **Python·Java·Go·Rust·JavaScript·C·C++** — 공통 라인 엔진(`scripts/common/table-engine.ts`) 위의 언어 프로파일러(`scripts/<언어>/01_group-regions.ts`, `06_align-tables.ts`). 문자열·주석 마스킹으로 구조를 오판하지 않고, 무손실 분해에 실패한 행은 거부한다.
+
+```bash
+bun skills/woo-code-readability/scripts/go/06_align-tables.ts --file main.go --write
+bun skills/woo-code-readability/scripts/python/06_align-tables.ts --file models.py
+```
 
 ## 설치
 

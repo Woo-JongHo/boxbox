@@ -1,6 +1,6 @@
 # 에이전트 포팅 지도
 
-`woo-code-readability` 스킬과 `readability-inspector` 검사자가 에이전트마다 어디에 놓이고 어떻게 설치되는지의 기준 문서다. 내용물(SKILL.md 본문, 규칙, 스크립트)은 에이전트 무관이고, 아래 표의 "어디에 두느냐"만 다르다.
+`woo-code-readability` 스킬과 `readability-inspector` 검사자가 에이전트마다 어디에 놓이고 어떻게 설치되는지의 기준 문서다. 내용물(SKILL.md 본문, 규칙, 스크립트)은 에이전트 무관이고, 아래 표의 "어디에 두느냐"만 다르다. 스킬 본문은 TypeScript(AST·LSP)와 Python·Java·Go·Rust·JavaScript·C·C++(공통 라인 엔진)의 표형 정렬 검사기를 포함한다.
 
 ## 설치 행렬
 
