@@ -1,0 +1,9 @@
+{
+	"name": "woo-readability",
+	"version": "0.1.0",
+	"private": true,
+	"description": "woo-code-readability 멀티 에이전트 스킬 플러그인 — AST 검사기 실행에 typescript@7이 필요하다",
+	"dependencies": {
+		"typescript": "7.0.2"
+	}
+}
