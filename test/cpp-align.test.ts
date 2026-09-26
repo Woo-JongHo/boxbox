@@ -3,11 +3,11 @@
  * 이 파일은 C++ 고유 성질 — 템플릿 타입 셀 보존, 원본 문자열 행 거부, 함수 포인터·함수형 매크로
  * 거부, 문자열 내부 = ; 의 구조 비오판 — 을 더해 검사한다.
  */
-import { readFileSync } from "node:fs";
+import { readFileSync }           from "node:fs";
 import { describe, expect, test } from "bun:test";
-import { alignSource } from "../skills/woo-code-readability/scripts/common/table-engine.ts";
-import { CPP_ALIGNER } from "../skills/woo-code-readability/scripts/cpp/profile.ts";
-import { defineLanguageSuite } from "./lang-harness.ts";
+import { alignSource }            from "../skills/woo-code-readability/scripts/common/table-engine.ts";
+import { CPP_ALIGNER }            from "../skills/woo-code-readability/scripts/cpp/profile.ts";
+import { defineLanguageSuite }    from "./lang-harness.ts";
 
 defineLanguageSuite({
 	aligner     : CPP_ALIGNER,

@@ -5,9 +5,15 @@
  * 일치해야 하며, CALLS에 적은 이름도 파일 안에 존재해야 한다. --scaffold는 선언을 훑어
  * GROUP·ROLE만 비어 있는 지도 골격을 stdout으로 출력한다.
  */
-import { isArrowFunction, isFunctionDeclaration, isFunctionExpression, isVariableStatement, type Node, type SourceFile } from "typescript/unstable/ast";
+import {
+	isArrowFunction,
+	isFunctionDeclaration,
+	isFunctionExpression,
+	isVariableStatement,
+} from "typescript/unstable/ast";
+import type { Node, SourceFile } from "typescript/unstable/ast";
 
-import { displayWidth } from "../common/display-width.ts";
+import { displayWidth }   from "../common/display-width.ts";
 import { loadSourceFile } from "./load-source-file.ts";
 
 interface MapRow {
@@ -16,9 +22,9 @@ interface MapRow {
 }
 
 interface Declaration {
-	readonly name     : string;
-	readonly params   : number;
-	readonly line     : number;
+	readonly name   : string ;
+	readonly params : number ;
+	readonly line   : number ;
 }
 
 const HEADER = /GROUP\s*\|\s*FUNCTION\s*\|\s*INPUT\s*\|\s*RETURN\s*\|\s*CALLS\s*\|\s*ROLE/u;
@@ -26,15 +32,15 @@ const HEADER = /GROUP\s*\|\s*FUNCTION\s*\|\s*INPUT\s*\|\s*RETURN\s*\|\s*CALLS\s*
 const MAP_COLUMNS = ["GROUP", "FUNCTION", "INPUT", "RETURN", "CALLS", "ROLE"] as const;
 
 interface ParsedMap {
-	readonly headerLine : number;
-	readonly rows       : readonly MapRow[];
-	readonly lines      : readonly string[];
+	readonly headerLine : number            ;
+	readonly rows       : readonly MapRow[] ;
+	readonly lines      : readonly string[] ;
 }
 
 function parseMap(source: SourceFile): ParsedMap {
-	const lines = source.text.split("\n");
-	const rows: MapRow[] = [];
-	let headerLine = -1;
+	const lines          = source.text.split("\n") ;
+	const rows: MapRow[] = []                      ;
+	let headerLine       = -1                      ;
 	for (let index = 0; index < lines.length; index += 1) {
 		const line = lines[index]!.trim();
 		if (headerLine < 0) {
@@ -77,11 +83,11 @@ function collectDeclarations(node: Node, source: SourceFile, out: Map<string, De
 }
 
 async function main(): Promise<void> {
-	const root = process.cwd();
-	const raw = process.argv.slice(2);
-	const scaffold = raw.includes("--scaffold");
-	const write = raw.includes("--write");
-	const fileIndex = raw.indexOf("--file");
+	const root      = process.cwd()              ;
+	const raw       = process.argv.slice(2)      ;
+	const scaffold  = raw.includes("--scaffold") ;
+	const write     = raw.includes("--write")    ;
+	const fileIndex = raw.indexOf("--file")      ;
 	if (raw[0] !== "--file" || !raw[1]) throw new Error("usage: 08_function-map.ts --file <repository TypeScript file> [--check|--scaffold]");
 	const { source, relative } = await loadSourceFile(root, raw[1]);
 
@@ -99,16 +105,16 @@ async function main(): Promise<void> {
 		process.exit(0);
 	}
 
-	const parsed = parseMap(source);
-	const rows = parsed.rows;
-	const expected = alignedMapLines(rows);
-	const mapMisaligned = rows.filter((row, index) => parsed.lines[row.line] !== expected[index + 1]).length;
-	const errors: string[] = [];
+	const parsed           = parseMap(source)                                                                   ;
+	const rows             = parsed.rows                                                                        ;
+	const expected         = alignedMapLines(rows)                                                              ;
+	const mapMisaligned    = rows.filter((row, index) => parsed.lines[row.line] !== expected[index + 1]).length ;
+	const errors: string[] = []                                                                                 ;
 	for (const row of rows) {
-		const name = row.cells[1]!;
-		const inputs = row.cells[2]!.split(",").map(value => value.trim()).filter(value => Boolean(value) && value !== "-");
-		const calls = row.cells[4]!.split(",").map(value => value.trim()).filter(value => Boolean(value) && value !== "-");
-		const declaration = declarations.get(name);
+		const name        = row.cells[1]!                                                                                        ;
+		const inputs      = row.cells[2]!.split(",").map(value => value.trim()).filter(value => Boolean(value) && value !== "-") ;
+		const calls       = row.cells[4]!.split(",").map(value => value.trim()).filter(value => Boolean(value) && value !== "-") ;
+		const declaration = declarations.get(name)                                                                               ;
 		if (!declaration) {
 			errors.push(`map line=${row.line + 1}: 선언이 없습니다: ${name}`);
 			continue;

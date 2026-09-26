@@ -12,16 +12,16 @@
  * 여는 행, 간격 자리에 문자열이 숨은 행, func 리터럴·익명 struct/interface처럼 타입을
  * 확신할 수 없는 행.
  */
-import type { CodeSyntax } from "../common/code-text.ts";
+import type { CodeSyntax }                     from "../common/code-text.ts";
 import type { LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
 
 const GO_SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],
 	blockComments : [{ open: "/*", close: "*/" }],
 	strings       : [
-		{ open: '"' , close: '"' , escape: true  },
-		{ open: "'", close: "'", escape: true  },
-		{ open: "`", close: "`", escape: false },
+		{ open : '"' , close : '"' , escape : true  },
+		{ open : "'" , close : "'" , escape : true  },
+		{ open : "`" , close : "`" , escape : false },
 	],
 	cppRaw        : false,
 };
@@ -41,21 +41,21 @@ const GO_KEYWORDS = new Set([
 
 // Go 타입 식의 안전한 부분집합: map[K]·포인터·슬라이스·배열 접두와 한정·일반화 이름,
 // chan 방향 접미만 인정한다. func·익명 struct/interface는 확신이 없어 거부한다.
-const TYPE_PREFIX = "(?:map\\[[^\\[\\]\\s]*\\]|\\*|\\[\\]|\\[\\d+\\])*";
-const TYPE_CORE   = "[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*(?:\\[[^\\[\\]]*\\])?";
-const GO_TYPE     = `${TYPE_PREFIX}(?:${TYPE_CORE}|(?:<-[ \\t]*|)chan(?:[ \\t]*<-|)(?:[ \\t]+${TYPE_PREFIX}${TYPE_CORE}|))`;
-const INDENT      = "([ \\t]*)";
-const GAP         = "([ \\t]+)";
-const TAG         = "(\\x60[^\\x60\\n]*\\x60)";
-const KEY         = `(?:${TYPE_CORE}|\\x60[^\\x60\\n]*\\x60|"[^"\\n]*")`;
+const TYPE_PREFIX = "(?:map\\[[^\\[\\]\\s]*\\]|\\*|\\[\\]|\\[\\d+\\])*"                                                     ;
+const TYPE_CORE   = "[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*(?:\\[[^\\[\\]]*\\])?"                             ;
+const GO_TYPE     = `${TYPE_PREFIX}(?:${TYPE_CORE}|(?:<-[ \\t]*|)chan(?:[ \\t]*<-|)(?:[ \\t]+${TYPE_PREFIX}${TYPE_CORE}|))` ;
+const INDENT      = "([ \\t]*)"                                                                                             ;
+const GAP         = "([ \\t]+)"                                                                                             ;
+const TAG         = "(\\x60[^\\x60\\n]*\\x60)"                                                                              ;
+const KEY         = `(?:${TYPE_CORE}|\\x60[^\\x60\\n]*\\x60|"[^"\\n]*")`                                                    ;
 
-const FIELD_TAGGED = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}(${GO_TYPE})${GAP}${TAG}[ \\t]*$`, "du");
-const FIELD_PLAIN  = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}(${GO_TYPE})[ \\t]*$`, "du");
-const CONST_TYPED  = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}(${GO_TYPE})${GAP}=(?!=)([ \\t]*)([^\\n]+?)[ \\t]*$`, "du");
-const CONST_PLAIN  = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}=(?!=)([ \\t]*)([^\\n]+?)[ \\t]*$`, "du");
-const MAP_ROW      = new RegExp(`^${INDENT}(${KEY})([ \\t]*):(?!=)([ \\t]*)([^\\n]+?)([ \\t]*)(,)?[ \\t]*$`, "du");
-const IMPORT_ALIAS = new RegExp(`^${INDENT}([A-Za-z_.][A-Za-z0-9_.]*)${GAP}("[^"\\n]*")[ \\t]*$`, "du");
-const IMPORT_PLAIN = new RegExp(`^${INDENT}("[^"\\n]*")[ \\t]*$`, "du");
+const FIELD_TAGGED = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}(${GO_TYPE})${GAP}${TAG}[ \\t]*$`, "du")                    ;
+const FIELD_PLAIN  = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}(${GO_TYPE})[ \\t]*$`, "du")                                ;
+const CONST_TYPED  = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}(${GO_TYPE})${GAP}=(?!=)([ \\t]*)([^\\n]+?)[ \\t]*$`, "du") ;
+const CONST_PLAIN  = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}=(?!=)([ \\t]*)([^\\n]+?)[ \\t]*$`, "du")                   ;
+const MAP_ROW      = new RegExp(`^${INDENT}(${KEY})([ \\t]*):(?!=)([ \\t]*)([^\\n]+?)([ \\t]*)(,)?[ \\t]*$`, "du")                   ;
+const IMPORT_ALIAS = new RegExp(`^${INDENT}([A-Za-z_.][A-Za-z0-9_.]*)${GAP}("[^"\\n]*")[ \\t]*$`, "du")                              ;
+const IMPORT_PLAIN = new RegExp(`^${INDENT}("[^"\\n]*")[ \\t]*$`, "du")                                                              ;
 
 interface Column {
 	readonly axis : string;
@@ -91,9 +91,9 @@ const rowFrom = (code: string, indices: RegExpIndicesArray, columns: readonly Co
 };
 
 export const GO_ALIGNER: LineProfiler = {
-	language      : "go",
-	syntax        : GO_SYNTAX,
-	columnAxes    : ["name", "type", "tag", "alias", "path", "key", "value"],
+	language   : "go",
+	syntax     : GO_SYNTAX,
+	columnAxes : ["name", "type", "tag", "alias", "path", "key", "value"],
 	canonicalGaps : {
 		// Go 관습: colon과 comma는 셀에 바로 붙이고 equal은 한 칸 띄운다. 나머지 축은 기본 간격 " "을 쓴다.
 		colon : "",
@@ -109,28 +109,28 @@ export const GO_ALIGNER: LineProfiler = {
 		const tagged = FIELD_TAGGED.exec(masked);
 		if (tagged?.indices) {
 			return rowFrom(code, tagged.indices, [
-				{ axis: "name", cell: 2 },
-				{ axis: "type", cell: 4, gap: 3 },
-				{ axis: "tag" , cell: 6, gap: 5 },
+				{ axis : "name" , cell : 2           },
+				{ axis : "type" , cell : 4 , gap : 3 },
+				{ axis : "tag"  , cell : 6 , gap : 5 },
 			]);
 		}
 
 		const typedConst = CONST_TYPED.exec(masked);
 		if (typedConst?.indices) {
 			return rowFrom(code, typedConst.indices, [
-				{ axis: "name" , cell: 2 },
-				{ axis: "type" , cell: 4, gap: 3 },
-				{ axis: "equal", text: "=", gap: 5 },
-				{ axis: "value", cell: 7, gap: 6 },
+				{ axis : "name"  , cell : 2             },
+				{ axis : "type"  , cell : 4   , gap : 3 },
+				{ axis : "equal" , text : "=" , gap : 5 },
+				{ axis : "value" , cell : 7   , gap : 6 },
 			]);
 		}
 
 		const plainConst = CONST_PLAIN.exec(masked);
 		if (plainConst?.indices) {
 			return rowFrom(code, plainConst.indices, [
-				{ axis: "name" , cell: 2 },
-				{ axis: "equal", text: "=", gap: 3 },
-				{ axis: "value", cell: 5, gap: 4 },
+				{ axis : "name"  , cell : 2             },
+				{ axis : "equal" , text : "=" , gap : 3 },
+				{ axis : "value" , cell : 5   , gap : 4 },
 			]);
 		}
 
@@ -145,9 +145,9 @@ export const GO_ALIGNER: LineProfiler = {
 		const mapRow = MAP_ROW.exec(masked);
 		if (mapRow?.indices) {
 			const columns: Column[] = [
-				{ axis: "key"  , cell: 2 },
-				{ axis: "colon", text: ":", gap: 3 },
-				{ axis: "value", cell: 5, gap: 4 },
+				{ axis : "key"   , cell : 2             },
+				{ axis : "colon" , text : ":" , gap : 3 },
+				{ axis : "value" , cell : 5   , gap : 4 },
 			];
 			if (mapRow.indices[7] !== undefined) columns.push({ axis: "comma", text: ",", gap: 6 });
 			return rowFrom(code, mapRow.indices, columns);

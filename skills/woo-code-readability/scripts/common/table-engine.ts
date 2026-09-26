@@ -7,8 +7,9 @@
  * 2. 빈 줄·주석 줄·블록 주석 내부·프로파일 거부 행은 영역을 끊는다 — 서로 다른 구획이 폭을 공유하지 않는다.
  * 3. minRows 미만 연속(기본 2행)은 보고만 하고 정렬하지 않는다.
  */
-import { displayWidth } from "./display-width.ts";
-import { maskSource, type CodeSyntax } from "./code-text.ts";
+import { displayWidth }    from "./display-width.ts";
+import { maskSource }      from "./code-text.ts";
+import type { CodeSyntax } from "./code-text.ts";
 
 /** 프로파일러가 CodeSyntax를 table-engine에서 바로 가져갈 수 있게 다시 내보낸다. */
 export type { CodeSyntax };
@@ -39,25 +40,25 @@ export interface LineProfiler {
 }
 
 export interface TableEdit {
-	readonly index  : number;
-	readonly before : string;
-	readonly after  : string;
+	readonly index  : number ;
+	readonly before : string ;
+	readonly after  : string ;
 }
 
 export interface DetectedTable {
-	readonly startLine : number;
-	readonly endLine   : number;
-	readonly rows      : number;
-	readonly axes      : readonly string[];
-	readonly widths    : readonly number[];
-	readonly edits     : readonly TableEdit[];
+	readonly startLine : number               ;
+	readonly endLine   : number               ;
+	readonly rows      : number               ;
+	readonly axes      : readonly string[]    ;
+	readonly widths    : readonly number[]    ;
+	readonly edits     : readonly TableEdit[] ;
 }
 
 export interface PairGroup {
-	readonly startLine : number;
-	readonly endLine   : number;
-	readonly rows      : number;
-	readonly signature : string;
+	readonly startLine : number ;
+	readonly endLine   : number ;
+	readonly rows      : number ;
+	readonly signature : string ;
 }
 
 export interface AlignResult {
@@ -69,9 +70,9 @@ export interface AlignResult {
 	/** 정렬했다면 바뀌는 행 수. */
 	readonly misaligned : number;
 	/** apply=true일 때 실제 적용된 행 수. */
-	readonly edits      : number;
-	readonly details    : readonly DetectedTable[];
-	readonly pairs      : readonly PairGroup[];
+	readonly edits   : number                   ;
+	readonly details : readonly DetectedTable[] ;
+	readonly pairs   : readonly PairGroup[]     ;
 }
 
 export interface AlignOptions {
@@ -101,19 +102,23 @@ function rebuildCode(aligner: LineProfiler, profile: RowProfile, widths: readonl
 }
 
 export function alignSource(source: string, aligner: LineProfiler, options: AlignOptions): AlignResult {
-	const minRows = Math.max(2, options.minRows);
-	const mask    = maskSource(source, aligner.syntax);
-	const lines       = source.split("\n");
-	const maskedLines = mask.text.split("\n");
+	const minRows     = Math.max(2, options.minRows)       ;
+	const mask        = maskSource(source, aligner.syntax) ;
+	const lines       = source.split("\n")                 ;
+	const maskedLines = mask.text.split("\n")              ;
 
-	interface Accepted { readonly index: number; readonly profile: RowProfile; readonly comment: string | null; }
+	interface Accepted {
+		readonly index   : number        ;
+		readonly profile : RowProfile    ;
+		readonly comment : string | null ;
+	}
 	const accepted: Accepted[] = [];
 
 	lines.forEach((line, index) => {
 		if (mask.opensInBlock[index]) return;
-		const commentStart = mask.commentStarts[index];
-		const codeEnd   = commentStart >= 0 ? commentStart : line.length;
-		const comment   = codeEnd < line.length ? line.slice(codeEnd).trim() : null;
+		const commentStart = mask.commentStarts[index]                                 ;
+		const codeEnd      = commentStart >= 0 ? commentStart : line.length            ;
+		const comment      = codeEnd < line.length ? line.slice(codeEnd).trim() : null ;
 		// 주석 앞의 남는 공백은 재조합 때 계산된 간격으로 대체되므로 코드 부분에서 제거한다.
 		const code       = comment !== null ? line.slice(0, codeEnd).replace(/\s+$/u, "") : line.slice(0, codeEnd);
 		const maskedCode = comment !== null ? maskedLines[index].slice(0, codeEnd).replace(/\s+$/u, "") : maskedLines[index].slice(0, codeEnd);
@@ -132,18 +137,18 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		current = [];
 	};
 	for (let position = 0; position < accepted.length; position += 1) {
-		const row = accepted[position];
-		const previous = current[current.length - 1];
-		const contiguous = !previous || previous.index === row.index - 1;
-		const sameShape  = previous && signatureOf(previous.profile) === signatureOf(row.profile);
+		const row        = accepted[position]                                                     ;
+		const previous   = current[current.length - 1]                                            ;
+		const contiguous = !previous || previous.index === row.index - 1                          ;
+		const sameShape  = previous && signatureOf(previous.profile) === signatureOf(row.profile) ;
 		if (contiguous && sameShape) current.push(row);
 		else { flush(); current = [row]; }
 	}
 	flush();
 
-	const details: DetectedTable[] = [];
-	const pairs: PairGroup[] = [];
-	const editsByLine = new Map<number, TableEdit>();
+	const details : DetectedTable[] = []                           ;
+	const pairs   : PairGroup[]     = []                           ;
+	const editsByLine               = new Map<number, TableEdit>() ;
 
 	for (const run of runs) {
 		const signature = signatureOf(run[0].profile);

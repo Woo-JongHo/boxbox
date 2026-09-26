@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 
 import { existsSync, realpathSync, statSync } from "node:fs";
-import { relative, resolve } from "node:path";
+import { relative, resolve }                  from "node:path";
 
-import { API } from "typescript/unstable/async";
+import { API }                                                                      from "typescript/unstable/async";
 import {
 	SyntaxKind,
 	isAsExpression,
@@ -19,11 +19,8 @@ import {
 	isPropertySignatureDeclaration,
 	isTypeAssertion,
 	isVariableDeclaration,
-	type Node,
-	type PropertyDeclaration,
-	type PropertySignatureDeclaration,
-	type SourceFile,
 } from "typescript/unstable/ast";
+import type { Node, PropertyDeclaration, PropertySignatureDeclaration, SourceFile } from "typescript/unstable/ast";
 
 type FindingKind =
 	| "optional-property"
@@ -39,10 +36,10 @@ type FindingKind =
 	| "angle-bracket-assertion";
 
 interface Finding {
-	kind   : FindingKind;
-	line   : number;
-	column : number;
-	text   : string;
+	kind   : FindingKind ;
+	line   : number      ;
+	column : number      ;
+	text   : string      ;
 }
 
 function compareText(left: string, right: string): number {
@@ -77,17 +74,17 @@ function errorMessage(value: unknown): string {
 }
 
 async function main(): Promise<void> {
-	const root   = process.cwd();
-	const target = repositoryFile(root, targetArgument());
-	const api    = new API({ cwd: root });
-	const state  = await api.updateSnapshot({ openFiles: [target.absolute] });
-	const project = await state.getDefaultProjectForFile(target.absolute);
+	const root    = process.cwd()                                              ;
+	const target  = repositoryFile(root, targetArgument())                     ;
+	const api     = new API({ cwd: root })                                     ;
+	const state   = await api.updateSnapshot({ openFiles: [target.absolute] }) ;
+	const project = await state.getDefaultProjectForFile(target.absolute)      ;
 	if (!project) throw new Error(`TypeScript project를 찾을 수 없습니다: ${target.relative}`);
 	const loaded = await project.program.getSourceFile(target.absolute);
 	if (!loaded) throw new Error(`TypeScript source AST를 읽을 수 없습니다: ${target.relative}`);
-	const source: SourceFile = loaded;
-	const found = new Map<string, Finding>();
-	const visited = new Set<string>();
+	const source: SourceFile = loaded                     ;
+	const found              = new Map<string, Finding>() ;
+	const visited            = new Set<string>()          ;
 
 	function add(kind: FindingKind, position: number, owner: Node): void {
 		const location = source.getLineAndCharacterOfPosition(position);

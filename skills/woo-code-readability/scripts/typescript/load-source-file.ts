@@ -1,7 +1,7 @@
 import { existsSync, realpathSync, statSync } from "node:fs";
-import { relative, resolve } from "node:path";
+import { relative, resolve }                  from "node:path";
 
-import { API } from "typescript/unstable/async";
+import { API }             from "typescript/unstable/async";
 import type { SourceFile } from "typescript/unstable/ast";
 
 export interface LoadedSource {
@@ -21,10 +21,10 @@ export function repositoryFile(root: string, value: string): { absolute: string;
 }
 
 export async function loadSourceFile(root: string, value: string): Promise<LoadedSource> {
-	const target  = repositoryFile(root, value);
-	const api     = new API({ cwd: root });
-	const state   = await api.updateSnapshot({ openFiles: [target.absolute] });
-	const project = await state.getDefaultProjectForFile(target.absolute);
+	const target  = repositoryFile(root, value)                                ;
+	const api     = new API({ cwd: root })                                     ;
+	const state   = await api.updateSnapshot({ openFiles: [target.absolute] }) ;
+	const project = await state.getDefaultProjectForFile(target.absolute)      ;
 	if (!project) throw new Error(`TypeScript project를 찾을 수 없습니다: ${target.relative}`);
 	const source = await project.program.getSourceFile(target.absolute);
 	if (!source) throw new Error(`TypeScript source AST를 읽을 수 없습니다: ${target.relative}`);

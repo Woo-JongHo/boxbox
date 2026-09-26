@@ -5,25 +5,27 @@
  * 한 줄 실행 블록, JSDoc·빈 줄로 끊긴 행은 행 후보가 아니므로 정렬되지 않는다.
  * --explain <줄번호>는 그 줄이 어떤 종류로 감지됐고 어떤 축을 갖는지 알려준다.
  */
-import { isInterfaceDeclaration, type Node, type SourceFile } from "typescript/unstable/ast";
+import { isInterfaceDeclaration } from "typescript/unstable/ast";
+import type { Node, SourceFile }  from "typescript/unstable/ast";
 
-import { ROW_KINDS, displayColumn, runsOf, syntaxKindName, type DetectedRow } from "./grid-kinds.ts";
-import { loadSourceFile } from "./load-source-file.ts";
+import { ROW_KINDS, displayColumn, runsOf, syntaxKindName } from "./grid-kinds.ts";
+import type { DetectedRow }                                 from "./grid-kinds.ts";
+import { loadSourceFile }                                   from "./load-source-file.ts";
 
 interface Edit {
-	readonly start : number;
-	readonly end   : number;
-	readonly text  : string;
+	readonly start : number ;
+	readonly end   : number ;
+	readonly text  : string ;
 }
 
 interface TableGroup {
-	readonly kind      : string;
-	readonly startLine : number;
-	readonly endLine   : number;
-	readonly rowCount  : number;
-	readonly axes      : readonly string[];
-	readonly skipped   : readonly string[];
-	readonly edits     : readonly Edit[];
+	readonly kind      : string            ;
+	readonly startLine : number            ;
+	readonly endLine   : number            ;
+	readonly rowCount  : number            ;
+	readonly axes      : readonly string[] ;
+	readonly skipped   : readonly string[] ;
+	readonly edits     : readonly Edit[]   ;
 }
 
 function alignRows(source: SourceFile, rows: readonly DetectedRow[]): { axes: readonly string[]; skipped: readonly string[]; edits: readonly Edit[] } {
@@ -54,19 +56,19 @@ function alignRows(source: SourceFile, rows: readonly DetectedRow[]): { axes: re
 		ordered.push(axis);
 	};
 	for (const axis of [...minFromOfAxis.keys()].sort((left, right) => minFromOfAxis.get(left)! - minFromOfAxis.get(right)!)) visit(axis);
-	const axisOrder = ordered.reverse();
-	const shifts = new Array<number>(rows.length).fill(0);
-	const edits: Edit[] = [];
-	const axes: string[] = [];
-	const skipped: string[] = [];
+	const axisOrder          = ordered.reverse()                      ;
+	const shifts             = new Array<number>(rows.length).fill(0) ;
+	const edits   : Edit[]   = []                                     ;
+	const axes    : string[] = []                                     ;
+	const skipped : string[] = []                                     ;
 	for (const axis of axisOrder) {
 		const entries = rows.map((row, index) => ({ row, index, boundary: row.boundaries.find(candidate => candidate.axis === axis) })).filter(entry => entry.boundary !== undefined);
 		if (entries.length < 2) continue;
 		// 목표 열은 가장 긴 앵커(from)가 정한다. 간격 축은 최소 한 칸 여백을 남기고,
 		// 삽입 축(insert)은 기존 열 그대로 맞춘다 — 정렬된 표가 다시 오른쪽으로 밀리지 않는다.
-		const minGap = entries.some(entry => entry.boundary!.insert) ? 0 : 1;
-		const target = Math.max(...entries.map(entry => displayColumn(source, entry.boundary!.from) + shifts[entry.index]!)) + minGap;
-		const pads = entries.map(entry => target - displayColumn(source, entry.boundary!.from) - shifts[entry.index]!);
+		const minGap = entries.some(entry => entry.boundary!.insert) ? 0 : 1                                                          ;
+		const target = Math.max(...entries.map(entry => displayColumn(source, entry.boundary!.from) + shifts[entry.index]!)) + minGap ;
+		const pads   = entries.map(entry => target - displayColumn(source, entry.boundary!.from) - shifts[entry.index]!)              ;
 		if (pads.some(pad => pad < minGap)) {
 			skipped.push(axis);
 			continue;
@@ -105,9 +107,9 @@ function buildGroup(source: SourceFile, kindName: string, groupName: string, run
 }
 
 interface CollectResult {
-	readonly groups     : TableGroup[];
-	readonly candidates : Node[];
-	readonly compressed : { readonly line: number; readonly members: number }[];
+	readonly groups     : TableGroup[]                                          ;
+	readonly candidates : Node[]                                                ;
+	readonly compressed : { readonly line: number; readonly members: number }[] ;
 }
 
 /** 한 물리 줄에 멤버 표를 압축한 인터페이스를 찾는다. 확장은 구조 변경이라 자동 수정하지 않는다. */
@@ -151,19 +153,19 @@ function applyEdits(text: string, edits: readonly Edit[]): string {
 }
 
 interface Arguments {
-	readonly file        : string;
-	readonly write       : boolean;
-	readonly minRows     : number;
-	readonly explainLine : number | undefined;
+	readonly file        : string             ;
+	readonly write       : boolean            ;
+	readonly minRows     : number             ;
+	readonly explainLine : number | undefined ;
 }
 
 function parseArguments(): Arguments {
-	const raw = process.argv.slice(2);
-	const write = raw.includes("--write");
-	const minRowsIndex = raw.indexOf("--min-rows");
-	const explainIndex = raw.indexOf("--explain");
-	const minRows = minRowsIndex < 0 ? 3 : Number(raw[minRowsIndex + 1]);
-	const explainLine = explainIndex < 0 ? undefined : Number(raw[explainIndex + 1]);
+	const raw          = process.argv.slice(2)                                        ;
+	const write        = raw.includes("--write")                                      ;
+	const minRowsIndex = raw.indexOf("--min-rows")                                    ;
+	const explainIndex = raw.indexOf("--explain")                                     ;
+	const minRows      = minRowsIndex < 0 ? 3 : Number(raw[minRowsIndex + 1])         ;
+	const explainLine  = explainIndex < 0 ? undefined : Number(raw[explainIndex + 1]) ;
 	if (raw[0] !== "--file" || !raw[1] || (!Number.isInteger(minRows) || minRows < 3) || (explainLine !== undefined && !Number.isInteger(explainLine))) {
 		throw new Error("usage: 06_align-tables.ts --file <repository TypeScript file> [--write] [--min-rows 3] [--explain <줄번호>]");
 	}

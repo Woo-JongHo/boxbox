@@ -20,7 +20,6 @@ import {
 	isMethodDeclaration,
 	isMethodSignatureDeclaration,
 	isObjectLiteralExpression,
-	type ObjectLiteralExpression,
 	isPropertyAssignment,
 	isPropertyDeclaration,
 	isPropertySignatureDeclaration,
@@ -29,19 +28,17 @@ import {
 	isTypeAliasDeclaration,
 	isTypeLiteralNode,
 	isVariableStatement,
-	type Node,
-	type PropertyAssignment,
-	type SourceFile,
 	SyntaxKind,
 } from "typescript/unstable/ast";
-import { skipTrivia } from "typescript/unstable/ast/scanner";
+import type { ObjectLiteralExpression, Node, PropertyAssignment, SourceFile } from "typescript/unstable/ast";
+import { skipTrivia }                                                         from "typescript/unstable/ast/scanner";
 
 import { displayWidth } from "../common/display-width.js";
 
 export interface RowBoundary {
-	readonly axis : string;
-	readonly from : number;
-	readonly at   : number;
+	readonly axis : string ;
+	readonly from : number ;
+	readonly at   : number ;
 	/** true면 기존 열 그대로 맞추는 삽입 축(`(`, `)`, `):`, `":`, `//`). false면 최소 한 칸 여백을 남기는 간격 축이다. */
 	readonly insert? : boolean;
 }
@@ -49,10 +46,10 @@ export interface RowBoundary {
 export type GapRule = "blank" | "comma";
 
 export interface RowKind {
-	readonly name       : string;
-	readonly gap        : GapRule;
-	readonly containers : (node: Node, seen: ReadonlySet<Node>) => readonly Node[] | undefined;
-	readonly detect     : (source: SourceFile, node: Node) => readonly RowBoundary[] | undefined;
+	readonly name       : string                                                                 ;
+	readonly gap        : GapRule                                                                ;
+	readonly containers : (node: Node, seen: ReadonlySet<Node>) => readonly Node[] | undefined   ;
+	readonly detect     : (source: SourceFile, node: Node) => readonly RowBoundary[] | undefined ;
 	/** 감지된 행 묶음에 따라 보고용 이름을 바꾼다(예: `=` 축을 정렬하는 declaration-equals). */
 	readonly groupName? : (run: readonly DetectedRow[]) => string;
 }
@@ -88,9 +85,9 @@ const COMMA_REST = /^[ \t]*,?[ \t]*(?:\/\/.*)?$/u;
 const CLOSER_REST = /^[ \t]*(?:(?:as const|satisfies [A-Za-z_$][\w$.<>[\]"']*)?[ \t]*(?:\)|;|,))?[ \t]*(?:\/\/.*)?$/u;
 /** 닫는 `}` 뒤 꼬리(`as const`/`satisfies`/`)`/`;`/`,`)의 시작 위치를 돌려준다. 꼬리가 없으면 undefined다. */
 function closerTail(source: SourceFile, node: Node): number | undefined {
-	const lineEnd = source.text.indexOf("\n", node.getEnd());
-	const rest = source.text.slice(node.getEnd(), lineEnd < 0 ? source.text.length : lineEnd).replace(/\r$/u, "");
-	const match = /^[ \t]*((?:as const|satisfies [A-Za-z_$][\w$.<>[\]"']*)[ \t]*)?(\)|;|,)/u.exec(rest);
+	const lineEnd = source.text.indexOf("\n", node.getEnd())                                                         ;
+	const rest    = source.text.slice(node.getEnd(), lineEnd < 0 ? source.text.length : lineEnd).replace(/\r$/u, "") ;
+	const match   = /^[ \t]*((?:as const|satisfies [A-Za-z_$][\w$.<>[\]"']*)[ \t]*)?(\)|;|,)/u.exec(rest)            ;
 	if (!match) return undefined;
 	const tailLength = (match[1]?.length ?? 0) + (match[2]?.length ?? 0);
 	return node.getEnd() + match[0].length - tailLength;
@@ -98,9 +95,9 @@ function closerTail(source: SourceFile, node: Node): number | undefined {
 
 /** 종결자 뒤 같은 줄의 우측 `//` 설명을 comment 축 경계로 돌려준다. */
 function trailingComment(source: SourceFile, after: number): RowBoundary | undefined {
-	const lineEnd = source.text.indexOf("\n", after);
-	const rest = source.text.slice(after, lineEnd < 0 ? source.text.length : lineEnd);
-	const match = /^[ \t]+(\/\/.*)$/u.exec(rest);
+	const lineEnd = source.text.indexOf("\n", after)                                     ;
+	const rest    = source.text.slice(after, lineEnd < 0 ? source.text.length : lineEnd) ;
+	const match   = /^[ \t]+(\/\/.*)$/u.exec(rest)                                       ;
 	if (!match) return undefined;
 	const at = after + match.index! + match[0].indexOf("//");
 	return { axis: "comment", from: at, at, insert: true };
@@ -113,9 +110,9 @@ function detectDeclaration(source: SourceFile, node: Node): readonly RowBoundary
 	const declaration = declarations[0]!;
 	if (!isIdentifier(declaration.name)) return undefined;
 	if (!ownLineOf(source, node, LINE_REST)) return undefined;
-	const nameEnd = declaration.name.getEnd();
-	const boundaries: RowBoundary[] = [];
-	const colon = tokenAfter(source, nameEnd, ":");
+	const nameEnd                   = declaration.name.getEnd()        ;
+	const boundaries: RowBoundary[] = []                               ;
+	const colon                     = tokenAfter(source, nameEnd, ":") ;
 	if (colon) boundaries.push({ axis: "colon", from: nameEnd, at: colon });
 	const equalsAnchor = declaration.type ? declaration.type.getEnd() : nameEnd;
 	const equals = tokenAfter(source, equalsAnchor, "=");
@@ -150,9 +147,9 @@ function detectTypeAlias(source: SourceFile, node: Node): readonly RowBoundary[]
 function detectMember(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
 	if (!isPropertySignatureDeclaration(node) && !isPropertyDeclaration(node)) return undefined;
 	if (!ownLineOf(source, node, LINE_REST)) return undefined;
-	const nameEnd = (node.postfixToken ?? node.name).getEnd();
-	const boundaries: RowBoundary[] = [];
-	const colon = tokenAfter(source, nameEnd, ":");
+	const nameEnd                   = (node.postfixToken ?? node.name).getEnd() ;
+	const boundaries: RowBoundary[] = []                                        ;
+	const colon                     = tokenAfter(source, nameEnd, ":")          ;
 	if (colon) boundaries.push({ axis: "colon", from: nameEnd, at: colon });
 	const equalsAnchor = node.type ? node.type.getEnd() : nameEnd;
 	const equals = isPropertyDeclaration(node) && node.initializer ? tokenAfter(source, equalsAnchor, "=") : undefined;
@@ -172,10 +169,10 @@ function detectMethod(source: SourceFile, node: Node): readonly RowBoundary[] | 
 	const nameEnd = node.name.getEnd();
 	const open = tokenAfter(source, nameEnd, "(");
 	if (!open) return undefined;
-	const parameters = node.parameters;
-	const hasParameters = parameters.length > 0;
-	const closeAnchor = hasParameters ? parameters.at(-1)!.getEnd() : open + 1;
-	const close = tokenAfter(source, closeAnchor, ")");
+	const parameters    = node.parameters                                        ;
+	const hasParameters = parameters.length > 0                                  ;
+	const closeAnchor   = hasParameters ? parameters.at(-1)!.getEnd() : open + 1 ;
+	const close         = tokenAfter(source, closeAnchor, ")")                   ;
 	if (!close) return undefined;
 	const boundaries: RowBoundary[] = [{ axis: "open-paren", from: open, at: open, insert: true }];
 	// 빈 매개변수는 ()로 붙여 쓴다 — 닫는 괄호를 표 폭에 맞추지 않고 여백은 괄호 밖에 둔다.
@@ -192,9 +189,9 @@ function detectMethod(source: SourceFile, node: Node): readonly RowBoundary[] | 
 function detectEnumMember(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
 	if (!isEnumMember(node)) return undefined;
 	if (!ownLineOf(source, node, COMMA_REST)) return undefined;
-	const nameEnd = node.name.getEnd();
-	const boundaries: RowBoundary[] = [];
-	const equals = node.initializer ? tokenAfter(source, nameEnd, "=") : undefined;
+	const nameEnd                   = node.name.getEnd()                                              ;
+	const boundaries: RowBoundary[] = []                                                              ;
+	const equals                    = node.initializer ? tokenAfter(source, nameEnd, "=") : undefined ;
 	if (equals) boundaries.push({ axis: "equals", from: nameEnd, at: equals });
 	const valueEnd = node.initializer ? node.initializer.getEnd() : nameEnd;
 	const comma = tokenAfter(source, valueEnd, ",");
@@ -288,17 +285,17 @@ function detectObjectRow(source: SourceFile, node: Node): readonly RowBoundary[]
 	if (properties.length === 0 || !properties.every(isPropertyAssignment)) return undefined;
 	const boundaries: RowBoundary[] = [];
 	for (let index = 0; index < properties.length; index += 1) {
-		const property = properties[index]! as PropertyAssignment;
-		const nameEnd = (property.postfixToken ?? property.name).getEnd();
-		const colon = tokenAfter(source, nameEnd, ":");
+		const property = properties[index]! as PropertyAssignment          ;
+		const nameEnd  = (property.postfixToken ?? property.name).getEnd() ;
+		const colon    = tokenAfter(source, nameEnd, ":")                  ;
 		if (!colon) return undefined;
 		boundaries.push({ axis: `colon${index + 1}`, from: nameEnd, at: colon });
 		if (spacesOnly(source, colon + 1, property.initializer.getStart())) {
 			boundaries.push({ axis: `value${index + 1}`, from: colon + 1, at: property.initializer.getStart() });
 		}
-		const last = index === properties.length - 1;
-		const boundaryAnchor = property.initializer.getEnd();
-		const boundary = tokenAfter(source, boundaryAnchor, last ? "}" : ",");
+		const last           = index === properties.length - 1                      ;
+		const boundaryAnchor = property.initializer.getEnd()                        ;
+		const boundary       = tokenAfter(source, boundaryAnchor, last ? "}" : ",") ;
 		if (!boundary) return undefined;
 		boundaries.push({ axis: last ? "close-brace" : `comma${index + 1}`, from: boundaryAnchor, at: boundary });
 	}
@@ -434,19 +431,19 @@ export function syntaxKindName(node: Node): string {
  * `":`, `//`)을 보존하며 열만 맞추는 축이다. `{i}`는 객체 행의 속성 위치별 축이다.
  */
 export const KIND_AXES: Readonly<Record<string, { readonly gap: readonly string[]; readonly insert: readonly string[] }>> = {
-	"declaration"       : { gap: ["colon", "semicolon"], insert: ["comment"] },
-	"declaration-equals": { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
-	"type-alias"        : { gap: ["equals", "semicolon"], insert: ["comment"] },
-	"method-signature"  : { gap: [], insert: ["open-paren", "close-paren", "colon", "comment"] },
-	"class-method"      : { gap: [], insert: ["open-paren", "close-paren", "colon", "comment"] },
-	"interface-members" : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
-	"type-members"      : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
-	"class-members"     : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
-	"enum-member"       : { gap: ["equals", "comma"], insert: ["comment"] },
-	"case-clause"       : { gap: [], insert: ["case-colon", "call-paren", "return-tail"] },
-	"assignments"       : { gap: ["equals", "semicolon"], insert: ["comment"] },
-	"object-rows"       : { gap: ["colon{i}", "value{i}", "comma{i}"], insert: ["close-brace", "tail"] },
-	"registration"      : { gap: ["colon", "value"], insert: [] },
+	"declaration"        : { gap: ["colon", "semicolon"], insert: ["comment"] },
+	"declaration-equals" : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
+	"type-alias"         : { gap: ["equals", "semicolon"], insert: ["comment"] },
+	"method-signature"   : { gap: [], insert: ["open-paren", "close-paren", "colon", "comment"] },
+	"class-method"       : { gap: [], insert: ["open-paren", "close-paren", "colon", "comment"] },
+	"interface-members"  : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
+	"type-members"       : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
+	"class-members"      : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
+	"enum-member"        : { gap: ["equals", "comma"], insert: ["comment"] },
+	"case-clause"        : { gap: [], insert: ["case-colon", "call-paren", "return-tail"] },
+	"assignments"        : { gap: ["equals", "semicolon"], insert: ["comment"] },
+	"object-rows"        : { gap: ["colon{i}", "value{i}", "comma{i}"], insert: ["close-brace", "tail"] },
+	"registration"       : { gap: ["colon", "value"], insert: [] },
 };
 
 export interface DetectedRow {
@@ -456,14 +453,14 @@ export interface DetectedRow {
 
 /** 컨테이너 형제 중 같은 종류의 연속 행만 묶는다. 빈 줄·주석·다른 구문이 사이에 있으면 표가 끊긴다. */
 export function runsOf(source: SourceFile, siblings: readonly Node[], kind: RowKind): readonly (readonly DetectedRow[])[] {
-	const commaGap = kind.gap === "comma";
-	const runs: DetectedRow[][] = [];
-	let current: DetectedRow[] = [];
-	let previousEnd: number | undefined;
+	const commaGap                    = kind.gap === "comma" ;
+	const runs      : DetectedRow[][] = []                   ;
+	let current     : DetectedRow[]   = []                   ;
+	let previousEnd : number | undefined                     ;
 	for (const sibling of siblings) {
-		const boundaries = kind.detect(source, sibling);
-		const gap = previousEnd === undefined || boundaries === undefined ? undefined : source.text.slice(previousEnd, sibling.getStart(source));
-		const continues = boundaries !== undefined && (previousEnd === undefined || (commaGap ? /^[ \t]*,?[ \t]*\r?\n[ \t]*$/u : /^[ \t]*\r?\n[ \t]*$/u).test(gap ?? ""));
+		const boundaries = kind.detect(source, sibling)                                                                                                                    ;
+		const gap        = previousEnd === undefined || boundaries === undefined ? undefined : source.text.slice(previousEnd, sibling.getStart(source))                    ;
+		const continues  = boundaries !== undefined && (previousEnd === undefined || (commaGap ? /^[ \t]*,?[ \t]*\r?\n[ \t]*$/u : /^[ \t]*\r?\n[ \t]*$/u).test(gap ?? "")) ;
 		if (continues) current.push({ node: sibling, boundaries });
 		else {
 			if (current.length > 0) runs.push(current);

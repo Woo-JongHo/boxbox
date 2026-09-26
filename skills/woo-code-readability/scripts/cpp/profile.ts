@@ -4,7 +4,7 @@
  * 남는 중괄호, 제어문, R"( 원본 문자열이 열려 있는 줄, type 셀에 소괄호(함수 포인터), 함수형
  * 매크로 — 는 null로 거부한다. 엔진의 무손실 검증이 두 번째 안전장치다.
  */
-import type { CodeSyntax } from "../common/code-text.ts";
+import type { CodeSyntax }                     from "../common/code-text.ts";
 import type { LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
 
 const SYNTAX: CodeSyntax = {

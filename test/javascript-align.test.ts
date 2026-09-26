@@ -1,7 +1,7 @@
-import { describe, expect, test } from "bun:test";
-import { maskSource } from "../skills/woo-code-readability/scripts/common/code-text.ts";
-import { alignSource } from "../skills/woo-code-readability/scripts/common/table-engine.ts";
-import { defineLanguageSuite } from "./lang-harness.ts";
+import { describe, expect, test }                from "bun:test";
+import { maskSource }                            from "../skills/woo-code-readability/scripts/common/code-text.ts";
+import { alignSource }                           from "../skills/woo-code-readability/scripts/common/table-engine.ts";
+import { defineLanguageSuite }                   from "./lang-harness.ts";
 import { JAVASCRIPT_ALIGNER, JAVASCRIPT_SYNTAX } from "../skills/woo-code-readability/scripts/javascript/profile.ts";
 
 defineLanguageSuite({
@@ -72,9 +72,9 @@ describe("javascript 프로파일 고유 성질", () => {
 			[template, "value", "`sum:${1 + 2} = 3`"],
 			[quoted, "key", '"open:key"'],
 		] as const) {
-			const mask   = maskSource(line, JAVASCRIPT_SYNTAX);
-			const masked = mask.text.split("\n")[0] ?? "";
-			const profile = JAVASCRIPT_ALIGNER.profile(line, masked);
+			const mask    = maskSource(line, JAVASCRIPT_SYNTAX)      ;
+			const masked  = mask.text.split("\n")[0] ?? ""           ;
+			const profile = JAVASCRIPT_ALIGNER.profile(line, masked) ;
 			expect(profile?.slots.find(slot => slot.axis === axis)?.text).toBe(expected);
 		}
 	});

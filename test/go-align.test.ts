@@ -1,8 +1,8 @@
-import { expect, test } from "bun:test";
+import { expect, test }        from "bun:test";
 import { defineLanguageSuite } from "./lang-harness.ts";
-import { maskSource } from "../skills/woo-code-readability/scripts/common/code-text.ts";
-import { alignSource } from "../skills/woo-code-readability/scripts/common/table-engine.ts";
-import { GO_ALIGNER } from "../skills/woo-code-readability/scripts/go/profile.ts";
+import { maskSource }          from "../skills/woo-code-readability/scripts/common/code-text.ts";
+import { alignSource }         from "../skills/woo-code-readability/scripts/common/table-engine.ts";
+import { GO_ALIGNER }          from "../skills/woo-code-readability/scripts/go/profile.ts";
 
 defineLanguageSuite({
 	aligner     : GO_ALIGNER,
@@ -39,9 +39,9 @@ test("go: 태그 열은 백틱 포함 최장 태그 값에 맞춘다", () => {
 		`    Qty  int    \`json:"qty"\``,
 		"}",
 	].join("\n");
-	const result = alignSource(source, GO_ALIGNER, { minRows: 3, apply: true });
-	const lines = result.output.split("\n");
-	const tagStarts = lines.slice(3, 6).map(line => line.indexOf("`"));
+	const result    = alignSource(source, GO_ALIGNER, { minRows: 3, apply: true }) ;
+	const lines     = result.output.split("\n")                                    ;
+	const tagStarts = lines.slice(3, 6).map(line => line.indexOf("`"))             ;
 	expect(new Set(tagStarts).size).toBe(1);
 	expect(tagStarts[0]).toBe(4 + 4 + 1 + 6 + 1);
 	expect(lines[4].slice(tagStarts[1]!).trimEnd()).toBe("`json:\"name\" validate:\"required\"`");

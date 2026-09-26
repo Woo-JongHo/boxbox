@@ -14,7 +14,7 @@
  * 빈 pattern·action·value 셀. enum 변형은 UpperCamelCase 관습으로 변형 이름을 가려
  * 함수 호출과 구별한다.
  */
-import type { CodeSyntax } from "../common/code-text.ts";
+import type { CodeSyntax }                     from "../common/code-text.ts";
 import type { LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
 
 const RUST_SYNTAX: CodeSyntax = {
@@ -40,28 +40,28 @@ const RUST_HEAD_KEYWORDS = new Set([
 	"use",      "where",    "while",
 ]);
 
-const INDENT    = "([ \\t]*)";
-const GAP       = "([ \\t]+)";
-const OPT_GAP   = "([ \\t]*)";
-const NAME      = "([A-Za-z_][A-Za-z0-9_]*)";
-const LIFETIME  = "'[A-Za-z_][A-Za-z0-9_]*";
-const REF       = `&(?:[ \\t]*${LIFETIME})?[ \\t]*(?:mut[ \\t]+)?`;
-const PATH      = "[A-Za-z_][A-Za-z0-9_]*(?:::[A-Za-z_][A-Za-z0-9_]*)*";
-const GENERIC   = "<[^<>\\n]*(?:<[^<>\\n]*>[^<>\\n]*)*>";
-const BRACKET   = "\\[[^\\[\\]\\n]*\\]";
-const TUPLE     = "\\([^\\(\\)\\n]*\\)";
+const INDENT   = "([ \\t]*)"                                           ;
+const GAP      = "([ \\t]+)"                                           ;
+const OPT_GAP  = "([ \\t]*)"                                           ;
+const NAME     = "([A-Za-z_][A-Za-z0-9_]*)"                            ;
+const LIFETIME = "'[A-Za-z_][A-Za-z0-9_]*"                             ;
+const REF      = `&(?:[ \\t]*${LIFETIME})?[ \\t]*(?:mut[ \\t]+)?`      ;
+const PATH     = "[A-Za-z_][A-Za-z0-9_]*(?:::[A-Za-z_][A-Za-z0-9_]*)*" ;
+const GENERIC  = "<[^<>\\n]*(?:<[^<>\\n]*>[^<>\\n]*)*>"                ;
+const BRACKET  = "\\[[^\\[\\]\\n]*\\]"                                 ;
+const TUPLE    = "\\([^\\(\\)\\n]*\\)"                                 ;
 // Rust 타입 식의 안전한 부분집합: 참조·수명 접두와 경로·제네릭 한 단계·슬라이스·튜플만 인정한다.
 const TYPE      = `(?:${REF})?(?:${PATH}(?:${GENERIC})?|${BRACKET}|${TUPLE})`;
 // 문은 ;로 끊지만 [0; 4]처럼 대괄호 안의 ;는 값에 포함된다. 문자열 내부는 masked에 이미 공백이다.
-const VALUE     = "((?:[^;\\n]|\\[[^\\[\\]\\n]*\\])*?)";
-const PATTERN   = "((?:[^=\\n]|=(?!>))*?)";
-const PAREN     = "(\\([^\\(\\)\\n]*\\))";
+const VALUE   = "((?:[^;\\n]|\\[[^\\[\\]\\n]*\\])*?)" ;
+const PATTERN = "((?:[^=\\n]|=(?!>))*?)"              ;
+const PAREN   = "(\\([^\\(\\)\\n]*\\))"               ;
 
-const STRUCT_FIELD = new RegExp(`^${INDENT}${NAME}${OPT_GAP}:${OPT_GAP}(${TYPE})${OPT_GAP}(,)?[ \\t]*$`, "du");
-const LET_TYPED    = new RegExp(`^${INDENT}(let(?:[ \\t]+mut)?)${GAP}${NAME}${OPT_GAP}:${OPT_GAP}(${TYPE})${GAP}=(?!=)${OPT_GAP}${VALUE}${OPT_GAP};[ \\t]*$`, "du");
-const LET_PLAIN    = new RegExp(`^${INDENT}(let(?:[ \\t]+mut)?)${GAP}${NAME}${GAP}=(?!=)${OPT_GAP}${VALUE}${OPT_GAP};[ \\t]*$`, "du");
-const ENUM_VARIANT = new RegExp(`^${INDENT}${NAME}${OPT_GAP}${PAREN}?(?:${OPT_GAP}=(?![=>])${OPT_GAP}${VALUE})?${OPT_GAP}(,)?[ \\t]*$`, "du");
-const MATCH_ARM    = new RegExp(`^${INDENT}${PATTERN}${OPT_GAP}=>${OPT_GAP}${VALUE}${OPT_GAP}(,)?[ \\t]*$`, "du");
+const STRUCT_FIELD = new RegExp(`^${INDENT}${NAME}${OPT_GAP}:${OPT_GAP}(${TYPE})${OPT_GAP}(,)?[ \\t]*$`, "du")                                                      ;
+const LET_TYPED    = new RegExp(`^${INDENT}(let(?:[ \\t]+mut)?)${GAP}${NAME}${OPT_GAP}:${OPT_GAP}(${TYPE})${GAP}=(?!=)${OPT_GAP}${VALUE}${OPT_GAP};[ \\t]*$`, "du") ;
+const LET_PLAIN    = new RegExp(`^${INDENT}(let(?:[ \\t]+mut)?)${GAP}${NAME}${GAP}=(?!=)${OPT_GAP}${VALUE}${OPT_GAP};[ \\t]*$`, "du")                               ;
+const ENUM_VARIANT = new RegExp(`^${INDENT}${NAME}${OPT_GAP}${PAREN}?(?:${OPT_GAP}=(?![=>])${OPT_GAP}${VALUE})?${OPT_GAP}(,)?[ \\t]*$`, "du")                       ;
+const MATCH_ARM    = new RegExp(`^${INDENT}${PATTERN}${OPT_GAP}=>${OPT_GAP}${VALUE}${OPT_GAP}(,)?[ \\t]*$`, "du")                                                   ;
 
 const cellOf = (code: string, indices: RegExpIndicesArray, group: number): string => {
 	const range = indices[group];
@@ -91,9 +91,9 @@ const fieldRow = (code: string, indices: RegExpIndicesArray): RowProfile | null 
 	const gaps = gapsOf(code, indices, [3, 4, 6]);
 	if (gaps === null) return null;
 	const slots: Slot[] = [
-		{ axis: "name" , text: cellOf(code, indices, 2), gapBefore: ""      },
-		{ axis: "colon", text: ":"                     , gapBefore: gaps[0] },
-		{ axis: "type" , text: cellOf(code, indices, 5), gapBefore: gaps[1] },
+		{ axis : "name"  , text : cellOf(code, indices, 2) , gapBefore : ""      },
+		{ axis : "colon" , text : ":"                      , gapBefore : gaps[0] },
+		{ axis : "type"  , text : cellOf(code, indices, 5) , gapBefore : gaps[1] },
 	];
 	if (indices[7] !== undefined) slots.push({ axis: "comma", text: ",", gapBefore: gaps[2] });
 	return { indent: cellOf(code, indices, 1), slots };
@@ -106,13 +106,13 @@ const letTypedRow = (code: string, indices: RegExpIndicesArray): RowProfile | nu
 	return {
 		indent: cellOf(code, indices, 1),
 		slots : [
-			{ axis: "keyword"  , text: cellOf(code, indices, 2) , gapBefore: ""      },
-			{ axis: "name"     , text: cellOf(code, indices, 4) , gapBefore: gaps[0] },
-			{ axis: "colon"    , text: ":"                      , gapBefore: gaps[1] },
-			{ axis: "type"     , text: cellOf(code, indices, 7) , gapBefore: gaps[2] },
-			{ axis: "equal"    , text: "="                      , gapBefore: gaps[3] },
-			{ axis: "value"    , text: cellOf(code, indices, 10), gapBefore: gaps[4] },
-			{ axis: "semicolon", text: ";"                      , gapBefore: gaps[5] },
+			{ axis : "keyword"   , text : cellOf(code, indices, 2)  , gapBefore : ""      },
+			{ axis : "name"      , text : cellOf(code, indices, 4)  , gapBefore : gaps[0] },
+			{ axis : "colon"     , text : ":"                       , gapBefore : gaps[1] },
+			{ axis : "type"      , text : cellOf(code, indices, 7)  , gapBefore : gaps[2] },
+			{ axis : "equal"     , text : "="                       , gapBefore : gaps[3] },
+			{ axis : "value"     , text : cellOf(code, indices, 10) , gapBefore : gaps[4] },
+			{ axis : "semicolon" , text : ";"                       , gapBefore : gaps[5] },
 		],
 	};
 };
@@ -124,11 +124,11 @@ const letPlainRow = (code: string, indices: RegExpIndicesArray): RowProfile | nu
 	return {
 		indent: cellOf(code, indices, 1),
 		slots : [
-			{ axis: "keyword"  , text: cellOf(code, indices, 2), gapBefore: ""      },
-			{ axis: "name"     , text: cellOf(code, indices, 4), gapBefore: gaps[0] },
-			{ axis: "equal"    , text: "="                     , gapBefore: gaps[1] },
-			{ axis: "value"    , text: cellOf(code, indices, 7), gapBefore: gaps[2] },
-			{ axis: "semicolon", text: ";"                     , gapBefore: gaps[3] },
+			{ axis : "keyword"   , text : cellOf(code, indices, 2) , gapBefore : ""      },
+			{ axis : "name"      , text : cellOf(code, indices, 4) , gapBefore : gaps[0] },
+			{ axis : "equal"     , text : "="                      , gapBefore : gaps[1] },
+			{ axis : "value"     , text : cellOf(code, indices, 7) , gapBefore : gaps[2] },
+			{ axis : "semicolon" , text : ";"                      , gapBefore : gaps[3] },
 		],
 	};
 };
@@ -141,9 +141,9 @@ const variantRow = (code: string, indices: RegExpIndicesArray): RowProfile | nul
 	if (!/^[A-Z]/u.test(name)) return null;
 	const gaps = gapsOf(code, indices, [3, 5, 6, 8]);
 	if (gaps === null) return null;
-	const hasParen = indices[4] !== undefined;
-	const hasValue = indices[7] !== undefined;
-	const value = cellOf(code, indices, 7);
+	const hasParen = indices[4] !== undefined ;
+	const hasValue = indices[7] !== undefined ;
+	const value    = cellOf(code, indices, 7) ;
 	if (hasValue && value.trim() === "") return null;
 	const slots: Slot[] = [{ axis: "name", text: name, gapBefore: "" }];
 	if (hasParen) slots.push({ axis: "paren", text: cellOf(code, indices, 4), gapBefore: gaps[0] });
@@ -163,32 +163,32 @@ const armRow = (code: string, indices: RegExpIndicesArray): RowProfile | null =>
 	const action  = cellOf(code, indices, 5);
 	if (pattern.trim() === "" || action.trim() === "") return null;
 	const slots: Slot[] = [
-		{ axis: "pattern", text: pattern, gapBefore: ""      },
-		{ axis: "arrow"  , text: "=>"   , gapBefore: gaps[0] },
-		{ axis: "action" , text: action , gapBefore: gaps[1] },
+		{ axis : "pattern" , text : pattern , gapBefore : ""      },
+		{ axis : "arrow"   , text : "=>"    , gapBefore : gaps[0] },
+		{ axis : "action"  , text : action  , gapBefore : gaps[1] },
 	];
 	if (indices[7] !== undefined) slots.push({ axis: "comma", text: ",", gapBefore: gaps[2] });
 	return { indent: cellOf(code, indices, 1), slots };
 };
 
 export const RUST_ALIGNER: LineProfiler = {
-	language      : "rust",
-	syntax        : RUST_SYNTAX,
-	columnAxes    : ["action", "name", "paren", "pattern", "type", "value"],
+	language   : "rust",
+	syntax     : RUST_SYNTAX,
+	columnAxes : ["action", "name", "paren", "pattern", "type", "value"],
 	canonicalGaps : {
 		// Rust 관습: colon·comma·semicolon·paren은 셀에 바로 붙이고 equal·arrow는 한 칸 띄운다.
-		colon    : "",
-		comma    : "",
-		semicolon: "",
-		paren    : "",
-		arrow    : " ",
-		equal    : " ",
-		keyword  : " ",
-		name     : " ",
-		type     : " ",
-		value    : " ",
-		pattern  : " ",
-		action   : " ",
+		colon     : "",
+		comma     : "",
+		semicolon : "",
+		paren     : "",
+		arrow     : " ",
+		equal     : " ",
+		keyword   : " ",
+		name      : " ",
+		type      : " ",
+		value     : " ",
+		pattern   : " ",
+		action    : " ",
 	},
 	profile(code: string, masked: string): RowProfile | null {
 		const tail = code.trimEnd();

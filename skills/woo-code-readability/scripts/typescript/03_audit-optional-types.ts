@@ -1,20 +1,20 @@
 #!/usr/bin/env bun
 
 import { existsSync, realpathSync, statSync } from "node:fs";
-import { relative, resolve } from "node:path";
+import { relative, resolve }                  from "node:path";
 
 interface Diagnostic {
-	file    : string;
-	line    : number;
-	column  : number;
-	code    : string;
-	message : string;
+	file    : string ;
+	line    : number ;
+	column  : number ;
+	code    : string ;
+	message : string ;
 }
 
 interface Options {
-	maxErrors : number;
-	top       : number;
-	file      : string | null;
+	maxErrors : number        ;
+	top       : number        ;
+	file      : string | null ;
 }
 
 function naturalNumber(name: string, value: string): number {
@@ -52,16 +52,16 @@ function options(root: string): Options {
 }
 
 function diagnostic(match: RegExpMatchArray): Diagnostic {
-	const file    = match[1];
-	const line    = match[2];
-	const column  = match[3];
-	const code    = match[4];
-	const message = match[5];
+	const file    = match[1] ;
+	const line    = match[2] ;
+	const column  = match[3] ;
+	const code    = match[4] ;
+	const message = match[5] ;
 	if (!file || !line || !column || !code || !message) throw new Error(`TypeScript 진단을 해석할 수 없습니다: ${match[0]}`);
 	return {
-		file    : file.replaceAll("\\", "/").replace(/^\.\//u, ""),
-		line    : Number(line),
-		column  : Number(column),
+		file   : file.replaceAll("\\", "/").replace(/^\.\//u, ""),
+		line   : Number(line),
+		column : Number(column),
 		code,
 		message,
 	};
@@ -90,11 +90,11 @@ function compareText(left: string, right: string): number {
 const root               = process.cwd();
 const binary             = resolve(root, "node_modules/.bin/tsc");
 const { maxErrors, top, file } = options(root);
-const result             = runTypeScript(root, binary);
-const decoder     = new TextDecoder();
-const output      = [decoder.decode(result.stdout), decoder.decode(result.stderr)].filter(Boolean).join("\n");
-const pattern     = /^(.+?)\((\d+),(\d+)\): error (TS\d+): (.+)$/gmu;
-const diagnostics = [...output.matchAll(pattern)].map(diagnostic);
+const result      = runTypeScript(root, binary)                                                               ;
+const decoder     = new TextDecoder()                                                                         ;
+const output      = [decoder.decode(result.stdout), decoder.decode(result.stderr)].filter(Boolean).join("\n") ;
+const pattern     = /^(.+?)\((\d+),(\d+)\): error (TS\d+): (.+)$/gmu                                          ;
+const diagnostics = [...output.matchAll(pattern)].map(diagnostic)                                             ;
 
 if (result.exitCode !== 0 && diagnostics.length === 0) {
 	console.error(output.trim() || `TypeScript 실행 실패: exit ${result.exitCode}`);

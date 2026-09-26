@@ -18,28 +18,28 @@ export const PYTHON_SYNTAX: CodeSyntax = {
 	lineComments  : ["#"],
 	blockComments : [],
 	strings       : [
-		{ open: '"""', close: '"""', escape: true },
-		{ open: "'''", close: "'''", escape: true },
-		{ open: '"',   close: '"',   escape: true },
-		{ open: "'",   close: "'",   escape: true },
+		{ open : '"""' , close   : '"""' , escape   : true },
+		{ open : "'''" , close   : "'''" , escape   : true },
+		{ open : '"'   ,   close : '"'   ,   escape : true },
+		{ open : "'"   ,   close : "'"   ,   escape : true },
 	],
 	cppRaw        : false,
 };
 
-const INDENT = "([ \\t]*)";
-const NAME   = "([A-Za-z_][A-Za-z0-9_]*)";
-const QUOTED = "(\"[^\"]*\"|'[^']*')";
-const TYPE   = "([A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*)";
-const GAP    = "(\\s*)";
-const VALUE  = "(.+?)";
+const INDENT = "([ \\t]*)"                                              ;
+const NAME   = "([A-Za-z_][A-Za-z0-9_]*)"                               ;
+const QUOTED = "(\"[^\"]*\"|'[^']*')"                                   ;
+const TYPE   = "([A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*)" ;
+const GAP    = "(\\s*)"                                                 ;
+const VALUE  = "(.+?)"                                                  ;
 
 /** 표 행이 될 수 없는 문 시작 — 제어문·선언·가져오기. match·case는 소프트 키워드라 제외한다. */
 const RESERVED_START = /^(?:if|elif|else|for|while|try|except|finally|with|def|class|return|raise|import|from|pass|break|continue|lambda|yield|assert|del|global|nonlocal|async|await)\b/;
 
-const ANNOTATED = new RegExp(`^${INDENT}${NAME}${GAP}:${GAP}${TYPE}${GAP}=${GAP}${VALUE}${GAP}$`, "du");
-const DECLARED  = new RegExp(`^${INDENT}${NAME}${GAP}:${GAP}${TYPE}$`, "du");
-const DICT_ROW  = new RegExp(`^${INDENT}${QUOTED}${GAP}:${GAP}${VALUE}${GAP},$`, "du");
-const ASSIGNED  = new RegExp(`^${INDENT}${NAME}${GAP}=${GAP}${VALUE}${GAP}$`, "du");
+const ANNOTATED = new RegExp(`^${INDENT}${NAME}${GAP}:${GAP}${TYPE}${GAP}=${GAP}${VALUE}${GAP}$`, "du") ;
+const DECLARED  = new RegExp(`^${INDENT}${NAME}${GAP}:${GAP}${TYPE}$`, "du")                            ;
+const DICT_ROW  = new RegExp(`^${INDENT}${QUOTED}${GAP}:${GAP}${VALUE}${GAP},$`, "du")                  ;
+const ASSIGNED  = new RegExp(`^${INDENT}${NAME}${GAP}=${GAP}${VALUE}${GAP}$`, "du")                     ;
 
 function slotAt(code: string, match: RegExpExecArray, group: number): string {
 	const range = match.indices?.[group];
@@ -89,9 +89,9 @@ function profilePython(code: string, masked: string): RowProfile | null {
 		return {
 			indent : slotAt(code, declared, 1),
 			slots  : [
-				{ axis: "name",  text: slotAt(code, declared, 2), gapBefore: "" },
-				{ axis: "colon", text: ":", gapBefore: slotAt(code, declared, 3) },
-				{ axis: "type",  text: slotAt(code, declared, 5), gapBefore: slotAt(code, declared, 4) },
+				{ axis : "name"  ,  text : slotAt(code, declared, 2) , gapBefore : ""                        },
+				{ axis : "colon" , text  : ":"                       , gapBefore : slotAt(code, declared, 3) },
+				{ axis : "type"  ,  text : slotAt(code, declared, 5) , gapBefore : slotAt(code, declared, 4) },
 			],
 		};
 	}

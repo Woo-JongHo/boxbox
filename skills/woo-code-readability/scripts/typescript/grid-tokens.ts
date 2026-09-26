@@ -16,10 +16,9 @@ import {
 	isPropertyDeclaration,
 	isPropertySignatureDeclaration,
 	isVariableStatement,
-	type Node,
-	type SourceFile,
 } from "typescript/unstable/ast";
-import { skipTrivia } from "typescript/unstable/ast/scanner";
+import type { Node, SourceFile } from "typescript/unstable/ast";
+import { skipTrivia }            from "typescript/unstable/ast/scanner";
 
 export type BoundaryRole =
 	| "type-annotation-colon"
@@ -35,9 +34,9 @@ export type BoundaryRole =
 	| "call-paren";
 
 export interface Boundary {
-	readonly role  : BoundaryRole;
-	readonly start : number;
-	readonly end   : number;
+	readonly role  : BoundaryRole ;
+	readonly start : number       ;
+	readonly end   : number       ;
 }
 
 function tokenAt(role: BoundaryRole, start: number, length = 1): Boundary {

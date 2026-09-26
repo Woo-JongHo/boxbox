@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { maskSource } from "../skills/woo-code-readability/scripts/common/code-text.ts";
-import { alignSource } from "../skills/woo-code-readability/scripts/common/table-engine.ts";
-import { JAVA_ALIGNER } from "../skills/woo-code-readability/scripts/java/profile.ts";
-import { defineLanguageSuite } from "./lang-harness.ts";
+import { maskSource }             from "../skills/woo-code-readability/scripts/common/code-text.ts";
+import { alignSource }            from "../skills/woo-code-readability/scripts/common/table-engine.ts";
+import { JAVA_ALIGNER }           from "../skills/woo-code-readability/scripts/java/profile.ts";
+import { defineLanguageSuite }    from "./lang-harness.ts";
 
 defineLanguageSuite({
 	aligner     : JAVA_ALIGNER,

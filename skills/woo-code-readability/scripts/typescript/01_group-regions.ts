@@ -14,9 +14,8 @@ import {
 	isInterfaceDeclaration,
 	isObjectLiteralExpression,
 	isSourceFile,
-	type Node,
-	type SourceFile as TsSourceFile,
 } from "typescript/unstable/ast";
+import type { Node, SourceFile as TsSourceFile } from "typescript/unstable/ast";
 
 import { boundaryAxesOf } from "./grid-tokens.ts";
 import { loadSourceFile } from "./load-source-file.ts";
@@ -27,12 +26,12 @@ interface RowContainer {
 }
 
 interface Group {
-	readonly containerLabel : string;
-	readonly kind           : string;
-	readonly rows           : readonly Node[];
-	readonly startLine      : number;
-	readonly endLine        : number;
-	readonly axes           : readonly string[];
+	readonly containerLabel : string            ;
+	readonly kind           : string            ;
+	readonly rows           : readonly Node[]   ;
+	readonly startLine      : number            ;
+	readonly endLine        : number            ;
+	readonly axes           : readonly string[] ;
 }
 
 function rowContainersOf(node: Node): readonly RowContainer[] {
@@ -111,9 +110,9 @@ async function main(): Promise<void> {
 
 	console.log(`grid-regions file=${relative} groups=${groups.length} min-rows=${minRows}`);
 	for (const group of groups) {
-		const table = group.rows.length >= 3 ? "table" : "pair";
-		const axes  = group.axes.length > 0 ? group.axes.join(",") : "-";
-		const range = group.startLine === group.endLine ? `${group.startLine}` : `${group.startLine}-${group.endLine}`;
+		const table = group.rows.length >= 3 ? "table" : "pair"                                                        ;
+		const axes  = group.axes.length > 0 ? group.axes.join(",") : "-"                                               ;
+		const range = group.startLine === group.endLine ? `${group.startLine}` : `${group.startLine}-${group.endLine}` ;
 		console.log(`  ${range.padStart(9)}  ${group.containerLabel.padEnd(10)} ${group.kind.padEnd(24)} rows=${String(group.rows.length).padStart(2)}  ${table.padEnd(5)} axes=${axes}`);
 	}
 }

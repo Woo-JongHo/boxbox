@@ -4,16 +4,16 @@
  * 구조 판정은 문자열 내부·주석이 공백화된 masked로 하고, 셀 텍스트는 원본 code에서 같은 좌표로 자른다.
  * 화살표 함수(=>), 닫히지 않은 괄호, 여는 중괄호가 남는 행, 제어문, 확신 없는 행은 표 행으로 인정하지 않는다.
  */
-import type { CodeSyntax } from "../common/code-text.ts";
+import type { CodeSyntax }                     from "../common/code-text.ts";
 import type { LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
 
 export const JAVASCRIPT_SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],
 	blockComments : [{ open: "/*", close: "*/" }],
 	strings       : [
-		{ open: '"', close: '"', escape: true },
-		{ open: "'", close: "'", escape: true },
-		{ open: "`", close: "`", escape: true },
+		{ open : '"' , close : '"' , escape : true },
+		{ open : "'" , close : "'" , escape : true },
+		{ open : "`" , close : "`" , escape : true },
 	],
 	cppRaw        : false,
 };
@@ -26,9 +26,9 @@ const RESERVED = new Set([
 	"while", "with", "yield",
 ]);
 
-const CONST_ROW  = /^([ \t]*)(const)([ \t]+)([A-Za-z_$][\w$]*)(\s*)=(?![=>])(\s*)(.+?)(\s*);$/du;
-const FIELD_ROW  = /^([ \t]*)([A-Za-z_$][\w$]*)(\s*)=(?![=>])(\s*)(.+?)(\s*);$/du;
-const OBJECT_ROW = /^([ \t]*)((?:"[^"]*"|'[^']*'|`[^`]*`|[A-Za-z_$][\w$]*))(\s*):(\s*)(.+?)(\s*),$/du;
+const CONST_ROW  = /^([ \t]*)(const)([ \t]+)([A-Za-z_$][\w$]*)(\s*)=(?![=>])(\s*)(.+?)(\s*);$/du      ;
+const FIELD_ROW  = /^([ \t]*)([A-Za-z_$][\w$]*)(\s*)=(?![=>])(\s*)(.+?)(\s*);$/du                     ;
+const OBJECT_ROW = /^([ \t]*)((?:"[^"]*"|'[^']*'|`[^`]*`|[A-Za-z_$][\w$]*))(\s*):(\s*)(.+?)(\s*),$/du ;
 /** `const a = 1, b = 2;` 같은 다중 선언 — 두 번째 `=`는 축이 아니므로 거부한다. */
 const DECLARATOR = /,\s*[A-Za-z_$][\w$]*\s*=(?!=)/;
 
@@ -55,11 +55,11 @@ function constProfile(code: string, masked: string, match: RegExpExecArray): Row
 	const value = sliceAt(masked, indices, 7);
 	if (value.includes(";") || DECLARATOR.test(value)) return null;
 	const slots: Slot[] = [
-		{ axis: "keyword",   text: sliceAt(code, indices, 2), gapBefore: ""                        },
-		{ axis: "name",      text: sliceAt(code, indices, 4), gapBefore: sliceAt(code, indices, 3) },
-		{ axis: "equal",     text: "=",                       gapBefore: sliceAt(code, indices, 5) },
-		{ axis: "value",     text: sliceAt(code, indices, 7), gapBefore: sliceAt(code, indices, 6) },
-		{ axis: "semicolon", text: ";",                       gapBefore: sliceAt(code, indices, 8) },
+		{ axis : "keyword"   ,   text    : sliceAt(code, indices, 2) , gapBefore                       : ""                        },
+		{ axis : "name"      ,      text : sliceAt(code, indices, 4) , gapBefore                       : sliceAt(code, indices, 3) },
+		{ axis : "equal"     ,     text  : "="                       ,                       gapBefore : sliceAt(code, indices, 5) },
+		{ axis : "value"     ,     text  : sliceAt(code, indices, 7) , gapBefore                       : sliceAt(code, indices, 6) },
+		{ axis : "semicolon" , text      : ";"                       ,                       gapBefore : sliceAt(code, indices, 8) },
 	];
 	return { indent: sliceAt(code, indices, 1), slots };
 }
@@ -71,10 +71,10 @@ function fieldProfile(code: string, masked: string, match: RegExpExecArray): Row
 	const value = sliceAt(masked, indices, 5);
 	if (value.includes(";") || DECLARATOR.test(value)) return null;
 	const slots: Slot[] = [
-		{ axis: "name",      text: sliceAt(code, indices, 2), gapBefore: ""                        },
-		{ axis: "equal",     text: "=",                       gapBefore: sliceAt(code, indices, 3) },
-		{ axis: "value",     text: sliceAt(code, indices, 5), gapBefore: sliceAt(code, indices, 4) },
-		{ axis: "semicolon", text: ";",                       gapBefore: sliceAt(code, indices, 6) },
+		{ axis : "name"      ,      text : sliceAt(code, indices, 2) , gapBefore                       : ""                        },
+		{ axis : "equal"     ,     text  : "="                       ,                       gapBefore : sliceAt(code, indices, 3) },
+		{ axis : "value"     ,     text  : sliceAt(code, indices, 5) , gapBefore                       : sliceAt(code, indices, 4) },
+		{ axis : "semicolon" , text      : ";"                       ,                       gapBefore : sliceAt(code, indices, 6) },
 	];
 	return { indent: sliceAt(code, indices, 1), slots };
 }
@@ -86,10 +86,10 @@ function objectProfile(code: string, masked: string, match: RegExpExecArray): Ro
 	const value = sliceAt(masked, indices, 5);
 	if (value.includes(";") || DECLARATOR.test(value)) return null;
 	const slots: Slot[] = [
-		{ axis: "key",   text: sliceAt(code, indices, 2), gapBefore: ""                        },
-		{ axis: "colon", text: ":",                       gapBefore: sliceAt(code, indices, 3) },
-		{ axis: "value", text: sliceAt(code, indices, 5), gapBefore: sliceAt(code, indices, 4) },
-		{ axis: "comma", text: ",",                       gapBefore: sliceAt(code, indices, 6) },
+		{ axis : "key"   ,   text : sliceAt(code, indices, 2) , gapBefore                       : ""                        },
+		{ axis : "colon" , text   : ":"                       ,                       gapBefore : sliceAt(code, indices, 3) },
+		{ axis : "value" , text   : sliceAt(code, indices, 5) , gapBefore                       : sliceAt(code, indices, 4) },
+		{ axis : "comma" , text   : ","                       ,                       gapBefore : sliceAt(code, indices, 6) },
 	];
 	return { indent: sliceAt(code, indices, 1), slots };
 }

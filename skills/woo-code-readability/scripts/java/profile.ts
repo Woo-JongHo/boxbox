@@ -12,29 +12,29 @@
  * 제어문·선언 키워드 행, 소괄호를 가진 메서드 시그니처(형태 4의 괄호 인자 제외),
  * 값이 비었거나 문자열 밖 ;를 둘 이상 품는 행 등 확신 없는 행은 null로 거부한다.
  */
-import type { CodeSyntax } from "../common/code-text.ts";
+import type { CodeSyntax }                     from "../common/code-text.ts";
 import type { LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
 
 export const JAVA_SYNTAX: CodeSyntax = {
-	lineComments : ["//"],
+	lineComments  : ["//"],
 	blockComments : [{ open: "/*", close: "*/" }],
 	strings       : [{ open: '"', close: '"', escape: true }],
 	cppRaw        : false,
 };
 
-const IDENTIFIER = "[A-Za-z_$][A-Za-z0-9_$]*";
-const TYPE       = `${IDENTIFIER}(?:\\.${IDENTIFIER})*(?:\\[\\])*`;
-const MODIFIER   = "(?:private|protected|public|static|final|volatile|transient)";
-const MODIFIERS  = `${MODIFIER}(?:\\s+${MODIFIER})*`;
+const IDENTIFIER = "[A-Za-z_$][A-Za-z0-9_$]*"                                     ;
+const TYPE       = `${IDENTIFIER}(?:\\.${IDENTIFIER})*(?:\\[\\])*`                ;
+const MODIFIER   = "(?:private|protected|public|static|final|volatile|transient)" ;
+const MODIFIERS  = `${MODIFIER}(?:\\s+${MODIFIER})*`                              ;
 
 /** 여는 괄호·중괄호가 남는 행, 어노테이션 줄, 제어문·선언 키워드로 시작하는 행은 행 후보에서 제외한다. */
 const RESERVED_START = /^(?:if|for|while|switch|do|else|try|catch|finally|return|throw|new|break|continue|case|default|synchronized|assert|import|package|class|interface|enum|record|extends|implements|this|super)\b/;
 
-const ENUM_WITH_ARGS = new RegExp(`^([ \\t]*)(${IDENTIFIER})(\\s*)(\\([^()]*\\))(\\s*),$`, "du");
-const ENUM_BARE      = new RegExp(`^([ \\t]*)(${IDENTIFIER})(\\s*),$`, "du");
-const INITIALIZED    = new RegExp(`^([ \\t]*)(${MODIFIERS})(\\s+)(${TYPE})(\\s+)(${IDENTIFIER})(\\s*)=(.*)$`, "du");
-const DECLARED       = new RegExp(`^([ \\t]*)(${MODIFIERS})(\\s+)(${TYPE})(\\s+)(${IDENTIFIER})(\\s*);$`, "du");
-const PLAIN_INIT     = new RegExp(`^([ \\t]*)(${TYPE})(\\s+)(${IDENTIFIER})(\\s*)=(.*)$`, "du");
+const ENUM_WITH_ARGS = new RegExp(`^([ \\t]*)(${IDENTIFIER})(\\s*)(\\([^()]*\\))(\\s*),$`, "du")                    ;
+const ENUM_BARE      = new RegExp(`^([ \\t]*)(${IDENTIFIER})(\\s*),$`, "du")                                        ;
+const INITIALIZED    = new RegExp(`^([ \\t]*)(${MODIFIERS})(\\s+)(${TYPE})(\\s+)(${IDENTIFIER})(\\s*)=(.*)$`, "du") ;
+const DECLARED       = new RegExp(`^([ \\t]*)(${MODIFIERS})(\\s+)(${TYPE})(\\s+)(${IDENTIFIER})(\\s*);$`, "du")     ;
+const PLAIN_INIT     = new RegExp(`^([ \\t]*)(${TYPE})(\\s+)(${IDENTIFIER})(\\s*)=(.*)$`, "du")                     ;
 
 function slotAt(code: string, match: RegExpExecArray, group: number): string {
 	const range = match.indices?.[group];
@@ -45,9 +45,9 @@ function slotAt(code: string, match: RegExpExecArray, group: number): string {
 function tailSlots(code: string, masked: string, match: RegExpExecArray, restGroup: number): readonly [Slot, Slot] | null {
 	const tailStart = match.indices?.[restGroup]?.[0];
 	if (tailStart === undefined || masked.endsWith(";") === false) return null;
-	const semicolonAt = masked.length - 1;
-	let valueStart = tailStart;
-	let valueEnd   = semicolonAt;
+	const semicolonAt = masked.length - 1 ;
+	let valueStart    = tailStart         ;
+	let valueEnd      = semicolonAt       ;
 	while (valueStart < valueEnd && /\s/.test(masked.charAt(valueStart))) valueStart += 1;
 	while (valueEnd > valueStart && /\s/.test(masked.charAt(valueEnd - 1))) valueEnd -= 1;
 	if (valueStart === valueEnd) return null;
@@ -67,9 +67,9 @@ function profileJava(code: string, masked: string): RowProfile | null {
 		return {
 			indent : slotAt(code, withArgs, 1),
 			slots  : [
-				{ axis: "name",      text: slotAt(code, withArgs, 2), gapBefore: "" },
-				{ axis: "parenArgs", text: slotAt(code, withArgs, 4), gapBefore: slotAt(code, withArgs, 3) },
-				{ axis: "comma",     text: ",", gapBefore: slotAt(code, withArgs, 5) },
+				{ axis : "name"      ,      text : slotAt(code, withArgs, 2) , gapBefore : ""                        },
+				{ axis : "parenArgs" , text      : slotAt(code, withArgs, 4) , gapBefore : slotAt(code, withArgs, 3) },
+				{ axis : "comma"     ,     text  : ","                       , gapBefore : slotAt(code, withArgs, 5) },
 			],
 		};
 	}
@@ -106,10 +106,10 @@ function profileJava(code: string, masked: string): RowProfile | null {
 		return {
 			indent : slotAt(code, declared, 1),
 			slots  : [
-				{ axis: "modifiers", text: slotAt(code, declared, 2), gapBefore: "" },
-				{ axis: "type",      text: slotAt(code, declared, 4), gapBefore: slotAt(code, declared, 3) },
-				{ axis: "name",      text: slotAt(code, declared, 6), gapBefore: slotAt(code, declared, 5) },
-				{ axis: "semicolon", text: ";", gapBefore: slotAt(code, declared, 7) },
+				{ axis : "modifiers" , text      : slotAt(code, declared, 2) , gapBefore : ""                        },
+				{ axis : "type"      ,      text : slotAt(code, declared, 4) , gapBefore : slotAt(code, declared, 3) },
+				{ axis : "name"      ,      text : slotAt(code, declared, 6) , gapBefore : slotAt(code, declared, 5) },
+				{ axis : "semicolon" , text      : ";"                       , gapBefore : slotAt(code, declared, 7) },
 			],
 		};
 	}

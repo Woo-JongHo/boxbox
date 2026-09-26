@@ -5,9 +5,9 @@
  */
 export interface StringSpec {
 	/** 여는 구분자. `"""` 같은 삼중 따옴표는 close와 같은 값을 쓴다. */
-	readonly open    : string;
-	readonly close   : string;
-	readonly escape  : boolean;
+	readonly open   : string  ;
+	readonly close  : string  ;
+	readonly escape : boolean ;
 }
 
 export interface BlockCommentSpec {
@@ -16,9 +16,9 @@ export interface BlockCommentSpec {
 }
 
 export interface CodeSyntax {
-	readonly lineComments  : readonly string[];
-	readonly blockComments : readonly BlockCommentSpec[];
-	readonly strings       : readonly StringSpec[];
+	readonly lineComments  : readonly string[]           ;
+	readonly blockComments : readonly BlockCommentSpec[] ;
+	readonly strings       : readonly StringSpec[]       ;
 	/** Rust 문자 리터럴 `'a'`만 문자열로 인정하고 `'a` 수명은 코드로 둔다. */
 	readonly rustChars?    : boolean;
 	/** C++ 원본 문자열 `R"delim( ... )delim"`을 인정한다. */
@@ -37,23 +37,23 @@ export interface MaskedSource {
 const longestFirst = (values: readonly string[]): readonly string[] => [...values].sort((left, right) => right.length - left.length);
 
 export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
-	const masked  = [...source];
-	const strings = longestFirst(syntax.strings.map(spec => spec.open));
-	const commentStarts: number[] = [-1];
-	const opensInBlock : boolean[] = [false];
-	let line = 0;
-	let lineStart = 0;
-	let inBlock = false;
-	let blockClose = "";
-	let index = 0;
+	const masked                    = [...source]                                         ;
+	const strings                   = longestFirst(syntax.strings.map(spec => spec.open)) ;
+	const commentStarts : number[]  = [-1]                                                ;
+	const opensInBlock  : boolean[] = [false]                                             ;
+	let line                        = 0                                                   ;
+	let lineStart                   = 0                                                   ;
+	let inBlock                     = false                                               ;
+	let blockClose                  = ""                                                  ;
+	let index                       = 0                                                   ;
 
 	while (index < source.length) {
 		const character = source[index];
 		if (character === "\n") {
 			line += 1;
-			lineStart = index + 1;
-			opensInBlock[line] = inBlock;
-			commentStarts[line] = -1;
+			lineStart           = index + 1 ;
+			opensInBlock[line]  = inBlock   ;
+			commentStarts[line] = -1        ;
 			index += 1;
 			continue;
 		}

@@ -4,9 +4,10 @@
  *         01_group-regions.ts --file <대상 파일>... [--min-rows 3]
  * misaligned가 있고 --write가 없으면 종료 코드 1로 실패한다.
  */
-import { readFileSync, writeFileSync } from "node:fs";
-import { relative, resolve } from "node:path";
-import { alignSource, type AlignResult, type LineProfiler } from "./table-engine.ts";
+import { readFileSync, writeFileSync }    from "node:fs";
+import { relative, resolve }              from "node:path";
+import { alignSource }                    from "./table-engine.ts";
+import type { AlignResult, LineProfiler } from "./table-engine.ts";
 
 /** CodeSyntax도 이 모듈에서 가져갈 수 있게 다시 내보낸다. */
 export type { CodeSyntax } from "./code-text.ts";
@@ -28,17 +29,17 @@ function numbers(args: readonly string[], name: string): readonly number[] {
 export function runAlignCli(aligner: LineProfiler, args: readonly string[], overrides: { readonly groupsOnly?: boolean } = {}): AlignCliResult {
 	const files = args.flatMap((argument, index) => argument === "--file" ? [args[index + 1]] : []);
 	if (files.length === 0) return { report: "사용법: --file <대상 파일>... [--write] [--min-rows 3] [--explain <줄번호>] [--groups]", code: 2 };
-	const minRows = Number(flag(args, "--min-rows") ?? 3);
-	const write = args.includes("--write") && !overrides.groupsOnly;
-	const explain = numbers(args, "--explain");
-	const groupsOnly = overrides.groupsOnly || args.includes("--groups");
+	const minRows    = Number(flag(args, "--min-rows") ?? 3)             ;
+	const write      = args.includes("--write") && !overrides.groupsOnly ;
+	const explain    = numbers(args, "--explain")                        ;
+	const groupsOnly = overrides.groupsOnly || args.includes("--groups") ;
 
 	const reports: string[] = [];
 	let failed = false;
 	for (const file of files) {
-		const absolute = resolve(file);
-		const source = readFileSync(absolute, "utf8");
-		const result = alignSource(source, aligner, { minRows: Number.isFinite(minRows) ? minRows : 3, apply: write });
+		const absolute = resolve(file)                                                                                   ;
+		const source   = readFileSync(absolute, "utf8")                                                                  ;
+		const result   = alignSource(source, aligner, { minRows: Number.isFinite(minRows) ? minRows : 3, apply: write }) ;
 		if (write && result.misaligned > 0) writeFileSync(absolute, result.output);
 		const label = relative(process.cwd(), absolute).replaceAll("\\", "/");
 		reports.push(formatResult(aligner, label, source, result, groupsOnly));

@@ -5,7 +5,7 @@
  * 여는 중괄호가 남는 행, 제어문, return, 비트필드, 배열, 함수형 매크로, 역슬래시 줄 연결처럼
  * 확신 없는 행은 null로 거부해 구획을 끊는다.
  */
-import type { CodeSyntax } from "../common/code-text.ts";
+import type { CodeSyntax }                     from "../common/code-text.ts";
 import type { LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
 
 /** 마스크는 원본과 줄·열 기하를 보존하므로, 마스크 좌표를 code 슬라이스에 그대로 쓴다. */
@@ -81,19 +81,19 @@ function fieldProfile(code: string, masked: string): RowProfile | null {
 	return {
 		indent : sliceAt(code, indices, 1),
 		slots  : [
-			{ axis: "type",      text: type,                       gapBefore: ""                             },
-			{ axis: "name",      text: name,                       gapBefore: sliceAt(code, indices, 3) },
-			{ axis: "semicolon", text: ";",                        gapBefore: sliceAt(code, indices, 6) },
+			{ axis : "type"      ,      text : type ,                       gapBefore  : ""                        },
+			{ axis : "name"      ,      text : name ,                       gapBefore  : sliceAt(code, indices, 3) },
+			{ axis : "semicolon" , text      : ";"  ,                        gapBefore : sliceAt(code, indices, 6) },
 		],
 	};
 }
 
 /** enum 상수와 지정 초기화는 `이름 = 값,` 형태가 같아 한 검사에서 축 이름만 바꿔 분해한다. */
 function assignProfile(code: string, masked: string): RowProfile | null {
-	const enumMatch = ENUM.exec(masked);
-	const designated = enumMatch === null;
-	const match = designated ? DESIGNATED.exec(masked) : enumMatch;
-	const indices = match?.indices;
+	const enumMatch  = ENUM.exec(masked)                                ;
+	const designated = enumMatch === null                               ;
+	const match      = designated ? DESIGNATED.exec(masked) : enumMatch ;
+	const indices    = match?.indices                                   ;
 	if (!match || !indices) return null;
 	const equalEnd = indices[4]?.[1];
 	const valueRange = indices[6];
@@ -105,10 +105,10 @@ function assignProfile(code: string, masked: string): RowProfile | null {
 	return {
 		indent : sliceAt(code, indices, 1),
 		slots  : [
-			{ axis: designated ? "dotfield" : "name", text: name,                      gapBefore: ""                             },
-			{ axis: "equal",                          text: "=",                       gapBefore: sliceAt(code, indices, 3) },
-			{ axis: "value",                          text: sliceAt(code, indices, 6), gapBefore: sliceAt(code, indices, 5) },
-			{ axis: "comma",                          text: ",",                       gapBefore: sliceAt(code, indices, 7) },
+			{ axis : designated ? "dotfield" : "name" , text                          : name                      ,                      gapBefore  : ""                        },
+			{ axis : "equal"                          ,                          text : "="                       ,                       gapBefore : sliceAt(code, indices, 3) },
+			{ axis : "value"                          ,                          text : sliceAt(code, indices, 6) , gapBefore                       : sliceAt(code, indices, 5) },
+			{ axis : "comma"                          ,                          text : ","                       ,                       gapBefore : sliceAt(code, indices, 7) },
 		],
 	};
 }

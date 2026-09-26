@@ -2,14 +2,14 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { relative }                    from "node:path";
 
-import { displayWidth } from "../common/display-width.ts";
+import { displayWidth }   from "../common/display-width.ts";
 import { repositoryFile } from "./load-source-file.ts";
 
 interface ImportRow {
-	readonly text  : string;
-	readonly start : number;
-	readonly end   : number;
-	readonly block : number;
+	readonly text  : string ;
+	readonly start : number ;
+	readonly end   : number ;
+	readonly block : number ;
 }
 
 interface RenderedRow {
@@ -18,19 +18,19 @@ interface RenderedRow {
 }
 
 interface ParsedImport {
-	readonly head       : string;
-	readonly before     : string;
-	readonly entries    : readonly string[];
-	readonly module     : string;
-	readonly attributes : string | undefined;
-	readonly terminator : string;
-	readonly suffix     : string;
+	readonly head       : string             ;
+	readonly before     : string             ;
+	readonly entries    : readonly string[]  ;
+	readonly module     : string             ;
+	readonly attributes : string | undefined ;
+	readonly terminator : string             ;
+	readonly suffix     : string             ;
 }
 
 function lexicalMask(source: string): string {
-	const chars = source.split("");
-	let state: "code" | "single" | "double" | "template" | "line" | "block" = "code";
-	let escaped = false;
+	const chars                                                             = source.split("") ;
+	let state: "code" | "single" | "double" | "template" | "line" | "block" = "code"           ;
+	let escaped                                                             = false            ;
 	for (let index = 0; index < chars.length; index += 1) {
 		const value = chars[index]!;
 		const next = chars[index + 1];
@@ -112,9 +112,9 @@ function splitNamedImport(row: string, file: string): readonly string[] {
 	if (hasComment(row) && /\btype\s+[A-Za-z_$]/u.test(row)) throw new Error(`주석이 있는 import는 자동 수정하지 않습니다: ${file}`);
 	const match = /^import\s+([^"']*?)\s+from\s+(["'][^"']+["']);?$/su.exec(row);
 	if (!match) return [row];
-	const clause = match[1] ?? "";
-	const open = clause.indexOf("{");
-	const close = clause.lastIndexOf("}");
+	const clause = match[1] ?? ""          ;
+	const open   = clause.indexOf("{")     ;
+	const close  = clause.lastIndexOf("}") ;
 	if (open < 0 || close < open) return [row];
 	const before = clause.slice(0, open).replace(/,\s*$/u, "").trim();
 	const entries = clause.slice(open + 1, close).split(",").map(value => value.trim()).filter(Boolean);
@@ -122,10 +122,10 @@ function splitNamedImport(row: string, file: string): readonly string[] {
 	const types = entries.filter(value => /^type\s+/u.test(value));
 	if (types.length === 0) return [row];
 	if (hasComment(row)) throw new Error(`주석이 있는 혼합 import는 자동 수정하지 않습니다: ${file}`);
-	const values = entries.filter(value => !/^type\s+/u.test(value));
-	const module = match[2];
-	const terminator = /;\s*$/u.test(row) ? ";" : "";
-	const result: string[] = [];
+	const values           = entries.filter(value => !/^type\s+/u.test(value)) ;
+	const module           = match[2]                                          ;
+	const terminator       = /;\s*$/u.test(row) ? ";" : ""                     ;
+	const result: string[] = []                                                ;
 	if (before || values.length > 0) {
 		const named = values.length > 0 ? `{ ${values.join(", ")} }` : "";
 		const valueClause = [before, named].filter(Boolean).join(", ");
@@ -137,19 +137,19 @@ function splitNamedImport(row: string, file: string): readonly string[] {
 
 /** named 절을 문법 경계로 분해한다. 문장을 완결하지 못하는 주석·비정형 절은 undefined다. */
 function parseImportRow(row: string): ParsedImport | undefined {
-	const at = commentIndex(row);
-	const core = at < 0 ? row : row.slice(0, at).trimEnd();
-	const suffix = at < 0 ? "" : row.slice(at);
-	const match = /^(import(?:[ \t]+type)?)[ \t]+([^{}'"]*?)\{([^{}]*)\}[ \t\r\n]*from[ \t]+(["'][^"'\n]+["'])([ \t]+(?:with|assert)[ \t\r\n]*\{[^{}]*\})?[ \t\r\n]*(;?)[ \t]*$/su.exec(core);
+	const at     = commentIndex(row)                                                                                                                                                           ;
+	const core   = at < 0 ? row : row.slice(0, at).trimEnd()                                                                                                                                   ;
+	const suffix = at < 0 ? "" : row.slice(at)                                                                                                                                                 ;
+	const match  = /^(import(?:[ \t]+type)?)[ \t]+([^{}'"]*?)\{([^{}]*)\}[ \t\r\n]*from[ \t]+(["'][^"'\n]+["'])([ \t]+(?:with|assert)[ \t\r\n]*\{[^{}]*\})?[ \t\r\n]*(;?)[ \t]*$/su.exec(core) ;
 	if (!match) return undefined;
 	const before = (match[2] ?? "").replace(/[ \t]+$/u, "").length > 0 ? `${(match[2] ?? "").replace(/[ \t]+$/u, "")} ` : "";
 	return {
 		head        : `${match[1]} `,
 		before,
-		entries     : (match[3] ?? "").split(",").map(value => value.trim()).filter(Boolean),
-		module      : match[4] ?? "",
-		attributes  : (match[5] ?? "").replace(/[ \t\r\n]+$/u, "") || undefined,
-		terminator  : (match[6] ?? "") === ";" ? ";" : "",
+		entries    : (match[3] ?? "").split(",").map(value => value.trim()).filter(Boolean),
+		module     : match[4] ?? "",
+		attributes : (match[5] ?? "").replace(/[ \t\r\n]+$/u, "") || undefined,
+		terminator : (match[6] ?? "") === ";" ? ";" : "",
 		suffix,
 	};
 }
@@ -201,9 +201,9 @@ function normalizeOnce(source: string, file: string): string {
 		if (styles.size > 1) throw new Error(`같은 import 블록의 종결자 스타일이 섞여 있습니다: ${file}`);
 	}
 	for (const row of rows) if (/\s(?:with|assert)\s*\{/u.test(row.text) && /\btype\s+[A-Za-z_$]/u.test(row.text)) throw new Error(`attributes가 있는 혼합 import는 자동 수정하지 않습니다: ${file}`);
-	const split = rows.map(row => splitNamedImport(row.text, file).map(text => ({ text, block: row.block })));
-	const aligned = alignFrom(split.flat().map(row => ({ ...row, text: renderImportRow(row.text, file, newline) })));
-	let offset = 0;
+	const split   = rows.map(row => splitNamedImport(row.text, file).map(text => ({ text, block: row.block })))      ;
+	const aligned = alignFrom(split.flat().map(row => ({ ...row, text: renderImportRow(row.text, file, newline) }))) ;
+	let offset    = 0                                                                                                ;
 	const replacements = rows.map((row, index) => {
 		const count = split[index]!.length;
 		const text = aligned.slice(offset, offset + count).map(value => value.text).join(newline);
@@ -226,11 +226,11 @@ function targetArguments(root: string): readonly string[] {
 	return values.map(value => repositoryFile(root, value).absolute);
 }
 
-const root = process.cwd();
-const write = process.argv.includes("--write");
-const targets = targetArguments(root);
-let changed = 0;
-let errors = 0;
+const root    = process.cwd()                    ;
+const write   = process.argv.includes("--write") ;
+const targets = targetArguments(root)            ;
+let changed   = 0                                ;
+let errors    = 0                                ;
 for (const absolute of targets) {
 	try {
 		const before = readFileSync(absolute, "utf8");

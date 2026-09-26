@@ -1,9 +1,11 @@
-import { describe, expect, test } from "bun:test";
-import { maskSource, type CodeSyntax } from "../skills/woo-code-readability/scripts/common/code-text.ts";
-import { alignSource, type LineProfiler, type RowProfile } from "../skills/woo-code-readability/scripts/common/table-engine.ts";
+import { describe, expect, test }        from "bun:test";
+import { maskSource }                    from "../skills/woo-code-readability/scripts/common/code-text.ts";
+import type { CodeSyntax }               from "../skills/woo-code-readability/scripts/common/code-text.ts";
+import { alignSource }                   from "../skills/woo-code-readability/scripts/common/table-engine.ts";
+import type { LineProfiler, RowProfile } from "../skills/woo-code-readability/scripts/common/table-engine.ts";
 
 const SYNTAX: CodeSyntax = {
-	lineComments : ["//"],
+	lineComments  : ["//"],
 	blockComments : [{ open: "/*", close: "*/" }],
 	strings       : [{ open: '"', close: '"', escape: true }],
 	cppRaw        : false,
@@ -26,10 +28,10 @@ const TEST_ALIGNER: LineProfiler = {
 		return {
 			indent : at(1),
 			slots  : [
-				{ axis: "name",      text: at(2), gapBefore: ""     },
-				{ axis: "colon",     text: ":",     gapBefore: at(3) },
-				{ axis: "value",     text: at(5), gapBefore: at(4) },
-				{ axis: "semicolon", text: ";",     gapBefore: at(6) },
+				{ axis : "name"      ,      text : at(2) , gapBefore     : ""    },
+				{ axis : "colon"     ,     text  : ":"   ,     gapBefore : at(3) },
+				{ axis : "value"     ,     text  : at(5) , gapBefore     : at(4) },
+				{ axis : "semicolon" , text      : ";"   ,     gapBefore : at(6) },
 			],
 		};
 	},
@@ -59,16 +61,16 @@ describe("maskSource", () => {
 	});
 
 	test("Rust 수명 'a는 문자열로 오판하지 않는다", () => {
-		const rust: CodeSyntax = { lineComments: ["//"], blockComments: [], strings: [{ open: '"', close: '"', escape: true }], rustChars: true, cppRaw: false };
-		const source = `let s: &'a str = "v";`;
-		const mask = maskSource(source, rust);
+		const rust: CodeSyntax = { lineComments: ["//"], blockComments: [], strings: [{ open: '"', close: '"', escape: true }], rustChars: true, cppRaw: false } ;
+		const source           = `let s: &'a str = "v";`                                                                                                         ;
+		const mask             = maskSource(source, rust)                                                                                                        ;
 		expect(mask.text).toBe(`let s: &'a str = " ";`);
 	});
 
 	test("C++ 원본 문자열 R\"( )\"를 통째로 가린다", () => {
-		const cpp: CodeSyntax = { lineComments: ["//"], blockComments: [{ open: "/*", close: "*/" }], strings: [{ open: '"', close: '"', escape: true }], cppRaw: true };
-		const source = `const char* p = R"x(a:b=c;)x";`;
-		const mask = maskSource(source, cpp);
+		const cpp: CodeSyntax = { lineComments: ["//"], blockComments: [{ open: "/*", close: "*/" }], strings: [{ open: '"', close: '"', escape: true }], cppRaw: true } ;
+		const source          = `const char* p = R"x(a:b=c;)x";`                                                                                                         ;
+		const mask            = maskSource(source, cpp)                                                                                                                  ;
 		expect(mask.text).toBe(`const char* p = R"x(      )x";`);
 	});
 });
@@ -120,17 +122,17 @@ describe("alignSource", () => {
 	});
 
 	test("문자열 내부의 구분자는 표로 오인하지 않는다", () => {
-		const source = `name : "a:b=c;" ;\nother : 2 ;\nthird : 3 ;`;
-		const result = alignSource(source, TEST_ALIGNER, { minRows: 3, apply: true });
-		const outputLines = result.output.split("\n");
+		const source      = `name : "a:b=c;" ;\nother : 2 ;\nthird : 3 ;`                  ;
+		const result      = alignSource(source, TEST_ALIGNER, { minRows: 3, apply: true }) ;
+		const outputLines = result.output.split("\n")                                      ;
 		expect(outputLines[0]).toBe(`name  : "a:b=c;" ;`);
 		expect(outputLines[1]).toBe(`other : 2        ;`);
 	});
 
 	test("주석 꼬리는 표 안에서 한 열로 맞춘다", () => {
-		const source = `alpha : 1 ; // first\nbeta : 22 ; // second\ngamma : 333 ;`;
-		const result = alignSource(source, TEST_ALIGNER, { minRows: 3, apply: true });
-		const outputLines = result.output.split("\n");
+		const source      = `alpha : 1 ; // first\nbeta : 22 ; // second\ngamma : 333 ;`   ;
+		const result      = alignSource(source, TEST_ALIGNER, { minRows: 3, apply: true }) ;
+		const outputLines = result.output.split("\n")                                      ;
 		expect(outputLines[0]).toBe("alpha : 1   ; // first");
 		expect(outputLines[1]).toBe("beta  : 22  ; // second");
 		expect(outputLines[2]).toBe("gamma : 333 ;");

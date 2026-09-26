@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { C_ALIGNER } from "../skills/woo-code-readability/scripts/c/profile.ts";
-import { alignSource } from "../skills/woo-code-readability/scripts/common/table-engine.ts";
-import { defineLanguageSuite } from "./lang-harness.ts";
+import { C_ALIGNER }              from "../skills/woo-code-readability/scripts/c/profile.ts";
+import { alignSource }            from "../skills/woo-code-readability/scripts/common/table-engine.ts";
+import { defineLanguageSuite }    from "./lang-harness.ts";
 
 defineLanguageSuite({
 	aligner     : C_ALIGNER,

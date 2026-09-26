@@ -2,14 +2,15 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { relative }                    from "node:path";
 
-import { isInterfaceDeclaration, type Node, type SourceFile } from "typescript/unstable/ast";
+import { isInterfaceDeclaration } from "typescript/unstable/ast";
+import type { Node, SourceFile }  from "typescript/unstable/ast";
 
 import { loadSourceFile, repositoryFile } from "./load-source-file.ts";
 
 interface Edit {
-	readonly start: number;
-	readonly end  : number;
-	readonly text : string;
+	readonly start : number ;
+	readonly end   : number ;
+	readonly text  : string ;
 }
 
 function lineOf(source: SourceFile, position: number): number {
@@ -27,12 +28,12 @@ function interfaceEdits(source: SourceFile): readonly Edit[] {
 	const newline = source.text.includes("\r\n") ? "\r\n" : "\n";
 	const visit = (node: Node): void => {
 		if (isInterfaceDeclaration(node) && node.members.length > 0) {
-			const first = node.members[0]!;
-			const last = node.members.at(-1)!;
-			const open = source.text.indexOf("{", node.name.getEnd());
-			const close = node.getEnd() - 1;
-			const baseIndent = indentationAt(source, node.getStart(source));
-			const memberIndent = `${baseIndent}\t`;
+			const first        = node.members[0]!                             ;
+			const last         = node.members.at(-1)!                         ;
+			const open         = source.text.indexOf("{", node.name.getEnd()) ;
+			const close        = node.getEnd() - 1                            ;
+			const baseIndent   = indentationAt(source, node.getStart(source)) ;
+			const memberIndent = `${baseIndent}\t`                            ;
 			if (open < 0 || source.text[close] !== "}") throw new Error("interface 중괄호 경계를 찾을 수 없습니다.");
 			if (lineOf(source, open) === lineOf(source, first.getStart(source))) {
 				const gap = source.text.slice(open + 1, first.getStart(source));
@@ -65,9 +66,9 @@ function applyEdits(source: string, edits: readonly Edit[]): string {
 	return result;
 }
 
-const root = process.cwd();
-const write = process.argv.includes("--write");
-const targets = process.argv.slice(2).filter(value => value !== "--write");
+const root    = process.cwd()                                              ;
+const write   = process.argv.includes("--write")                           ;
+const targets = process.argv.slice(2).filter(value => value !== "--write") ;
 if (targets.length === 0) throw new Error("usage: 00_expand-interface-members.ts [--write] <TypeScript file>...");
 let changed = 0;
 for (const target of targets) {

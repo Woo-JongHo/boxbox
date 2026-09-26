@@ -54,22 +54,22 @@ function parentKind(parent: Node, grandparent: Node): "if" | "return" | "variabl
 }
 
 interface Wrap {
-	readonly start : number;
-	readonly end   : number;
-	readonly text  : string;
+	readonly start : number ;
+	readonly end   : number ;
+	readonly text  : string ;
 }
 
 function collectWraps(node: Node, source: SourceFile, minOperands: number, wraps: Wrap[], skipped: string[], parent?: Node, grandparent?: Node): void {
 	const op = operatorOf(node, source);
 	if (op !== undefined && parent !== undefined && operatorOf(parent, source) !== op) {
-		const operands = collectOperands(node, source, op);
-		const singleLine = source.getLineAndCharacterOfPosition(node.getStart(source)).line === source.getLineAndCharacterOfPosition(node.getEnd() - 1).line;
-		const parentForm = parentKind(parent, grandparent ?? parent);
+		const operands   = collectOperands(node, source, op)                                                                                                 ;
+		const singleLine = source.getLineAndCharacterOfPosition(node.getStart(source)).line === source.getLineAndCharacterOfPosition(node.getEnd() - 1).line ;
+		const parentForm = parentKind(parent, grandparent ?? parent)                                                                                         ;
 		if (process.env.DEBUG_WRAP) console.error(`DBG op=${op} operands=${operands.length} parent=${syntaxKindName(parent)} grand=${syntaxKindName(grandparent ?? parent)} parentForm=${parentForm ?? "undefined"}`);
 		if (operands.length >= minOperands && singleLine && parentForm !== undefined) {
-			const base = lineIndent(source, node.getStart(source));
-			const indent = /\t/u.test(base) ? base + "\t" : base + "  ";
-			const lead = parentForm === "if" ? "" : indent;
+			const base   = lineIndent(source, node.getStart(source))    ;
+			const indent = /\t/u.test(base) ? base + "\t" : base + "  " ;
+			const lead   = parentForm === "if" ? "" : indent            ;
 			const lines = operands.map((operand, index) => {
 				const text = source.text.slice(operand.getStart(source), operand.getEnd());
 				return index === 0 ? `${lead}${text}` : `${indent}${op} ${text}`;
@@ -91,17 +91,17 @@ function applyWraps(text: string, wraps: readonly Wrap[]): string {
 }
 
 interface Arguments {
-	readonly file        : string;
-	readonly write       : boolean;
-	readonly minOperands : number;
+	readonly file        : string  ;
+	readonly write       : boolean ;
+	readonly minOperands : number  ;
 }
 
 function parseArguments(): Arguments {
-	const raw = process.argv.slice(2);
-	const write = raw.includes("--write");
-	const minIndex = raw.indexOf("--min-conditions");
-	const minConditions = minIndex < 0 ? 4 : Number(raw[minIndex + 1]);
-	const minOperands = minConditions;
+	const raw           = process.argv.slice(2)                        ;
+	const write         = raw.includes("--write")                      ;
+	const minIndex      = raw.indexOf("--min-conditions")              ;
+	const minConditions = minIndex < 0 ? 4 : Number(raw[minIndex + 1]) ;
+	const minOperands   = minConditions                                ;
 	if (raw[0] !== "--file" || !raw[1] || !Number.isInteger(minConditions) || minConditions < 3) {
 		throw new Error("usage: 07_wrap-conditions.ts --file <repository TypeScript file> [--write] [--min-conditions 4]");
 	}

@@ -78,9 +78,9 @@ function tokenColumn(line: string, spec: TokenSpec): number | undefined {
 function leftAnchorError(line: string, spec: LeftAnchorSpec): string | undefined {
 	const openingIndex = tokenIndex(line, spec);
 	if (openingIndex === undefined) return undefined;
-	const contentStart = openingIndex + spec.token.length;
-	const closingIndex = line.indexOf(spec.closingToken, contentStart);
-	const content = line.slice(contentStart, closingIndex < 0 ? undefined : closingIndex);
+	const contentStart = openingIndex + spec.token.length                                      ;
+	const closingIndex = line.indexOf(spec.closingToken, contentStart)                         ;
+	const content      = line.slice(contentStart, closingIndex < 0 ? undefined : closingIndex) ;
 	if (!content.trim()) return undefined;
 	if (!content.startsWith(" ")) return "여는 경계 뒤 한 칸이 없습니다";
 	if (content.startsWith("  ") || content.startsWith("\t")) return "내용 앞에 한 칸보다 큰 여백이 있습니다";
@@ -101,9 +101,9 @@ if (!filePath || filePath.startsWith("--")) {
 	throw new Error("사용법: measure-layout.ts <file> [--lines 1,3-8] [--tokens 'from|//#1'] [--expect 'from=41|//=146'] [--left-anchor '{#1|(#1|<#1'] [--center-cell '(#1|<#1'] [--compact-before '}#2']");
 }
 
-const source     : string           = readFileSync(filePath, "utf8");
-const sourceLines: readonly string[] = source.split("\n");
-const lineFilter : ReadonlySet<number> = parseLines(argument("--lines"), sourceLines.length);
+const source      : string              = readFileSync(filePath, "utf8")                      ;
+const sourceLines : readonly string[]   = source.split("\n")                                  ;
+const lineFilter  : ReadonlySet<number> = parseLines(argument("--lines"), sourceLines.length) ;
 const tokenSpecs : readonly TokenSpec[] = (argument("--tokens") ?? ":#1|=>|= await|//")
 	.split("|")
 	.filter(Boolean)
@@ -161,14 +161,14 @@ for (const lineNumber of [...lineFilter].sort((left, right) => left - right)) {
 	const centerMeasurements = centerCellSpecs.flatMap(spec => {
 		const content = cellContent(line, spec);
 		if (content === undefined || content.trim().length === 0) return [];
-		const expectedWidth = centerWidths.get(`${spec.token}#${spec.occurrence}`) ?? 0;
-		const value = content.trim();
-		const valueStart = content.indexOf(value);
-		const leftWidth = displayWidth(content.slice(0, valueStart));
-		const rightWidth = displayWidth(content.slice(valueStart + value.length));
-		const cellWidth = displayWidth(content);
-		const centered = Math.abs(leftWidth - rightWidth) <= 1;
-		const minimal = cellWidth === expectedWidth;
+		const expectedWidth = centerWidths.get(`${spec.token}#${spec.occurrence}`) ?? 0 ;
+		const value         = content.trim()                                            ;
+		const valueStart    = content.indexOf(value)                                    ;
+		const leftWidth     = displayWidth(content.slice(0, valueStart))                ;
+		const rightWidth    = displayWidth(content.slice(valueStart + value.length))    ;
+		const cellWidth     = displayWidth(content)                                     ;
+		const centered      = Math.abs(leftWidth - rightWidth) <= 1                     ;
+		const minimal       = cellWidth === expectedWidth                               ;
 		if (!centered || !minimal) failed = true;
 		const label = `${spec.token}${spec.occurrence === 1 ? "" : `#${spec.occurrence}`}`;
 		return [`center(${label})=${centered && minimal ? "ok" : `fail:width=${cellWidth}/${expectedWidth},padding=${leftWidth}/${rightWidth}`}`];
