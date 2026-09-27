@@ -52,6 +52,23 @@ const ServerOptions options = {
     .timeoutSeconds = 30,
 };
 
+static const Entry rows[] = {
+    {"alpha", 1, 0x10},
+    {"b, c", 22, 2},
+    {"ccc", 333, 0x201},
+};
+
+static const Switch flags[] = {
+    {"mode", true},
+    {"cache", false},
+    {"log", true},
+};
+
+static const Endpoint endpoints[] = {
+    {"edge", 8080, nullptr, Mode::Fast},
+    {"core", 2, nullptr, Mode::Slow},
+};
+
 #define SMALL_LIMIT 4
 #define LARGE_LIMIT 4096
 #define DEFAULT_TAG "dev=1;"

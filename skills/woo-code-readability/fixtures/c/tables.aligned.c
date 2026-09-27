@@ -47,3 +47,23 @@ static int counter;
 
 int probe_a;
 int probe_b;
+
+/* 묶음 행 표 — 내부 셀 열이 각 최장 셀에 맞춰진다 */
+static const Entry entries[] = {
+    {1  , "alpha", 0x10 },
+    {22 , "b"    , 0x201},
+    {333, "ccc"  , 3    },
+};
+
+/* arity가 다른 묶음 행 표 — 슬롯 수가 달라 앞 표와 폭을 공유하지 않는다 */
+static const Flag flags[] = {
+    {NAME_A, 0x1  , -1  , "first" },
+    {NAME_B, 0x22 , +2  , "second"},
+    {NAME_C, 0x333, 4096, "third" },
+};
+
+/* 2행 묶음은 보고만 하고 정렬하지 않는다 */
+static const Pair pairs[] = {
+    {7, "x"},
+    {99, "yy"},
+};

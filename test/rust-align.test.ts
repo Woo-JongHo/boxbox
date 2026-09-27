@@ -1,5 +1,6 @@
 import { expect, test }        from "bun:test";
 import { defineLanguageSuite } from "./lang-harness.ts";
+import { maskSource }          from "../skills/woo-code-readability/scripts/common/code-text.ts";
 import { alignSource }         from "../skills/woo-code-readability/scripts/common/table-engine.ts";
 import { RUST_ALIGNER }        from "../skills/woo-code-readability/scripts/rust/profile.ts";
 
@@ -80,5 +81,55 @@ test("rust: 선언·속성·여는 괄호·수명 라벨 행은 프로파일을 
 	];
 	for (const code of rejects) {
 		expect(RUST_ALIGNER.profile(code, code)).toBeNull();
+	}
+});
+
+test("rust: 묶음 행은 내부 셀 열을 맞추고 닫는 괄호도 cell 폭을 공유한다", () => {
+	const tuples = [
+		"const TABLE: &[(&str, i32, &str)] = &[",
+		`    ("alpha", 1, "x"),`,
+		`    ("b", 333, "yy"),`,
+		`    ("gamma", 22, "z"),`,
+		"];",
+	].join("\n");
+	const tupleResult = alignSource(tuples, RUST_ALIGNER, { minRows: 3, apply: true });
+	expect(tupleResult.tables).toBe(1);
+	expect(tupleResult.details[0].axes).toEqual(["parenOpen", "cell", "comma", "arg", "comma", "arg", "parenClose"]);
+	const tupleLines = tupleResult.output.split("\n");
+	expect(tupleLines[1]).toBe(`    ("alpha", 1  , "x" ),`);
+	expect(tupleLines[2]).toBe(`    ("b"    , 333, "yy"),`);
+	expect(tupleLines[3]).toBe(`    ("gamma", 22 , "z" ),`);
+
+	const grids = [
+		"const GRID: [[u8; 3]; 3] = [",
+		"    [1, 22],",
+		"    [333, 4],",
+		"    [55, 6666],",
+		"];",
+	].join("\n");
+	const gridResult = alignSource(grids, RUST_ALIGNER, { minRows: 3, apply: true });
+	expect(gridResult.tables).toBe(1);
+	expect(gridResult.details[0].axes).toEqual(["bracketOpen", "cell", "comma", "arg", "bracketClose"]);
+	const gridLines = gridResult.output.split("\n");
+	expect(gridLines[1]).toBe("    [1  , 22  ],");
+	expect(gridLines[2]).toBe("    [333, 4   ],");
+	expect(gridLines[3]).toBe("    [55 , 6666],");
+});
+
+test("rust: 중첩·대입 묶음 행과 경로·수명·타입 이름 셀은 프로파일을 거부한다", () => {
+	const maskedOf = (code: string): string => maskSource(code, RUST_ALIGNER.syntax).text;
+	for (const code of [
+		`("a", ("b", 1)),`, // 중첩 소괄호
+		`("a", [1, 2]),`,   // 중첩 대괄호·슬라이스 타입
+		"(x = 1, y),",     // 대입
+		"(a),",            // 셀 1개
+		"(a, ),",          // 빈 셀
+		"('a, 1),",        // 수명 셀
+		"(std::fmt, 1),",  // 경로 셀
+		"(u32, 1),",       // 타입 이름 셀
+		"(&str, 1),",      // 참조 타입 셀
+		"[a, b),",         // 기호 짝이 어긋난 행
+	]) {
+		expect(RUST_ALIGNER.profile(code, maskedOf(code))).toBeNull();
 	}
 });

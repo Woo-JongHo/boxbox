@@ -8,11 +8,13 @@
  * - let 바인딩  `let name = value;`             → name·value 열과 keyword·equal·semicolon
  * - enum 변형   `Variant(u32),`·`Variant = 5,`  → name·paren·value 열과 equal·comma 구분자
  * - match 갈래  `Pattern => Action,`            → pattern·action 열과 arrow·comma 구분자
+ * - 묶음 행     `("alpha", 1, "x"),`·`[1, 22],` → cell·arg 열과 open·comma·close 구분자
  *
  * 거부: fn·struct·impl·enum·mod 등 선언·제어 키워드로 시작하는 행, #[속성] 줄, macro_rules!,
  * `{`·`(`·`[`로 끝나는 여는 행, 간격 자리에 문자열이 숨은 행, 타입을 확신할 수 없는 행,
  * 빈 pattern·action·value 셀. enum 변형은 UpperCamelCase 관습으로 변형 이름을 가려
- * 함수 호출과 구별한다.
+ * 함수 호출과 구별한다. 묶음 행은 셀 2개 이상인 `(…)`·`[…]` 행만 받고, 내부에 중첩·대입이
+ * 남거나 셀이 경로·수명·타입 이름이면 거부한다.
  */
 import type { CodeSyntax }                     from "../common/code-text.ts";
 import type { LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
@@ -56,6 +58,22 @@ const TYPE      = `(?:${REF})?(?:${PATH}(?:${GENERIC})?|${BRACKET}|${TUPLE})`;
 const VALUE   = "((?:[^;\\n]|\\[[^\\[\\]\\n]*\\])*?)" ;
 const PATTERN = "((?:[^=\\n]|=(?!>))*?)"              ;
 const PAREN   = "(\\([^\\(\\)\\n]*\\))"               ;
+
+// 괄호·대괄호 묶음 행 — 셀 경계는 마스크의 쉼표로 자르고 기호 쌍은 ()와 []뿐이다.
+const GROUP        = /^([ \t]*)([([])(.*)([)\]])(,)?[ \t]*$/du                                                                                                                                      ;
+const STRING_CELL  = /^"(?:[^"\\]|\\.)*"$/u                                                                                                                                                         ;
+const CHAR_CELL    = /^'(?:[^'\\]|\\.)'$/u                                                                                                                                                          ;
+const SCALAR_CELL  = /^(?:[+-]?(?:0[bB][01_]+|0[oO][0-7_]+|0[xX][0-9A-Fa-f_]+|[0-9][0-9_]*(?:\.[0-9_]+)?(?:[eE][+-]?[0-9]+)?)(?:[iu](?:8|16|32|64|128|size)|f(?:32|64))?|[A-Za-z_][A-Za-z0-9_]*)$/u ;
+const GROUP_UNSAFE = /[(){}[\]=>]/u                                                                                                                                                                 ;
+/** 묶음 행 여는 기호가 받는 닫는 기호 — 짝이 어긋난 `[a, b)` 꼴은 거부한다. */
+const CLOSE_OF: Record<string, string> = { "(": ")", "[": "]" };
+/** 셀 자리의 원시 타입 이름은 값이 아니라 타입이다 — `("a", u32)` 꼴의 타입 행을 거부한다. */
+const TYPE_CELL = new Set([
+	"bool", "char", "str",
+	"f32",  "f64",
+	"i8",   "i16",  "i32", "i64", "i128", "isize",
+	"u8",   "u16",  "u32", "u64", "u128", "usize",
+]);
 
 const STRUCT_FIELD = new RegExp(`^${INDENT}${NAME}${OPT_GAP}:${OPT_GAP}(${TYPE})${OPT_GAP}(,)?[ \\t]*$`, "du")                                                      ;
 const LET_TYPED    = new RegExp(`^${INDENT}(let(?:[ \\t]+mut)?)${GAP}${NAME}${OPT_GAP}:${OPT_GAP}(${TYPE})${GAP}=(?!=)${OPT_GAP}${VALUE}${OPT_GAP};[ \\t]*$`, "du") ;
@@ -171,10 +189,70 @@ const armRow = (code: string, indices: RegExpIndicesArray): RowProfile | null =>
 	return { indent: cellOf(code, indices, 1), slots };
 };
 
+/**
+ * 괄호 묶음 행 `("alpha", 1, "x"),`·`[1, 22],` — 셀 경계는 마스크의 쉼표로 자르고 텍스트는
+ * code에서 같은 좌표로 가져온다. 문자열·문자 셀 안의 쉼표는 마스크가 공백화해 경계가 끊기지
+ * 않는다. 셀은 스칼라(문자열·문자·숫자·식별자)만 통과하고 경로·수명·타입 이름 셀은 거부한다.
+ * 여는 기호와 닫는 기호+`,`는 열이 아니라 구조 축이라 셀 열을 패딩해도 줄 끝 공백이 생기지
+ * 않고, 기호를 축 이름에 넣어 같은 arity라도 괄호 행과 대괄호 행은 한 표로 묶이지 않는다.
+ */
+function bundleProfile(code: string, masked: string): RowProfile | null {
+	const match   = GROUP.exec(masked) ;
+	const indices = match?.indices     ;
+	if (!match || !indices) return null;
+	const interior   = indices[3]                    ;
+	const openRange  = indices[2]                    ;
+	const closeRange = indices[4]                    ;
+	if (!interior || !openRange || !closeRange) return null;
+	const open = code.slice(openRange[0], openRange[1]);
+	if (CLOSE_OF[open] !== code.slice(closeRange[0], closeRange[1])) return null;
+	if (GROUP_UNSAFE.test(masked.slice(interior[0], interior[1]))) return null; // 중첩·대입·슬라이스 타입이 남은 행
+
+	// 마스크 좌표로 셀 구간을 자른다. 문자열·문자 셀 안의 쉼표는 마스크에서 공백이라 경계가 되지 않는다.
+	const bounds: Array<{ start: number; end: number }> = [];
+	let boundStart = interior[0];
+	for (let index = interior[0]; index < interior[1]; index += 1) {
+		if (masked[index] === ",") {
+			bounds.push({ start: boundStart, end: index });
+			boundStart = index + 1;
+		}
+	}
+	bounds.push({ start: boundStart, end: interior[1] });
+	if (bounds.length < 2) return null; // 셀이 1개뿐인 행은 묶음 표가 아니다
+
+	const cells: Array<{ text: string; gap: string; commaGap: string; end: number }> = [];
+	for (const bound of bounds) {
+		const raw  = code.slice(bound.start, bound.end) ;
+		const text = raw.trim()                         ;
+		if (text === "") return null; // 연속 쉼표·마지막 쉼표 뒤의 빈 셀
+		const cellStart = bound.start + raw.indexOf(text);
+		if (text.startsWith('"') || text.startsWith("'")) {
+			// 문자열·문자 셀은 마스크가 공백화하니 원본 꼴만 검사한다 — `'a` 수명은 닫힘이 없어 거부된다.
+			if (!STRING_CELL.test(text) && !CHAR_CELL.test(text)) return null;
+		} else if (masked.slice(cellStart, cellStart + text.length) !== text || !SCALAR_CELL.test(text) || TYPE_CELL.has(text)) {
+			return null; // 셀 안에 주석·문자열 조각이 남거나 경로·타입 이름이면 스칼라 값이 아니다
+		}
+		const cellEnd = cellStart + text.length;
+		cells.push({ text, gap: code.slice(bound.start, cellStart), commaGap: code.slice(cellEnd, bound.end), end: cellEnd });
+	}
+
+	const [openAxis, closeAxis] = open === "(" ? ["parenOpen", "parenClose"] : ["bracketOpen", "bracketClose"];
+	const slots: Slot[] = [{ axis: openAxis, text: open, gapBefore: "" }];
+	cells.forEach((cell, position) => {
+		// 첫 셀은 여는 기호에 바로 붙이고(간격 ""), 나머지 셀은 쉼표 뒤 한 칸 간격을 둔다.
+		slots.push({ axis: position === 0 ? "cell" : "arg", text: cell.text, gapBefore: cell.gap });
+		if (position < cells.length - 1) slots.push({ axis: "comma", text: ",", gapBefore: cell.commaGap });
+	});
+	const closeEnd = indices[5] ? indices[5][1] : closeRange[1];
+	slots.push({ axis: closeAxis, text: code.slice(closeRange[0], closeEnd), gapBefore: code.slice(cells[cells.length - 1].end, interior[1]) });
+	return { indent: cellOf(code, indices, 1), slots };
+}
+
 export const RUST_ALIGNER: LineProfiler = {
 	language   : "rust",
 	syntax     : RUST_SYNTAX,
-	columnAxes : ["action", "name", "paren", "pattern", "type", "value"],
+	// 묶음 행의 cell·arg 축은 뒤에 쉼표나 close 슬롯이 있으므로 열로 맞춰도 줄 끝 공백이 생기지 않는다.
+	columnAxes : ["action", "arg", "cell", "name", "paren", "pattern", "type", "value"],
 	canonicalGaps : {
 		// Rust 관습: colon·comma·semicolon·paren은 셀에 바로 붙이고 equal·arrow는 한 칸 띄운다.
 		colon     : "",
@@ -189,6 +267,13 @@ export const RUST_ALIGNER: LineProfiler = {
 		value     : " ",
 		pattern   : " ",
 		action    : " ",
+		// 묶음 행은 첫 셀을 여는 기호에 바로 붙이고 닫는 기호+`,`도 바로 붙여 셀 열을 공유하게 한다.
+		cell        : "",
+		arg         : " ",
+		parenOpen   : "",
+		parenClose  : "",
+		bracketOpen : "",
+		bracketClose: "",
 	},
 	profile(code: string, masked: string): RowProfile | null {
 		const tail = code.trimEnd();
@@ -211,6 +296,9 @@ export const RUST_ALIGNER: LineProfiler = {
 
 		const arm = MATCH_ARM.exec(masked);
 		if (arm?.indices) return armRow(code, arm.indices);
+
+		const bundle = bundleProfile(code, masked);
+		if (bundle) return bundle;
 
 		return null;
 	},

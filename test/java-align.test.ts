@@ -67,13 +67,13 @@ describe("java 프로파일 거부 규칙", () => {
 	});
 
 	test("구분자 축은 열 축이 아니고 canonical 간격은 Java 관습을 따른다", () => {
-		for (const axis of ["equal", "semicolon", "comma"]) {
+		for (const axis of ["equal", "semicolon", "comma", "open", "close"]) {
 			expect(JAVA_ALIGNER.columnAxes).not.toContain(axis);
 		}
-		for (const axis of ["modifiers", "type", "name", "value", "parenArgs"]) {
+		for (const axis of ["modifiers", "type", "name", "value", "parenArgs", "cell", "arg"]) {
 			expect(JAVA_ALIGNER.columnAxes).toContain(axis);
 		}
-		expect(JAVA_ALIGNER.canonicalGaps).toEqual({ modifiers: " ", type: " ", name: " ", value: " ", parenArgs: "", equal: " ", semicolon: "", comma: "" });
+		expect(JAVA_ALIGNER.canonicalGaps).toEqual({ modifiers: " ", type: " ", name: " ", value: " ", parenArgs: "", equal: " ", semicolon: "", comma: "", open: "", cell: "", arg: " ", close: "" });
 	});
 
 	test("enum 상수 재조합은 이름과 괄호 사이에 공백을 늘리지 않는다", () => {
@@ -89,9 +89,41 @@ describe("java 프로파일 거부 규칙", () => {
 			expect(JAVA_ALIGNER.profile(line, maskedOf(line))).toBeNull();
 		}
 	});
+
+	test("중첩·대입·호출·첨자·제네릭 묶음 행과 단일·빈 셀 행은 거부한다", () => {
+		for (const line of [
+			"    {1, {2, 3}, 4},",      // 중첩 묶음
+			"    {1, x = 2, 3},",       // 대입
+			"    {foo(1), 2},",         // 함수 호출
+			"    {map[0], 2},",         // 첨자
+			"    {List<Int>, 2},",      // 제네릭
+			"    {Value.valueOf, 1},",  // 한정 참조는 스칼라가 아니다
+			'    {"a"},',               // 셀 1개
+			"    {a, },",               // 빈 셀
+			'    {"a", 1} x',           // trailer 자리에 잔류
+		]) {
+			expect(JAVA_ALIGNER.profile(line, maskedOf(line))).toBeNull();
+		}
+	});
 });
 
 describe("java 정렬 성질", () => {
+	test("묶음 행은 내부 셀 열을 각 최장 셀 폭에 맞춘다", () => {
+		const source = [
+			"    private static final String[][] TABLE = {",
+			'        {"alpha", 1, "x"},',
+			'        {"b", 22, "yy"},',
+			'        {"ccc", 333, "z"},',
+			"    };",
+		].join("\n");
+		const result = alignSource(source, JAVA_ALIGNER, { minRows: 3, apply: true });
+		const lines = result.output.split("\n");
+		expect(lines[1]).toBe('        {"alpha", 1  , "x" },');
+		expect(lines[2]).toBe('        {"b"    , 22 , "yy"},');
+		expect(lines[3]).toBe('        {"ccc"  , 333, "z" },');
+		expect(result.misaligned).toBe(3);
+	});
+
 	test("형태가 다른 초기화 필드는 슬롯 수대로 서로 다른 표로 갈린다", () => {
 		const source = [
 			"    private static final int MAX_SIZE = 10;",

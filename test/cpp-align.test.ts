@@ -1,7 +1,7 @@
 /**
  * C++ 프로파일러 스위트. 언어 공통 성질(보존·멱등·골든·함정·2행 미정렬)은 하네스가 검사하고,
  * 이 파일은 C++ 고유 성질 — 템플릿 타입 셀 보존, 원본 문자열 행 거부, 함수 포인터·함수형 매크로
- * 거부, 문자열 내부 = ; 의 구조 비오판 — 을 더해 검사한다.
+ * 거부, 문자열 내부 = ; 의 구조 비오판, 묶음 행의 내부 셀 정렬과 중첩·대입 거부 — 을 더해 검사한다.
  */
 import { readFileSync }           from "node:fs";
 import { describe, expect, test } from "bun:test";
@@ -64,10 +64,44 @@ describe("cpp 프로파일 고유 성질", () => {
 		expect(output[2]).toBe("const char* three = \"zzz = 333;\";");
 	});
 
-	test("tables.cpp에는 정확히 하나의 2행 그룹(pair)이 있다", () => {
+	test("묶음 행의 내부 셀 열을 최소 폭으로 맞춘다", () => {
+		const source = [
+			"static const Entry rows[] = {",
+			`    {"alpha", 1, 0x10},`,
+			`    {"b, c", 22, 2},`,
+			`    {"ccc", 333, 0x201},`,
+			"};",
+		].join("\n");
+		const output = align(source).output.split("\n");
+		expect(output[1]).toBe(`    {"alpha", 1,   0x10},`);
+		expect(output[2]).toBe(`    {"b, c",  22,  2},`);
+		expect(output[3]).toBe(`    {"ccc",   333, 0x201},`);
+	});
+
+	test("중첩·대입·인덱스가 남은 묶음 행과 단일·빈 셀 묶음은 거부한다", () => {
+		expect(CPP_ALIGNER.profile(`    {{"alpha", 1}, 2},`, `    {{"alpha", 1}, 2},`)).toBeNull();
+		expect(CPP_ALIGNER.profile(`    {"alpha", n = 1, 2},`, `    {"alpha", n = 1, 2},`)).toBeNull();
+		expect(CPP_ALIGNER.profile(`    {"alpha", v[0], 2},`, `    {"alpha", v[0], 2},`)).toBeNull();
+		expect(CPP_ALIGNER.profile(`    {"alpha"},`, `    {"alpha"},`)).toBeNull();
+		expect(CPP_ALIGNER.profile(`    {"alpha", , 2},`, `    {"alpha", , 2},`)).toBeNull();
+		const nested = [
+			`    {{"a", 1}, 2},`,
+			`    {{"b", 2}, 3},`,
+			`    {{"c", 3}, 4},`,
+		].join("\n");
+		expect(align(nested).misaligned).toBe(0);
+		const bundle = CPP_ALIGNER.profile(`    {"alpha", 1},`, `    {"alpha", 1},`);
+		expect(bundle?.slots.map(slot => slot.axis)).toEqual(["open", "item0", "item"]);
+		expect(bundle?.slots.map(slot => slot.text)).toEqual(["{", `"alpha",`, `1},`]);
+	});
+
+	test("tables.cpp의 2행 그룹은 필드 표 pair와 묶음 행 pair다", () => {
 		const source = readFileSync(new URL("../skills/woo-code-readability/fixtures/cpp/tables.cpp", import.meta.url), "utf8");
 		const result = align(source);
-		expect(result.pairs.length).toBe(1);
-		expect(result.pairs[0].signature).toBe("    |type>name>equal>value>semicolon");
+		expect(result.pairs.length).toBe(2);
+		expect(result.pairs.map(pair => pair.signature)).toEqual([
+			"    |type>name>equal>value>semicolon",
+			"    |open>item0>item>item>item",
+		]);
 	});
 });

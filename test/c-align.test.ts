@@ -68,6 +68,59 @@ describe("C 프로파일러 고유 성질", () => {
 		expect(lines[2]).toBe(`#define GREETING "hi = ;"`);
 	});
 
+	test("묶음 행은 내부 셀 열을 각 최장 셀 폭에 맞춘다", () => {
+		const source = [
+			"static const Table table[] = {",
+			`    {1, "alpha", 0x10},`,
+			`    {22, "b", 0x201},`,
+			`    {333, "ccc", 3},`,
+			"};",
+		].join("\n");
+		const result = alignSource(source, C_ALIGNER, { minRows: 3, apply: true });
+		const lines = result.output.split("\n");
+		expect(lines[1]).toBe(`    {1  , "alpha", 0x10 },`);
+		expect(lines[2]).toBe(`    {22 , "b"    , 0x201},`);
+		expect(lines[3]).toBe(`    {333, "ccc"  , 3    },`);
+		expect(result.misaligned).toBe(3);
+	});
+
+	test("중첩·대입·호출 묶음 행과 셀 하나짜리 행은 거부한다", () => {
+		const nested = [
+			"static const Nest nests[] = {",
+			"    {1, {2, 3}, 4},",
+			"    {5, {6, 7}, 8},",
+			"    {9, {10, 11}, 12},",
+			"};",
+		].join("\n");
+		const assigned = [
+			"static const Assign assigns[] = {",
+			"    {1, x = 2, 3},",
+			"    {4, y = 5, 6},",
+			"    {7, z = 8, 9},",
+			"};",
+		].join("\n");
+		const called = [
+			"static const Call calls[] = {",
+			"    {foo(1), 2},",
+			"    {bar(3), 4},",
+			"    {baz(5), 6},",
+			"};",
+		].join("\n");
+		const single = [
+			"static const Solo solos[] = {",
+			"    {only},",
+			"    {single},",
+			"    {loner},",
+			"};",
+		].join("\n");
+		for (const source of [nested, assigned, called, single]) {
+			const result = alignSource(source, C_ALIGNER, { minRows: 3, apply: true });
+			expect(result.tables).toBe(0);
+			expect(result.misaligned).toBe(0);
+			expect(result.output).toBe(source);
+		}
+	});
+
 	test("return 문과 역슬래시 줄 연결 매크로는 거부한다", () => {
 		const source = [
 			"#define WIDE 1 + \\",

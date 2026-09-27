@@ -20,27 +20,68 @@ interface LanguageConfig {
 	/** 클론 안에서 볼 하위 디렉터리. 비우면 저장소 전체를 일반 얕은 클론한다. */
 	readonly dirs     : readonly string[];
 	readonly exclude? : RegExp;
+	/** 선언문 밀도 측정용 행 패턴 — 데이터 테이블보다 선언이 많은 파일을 고른다. */
+	readonly decl     : RegExp;
 }
 
-const GENERIC_EXCLUDE = /(^|\/)(tests?|testdata|examples?|benchmarks?|vendor|fuzz|fixtures)(\/|$)|Gen[A-Z]|_pb2\.|\.pb\.|\.min\.|snapshot/i;
+const GENERIC_EXCLUDE = /(^|\/)(tests?|testdata|examples?|benchmarks?|vendor|fuzz|fixtures)(\/|$)|Gen[A-Z]|opGen|rewrite[A-Z]|_pb2\.|\.pb\.|\.min\.|snapshot/i;
+/** 생성물 표지 — 파일 머리에서 이 문자열이 보이면 말뭉치에서 제외한다. */
+const GENERATED_MARK = /code generated|do not edit|auto-?generated|machine generated/i;
 
 const LANGUAGES: Readonly<Record<string, LanguageConfig>> = {
-	python     : { repo: "django/django",     ext: ".py",   dirs: [] },
-	java       : { repo: "openjdk/jdk",       ext: ".java", dirs: ["src/java.base/share/classes", "src/jdk.compiler/share/classes", "src/jdk.hotspot.agent/share/classes"] },
-	go         : { repo: "golang/go",         ext: ".go",   dirs: [] },
-	rust       : { repo: "rust-lang/rust",    ext: ".rs",   dirs: ["library/core/src", "library/alloc/src", "library/std/src", "compiler/rustc_middle/src", "compiler/rustc_borrowck/src"] },
-	javascript : { repo: "webpack/webpack",   ext: ".js",   dirs: ["lib"] },
-	c          : { repo: "ffmpeg/ffmpeg",     ext: ".c",    dirs: ["libavcodec", "libavformat", "libavutil"] },
-	cpp        : { repo: "llvm/llvm-project", ext: ".cpp",  dirs: ["llvm/lib/IR", "llvm/lib/MC", "llvm/lib/Transforms/Scalar", "llvm/lib/Target/X86", "clang/lib/Sema", "clang/lib/CodeGen"] },
+	python     : {
+		repo : "django/django",
+		ext  : ".py",
+		dirs : [],
+		decl : /^\s*[A-Za-z_]\w*\s*(?::\s*[^=;\n]+)?=(?!=)/,
+	},
+	java       : {
+		repo : "openjdk/jdk",
+		ext  : ".java",
+		dirs : ["src/java.base/share/classes", "src/jdk.compiler/share/classes", "src/jdk.hotspot.agent/share/classes"],
+		decl : /^\s+(?:(?:public|private|protected|static|final|volatile|transient|abstract)\s+)+(?:[\w<>\[\], ?.]+\s+)?\w+\s*(?:=|;)|^\s+(?:int|long|short|byte|char|boolean|float|double|String|Object|var)\b[^\n]*[;=]/,
+	},
+	go         : {
+		repo : "golang/go",
+		ext  : ".go",
+		dirs : [],
+		decl : /^\s*[A-Za-z_]\w*\s+[\w\[\]\*\.]+(?:\s+`|\s*=|$)|^\s*(?:const|var|type)\s/,
+	},
+	rust       : {
+		repo : "rust-lang/rust",
+		ext  : ".rs",
+		dirs : ["library/core/src", "library/alloc/src", "library/std/src", "compiler/rustc_middle/src", "compiler/rustc_borrowck/src"],
+		decl : /^\s*(?:pub\s+)?(?:\w+\s*:\s*|(?:const|static|let)\s)/,
+	},
+	javascript : {
+		repo : "webpack/webpack",
+		ext  : ".js",
+		dirs : ["lib"],
+		decl : /^\s*(?:const|let|var)\s+\w+\s*=|^\s+\w+\s*=\s*[^=]/,
+	},
+	c          : {
+		repo : "ffmpeg/ffmpeg",
+		ext  : ".c",
+		dirs : ["libavcodec", "libavformat", "libavutil"],
+		decl : /^\s*(?:const\s+|static\s+|unsigned\s+|signed\s+)*\w[\w\s]*[\*\s]\w+\s*(?:;|=\s*[^=]|\[[^\]]*\])/,
+	},
+	cpp        : {
+		repo : "llvm/llvm-project",
+		ext  : ".cpp",
+		dirs : ["llvm/lib/IR", "llvm/lib/MC", "llvm/lib/Transforms/Scalar", "llvm/lib/Target/X86", "clang/lib/Sema", "clang/lib/CodeGen"],
+		decl : /^\s*(?:constexpr|static|inline|const)\s[^\n]*;|^\s*\w[\w:<>&\*\s]*\s+\w+\s*(?:;|=\s*[^=])/,
+	},
 };
 
 const MIN_LINES = 300;
+const MIN_DECLS = 15;
 const PER_LANG  = 5;
 
 interface Candidate {
 	readonly path    : string;
 	readonly absolute: string;
 	readonly lines   : number;
+	readonly decls   : number;
 }
 
 function git(target: string, args: readonly string[]): void {
@@ -81,14 +122,18 @@ function collectCandidates(config: LanguageConfig, target: string): readonly Can
 				if (!entry.endsWith(config.ext)) continue;
 				const relative = scope === "" ? path.slice(target.length + 1) : path.slice(target.length + 1);
 				if (GENERIC_EXCLUDE.test(relative) || config.exclude?.test(relative)) continue;
-				const lines = readFileSync(path, "utf8").split("\n").length;
-				if (lines < MIN_LINES) continue;
-				candidates.push({ path: relative, absolute: path, lines });
+				const text    = readFileSync(path, "utf8");
+				const heads   = text.slice(0, 600);
+				const decls   = text.split("\n").filter(line => config.decl.test(line)).length;
+				const lines   = text.split("\n").length;
+				// 생성물·데이터 테이블은 배제하고, 선언문이 많은 파일을 우선한다.
+				if (GENERATED_MARK.test(heads) || lines < MIN_LINES || decls < MIN_DECLS) continue;
+				candidates.push({ path: relative, absolute: path, lines, decls });
 			}
 		};
 		walk(scopeDir);
 	}
-	candidates.sort((left, right) => right.lines - left.lines);
+	candidates.sort((left, right) => right.decls - left.decls || right.lines - left.lines);
 	return candidates.slice(0, PER_LANG);
 }
 

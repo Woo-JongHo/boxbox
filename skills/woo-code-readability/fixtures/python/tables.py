@@ -41,3 +41,20 @@ hosts = {
     "primary": "alpha:1",
     "standby": "beta",
 }
+
+records = [
+    ["alpha", 1, "x"],
+    ["b", 22, "yy"],
+    ["ccc", 333, "zzz"],
+]
+
+points = [
+    ("p1", 1, 2, True),
+    ("p22", 33, 44, False),
+    ("p333", 555, 666, None),
+]
+
+edges = [
+    ("a", 1),
+    ("bb", 22),
+]

@@ -69,3 +69,23 @@ var aliases = map[string]string{
     usr: "user",
     grp: "group",
 }
+
+// points는 위치형 묶음 행이다 — 내부 셀 열을 맞춘다.
+var points = [][]int{
+    {1, 22},
+    {333, 4},
+    {55, 6666},
+}
+
+// labels는 3셀 묶음 행이다 — arity가 달라 위 표와 폭을 공유하지 않는다.
+var labels = []Label{
+    {alpha, 1, "x"},
+    {b, 333, "yy"},
+    {gamma, 22, "z"}, // 주석이 있어도 셀 열은 코드 부분끼리 맞춘다
+}
+
+// pair는 2행이라 보고만 하고 정렬하지 않는다.
+var pair = [][]int{
+    {7, 8},
+    {99, 10},
+}

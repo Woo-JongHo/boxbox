@@ -23,6 +23,26 @@ public class WarehouseConfig {
     short total = 1;
     int   base  = 2;
 
+    // 묶음 행 표 — 내부 셀 열이 각 최장 셀에 맞춰진다
+    private static final String[][] TABLE = {
+        {"alpha", 1, "x"},
+        {"b", 22, "yy"},
+        {"ccc", 333, "z"},
+    };
+
+    // arity가 다른 묶음 행 표 — 슬롯 수가 달라 앞 표와 폭을 공유하지 않는다
+    private static final Object[][] FLAGS = {
+        {NAME_A, 0x1, -1, "first"},
+        {NAME_B, 0x22, +2, "second"},
+        {NAME_C, 0x333, 4096, "third"},
+    };
+
+    // 2행 묶음은 보고만 하고 정렬하지 않는다
+    private static final int[][] PAIRS = {
+        {7, "x"},
+        {99, "yy"},
+    };
+
     public enum Level {
 
         Alpha(1, "one;two"),

@@ -78,4 +78,41 @@ describe("javascript 프로파일 고유 성질", () => {
 			expect(profile?.slots.find(slot => slot.axis === axis)?.text).toBe(expected);
 		}
 	});
+
+	test("묶음 행은 첫 셀을 여는 대괄호에 붙이고 셀 열과 닫는 대괄호 열을 최소 폭으로 맞춘다", () => {
+		const source = [
+			"const table = [",
+			'  ["alpha", 1, "x"],',
+			'  ["b", 22, "yy"],',
+			'  ["ccc", 333, "z"],',
+			"];",
+		].join("\n");
+		const result = align(source);
+		expect(result.tables).toBe(1);
+		expect(result.details[0]?.axes).toEqual(["open", "cell", "comma", "arg", "comma", "arg", "close"]);
+		expect(result.details[0]?.widths).toEqual([1, 7, 1, 3, 1, 4, 2]);
+		const lines = result.output.split("\n");
+		expect(lines[1]).toBe('  ["alpha", 1  , "x" ],');
+		expect(lines[2]).toBe('  ["b"    , 22 , "yy"],');
+		expect(lines[3]).toBe('  ["ccc"  , 333, "z" ],');
+	});
+
+	test("중첩·대입·호출이 남은 묶음 행과 셀 하나·빈 셀 행은 표 행으로 인정하지 않는다", () => {
+		const rejected = [
+			"[[a, b], [c, d]],",
+			"[a, [b, c]],",
+			"[x = 1, y],",
+			"[f(x), y],",
+			"[{ a: 1 }, y],",
+			"[only],",
+			"[a, , b],",
+			"[a, b,],",
+			"[a, b] = pair,",
+			"[pos, /re, x/],",
+		];
+		for (const line of rejected) {
+			// 이 행들에는 문자열이 없어 마스크가 원본과 같다 — 구조·텍스트 좌표가 일치한다.
+			expect(JAVASCRIPT_ALIGNER.profile(line, line)).toBeNull();
+		}
+	});
 });
