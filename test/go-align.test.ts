@@ -12,7 +12,7 @@ defineLanguageSuite({
 	trickyFile  : "tricky.go",
 });
 
-test("go: 구조체 필드 type 열을 최장 타입 셀에 맞춘다", () => {
+test("go: 구조체 필드 type 열은 행의 마지막 셀이면 패딩하지 않는다", () => {
 	const source = [
 		"package layout",
 		"",
@@ -24,8 +24,8 @@ test("go: 구조체 필드 type 열을 최장 타입 셀에 맞춘다", () => {
 	].join("\n");
 	const result = alignSource(source, GO_ALIGNER, { minRows: 3, apply: true });
 	const lines = result.output.split("\n");
-	expect(lines[3]).toBe("Key   KeyType    ");
-	expect(lines[4]).toBe("Value Value      ");
+	expect(lines[3]).toBe("Key   KeyType");
+	expect(lines[4]).toBe("Value Value");
 	expect(lines[5]).toBe("Label LongerLabel");
 });
 

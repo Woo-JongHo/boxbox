@@ -52,9 +52,9 @@ const ServerOptions options = {
     .timeoutSeconds = 30    ,
 };
 
-#define SMALL_LIMIT 4        
-#define LARGE_LIMIT 4096     
-#define DEFAULT_TAG "dev=1;" 
+#define SMALL_LIMIT 4
+#define LARGE_LIMIT 4096
+#define DEFAULT_TAG "dev=1;"
 #define BITMASK     (1 << 10)
 
 } // namespace demo

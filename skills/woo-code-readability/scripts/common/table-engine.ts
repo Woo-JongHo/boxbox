@@ -89,9 +89,11 @@ function signatureOf(profile: RowProfile): string {
 
 function rebuildCode(aligner: LineProfiler, profile: RowProfile, widths: readonly number[] | null): string {
 	const parts: string[] = [profile.indent];
+	const lastIndex = profile.slots.length - 1;
 	profile.slots.forEach((slot, position) => {
 		if (position > 0) parts.push(canonicalGap(aligner, slot.axis));
-		if (widths !== null && aligner.columnAxes.includes(slot.axis)) {
+		// 행의 마지막 열 셀은 맞춰볼 뒤 셀이 없으므로 패딩하지 않는다 — 줄 끝 공백을 만들지 않는다.
+		if (widths !== null && aligner.columnAxes.includes(slot.axis) && position !== lastIndex) {
 			const pad = widths[position] - displayWidth(slot.text);
 			parts.push(pad > 0 ? slot.text + " ".repeat(pad) : slot.text);
 		} else {
@@ -125,7 +127,10 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		if (maskedCode.trim() === "") return;
 		const profile = aligner.profile(code, maskedCode);
 		if (!profile) return;
-		const lossless = profile.indent + profile.slots.map((slot, position) => position === 0 ? slot.text : slot.gapBefore + slot.text).join("") === code;
+		// 간격은 순수 공백만 허용한다. 마스커가 가린 주석·문자열이 간격에 흡수되면 재조합 때 유실되므로 행을 거부한다.
+		const lossless = /^[ \t]*$/u.test(profile.indent)
+			&& profile.slots.every(slot => /^[ \t]*$/u.test(slot.gapBefore))
+			&& profile.indent + profile.slots.map((slot, position) => position === 0 ? slot.text : slot.gapBefore + slot.text).join("") === code;
 		if (!lossless) return;
 		accepted.push({ index, profile, comment });
 	});

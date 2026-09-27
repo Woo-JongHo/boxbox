@@ -1,42 +1,42 @@
 package inventory
 
 import (
-    "fmt"    
+    "fmt"
     "strings"
-    "time"   
+    "time"
 
-    cache    "github.com/woo/inventory-cache"   
+    cache    "github.com/woo/inventory-cache"
     memstore "github.com/woo/inventory-memstore"
-    trace    "github.com/woo/inventory-trace"   
+    trace    "github.com/woo/inventory-trace"
 )
 
 /*
  * Item은 재고 품목 한 건이다 — 태그 열까지 폭을 맞춘다.
  */
 type Item struct {
-    ID         string    `json:"id" validate:"required"`     
-    Name       string    `json:"name"`                       
-    Quantity   int       `json:"qty" validate:"min=0"`       
+    ID         string    `json:"id" validate:"required"`
+    Name       string    `json:"name"`
+    Quantity   int       `json:"qty" validate:"min=0"`
     UnitPrice  float64   `json:"unit_price" validate:"min=0"` // 소계 단가
-    ModifiedAt time.Time `json:"modified_at"`                
+    ModifiedAt time.Time `json:"modified_at"`
 }
 
 // Batch는 묶음 단위다 — 위 표와 폭을 공유하지 않는다.
 type Batch struct {
-    Code string   `json:"code"`         
+    Code string   `json:"code"`
     Note string   `json:"note:nullable"`
-    Tags []string `json:"tags"`         
+    Tags []string `json:"tags"`
 }
 
 type (
     NodeID    string
     EdgeLabel string
-    Weight    int   
+    Weight    int
 )
 
 const (
     MaxWeight     = 40
-    MinWeight     = 1 
+    MinWeight     = 1
     DefaultWeight = 12
 )
 
@@ -49,8 +49,8 @@ const (
 
 const (
     DefaultUnit  string = "kg"
-    OverflowUnit string = "t" 
-    TinyUnit     string = "g" 
+    OverflowUnit string = "t"
+    TinyUnit     string = "g"
 )
 
 var roleWeights = map[string]int{

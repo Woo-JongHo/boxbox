@@ -37,7 +37,9 @@ export interface MaskedSource {
 const longestFirst = (values: readonly string[]): readonly string[] => [...values].sort((left, right) => right.length - left.length);
 
 export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
-	const masked                    = [...source]                                         ;
+	// UTF-16 코드 단위 배열 — indexOf·startsWith 좌표와 배열 인덱스가 정확히 일치해야 한다.
+	// 코드 포인트 배열([...source])은 비BMP 문자(서러게이트 페어)마다 좌표를 어긋나게 한다.
+	const masked                    = source.split("")                    ;
 	const strings                   = longestFirst(syntax.strings.map(spec => spec.open)) ;
 	const commentStarts : number[]  = [-1]                                                ;
 	const opensInBlock  : boolean[] = [false]                                             ;
@@ -125,6 +127,11 @@ function consumeString(source: string, masked: string[], open: number, from: num
 		if (source.startsWith(close, index)) return index + close.length;
 		if (escape && source[index] === "\\") {
 			masked[index] = " ";
+			if (source[index + 1] === "\n") {
+				// 역슬래시-줄바꿈: 줄바꿈은 기하 보존을 위해 남기고 다음 반복에서 처리한다.
+				index += 1;
+				continue;
+			}
 			if (index + 1 < source.length) masked[index + 1] = " ";
 			index += 2;
 			continue;

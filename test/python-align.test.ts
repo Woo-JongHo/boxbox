@@ -30,7 +30,7 @@ describe("python 프로파일 고유 성질", () => {
 		expect(result.tables).toBe(1);
 	});
 
-	test("어노테이션 대입은 name·type·value 열을 각 최장 셀 폭에 맞춘다", () => {
+	test("어노테이션 대입은 name·type 열을 맞추고 행 끝 value는 패딩하지 않는다", () => {
 		const source = [
 			"@dataclass",
 			"class Config:",
@@ -40,8 +40,8 @@ describe("python 프로파일 고유 성질", () => {
 		].join("\n");
 		const result = align(source);
 		const lines = result.output.split("\n");
-		expect(lines[2]).toBe("    retries: int  = 3   ");
-		expect(lines[3]).toBe(`    label  : str  = "x" `);
+		expect(lines[2]).toBe("    retries: int  = 3");
+		expect(lines[3]).toBe(`    label  : str  = "x"`);
 		expect(lines[4]).toBe("    verbose: bool = True");
 		expect(result.misaligned).toBe(2);
 	});
@@ -55,7 +55,7 @@ describe("python 프로파일 고유 성질", () => {
 		const result = align(source);
 		const lines = result.output.split("\n");
 		expect(lines[0]).toBe("ratio: float = 0.5");
-		expect(lines[1]).toBe("level: int   = 3  ");
+		expect(lines[1]).toBe("level: int   = 3");
 		expect(lines[2]).toBe("name : str   = 'x'");
 	});
 
@@ -88,8 +88,8 @@ describe("python 프로파일 고유 성질", () => {
 			"flag == other",
 		].join("\n"));
 		expect(bareComparison.tables).toBe(1);
-		expect(bareComparison.misaligned).toBe(2);
-		expect(bareComparison.output.split("\n")[0]).toBe("alpha = 1  ");
+		expect(bareComparison.misaligned).toBe(1);
+		expect(bareComparison.output.split("\n")[0]).toBe("alpha = 1");
 		expect(bareComparison.output.split("\n")[3]).toBe("flag == other");
 	});
 });
