@@ -6,16 +6,16 @@ The working plan for XXX. Product direction lives in [`design.md`](design.md); t
 
 **North star:** a readability plugin any coding agent can plug in, that aligns same-role code into readable tables and never changes behavior — learning from judged cases until it can safely change and generate code.
 
-**Current milestone — M1 Safety proof (design §11 P0):** every automatic edit is *proven* safe in code, not just promised in prose.
+**Current milestone — M1.6 Nested tables, TypeScript first.** Then M1.5 data for TypeScript and Python.
 
-M1 is done when:
+**M1 Safety proof — done 2026-09-28.** Every automatic edit is *proven* safe in code, not just promised in prose. Criteria and result:
 
-- Every write path re-tokenizes and re-parses its output and refuses edits that change anything but inter-token whitespace.
-- Automatic fixes never apply to fewer than 3 rows.
-- Go alignment is off by default.
-- Both engines emit one versioned `Result` JSON.
-- `bun run check` is green and the repository passes its own checker.
-- `design.md` §10 shows these rows as **Exists**.
+- ✅ Every write path re-tokenizes and re-parses its output and refuses edits that change anything but inter-token whitespace (T2, T3; Rust re-parse verified in CI only).
+- ✅ Automatic fixes never apply to fewer than 3 rows — except the user-confirmed 2-row `=` declaration tables and imports (T4).
+- ✅ Go alignment is off by default (T5).
+- ✅ Both engines emit one versioned `Result` JSON (T6).
+- ✅ `bun run check` is green (169 pass, 3 skipped for the missing local Rust parser) and all 61 repository TypeScript files pass their own checks.
+- ✅ `design.md` §10 shows token preservation, re-parse, mutation tests and row floors as **Exists**; Go stability stays **Partial** (report-only, no gofmt-stable subset yet).
 
 ## How we work
 
@@ -43,7 +43,7 @@ Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked`
 | T4 | Row floors per kind | ✅ done 2026-09-28 |
 | T5 | Go alignment off by default | ✅ done 2026-09-28 |
 | T6 | Shared `Result` JSON | ✅ done 2026-09-28 |
-| T7 | Close M1 | ▶ active |
+| T7 | Close M1 | ✅ done 2026-09-28 |
 
 ### T0 — Baseline commit
 
@@ -139,7 +139,32 @@ A place to check aligned results by eye in an editor (design §6, L4 review, fir
 - **Scope:** update `design.md` §10 rows, README status, and this file; write the next milestone's tasks in detail.
 - **Accept:** the M1 checklist under *Goal* is all true.
 
-## M1.5 — Data for TypeScript and Python (after M1, before M2)
+## M1.6 — Nested tables, TypeScript first (after M1, before M1.5)
+
+Why: the engine sees one layer only. In `const STATES = new Set(["PASS", …]) ;` it aligns `=` and `;` but not the call or the list inside. Judging real data (M1.5) before this would spend verdicts on a known gap (user decision 2026-09-28).
+
+```ts
+const STATES = new Set(["PASS", "FIXABLE", "SUGGEST", "REFUSE" ]) ;
+const PARSES = new Set(["ok"  , "changed", "skipped", "not-run"]) ;
+```
+
+| # | Task | Status |
+|---|---|---|
+| N1 | Call layer: callee, `(`, top-level `,`, `)` inside declaration values and call-statement subjects | ▶ active |
+| N2 | List layer: `[ ]` / `{ }` of literals — element widths, `,` and closing column | ⬜ todo |
+| N3 | Outliers in declaration tables: when one row is far longer, the vertical form (as for imports) | ⬜ todo |
+| N4 | Hand-made samples: guard-row tables and subscript cells from `00_normalize-imports.ts` | ⬜ todo |
+| N5 | Python: the same layers on the line engine's bundle rows | ⬜ todo |
+
+| Layer | Aligned | Condition |
+|---|---|---|
+| 1 — row | `=`, `;` (existing) | declaration / call-statement table |
+| 2 — call | callee name (left), `(`, top-level argument `,`, `)` | the cells share callee, arity and tail (no `.stdout ?? ""` on only some rows), in the table's row count |
+| 3 — list | each element padded to its column, `,` and the closing `]` / `}` column | every element is a literal (string, number, boolean) and the arity matches; lists with identifiers or calls (argv-like) stay compact |
+
+Hand-made reference samples (user, `00_normalize-imports.ts`): guard rows `if (…) { state = … ; … continue; }` with aligned condition cell, `{ … ;` and `continue`; subscript cells `chars[index    ]!` / `chars[index + 1] ;`; a multi-line object literal whose continuation lines align on the first property.
+
+## M1.5 — Data for TypeScript and Python (after M1.6, before M2)
 
 Why: today's tests prove safety, not quality. Goldens were produced by the engine itself and no real code has been judged by a person. The principles are the same for every language; what makes a language solid is **judged real data**. TypeScript and Python get it first (user decision 2026-09-28); Java, Go, Rust, JavaScript, C, C++, Kotlin and Swift stay light (current fixtures plus the safety net).
 
@@ -166,26 +191,11 @@ Why: today's tests prove safety, not quality. Goldens were produced by the engin
 | Milestone | Design phase | Outcome |
 |---|---|---|
 | M2 Run-last | P0.5 | `xxx format` / `xxx check` wrapping one configured formatter; fixed-point tests |
-| M3 Declarative registry | P1 | rule identity = language + context + kind + signature; five review states; value-cell sub-tables (below), including call-statement subject cells |
+| M3 Declarative registry | P1 | rule identity = language + context + kind + signature; five review states |
 | M4 Corpus | P1.5 | pinned open-source manifest; L1 runner; L2 signatures; judged cases |
 | M5 Rules and layers | P2 | `rules/<language>/<region>/` files; preset `recommended`; `.xxx/config.json` |
 | M6 Learn | P3 | candidates from a repository; approve / reject |
 | M7 Guide and feedback | P4 | agent rule generation; case recording; promotion gate |
-
-### Queued for M3 — value-cell sub-tables (agreed 2026-09-28)
-
-A declaration or assignment table whose value cells repeat a structure gets an inner table (contract rule 7). Two levels, each with its own condition:
-
-| Level | Aligned | Condition |
-|---|---|---|
-| 1 — call | callee name (left), `(`, top-level argument `,`, `)` | the value cells — or the subject cells of call statements such as `expect(preservesTokens(a, b)).toBe(false)` — share callee, arity and tail (e.g. no `.stdout ?? ""` on only some rows), in 3+ rows |
-| 2 — nested `[ ]` / `{ }` | inner `,`, closing `]` / `}` | only when the nested container is a data row whose positions play the same role; argv-like arrays whose positions differ in meaning stay compact (discarded rule 2) |
-
-```ts
-const alpha = spawnSync("bun" , ["run" , "a.ts"   ], options) ;
-const beta  = spawnSync("node", ["exec", "b.js"   ], options) ;
-const gamma = spawnSync("deno", ["run" , "long.ts"], options) ;
-```
 
 ## Backlog
 
@@ -194,8 +204,7 @@ Findings outside the active task. Pull into a milestone when relevant.
 - The `;` axis can pad short rows far past column 120 when one row is long (seen in `stress-corpus.ts` during T1, fixed there by extracting a duplicated expression). The checker should warn when alignment pushes a table past 120 columns, pointing to the contract's "simplify the exceptional element first" step.
 - `scripts/stress-corpus.ts` still has ten lines over 130 columns that are not tables.
 - Import tables are aligned from 2 rows (the pre-existing import rule), unlike other tables (3). Decide whether imports follow the 3-row floor in T4.
-- Hand-made reference samples for M3 (2026-09-28, `00_normalize-imports.ts`): guard-row table (`if (…) { state = … ; … continue; }` with aligned condition cell, `{ … ;` and `continue`), subscript cells (`chars[index    ]!` / `chars[index + 1] ;`), and a multi-line object literal whose continuation lines align on the first property.
-- Declaration tables (01.2 and 04.2): align `=` from 2 rows, let a multi-line declaration's first line join the `=` column, keep declarations and plain assignments apart (agreed 2026-09-28); inner `( )` `[ ]` `{ }` `;` cells follow the M3 sub-table rule, with the vertical form for outliers as in imports.
+- Declaration tables (01.2 and 04.2): let a multi-line declaration's first line join the `=` column; keep declarations and plain assignments apart (agreed 2026-09-28). Inner layers and outliers: M1.6.
 - T3: Rust re-parse is unverified locally (`rustfmt` not installed); CI installs it and runs with `XXX_REQUIRE_PARSERS=1`, but the workflow change is unverified until the branch is pushed.
 - T3: the TypeScript re-parse gate starts two TypeScript 7 servers per written file (~0.3 s); fine for `--write`, revisit for bulk runs.
 - T3.5 findings (fixed): (1) the preservation check treated trailing whitespace after a line comment as content, so 10–57 tables per 1,000 variants were refused although the edit was safe; (2) the TypeScript aligner was not idempotent in one pass when lines contain mid-line tabs — `--write` now repeats until stable (max 5 passes).

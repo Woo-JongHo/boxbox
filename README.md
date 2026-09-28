@@ -6,7 +6,9 @@ A multi-agent skill plugin that inspects, fixes and verifies source files one at
 
 It belongs to the same family of agent skill plugins as caveman and ponytail. The SKILL.md body (Agent Skills format) is tool-agnostic; the only per-tool differences are install location and manifest.
 
-See [`docs/design.md`](docs/design.md) for the product direction.
+See [`docs/design.md`](docs/design.md) for the product direction and [`docs/plan.md`](docs/plan.md) for the current plan.
+
+**Status:** safety proven (milestone M1): every automatic edit is checked token by token and re-parsed with the language's official parser, and tables that would change more than whitespace are refused. Next: nested tables, then judged real-code data for TypeScript and Python.
 
 ## Contents
 
