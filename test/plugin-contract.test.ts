@@ -50,7 +50,7 @@ describe("plugin distribution contract", () => {
 
 	test("every table-kind axis has a human-readable note", () => {
 		for (const axes of Object.values(KIND_AXES)) {
-			for (const axis of [...axes.gap, ...axes.insert]) expect(AXIS_NOTES[axis.replace("{i}", "")]).toBeDefined();
+			for (const axis of [...axes.gap, ...axes.insert]) expect(AXIS_NOTES[axis.replaceAll("{i}", "")]).toBeDefined();
 		}
 	});
 });

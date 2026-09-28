@@ -46,6 +46,16 @@ expect(preservesTokens(text        , text.replace("c  d", "c d"))).toBe(false) ;
 expect(preservesTokens("let x = 1;", "letx = 1;"                )).toBe(false) ;
 ```
 
+**List layer.** A literal list inside the table is a nested table of its own: the declaration value itself (`const STATES = [...] ;`), an argument of the layered call, or a matcher argument (`expect(x).toEqual([...])`). `[` / `{` keep one column, each item `,` sits right after the widest item in its column, the next item starts one space later, and `]` / `}` sits right after the widest last item. A slot is kept only when every row has the same list shape there (same arity, or the same object property names) and every item is a string, number or boolean literal; lists with identifiers or calls (argv-like), lists with a trailing comma or a multi-line form, and lists where one item is 20 or more columns wider than the second widest in its column stay compact. Dropping the call layer drops the list slots inside its arguments.
+
+```ts
+const STATES = new Set(["PASS", "FIXABLE", "SUGGEST", "REFUSE" ]) ;
+const PARSES = new Set(["ok"  , "changed", "skipped", "not-run"]) ;
+
+expect(states(key)).toEqual(["PASS", "FIXABLE"]) ;
+expect(states(key)).toEqual(["ok"  , "changed"]) ;
+```
+
 ## Registration objects · enum members · case rows
 
 ```ts

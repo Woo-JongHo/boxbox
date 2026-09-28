@@ -46,10 +46,20 @@ export interface RowBoundary {
 	readonly axis : string ;
 	readonly from : number ;
 	readonly at   : number ;
-	/** true for an insert axis with no minimum gap (`(`, `)`, `):`, `":`, `//`, call-layer `,`); false for a gap axis that keeps at least one space. */
+	/** true for an insert axis with no minimum gap (`(`, `)`, `):`, `":`, `//`, layer `,`); false for a gap axis that keeps at least one space. */
 	readonly insert? : boolean;
-	/** true for a boundary of the nested call layer; the layer is kept only when every row of the run calls the same callee with the same arity. */
-	readonly layer?  : boolean;
+	/** The nested cell this boundary belongs to: `"call"`, or a named literal list (`list:value`, `list:arg2`, `list:matcher-arg1`). A layer is kept only when every row of the run has it in the same shape. */
+	readonly layer?  : LayerTag;
+}
+
+/** Which nested cell a boundary belongs to: the call layer, or one named list slot (`list:<slot>`). */
+export type LayerTag = "call" | `list:${string}` ;
+
+/** One literal list a list slot may align: the open bracket position, the item nodes, the close bracket position. */
+export interface ListCell {
+	readonly open  : number          ;
+	readonly items : readonly Node[] ;
+	readonly close : number          ;
 }
 
 export type GapRule = "blank" | "comma";
@@ -158,20 +168,120 @@ function callLayer(source: SourceFile, call: Node): readonly RowBoundary[] | und
 	const open   = tokenAfter(source, callee.getEnd(), "(")                      ;
 	const items  = callArguments(call)                                           ;
 	if (open === undefined || items.length === 0) return undefined;
-	const boundaries: RowBoundary[] = [{ axis: "call-open-paren", from: open, at: open, insert: true, layer: true }];
+	const boundaries: RowBoundary[] = [{ axis: "call-open-paren", from: open, at: open, insert: true, layer: "call" }];
 	for (let index = 0; index + 1 < items.length; index += 1) {
 		const end   = items[index]!.getEnd()             ;
 		const comma = tokenAfter(source, end, ",")       ;
 		const next  = items[index + 1]!.getStart(source) ;
 		if (comma === undefined || !spacesOnly(source, comma + 1, next)) return undefined;
-		boundaries.push({ axis: `call-comma${index + 1}`, from: end, at: comma, insert: true, layer: true });
-		boundaries.push({ axis: `call-arg${index + 2}`, from: comma + 1, at: next, layer: true });
+		boundaries.push({ axis: `call-comma${index + 1}`, from: end, at: comma, insert: true, layer: "call" });
+		boundaries.push({ axis: `call-arg${index + 2}`, from: comma + 1, at: next, layer: "call" });
 	}
 	const last  = items.at(-1)!.getEnd()        ;
 	const close = tokenAfter(source, last, ")") ;
 	if (close === undefined || close !== call.getEnd() - 1) return undefined;
-	boundaries.push({ axis: "call-close-paren", from: last, at: close, insert: true, layer: true });
+	boundaries.push({ axis: "call-close-paren", from: last, at: close, insert: true, layer: "call" });
 	return boundaries;
+}
+
+/** A list item the list layer may pad: a string, number or boolean literal. Identifiers and calls keep the list compact. */
+function isLiteralItem(node: Node): boolean {
+	const name = syntaxKindName(node);
+	return name === "StringLiteral" || name === "NumericLiteral" || name === "TrueLiteral" || name === "FalseLiteral";
+}
+
+/** An object item of the list layer: a `name: literal` property whose name text must match across rows. */
+function isNamedProperty(node: Node): boolean {
+	if (!isPropertyAssignment(node)) return false;
+	const name = syntaxKindName((node as PropertyAssignment).name);
+	return name === "Identifier" || name === "StringLiteral";
+}
+
+/** The literal list a node consists of: an array of literals or an object of literal properties; undefined otherwise. */
+function literalListOf(source: SourceFile, node: Node): ListCell | undefined {
+	if (isArrayLiteralExpression(node)) {
+		const elements = node.elements;
+		if (elements.length === 0 || !elements.every(isLiteralItem)) return undefined;
+		return { open: node.getStart(source), items: [...elements], close: node.getEnd() - 1 };
+	}
+	const object = objectLiteralOf(node);
+	if (object === undefined) return undefined;
+	const properties = [...object.properties];
+	if (properties.length === 0 || !properties.every(isNamedProperty)) return undefined;
+	return { open: object.getStart(source), items: properties, close: object.getEnd() - 1 };
+}
+
+/**
+ * Layer 3 — one list cell: the bracket at its column, each item `,` right after the widest item, the next item one
+ * space later, and the closing bracket right after the widest last item. Empty when a comma, the closing bracket or
+ * the spacing between them is missing (trailing comma, multi-line list).
+ */
+function itemLayer(source: SourceFile, cell: ListCell, prefix: string, tag: LayerTag): readonly RowBoundary[] {
+	const boundaries: RowBoundary[] = [{ axis: `${prefix}-open`, from: cell.open, at: cell.open, insert: true, layer: tag }];
+	for (let index = 0; index + 1 < cell.items.length; index += 1) {
+		const end   = cell.items[index]!.getEnd()             ;
+		const comma = tokenAfter(source, end, ",")            ;
+		const next  = cell.items[index + 1]!.getStart(source) ;
+		if (comma === undefined || !spacesOnly(source, comma + 1, next)) return [];
+		boundaries.push({ axis: `${prefix}-comma${index + 1}`, from: end, at: comma, insert: true, layer: tag });
+		boundaries.push({ axis: `${prefix}-el${index + 2}`, from: comma + 1, at: next, layer: tag });
+	}
+	const last  = cell.items.at(-1)!.getEnd()                       ;
+	const close = tokenAfter(source, last, source.text[cell.close]) ;
+	if (close === undefined || close !== cell.close) return [];
+	boundaries.push({ axis: `${prefix}-close`, from: last, at: close, insert: true, layer: tag });
+	return boundaries;
+}
+
+/** The nested call of a row by kind name — the same call `layerCall` selects. */
+function kindLayerCall(kindName: string, node: Node): Node | undefined {
+	if (kindName === "declaration") return declarationCall(node)      ;
+	if (kindName === "call-statements") return subjectCall(node)      ;
+	return undefined                                                  ;
+}
+
+/** The right-hand matcher call of a call statement, as `.toBe(false)` in `expect(x).toBe(false);`. */
+function matcherCallOf(node: Node): Node | undefined {
+	if (!isExpressionStatement(node)) return undefined                 ;
+	const expression = unwrapExpression(node.expression)               ;
+	return isCallExpression(expression) && isPropertyAccessExpression(expression.expression) ? expression : undefined;
+}
+
+/** The declaration's own value when it is a literal list, as `const STATES = ["PASS", "FIXABLE"] ;`. */
+function declarationValueList(source: SourceFile, node: Node): ListCell | undefined {
+	if (!isVariableStatement(node)) return undefined                        ;
+	const initializer = node.declarationList.declarations[0]?.initializer   ;
+	return initializer === undefined ? undefined : literalListOf(source, initializer);
+}
+
+/** The literal list slots of one row: each layered-call argument, the declaration value itself, and the matcher arguments. */
+function rowListCells(source: SourceFile, kindName: string, node: Node): ReadonlyMap<LayerTag, ListCell> {
+	const cells = new Map<LayerTag, ListCell>()                                      ;
+	if (kindName === "call-statements") {
+		const matcher = matcherCallOf(node)                                          ;
+		if (matcher) for (const [index, argument] of callArguments(matcher).entries()) {
+			const cell = literalListOf(source, argument)                             ;
+			if (cell) cells.set(`list:matcher-arg${index + 1}`, cell)                ;
+		}
+	}
+	const call = kindLayerCall(kindName, node)                                       ;
+	if (call) {
+		for (const [index, argument] of callArguments(call).entries()) {
+			const cell = literalListOf(source, argument)                             ;
+			if (cell) cells.set(`list:arg${index + 1}`, cell)                        ;
+		}
+		return cells                                                                   ;
+	}
+	if (kindName === "declaration") {
+		const cell = declarationValueList(source, node)                              ;
+		if (cell) cells.set("list:value", cell)                                      ;
+	}
+	return cells                                                                     ;
+}
+
+/** The boundary axis prefix of a list slot tag: `list:arg2` → `list-arg2`. */
+function listAxisPrefix(tag: string): string {
+	return tag.replace(/^list:/u, "list-");
 }
 
 /** Callee text (whitespace-collapsed, `new`/`await` included) and arity; rows share the call layer only when these match. */
@@ -197,6 +307,7 @@ function detectDeclaration(source: SourceFile, node: Node): readonly RowBoundary
 	if (!colon && !equals) return undefined;
 	const call = equals ? declarationCall(node) : undefined;
 	if (call) boundaries.push(...callLayer(source, call) ?? []);
+	for (const [tag, cell] of rowListCells(source, "declaration", node)) boundaries.push(...itemLayer(source, cell, listAxisPrefix(tag), tag));
 	const contentEnd = node.declarationList.getEnd()       ;
 	const semicolon  = tokenAfter(source, contentEnd, ";") ;
 	if (!semicolon) return undefined;
@@ -349,6 +460,7 @@ function detectCallStatement(source: SourceFile, node: Node): readonly RowBounda
 	];
 	const inner = subjectCall(node);
 	if (inner) boundaries.push(...callLayer(source, inner) ?? []);
+	for (const [tag, cell] of rowListCells(source, "call-statements", node)) boundaries.push(...itemLayer(source, cell, listAxisPrefix(tag), tag));
 	const comment = trailingComment(source, semicolon + 1);
 	if (comment) boundaries.push(comment);
 	return boundaries;
@@ -456,7 +568,7 @@ export const ROW_KINDS: readonly RowKind[] = [
 		detect     : detectDeclaration,
 		groupName  : run => run.some(row => row.boundaries.some(boundary => boundary.axis === "equals")) ? "declaration-equals" : "declaration",
 		minRows    : run => run.every(row => row.boundaries.some(boundary => boundary.axis === "equals")) ? 2 : undefined,
-		layerCall  : declarationCall,
+		layerCall  : node => kindLayerCall("declaration", node),
 	},
 	{
 		name       : "type-alias",
@@ -505,7 +617,7 @@ export const ROW_KINDS: readonly RowKind[] = [
 		gap        : "blank",
 		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
 		detect     : detectCallStatement,
-		layerCall  : subjectCall,
+		layerCall  : node => kindLayerCall("call-statements", node),
 	},
 	{
 		name       : "enum-member",
@@ -542,29 +654,41 @@ export const ROW_KINDS: readonly RowKind[] = [
 
 /** Human-readable description of which syntax boundary each axis name means. Fill it in when registering a new axis. */
 export const AXIS_NOTES: Readonly<Record<string, string>> = {
-	"colon"               : "`:` separating a name or identifier from its type or expression",
-	"equals"              : "`=` of a declaration, alias or enum member",
-	"semicolon"           : "statement-terminating `;`",
-	"comma"               : "row-separating `,`",
-	"comment"             : "start column of a trailing `//` note",
-	"open-paren"          : "parameter-opening `(` (after the name width)",
-	"close-paren"         : "parameter-closing `)` (after the minimum inner width)",
-	"case-colon"          : "`:` of a case label",
-	"call-paren"          : "opening `(` of the first call in a case row",
-	"subject-close-paren" : "`)` closing the subject argument cell of a call statement",
-	"matcher-dot"         : "`.` before the right-hand matcher of a call statement",
-	"matcher-open-paren"  : "`(` opening the matcher argument cell",
-	"matcher-close-paren" : "`)` closing the matcher argument cell",
-	"return-tail"         : "start column of a bare `return;` at the end of a case row",
-	"value"               : "start column of a registration-object expression",
-	"property"            : "start column of the property name at each position in an object row",
-	"open-brace"          : "opening `{` of an object row",
-	"close-brace"         : "closing `}` of an object row",
-	"tail"                : "tail after an object row's `}` (`,` `;` `)` `as const`)",
-	"call-open-paren"     : "`(` of the nested call cell (same callee and arity in every row)",
-	"call-comma"          : "top-level argument `,` of the nested call cell, right after the widest argument",
-	"call-arg"            : "start column of the next argument of the nested call cell",
-	"call-close-paren"    : "`)` of the nested call cell, right after the widest last argument",
+	"colon"                  : "`:` separating a name or identifier from its type or expression",
+	"equals"                 : "`=` of a declaration, alias or enum member",
+	"semicolon"              : "statement-terminating `;`",
+	"comma"                  : "row-separating `,`",
+	"comment"                : "start column of a trailing `//` note",
+	"open-paren"             : "parameter-opening `(` (after the name width)",
+	"close-paren"            : "parameter-closing `)` (after the minimum inner width)",
+	"case-colon"             : "`:` of a case label",
+	"call-paren"             : "opening `(` of the first call in a case row",
+	"subject-close-paren"    : "`)` closing the subject argument cell of a call statement",
+	"matcher-dot"            : "`.` before the right-hand matcher of a call statement",
+	"matcher-open-paren"     : "`(` opening the matcher argument cell",
+	"matcher-close-paren"    : "`)` closing the matcher argument cell",
+	"return-tail"            : "start column of a bare `return;` at the end of a case row",
+	"value"                  : "start column of a registration-object expression",
+	"property"               : "start column of the property name at each position in an object row",
+	"open-brace"             : "opening `{` of an object row",
+	"close-brace"            : "closing `}` of an object row",
+	"tail"                   : "tail after an object row's `}` (`,` `;` `)` `as const`)",
+	"call-open-paren"        : "`(` of the nested call cell (same callee and arity in every row)",
+	"call-comma"             : "top-level argument `,` of the nested call cell, right after the widest argument",
+	"call-arg"               : "start column of the next argument of the nested call cell",
+	"call-close-paren"       : "`)` of the nested call cell, right after the widest last argument",
+	"list-value-open"        : "opening `[` or `{` of a declaration value list",
+	"list-value-comma"       : "`,` of a declaration value list, right after the widest item",
+	"list-value-el"          : "start column of the next item of a declaration value list",
+	"list-value-close"       : "closing `]` or `}` of a declaration value list, right after the widest last item",
+	"list-arg-open"          : "opening `[` or `{` of a list inside a nested call argument",
+	"list-arg-comma"         : "`,` of a list inside a nested call argument, right after the widest item",
+	"list-arg-el"            : "start column of the next item of a list inside a nested call argument",
+	"list-arg-close"         : "closing `]` or `}` of a list inside a nested call argument, right after the widest last item",
+	"list-matcher-arg-open"  : "opening `[` or `{` of a list inside a matcher argument",
+	"list-matcher-arg-comma" : "`,` of a list inside a matcher argument, right after the widest item",
+	"list-matcher-arg-el"    : "start column of the next item of a list inside a matcher argument",
+	"list-matcher-arg-close" : "closing `]` or `}` of a list inside a matcher argument, right after the widest last item",
 };
 
 export function syntaxKindName(node: Node): string {
@@ -578,7 +702,7 @@ export function syntaxKindName(node: Node): string {
  */
 export const KIND_AXES: Readonly<Record<string, { readonly gap: readonly string[]; readonly insert: readonly string[] }>> = {
 	"declaration"        : { gap: ["colon", "semicolon"], insert: ["comment"] },
-	"declaration-equals" : { gap: ["colon", "equals", "call-arg{i}", "semicolon"], insert: ["call-open-paren", "call-comma{i}", "call-close-paren", "comment"] },
+	"declaration-equals" : { gap: ["colon", "equals", "call-arg{i}", "list-value-comma{i}", "list-value-el{i}", "list-arg{i}-comma{i}", "list-arg{i}-el{i}", "semicolon"], insert: ["call-open-paren", "call-comma{i}", "call-close-paren", "list-value-open", "list-value-close", "list-arg{i}-open", "list-arg{i}-close", "comment"] },
 	"type-alias"         : { gap: ["equals", "semicolon"], insert: ["comment"] },
 	"method-signature"   : { gap: [], insert: ["open-paren", "close-paren", "colon", "comment"] },
 	"class-method"       : { gap: [], insert: ["open-paren", "close-paren", "colon", "comment"] },
@@ -588,7 +712,7 @@ export const KIND_AXES: Readonly<Record<string, { readonly gap: readonly string[
 	"enum-member"        : { gap: ["equals", "comma"], insert: ["comment"] },
 	"case-clause"        : { gap: [], insert: ["case-colon", "call-paren", "return-tail"] },
 	"assignments"        : { gap: ["equals", "semicolon"], insert: ["comment"] },
-	"call-statements"    : { gap: ["call-arg{i}", "semicolon"], insert: ["call-open-paren", "call-comma{i}", "call-close-paren", "subject-close-paren", "matcher-dot", "matcher-open-paren", "matcher-close-paren", "comment"] },
+	"call-statements"    : { gap: ["call-arg{i}", "list-arg{i}-comma{i}", "list-arg{i}-el{i}", "list-matcher-arg{i}-comma{i}", "list-matcher-arg{i}-el{i}", "semicolon"], insert: ["call-open-paren", "call-comma{i}", "call-close-paren", "list-arg{i}-open", "list-arg{i}-close", "list-matcher-arg{i}-open", "list-matcher-arg{i}-close", "subject-close-paren", "matcher-dot", "matcher-open-paren", "matcher-close-paren", "comment"] },
 	"object-rows"        : { gap: ["property{i}", "colon{i}", "value{i}", "comma{i}", "close-brace"], insert: ["open-brace", "tail"] },
 	"registration"       : { gap: ["colon", "value"], insert: [] },
 };
@@ -616,7 +740,7 @@ export function runsOf(source: SourceFile, siblings: readonly Node[], kind: RowK
 		previousEnd = sibling.getEnd();
 	}
 	if (current.length > 0) runs.push(current);
-	return runs.filter(run => run.length > 0).map(run => withCallLayer(source, kind, run));
+	return runs.filter(run => run.length > 0).map(run => withLayers(source, kind, run));
 }
 
 /** An argument cell this much wider than the second widest in its column is an outlier (import rule B); the layer is not applied. */
@@ -624,24 +748,47 @@ const OUTLIER_GAP = 20;
 
 /**
  * Keeps the call layer only when every row calls the same callee with the same arity and no argument column has an
- * outlier; otherwise the rows stay one layer.
+ * outlier; keeps a list slot only when every row has the same literal list there (same shape, no outlier column).
+ * Dropping the call layer drops the list slots inside its arguments; the matcher slots of call statements survive.
  */
-function withCallLayer(source: SourceFile, kind: RowKind, run: readonly DetectedRow[]): readonly DetectedRow[] {
-	if (!run.some(row => row.boundaries.some(boundary => boundary.layer))) return run;
+function withLayers(source: SourceFile, kind: RowKind, run: readonly DetectedRow[]): readonly DetectedRow[] {
+	const tags = new Set(run.flatMap(row => row.boundaries.filter(boundary => boundary.layer !== undefined).map(boundary => boundary.layer!))) ;
+	if (tags.size === 0) return run                                                                                                           ;
+	const keep       = new Set<string>()                                                                        ;
 	const calls      = run.map(row => kind.layerCall?.(row.node))                                               ;
 	const signatures = new Set(calls.map(call => call === undefined ? undefined : callSignature(source, call))) ;
 	const complete   = run.every(row => row.boundaries.some(boundary => boundary.axis === "call-close-paren"))  ;
-	if (complete && signatures.size === 1 && !signatures.has(undefined) && !hasOutlier(source, calls as readonly Node[])) return run;
-	return run.map(row => ({ node: row.node, boundaries: row.boundaries.filter(boundary => !boundary.layer) }));
+	if (tags.has("call") && complete && signatures.size === 1 && !signatures.has(undefined) && !hasOutlier(source, calls.map(call => callArguments(call!)))) keep.add("call");
+	for (const tag of tags) {
+		if (!tag.startsWith("list:")) continue                                   ;
+		if (tag.startsWith("list:arg") && !keep.has("call")) continue            ;
+		const cells = run.map(row => rowListCells(source, kind.name, row.node).get(tag)) ;
+		if (cells.some(cell => cell === undefined)) continue                     ;
+		if (!sameShape(source, cells as readonly ListCell[])) continue           ;
+		if (hasOutlier(source, cells.map(cell => (cell as ListCell).items))) continue ;
+		keep.add(tag)                                                            ;
+	}
+	if (keep.size === tags.size) return run;
+	return run.map(row => ({ node: row.node, boundaries: row.boundaries.filter(boundary => boundary.layer === undefined || keep.has(boundary.layer)) }));
 }
 
-function hasOutlier(source: SourceFile, calls: readonly Node[]): boolean {
-	const columns = callArguments(calls[0]!).map((_, index) => calls.map(call => {
-		const argument = callArguments(call)[index]!;
-		return displayWidth(source.text.slice(argument.getStart(source), argument.getEnd()));
-	}));
+/** An item cell this much wider than the second widest in its column is an outlier (import rule B); the layer is not applied. */
+function hasOutlier(source: SourceFile, itemsPerRow: readonly (readonly Node[])[]): boolean {
+	const columns = itemsPerRow[0]!.map((_, index) => itemsPerRow.map(items => displayWidth(source.text.slice(items[index]!.getStart(source), items[index]!.getEnd()))));
 	return columns.some(widths => {
 		const [widest = 0, second = 0] = [...widths].sort((left, right) => right - left);
 		return widest - second >= OUTLIER_GAP;
 	});
+}
+
+/** Rows keep a list slot only when every list there has the same items: equal arity for arrays, equal property names for objects. */
+function sameShape(source: SourceFile, cells: readonly ListCell[]): boolean {
+	const first = cells[0]!;
+	return cells.every(cell => cell.items.length === first.items.length && cell.items.every((item, index) => itemName(source, item) === itemName(source, first.items[index]!)));
+}
+
+/** The name that must match across rows: the property name of an object item; array items have none. */
+function itemName(source: SourceFile, item: Node): string {
+	const name = (item as unknown as { readonly name?: Node }).name;
+	return name === undefined ? "" : source.text.slice(name.getStart(source), name.getEnd());
 }

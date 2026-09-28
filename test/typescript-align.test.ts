@@ -176,3 +176,106 @@ describe("typescript call layer", () => {
 		]);
 	});
 });
+
+describe("typescript list layer", () => {
+	test("aligns the elements, commas and closing bracket of the same literal list in a call", () => {
+		expect(alignLines([
+			'const STATES = new Set(["PASS", "FIXABLE", "SUGGEST", "REFUSE"]);',
+			'const PARSES = new Set(["ok", "changed", "skipped", "not-run"]);',
+		])).toEqual([
+			'const STATES = new Set(["PASS", "FIXABLE", "SUGGEST", "REFUSE" ]) ;',
+			'const PARSES = new Set(["ok"  , "changed", "skipped", "not-run"]) ;',
+		]);
+	});
+
+	test("aligns the literal list of a matcher argument", () => {
+		expect(alignLines([
+			'expect(states(key)).toEqual(["PASS", "FIXABLE"]);',
+			'expect(states(key)).toEqual(["ok", "changed"]);',
+			'expect(states(key)).toEqual(["no", "off"]);',
+		])).toEqual([
+			'expect(states(key)).toEqual(["PASS", "FIXABLE"]) ;',
+			'expect(states(key)).toEqual(["ok"  , "changed"]) ;',
+			'expect(states(key)).toEqual(["no"  , "off"    ]) ;',
+		]);
+	});
+
+	test("aligns a declaration value that is itself a literal list", () => {
+		expect(alignLines([
+			'const short = ["a", "bb"];',
+			'const longer = ["c", "dd"];',
+			'',
+			'const limits = { low: 1, high: 10 };',
+			'const bounds = { low: 2, high: 300 };',
+		])).toEqual([
+			'const short  = ["a", "bb"] ;',
+			'const longer = ["c", "dd"] ;',
+			'',
+			'const limits = { low: 1, high: 10 } ;',
+			'const bounds = { low: 2, high: 300} ;',
+		]);
+	});
+
+	test("keeps a list with identifiers compact and aligns only the row layer", () => {
+		expect(alignLines([
+			'const argv = ["bun", "run", script];',
+			'const args = ["bun", "run", other];',
+		])).toEqual([
+			'const argv = ["bun", "run", script] ;',
+			'const args = ["bun", "run", other]  ;',
+		]);
+	});
+
+	test("keeps the call layer but drops the list slot when the arity differs", () => {
+		expect(alignLines([
+			'const a = pick(["x"], "tail");',
+			'const b = pick(["x", "yy"], "tail");',
+		])).toEqual([
+			'const a = pick(["x"]      , "tail") ;',
+			'const b = pick(["x", "yy"], "tail") ;',
+		]);
+	});
+
+	test("drops the call layer and the lists inside its arguments when the callee differs", () => {
+		expect(alignLines([
+			'const a = first(["x"], y);',
+			'const bb = pick(["zz"], y);',
+		])).toEqual([
+			'const a  = first(["x"], y) ;',
+			'const bb = pick(["zz"], y) ;',
+		]);
+	});
+
+	test("drops a list whose item is 20 columns wider than the second widest", () => {
+		expect(alignLines([
+			'const widths = ["tiny", "a-very-much-longer-element-string"];',
+			'const others = ["ok", "fine"];',
+		])).toEqual([
+			'const widths = ["tiny", "a-very-much-longer-element-string"] ;',
+			'const others = ["ok", "fine"]                                ;',
+		]);
+	});
+
+	test("drops a list with a trailing comma or a multi-line form", () => {
+		expect(alignLines([
+			'const trail = ["a", "bb",];',
+			'const other = ["c", "dd", "e"];',
+		])).toEqual([
+			'const trail = ["a", "bb",]     ;',
+			'const other = ["c", "dd", "e"] ;',
+		]);
+		expect(alignLines([
+			'const multi = [',
+			'\t"a",',
+			'\t"bb",',
+			'];',
+			'const single = ["c", "dd"];',
+		])).toEqual([
+			'const multi = [',
+			'\t"a",',
+			'\t"bb",',
+			'];',
+			'const single = ["c", "dd"];',
+		]);
+	});
+});
