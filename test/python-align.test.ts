@@ -1,8 +1,8 @@
-import { describe, expect, test } from "bun:test";
-import { alignSource }            from "../skills/xxx/scripts/common/table-engine.ts";
-import { maskSource }             from "../skills/xxx/scripts/common/code-text.ts";
-import { PYTHON_ALIGNER }         from "../skills/xxx/scripts/python/profile.ts";
-import { defineLanguageSuite }    from "./lang-harness.ts";
+import      { describe, expect, test } from "bun:test"                                     ;
+import      { alignSource            } from "../skills/xxx/scripts/common/table-engine.ts" ;
+import      { maskSource             } from "../skills/xxx/scripts/common/code-text.ts"    ;
+import      { PYTHON_ALIGNER         } from "../skills/xxx/scripts/python/profile.ts"      ;
+import      { defineLanguageSuite    } from "./lang-harness.ts"                            ;
 
 defineLanguageSuite({
 	aligner     : PYTHON_ALIGNER,

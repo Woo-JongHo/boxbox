@@ -4,8 +4,8 @@
  * whitespace trivia is ignored. Template literals and regular expressions are re-scanned the way the parser does,
  * so whitespace inside them is compared as part of the token text.
  */
-import { SyntaxKind }    from "typescript/unstable/ast";
-import { createScanner } from "typescript/unstable/ast/scanner";
+import      { SyntaxKind    } from "typescript/unstable/ast"         ;
+import      { createScanner } from "typescript/unstable/ast/scanner" ;
 
 /** After these tokens a `/` is division; anywhere else it starts a regular expression. */
 const DIVISION_AFTER = new Set<SyntaxKind>([

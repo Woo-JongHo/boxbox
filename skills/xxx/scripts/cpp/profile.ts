@@ -6,8 +6,12 @@
  * type cell (function pointers), function-like macros, bundles with `{}()[]=>` left in the interior (nesting,
  * assignment, lambdas) — are refused with null. The engine's lossless check is the second safeguard.
  */
-import type { CodeSyntax }                     from "../common/code-text.ts";
-import type { LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
+import type { CodeSyntax     } from "../common/code-text.ts"    ;
+import type {
+              LineProfiler ,
+              RowProfile   ,
+              Slot         ,
+                             } from "../common/table-engine.ts" ;
 
 const SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],

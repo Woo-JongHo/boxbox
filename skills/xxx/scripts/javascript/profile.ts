@@ -6,8 +6,12 @@
  * Arrow functions (=>), unclosed parentheses, rows with a remaining opening brace, control flow and uncertain rows are not table rows.
  * Bundle rows are rejected when structural symbols remain inside (nesting, assignment, calls), or when they have one cell or an empty cell.
  */
-import type { CodeSyntax }                     from "../common/code-text.ts";
-import type { LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
+import type { CodeSyntax     } from "../common/code-text.ts"    ;
+import type {
+              LineProfiler ,
+              RowProfile   ,
+              Slot         ,
+                             } from "../common/table-engine.ts" ;
 
 export const JAVASCRIPT_SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],

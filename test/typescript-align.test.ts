@@ -1,7 +1,12 @@
-import { afterEach, describe, expect, test }                from "bun:test";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { join, relative, resolve }                          from "node:path";
-import { preservesTokens }                                  from "../skills/xxx/scripts/typescript/token-preservation.ts";
+import      { afterEach, describe, expect, test } from "bun:test"                                               ;
+import      {
+              mkdtempSync                     ,
+              readFileSync                    ,
+              rmSync                          ,
+              writeFileSync                   ,
+                                                } from "node:fs"                                                ;
+import      { join, relative, resolve           } from "node:path"                                              ;
+import      { preservesTokens                   } from "../skills/xxx/scripts/typescript/token-preservation.ts" ;
 
 const root                 = resolve(import.meta.dir, "..")                                    ;
 const script               = resolve(root, "skills/xxx/scripts/typescript/06_align-tables.ts") ;

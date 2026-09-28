@@ -7,13 +7,18 @@
  * Every table's edits must pass the scanner-based whitespace-only check (token-preservation.ts); a table that does
  * not is refused and reported, never written.
  */
-import { isInterfaceDeclaration } from "typescript/unstable/ast";
-import type { Node, SourceFile }  from "typescript/unstable/ast";
+import      { isInterfaceDeclaration } from "typescript/unstable/ast" ;
+import type { Node, SourceFile       } from "typescript/unstable/ast" ;
 
-import { ROW_KINDS, displayColumn, runsOf, syntaxKindName } from "./grid-kinds.ts";
-import type { DetectedRow }                                 from "./grid-kinds.ts";
-import { loadSourceFile }                                   from "./load-source-file.ts";
-import { preservesTokens }                                  from "./token-preservation.ts";
+import      {
+              ROW_KINDS            ,
+              displayColumn        ,
+              runsOf               ,
+              syntaxKindName       ,
+                                     } from "./grid-kinds.ts"         ;
+import type { DetectedRow            } from "./grid-kinds.ts"         ;
+import      { loadSourceFile         } from "./load-source-file.ts"   ;
+import      { preservesTokens        } from "./token-preservation.ts" ;
 
 interface Edit {
 	readonly start : number ;

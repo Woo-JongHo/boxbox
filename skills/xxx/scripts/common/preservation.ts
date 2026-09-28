@@ -12,8 +12,8 @@
  * whitespace that was already a space, so the source is masked with its whitespace replaced by a sentinel first:
  * every blank in that mask is then a masked position.
  */
-import { maskSource }      from "./code-text.ts";
-import type { CodeSyntax } from "./code-text.ts";
+import      { maskSource } from "./code-text.ts" ;
+import type { CodeSyntax } from "./code-text.ts" ;
 
 const SENTINEL    = "\u0000"                 ;
 const PLACEHOLDER = "\u0001"                 ;

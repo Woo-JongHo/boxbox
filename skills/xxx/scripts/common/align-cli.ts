@@ -4,10 +4,10 @@
  *        01_group-regions.ts --file <target file>... [--min-rows 3]
  * Fails with exit code 1 when anything is misaligned and --write is absent.
  */
-import { readFileSync, writeFileSync }    from "node:fs";
-import { relative, resolve }              from "node:path";
-import { alignSource }                    from "./table-engine.ts";
-import type { AlignResult, LineProfiler } from "./table-engine.ts";
+import      { readFileSync, writeFileSync } from "node:fs"           ;
+import      { relative, resolve           } from "node:path"         ;
+import      { alignSource                 } from "./table-engine.ts" ;
+import type { AlignResult, LineProfiler   } from "./table-engine.ts" ;
 
 /** Re-exported so CodeSyntax can also be imported from this module. */
 export type { CodeSyntax } from "./code-text.ts";

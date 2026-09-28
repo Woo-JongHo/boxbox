@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import { spawn } from "node:child_process";
-import { existsSync, readFileSync, realpathSync, statSync } from "node:fs";
-import { basename, relative, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { spawn                                            } from "node:child_process" ;
+import { existsSync, readFileSync, realpathSync, statSync } from "node:fs"            ;
+import { basename, relative, resolve                      } from "node:path"          ;
+import { pathToFileURL                                    } from "node:url"           ;
 
 const root = process.cwd();
 const targetArgument = process.argv[2];

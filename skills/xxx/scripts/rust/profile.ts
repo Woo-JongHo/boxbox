@@ -16,8 +16,12 @@
  * UpperCamelCase convention. Bundle rows accept only `(…)`/`[…]` rows with two or more cells, and are refused when
  * nesting or assignment remains inside or a cell is a path, lifetime or type name.
  */
-import type { CodeSyntax }                     from "../common/code-text.ts";
-import type { LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
+import type { CodeSyntax     } from "../common/code-text.ts"    ;
+import type {
+              LineProfiler ,
+              RowProfile   ,
+              Slot         ,
+                             } from "../common/table-engine.ts" ;
 
 const RUST_SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],

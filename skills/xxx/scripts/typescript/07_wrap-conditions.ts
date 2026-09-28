@@ -6,10 +6,10 @@
  * and chains already spanning lines are excluded — cases that would break a table or need structural
  * judgment are fixed by a person under rule 38.
  */
-import type { Node, SourceFile } from "typescript/unstable/ast";
+import type { Node, SourceFile } from "typescript/unstable/ast" ;
 
-import { syntaxKindName } from "./grid-kinds.ts";
-import { loadSourceFile } from "./load-source-file.ts";
+import      { syntaxKindName   } from "./grid-kinds.ts"         ;
+import      { loadSourceFile   } from "./load-source-file.ts"   ;
 
 function operatorOf(node: Node, source: SourceFile): string | undefined {
 	if (syntaxKindName(node) !== "BinaryExpression") return undefined;

@@ -1,8 +1,8 @@
-import { expect, test }        from "bun:test";
-import { defineLanguageSuite } from "./lang-harness.ts";
-import { maskSource }          from "../skills/xxx/scripts/common/code-text.ts";
-import { alignSource }         from "../skills/xxx/scripts/common/table-engine.ts";
-import { GO_ALIGNER }          from "../skills/xxx/scripts/go/profile.ts";
+import      { expect, test        } from "bun:test"                                     ;
+import      { defineLanguageSuite } from "./lang-harness.ts"                            ;
+import      { maskSource          } from "../skills/xxx/scripts/common/code-text.ts"    ;
+import      { alignSource         } from "../skills/xxx/scripts/common/table-engine.ts" ;
+import      { GO_ALIGNER          } from "../skills/xxx/scripts/go/profile.ts"          ;
 
 defineLanguageSuite({
 	aligner     : GO_ALIGNER,

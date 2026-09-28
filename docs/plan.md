@@ -36,8 +36,8 @@ Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked`
 | T0 | Baseline commit | ✅ done 2026-09-28 |
 | T1 | Green self-check | ✅ done 2026-09-28 |
 | T2 | Token-stream preservation | ✅ done 2026-09-28 |
-| T2.5 | Import table cells | ▶ active |
-| T3 | Output re-parse | ⬜ todo |
+| T2.5 | Import table cells | ✅ done 2026-09-28 |
+| T3 | Output re-parse | ▶ active |
 | T3.5 | Mutation tests | ⬜ todo |
 | T4 | 3-row floor for fixes | ⬜ todo |
 | T5 | Go alignment off by default | ⬜ todo |
@@ -75,18 +75,23 @@ Today the harness compares output and input with *all* whitespace stripped, whic
 
 ### T2.5 — Import table cells
 
-User-confirmed rule change (2026-09-28): one-line imports apply contract rules 8 and 35 — the `{ }` binding list is a fixed-width cell and the terminating `;` is a column.
+User-confirmed rule change (2026-09-28): imports apply contract rules 8 and 35 — the `{ }` binding list is a fixed-width cell and the terminating `;` is a column — across the whole import section.
 
 ```ts
-import        { alignSource              } from "./table-engine.ts" ;
-import type   { LineProfiler, RowProfile } from "./table-engine.ts" ;
-import React, { useState, useEffect      } from "react"             ;
+import      {
+              isArrayLiteralExpression       ,
+              isPropertySignatureDeclaration ,
+                                               } from "typescript/unstable/ast"         ;
+import type { Node, SourceFile                 } from "typescript/unstable/ast"         ;
+import      { skipTrivia                       } from "typescript/unstable/ast/scanner" ;
 ```
 
-- **Columns:** the head cell between `import` and `{` (empty, `type`, or `Default,` — TypeScript forbids `type` together with a default), `{`, names left-aligned one space after `{`, `}`, `from`, module specifier, `;`. Value and `type` imports share one table (option A).
-- **Not in the table:** imports without `{ }` (default only, namespace, `defer`, side-effect, `import x = require`) break the table; they form their own table only when 3+ of them are contiguous. Imports with attributes (`with { … }`) stay excluded from automatic fixes. Multi-line imports (over 120 columns) break the table. `export … from` re-exports form separate tables with the same rule. Files without semicolons (ASI style) get no `;` column.
-- **Accept:** `00_normalize-imports.ts --write` produces the form above; the fold/unfold rule at 120 columns uses the aligned line width; the whole repository is realigned; SKILL.md STEP0 and contract rule 2 describe the new form.
-- **Verify:** `bun test` (new cases for head cell, brace cell, `;` column, breaks), standing self-check across the repository.
+- **Head cell:** always reserves the `import type` width (or a wider `import Default,`), so `{` is one column in every import.
+- **Section-wide columns:** `{ }`, `from`, module and `;` are shared by all groups separated only by blank lines; code between imports starts a new section.
+- **Vertical form:** one name per line on the names column, aligned commas, trailing comma, closing `}` on the table's `}` column — triggered by (A) one-line form over 120 columns, (B) names 20+ columns wider than the second-widest, (C) the aligned table still over 120 columns (widest names first).
+- **Stay as written:** imports without braces and imports with attributes (they do not break the table); a lone brace import stays compact; no `;` column in files without semicolons.
+- **Accept:** the rules above hold; the whole repository is realigned with every import line within 120 columns; SKILL.md STEP0 and contract rule 2 describe the new form.
+- **Verify:** `bun test test/normalize-imports.test.ts` (7 cases, including re-detection of already aligned rows), standing self-check across the repository.
 
 ### T3 — Output re-parse
 
@@ -130,7 +135,7 @@ Generate thousands of variants from the existing fixtures and prove the invarian
 | Milestone | Design phase | Outcome |
 |---|---|---|
 | M2 Run-last | P0.5 | `xxx format` / `xxx check` wrapping one configured formatter; fixed-point tests |
-| M3 Declarative registry | P1 | rule identity = language + context + kind + signature; five review states; value-cell sub-tables (below) |
+| M3 Declarative registry | P1 | rule identity = language + context + kind + signature; five review states; value-cell sub-tables (below), including call-statement subject cells |
 | M4 Corpus | P1.5 | pinned open-source manifest; L1 runner; L2 signatures; judged cases |
 | M5 Rules and layers | P2 | `rules/<language>/<region>/` files; preset `recommended`; `.xxx/config.json` |
 | M6 Learn | P3 | candidates from a repository; approve / reject |
@@ -142,7 +147,7 @@ A declaration or assignment table whose value cells repeat a structure gets an i
 
 | Level | Aligned | Condition |
 |---|---|---|
-| 1 — call | callee name (left), `(`, top-level argument `,`, `)` | the value cells share callee kind, arity and tail (e.g. no `.stdout ?? ""` on only some rows), in 3+ rows |
+| 1 — call | callee name (left), `(`, top-level argument `,`, `)` | the value cells — or the subject cells of call statements such as `expect(preservesTokens(a, b)).toBe(false)` — share callee, arity and tail (e.g. no `.stdout ?? ""` on only some rows), in 3+ rows |
 | 2 — nested `[ ]` / `{ }` | inner `,`, closing `]` / `}` | only when the nested container is a data row whose positions play the same role; argv-like arrays whose positions differ in meaning stay compact (discarded rule 2) |
 
 ```ts
@@ -158,6 +163,9 @@ Findings outside the active task. Pull into a milestone when relevant.
 - The `;` axis can pad short rows far past column 120 when one row is long (seen in `stress-corpus.ts` during T1, fixed there by extracting a duplicated expression). The checker should warn when alignment pushes a table past 120 columns, pointing to the contract's "simplify the exceptional element first" step.
 - `scripts/stress-corpus.ts` still has ten lines over 130 columns that are not tables.
 - The TypeScript check refuses per table but cannot yet prove an end-to-end refusal (detectors only emit whitespace edits); T3.5 mutation tests should exercise it.
+- Import tables are aligned from 2 rows (the pre-existing import rule), unlike other tables (3). Decide whether imports follow the 3-row floor in T4.
+- Hand-made reference samples for M3 (2026-09-28, `00_normalize-imports.ts`): guard-row table (`if (…) { state = … ; … continue; }` with aligned condition cell, `{ … ;` and `continue`), subscript cells (`chars[index    ]!` / `chars[index + 1] ;`), and a multi-line object literal whose continuation lines align on the first property.
+- Declaration tables (01.2 and 04.2): align `=` from 2 rows, let a multi-line declaration's first line join the `=` column, keep declarations and plain assignments apart (agreed 2026-09-28); inner `( )` `[ ]` `{ }` `;` cells follow the M3 sub-table rule, with the vertical form for outliers as in imports.
 - `.tsx` is not covered by the TypeScript token check (JSX text whitespace is significant); decide before supporting TSX.
 - The stress corpus uses OpenJDK (GPL with classpath exception): keep it for checks only, never copy snippets into fixtures (see design §5.2).
 - Choose the final product name, then replace `xxx` / `XXX` in one pass.

@@ -6,8 +6,12 @@
  * with a remaining opening brace, control flow, return, bit fields, arrays, function-like macros, backslash line
  * continuation, bundle rows with nesting, assignment or calls inside — are refused with null, breaking the section.
  */
-import type { CodeSyntax }                     from "../common/code-text.ts";
-import type { LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
+import type { CodeSyntax     } from "../common/code-text.ts"    ;
+import type {
+              LineProfiler ,
+              RowProfile   ,
+              Slot         ,
+                             } from "../common/table-engine.ts" ;
 
 /** The mask preserves line/column geometry, so mask coordinates slice `code` directly. */
 const sliceAt = (code: string, indices: RegExpIndicesArray, group: number): string => {

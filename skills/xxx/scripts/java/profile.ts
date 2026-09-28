@@ -13,8 +13,12 @@
  * lines (starting with @); control-flow or declaration keyword rows; method signatures with parentheses
  * (except form 4's argument list); rows with an empty value or more than one `;` outside strings.
  */
-import type { CodeSyntax }                     from "../common/code-text.ts";
-import type { LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
+import type { CodeSyntax     } from "../common/code-text.ts"    ;
+import type {
+              LineProfiler ,
+              RowProfile   ,
+              Slot         ,
+                             } from "../common/table-engine.ts" ;
 
 export const JAVA_SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],
