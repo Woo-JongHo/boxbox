@@ -179,6 +179,35 @@ function errorMessage(value: unknown): string {
 	return value instanceof Error ? value.message : String(value);
 }
 
+/** Most passes one --write may take before the output must stop changing. */
+const MAX_PASSES = 5;
+
+/** Applies the groups' edits through the token gate and the re-parse gate, then writes the file. */
+async function writeGroups(root: string, relative: string, text: string, groups: readonly TableGroup[]): Promise<void> {
+	const edits = groups.flatMap(group => group.edits).sort((left, right) => left.start - right.start);
+	for (let index = 1; index < edits.length; index += 1) {
+		if (edits[index - 1]!.end > edits[index]!.start) throw new Error(`alignment edits overlap: ${relative}`);
+	}
+	const output = applyEdits(text, edits);
+	if (!preservesTokens(text, output)) throw new Error(`combined alignment edits change more than whitespace; nothing written: ${relative}`);
+	// Re-parse gate: the written file must produce the same syntactic diagnostics as the source, or it is restored.
+	const absolute = `${root}/${relative}`;
+	const before   = await syntacticDiagnostics(root, absolute, text);
+	await Bun.write(absolute, output);
+	const after = await syntacticDiagnostics(root, absolute, output);
+	if (before.join("|") !== after.join("|")) {
+		await Bun.write(absolute, text);
+		throw new Error(`aligned output parses differently (before ${before.join(",") || "none"}, after ${after.join(",") || "none"}); restored: ${relative}`);
+	}
+}
+
+/** Safe groups of a freshly loaded file: detected tables minus those whose edits fail the token check. */
+function safeGroups(source: SourceFile, minRows: number): readonly TableGroup[] {
+	const result: CollectResult = { groups: [], candidates: [], compressed: [] };
+	collect(source, source, minRows, new Set<Node>(), undefined, result);
+	return result.groups.filter(group => group.edits.length === 0 || preservesTokens(source.text, applyEdits(source.text, group.edits)));
+}
+
 async function main(): Promise<void> {
 	const root = process.cwd();
 	const { file, write, minRows, explainLine } = parseArguments();
@@ -222,22 +251,18 @@ async function main(): Promise<void> {
 	}
 	if (result.compressed.length > 0) process.exit(1);
 	if (write && totalEdits > 0) {
-		const edits = groups.flatMap(group => group.edits).sort((left, right) => left.start - right.start);
-		for (let index = 1; index < edits.length; index += 1) {
-			if (edits[index - 1]!.end > edits[index]!.start) throw new Error(`alignment edits overlap: ${relative}`);
+		await writeGroups(root, relative, source.text, groups);
+		// Mid-line tabs change width with their position, so one pass can shift a later column; repeat until stable.
+		let passes = 1;
+		for (; passes < MAX_PASSES; passes += 1) {
+			const next    = await loadSourceFile(root, file)                                 ;
+			const pending = safeGroups(next.source, minRows).filter(group => group.edits.length > 0) ;
+			if (pending.length === 0) break;
+			await writeGroups(root, relative, next.source.text, pending);
 		}
-		const output = applyEdits(source.text, edits);
-		if (!preservesTokens(source.text, output)) throw new Error(`combined alignment edits change more than whitespace; nothing written: ${relative}`);
-		// Re-parse gate: the written file must produce the same syntactic diagnostics as the source, or it is restored.
-		const absolute = `${root}/${relative}`;
-		const before   = await syntacticDiagnostics(root, absolute, source.text);
-		await Bun.write(absolute, output);
-		const after = await syntacticDiagnostics(root, absolute, output);
-		if (before.join("|") !== after.join("|")) {
-			await Bun.write(absolute, source.text);
-			throw new Error(`aligned output parses differently (before ${before.join(",") || "none"}, after ${after.join(",") || "none"}); restored: ${relative}`);
-		}
-		console.log("  parse=ok tool=typescript");
+		const final = await loadSourceFile(root, file);
+		if (safeGroups(final.source, minRows).some(group => group.edits.length > 0)) throw new Error(`alignment did not converge within ${MAX_PASSES} passes: ${relative}`);
+		console.log(`  parse=ok tool=typescript passes=${passes}`);
 	}
 	if (!write && totalEdits > 0) process.exit(1);
 }
