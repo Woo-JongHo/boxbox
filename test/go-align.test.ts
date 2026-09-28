@@ -1,18 +1,18 @@
 import { expect, test }        from "bun:test";
 import { defineLanguageSuite } from "./lang-harness.ts";
-import { maskSource }          from "../skills/woo-code-readability/scripts/common/code-text.ts";
-import { alignSource }         from "../skills/woo-code-readability/scripts/common/table-engine.ts";
-import { GO_ALIGNER }          from "../skills/woo-code-readability/scripts/go/profile.ts";
+import { maskSource }          from "../skills/xxx/scripts/common/code-text.ts";
+import { alignSource }         from "../skills/xxx/scripts/common/table-engine.ts";
+import { GO_ALIGNER }          from "../skills/xxx/scripts/go/profile.ts";
 
 defineLanguageSuite({
 	aligner     : GO_ALIGNER,
-	fixturesDir : new URL("../skills/woo-code-readability/fixtures/go/", import.meta.url).pathname,
+	fixturesDir : new URL("../skills/xxx/fixtures/go/", import.meta.url).pathname,
 	tableFile   : "tables.go",
 	alignedFile : "tables.aligned.go",
 	trickyFile  : "tricky.go",
 });
 
-test("go: 구조체 필드 type 열은 행의 마지막 셀이면 패딩하지 않는다", () => {
+test("go: a struct field type column is not padded when it is the row's last cell", () => {
 	const source = [
 		"package layout",
 		"",
@@ -29,7 +29,7 @@ test("go: 구조체 필드 type 열은 행의 마지막 셀이면 패딩하지 �
 	expect(lines[5]).toBe("Label LongerLabel");
 });
 
-test("go: 태그 열은 백틱 포함 최장 태그 값에 맞춘다", () => {
+test("go: the tag column aligns to the longest tag value including backticks", () => {
 	const source = [
 		"package layout",
 		"",
@@ -47,7 +47,7 @@ test("go: 태그 열은 백틱 포함 최장 태그 값에 맞춘다", () => {
 	expect(lines[4].slice(tagStarts[1]!).trimEnd()).toBe("`json:\"name\" validate:\"required\"`");
 });
 
-test("go: 맵 행은 colon 간격 0으로 붙이고 문자열 키 내부는 구조로 보지 않는다", () => {
+test("go: map rows attach the colon with zero gap and do not read string key contents as structure", () => {
 	const source = [
 		"var widths = map[string]int{",
 		`\t"small" :  1,`,
@@ -62,7 +62,7 @@ test("go: 맵 행은 colon 간격 0으로 붙이고 문자열 키 내부는 구�
 	expect(lines[3]).toBe(`\t"large" : 555,`);
 });
 
-test("go: 묶음 행은 내부 셀 열을 맞추고 닫는 중괄호도 cell 폭을 공유한다", () => {
+test("go: bundle rows align inner cell columns and the closing brace shares the cell width", () => {
 	const source = [
 		"var table = []Entry{",
 		`    {Kind, 22,  "x"},`,
@@ -77,25 +77,25 @@ test("go: 묶음 행은 내부 셀 열을 맞추고 닫는 중괄호도 cell 폭
 	expect(lines[3]).toBe(`    {Third, 4  , "zzz"},`);
 });
 
-test("go: 키·중첩·호출·단일 셀·func 묶음 행은 프로파일을 거부한다", () => {
+test("go: the profile refuses bundle rows with keys, nesting, calls, a single cell or func", () => {
 	const maskedOf = (code: string): string => maskSource(code, GO_ALIGNER.syntax).text;
 	for (const code of [
-		`{Name: "alpha", Size: 1},`, // 키 있는 행
-		"{a, {b, c}},",              // 중첩 묶음
-		"{f(x), y},",                // 함수 호출
-		"{a},",                      // 셀 1개
-		"{a, },",                    // 빈 셀
-		"{a := b, c},",              // 대입
-		"{a => b, c},",              // 화살표
-		"{&a, b},",                  // 주소 연산
-		"{a, func},",                // func 셀
-		"{a, b} x",                  // trailer 자리에 잔류
+		`{Name: "alpha", Size: 1},`, // keyed row
+		"{a, {b, c}},",              // nested bundle
+		"{f(x), y},",                // function call
+		"{a},",                      // single cell
+		"{a, },",                    // empty cell
+		"{a := b, c},",              // assignment
+		"{a => b, c},",              // arrow
+		"{&a, b},",                  // address-of
+		"{a, func},",                // func cell
+		"{a, b} x",                  // leftover in the trailer position
 	]) {
 		expect(GO_ALIGNER.profile(code, maskedOf(code))).toBeNull();
 	}
 });
 
-test("go: 선언·제어·여는 괄호·:= 행은 프로파일을 거부한다", () => {
+test("go: the profile refuses declaration, control-flow, opening-bracket and := rows", () => {
 	const maskedOf = (code: string): string => maskSource(code, GO_ALIGNER.syntax).text;
 	for (const code of [
 		"func demo(ok bool) {",

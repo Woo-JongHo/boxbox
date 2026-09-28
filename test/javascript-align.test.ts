@@ -1,21 +1,21 @@
 import { describe, expect, test }                from "bun:test";
-import { maskSource }                            from "../skills/woo-code-readability/scripts/common/code-text.ts";
-import { alignSource }                           from "../skills/woo-code-readability/scripts/common/table-engine.ts";
+import { maskSource }                            from "../skills/xxx/scripts/common/code-text.ts";
+import { alignSource }                           from "../skills/xxx/scripts/common/table-engine.ts";
 import { defineLanguageSuite }                   from "./lang-harness.ts";
-import { JAVASCRIPT_ALIGNER, JAVASCRIPT_SYNTAX } from "../skills/woo-code-readability/scripts/javascript/profile.ts";
+import { JAVASCRIPT_ALIGNER, JAVASCRIPT_SYNTAX } from "../skills/xxx/scripts/javascript/profile.ts";
 
 defineLanguageSuite({
 	aligner     : JAVASCRIPT_ALIGNER,
-	fixturesDir : new URL("../skills/woo-code-readability/fixtures/javascript/", import.meta.url).pathname,
+	fixturesDir : new URL("../skills/xxx/fixtures/javascript/", import.meta.url).pathname,
 	tableFile   : "tables.js",
 	alignedFile : "tables.aligned.js",
 	trickyFile  : "tricky.js",
 });
 
-describe("javascript 프로파일 고유 성질", () => {
+describe("javascript profile specific properties", () => {
 	const align = (source: string): ReturnType<typeof alignSource> => alignSource(source, JAVASCRIPT_ALIGNER, { minRows: 3, apply: true });
 
-	test("객체 리터럴 행과 const 대입 행은 맞닿아 있어도 별개 표로 폭을 나눠 갖는다", () => {
+	test("object-literal rows and const assignment rows keep separate tables and widths even when adjacent", () => {
 		const source = [
 			"const a = 1;",
 			"const bb = 22;",
@@ -35,7 +35,7 @@ describe("javascript 프로파일 고유 성질", () => {
 		expect(lines[3]).toBe("key      : value,");
 	});
 
-	test("문자열 내부의 : = ; 는 구조로 오인하지 않고 값 셀을 온전히 보존한다", () => {
+	test("does not mistake : = ; inside strings for structure and keeps the value cell intact", () => {
 		const source = [
 			'mid: "a:b=c;d",',
 			'wideKey: "e=f",',
@@ -48,7 +48,7 @@ describe("javascript 프로파일 고유 성질", () => {
 		expect(lines[2]).toBe("tiny   : 1        ,");
 	});
 
-	test("화살표 함수·비교 연산·제어문·다중 선언·확신 없는 행은 표 행으로 인정하지 않는다", () => {
+	test("arrow functions, comparisons, control flow, multiple declarations and uncertain rows are not table rows", () => {
 		const rejected = [
 			"const f = () => 1;",
 			"total <= limit;",
@@ -60,12 +60,12 @@ describe("javascript 프로파일 고유 성질", () => {
 			"key: value",
 		];
 		for (const line of rejected) {
-			// 이 행들에는 문자열이 없어 마스크가 원본과 같다 — 구조·텍스트 좌표가 일치한다.
+			// These rows contain no strings, so the mask equals the source — structure and text coordinates match.
 			expect(JAVASCRIPT_ALIGNER.profile(line, line)).toBeNull();
 		}
 	});
 
-	test("템플릿 리터럴과 따옴표 키를 하나의 셀로 자른다", () => {
+	test("cuts template literals and quoted keys as single cells", () => {
 		const template = "tiny: `sum:${1 + 2} = 3`,";
 		const quoted   = '"open:key": v,';
 		for (const [line, axis, expected] of [
@@ -79,7 +79,7 @@ describe("javascript 프로파일 고유 성질", () => {
 		}
 	});
 
-	test("묶음 행은 첫 셀을 여는 대괄호에 붙이고 셀 열과 닫는 대괄호 열을 최소 폭으로 맞춘다", () => {
+	test("bundle rows attach the first cell to the opening bracket and align cell and closing-bracket columns at minimum width", () => {
 		const source = [
 			"const table = [",
 			'  ["alpha", 1, "x"],',
@@ -97,7 +97,7 @@ describe("javascript 프로파일 고유 성질", () => {
 		expect(lines[3]).toBe('  ["ccc"  , 333, "z" ],');
 	});
 
-	test("중첩·대입·호출이 남은 묶음 행과 셀 하나·빈 셀 행은 표 행으로 인정하지 않는다", () => {
+	test("bundle rows with nesting, assignment or calls, and single-cell or empty-cell rows are not table rows", () => {
 		const rejected = [
 			"[[a, b], [c, d]],",
 			"[a, [b, c]],",
@@ -111,7 +111,7 @@ describe("javascript 프로파일 고유 성질", () => {
 			"[pos, /re, x/],",
 		];
 		for (const line of rejected) {
-			// 이 행들에는 문자열이 없어 마스크가 원본과 같다 — 구조·텍스트 좌표가 일치한다.
+			// These rows contain no strings, so the mask equals the source — structure and text coordinates match.
 			expect(JAVASCRIPT_ALIGNER.profile(line, line)).toBeNull();
 		}
 	});

@@ -1,18 +1,18 @@
 import { describe, expect, test } from "bun:test";
-import { C_ALIGNER }              from "../skills/woo-code-readability/scripts/c/profile.ts";
-import { alignSource }            from "../skills/woo-code-readability/scripts/common/table-engine.ts";
+import { C_ALIGNER }              from "../skills/xxx/scripts/c/profile.ts";
+import { alignSource }            from "../skills/xxx/scripts/common/table-engine.ts";
 import { defineLanguageSuite }    from "./lang-harness.ts";
 
 defineLanguageSuite({
 	aligner     : C_ALIGNER,
-	fixturesDir : new URL("../skills/woo-code-readability/fixtures/c/", import.meta.url).pathname,
+	fixturesDir : new URL("../skills/xxx/fixtures/c/", import.meta.url).pathname,
 	tableFile   : "tables.c",
 	alignedFile : "tables.aligned.c",
 	trickyFile  : "tricky.c",
 });
 
-describe("C 프로파일러 고유 성질", () => {
-	test("지정 초기화는 dotfield 열을 실제 최장 셀 폭으로 맞춘다", () => {
+describe("C profiler specific properties", () => {
+	test("designated initializers align the dotfield column to the actual longest cell", () => {
 		const source = [
 			"struct config defaults = {",
 			`    .name = "x",`,
@@ -28,7 +28,7 @@ describe("C 프로파일러 고유 성질", () => {
 		expect(result.misaligned).toBe(2);
 	});
 
-	test("함수형 매크로 NAME(args)는 표 행으로 인정하지 않는다", () => {
+	test("function-like macros NAME(args) are not table rows", () => {
 		const source = [
 			"#define SQUARE(x) ((x) * (x))",
 			"#define MAX(a, b) ((a) > (b) ? (a) : (b))",
@@ -40,7 +40,7 @@ describe("C 프로파일러 고유 성질", () => {
 		expect(result.output).toBe(source);
 	});
 
-	test("포인터 별표는 이름 셀에 붙고 type·name 열이 맞춰진다", () => {
+	test("pointer stars attach to the name cell and type/name columns align", () => {
 		const source = [
 			"struct link {",
 			"    char *name;",
@@ -55,7 +55,7 @@ describe("C 프로파일러 고유 성질", () => {
 		expect(lines[3]).toBe("    struct link *prev;");
 	});
 
-	test("매크로 표는 이름 열만 맞추고 치환 목록은 패딩하지 않는다", () => {
+	test("macro tables align only the name column and never pad the replacement list", () => {
 		const source = [
 			"#define PORT 80",
 			"#define BACKLOG 128",
@@ -68,7 +68,7 @@ describe("C 프로파일러 고유 성질", () => {
 		expect(lines[2]).toBe(`#define GREETING "hi = ;"`);
 	});
 
-	test("묶음 행은 내부 셀 열을 각 최장 셀 폭에 맞춘다", () => {
+	test("bundle rows align inner cell columns to each longest cell", () => {
 		const source = [
 			"static const Table table[] = {",
 			`    {1, "alpha", 0x10},`,
@@ -84,7 +84,7 @@ describe("C 프로파일러 고유 성질", () => {
 		expect(result.misaligned).toBe(3);
 	});
 
-	test("중첩·대입·호출 묶음 행과 셀 하나짜리 행은 거부한다", () => {
+	test("refuses bundle rows with nesting, assignment or calls, and single-cell rows", () => {
 		const nested = [
 			"static const Nest nests[] = {",
 			"    {1, {2, 3}, 4},",
@@ -121,7 +121,7 @@ describe("C 프로파일러 고유 성질", () => {
 		}
 	});
 
-	test("return 문과 역슬래시 줄 연결 매크로는 거부한다", () => {
+	test("refuses return statements and backslash-continued macros", () => {
 		const source = [
 			"#define WIDE 1 + \\",
 			"    2 + \\",

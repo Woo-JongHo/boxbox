@@ -1,12 +1,12 @@
 import { describe, expect, test } from "bun:test";
-import { maskSource }             from "../skills/woo-code-readability/scripts/common/code-text.ts";
-import { alignSource }            from "../skills/woo-code-readability/scripts/common/table-engine.ts";
-import { JAVA_ALIGNER }           from "../skills/woo-code-readability/scripts/java/profile.ts";
+import { maskSource }             from "../skills/xxx/scripts/common/code-text.ts";
+import { alignSource }            from "../skills/xxx/scripts/common/table-engine.ts";
+import { JAVA_ALIGNER }           from "../skills/xxx/scripts/java/profile.ts";
 import { defineLanguageSuite }    from "./lang-harness.ts";
 
 defineLanguageSuite({
 	aligner     : JAVA_ALIGNER,
-	fixturesDir : new URL("../skills/woo-code-readability/fixtures/java/", import.meta.url).pathname,
+	fixturesDir : new URL("../skills/xxx/fixtures/java/", import.meta.url).pathname,
 	tableFile   : "tables.java",
 	alignedFile : "tables.aligned.java",
 	trickyFile  : "tricky.java",
@@ -16,15 +16,15 @@ const maskedOf = (line: string): string => maskSource(line, JAVA_ALIGNER.syntax)
 
 const axesOf = (line: string): readonly string[] => JAVA_ALIGNER.profile(line, maskedOf(line))?.slots.map(slot => slot.axis) ?? [];
 
-/** 원본 간격(gapBefore)으로 되짚어 조합해 무손실 분해를 검사한다 — 엔진이 행하는 것과 같은 검사다. */
+/** Reassembles with the original gaps (gapBefore) to check lossless decomposition — the same check the engine performs. */
 const losslessOf = (line: string): string | null => {
 	const profile = JAVA_ALIGNER.profile(line, maskedOf(line));
 	if (!profile) return null;
 	return profile.indent + profile.slots.map((slot, position) => position === 0 ? slot.text : slot.gapBefore + slot.text).join("");
 };
 
-describe("java 프로파일 거부 규칙", () => {
-	test("중괄호·어노테이션·제어문·메서드 시그니처 행은 null로 거부한다", () => {
+describe("java profile refusal rules", () => {
+	test("refuses brace, annotation, control-flow and method-signature rows with null", () => {
 		const rejected = [
 			"public class Warehouse {",
 			"    }",
@@ -45,7 +45,7 @@ describe("java 프로파일 거부 규칙", () => {
 		}
 	});
 
-	test("네 형태를 축 나열로 분해하고 enum 괄호 인자는 괄호째 단일 셀로 잡는다", () => {
+	test("decomposes the four forms into axis sequences and keeps enum argument lists as one cell including parentheses", () => {
 		expect(axesOf('    private static final String LABEL = "max=10;units=kg";')).toEqual(["modifiers", "type", "name", "equal", "value", "semicolon"]);
 		expect(axesOf("    protected List queue;")).toEqual(["modifiers", "type", "name", "semicolon"]);
 		expect(axesOf("    int count = 0;")).toEqual(["type", "name", "equal", "value", "semicolon"]);
@@ -53,7 +53,7 @@ describe("java 프로파일 거부 규칙", () => {
 		expect(axesOf("    Off,")).toEqual(["name", "comma"]);
 	});
 
-	test("문자열 내부의 = ; 는 구조로 읽지 않고 값 셀에 통째로 보존한다", () => {
+	test("does not read = ; inside strings as structure and keeps them whole in the value cell", () => {
 		const line = '    String LABEL = "a=b;c=d // e";';
 		const profile = JAVA_ALIGNER.profile(line, maskedOf(line));
 		expect(profile?.slots.map(slot => [slot.axis, slot.text])).toEqual([
@@ -66,7 +66,7 @@ describe("java 프로파일 거부 규칙", () => {
 		expect(losslessOf(line)).toBe(line);
 	});
 
-	test("구분자 축은 열 축이 아니고 canonical 간격은 Java 관습을 따른다", () => {
+	test("separator axes are not column axes and canonical gaps follow Java conventions", () => {
 		for (const axis of ["equal", "semicolon", "comma", "open", "close"]) {
 			expect(JAVA_ALIGNER.columnAxes).not.toContain(axis);
 		}
@@ -76,7 +76,7 @@ describe("java 프로파일 거부 규칙", () => {
 		expect(JAVA_ALIGNER.canonicalGaps).toEqual({ modifiers: " ", type: " ", name: " ", value: " ", parenArgs: "", equal: " ", semicolon: "", comma: "", open: "", cell: "", arg: " ", close: "" });
 	});
 
-	test("enum 상수 재조합은 이름과 괄호 사이에 공백을 늘리지 않는다", () => {
+	test("reassembling enum constants adds no space between the name and the parenthesis", () => {
 		const line = '        Beta(22, "x=y"),';
 		expect(losslessOf(line)).toBe(line);
 		const profile = JAVA_ALIGNER.profile(line, maskedOf(line));
@@ -84,31 +84,31 @@ describe("java 프로파일 거부 규칙", () => {
 		expect(canonical).toBe(line);
 	});
 
-	test("값이 비었거나 문자열 밖 ;를 둘 이상 품는 초기화는 확신 없음으로 거부한다", () => {
+	test("refuses as uncertain initializers with an empty value or more than one ; outside strings", () => {
 		for (const line of ["    int broken = ;", "    int split = a; b;", '    int nested = m(a; b);']) {
 			expect(JAVA_ALIGNER.profile(line, maskedOf(line))).toBeNull();
 		}
 	});
 
-	test("중첩·대입·호출·첨자·제네릭 묶음 행과 단일·빈 셀 행은 거부한다", () => {
+	test("refuses bundle rows with nesting, assignment, calls, indexing or generics, and single or empty cells", () => {
 		for (const line of [
-			"    {1, {2, 3}, 4},",      // 중첩 묶음
-			"    {1, x = 2, 3},",       // 대입
-			"    {foo(1), 2},",         // 함수 호출
-			"    {map[0], 2},",         // 첨자
-			"    {List<Int>, 2},",      // 제네릭
-			"    {Value.valueOf, 1},",  // 한정 참조는 스칼라가 아니다
-			'    {"a"},',               // 셀 1개
-			"    {a, },",               // 빈 셀
-			'    {"a", 1} x',           // trailer 자리에 잔류
+			"    {1, {2, 3}, 4},",      // nested bundle
+			"    {1, x = 2, 3},",       // assignment
+			"    {foo(1), 2},",         // function call
+			"    {map[0], 2},",         // indexing
+			"    {List<Int>, 2},",      // generics
+			"    {Value.valueOf, 1},",  // a qualified reference is not a scalar
+			'    {"a"},',               // single cell
+			"    {a, },",               // empty cell
+			'    {"a", 1} x',           // leftover in the trailer position
 		]) {
 			expect(JAVA_ALIGNER.profile(line, maskedOf(line))).toBeNull();
 		}
 	});
 });
 
-describe("java 정렬 성질", () => {
-	test("묶음 행은 내부 셀 열을 각 최장 셀 폭에 맞춘다", () => {
+describe("java alignment properties", () => {
+	test("bundle rows align inner cell columns to each longest cell", () => {
 		const source = [
 			"    private static final String[][] TABLE = {",
 			'        {"alpha", 1, "x"},',
@@ -124,7 +124,7 @@ describe("java 정렬 성질", () => {
 		expect(result.misaligned).toBe(3);
 	});
 
-	test("형태가 다른 초기화 필드는 슬롯 수대로 서로 다른 표로 갈린다", () => {
+	test("initialized fields of different shapes split into different tables by slot count", () => {
 		const source = [
 			"    private static final int MAX_SIZE = 10;",
 			"    private static final int LIMIT = 20;",

@@ -1,11 +1,11 @@
 {
-	"name": "woo-plugins",
+	"name": "xxx-plugins",
 	"owner": { "name": "Woo-JongHo" },
 	"plugins": [
 		{
-			"name": "woo-readability",
+			"name": "xxx",
 			"source": "./",
-			"description": "표형 가독성 규칙으로 TypeScript를 한 파일씩 조사·수정·검증하는 woo-code-readability 스킬",
+			"description": "The xxx skill: inspects, fixes and verifies TypeScript, Python, Java, Go, Rust, JavaScript, C, and C++ against tabular readability rules",
 			"version": "0.2.0"
 		}
 	]

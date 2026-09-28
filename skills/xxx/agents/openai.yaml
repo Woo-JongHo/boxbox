@@ -1,0 +1,4 @@
+interface:
+  display_name: "XXX Code Readability"
+  short_description: "Verifies role-based minimum-width tabular readability one file at a time"
+  default_prompt: "Use $xxx to inspect one TypeScript file as independent per-role tables and verify minimum widths and centering."

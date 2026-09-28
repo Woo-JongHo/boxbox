@@ -1,31 +1,32 @@
 #!/usr/bin/env bun
 /**
- * 스트레스 말뭉치 빌더: 언어별 대형 오픈소스에서 가장 긴 실제 파일 5개씩 골라
- * 각 언어 정렬기를 적용하고, 원본·정렬본·diff·검증 결과를 stress/ 아래에 남긴다.
- * 파일 목록과 내용은 얕은 클론에서 로컬로 직접 읽어 GitHub API 한도와 무관하게 동작한다.
- * 큰 저장소는 blob:none + sparse-checkout으로 필요한 디렉터리 블롭만 내려받는다.
- * 결과물은 서드파티 코드라 커밋하지 않는다(.gitignore의 stress/).
+ * Stress corpus builder: picks the five longest real files from a large open-source project per language,
+ * applies each language's aligner, and writes the original, aligned output, diff and verification results under stress/.
+ * File lists and contents are read locally from shallow clones, so it works regardless of GitHub API limits.
+ * Large repositories fetch only the needed directory blobs via blob:none + sparse-checkout.
+ * Output is third-party code and is never committed (stress/ in .gitignore).
  */
 import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { homedir }                                                       from "node:os";
 import { basename, join }                                                from "node:path";
 import { spawnSync }                                                     from "node:child_process";
 
 const ROOT   = join(import.meta.dir, "..");
 const OUT    = join(ROOT, "stress");
-const CLONES = "/tmp/woo-stress-clones";
+const CLONES = join(homedir(), ".cache", "xxx", "stress-clones");
 
 interface LanguageConfig {
 	readonly repo     : string;
 	readonly ext      : string;
-	/** 클론 안에서 볼 하위 디렉터리. 비우면 저장소 전체를 일반 얕은 클론한다. */
+	/** Subdirectories to use inside the clone. Leave empty for a plain shallow clone of the whole repository. */
 	readonly dirs     : readonly string[];
 	readonly exclude? : RegExp;
-	/** 선언문 밀도 측정용 행 패턴 — 데이터 테이블보다 선언이 많은 파일을 고른다. */
+	/** Row pattern for measuring declaration density — prefers files with more declarations than data tables. */
 	readonly decl     : RegExp;
 }
 
 const GENERIC_EXCLUDE = /(^|\/)(tests?|testdata|examples?|benchmarks?|vendor|fuzz|fixtures)(\/|$)|Gen[A-Z]|opGen|rewrite[A-Z]|_pb2\.|\.pb\.|\.min\.|snapshot/i;
-/** 생성물 표지 — 파일 머리에서 이 문자열이 보이면 말뭉치에서 제외한다. */
+/** Generated-file markers — files showing these strings in their header are excluded from the corpus. */
 const GENERATED_MARK = /code generated|do not edit|auto-?generated|machine generated/i;
 
 const LANGUAGES: Readonly<Record<string, LanguageConfig>> = {
@@ -86,15 +87,15 @@ interface Candidate {
 
 function git(target: string, args: readonly string[]): void {
 	const result = spawnSync("git", ["-C", target, ...args], { encoding: "utf8", timeout: 600_000 });
-	if (result.status !== 0) throw new Error(`git ${args[0]} 실패: ${result.stderr?.split("\n")[0]}`);
+	if (result.status !== 0) throw new Error(`git ${args[0]} failed: ${result.stderr?.split("\n")[0]}`);
 }
 
 function ensureClone(config: LanguageConfig): string {
 	const slug   = config.repo.replaceAll("/", "__");
 	const target = join(CLONES, slug);
 	if (spawnSync("git", ["-C", target, "rev-parse", "HEAD"], { encoding: "utf8" }).status === 0) {
-		// --no-checkout 등으로 작업트리가 비어 있으면 채운다(재사용 클론 호환). 수집기의 임시 파일은 무시한다.
-		const hasWorktree = readdirSync(target).some(entry => entry !== ".git" && entry !== ".woo-ls-tree.txt");
+		// Fill the worktree if it is empty (e.g. after --no-checkout; compatible with reused clones). Ignore the collector's temp files.
+		const hasWorktree = readdirSync(target).some(entry => entry !== ".git" && entry !== ".xxx-ls-tree.txt");
 		if (!hasWorktree) git(target, ["checkout", "HEAD"]);
 		return target;
 	}
@@ -104,7 +105,7 @@ function ensureClone(config: LanguageConfig): string {
 	if (sparse) cloneArgs.push("--filter=blob:none", "--sparse");
 	cloneArgs.push(`https://github.com/${config.repo}.git`, target);
 	const clone = spawnSync("git", cloneArgs, { encoding: "utf8", timeout: 600_000 });
-	if (clone.status !== 0) throw new Error(`clone 실패: ${clone.stderr?.split("\n")[0]}`);
+	if (clone.status !== 0) throw new Error(`clone failed: ${clone.stderr?.split("\n")[0]}`);
 	if (sparse) git(target, ["sparse-checkout", "set", ...config.dirs]);
 	return target;
 }
@@ -126,7 +127,7 @@ function collectCandidates(config: LanguageConfig, target: string): readonly Can
 				const heads   = text.slice(0, 600);
 				const decls   = text.split("\n").filter(line => config.decl.test(line)).length;
 				const lines   = text.split("\n").length;
-				// 생성물·데이터 테이블은 배제하고, 선언문이 많은 파일을 우선한다.
+				// Exclude generated files and data tables; prefer files with many declarations.
 				if (GENERATED_MARK.test(heads) || lines < MIN_LINES || decls < MIN_DECLS) continue;
 				candidates.push({ path: relative, absolute: path, lines, decls });
 			}
@@ -163,11 +164,11 @@ async function processLanguage(language: string, config: LanguageConfig): Promis
 			const source = readFileSync(candidate.absolute, "utf8");
 			writeFileSync(original, source);
 			writeFileSync(aligned, source);
-			const apply = spawnSync("bun", [join(ROOT, `skills/woo-code-readability/scripts/${language}/06_align-tables.ts`), "--file", aligned, "--write"], { encoding: "utf8", timeout: 120_000, cwd: ROOT });
-			// 크래시도 종료코드 1로 나오므로 보고 헤더 유무로 성공을 판정한다.
-			if (!(apply.stdout ?? "").startsWith("align-tables")) throw new Error(`정렬기 오류: ${(apply.stderr ?? "").split("\n")[0]}`);
+			const apply = spawnSync("bun", [join(ROOT, `skills/xxx/scripts/${language}/06_align-tables.ts`), "--file", aligned, "--write"], { encoding: "utf8", timeout: 120_000, cwd: ROOT });
+			// Crashes also exit with code 1, so success is judged by the presence of the report header.
+			if (!(apply.stdout ?? "").startsWith("align-tables")) throw new Error(`aligner error: ${(apply.stderr ?? "").split("\n")[0]}`);
 			const edits = Number(/edits=(\d+)/.exec(apply.stdout ?? "")?.[1] ?? 0);
-			const verify = spawnSync("bun", [join(ROOT, `skills/woo-code-readability/scripts/${language}/06_align-tables.ts`), "--file", aligned], { encoding: "utf8", timeout: 120_000, cwd: ROOT });
+			const verify = spawnSync("bun", [join(ROOT, `skills/xxx/scripts/${language}/06_align-tables.ts`), "--file", aligned], { encoding: "utf8", timeout: 120_000, cwd: ROOT });
 			const diffOutput = spawnSync("diff", ["-u", original, aligned], { encoding: "utf8" }).stdout ?? "";
 			writeFileSync(`${aligned}.diff`, diffOutput);
 			results.push({
@@ -187,17 +188,17 @@ async function processLanguage(language: string, config: LanguageConfig): Promis
 }
 
 mkdirSync(OUT, { recursive: true });
-const summary: string[] = ["# 스트레스 말뭉치 — 대형 오픈소스에서 가장 긴 파일 5개씩 × 7개 언어", ""];
+const summary: string[] = ["# Stress corpus — the 5 longest files from large open-source projects × 7 languages", ""];
 for (const [language, config] of Object.entries(LANGUAGES)) {
-	console.error(`수집 중: ${language} (${config.repo})`);
+	console.error(`collecting: ${language} (${config.repo})`);
 	const results = await processLanguage(language, config);
-	summary.push(`## ${language} — ${config.repo}`, "", "| 파일 | 줄 | 편집 | diff ±줄 | 내용 보존 | 멱등 |", "|---|---|---|---|---|---|");
+	summary.push(`## ${language} — ${config.repo}`, "", "| File | Lines | Edits | Diff ±lines | Content preserved | Idempotent |", "|---|---|---|---|---|---|");
 	for (const result of results) {
 		const mark = (value: boolean): string => value ? "✅" : "❌";
 		summary.push(`| ${result.file} | ${result.lines} | ${result.edits} | ${result.diffLines} | ${mark(result.preserved)}${result.error ? ` (${result.error})` : ""} | ${mark(result.idempotent)} |`);
-		console.error(`  ${result.file} lines=${result.lines} edits=${result.edits} 보존=${result.preserved} 멱등=${result.idempotent}${result.error ? ` 오류=${result.error}` : ""}`);
+		console.error(`  ${result.file} lines=${result.lines} edits=${result.edits} preserved=${result.preserved} idempotent=${result.idempotent}${result.error ? ` error=${result.error}` : ""}`);
 	}
-	summary.push("", "각 항목: `<파일>` 원본 · `<파일>.aligned.<확장자>` 정렬 결과 · `<파일>.aligned.<확장자>.diff` 변경점", "");
+	summary.push("", "Each entry: `<file>` original · `<file>.aligned.<ext>` aligned result · `<file>.aligned.<ext>.diff` changes", "");
 }
 writeFileSync(join(OUT, "README.md"), summary.join("\n"));
-console.error("완료: stress/README.md");
+console.error("done: stress/README.md");
