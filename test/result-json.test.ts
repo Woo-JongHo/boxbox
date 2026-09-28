@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 const STATES = new Set(["PASS", "FIXABLE", "SUGGEST", "REFUSE"]) ;
-const PARSES = new Set(["ok", "changed", "skipped", "not-run"])  ;
+const PARSES = new Set(["ok", "changed", "skipped", "not-run"] ) ;
 
 /** Structural check of the shared result; returns the problems found. */
 function problems(value: ResultEnvelope): readonly string[] {

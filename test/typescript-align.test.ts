@@ -114,3 +114,65 @@ describe("typescript row floors", () => {
 		].join("\n") + "\n");
 	});
 });
+
+/** Writes `lines` to a temporary file, runs the aligner with --write, and returns the file's lines. */
+function alignLines(lines: readonly string[]): readonly string[] {
+	const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
+	const target    = join(workspace, "layer.ts")                             ;
+	workspaces.push(workspace);
+	writeFileSync(target, `${lines.join("\n")}\n`);
+	const result = Bun.spawnSync(["bun", script, "--file", relative(root, target), "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" });
+	expect(result.exitCode).toBe(0);
+	return readFileSync(target, "utf8").split("\n").slice(0, -1);
+}
+
+describe("typescript call layer", () => {
+	test("aligns the commas and closing paren of the same call in declaration values", () => {
+		expect(alignLines([
+			'const left = diagnostics(toolchain, before);',
+			'const right = diagnostics(toolchain, after);',
+		])).toEqual([
+			'const left  = diagnostics(toolchain, before) ;',
+			'const right = diagnostics(toolchain, after ) ;',
+		]);
+	});
+
+	test("aligns the call inside call-statement subjects", () => {
+		expect(alignLines([
+			'expect(preservesTokens(text, text.replace("c  d", "c d"))).toBe(false);',
+			'expect(preservesTokens("let x = 1;", "letx = 1;")).toBe(false);',
+			'expect(preservesTokens("a == b;", "a = = b;")).toBe(false);',
+		])).toEqual([
+			'expect(preservesTokens(text        , text.replace("c  d", "c d"))).toBe(false) ;',
+			'expect(preservesTokens("let x = 1;", "letx = 1;"                )).toBe(false) ;',
+			'expect(preservesTokens("a == b;"   , "a = = b;"                 )).toBe(false) ;',
+		]);
+	});
+
+	test("keeps one layer when the callee or the arity differs", () => {
+		expect(alignLines([
+			'const a = first(x, y);',
+			'const bb = second(x, y);',
+		])).toEqual([
+			'const a  = first(x, y)  ;',
+			'const bb = second(x, y) ;',
+		]);
+		expect(alignLines([
+			'const a = pick(x, yy);',
+			'const bb = pick(x);',
+		])).toEqual([
+			'const a  = pick(x, yy) ;',
+			'const bb = pick(x)     ;',
+		]);
+	});
+
+	test("keeps one layer when one argument is 20 columns wider than the second widest", () => {
+		expect(alignLines([
+			'const open = charTokenAt(source, skipTrivia(source.text, node.expression.getEnd()));',
+			'const close = charTokenAt(source, node.getEnd() - 1);',
+		])).toEqual([
+			'const open  = charTokenAt(source, skipTrivia(source.text, node.expression.getEnd())) ;',
+			'const close = charTokenAt(source, node.getEnd() - 1)                                 ;',
+		]);
+	});
+});

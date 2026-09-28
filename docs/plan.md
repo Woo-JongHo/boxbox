@@ -150,8 +150,8 @@ const PARSES = new Set(["ok"  , "changed", "skipped", "not-run"]) ;
 
 | # | Task | Status |
 |---|---|---|
-| N1 | Call layer: callee, `(`, top-level `,`, `)` inside declaration values and call-statement subjects | ▶ active |
-| N2 | List layer: `[ ]` / `{ }` of literals — element widths, `,` and closing column | ⬜ todo |
+| N1 | Call layer: callee, `(`, top-level `,`, `)` inside declaration values and call-statement subjects | ✅ done 2026-09-28 |
+| N2 | List layer: `[ ]` / `{ }` of literals — element widths, `,` and closing column | ▶ active |
 | N3 | Outliers in declaration tables: when one row is far longer, the vertical form (as for imports) | ⬜ todo |
 | N4 | Hand-made samples: guard-row tables and subscript cells from `00_normalize-imports.ts` | ⬜ todo |
 | N5 | Python: the same layers on the line engine's bundle rows | ⬜ todo |
@@ -159,7 +159,7 @@ const PARSES = new Set(["ok"  , "changed", "skipped", "not-run"]) ;
 | Layer | Aligned | Condition |
 |---|---|---|
 | 1 — row | `=`, `;` (existing) | declaration / call-statement table |
-| 2 — call | callee name (left), `(`, top-level argument `,`, `)` | the cells share callee, arity and tail (no `.stdout ?? ""` on only some rows), in the table's row count |
+| 2 — call | callee name (left), `(`, top-level argument `,`, `)` | the cells share callee, arity and tail (no `.stdout ?? ""` on only some rows), in the table's row count; no argument is 20+ columns wider than the second widest in its column (import rule B) |
 | 3 — list | each element padded to its column, `,` and the closing `]` / `}` column | every element is a literal (string, number, boolean) and the arity matches; lists with identifiers or calls (argv-like) stay compact |
 
 Hand-made reference samples (user, `00_normalize-imports.ts`): guard rows `if (…) { state = … ; … continue; }` with aligned condition cell, `{ … ;` and `continue`; subscript cells `chars[index    ]!` / `chars[index + 1] ;`; a multi-line object literal whose continuation lines align on the first property.
@@ -201,6 +201,7 @@ Why: today's tests prove safety, not quality. Goldens were produced by the engin
 
 Findings outside the active task. Pull into a milestone when relevant.
 
+- Different callees in one table (`run.map(…)` next to `new RegExp(…)`): align `(` after the widest callee and `)` as the cell close, arguments compact (user idea, 2026-09-28). Deferred to M1.5 judging: comparing different calls is rarely useful and `name    (` splits a call. Decide on real data.
 - The `;` axis can pad short rows far past column 120 when one row is long (seen in `stress-corpus.ts` during T1, fixed there by extracting a duplicated expression). The checker should warn when alignment pushes a table past 120 columns, pointing to the contract's "simplify the exceptional element first" step.
 - `scripts/stress-corpus.ts` still has ten lines over 130 columns that are not tables.
 - Import tables are aligned from 2 rows (the pre-existing import rule), unlike other tables (3). Decide whether imports follow the 3-row floor in T4.

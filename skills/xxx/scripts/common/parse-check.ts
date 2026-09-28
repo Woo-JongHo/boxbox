@@ -76,7 +76,7 @@ export function compareParse(language: string, before: string, after: string): P
 	}
 	if (before === after) return { status: "ok", tool: toolchain.tool, delta: [] };
 	const left  = diagnostics(toolchain, before) ;
-	const right = diagnostics(toolchain, after)  ;
+	const right = diagnostics(toolchain, after ) ;
 	const delta = [
 		...left.filter(line => !right.includes(line)).map(line => `- ${line}`),
 		...right.filter(line => !left.includes(line)).map(line => `+ ${line}`),

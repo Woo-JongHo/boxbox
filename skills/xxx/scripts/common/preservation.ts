@@ -92,7 +92,7 @@ const sameKey = (left: LineKey, right: LineKey): boolean =>
  */
 export function changedLines(before: string, after: string, syntax: CodeSyntax): readonly number[] {
 	const beforeKeys = lineKeys(before, syntax) ;
-	const afterKeys  = lineKeys(after, syntax)  ;
+	const afterKeys  = lineKeys(after , syntax) ;
 	if (beforeKeys.length !== afterKeys.length) return beforeKeys.map((_, index) => index);
 	return beforeKeys.flatMap((key, index) => sameKey(key, afterKeys[index]!) ? [] : [index]);
 }

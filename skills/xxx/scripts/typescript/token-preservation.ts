@@ -54,6 +54,6 @@ export function tokenStream(text: string): readonly string[] {
 /** True when `after` differs from `before` only in horizontal whitespace between tokens. */
 export function preservesTokens(before: string, after: string): boolean {
 	const left  = tokenStream(before) ;
-	const right = tokenStream(after)  ;
+	const right = tokenStream(after ) ;
 	return left.length === right.length && left.every((token, index) => token === right[index]);
 }

@@ -36,6 +36,16 @@ const beta  : number  = 22   ;
 const gamma : boolean = true ;
 ```
 
+**Call layer.** When every row's value is the same call (same callee text, same argument count, nothing after the `)`), the call is a nested table: each top-level `,` sits right after the widest argument, the next argument starts one space later, and `)` sits right after the widest last argument. The same applies to the call inside a call statement's subject. Rows with different callees or arities keep one layer, and so does a table where one argument is 20 or more columns wider than the second widest in its column (the import outlier rule B); such a row is a candidate for the vertical form instead.
+
+```ts
+const left  = diagnostics(toolchain, before) ;
+const right = diagnostics(toolchain, after ) ;
+
+expect(preservesTokens(text        , text.replace("c  d", "c d"))).toBe(false) ;
+expect(preservesTokens("let x = 1;", "letx = 1;"                )).toBe(false) ;
+```
+
 ## Registration objects · enum members · case rows
 
 ```ts
