@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, test }                from "bun:test";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, relative, resolve }                          from "node:path";
+import { preservesTokens }                                  from "../skills/xxx/scripts/typescript/token-preservation.ts";
 
 const root                 = resolve(import.meta.dir, "..")                                    ;
 const script               = resolve(root, "skills/xxx/scripts/typescript/06_align-tables.ts") ;
@@ -61,5 +62,20 @@ describe("typescript object row alignment", () => {
 			'    { axis : "semicolon"           , from : expression.getEnd() , at : semicolon    , insert : false , },',
 			"] ;",
 		].join("\n") + "\n");
+	});
+});
+
+describe("typescript whitespace-only guarantee", () => {
+	test("the fixture aligns with an identical token stream and no refused table", () => {
+		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-"))                   ;
+		const target    = join(workspace, "table-kinds.ts")                                         ;
+		const before    = readFileSync(resolve(root, "skills/xxx/fixtures/table-kinds.ts"), "utf8") ;
+		workspaces.push(workspace);
+		writeFileSync(target, before);
+
+		const result = Bun.spawnSync(["bun", script, "--file", relative(root, target), "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" });
+		expect(result.exitCode                                      ).toBe     (0          ) ;
+		expect(result.stdout.toString()                             ).toContain("refused=0") ;
+		expect(preservesTokens(before, readFileSync(target, "utf8"))).toBe     (true       ) ;
 	});
 });

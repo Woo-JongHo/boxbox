@@ -51,13 +51,14 @@ export function runAlignCli(aligner: LineProfiler, args: readonly string[], over
 
 function formatResult(aligner: LineProfiler, label: string, source: string, result: AlignResult, groupsOnly: boolean): string {
 	const command = groupsOnly ? "group-regions" : "align-tables";
-	const head = `${command} file=${label} groups=${result.groups} tables=${result.tables} misaligned=${result.misaligned} edits=${result.edits}`;
+	const head = `${command} file=${label} groups=${result.groups} tables=${result.tables} misaligned=${result.misaligned} edits=${result.edits} refused=${result.refused.length}`;
 	const body = groupsOnly
 		? result.details.map(table => `  ${padRange(table.startLine, table.endLine)}  rows=${table.rows} axes=${table.axes.join(">")}`).join("\n")
 		: result.details.map(table => `  ${padRange(table.startLine, table.endLine)}  rows=${table.rows} widths=${table.widths.join(",")}`).join("\n");
-	const pairLines = result.pairs.map(pair => `  ${padRange(pair.startLine, pair.endLine)}  rows=${pair.rows} pair — ${pair.rows} rows are promoted to a table only when the user confirms the comparison is useful`).join("\n");
-	const sourceLines = source.split("\n").length;
-	return [head, body, pairLines, `  lines=${sourceLines} language=${aligner.language}`].filter(part => part !== "").join("\n");
+	const pairLines    = result.pairs.map(pair => `  ${padRange(pair.startLine, pair.endLine)}  rows=${pair.rows} pair — ${pair.rows} rows are promoted to a table only when the user confirms the comparison is useful`).join("\n") ;
+	const refusedLines = result.refused.map(table => `  ${padRange(table.startLine, table.endLine)}  rows=${table.rows} refused — the edit would change more than whitespace between tokens`).join("\n")                             ;
+	const sourceLines  = source.split("\n").length                                                                                                                                                                                   ;
+	return [head, body, pairLines, refusedLines, `  lines=${sourceLines} language=${aligner.language}`].filter(part => part !== "").join("\n");
 }
 
 function formatExplain(aligner: LineProfiler, result: AlignResult, line: number): string {

@@ -1,7 +1,16 @@
-import { existsSync, lstatSync, mkdtempSync, mkdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir }                                                            from "node:os";
-import { join, resolve }                                                     from "node:path";
-import { afterEach, describe, expect, test }                                 from "bun:test";
+import {
+	existsSync,
+	lstatSync,
+	mkdtempSync,
+	mkdirSync,
+	readFileSync,
+	realpathSync,
+	rmSync,
+	writeFileSync,
+} from "node:fs";
+import { tmpdir }                            from "node:os";
+import { join, resolve }                     from "node:path";
+import { afterEach, describe, expect, test } from "bun:test";
 
 const ROOT = resolve(import.meta.dir, "..");
 const homes: string[] = [];

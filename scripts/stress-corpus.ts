@@ -10,6 +10,15 @@ import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "n
 import { homedir }                                                       from "node:os";
 import { basename, join }                                                from "node:path";
 import { spawnSync }                                                     from "node:child_process";
+import type { CodeSyntax }                                               from "../skills/xxx/scripts/common/code-text.ts";
+import { changedLines }                                                  from "../skills/xxx/scripts/common/preservation.ts";
+import { C_ALIGNER }                                                     from "../skills/xxx/scripts/c/profile.ts";
+import { CPP_ALIGNER }                                                   from "../skills/xxx/scripts/cpp/profile.ts";
+import { GO_ALIGNER }                                                    from "../skills/xxx/scripts/go/profile.ts";
+import { JAVA_ALIGNER }                                                  from "../skills/xxx/scripts/java/profile.ts";
+import { JAVASCRIPT_ALIGNER }                                            from "../skills/xxx/scripts/javascript/profile.ts";
+import { PYTHON_ALIGNER }                                                from "../skills/xxx/scripts/python/profile.ts";
+import { RUST_ALIGNER }                                                  from "../skills/xxx/scripts/rust/profile.ts";
 
 const ROOT   = join(import.meta.dir, "..")                       ;
 const OUT    = join(ROOT, "stress")                              ;
@@ -138,7 +147,16 @@ function collectCandidates(config: LanguageConfig, target: string): readonly Can
 	return candidates.slice(0, PER_LANG);
 }
 
-const stripWhitespace = (value: string): string => value.replace(/\s+/gu, "");
+/** Syntax per corpus language, so preservation is judged by the same whitespace-only check as the engine. */
+const SYNTAX: Readonly<Record<string, CodeSyntax>> = {
+	c          : C_ALIGNER.syntax,
+	cpp        : CPP_ALIGNER.syntax,
+	go         : GO_ALIGNER.syntax,
+	java       : JAVA_ALIGNER.syntax,
+	javascript : JAVASCRIPT_ALIGNER.syntax,
+	python     : PYTHON_ALIGNER.syntax,
+	rust       : RUST_ALIGNER.syntax,
+};
 
 interface FileResult {
 	readonly file       : string  ;
@@ -179,7 +197,7 @@ async function processLanguage(language: string, config: LanguageConfig): Promis
 				lines  : candidate.lines,
 				edits,
 				diffLines  : diffOutput.split("\n").filter(line => (line.startsWith("+") || line.startsWith("-")) && !line.startsWith("+++") && !line.startsWith("---")).length,
-				preserved  : stripWhitespace(readFileSync(aligned, "utf8")) === stripWhitespace(source),
+				preserved  : changedLines(source, readFileSync(aligned, "utf8"), SYNTAX[language]!).length === 0,
 				idempotent : verify.status === 0,
 			});
 		} catch (error) {

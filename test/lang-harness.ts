@@ -4,6 +4,7 @@
  */
 import { readFileSync }      from "node:fs";
 import { expect, test }      from "bun:test";
+import { changedLines }      from "../skills/xxx/scripts/common/preservation.ts";
 import { alignSource }       from "../skills/xxx/scripts/common/table-engine.ts";
 import type { LineProfiler } from "../skills/xxx/scripts/common/table-engine.ts";
 
@@ -16,8 +17,6 @@ export interface LanguageSuiteInput {
 	readonly trickyFile  : string ;
 }
 
-const stripWhitespace = (value: string): string => value.replace(/\s+/gu, "");
-
 export function defineLanguageSuite(input: LanguageSuiteInput): void {
 	const { aligner } = input;
 	const read    = (name: string): string => readFileSync(`${input.fixturesDir}/${name}`, "utf8")                                ;
@@ -26,8 +25,10 @@ export function defineLanguageSuite(input: LanguageSuiteInput): void {
 	const aligned = read(input.alignedFile)                                                                                       ;
 	const tricky  = read(input.trickyFile)                                                                                        ;
 
-	test(`${aligner.language}: alignment preserves content — equal to the original with all whitespace removed`, () => {
-		expect(stripWhitespace(align(source).output)).toBe(stripWhitespace(source));
+	test(`${aligner.language}: alignment changes only whitespace between tokens and refuses nothing`, () => {
+		const result = align(source);
+		expect(changedLines(source, result.output, aligner.syntax)).toEqual([]);
+		expect(result.refused).toEqual([]);
 	});
 
 	test(`${aligner.language}: alignment is idempotent — running twice gives the same result`, () => {
