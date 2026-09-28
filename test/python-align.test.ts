@@ -60,6 +60,61 @@ describe("python profile specific properties", () => {
 		expect(lines[2]).toBe("name : str   = 'x'") ;
 	});
 
+	test("assigned calls decompose into the call cell and argument columns", () => {
+		const source = [
+			"first  = diagnostics(toolchain, before)",
+			"second = diagnostics(toolchain, after)",
+			"third  = diagnostics(toolchain, during)",
+		].join("\n");
+		const result = align(source)             ;
+		const lines  = result.output.split("\n") ;
+		expect(lines[0]).toBe("first  = diagnostics(toolchain, before)") ;
+		expect(lines[1]).toBe("second = diagnostics(toolchain, after )") ;
+		expect(lines[2]).toBe("third  = diagnostics(toolchain, during)") ;
+	});
+
+	test("a call wrapping one flat bundle aligns the bundle cells inside the call", () => {
+		const source = [
+			`STATES = frozenset({"PASS", "FIXABLE", "SUGGEST"})`,
+			`PARSES = frozenset({"ok", "changed", "skipped"})`,
+			`GONE = frozenset({"no", "off", "away"})`,
+		].join("\n");
+		const result = align(source)             ;
+		const lines  = result.output.split("\n") ;
+		expect(lines[0]).toBe(`STATES = frozenset({"PASS", "FIXABLE", "SUGGEST"})`) ;
+		expect(lines[1]).toBe(`PARSES = frozenset({"ok"  , "changed", "skipped"})`) ;
+		expect(lines[2]).toBe(`GONE   = frozenset({"no"  , "off"    , "away"   })`) ;
+	});
+
+	test("calls with a different callee, a different arity, nesting or keyword arguments never share a table", () => {
+		for (const source of [
+			[
+				"first  = other(toolchain, before)",
+				"second = diagnostics(toolchain, after)",
+				"third  = diagnostics(toolchain, during)",
+			].join("\n"),
+			[
+				"first  = diagnostics(toolchain, before)",
+				"second = diagnostics(toolchain, after, extra)",
+				"third  = diagnostics(toolchain, during)",
+			].join("\n"),
+			[
+				"first  = diagnostics(toolchain, os.path(base))",
+				"second = diagnostics(toolchain, after)",
+				"third  = diagnostics(toolchain, during)",
+			].join("\n"),
+			[
+				"first  = diagnostics(tool=1, before=2)",
+				"second = diagnostics(toolchain, after)",
+				"third  = diagnostics(toolchain, during)",
+			].join("\n"),
+		]) {
+			const result = align(source) ;
+			expect(result.tables    ).toBe(0     ) ;
+			expect(result.output    ).toBe(source) ;
+		}
+	});
+
 	test("the profile refuses control-flow, call and line-continuation rows so they never form tables", () => {
 		const source = [
 			"if flag == other:",

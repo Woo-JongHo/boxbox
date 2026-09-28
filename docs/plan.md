@@ -6,7 +6,7 @@ The working plan for XXX. Product direction lives in [`design.md`](design.md); t
 
 **North star:** a readability plugin any coding agent can plug in, that aligns same-role code into readable tables and never changes behavior — learning from judged cases until it can safely change and generate code.
 
-**Current milestone — M1.6 Nested tables, TypeScript first.** Then M1.5 data for TypeScript and Python.
+**Current milestone — M1.5 data for TypeScript and Python.** M1.6 Nested tables is done 2026-09-28 (call layer, list layer, vertical outliers, guard rows and subscript cells, Python assigned calls).
 
 **M1 Safety proof — done 2026-09-28.** Every automatic edit is *proven* safe in code, not just promised in prose. Criteria and result:
 
@@ -154,7 +154,7 @@ const PARSES = new Set(["ok"  , "changed", "skipped", "not-run"]) ;
 | N2 | List layer: `[ ]` / `{ }` of literals — element widths, `,` and closing column | ✅ done 2026-09-28 |
 | N3 | Outliers in declaration tables: when one row is far longer, the vertical form (as for imports) | ✅ done 2026-09-28 |
 | N4 | Hand-made samples: guard-row tables and subscript cells from `00_normalize-imports.ts` | ✅ done 2026-09-28 |
-| N5 | Python: the same layers on the line engine's bundle rows | ⬜ todo |
+| N5 | Python: the same layers on the line engine's bundle rows | ✅ done 2026-09-28 |
 
 | Layer | Aligned | Condition |
 |---|---|---|
@@ -167,6 +167,8 @@ N2 implementation notes (done 2026-09-28): `callLayer` in `grid-kinds.ts` was ge
 N3 implementation notes (done 2026-09-28): in a declaration table whose rows share callee and arity, the row holding the outlier argument (import rule B) takes the vertical form instead of dropping the layer for everyone — arguments one per line under the `(`, non-last argument commas right after the widest argument, `);` on the statement's indentation, `=` at the table's `=` column; the remaining rows keep the call layer when no outlier is left among them. The render only inserts line breaks and padding, so `06_align-tables.ts` gates such a group with the new `preservesTokensWithBreaks` (tokens and comments byte-identical, breaks only inserted; the strict gate still covers every other edit) plus the re-parse gate. Calls with one argument, different callees, and call statements never go vertical. A vertical row leaves the table on the next run, so the write is stable.
 
 N4 implementation notes (done 2026-09-28): two constructs from the hand-aligned `lexicalMask` in `00_normalize-imports.ts`. (1) Subscript cells — a declaration value that is a subscript read (a leading `!` is fine) gains a `subscript-close` insert axis: `]` right after the widest index, kept only when every row has the subscript on the same object with no outlier index. (2) Guard rows — a new `guard-statements` kind for consecutive one-line `if (…) { …; continue; }` statements (block ends in `continue`, no `else`): the condition's closing `)`, the first statement's `;` and the `continue` column are insert axes; the statements in between stay as written. The hand-aligned sample is the engine's fixed point. The third hand-made sample (a multi-line object literal whose continuation lines align on the first property) is not covered yet — see backlog.
+
+N5 implementation notes (done 2026-09-28): the Python profile gains the assigned call row, `name = call(...)`, as table form 6 — the line engine's call layer. The callee travels in the axis name (`call:frozenset`), so rows calling a different callee never share a table; arity is part of the axis sequence. Two argument shapes decompose: two or more scalar arguments become cell/arg columns, and exactly one flat bundle argument (`frozenset({"a", "b"})`) folds its cells inside the call as the list layer — the Python counterpart of the milestone's `new Set([...])` example. Nesting, keyword arguments, and bare `name = {...}` values stay refused. The cell cutter is shared with bundle rows (`cellsIn`); tables need the line engine's 3-row floor.
 
 Hand-made reference samples (user, `00_normalize-imports.ts`): guard rows `if (…) { state = … ; … continue; }` with aligned condition cell, `{ … ;` and `continue`; subscript cells `chars[index    ]!` / `chars[index + 1] ;`; a multi-line object literal whose continuation lines align on the first property.
 

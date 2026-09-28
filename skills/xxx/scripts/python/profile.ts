@@ -1,6 +1,6 @@
 /**
  * Python line profiler. Structure is judged on `masked` (string contents and comments blanked), and cell text
- * is sliced from `code` at the same coordinates (match.indices from the /d flag). Table rows are limited to five forms.
+ * is sliced from `code` at the same coordinates (match.indices from the /d flag). Table rows are limited to six forms.
  *
  * Table forms:
  * 1. Annotated assignment `name: Type = value` → name, colon, type, equal, value
@@ -8,6 +8,8 @@
  * 3. Dictionary row       `"key": value,`      → key (with quotes), colon, value, comma
  * 4. Plain assignment     `name = value`       → name, equal, value
  * 5. Bundle row           `["a", 1, "x"],`     → cell/arg columns with open, comma, close separators
+ * 6. Assigned call row    `name = call(a, b)`  → name, equal, call cell (callee in the axis name), argument cells;
+ *                                                one flat bundle argument folds its cells inside the call
  *
  * Refused (null) when uncertain: non-bundle rows with remaining parens, braces or brackets (calls, containers,
  * indexing, def signatures); rows ending in a continuation (\); decorator, def, class, control-flow and import
@@ -93,16 +95,30 @@ function bundleProfile(code: string, masked: string): RowProfile | null {
 	if (!interior || !trailer) return null;
 	if (BUNDLE_UNSAFE.test(masked.slice(interior[0], interior[1]))) return null;
 
-	// Cut cell ranges by mask coordinates. Commas inside string cells are spaces in the mask, so they are not boundaries.
-	const bounds: Array<{ start: number; end: number }> = []          ;
-	let boundStart                                      = interior[0] ;
-	for (let index = interior[0]; index < interior[1]; index += 1) {
+	const cells = cellsIn(code, masked, interior[0], interior[1]);
+	if (!cells) return null;
+
+	const slots: Slot[] = [{ axis: open === "[" ? "open[" : "open(", text: open, gapBefore: "" }];
+	cells.forEach((cell, position) => {
+		// The first cell attaches directly to the opening bracket (gap ""); other cells get one space after the comma.
+		slots.push({ axis: position === 0 ? "cell" : "arg", text: cell.text, gapBefore: cell.gap });
+		if (position < cells.length - 1) slots.push({ axis: "comma", text: ",", gapBefore: cell.commaGap });
+	});
+	slots.push({ axis: close === "]" ? "close]" : "close)", text: close + slotAt(code, match, 5), gapBefore: code.slice(cells[cells.length - 1].end, interior[1]) });
+	return { indent: slotAt(code, match, 1), slots };
+}
+
+/** Cuts `[start, end)` into cells at the mask's commas and validates every cell as a scalar; null when a cell fails. */
+function cellsIn(code: string, masked: string, start: number, end: number): Array<{ text: string; gap: string; commaGap: string; end: number }> | null {
+	const bounds: Array<{ start: number; end: number }> = []    ;
+	let boundStart                                      = start ;
+	for (let index = start; index < end; index += 1) {
 		if (masked[index] === ",") {
 			bounds.push({ start: boundStart, end: index });
 			boundStart = index + 1;
 		}
 	}
-	bounds.push({ start: boundStart, end: interior[1] });
+	bounds.push({ start: boundStart, end });
 	if (bounds.length < 2) return null; // a row with a single cell is not a bundle table
 
 	const cells: Array<{ text: string; gap: string; commaGap: string; end: number }> = [];
@@ -119,24 +135,76 @@ function bundleProfile(code: string, masked: string): RowProfile | null {
 		const cellEnd = cellStart + text.length;
 		cells.push({ text, gap: code.slice(bound.start, cellStart), commaGap: code.slice(cellEnd, bound.end), end: cellEnd });
 	}
+	return cells;
+}
 
-	const slots: Slot[] = [{ axis: open === "[" ? "open[" : "open(", text: open, gapBefore: "" }];
-	cells.forEach((cell, position) => {
-		// The first cell attaches directly to the opening bracket (gap ""); other cells get one space after the comma.
-		slots.push({ axis: position === 0 ? "cell" : "arg", text: cell.text, gapBefore: cell.gap });
-		if (position < cells.length - 1) slots.push({ axis: "comma", text: ",", gapBefore: cell.commaGap });
-	});
-	slots.push({ axis: close === "]" ? "close]" : "close)", text: close + slotAt(code, match, 5), gapBefore: code.slice(cells[cells.length - 1].end, interior[1]) });
+/**
+ * Layer 2 and 3 on assignment rows: `name = callee(...)` decomposes into the call cell and its argument cells.
+ * The callee travels in the axis name, so rows calling a different callee never share a table, and arity is part
+ * of the axis sequence. Two argument shapes pass: exactly one flat bundle argument (`frozenset({"a", "b"})` — the
+ * bundle cells become the inner columns) or two or more scalar arguments (`run(files, before)`). Nesting, keyword
+ * arguments and anything else inside the parentheses are refused. A bare `name = {...}` value without a call is
+ * not a call row and stays refused with the other unsafe values.
+ */
+function assignedCallProfile(code: string, masked: string): RowProfile | null {
+	const match   = /^([ \t]*)([A-Za-z_][A-Za-z0-9_]*)(\s*)=(\s*)([A-Za-z_][A-Za-z0-9_.]*)(\s*)\((.*)\)[ \t]*$/du.exec(masked) ;
+	const indices = match?.indices                                                                                             ;
+	if (!match || !indices) return null;
+	const nameRange = indices[2] ;
+	const inner     = indices[7] ;
+	if (!nameRange || !inner) return null;
+	const callee = slotAt(code, match, 5)                                            ;
+
+	const slots: Slot[] = [
+		{ axis : "name"           , text : slotAt(code, match, 2) , gapBefore : ""                     },
+		{ axis : "equal"          , text : "="                    , gapBefore : slotAt(code, match, 3) },
+		{ axis : `call:${callee}` , text : callee                 , gapBefore : slotAt(code, match, 4) },
+		{ axis : "open("          , text : "("                    , gapBefore : slotAt(code, match, 6) },
+	];
+	const interiorText                    = masked.slice(inner[0], inner[1])                                         ;
+	const trimmedStart                    = inner[0] + interiorText.length - interiorText.trimStart().length         ;
+	const trimmedEnd                      = inner[0] + interiorText.trimEnd().length                                 ;
+	const trimmed                         = masked.slice(trimmedStart, trimmedEnd)                                   ;
+	const OPEN_OF: Record<string, string> = { "}": "{", "]": "[", ")": "(" }                                         ;
+	const wrapOpen                        = OPEN_OF[trimmed.at(-1) ?? ""]                                            ;
+	const isWrapped                       = trimmed.length >= 2 && wrapOpen !== undefined && trimmed[0] === wrapOpen ;
+	let contentEnd                        = inner[1]                                                                 ;
+	if (isWrapped) {
+		const cells = BUNDLE_UNSAFE.test(masked.slice(trimmedStart + 1, trimmedEnd - 1))
+			? null
+			: cellsIn(code, masked, trimmedStart + 1, trimmedEnd - 1) ;
+		if (!cells) return null;
+		const wrap = trimmed[0]!                                                                                                                     ;
+		slots.push({ axis: wrap === "{" ? "open{" : wrap === "[" ? "open[" : "open(", text: code[trimmedStart] ?? "", gapBefore: code.slice(inner[0], trimmedStart) });
+		cells.forEach((cell, position) => {
+			slots.push({ axis: position === 0 ? "cell" : "arg", text: cell.text, gapBefore: cell.gap });
+			if (position < cells.length - 1) slots.push({ axis: "comma", text: ",", gapBefore: cell.commaGap });
+		});
+		slots.push({ axis: trimmed.at(-1) === "}" ? "close}" : trimmed.at(-1) === "]" ? "close]" : "close)", text: code[trimmedEnd - 1] ?? "", gapBefore: code.slice(cells[cells.length - 1].end, trimmedEnd - 1) });
+		contentEnd = trimmedEnd                                                                                      ;
+	} else {
+		const cells = cellsIn(code, masked, inner[0], inner[1]);
+		if (!cells) return null;
+		cells.forEach((cell, position) => {
+			slots.push({ axis: position === 0 ? "cell" : "arg", text: cell.text, gapBefore: cell.gap });
+			if (position < cells.length - 1) slots.push({ axis: "comma", text: ",", gapBefore: cell.commaGap });
+		});
+		contentEnd = cells[cells.length - 1]!.end                                                                    ;
+	}
+	slots.push({ axis: "close)", text: ")", gapBefore: code.slice(contentEnd, inner[1]) });
 	return { indent: slotAt(code, match, 1), slots };
 }
 
 function profilePython(code: string, masked: string): RowProfile | null {
 	const trimmed = masked.trim();
 	if (trimmed === "" || trimmed.startsWith("@") || RESERVED_START.test(trimmed)) return null;
-	// Bundle rows keep their brackets, so decompose them before the isUnsafe check. Non-bundle rows with
-	// remaining brackets are refused by isUnsafe below — the existing refusal rules still hold.
+	// Bundle rows keep their brackets, so decompose them before the isUnsafe check. Assigned call rows decompose
+	// into the call cell and its argument cells the same way. Non-bundle rows with remaining brackets are refused
+	// by isUnsafe below — the existing refusal rules still hold.
 	const bundle = bundleProfile(code, masked);
 	if (bundle) return bundle;
+	const assignedCall = assignedCallProfile(code, masked);
+	if (assignedCall) return assignedCall;
 	if (isUnsafe(masked)) return null;
 
 	const annotated = ANNOTATED.exec(masked);
@@ -208,6 +276,7 @@ export const PYTHON_ALIGNER: LineProfiler = {
 	columnAxes    : ["name", "key", "type", "value", "cell", "arg"],
 	// Python convention: colon and comma attach to the cell; equal gets one space. Bundle rows attach the
 	// first cell to the opening bracket and attach close too, so the closing bracket shares the last cell's width.
-	canonicalGaps : { name: " ", key: " ", type: " ", value: " ", colon: "", equal: " ", comma: "", cell: "", arg: " ", "open[": "", "open(": "", "close]": "", "close)": "" },
+	// The call layer's wrapped bundle attaches its brackets to the call the same way.
+	canonicalGaps : { name: " ", key: " ", type: " ", value: " ", colon: "", equal: " ", comma: "", cell: "", arg: " ", "open[": "", "open(": "", "open{": "", "close]": "", "close)": "", "close}": "" },
 	profile       : profilePython,
 };

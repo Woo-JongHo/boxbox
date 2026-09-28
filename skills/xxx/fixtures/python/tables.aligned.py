@@ -26,6 +26,10 @@ DEFAULT_RETRIES      = 3
 LONG_TIMEOUT_SECONDS = 90
 DEBUG                = False
 
+STATES = frozenset({"PASS", "FIXABLE", "SUGGEST"})
+PARSES = frozenset({"ok"  , "changed", "skipped"})
+GONE   = frozenset({"no"  , "off"    , "away"   })
+
 FLAGS         = True
 VERBOSE_LABEL = "x=y#z"
 RETRY_LIMIT   = 30 # upper bound
