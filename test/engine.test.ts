@@ -1,8 +1,8 @@
 import { describe, expect, test }        from "bun:test";
-import { maskSource }                    from "../skills/woo-code-readability/scripts/common/code-text.ts";
-import type { CodeSyntax }               from "../skills/woo-code-readability/scripts/common/code-text.ts";
-import { alignSource }                   from "../skills/woo-code-readability/scripts/common/table-engine.ts";
-import type { LineProfiler, RowProfile } from "../skills/woo-code-readability/scripts/common/table-engine.ts";
+import { maskSource }                    from "../skills/xxx/scripts/common/code-text.ts";
+import type { CodeSyntax }               from "../skills/xxx/scripts/common/code-text.ts";
+import { alignSource }                   from "../skills/xxx/scripts/common/table-engine.ts";
+import type { LineProfiler, RowProfile } from "../skills/xxx/scripts/common/table-engine.ts";
 
 const SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],
@@ -11,7 +11,7 @@ const SYNTAX: CodeSyntax = {
 	cppRaw        : false,
 };
 
-/** `이름 : 값 ;` 형태만 인정하는 최소 프로파일러 — 구조는 마스크로, 텍스트는 원본에서 자른다. */
+/** Minimal profiler accepting only `name : value ;` — structure from the mask, text sliced from the source. */
 const TEST_ALIGNER: LineProfiler = {
 	language      : "test",
 	syntax        : SYNTAX,
@@ -38,7 +38,7 @@ const TEST_ALIGNER: LineProfiler = {
 };
 
 describe("maskSource", () => {
-	test("기하를 보존하고 문자열 내부만 가린다", () => {
+	test("preserves geometry and masks only string contents", () => {
 		const source = `let a = "x:y=z;"; // tail: 1\nlet b = 2;`;
 		const mask = maskSource(source, SYNTAX);
 		expect(mask.text.length).toBe(source.length);
@@ -46,28 +46,28 @@ describe("maskSource", () => {
 		expect(mask.commentStarts).toEqual([18, -1]);
 	});
 
-	test("블록 주석 내부 줄은 opensInBlock로 표시한다", () => {
+	test("marks lines inside block comments with opensInBlock", () => {
 		const source = `a : 1 ;\n/* begin\n   span */\nb : 2 ;`;
 		const mask = maskSource(source, SYNTAX);
 		expect(mask.opensInBlock).toEqual([false, false, true, false]);
 		expect(mask.text.split("\n")[2]).toBe("          ");
 	});
 
-	test("주석 안의 따옴표는 문자열로 열리지 않는다", () => {
+	test("quotes inside comments do not open strings", () => {
 		const source = `a : 1 ; // don't "open\nb : 2 ;`;
 		const mask = maskSource(source, SYNTAX);
 		expect(mask.commentStarts[0]).toBe(8);
 		expect(mask.text.split("\n")[1]).toBe("b : 2 ;");
 	});
 
-	test("Rust 수명 'a는 문자열로 오판하지 않는다", () => {
+	test("does not mistake the Rust lifetime 'a for a string", () => {
 		const rust: CodeSyntax = { lineComments: ["//"], blockComments: [], strings: [{ open: '"', close: '"', escape: true }], rustChars: true, cppRaw: false } ;
 		const source           = `let s: &'a str = "v";`                                                                                                         ;
 		const mask             = maskSource(source, rust)                                                                                                        ;
 		expect(mask.text).toBe(`let s: &'a str = " ";`);
 	});
 
-	test("C++ 원본 문자열 R\"( )\"를 통째로 가린다", () => {
+	test("masks the whole C++ raw string R\"( )\"", () => {
 		const cpp: CodeSyntax = { lineComments: ["//"], blockComments: [{ open: "/*", close: "*/" }], strings: [{ open: '"', close: '"', escape: true }], cppRaw: true } ;
 		const source          = `const char* p = R"x(a:b=c;)x";`                                                                                                         ;
 		const mask            = maskSource(source, cpp)                                                                                                                  ;
@@ -84,12 +84,12 @@ describe("alignSource", () => {
 		"breaks : region ;",
 		"a : 1 ;",
 		"b : 2 ;",
-		"// 별도 구획 주석",
+		"// separate section comment",
 		"xx : 1 ;",
 		"yy : 2 ;",
 	].join("\n");
 
-	test("열을 실제 최장 셀의 최소 폭에 맞춘다", () => {
+	test("aligns columns at the minimum width of the actual longest cell", () => {
 		const result = alignSource(SOURCE, TEST_ALIGNER, { minRows: 3, apply: true });
 		const outputLines = result.output.split("\n");
 		expect(outputLines[0]).toBe("short      : 1   ;");
@@ -99,7 +99,7 @@ describe("alignSource", () => {
 		expect(result.misaligned).toBe(5);
 	});
 
-	test("빈 줄과 주석은 구획을 끊는다 — 뒤 구획이 앞 구획 폭을 공유하지 않는다", () => {
+	test("blank lines and comments break sections — a later section never shares an earlier section's width", () => {
 		const result = alignSource(SOURCE, TEST_ALIGNER, { minRows: 3, apply: true });
 		const outputLines = result.output.split("\n");
 		expect(outputLines[4]).toBe("breaks : region ;");
@@ -107,13 +107,13 @@ describe("alignSource", () => {
 		expect(result.details.map(table => table.startLine)).toEqual([1, 5]);
 	});
 
-	test("2행 연속은 pair로 보고만 하고 정렬하지 않는다", () => {
+	test("a 2-row run is reported as a pair and not aligned", () => {
 		const result = alignSource(SOURCE, TEST_ALIGNER, { minRows: 3, apply: true });
 		expect(result.pairs).toEqual([{ startLine: 9, endLine: 10, rows: 2, signature: "|name>colon>value>semicolon" }]);
 		expect(result.output.split("\n")[8]).toBe("xx : 1 ;");
 	});
 
-	test("정렬은 내용을 보존하고 멱등하다", () => {
+	test("alignment preserves content and is idempotent", () => {
 		const once = alignSource(SOURCE, TEST_ALIGNER, { minRows: 3, apply: true });
 		expect(once.output.replace(/\s+/gu, "")).toBe(SOURCE.replace(/\s+/gu, ""));
 		const twice = alignSource(once.output, TEST_ALIGNER, { minRows: 3, apply: true });
@@ -121,7 +121,7 @@ describe("alignSource", () => {
 		expect(twice.misaligned).toBe(0);
 	});
 
-	test("문자열 내부의 구분자는 표로 오인하지 않는다", () => {
+	test("separators inside strings are not mistaken for tables", () => {
 		const source      = `name : "a:b=c;" ;\nother : 2 ;\nthird : 3 ;`                  ;
 		const result      = alignSource(source, TEST_ALIGNER, { minRows: 3, apply: true }) ;
 		const outputLines = result.output.split("\n")                                      ;
@@ -129,7 +129,7 @@ describe("alignSource", () => {
 		expect(outputLines[1]).toBe(`other : 2        ;`);
 	});
 
-	test("주석 꼬리는 표 안에서 한 열로 맞춘다", () => {
+	test("trailing comments align into one column within a table", () => {
 		const source      = `alpha : 1 ; // first\nbeta : 22 ; // second\ngamma : 333 ;`   ;
 		const result      = alignSource(source, TEST_ALIGNER, { minRows: 3, apply: true }) ;
 		const outputLines = result.output.split("\n")                                      ;
@@ -138,13 +138,13 @@ describe("alignSource", () => {
 		expect(outputLines[2]).toBe("gamma : 333 ;");
 	});
 
-	test("무손실 분해에 실패한 프로파일 행은 거부한다", () => {
+	test("refuses profile rows that fail lossless decomposition", () => {
 		const lossy: LineProfiler = {
 			...TEST_ALIGNER,
 			profile(code: string, masked: string): RowProfile | null {
 				const base = TEST_ALIGNER.profile(code, masked);
 				if (!base) return null;
-				// 간격을 원본과 다르게 보고하면 엔진이 거부해야 한다.
+				// If the profiler reports a gap different from the source, the engine must refuse.
 				return { ...base, slots: base.slots.map(slot => slot.axis === "colon" ? { ...slot, gapBefore: "" } : slot) };
 			},
 		};
@@ -153,7 +153,7 @@ describe("alignSource", () => {
 		expect(result.tables).toBe(0);
 	});
 
-	test("apply=false는 보고만 하고 원본을 되돌린다", () => {
+	test("apply=false only reports and returns the original", () => {
 		const result = alignSource("a : 1 ;\nb : 22 ;\nc : 333 ;", TEST_ALIGNER, { minRows: 3, apply: false });
 		expect(result.output).toBe("a : 1 ;\nb : 22 ;\nc : 333 ;");
 		expect(result.misaligned).toBe(2);

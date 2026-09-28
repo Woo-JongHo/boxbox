@@ -1,18 +1,18 @@
 import { expect, test }        from "bun:test";
 import { defineLanguageSuite } from "./lang-harness.ts";
-import { maskSource }          from "../skills/woo-code-readability/scripts/common/code-text.ts";
-import { alignSource }         from "../skills/woo-code-readability/scripts/common/table-engine.ts";
-import { RUST_ALIGNER }        from "../skills/woo-code-readability/scripts/rust/profile.ts";
+import { maskSource }          from "../skills/xxx/scripts/common/code-text.ts";
+import { alignSource }         from "../skills/xxx/scripts/common/table-engine.ts";
+import { RUST_ALIGNER }        from "../skills/xxx/scripts/rust/profile.ts";
 
 defineLanguageSuite({
 	aligner     : RUST_ALIGNER,
-	fixturesDir : new URL("../skills/woo-code-readability/fixtures/rust/", import.meta.url).pathname,
+	fixturesDir : new URL("../skills/xxx/fixtures/rust/", import.meta.url).pathname,
 	tableFile   : "tables.rs",
 	alignedFile : "tables.aligned.rs",
 	trickyFile  : "tricky.rs",
 });
 
-test("rust: match 갈래 pattern·action 열을 최소 폭으로 맞춘다", () => {
+test("rust: aligns match arm pattern and action columns at minimum width", () => {
 	const source = [
 		"match frame {",
 		"    Read(n) => n,",
@@ -29,7 +29,7 @@ test("rust: match 갈래 pattern·action 열을 최소 폭으로 맞춘다", () 
 	expect(lines[3]).toBe("    Move(x, y) => x + y,");
 });
 
-test("rust: 수명이 포함된 타입 셀을 그대로 보존한다", () => {
+test("rust: preserves type cells containing lifetimes", () => {
 	const source = [
 		`let a: &'static str = "x:y";`,
 		`let b: &'a str = "y";`,
@@ -43,13 +43,13 @@ test("rust: 수명이 포함된 타입 셀을 그대로 보존한다", () => {
 	expect(result.misaligned).toBe(2);
 });
 
-test("rust: enum 변형의 닫힌 소괄호 한 쌍을 하나의 셀로 삼는다", () => {
+test("rust: treats an enum variant's closed parenthesis pair as one cell", () => {
 	const profile = RUST_ALIGNER.profile("    Move(i64, i64),", "    Move(i64, i64),");
 	expect(profile?.slots.map(slot => slot.axis)).toEqual(["name", "paren", "comma"]);
 	expect(profile?.slots[1].text).toBe("(i64, i64)");
 });
 
-test("rust: let mut 행은 keyword 축으로 name·value 열과 함께 정렬된다", () => {
+test("rust: let mut rows align on the keyword axis together with name and value columns", () => {
 	const profile = RUST_ALIGNER.profile("    let mut total: u64 = 0;", "    let mut total: u64 = 0;");
 	expect(profile?.slots[0]).toEqual({ axis: "keyword", text: "let mut", gapBefore: "" });
 	const source = [
@@ -64,7 +64,7 @@ test("rust: let mut 행은 keyword 축으로 name·value 열과 함께 정렬된
 	expect(lines[2]).toBe("let mut total = base + step;");
 });
 
-test("rust: 선언·속성·여는 괄호·수명 라벨 행은 프로파일을 거부한다", () => {
+test("rust: the profile refuses declaration, attribute, opening-bracket and lifetime-label rows", () => {
 	const rejects = [
 		"struct S {",
 		"impl Display for S {",
@@ -84,7 +84,7 @@ test("rust: 선언·속성·여는 괄호·수명 라벨 행은 프로파일을 
 	}
 });
 
-test("rust: 묶음 행은 내부 셀 열을 맞추고 닫는 괄호도 cell 폭을 공유한다", () => {
+test("rust: bundle rows align inner cell columns and the closing bracket shares the cell width", () => {
 	const tuples = [
 		"const TABLE: &[(&str, i32, &str)] = &[",
 		`    ("alpha", 1, "x"),`,
@@ -116,19 +116,19 @@ test("rust: 묶음 행은 내부 셀 열을 맞추고 닫는 괄호도 cell 폭�
 	expect(gridLines[3]).toBe("    [55 , 6666],");
 });
 
-test("rust: 중첩·대입 묶음 행과 경로·수명·타입 이름 셀은 프로파일을 거부한다", () => {
+test("rust: the profile refuses nested or assigning bundle rows and path, lifetime or type-name cells", () => {
 	const maskedOf = (code: string): string => maskSource(code, RUST_ALIGNER.syntax).text;
 	for (const code of [
-		`("a", ("b", 1)),`, // 중첩 소괄호
-		`("a", [1, 2]),`,   // 중첩 대괄호·슬라이스 타입
-		"(x = 1, y),",     // 대입
-		"(a),",            // 셀 1개
-		"(a, ),",          // 빈 셀
-		"('a, 1),",        // 수명 셀
-		"(std::fmt, 1),",  // 경로 셀
-		"(u32, 1),",       // 타입 이름 셀
-		"(&str, 1),",      // 참조 타입 셀
-		"[a, b),",         // 기호 짝이 어긋난 행
+		`("a", ("b", 1)),`, // nested parentheses
+		`("a", [1, 2]),`,   // nested brackets / slice type
+		"(x = 1, y),",     // assignment
+		"(a),",            // single cell
+		"(a, ),",          // empty cell
+		"('a, 1),",        // lifetime cell
+		"(std::fmt, 1),",  // path cell
+		"(u32, 1),",       // type-name cell
+		"(&str, 1),",      // reference-type cell
+		"[a, b),",         // mismatched bracket pair
 	]) {
 		expect(RUST_ALIGNER.profile(code, maskedOf(code))).toBeNull();
 	}

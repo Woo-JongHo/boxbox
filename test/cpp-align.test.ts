@@ -1,26 +1,27 @@
 /**
- * C++ 프로파일러 스위트. 언어 공통 성질(보존·멱등·골든·함정·2행 미정렬)은 하네스가 검사하고,
- * 이 파일은 C++ 고유 성질 — 템플릿 타입 셀 보존, 원본 문자열 행 거부, 함수 포인터·함수형 매크로
- * 거부, 문자열 내부 = ; 의 구조 비오판, 묶음 행의 내부 셀 정렬과 중첩·대입 거부 — 을 더해 검사한다.
+ * C++ profiler suite. The harness checks the shared properties (preservation, idempotence, golden, traps,
+ * no alignment of 2-row groups); this file adds C++-specific ones — template type cells preserved, raw string rows
+ * refused, function pointers and function-like macros refused, = ; inside strings not read as structure, bundle-row
+ * inner cell alignment, and refusal of nesting and assignment.
  */
 import { readFileSync }           from "node:fs";
 import { describe, expect, test } from "bun:test";
-import { alignSource }            from "../skills/woo-code-readability/scripts/common/table-engine.ts";
-import { CPP_ALIGNER }            from "../skills/woo-code-readability/scripts/cpp/profile.ts";
+import { alignSource }            from "../skills/xxx/scripts/common/table-engine.ts";
+import { CPP_ALIGNER }            from "../skills/xxx/scripts/cpp/profile.ts";
 import { defineLanguageSuite }    from "./lang-harness.ts";
 
 defineLanguageSuite({
 	aligner     : CPP_ALIGNER,
-	fixturesDir : new URL("../skills/woo-code-readability/fixtures/cpp/", import.meta.url).pathname,
+	fixturesDir : new URL("../skills/xxx/fixtures/cpp/", import.meta.url).pathname,
 	tableFile   : "tables.cpp",
 	alignedFile : "tables.aligned.cpp",
 	trickyFile  : "tricky.cpp",
 });
 
-describe("cpp 프로파일 고유 성질", () => {
+describe("cpp profile specific properties", () => {
 	const align = (source: string): ReturnType<typeof alignSource> => alignSource(source, CPP_ALIGNER, { minRows: 3, apply: true });
 
-	test("std::vector<int> 타입 셀을 보존하고 name 열을 최소 폭으로 맞춘다", () => {
+	test("preserves the std::vector<int> type cell and aligns the name column at minimum width", () => {
 		const source = [
 			"std::vector<int> items;",
 			"int count;",
@@ -32,7 +33,7 @@ describe("cpp 프로파일 고유 성질", () => {
 		expect(output[2]).toBe("const std::string& label;");
 	});
 
-	test("R\"( 원본 문자열이 열려 있는 줄과 그 내부는 표로 인정하지 않는다", () => {
+	test("lines with an open R\"( raw string and their contents are not tables", () => {
 		const source = [
 			"const char* doc = R\"(mode = fast;",
 			"count = 4;",
@@ -44,7 +45,7 @@ describe("cpp 프로파일 고유 성질", () => {
 		expect(result.output).toBe(source);
 	});
 
-	test("type 셀의 소괄호(함수 포인터)와 함수형 매크로는 거부하고 객체형 매크로는 인정한다", () => {
+	test("refuses parentheses in type cells (function pointers) and function-like macros, accepts object-like macros", () => {
 		expect(CPP_ALIGNER.profile("void (*callback)(int);", "void (*callback)(int);")).toBeNull();
 		expect(CPP_ALIGNER.profile("using Handler = void (*)(int);", "using Handler = void (*)(int);")).toBeNull();
 		expect(CPP_ALIGNER.profile("#define MAX(a, b) ((a) > (b))", "#define MAX(a, b) ((a) > (b))")).toBeNull();
@@ -52,7 +53,7 @@ describe("cpp 프로파일 고유 성질", () => {
 		expect(define?.slots.map(slot => slot.axis)).toEqual(["directive", "name", "value"]);
 	});
 
-	test("문자열 내부의 = ; 를 구조로 오판하지 않고 값 셀에 그대로 보존한다", () => {
+	test("does not read = ; inside strings as structure and keeps them in the value cell", () => {
 		const source = [
 			"const char* one = \"x = 1;\";",
 			"const char* two = \"yy = 22;\";",
@@ -64,7 +65,7 @@ describe("cpp 프로파일 고유 성질", () => {
 		expect(output[2]).toBe("const char* three = \"zzz = 333;\";");
 	});
 
-	test("묶음 행의 내부 셀 열을 최소 폭으로 맞춘다", () => {
+	test("aligns bundle-row inner cell columns at minimum width", () => {
 		const source = [
 			"static const Entry rows[] = {",
 			`    {"alpha", 1, 0x10},`,
@@ -78,7 +79,7 @@ describe("cpp 프로파일 고유 성질", () => {
 		expect(output[3]).toBe(`    {"ccc",   333, 0x201},`);
 	});
 
-	test("중첩·대입·인덱스가 남은 묶음 행과 단일·빈 셀 묶음은 거부한다", () => {
+	test("refuses bundle rows with nesting, assignment or indexing, and single or empty cells", () => {
 		expect(CPP_ALIGNER.profile(`    {{"alpha", 1}, 2},`, `    {{"alpha", 1}, 2},`)).toBeNull();
 		expect(CPP_ALIGNER.profile(`    {"alpha", n = 1, 2},`, `    {"alpha", n = 1, 2},`)).toBeNull();
 		expect(CPP_ALIGNER.profile(`    {"alpha", v[0], 2},`, `    {"alpha", v[0], 2},`)).toBeNull();
@@ -95,8 +96,8 @@ describe("cpp 프로파일 고유 성질", () => {
 		expect(bundle?.slots.map(slot => slot.text)).toEqual(["{", `"alpha",`, `1},`]);
 	});
 
-	test("tables.cpp의 2행 그룹은 필드 표 pair와 묶음 행 pair다", () => {
-		const source = readFileSync(new URL("../skills/woo-code-readability/fixtures/cpp/tables.cpp", import.meta.url), "utf8");
+	test("the 2-row groups in tables.cpp are a field-table pair and a bundle-row pair", () => {
+		const source = readFileSync(new URL("../skills/xxx/fixtures/cpp/tables.cpp", import.meta.url), "utf8");
 		const result = align(source);
 		expect(result.pairs.length).toBe(2);
 		expect(result.pairs.map(pair => pair.signature)).toEqual([
