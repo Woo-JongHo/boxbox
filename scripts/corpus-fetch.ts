@@ -66,15 +66,20 @@ function materialize(source: CorpusSource): string {
 	return "fetched"                                                             ;
 }
 
-function main(): void {
-	const manifest = readManifest(join(ROOT, "corpus", "manifest.json"), true) ;
-	const local    = readManifest(join(ROOT, "corpus", "local.json"), false)   ;
-	const ids      = new Set(manifest.sources.map(source => source.id))        ;
+/** Merges the committed manifest with the local-only sources; a duplicate id is refused, never silently dropped. */
+export function mergeSources(manifest: CorpusManifest, local: CorpusManifest): readonly CorpusSource[] {
+	const ids = new Set(manifest.sources.map(source => source.id))                      ;
 	for (const source of local.sources) {
 		if (ids.has(source.id)) throw new Error(`duplicate corpus id: ${source.id}`)    ;
 		ids.add(source.id)                                                              ;
 	}
-	const sources = [...manifest.sources, ...local.sources]                             ;
+	return [...manifest.sources, ...local.sources]                                      ;
+}
+
+function main(): void {
+	const manifest = readManifest(join(ROOT, "corpus", "manifest.json"), true) ;
+	const local    = readManifest(join(ROOT, "corpus", "local.json"), false)   ;
+	const sources  = mergeSources(manifest, local)                             ;
 	mkdirSync(CACHE, { recursive: true })                                               ;
 	let failures = 0                                                                    ;
 	for (const source of sources) {
@@ -90,4 +95,4 @@ function main(): void {
 	if (failures > 0) process.exit(1)                                                   ;
 }
 
-main() ;
+if (import.meta.main) main() ;

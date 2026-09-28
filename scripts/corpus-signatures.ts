@@ -6,14 +6,16 @@
  * representatives of D3 sample the tables that matter first. The report is written to
  * ~/.cache/xxx/corpus/signatures.json; third-party source never enters this repository.
  *
- * TypeScript files load through the TypeScript 7 server (~0.3 s per file), so each TypeScript source is capped
- * with --max-files (default 400, walked in sorted order for determinism); .tsx and .d.ts are skipped. Python is
- * the in-process line engine and scans its whole tree. Local-only sources are included when present.
+ * TypeScript files load through the TypeScript 7 server (~0.3 s per file), so each source is capped with
+ * --max-files (default 400, walked in sorted order for determinism; symlinked directories count once);
+ * .tsx and .d.ts are skipped. Python runs through the in-process line engine under the same cap — it is fast,
+ * so raise --max-files to scan a whole tree. Local-only sources are included when present.
  */
 import      {
               existsSync                 ,
               readdirSync                ,
               readFileSync               ,
+              realpathSync               ,
               statSync                   ,
               mkdirSync                  ,
               writeFileSync              ,
@@ -63,9 +65,15 @@ interface SignatureType {
 }
 
 const readManifest = (name: string): CorpusManifest => {
-	const path = join(ROOT, "corpus", name)                         ;
-	if (!existsSync(path)) return { schemaVersion: 1, sources: [] } ;
-	return JSON.parse(readFileSync(path, "utf8")) as CorpusManifest ;
+	const path = join(ROOT, "corpus", name)                                                    ;
+	if (!existsSync(path)) {
+		// the committed manifest is required; local.json is optional
+		if (name === "manifest.json") throw new Error(`missing manifest: ${path}`)             ;
+		return { schemaVersion: 1, sources: [] }                                               ;
+	}
+	const parsed = JSON.parse(readFileSync(path, "utf8")) as CorpusManifest                    ;
+	if (parsed.schemaVersion !== 1 || !Array.isArray(parsed.sources)) throw new Error(`bad manifest: ${path}`) ;
+	return parsed                                                                              ;
 } ;
 
 /** Normalizes one axis id for typing: `axis=target` loses its column, digit runs become `{i}`, a callee becomes `call:*`. */
@@ -81,25 +89,43 @@ export function signatureOf(language: string, context: string, kind: string, axe
 }
 
 function walkFiles(root: string, extension: string, limit: number): readonly string[] {
-	const found: string[] = []                                    ;
+	const found: string[] = []                ;
+	const seen            = new Set<string>() ;
 	const visit = (dir: string): void => {
-		if (found.length >= limit) return                         ;
-		for (const entry of readdirSync(dir).sort()) {
-			if (found.length >= limit) return                     ;
-			const full = join(dir, entry)                         ;
-			if (statSync(full).isDirectory()) {
+		if (found.length >= limit) return                               ;
+		let entries: string[]                                           ;
+		try {
+			entries = readdirSync(dir).sort()                           ;
+		} catch {
+			return                                                      ;
+		}
+		for (const entry of entries) {
+			if (found.length >= limit) return                           ;
+			const full = join(dir, entry)                               ;
+			// real paths dedup symlinked directories, so a tree reachable twice is counted once
+			let real: string                                            ;
+			let isDirectory = false                                     ;
+			try {
+				real        = realpathSync(full)                        ;
+				isDirectory = statSync(full).isDirectory()              ;
+			} catch {
+				continue                                                ;
+			}
+			if (seen.has(real)) continue                                ;
+			seen.add(real)                                              ;
+			if (isDirectory) {
 				// hidden directories (.github, .agents, …) and vendor trees are not product source
 				if (entry === "node_modules" || entry.startsWith(".")) continue ;
-				visit(full)                                       ;
-				continue                                          ;
+				visit(full)                                             ;
+				continue                                                ;
 			}
-			if (!entry.endsWith(extension)) continue              ;
+			if (!entry.endsWith(extension)) continue                    ;
 			if (entry.endsWith(".d.ts") || entry.endsWith(".tsx")) continue ;
-			found.push(full)                                      ;
+			found.push(full)                                            ;
 		}
-	}                                                             ;
-	visit(root)                                                   ;
-	return found                                                  ;
+	}                                                                 ;
+	visit(root)                                                       ;
+	return found                                                      ;
 }
 
 interface CensusRow {

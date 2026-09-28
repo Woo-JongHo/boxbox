@@ -1,6 +1,7 @@
-import      { describe, expect, test   } from "bun:test"  ;
-import      { existsSync, readFileSync } from "node:fs"   ;
-import      { resolve                  } from "node:path" ;
+import      { describe, expect, test   } from "bun:test"                   ;
+import      { existsSync, readFileSync } from "node:fs"                    ;
+import      { resolve                  } from "node:path"                  ;
+import      { mergeSources             } from "../scripts/corpus-fetch.ts" ;
 
 const ROOT = resolve(import.meta.dir, "..") ;
 
@@ -50,5 +51,13 @@ describe("pinned corpus", () => {
 			expect(String(source.repository)).toMatch(/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/u) ;
 			expect(String(source.commit)    ).toMatch(/^[0-9a-f]{40}$/u)                     ;
 		}
+	});
+
+	test("the fetcher merges manifest and local sources and refuses a duplicate id", () => {
+		const source   = (id: string, repository: string, commit: string) => ({ id, language: "typescript", repository, commit, license: "MIT", paths: [] as readonly string[] }) ;
+		const manifest = { schemaVersion: 1, sources: [source("zod", "colinhacks/zod", "a".repeat(40))] }                                                                         ;
+		const local    = { schemaVersion: 1, sources: [source("my-project", "mycompany/my-project", "b".repeat(40))] }                                                            ;
+		expect(mergeSources(manifest, local).length).toBe(2)                                                ;
+		expect(() => mergeSources(manifest, { schemaVersion: 1, sources: [source("zod", "evil/zod", "c".repeat(40))] })).toThrow("duplicate corpus id: zod") ;
 	});
 });
