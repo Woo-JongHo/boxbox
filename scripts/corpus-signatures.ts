@@ -139,8 +139,9 @@ interface CensusRow {
 }
 
 interface CensusResult {
-	readonly files : number                   ;
-	readonly rows  : readonly CensusRow[]     ;
+	readonly files          : number               ;
+	readonly rows           : readonly CensusRow[] ;
+	readonly failedBatches? : number               ;
 }
 
 async function censusSource(source: CorpusSource, maxFiles: number): Promise<CensusResult> {
@@ -149,14 +150,26 @@ async function censusSource(source: CorpusSource, maxFiles: number): Promise<Cen
 	const files             = walkFiles(root, suffix, maxFiles)                ;
 	const rows: CensusRow[] = []                                               ;
 	if (source.language === "typescript") {
-		const api = new API({ cwd: root })                          ;
 		// One server for the whole source: opening per file spawns a TypeScript 7 project per file and leaks gigabytes.
+		// A batch that triggers huge-project inference can wedge the server for many minutes (vscode's src/), so every
+		// server call runs under a watchdog; a wedged batch is skipped and the server is rebuilt before continuing.
+		const watchdog = async <T>(work: Promise<T>, what: string): Promise<T | null> => {
+			let timer: ReturnType<typeof setTimeout> | undefined ;
+			const timeout = new Promise<null>(resolve => { timer = setTimeout(() => resolve(null), 900_000); }) ;
+			// a rejected batch is a failure (false), a timed-out batch is a wedged server (null)
+			const settled = await Promise.race([work.catch(() => false as unknown as T), timeout])              ;
+			clearTimeout(timer)                                                                                  ;
+			if (settled === null) console.error(`corpus-signatures ${source.id} ${what} timed out after 900s`)   ;
+			return settled                                                                                       ;
+		}                                                                                                        ;
+		let api           = new API({ cwd: root }) ;
+		let batchesFailed = 0                      ;
 		try {
 			const size = 25                                                  ;
 			for (let index = 0; index < files.length; index += size) {
 				const batch = files.slice(index, index + size)                                     ;
 				const label = (file: string): string => relative(root, file).replaceAll("\\", "/") ;
-				try {
+				const run = async (): Promise<boolean> => {
 					const state = await api.updateSnapshot({ openFiles: batch }) ;
 					for (const file of batch) {
 						const project = await state.getDefaultProjectForFile(file)       ;
@@ -176,14 +189,30 @@ async function censusSource(source: CorpusSource, maxFiles: number): Promise<Cen
 							})                     ;
 						}
 					}
-				} catch {
-					// a batch the TypeScript project layer cannot open is skipped, not fatal — the census is a sample
+					return true                                                     ;
+				}                                                                    ;
+				// the first wedge may be huge-project inference doing real work (vscode src/), so the SAME batch is
+				// retried once; only a second wedge rebuilds the server and skips the batch
+				let settled: boolean | null = false                                  ;
+				for (let attempt = 1; attempt <= 2; attempt += 1) {
+					settled = await watchdog(run(), `batch ${Math.floor(index / size) + 1} attempt ${attempt}`) ;
+					if (settled !== null) break                                      ;
+				}                                                                    ;
+				if (settled === null || settled === false) {
+					batchesFailed += 1                                                          ;
+					if (settled === null) {
+						await watchdog(api.close().then(() => undefined), "close")               ;
+						api = new API({ cwd: root })                                             ;
+					}
+					console.error(`corpus-signatures ${source.id} batch ${Math.floor(index / size) + 1} SKIPPED${batchesFailed > 0 ? ` failedBatches=${batchesFailed}` : ""}`) ;
+				} else {
+					console.error(`corpus-signatures ${source.id} batch ${Math.floor(index / size) + 1}/${Math.ceil(files.length / size)} tables=${rows.length}${batchesFailed > 0 ? ` failedBatches=${batchesFailed}` : ""}`) ;
 				}
 			}
 		} finally {
-			await api.close()                        ;
+			await watchdog(api.close().then(() => undefined), "close")               ;
 		}
-		return { files: files.length, rows }         ;
+		return { files: files.length, rows, failedBatches: batchesFailed } ;
 	}
 	for (const file of files) {
 		const label  = relative(root, file).replaceAll("\\", "/")                                                                                                 ;
@@ -229,21 +258,23 @@ function collapse(rows: readonly CensusRow[]): readonly SignatureType[] {
 }
 
 async function main(): Promise<void> {
-	const maxFilesIndex                    = process.argv.indexOf("--max-files")                               ;
-	const maxFiles                         = maxFilesIndex < 0 ? 400 : Number(process.argv[maxFilesIndex + 1]) ;
-	const manifest                         = readManifest("manifest.json")                                     ;
-	const local                            = readManifest("local.json")                                        ;
-	const sources                          = [...manifest.sources, ...local.sources]                           ;
-	const all     : CensusRow[]            = []                                                                ;
-	const scanned : Record<string, number> = {}                                                                ;
+	const maxFilesIndex                          = process.argv.indexOf("--max-files")                               ;
+	const maxFiles                               = maxFilesIndex < 0 ? 400 : Number(process.argv[maxFilesIndex + 1]) ;
+	const manifest                               = readManifest("manifest.json")                                     ;
+	const local                                  = readManifest("local.json")                                        ;
+	const sources                                = [...manifest.sources, ...local.sources]                           ;
+	const all           : CensusRow[]            = []                                                                ;
+	const scanned       : Record<string, number> = {}                                                                ;
+	const failedBatches : Record<string, number> = {}                                                                ;
 	for (const source of sources) {
 		const census = await censusSource(source, maxFiles) ;
 		scanned[source.id] = census.files                   ;
+		if (census.failedBatches) failedBatches[source.id] = census.failedBatches ;
 		all.push(...census.rows)                            ;
-		console.error(`corpus-signatures ${source.id} files=${census.files} tables=${census.rows.length}`) ;
+		console.error(`corpus-signatures ${source.id} files=${census.files} tables=${census.rows.length}${census.failedBatches ? ` failedBatches=${census.failedBatches}` : ""}`) ;
 	}
-	const types  = collapse(all)                                                                                                               ;
-	const report = { schemaVersion: 1, sources: sources.map(source => source.id), maxFiles, filesScanned: scanned, tables: all.length, types } ;
+	const types  = collapse(all)                                                                                                                              ;
+	const report = { schemaVersion: 1, sources: sources.map(source => source.id), maxFiles, filesScanned: scanned, failedBatches, tables: all.length, types } ;
 	mkdirSync(CACHE, { recursive: true })                              ;
 	const out = join(CACHE, "signatures.json")                         ;
 	writeFileSync(out, `${JSON.stringify(report, null, "\t")}\n`)      ;
@@ -251,4 +282,4 @@ async function main(): Promise<void> {
 	console.log(JSON.stringify(types.slice(0, 20).map(type => ({ signature: type.signature, count: type.count, edits: type.edits })), null, 2)) ;
 }
 
-await main() ;
+if (import.meta.main) await main() ;
