@@ -343,7 +343,7 @@ The author's convention is a preset, not the law. Users customize without touchi
 | Token-stream preservation | `common/preservation.ts` (line engine, mask-based: indentation, string/comment bytes, token joins) and `typescript/token-preservation.ts` (TypeScript scanner); unsafe tables are refused and reported as `refused=` | Exists (M1 T2) |
 | Mutation tests | `test/mutator.ts`, `test/mutation.test.ts`: seeded variants (re-spacing with tabs, separators/CJK/emoji inside strings and comments, inserted comments) per line-engine language; TypeScript through the CLI. Checks whitespace-only output, no refusal, idempotence and sampled re-parse; failures are minimized | Exists (M1 T3.5) |
 | Output re-parse | `common/parse-check.ts` (python3 `ast`, `gofmt -e`, `node --check`, `clang`/`clang++ -fsyntax-only`, `javac`, `rustfmt`) gates every line-engine `--write`; `06_align-tables.ts` compares TypeScript 7 syntactic diagnostics before and after writing and restores on mismatch. Missing parsers report `skipped`; CI sets `XXX_REQUIRE_PARSERS=1` | Exists (M1 T3) |
-| Minimum 3 rows for fixes | `table-engine.ts` floors `minRows` at 2; CLI default is 3 | Partial |
+| Row floors for fixes | 3 rows; user-confirmed 2-row exceptions: TypeScript `=` declaration tables and imports (`grid-kinds.ts` `minRows`, `table-engine.ts` raises lower values to 3) | Exists (M1 T4) |
 | Go gofmt stability | Go alignment is report-only by default; `--enable-go` opts in (M1 T5). A gofmt-stable subset is still to be built | Partial |
 | Preset `recommended` | `references/readability-contract.md` | Mixed with Base |
 | GUIDE | Handwritten contract sections | Manual |
