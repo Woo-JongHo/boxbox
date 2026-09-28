@@ -3,23 +3,23 @@ import { resolve }                  from "node:path";
 import { describe, expect, test }   from "bun:test";
 import { AXIS_NOTES, KIND_AXES }    from "../skills/xxx/scripts/typescript/grid-kinds.ts";
 
-const ROOT      = resolve(import.meta.dir, "..");
-const read      = (path: string): string => readFileSync(resolve(ROOT, path), "utf8");
-const parseJson = (path: string): Record<string, unknown> => JSON.parse(read(path)) as Record<string, unknown>;
-const LANGUAGE_DISCOVERY_TEXT = "TypeScript, Python, Java, Go, Rust, JavaScript, C, and C++";
+const ROOT                    = resolve(import.meta.dir, "..")                                                               ;
+const read                    = (path: string): string => readFileSync(resolve(ROOT, path), "utf8")                          ;
+const parseJson               = (path: string): Record<string, unknown> => JSON.parse(read(path)) as Record<string, unknown> ;
+const LANGUAGE_DISCOVERY_TEXT = "TypeScript, Python, Java, Go, Rust, JavaScript, C, and C++"                                 ;
 
 describe("plugin distribution contract", () => {
 	test("package, plugin and marketplace share version and identity", () => {
-		const packageJson = parseJson("package.json");
-		const plugin      = parseJson(".claude-plugin/plugin.json");
-		const marketplace = parseJson(".claude-plugin/marketplace.json");
-		const entry       = (marketplace.plugins as Array<Record<string, unknown>>)[0]!;
+		const packageJson = parseJson("package.json")                                   ;
+		const plugin      = parseJson(".claude-plugin/plugin.json")                     ;
+		const marketplace = parseJson(".claude-plugin/marketplace.json")                ;
+		const entry       = (marketplace.plugins as Array<Record<string, unknown>>)[0]! ;
 
-		expect(plugin.name).toBe(packageJson.name);
-		expect(entry.name).toBe(packageJson.name);
-		expect(plugin.version).toBe(packageJson.version);
-		expect(entry.version).toBe(packageJson.version);
-		expect(entry.source).toBe("./");
+		expect(plugin.name   ).toBe(packageJson.name   ) ;
+		expect(entry.name    ).toBe(packageJson.name   ) ;
+		expect(plugin.version).toBe(packageJson.version) ;
+		expect(entry.version ).toBe(packageJson.version) ;
+		expect(entry.source  ).toBe("./"               ) ;
 	});
 
 	test("skills and agents referenced by the manifest exist", () => {
@@ -28,9 +28,9 @@ describe("plugin distribution contract", () => {
 			const relative = String(plugin[field]).replace(/^\.\//u, "");
 			expect(existsSync(resolve(ROOT, relative))).toBe(true);
 		}
-		expect(existsSync(resolve(ROOT, "skills/xxx/SKILL.md"))).toBe(true);
-		expect(existsSync(resolve(ROOT, "agents/readability-inspector.md"))).toBe(true);
-		expect(existsSync(resolve(ROOT, "codex/readability-inspector.toml"))).toBe(true);
+		expect(existsSync(resolve(ROOT, "skills/xxx/SKILL.md"))             ).toBe(true) ;
+		expect(existsSync(resolve(ROOT, "agents/readability-inspector.md")) ).toBe(true) ;
+		expect(existsSync(resolve(ROOT, "codex/readability-inspector.toml"))).toBe(true) ;
 	});
 
 	test("discovery descriptions list every supported language", () => {

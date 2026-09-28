@@ -25,10 +25,10 @@ describe("python profile specific properties", () => {
 		].join("\n");
 		const result = align(source);
 		const lines = result.output.split("\n");
-		expect(lines[1]).toBe(`    "host" : "localhost:8080",`);
-		expect(lines[2]).toBe(`    "port" : 8080            ,`);
-		expect(lines[3]).toBe(`    "debug": True            ,`);
-		expect(result.tables).toBe(1);
+		expect(lines[1]     ).toBe(`    "host" : "localhost:8080",`) ;
+		expect(lines[2]     ).toBe(`    "port" : 8080            ,`) ;
+		expect(lines[3]     ).toBe(`    "debug": True            ,`) ;
+		expect(result.tables).toBe(1                               ) ;
 	});
 
 	test("annotated assignments align name and type columns and never pad the trailing value", () => {
@@ -41,10 +41,10 @@ describe("python profile specific properties", () => {
 		].join("\n");
 		const result = align(source);
 		const lines = result.output.split("\n");
-		expect(lines[2]).toBe("    retries: int  = 3");
-		expect(lines[3]).toBe(`    label  : str  = "x"`);
-		expect(lines[4]).toBe("    verbose: bool = True");
-		expect(result.misaligned).toBe(2);
+		expect(lines[2]         ).toBe("    retries: int  = 3"   ) ;
+		expect(lines[3]         ).toBe(`    label  : str  = "x"` ) ;
+		expect(lines[4]         ).toBe("    verbose: bool = True") ;
+		expect(result.misaligned).toBe(2                         ) ;
 	});
 
 	test("tightly written assignments also form a table and are fixed to conventional gaps (none after colon, spaces around equal)", () => {
@@ -55,9 +55,9 @@ describe("python profile specific properties", () => {
 		].join("\n");
 		const result = align(source);
 		const lines = result.output.split("\n");
-		expect(lines[0]).toBe("ratio: float = 0.5");
-		expect(lines[1]).toBe("level: int   = 3");
-		expect(lines[2]).toBe("name : str   = 'x'");
+		expect(lines[0]).toBe("ratio: float = 0.5") ;
+		expect(lines[1]).toBe("level: int   = 3"  ) ;
+		expect(lines[2]).toBe("name : str   = 'x'") ;
 	});
 
 	test("the profile refuses control-flow, call and line-continuation rows so they never form tables", () => {
@@ -68,9 +68,9 @@ describe("python profile specific properties", () => {
 			"    done = True",
 		].join("\n");
 		const result = align(source);
-		expect(result.tables).toBe(0);
-		expect(result.misaligned).toBe(0);
-		expect(result.output).toBe(source);
+		expect(result.tables    ).toBe(0     ) ;
+		expect(result.misaligned).toBe(0     ) ;
+		expect(result.output    ).toBe(source) ;
 	});
 
 	test("bundle rows align inner cell columns, and rows with different bracket pairs split tables", () => {
@@ -84,9 +84,9 @@ describe("python profile specific properties", () => {
 		].join("\n");
 		const result = align(source);
 		const lines = result.output.split("\n");
-		expect(lines[1]).toBe(`    ["alpha", 1  , "x"  ],`);
-		expect(lines[2]).toBe(`    ["b"    , 22 , "yy" ],`);
-		expect(lines[3]).toBe(`    ["ccc"  , 333, "zzz"],`);
+		expect(lines[1]).toBe(`    ["alpha", 1  , "x"  ],`) ;
+		expect(lines[2]).toBe(`    ["b"    , 22 , "yy" ],`) ;
+		expect(lines[3]).toBe(`    ["ccc"  , 333, "zzz"],`) ;
 		// `[` rows and `(` rows have different axis sequences and never share a table — a lone tuple row stays as is.
 		expect(lines[4]).toBe(`    ("delta", 4, "w"),`);
 		expect(result.tables).toBe(1);
@@ -124,9 +124,9 @@ describe("python profile specific properties", () => {
 			"gamma = 333",
 			"flag == other",
 		].join("\n"));
-		expect(bareComparison.tables).toBe(1);
-		expect(bareComparison.misaligned).toBe(1);
-		expect(bareComparison.output.split("\n")[0]).toBe("alpha = 1");
-		expect(bareComparison.output.split("\n")[3]).toBe("flag == other");
+		expect(bareComparison.tables               ).toBe(1              ) ;
+		expect(bareComparison.misaligned           ).toBe(1              ) ;
+		expect(bareComparison.output.split("\n")[0]).toBe("alpha = 1"    ) ;
+		expect(bareComparison.output.split("\n")[3]).toBe("flag == other") ;
 	});
 });

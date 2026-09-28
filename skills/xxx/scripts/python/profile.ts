@@ -20,10 +20,10 @@ export const PYTHON_SYNTAX: CodeSyntax = {
 	lineComments  : ["#"],
 	blockComments : [],
 	strings       : [
-		{ open : '"""' , close   : '"""' , escape   : true },
-		{ open : "'''" , close   : "'''" , escape   : true },
-		{ open : '"'   ,   close : '"'   ,   escape : true },
-		{ open : "'"   ,   close : "'"   ,   escape : true },
+		{ open : '"""' , close : '"""' , escape : true },
+		{ open : "'''" , close : "'''" , escape : true },
+		{ open : '"'   , close : '"'   , escape : true },
+		{ open : "'"   , close : "'"   , escape : true },
 	],
 	cppRaw        : false,
 };
@@ -161,9 +161,9 @@ function profilePython(code: string, masked: string): RowProfile | null {
 		return {
 			indent : slotAt(code, declared, 1),
 			slots  : [
-				{ axis : "name"  ,  text : slotAt(code, declared, 2) , gapBefore : ""                        },
-				{ axis : "colon" , text  : ":"                       , gapBefore : slotAt(code, declared, 3) },
-				{ axis : "type"  ,  text : slotAt(code, declared, 5) , gapBefore : slotAt(code, declared, 4) },
+				{ axis : "name"  , text : slotAt(code, declared, 2) , gapBefore : ""                        },
+				{ axis : "colon" , text : ":"                       , gapBefore : slotAt(code, declared, 3) },
+				{ axis : "type"  , text : slotAt(code, declared, 5) , gapBefore : slotAt(code, declared, 4) },
 			],
 		};
 	}

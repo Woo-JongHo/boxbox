@@ -131,9 +131,9 @@ function profileJava(code: string, masked: string): RowProfile | null {
 		return {
 			indent : slotAt(code, withArgs, 1),
 			slots  : [
-				{ axis : "name"      ,      text : slotAt(code, withArgs, 2) , gapBefore : ""                        },
-				{ axis : "parenArgs" , text      : slotAt(code, withArgs, 4) , gapBefore : slotAt(code, withArgs, 3) },
-				{ axis : "comma"     ,     text  : ","                       , gapBefore : slotAt(code, withArgs, 5) },
+				{ axis : "name"      , text : slotAt(code, withArgs, 2) , gapBefore : ""                        },
+				{ axis : "parenArgs" , text : slotAt(code, withArgs, 4) , gapBefore : slotAt(code, withArgs, 3) },
+				{ axis : "comma"     , text : ","                       , gapBefore : slotAt(code, withArgs, 5) },
 			],
 		};
 	}
@@ -170,10 +170,10 @@ function profileJava(code: string, masked: string): RowProfile | null {
 		return {
 			indent : slotAt(code, declared, 1),
 			slots  : [
-				{ axis : "modifiers" , text      : slotAt(code, declared, 2) , gapBefore : ""                        },
-				{ axis : "type"      ,      text : slotAt(code, declared, 4) , gapBefore : slotAt(code, declared, 3) },
-				{ axis : "name"      ,      text : slotAt(code, declared, 6) , gapBefore : slotAt(code, declared, 5) },
-				{ axis : "semicolon" , text      : ";"                       , gapBefore : slotAt(code, declared, 7) },
+				{ axis : "modifiers" , text : slotAt(code, declared, 2) , gapBefore : ""                        },
+				{ axis : "type"      , text : slotAt(code, declared, 4) , gapBefore : slotAt(code, declared, 3) },
+				{ axis : "name"      , text : slotAt(code, declared, 6) , gapBefore : slotAt(code, declared, 5) },
+				{ axis : "semicolon" , text : ";"                       , gapBefore : slotAt(code, declared, 7) },
 			],
 		};
 	}

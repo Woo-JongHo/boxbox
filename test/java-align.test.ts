@@ -46,11 +46,11 @@ describe("java profile refusal rules", () => {
 	});
 
 	test("decomposes the four forms into axis sequences and keeps enum argument lists as one cell including parentheses", () => {
-		expect(axesOf('    private static final String LABEL = "max=10;units=kg";')).toEqual(["modifiers", "type", "name", "equal", "value", "semicolon"]);
-		expect(axesOf("    protected List queue;")).toEqual(["modifiers", "type", "name", "semicolon"]);
-		expect(axesOf("    int count = 0;")).toEqual(["type", "name", "equal", "value", "semicolon"]);
-		expect(axesOf('    Beta(22, "x=y"),')).toEqual(["name", "parenArgs", "comma"]);
-		expect(axesOf("    Off,")).toEqual(["name", "comma"]);
+		expect(axesOf('    private static final String LABEL = "max=10;units=kg";')).toEqual(["modifiers", "type", "name", "equal", "value", "semicolon"]) ;
+		expect(axesOf("    protected List queue;")                                 ).toEqual(["modifiers", "type", "name", "semicolon"]                  ) ;
+		expect(axesOf("    int count = 0;")                                        ).toEqual(["type", "name", "equal", "value", "semicolon"]             ) ;
+		expect(axesOf('    Beta(22, "x=y"),')                                      ).toEqual(["name", "parenArgs", "comma"]                              ) ;
+		expect(axesOf("    Off,")                                                  ).toEqual(["name", "comma"]                                           ) ;
 	});
 
 	test("does not read = ; inside strings as structure and keeps them whole in the value cell", () => {
@@ -118,10 +118,10 @@ describe("java alignment properties", () => {
 		].join("\n");
 		const result = alignSource(source, JAVA_ALIGNER, { minRows: 3, apply: true });
 		const lines = result.output.split("\n");
-		expect(lines[1]).toBe('        {"alpha", 1  , "x" },');
-		expect(lines[2]).toBe('        {"b"    , 22 , "yy"},');
-		expect(lines[3]).toBe('        {"ccc"  , 333, "z" },');
-		expect(result.misaligned).toBe(3);
+		expect(lines[1]         ).toBe('        {"alpha", 1  , "x" },') ;
+		expect(lines[2]         ).toBe('        {"b"    , 22 , "yy"},') ;
+		expect(lines[3]         ).toBe('        {"ccc"  , 333, "z" },') ;
+		expect(result.misaligned).toBe(3                              ) ;
 	});
 
 	test("initialized fields of different shapes split into different tables by slot count", () => {
@@ -138,9 +138,9 @@ describe("java alignment properties", () => {
 		expect(result.tables).toBe(2);
 		expect(result.misaligned).toBe(4);
 		const outputLines = result.output.split("\n");
-		expect(outputLines[0]).toBe("    private static final int MAX_SIZE = 10;");
-		expect(outputLines[1]).toBe("    private static final int LIMIT    = 20;");
-		expect(outputLines[4]).toBe("    int count = 0 ;");
-		expect(outputLines[6]).toBe("    int shift = 2 ;");
+		expect(outputLines[0]).toBe("    private static final int MAX_SIZE = 10;") ;
+		expect(outputLines[1]).toBe("    private static final int LIMIT    = 20;") ;
+		expect(outputLines[4]).toBe("    int count = 0 ;"                        ) ;
+		expect(outputLines[6]).toBe("    int shift = 2 ;"                        ) ;
 	});
 });

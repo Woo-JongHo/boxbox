@@ -92,9 +92,9 @@ function fieldProfile(code: string, masked: string): RowProfile | null {
 	return {
 		indent : sliceAt(code, indices, 1),
 		slots  : [
-			{ axis : "type"      ,      text : type ,                       gapBefore  : ""                        },
-			{ axis : "name"      ,      text : name ,                       gapBefore  : sliceAt(code, indices, 3) },
-			{ axis : "semicolon" , text      : ";"  ,                        gapBefore : sliceAt(code, indices, 6) },
+			{ axis : "type"      , text : type , gapBefore : ""                        },
+			{ axis : "name"      , text : name , gapBefore : sliceAt(code, indices, 3) },
+			{ axis : "semicolon" , text : ";"  , gapBefore : sliceAt(code, indices, 6) },
 		],
 	};
 }
@@ -116,10 +116,10 @@ function assignProfile(code: string, masked: string): RowProfile | null {
 	return {
 		indent : sliceAt(code, indices, 1),
 		slots  : [
-			{ axis : designated ? "dotfield" : "name" , text                          : name                      ,                      gapBefore  : ""                        },
-			{ axis : "equal"                          ,                          text : "="                       ,                       gapBefore : sliceAt(code, indices, 3) },
-			{ axis : "value"                          ,                          text : sliceAt(code, indices, 6) , gapBefore                       : sliceAt(code, indices, 5) },
-			{ axis : "comma"                          ,                          text : ","                       ,                       gapBefore : sliceAt(code, indices, 7) },
+			{ axis : designated ? "dotfield" : "name" , text : name                      , gapBefore : ""                        },
+			{ axis : "equal"                          , text : "="                       , gapBefore : sliceAt(code, indices, 3) },
+			{ axis : "value"                          , text : sliceAt(code, indices, 6) , gapBefore : sliceAt(code, indices, 5) },
+			{ axis : "comma"                          , text : ","                       , gapBefore : sliceAt(code, indices, 7) },
 		],
 	};
 }

@@ -25,11 +25,11 @@ describe("javascript profile specific properties", () => {
 			"mid: 3,",
 		].join("\n");
 		const result = align(source);
-		expect(result.tables).toBe(2);
-		expect(result.details[0]?.axes).toEqual(["keyword", "name", "equal", "value", "semicolon"]);
-		expect(result.details[0]?.widths).toEqual([5, 3, 1, 3, 1]);
-		expect(result.details[1]?.axes).toEqual(["key", "colon", "value", "comma"]);
-		expect(result.details[1]?.widths).toEqual([9, 1, 5, 1]);
+		expect(result.tables            ).toBe   (2                                                 ) ;
+		expect(result.details[0]?.axes  ).toEqual(["keyword", "name", "equal", "value", "semicolon"]) ;
+		expect(result.details[0]?.widths).toEqual([5, 3, 1, 3, 1]                                   ) ;
+		expect(result.details[1]?.axes  ).toEqual(["key", "colon", "value", "comma"]                ) ;
+		expect(result.details[1]?.widths).toEqual([9, 1, 5, 1]                                      ) ;
 		const lines = result.output.split("\n");
 		expect(lines[0]).toBe("const a   = 1   ;");
 		expect(lines[3]).toBe("key      : value,");
@@ -43,9 +43,9 @@ describe("javascript profile specific properties", () => {
 		].join("\n");
 		const result = align(source);
 		const lines = result.output.split("\n");
-		expect(lines[0]).toBe('mid    : "a:b=c;d",');
-		expect(lines[1]).toBe('wideKey: "e=f"    ,');
-		expect(lines[2]).toBe("tiny   : 1        ,");
+		expect(lines[0]).toBe('mid    : "a:b=c;d",') ;
+		expect(lines[1]).toBe('wideKey: "e=f"    ,') ;
+		expect(lines[2]).toBe("tiny   : 1        ,") ;
 	});
 
 	test("arrow functions, comparisons, control flow, multiple declarations and uncertain rows are not table rows", () => {
@@ -88,13 +88,13 @@ describe("javascript profile specific properties", () => {
 			"];",
 		].join("\n");
 		const result = align(source);
-		expect(result.tables).toBe(1);
-		expect(result.details[0]?.axes).toEqual(["open", "cell", "comma", "arg", "comma", "arg", "close"]);
-		expect(result.details[0]?.widths).toEqual([1, 7, 1, 3, 1, 4, 2]);
+		expect(result.tables            ).toBe   (1                                                        ) ;
+		expect(result.details[0]?.axes  ).toEqual(["open", "cell", "comma", "arg", "comma", "arg", "close"]) ;
+		expect(result.details[0]?.widths).toEqual([1, 7, 1, 3, 1, 4, 2]                                    ) ;
 		const lines = result.output.split("\n");
-		expect(lines[1]).toBe('  ["alpha", 1  , "x" ],');
-		expect(lines[2]).toBe('  ["b"    , 22 , "yy"],');
-		expect(lines[3]).toBe('  ["ccc"  , 333, "z" ],');
+		expect(lines[1]).toBe('  ["alpha", 1  , "x" ],') ;
+		expect(lines[2]).toBe('  ["b"    , 22 , "yy"],') ;
+		expect(lines[3]).toBe('  ["ccc"  , 333, "z" ],') ;
 	});
 
 	test("bundle rows with nesting, assignment or calls, and single-cell or empty-cell rows are not table rows", () => {

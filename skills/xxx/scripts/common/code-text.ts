@@ -39,7 +39,7 @@ const longestFirst = (values: readonly string[]): readonly string[] => [...value
 export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 	// UTF-16 code unit array — indexOf/startsWith coordinates must match array indices exactly.
 	// A code point array ([...source]) would shift coordinates at every non-BMP character (surrogate pair).
-	const masked                    = source.split("")                    ;
+	const masked                    = source.split("")                                    ;
 	const strings                   = longestFirst(syntax.strings.map(spec => spec.open)) ;
 	const commentStarts : number[]  = [-1]                                                ;
 	const opensInBlock  : boolean[] = [false]                                             ;

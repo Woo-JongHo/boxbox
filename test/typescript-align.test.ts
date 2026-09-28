@@ -2,9 +2,9 @@ import { afterEach, describe, expect, test }                from "bun:test";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, relative, resolve }                          from "node:path";
 
-const root                 = resolve(import.meta.dir, "..")                                                     ;
+const root                 = resolve(import.meta.dir, "..")                                    ;
 const script               = resolve(root, "skills/xxx/scripts/typescript/06_align-tables.ts") ;
-const workspaces: string[] = []                                                                                 ;
+const workspaces: string[] = []                                                                ;
 
 afterEach(() => {
 	for (const workspace of workspaces.splice(0)) rmSync(workspace, { recursive: true, force: true });

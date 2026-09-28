@@ -200,9 +200,9 @@ function bundleProfile(code: string, masked: string): RowProfile | null {
 	const match   = GROUP.exec(masked) ;
 	const indices = match?.indices     ;
 	if (!match || !indices) return null;
-	const interior   = indices[3]                    ;
-	const openRange  = indices[2]                    ;
-	const closeRange = indices[4]                    ;
+	const interior   = indices[3] ;
+	const openRange  = indices[2] ;
+	const closeRange = indices[4] ;
 	if (!interior || !openRange || !closeRange) return null;
 	const open = code.slice(openRange[0], openRange[1]);
 	if (CLOSE_OF[open] !== code.slice(closeRange[0], closeRange[1])) return null;
@@ -268,12 +268,12 @@ export const RUST_ALIGNER: LineProfiler = {
 		pattern   : " ",
 		action    : " ",
 		// Bundle rows attach the first cell to the opening symbol and attach the closing symbol + `,` too, so they share the cell column.
-		cell        : "",
-		arg         : " ",
-		parenOpen   : "",
-		parenClose  : "",
-		bracketOpen : "",
-		bracketClose: "",
+		cell         : "",
+		arg          : " ",
+		parenOpen    : "",
+		parenClose   : "",
+		bracketOpen  : "",
+		bracketClose : "",
 	},
 	profile(code: string, masked: string): RowProfile | null {
 		const tail = code.trimEnd();

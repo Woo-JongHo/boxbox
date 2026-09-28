@@ -28,9 +28,9 @@ describe("cpp profile specific properties", () => {
 			"const std::string& label;",
 		].join("\n");
 		const output = align(source).output.split("\n");
-		expect(output[0]).toBe("std::vector<int>   items;");
-		expect(output[1]).toBe("int                count;");
-		expect(output[2]).toBe("const std::string& label;");
+		expect(output[0]).toBe("std::vector<int>   items;") ;
+		expect(output[1]).toBe("int                count;") ;
+		expect(output[2]).toBe("const std::string& label;") ;
 	});
 
 	test("lines with an open R\"( raw string and their contents are not tables", () => {
@@ -40,9 +40,9 @@ describe("cpp profile specific properties", () => {
 			")\";",
 		].join("\n");
 		const result = align(source);
-		expect(result.tables).toBe(0);
-		expect(result.misaligned).toBe(0);
-		expect(result.output).toBe(source);
+		expect(result.tables    ).toBe(0     ) ;
+		expect(result.misaligned).toBe(0     ) ;
+		expect(result.output    ).toBe(source) ;
 	});
 
 	test("refuses parentheses in type cells (function pointers) and function-like macros, accepts object-like macros", () => {
@@ -60,9 +60,9 @@ describe("cpp profile specific properties", () => {
 			"const char* three = \"zzz = 333;\";",
 		].join("\n");
 		const output = align(source).output.split("\n");
-		expect(output[0]).toBe("const char* one   = \"x = 1;\"    ;");
-		expect(output[1]).toBe("const char* two   = \"yy = 22;\"  ;");
-		expect(output[2]).toBe("const char* three = \"zzz = 333;\";");
+		expect(output[0]).toBe("const char* one   = \"x = 1;\"    ;") ;
+		expect(output[1]).toBe("const char* two   = \"yy = 22;\"  ;") ;
+		expect(output[2]).toBe("const char* three = \"zzz = 333;\";") ;
 	});
 
 	test("aligns bundle-row inner cell columns at minimum width", () => {
@@ -74,9 +74,9 @@ describe("cpp profile specific properties", () => {
 			"};",
 		].join("\n");
 		const output = align(source).output.split("\n");
-		expect(output[1]).toBe(`    {"alpha", 1,   0x10},`);
-		expect(output[2]).toBe(`    {"b, c",  22,  2},`);
-		expect(output[3]).toBe(`    {"ccc",   333, 0x201},`);
+		expect(output[1]).toBe(`    {"alpha", 1,   0x10},` ) ;
+		expect(output[2]).toBe(`    {"b, c",  22,  2},`    ) ;
+		expect(output[3]).toBe(`    {"ccc",   333, 0x201},`) ;
 	});
 
 	test("refuses bundle rows with nesting, assignment or indexing, and single or empty cells", () => {
