@@ -2,7 +2,7 @@
 	"name": "xxx",
 	"version": "0.2.0",
 	"private": true,
-	"description": "Multi-agent skill plugin that checks tabular readability in TypeScript, Python, Java, Go, Rust, JavaScript, C, and C++",
+	"description": "Multi-agent skill plugin that checks tabular readability in TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, and Kotlin",
 	"scripts": {
 		"test": "bun test",
 		"check": "bun test && bunx tsc --noEmit && bash -n install.sh"

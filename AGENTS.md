@@ -15,7 +15,7 @@ Do not add Korean (or any non-English) prose anywhere. Converse with the user in
 
 The only allowed exception is **CJK test data** — string literals that exist to exercise display-width handling, such as `"범위"` in `skills/xxx/fixtures/c/tables*.c`. Keep them, and do not add prose around them in another language.
 
-`test/plugin-contract.test.ts` pins the discovery text `TypeScript, Python, Java, Go, Rust, JavaScript, C, and C++`. Change it together with the manifests and the `SKILL.md` frontmatter.
+`test/plugin-contract.test.ts` pins the discovery text `TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, and Kotlin`. Change it together with the manifests and the `SKILL.md` frontmatter.
 
 ## Naming placeholder
 
@@ -39,7 +39,7 @@ The core value is conservatism: a row whose structure cannot be decomposed lossl
 Supported languages:
 
 - **TypeScript** — AST + LSP tooling (TypeScript 7), table-kind registry in `grid-kinds.ts`.
-- **Python, Java, Go, Rust, JavaScript, C, C++** — a shared line engine plus a small per-language profile (string/comment masking + row slot rules).
+- **Python, Java, Go, Rust, JavaScript, C, C++, Swift, Kotlin** — a shared line engine plus a small per-language profile (string/comment masking + row slot rules).
 
 ## Structure map
 

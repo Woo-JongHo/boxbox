@@ -40,6 +40,8 @@ const TOOLCHAINS: Readonly<Record<string, Toolchain>> = {
 	cpp        : { tool: "clang++", extension: ".cpp",  command: file => ["clang++", "-std=c++20", "-fsyntax-only", "-w", file],               keep: /error:/u },
 	java       : { tool: "javac",   extension: ".java", command: (file, work) => ["javac", "-proc:none", "-Xlint:none", "-d", work, file],     keep: /error:/u },
 	rust       : { tool: "rustfmt", extension: ".rs",   command: file => ["rustfmt", "--edition", "2021", "--check", file],                    keep: /^error/u },
+	swift      : { tool: "swiftc",  extension: ".swift", command: file => ["swiftc", "-parse", file],                                           keep: /error:/u },
+	kotlin     : { tool: "kotlinc", extension: ".kt",   command: (file, work) => ["kotlinc", file, "-d", work],                                keep: /error:/u },
 };
 
 const available = new Map<string, boolean>();

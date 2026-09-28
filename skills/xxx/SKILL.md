@@ -1,6 +1,6 @@
 ---
 name: xxx
-description: Use when structurally simplifying long exceptional elements and then inspecting, fixing and verifying TypeScript, Python, Java, Go, Rust, JavaScript, C, and C++ files one at a time against tabular readability rules.
+description: Use when structurally simplifying long exceptional elements and then inspecting, fixing and verifying TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, and Kotlin files one at a time against tabular readability rules.
 ---
 
 # XXX Code Readability
@@ -94,12 +94,14 @@ Decide in this order:
 
 ## Automated checks
 
-Scripts are split by language. `scripts/common/` holds the language-agnostic engine (string/comment masking, table detection and minimum-width alignment, display width), and `scripts/typescript/` holds the TypeScript AST/LSP tools numbered in order (00→08). `scripts/<python|java|go|rust|javascript|c|cpp>/` are line profilers on the common engine (01_group-regions, 06_align-tables) that lock repeated rows — struct fields, objects, dictionaries, enum constants, import blocks, assigned calls and their bundle arguments — into tables. String and comment contents are masked to prevent structural misreads, and rows that fail lossless decomposition or are uncertain are refused — refusal is the safe direction.
+Scripts are split by language. `scripts/common/` holds the language-agnostic engine (string/comment masking, table detection and minimum-width alignment, display width), and `scripts/typescript/` holds the TypeScript AST/LSP tools numbered in order (00→08). `scripts/<python|java|go|rust|javascript|c|cpp|swift|kotlin>/` are line profilers on the common engine (01_group-regions, 06_align-tables) that lock repeated rows — struct fields, objects, dictionaries, enum constants, import blocks, assigned calls and their bundle arguments — into tables. String and comment contents are masked to prevent structural misreads, and rows that fail lossless decomposition or are uncertain are refused — refusal is the safe direction.
 
 ```bash
 bun <SKILL>/scripts/python/06_align-tables.ts --file <target file> [--write] [--min-rows 3]
 bun <SKILL>/scripts/go/06_align-tables.ts --file <target file> [--write --enable-go]   # Go reports only unless --enable-go
 bun <SKILL>/scripts/python/01_group-regions.ts --file <target file>
+bun <SKILL>/scripts/swift/06_align-tables.ts --file <target file> [--write] [--min-rows 3]
+bun <SKILL>/scripts/kotlin/06_align-tables.ts --file <target file> [--write] [--min-rows 3]
 ```
 
 **STEP0 — Normalize import declarations.** Unify the declaration section before checking tables in the body of a product file. When values and types are mixed in one named import, split it into a value declaration and an `import type` declaration. A single named specifier always stays on one line; two or more fold onto one line when the completed line's display width is 120 or less. Only above 120 do they break into one item per line, with the closing `}` and `from` on the same line. All brace imports of an import section (groups separated only by blank lines) form one table: the head cell always reserves the `import type` width, so `{` sits in one column; the fixed-width `{ }` cell (names left-aligned one space after `{`), `from`, the module specifier and the terminating `;` share columns across every group. An import goes vertical — one name per line on the names column, aligned commas, a trailing comma, and the closing `}` on the table's `}` column — when (A) its one-line form exceeds 120 columns, (B) its names are 20+ columns wider than the second-widest names, or (C) the aligned table still exceeds 120 columns, taking the widest names first. Imports without braces (default only, namespace, `defer`, side-effect, `import x = require`) and imports with attributes stay as written without breaking the table; a lone brace import stays compact. Files without semicolons get no `;` column. Type-only imports are not runtime dependencies, so do not mix their structure with value imports.

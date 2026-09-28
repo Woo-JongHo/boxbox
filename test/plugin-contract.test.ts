@@ -6,7 +6,7 @@ import      { AXIS_NOTES, KIND_AXES    } from "../skills/xxx/scripts/typescript/
 const ROOT                    = resolve(import.meta.dir, "..")                                                               ;
 const read                    = (path: string): string => readFileSync(resolve(ROOT, path), "utf8")                          ;
 const parseJson               = (path: string): Record<string, unknown> => JSON.parse(read(path)) as Record<string, unknown> ;
-const LANGUAGE_DISCOVERY_TEXT = "TypeScript, Python, Java, Go, Rust, JavaScript, C, and C++"                                 ;
+const LANGUAGE_DISCOVERY_TEXT = "TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, and Kotlin"                  ;
 
 describe("plugin distribution contract", () => {
 	test("package, plugin and marketplace share version and identity", () => {
