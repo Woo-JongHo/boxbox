@@ -13,6 +13,8 @@ export interface StringSpec {
 export interface BlockCommentSpec {
 	readonly open    : string;
 	readonly close   : string;
+	/** Swallow nested opens (`/* … /* … * / … * /`) and close only when the depth reaches zero — Swift and Kotlin nest block comments. */
+	readonly nested? : boolean;
 }
 
 export interface CodeSyntax {
@@ -47,6 +49,9 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 	let lineStart                   = 0                                                   ;
 	let inBlock                     = false                                               ;
 	let blockClose                  = ""                                                  ;
+	let blockOpenToken              = ""                                                  ;
+	let blockNested                 = false                                               ;
+	let blockDepth                  = 0                                                   ;
 	let index                       = 0                                                   ;
 
 	while (index < source.length) {
@@ -62,8 +67,20 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 		if (commentStarts[line] === undefined) commentStarts[line] = -1;
 
 		if (inBlock) {
+			// Nested-capable blocks (Swift, Kotlin) swallow inner opens and close only at depth zero.
+			if (blockNested && source.startsWith(blockOpenToken, index)) {
+				for (let k = 0; k < blockOpenToken.length; k += 1) masked[index + k] = " ";
+				blockDepth += 1;
+				index += blockOpenToken.length;
+				continue;
+			}
 			if (source.startsWith(blockClose, index)) {
 				for (let k = 0; k < blockClose.length; k += 1) masked[index + k] = " ";
+				if (blockNested && blockDepth > 0) {
+					blockDepth -= 1;
+					index += blockClose.length;
+					continue;
+				}
 				inBlock = false;
 				index += blockClose.length;
 				continue;
@@ -77,8 +94,11 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 		if (blockOpen) {
 			if (commentStarts[line] < 0) commentStarts[line] = index - lineStart;
 			for (let k = 0; k < blockOpen.open.length; k += 1) masked[index + k] = " ";
-			inBlock = true;
-			blockClose = blockOpen.close;
+			inBlock        = true                      ;
+			blockClose     = blockOpen.close           ;
+			blockOpenToken = blockOpen.open            ;
+			blockNested    = blockOpen.nested === true ;
+			blockDepth     = 0                         ;
 			index += blockOpen.open.length;
 			continue;
 		}

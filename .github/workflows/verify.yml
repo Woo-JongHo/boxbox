@@ -23,6 +23,14 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.0"
+      # kotlinc for the Kotlin parse gate; a plain zip download keeps the workflow dependency-free.
+      - run: |
+          curl -sL -o /tmp/kotlin.zip https://github.com/JetBrains/kotlin/releases/download/v2.0.21/kotlin-compiler-2.0.21.zip
+          sudo unzip -q /tmp/kotlin.zip -d /opt
+          echo "/opt/kotlinc/bin" >> "$GITHUB_PATH"
       - run: bun install --frozen-lockfile
       # Every language parser must be present in CI: a missing parser fails instead of skipping.
       - run: bun run check

@@ -5,7 +5,7 @@
 		{
 			"name": "xxx",
 			"source": "./",
-			"description": "The xxx skill: inspects, fixes and verifies TypeScript, Python, Java, Go, Rust, JavaScript, C, and C++ against tabular readability rules",
+			"description": "The xxx skill: inspects, fixes and verifies TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, and Kotlin against tabular readability rules",
 			"version": "0.2.0"
 		}
 	]

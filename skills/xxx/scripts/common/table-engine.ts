@@ -125,14 +125,19 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 	}
 	const accepted: Accepted[] = [];
 
-	lines.forEach((line, index) => {
+	lines.forEach((raw, index) => {
+		// CRLF files carry \r at every line end; profiling strips it and the rebuilt line gets it back, so a
+		// row is never refused for trailing \r and the file's line endings stay exactly as they were.
+		const hadCR      = raw.endsWith("\r")                                                         ;
+		const line       = hadCR ? raw.slice(0, -1) : raw                                             ;
+		const maskedLine = hadCR ? (maskedLines[index] ?? "").slice(0, -1) : maskedLines[index] ?? "" ;
 		if (mask.opensInBlock[index]) return;
 		const commentStart = mask.commentStarts[index]                                 ;
 		const codeEnd      = commentStart >= 0 ? commentStart : line.length            ;
 		const comment      = codeEnd < line.length ? line.slice(codeEnd).trim() : null ;
 		// Leftover spaces before a comment are replaced by the computed gap on reassembly, so strip them from the code part.
-		const code       = comment !== null ? line.slice(0, codeEnd).replace(/\s+$/u, "") : line.slice(0, codeEnd)                             ;
-		const maskedCode = comment !== null ? maskedLines[index].slice(0, codeEnd).replace(/\s+$/u, "") : maskedLines[index].slice(0, codeEnd) ;
+		const code       = comment !== null ? line.slice(0, codeEnd).replace(/\s+$/u, "") : line.slice(0, codeEnd)             ;
+		const maskedCode = comment !== null ? maskedLine.slice(0, codeEnd).replace(/\s+$/u, "") : maskedLine.slice(0, codeEnd) ;
 		if (maskedCode.trim() === "") return;
 		const profile = aligner.profile(code, maskedCode);
 		if (!profile) return;
@@ -184,8 +189,11 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 			const after = row.comment !== null
 				? code + " ".repeat(commentColumn - displayWidth(code)) + row.comment
 				: code;
-			if (after === lines[row.index]) return;
-			tableEdits.push({ index: row.index, before: lines[row.index], after });
+			// the raw line keeps its \r so CRLF files stay CRLF
+			const raw    = lines[row.index]                          ;
+			const withCR = raw.endsWith("\r") ? `${after}\r` : after ;
+			if (withCR === raw) return;
+			tableEdits.push({ index: row.index, before: raw, after: withCR });
 		});
 		candidates.push({
 			startLine : run[0].index + 1,

@@ -24,6 +24,8 @@ import      { JAVA_ALIGNER                  } from "../skills/xxx/scripts/java/p
 import      { JAVASCRIPT_ALIGNER            } from "../skills/xxx/scripts/javascript/profile.ts"            ;
 import      { PYTHON_ALIGNER                } from "../skills/xxx/scripts/python/profile.ts"                ;
 import      { RUST_ALIGNER                  } from "../skills/xxx/scripts/rust/profile.ts"                  ;
+import      { SWIFT_ALIGNER                 } from "../skills/xxx/scripts/swift/profile.ts"                 ;
+import      { KOTLIN_ALIGNER                } from "../skills/xxx/scripts/kotlin/profile.ts"                ;
 import      { minimize, mutate              } from "./mutator.ts"                                           ;
 
 const VARIANTS     = Number(process.env.XXX_MUTATIONS ?? 1000)                    ;
@@ -37,13 +39,15 @@ interface Language {
 }
 
 const LANGUAGES: readonly Language[] = [
-	{ aligner : PYTHON_ALIGNER     , extension : "py"   , comment : "#"  },
-	{ aligner : JAVA_ALIGNER       , extension : "java" , comment : "//" },
-	{ aligner : GO_ALIGNER         , extension : "go"   , comment : "//" },
-	{ aligner : RUST_ALIGNER       , extension : "rs"   , comment : "//" },
-	{ aligner : JAVASCRIPT_ALIGNER , extension : "js"   , comment : "//" },
-	{ aligner : C_ALIGNER          , extension : "c"    , comment : "//" },
-	{ aligner : CPP_ALIGNER        , extension : "cpp"  , comment : "//" },
+	{ aligner : PYTHON_ALIGNER     , extension : "py"    , comment : "#"  },
+	{ aligner : JAVA_ALIGNER       , extension : "java"  , comment : "//" },
+	{ aligner : GO_ALIGNER         , extension : "go"    , comment : "//" },
+	{ aligner : RUST_ALIGNER       , extension : "rs"    , comment : "//" },
+	{ aligner : JAVASCRIPT_ALIGNER , extension : "js"    , comment : "//" },
+	{ aligner : C_ALIGNER          , extension : "c"     , comment : "//" },
+	{ aligner : CPP_ALIGNER        , extension : "cpp"   , comment : "//" },
+	{ aligner : SWIFT_ALIGNER      , extension : "swift" , comment : "//" },
+	{ aligner : KOTLIN_ALIGNER     , extension : "kt"    , comment : "//" },
 ];
 
 const align = (source: string, aligner: LineProfiler): string => alignSource(source, aligner, { minRows: 3, apply: true }).output;
