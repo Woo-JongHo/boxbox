@@ -24,9 +24,9 @@ test("rust: aligns match arm pattern and action columns at minimum width", () =>
 	expect(result.tables).toBe(1);
 	expect(result.details[0].axes).toEqual(["pattern", "arrow", "action", "comma"]);
 	const lines = result.output.split("\n");
-	expect(lines[1]).toBe("    Read(n)    => n    ,");
-	expect(lines[2]).toBe("    Write(n)   => n * 2,");
-	expect(lines[3]).toBe("    Move(x, y) => x + y,");
+	expect(lines[1]).toBe("    Read(n)    => n    ,") ;
+	expect(lines[2]).toBe("    Write(n)   => n * 2,") ;
+	expect(lines[3]).toBe("    Move(x, y) => x + y,") ;
 });
 
 test("rust: preserves type cells containing lifetimes", () => {
@@ -37,10 +37,10 @@ test("rust: preserves type cells containing lifetimes", () => {
 	].join("\n");
 	const result = alignSource(source, RUST_ALIGNER, { minRows: 3, apply: true });
 	const lines = result.output.split("\n");
-	expect(lines[0]).toBe(`let a: &'static str = "x:y";`);
-	expect(lines[1]).toBe(`let b: &'a str      = "y"  ;`);
-	expect(lines[2]).toBe(`let c: &str         = "z"  ;`);
-	expect(result.misaligned).toBe(2);
+	expect(lines[0]         ).toBe(`let a: &'static str = "x:y";`) ;
+	expect(lines[1]         ).toBe(`let b: &'a str      = "y"  ;`) ;
+	expect(lines[2]         ).toBe(`let c: &str         = "z"  ;`) ;
+	expect(result.misaligned).toBe(2                             ) ;
 });
 
 test("rust: treats an enum variant's closed parenthesis pair as one cell", () => {
@@ -59,9 +59,9 @@ test("rust: let mut rows align on the keyword axis together with name and value 
 	].join("\n");
 	const result = alignSource(source, RUST_ALIGNER, { minRows: 3, apply: true });
 	const lines = result.output.split("\n");
-	expect(lines[0]).toBe("let mut base  = 10         ;");
-	expect(lines[1]).toBe("let mut step  = 2          ;");
-	expect(lines[2]).toBe("let mut total = base + step;");
+	expect(lines[0]).toBe("let mut base  = 10         ;") ;
+	expect(lines[1]).toBe("let mut step  = 2          ;") ;
+	expect(lines[2]).toBe("let mut total = base + step;") ;
 });
 
 test("rust: the profile refuses declaration, attribute, opening-bracket and lifetime-label rows", () => {
@@ -96,9 +96,9 @@ test("rust: bundle rows align inner cell columns and the closing bracket shares 
 	expect(tupleResult.tables).toBe(1);
 	expect(tupleResult.details[0].axes).toEqual(["parenOpen", "cell", "comma", "arg", "comma", "arg", "parenClose"]);
 	const tupleLines = tupleResult.output.split("\n");
-	expect(tupleLines[1]).toBe(`    ("alpha", 1  , "x" ),`);
-	expect(tupleLines[2]).toBe(`    ("b"    , 333, "yy"),`);
-	expect(tupleLines[3]).toBe(`    ("gamma", 22 , "z" ),`);
+	expect(tupleLines[1]).toBe(`    ("alpha", 1  , "x" ),`) ;
+	expect(tupleLines[2]).toBe(`    ("b"    , 333, "yy"),`) ;
+	expect(tupleLines[3]).toBe(`    ("gamma", 22 , "z" ),`) ;
 
 	const grids = [
 		"const GRID: [[u8; 3]; 3] = [",
@@ -111,9 +111,9 @@ test("rust: bundle rows align inner cell columns and the closing bracket shares 
 	expect(gridResult.tables).toBe(1);
 	expect(gridResult.details[0].axes).toEqual(["bracketOpen", "cell", "comma", "arg", "bracketClose"]);
 	const gridLines = gridResult.output.split("\n");
-	expect(gridLines[1]).toBe("    [1  , 22  ],");
-	expect(gridLines[2]).toBe("    [333, 4   ],");
-	expect(gridLines[3]).toBe("    [55 , 6666],");
+	expect(gridLines[1]).toBe("    [1  , 22  ],") ;
+	expect(gridLines[2]).toBe("    [333, 4   ],") ;
+	expect(gridLines[3]).toBe("    [55 , 6666],") ;
 });
 
 test("rust: the profile refuses nested or assigning bundle rows and path, lifetime or type-name cells", () => {

@@ -59,8 +59,8 @@ describe("install.sh lifecycle", () => {
 		writeFileSync(join(target, "owner.txt"), "keep\n");
 
 		const result = install(home, "codex");
-		expect(result.exitCode).toBe(0);
-		expect(result.stdout?.toString() ?? "").toContain("existing entry that is not a symlink");
-		expect(readFileSync(join(target, "owner.txt"), "utf8")).toBe("keep\n");
+		expect(result.exitCode                                ).toBe     (0                                     ) ;
+		expect(result.stdout?.toString() ?? ""                ).toContain("existing entry that is not a symlink") ;
+		expect(readFileSync(join(target, "owner.txt"), "utf8")).toBe     ("keep\n"                              ) ;
 	});
 });

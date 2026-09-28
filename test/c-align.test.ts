@@ -22,10 +22,10 @@ describe("C profiler specific properties", () => {
 		].join("\n");
 		const result = alignSource(source, C_ALIGNER, { minRows: 3, apply: true });
 		const lines = result.output.split("\n");
-		expect(lines[1]).toBe(`    .name       = "x" ,`);
-		expect(lines[2]).toBe("    .retries    = 3   ,");
-		expect(lines[3]).toBe("    .timeout_ms = 1500,");
-		expect(result.misaligned).toBe(2);
+		expect(lines[1]         ).toBe(`    .name       = "x" ,`) ;
+		expect(lines[2]         ).toBe("    .retries    = 3   ,") ;
+		expect(lines[3]         ).toBe("    .timeout_ms = 1500,") ;
+		expect(result.misaligned).toBe(2                        ) ;
 	});
 
 	test("function-like macros NAME(args) are not table rows", () => {
@@ -35,9 +35,9 @@ describe("C profiler specific properties", () => {
 			"#define MIN(a, b) ((a) < (b) ? (a) : (b))",
 		].join("\n");
 		const result = alignSource(source, C_ALIGNER, { minRows: 3, apply: true });
-		expect(result.tables).toBe(0);
-		expect(result.misaligned).toBe(0);
-		expect(result.output).toBe(source);
+		expect(result.tables    ).toBe(0     ) ;
+		expect(result.misaligned).toBe(0     ) ;
+		expect(result.output    ).toBe(source) ;
 	});
 
 	test("pointer stars attach to the name cell and type/name columns align", () => {
@@ -50,9 +50,9 @@ describe("C profiler specific properties", () => {
 		].join("\n");
 		const result = alignSource(source, C_ALIGNER, { minRows: 3, apply: true });
 		const lines = result.output.split("\n");
-		expect(lines[1]).toBe("    char        *name;");
-		expect(lines[2]).toBe("    struct link *next;");
-		expect(lines[3]).toBe("    struct link *prev;");
+		expect(lines[1]).toBe("    char        *name;") ;
+		expect(lines[2]).toBe("    struct link *next;") ;
+		expect(lines[3]).toBe("    struct link *prev;") ;
 	});
 
 	test("macro tables align only the name column and never pad the replacement list", () => {
@@ -63,9 +63,9 @@ describe("C profiler specific properties", () => {
 		].join("\n");
 		const result = alignSource(source, C_ALIGNER, { minRows: 3, apply: true });
 		const lines = result.output.split("\n");
-		expect(lines[0]).toBe("#define PORT     80");
-		expect(lines[1]).toBe("#define BACKLOG  128");
-		expect(lines[2]).toBe(`#define GREETING "hi = ;"`);
+		expect(lines[0]).toBe("#define PORT     80"      ) ;
+		expect(lines[1]).toBe("#define BACKLOG  128"     ) ;
+		expect(lines[2]).toBe(`#define GREETING "hi = ;"`) ;
 	});
 
 	test("bundle rows align inner cell columns to each longest cell", () => {
@@ -78,10 +78,10 @@ describe("C profiler specific properties", () => {
 		].join("\n");
 		const result = alignSource(source, C_ALIGNER, { minRows: 3, apply: true });
 		const lines = result.output.split("\n");
-		expect(lines[1]).toBe(`    {1  , "alpha", 0x10 },`);
-		expect(lines[2]).toBe(`    {22 , "b"    , 0x201},`);
-		expect(lines[3]).toBe(`    {333, "ccc"  , 3    },`);
-		expect(result.misaligned).toBe(3);
+		expect(lines[1]         ).toBe(`    {1  , "alpha", 0x10 },`) ;
+		expect(lines[2]         ).toBe(`    {22 , "b"    , 0x201},`) ;
+		expect(lines[3]         ).toBe(`    {333, "ccc"  , 3    },`) ;
+		expect(result.misaligned).toBe(3                           ) ;
 	});
 
 	test("refuses bundle rows with nesting, assignment or calls, and single-cell rows", () => {
@@ -115,9 +115,9 @@ describe("C profiler specific properties", () => {
 		].join("\n");
 		for (const source of [nested, assigned, called, single]) {
 			const result = alignSource(source, C_ALIGNER, { minRows: 3, apply: true });
-			expect(result.tables).toBe(0);
-			expect(result.misaligned).toBe(0);
-			expect(result.output).toBe(source);
+			expect(result.tables    ).toBe(0     ) ;
+			expect(result.misaligned).toBe(0     ) ;
+			expect(result.output    ).toBe(source) ;
 		}
 	});
 

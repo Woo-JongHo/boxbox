@@ -11,9 +11,9 @@ import { homedir }                                                       from "n
 import { basename, join }                                                from "node:path";
 import { spawnSync }                                                     from "node:child_process";
 
-const ROOT   = join(import.meta.dir, "..");
-const OUT    = join(ROOT, "stress");
-const CLONES = join(homedir(), ".cache", "xxx", "stress-clones");
+const ROOT   = join(import.meta.dir, "..")                       ;
+const OUT    = join(ROOT, "stress")                              ;
+const CLONES = join(homedir(), ".cache", "xxx", "stress-clones") ;
 
 interface LanguageConfig {
 	readonly repo     : string;
@@ -74,15 +74,15 @@ const LANGUAGES: Readonly<Record<string, LanguageConfig>> = {
 	},
 };
 
-const MIN_LINES = 300;
-const MIN_DECLS = 15;
-const PER_LANG  = 5;
+const MIN_LINES = 300 ;
+const MIN_DECLS = 15  ;
+const PER_LANG  = 5   ;
 
 interface Candidate {
-	readonly path    : string;
-	readonly absolute: string;
-	readonly lines   : number;
-	readonly decls   : number;
+	readonly path     : string ;
+	readonly absolute : string ;
+	readonly lines    : number ;
+	readonly decls    : number ;
 }
 
 function git(target: string, args: readonly string[]): void {
@@ -123,10 +123,10 @@ function collectCandidates(config: LanguageConfig, target: string): readonly Can
 				if (!entry.endsWith(config.ext)) continue;
 				const relative = scope === "" ? path.slice(target.length + 1) : path.slice(target.length + 1);
 				if (GENERIC_EXCLUDE.test(relative) || config.exclude?.test(relative)) continue;
-				const text    = readFileSync(path, "utf8");
-				const heads   = text.slice(0, 600);
-				const decls   = text.split("\n").filter(line => config.decl.test(line)).length;
-				const lines   = text.split("\n").length;
+				const text  = readFileSync(path, "utf8")                                     ;
+				const heads = text.slice(0, 600)                                             ;
+				const decls = text.split("\n").filter(line => config.decl.test(line)).length ;
+				const lines = text.split("\n").length                                        ;
 				// Exclude generated files and data tables; prefer files with many declarations.
 				if (GENERATED_MARK.test(heads) || lines < MIN_LINES || decls < MIN_DECLS) continue;
 				candidates.push({ path: relative, absolute: path, lines, decls });
@@ -141,40 +141,42 @@ function collectCandidates(config: LanguageConfig, target: string): readonly Can
 const stripWhitespace = (value: string): string => value.replace(/\s+/gu, "");
 
 interface FileResult {
-	readonly file       : string;
-	readonly origin     : string;
-	readonly lines      : number;
-	readonly edits      : number;
-	readonly diffLines  : number;
-	readonly preserved  : boolean;
-	readonly idempotent : boolean;
-	readonly error?     : string;
+	readonly file       : string  ;
+	readonly origin     : string  ;
+	readonly lines      : number  ;
+	readonly edits      : number  ;
+	readonly diffLines  : number  ;
+	readonly preserved  : boolean ;
+	readonly idempotent : boolean ;
+	readonly error?     : string  ;
 }
 
 async function processLanguage(language: string, config: LanguageConfig): Promise<readonly FileResult[]> {
 	const dir  = join(OUT, language);
 	mkdirSync(dir, { recursive: true });
-	const target   = ensureClone(config);
-	const results: FileResult[] = [];
+	const target                = ensureClone(config)                                             ;
+	const results: FileResult[] = []                                                              ;
+	const alignerPath           = join(ROOT, `skills/xxx/scripts/${language}/06_align-tables.ts`) ;
+	const spawnOptions          = { encoding: "utf8", timeout: 120_000, cwd: ROOT } as const      ;
 	for (const [index, candidate] of collectCandidates(config, target).entries()) {
-		const tag      = `${String(index + 1).padStart(2, "0")}-${basename(candidate.path)}`;
-		const original = join(dir, tag);
-		const aligned  = join(dir, `${tag}.aligned${config.ext}`);
+		const tag      = `${String(index + 1).padStart(2, "0")}-${basename(candidate.path)}` ;
+		const original = join(dir, tag)                                                      ;
+		const aligned  = join(dir, `${tag}.aligned${config.ext}`)                            ;
 		try {
 			const source = readFileSync(candidate.absolute, "utf8");
 			writeFileSync(original, source);
 			writeFileSync(aligned, source);
-			const apply = spawnSync("bun", [join(ROOT, `skills/xxx/scripts/${language}/06_align-tables.ts`), "--file", aligned, "--write"], { encoding: "utf8", timeout: 120_000, cwd: ROOT });
+			const apply = spawnSync("bun", [alignerPath, "--file", aligned, "--write"], spawnOptions);
 			// Crashes also exit with code 1, so success is judged by the presence of the report header.
 			if (!(apply.stdout ?? "").startsWith("align-tables")) throw new Error(`aligner error: ${(apply.stderr ?? "").split("\n")[0]}`);
-			const edits = Number(/edits=(\d+)/.exec(apply.stdout ?? "")?.[1] ?? 0);
-			const verify = spawnSync("bun", [join(ROOT, `skills/xxx/scripts/${language}/06_align-tables.ts`), "--file", aligned], { encoding: "utf8", timeout: 120_000, cwd: ROOT });
-			const diffOutput = spawnSync("diff", ["-u", original, aligned], { encoding: "utf8" }).stdout ?? "";
+			const edits      = Number(/edits=(\d+)/.exec(apply.stdout ?? "")?.[1] ?? 0)                        ;
+			const verify     = spawnSync("bun", [alignerPath, "--file", aligned], spawnOptions)                ;
+			const diffOutput = spawnSync("diff", ["-u", original, aligned], { encoding: "utf8" }).stdout ?? "" ;
 			writeFileSync(`${aligned}.diff`, diffOutput);
 			results.push({
-				file       : tag,
-				origin     : `${config.repo} ${candidate.path}`,
-				lines      : candidate.lines,
+				file   : tag,
+				origin : `${config.repo} ${candidate.path}`,
+				lines  : candidate.lines,
 				edits,
 				diffLines  : diffOutput.split("\n").filter(line => (line.startsWith("+") || line.startsWith("-")) && !line.startsWith("+++") && !line.startsWith("---")).length,
 				preserved  : stripWhitespace(readFileSync(aligned, "utf8")) === stripWhitespace(source),

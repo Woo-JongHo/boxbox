@@ -24,9 +24,9 @@ test("go: a struct field type column is not padded when it is the row's last cel
 	].join("\n");
 	const result = alignSource(source, GO_ALIGNER, { minRows: 3, apply: true });
 	const lines = result.output.split("\n");
-	expect(lines[3]).toBe("Key   KeyType");
-	expect(lines[4]).toBe("Value Value");
-	expect(lines[5]).toBe("Label LongerLabel");
+	expect(lines[3]).toBe("Key   KeyType"    ) ;
+	expect(lines[4]).toBe("Value Value"      ) ;
+	expect(lines[5]).toBe("Label LongerLabel") ;
 });
 
 test("go: the tag column aligns to the longest tag value including backticks", () => {
@@ -42,9 +42,9 @@ test("go: the tag column aligns to the longest tag value including backticks", (
 	const result    = alignSource(source, GO_ALIGNER, { minRows: 3, apply: true }) ;
 	const lines     = result.output.split("\n")                                    ;
 	const tagStarts = lines.slice(3, 6).map(line => line.indexOf("`"))             ;
-	expect(new Set(tagStarts).size).toBe(1);
-	expect(tagStarts[0]).toBe(4 + 4 + 1 + 6 + 1);
-	expect(lines[4].slice(tagStarts[1]!).trimEnd()).toBe("`json:\"name\" validate:\"required\"`");
+	expect(new Set(tagStarts).size                ).toBe(1                                      ) ;
+	expect(tagStarts[0]                           ).toBe(4 + 4 + 1 + 6 + 1                      ) ;
+	expect(lines[4].slice(tagStarts[1]!).trimEnd()).toBe("`json:\"name\" validate:\"required\"`") ;
 });
 
 test("go: map rows attach the colon with zero gap and do not read string key contents as structure", () => {
@@ -57,9 +57,9 @@ test("go: map rows attach the colon with zero gap and do not read string key con
 	].join("\n");
 	const result = alignSource(source, GO_ALIGNER, { minRows: 3, apply: true });
 	const lines = result.output.split("\n");
-	expect(lines[1]).toBe(`\t"small" : 1  ,`);
-	expect(lines[2]).toBe(`\t"medium": 33 ,`);
-	expect(lines[3]).toBe(`\t"large" : 555,`);
+	expect(lines[1]).toBe(`\t"small" : 1  ,`) ;
+	expect(lines[2]).toBe(`\t"medium": 33 ,`) ;
+	expect(lines[3]).toBe(`\t"large" : 555,`) ;
 });
 
 test("go: bundle rows align inner cell columns and the closing brace shares the cell width", () => {
@@ -72,9 +72,9 @@ test("go: bundle rows align inner cell columns and the closing brace shares the 
 	].join("\n");
 	const result = alignSource(source, GO_ALIGNER, { minRows: 3, apply: true });
 	const lines = result.output.split("\n");
-	expect(lines[1]).toBe(`    {Kind , 22 , "x"  },`);
-	expect(lines[2]).toBe(`    {Other, 333, "yy" },`);
-	expect(lines[3]).toBe(`    {Third, 4  , "zzz"},`);
+	expect(lines[1]).toBe(`    {Kind , 22 , "x"  },`) ;
+	expect(lines[2]).toBe(`    {Other, 333, "yy" },`) ;
+	expect(lines[3]).toBe(`    {Third, 4  , "zzz"},`) ;
 });
 
 test("go: the profile refuses bundle rows with keys, nesting, calls, a single cell or func", () => {

@@ -28,10 +28,10 @@ const TEST_ALIGNER: LineProfiler = {
 		return {
 			indent : at(1),
 			slots  : [
-				{ axis : "name"      ,      text : at(2) , gapBefore     : ""    },
-				{ axis : "colon"     ,     text  : ":"   ,     gapBefore : at(3) },
-				{ axis : "value"     ,     text  : at(5) , gapBefore     : at(4) },
-				{ axis : "semicolon" , text      : ";"   ,     gapBefore : at(6) },
+				{ axis : "name"      , text : at(2) , gapBefore : ""    },
+				{ axis : "colon"     , text : ":"   , gapBefore : at(3) },
+				{ axis : "value"     , text : at(5) , gapBefore : at(4) },
+				{ axis : "semicolon" , text : ";"   , gapBefore : at(6) },
 			],
 		};
 	},
@@ -41,9 +41,9 @@ describe("maskSource", () => {
 	test("preserves geometry and masks only string contents", () => {
 		const source = `let a = "x:y=z;"; // tail: 1\nlet b = 2;`;
 		const mask = maskSource(source, SYNTAX);
-		expect(mask.text.length).toBe(source.length);
-		expect(mask.text).toBe(`let a = "      "; // tail: 1\nlet b = 2;`);
-		expect(mask.commentStarts).toEqual([18, -1]);
+		expect(mask.text.length  ).toBe   (source.length                             ) ;
+		expect(mask.text         ).toBe   (`let a = "      "; // tail: 1\nlet b = 2;`) ;
+		expect(mask.commentStarts).toEqual([18, -1]                                  ) ;
 	});
 
 	test("marks lines inside block comments with opensInBlock", () => {
@@ -92,19 +92,19 @@ describe("alignSource", () => {
 	test("aligns columns at the minimum width of the actual longest cell", () => {
 		const result = alignSource(SOURCE, TEST_ALIGNER, { minRows: 3, apply: true });
 		const outputLines = result.output.split("\n");
-		expect(outputLines[0]).toBe("short      : 1   ;");
-		expect(outputLines[1]).toBe("longername : 22  ;");
-		expect(outputLines[2]).toBe("m          : 333 ;");
-		expect(result.tables).toBe(2);
-		expect(result.misaligned).toBe(5);
+		expect(outputLines[0]   ).toBe("short      : 1   ;") ;
+		expect(outputLines[1]   ).toBe("longername : 22  ;") ;
+		expect(outputLines[2]   ).toBe("m          : 333 ;") ;
+		expect(result.tables    ).toBe(2                   ) ;
+		expect(result.misaligned).toBe(5                   ) ;
 	});
 
 	test("blank lines and comments break sections — a later section never shares an earlier section's width", () => {
 		const result = alignSource(SOURCE, TEST_ALIGNER, { minRows: 3, apply: true });
 		const outputLines = result.output.split("\n");
-		expect(outputLines[4]).toBe("breaks : region ;");
-		expect(outputLines[5]).toBe("a      : 1      ;");
-		expect(result.details.map(table => table.startLine)).toEqual([1, 5]);
+		expect(outputLines[4]                              ).toBe   ("breaks : region ;") ;
+		expect(outputLines[5]                              ).toBe   ("a      : 1      ;") ;
+		expect(result.details.map(table => table.startLine)).toEqual([1, 5]             ) ;
 	});
 
 	test("a 2-row run is reported as a pair and not aligned", () => {
@@ -133,9 +133,9 @@ describe("alignSource", () => {
 		const source      = `alpha : 1 ; // first\nbeta : 22 ; // second\ngamma : 333 ;`   ;
 		const result      = alignSource(source, TEST_ALIGNER, { minRows: 3, apply: true }) ;
 		const outputLines = result.output.split("\n")                                      ;
-		expect(outputLines[0]).toBe("alpha : 1   ; // first");
-		expect(outputLines[1]).toBe("beta  : 22  ; // second");
-		expect(outputLines[2]).toBe("gamma : 333 ;");
+		expect(outputLines[0]).toBe("alpha : 1   ; // first" ) ;
+		expect(outputLines[1]).toBe("beta  : 22  ; // second") ;
+		expect(outputLines[2]).toBe("gamma : 333 ;"          ) ;
 	});
 
 	test("refuses profile rows that fail lossless decomposition", () => {
@@ -155,8 +155,8 @@ describe("alignSource", () => {
 
 	test("apply=false only reports and returns the original", () => {
 		const result = alignSource("a : 1 ;\nb : 22 ;\nc : 333 ;", TEST_ALIGNER, { minRows: 3, apply: false });
-		expect(result.output).toBe("a : 1 ;\nb : 22 ;\nc : 333 ;");
-		expect(result.misaligned).toBe(2);
-		expect(result.edits).toBe(0);
+		expect(result.output    ).toBe("a : 1 ;\nb : 22 ;\nc : 333 ;") ;
+		expect(result.misaligned).toBe(2                             ) ;
+		expect(result.edits     ).toBe(0                             ) ;
 	});
 });
