@@ -1,4 +1,11 @@
 import      { expect, test        } from "bun:test"                                     ;
+import      {
+              mkdtempSync       ,
+              readFileSync      ,
+              rmSync            ,
+              writeFileSync     ,
+                                  } from "node:fs"                                      ;
+import      { join                } from "node:path"                                    ;
 import      { defineLanguageSuite } from "./lang-harness.ts"                            ;
 import      { maskSource          } from "../skills/xxx/scripts/common/code-text.ts"    ;
 import      { alignSource         } from "../skills/xxx/scripts/common/table-engine.ts" ;
@@ -111,5 +118,24 @@ test("go: the profile refuses declaration, control-flow, opening-bracket and := 
 		`import "fmt"`,
 	]) {
 		expect(GO_ALIGNER.profile(code, maskedOf(code))).toBeNull();
+	}
+});
+
+test("go: the CLI only reports by default and writes only with --enable-go", () => {
+	const workspace = mkdtempSync(join(import.meta.dir, "go-align-"));
+	try {
+		const target = join(workspace, "tables.go")                                                          ;
+		const source = readFileSync(new URL("../skills/xxx/fixtures/go/tables.go", import.meta.url), "utf8") ;
+		const script = new URL("../skills/xxx/scripts/go/06_align-tables.ts", import.meta.url).pathname      ;
+		writeFileSync(target, source);
+		const reportOnly = Bun.spawnSync(["bun", script, "--file", target, "--write"], { stdout: "pipe", stderr: "pipe" });
+		expect(reportOnly.exitCode         ).toBe     (0               ) ;
+		expect(reportOnly.stdout.toString()).toContain("go=report-only") ;
+		expect(readFileSync(target, "utf8")).toBe     (source          ) ;
+		const enabled = Bun.spawnSync(["bun", script, "--file", target, "--write", "--enable-go"], { stdout: "pipe", stderr: "pipe" });
+		expect(enabled.exitCode).toBe(0);
+		expect(readFileSync(target, "utf8")).not.toBe(source);
+	} finally {
+		rmSync(workspace, { recursive: true, force: true });
 	}
 });

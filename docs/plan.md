@@ -41,8 +41,8 @@ Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked`
 | T3.5 | Mutation tests | ✅ done 2026-09-28 |
 | T3.6 | TEST_COMPLETED folder | ✅ done 2026-09-28 |
 | T4 | Row floors per kind | ✅ done 2026-09-28 |
-| T5 | Go alignment off by default | ▶ active |
-| T6 | Shared `Result` JSON | ⬜ todo |
+| T5 | Go alignment off by default | ✅ done 2026-09-28 |
+| T6 | Shared `Result` JSON | ▶ active |
 | T7 | Close M1 | ⬜ todo |
 
 ### T0 — Baseline commit
@@ -149,13 +149,22 @@ Why: today's tests prove safety, not quality. Goldens were produced by the engin
 | F2 | Verdict status in TEST_COMPLETED | ⬜ todo |
 | F3 | Pinned real-code slice for review | ⬜ todo |
 | F4 | Edge inputs: CRLF, BOM, large files, Rust parser | ⬜ todo |
-| F5 | Swift | ⬜ todo |
-| F6 | Kotlin | ⬜ todo |
+| F5 | Swift (light) | ⬜ todo |
+| F6 | Kotlin (light) | ⬜ todo |
+| F7 | Python on the official tokenizer and AST | ⬜ todo |
+
+**Language tiers (user decision 2026-09-28):** TypeScript and Python are the strongest, most hardened languages. Java, Go, Rust, JavaScript, C, C++, Kotlin and Swift stay light: current fixtures plus the safety net (token check, re-parse, mutation tests); deep work waits.
+
+| Tier | Languages | F1 matrix | F3 real code | New layout features |
+|---|---|---|---|---|
+| Strong | TypeScript, Python | all regions 01–04 | yes, judged | first |
+| Light | Java, Go, Rust, JavaScript, C, C++, Kotlin, Swift | list of supported forms only | later | later |
 
 - **F1:** `fixtures/<language>/<region>/<construct>/` with `input`, `expected` and `case.json` (approver, date, rule id, or "refused by design"), following the rule taxonomy (design §4.3). A generated coverage table per language: constructs that exist in the language, covered, deliberately unsupported.
 - **F2:** `SUMMARY.txt` marks each result `approved` or `unjudged`; only user-approved expectations count as goldens. Existing goldens start as `unjudged`.
 - **F3:** 3–5 permissively licensed repositories per language pinned by commit SHA (subset of design §5.2), aligned results sampled into `TEST_COMPLETED/corpus/<language>/` for review; nothing from them is committed except the manifest.
 - **F5 Swift / F6 Kotlin** (added 2026-09-28 at the user's request), built directly on the F1 structure: a `CodeSyntax` that handles nested block comments (`/* /* */ */`), multi-line strings (`"""`), Swift raw strings (`#"…"#`) and interpolation with nested strings (`\(…)`, `${…}`) — a masking extension that the mutation tests must cover; a profile per region; fixtures and construct matrix; re-parse with `swiftc -parse` and `kotlinc` (not installed locally yet; CI installs both); mutation tests; discovery text in manifests, SKILL.md and the contract test.
+- **F7 Python strong:** replace mask estimates with Python's own `tokenize` for the whitespace-only check (exact tokens, including f-strings and nested quotes), and group rows by `ast` structure like TypeScript's `01_group-regions`, so Python matches TypeScript's level of proof.
 - **F4:** CRLF and BOM files, a multi-thousand-line file per language with a time budget, and `rustfmt` installed locally so Rust re-parse stops being skipped.
 
 ## Next milestones (detailed when they become active)

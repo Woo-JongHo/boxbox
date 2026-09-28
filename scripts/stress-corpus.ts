@@ -190,7 +190,7 @@ async function processLanguage(language: string, config: LanguageConfig): Promis
 			const source = readFileSync(candidate.absolute, "utf8");
 			writeFileSync(original, source);
 			writeFileSync(aligned, source);
-			const apply = spawnSync("bun", [alignerPath, "--file", aligned, "--write"], spawnOptions);
+			const apply = spawnSync("bun", [alignerPath, "--file", aligned, "--write", "--enable-go"], spawnOptions);
 			// Crashes also exit with code 1, so success is judged by the presence of the report header.
 			if (!(apply.stdout ?? "").startsWith("align-tables")) throw new Error(`aligner error: ${(apply.stderr ?? "").split("\n")[0]}`);
 			const edits      = Number(/edits=(\d+)/.exec(apply.stdout ?? "")?.[1] ?? 0)                        ;

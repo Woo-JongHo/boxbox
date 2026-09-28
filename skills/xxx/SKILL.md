@@ -97,7 +97,8 @@ Decide in this order:
 Scripts are split by language. `scripts/common/` holds the language-agnostic engine (string/comment masking, table detection and minimum-width alignment, display width), and `scripts/typescript/` holds the TypeScript AST/LSP tools numbered in order (00→08). `scripts/<python|java|go|rust|javascript|c|cpp>/` are line profilers on the common engine (01_group-regions, 06_align-tables) that lock repeated rows — struct fields, objects, dictionaries, enum constants, import blocks — into tables. String and comment contents are masked to prevent structural misreads, and rows that fail lossless decomposition or are uncertain are refused — refusal is the safe direction.
 
 ```bash
-bun <SKILL>/scripts/go/06_align-tables.ts --file <target file> [--write] [--min-rows 3]
+bun <SKILL>/scripts/python/06_align-tables.ts --file <target file> [--write] [--min-rows 3]
+bun <SKILL>/scripts/go/06_align-tables.ts --file <target file> [--write --enable-go]   # Go reports only unless --enable-go
 bun <SKILL>/scripts/python/01_group-regions.ts --file <target file>
 ```
 
