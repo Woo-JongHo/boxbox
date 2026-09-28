@@ -13,5 +13,18 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.0
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
       - run: bun install --frozen-lockfile
+      # Every language parser must be present in CI: a missing parser fails instead of skipping.
       - run: bun run check
+        env:
+          XXX_REQUIRE_PARSERS: "1"

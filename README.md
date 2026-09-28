@@ -57,6 +57,7 @@ Marketplace installs are supported too (once the repository is on GitHub):
 
 - `bun` — runs the AST checkers (`scripts/typescript/*.ts`).
 - `node` + the target project's `node_modules/.bin/tsc` — used only by the hover check (`05_inspect-hover.mjs`).
+- Optional language parsers for the re-parse safety check: `python3`, `gofmt`, `node`, `clang`/`clang++`, `javac`, `rustfmt`. Without one, that language's check reports `skipped` (never `ok`).
 - `bun install` (or `npm install`) in this repository — pins the `typescript@7` the checkers use. `install.sh` runs it automatically.
 
 ## Single source of rules

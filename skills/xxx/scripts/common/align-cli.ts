@@ -6,6 +6,7 @@
  */
 import      { readFileSync, writeFileSync } from "node:fs"           ;
 import      { relative, resolve           } from "node:path"         ;
+import      { compareParse                } from "./parse-check.ts"  ;
 import      { alignSource                 } from "./table-engine.ts" ;
 import type { AlignResult, LineProfiler   } from "./table-engine.ts" ;
 
@@ -40,9 +41,15 @@ export function runAlignCli(aligner: LineProfiler, args: readonly string[], over
 		const absolute = resolve(file)                                                                                   ;
 		const source   = readFileSync(absolute, "utf8")                                                                  ;
 		const result   = alignSource(source, aligner, { minRows: Number.isFinite(minRows) ? minRows : 3, apply: write }) ;
-		if (write && result.misaligned > 0) writeFileSync(absolute, result.output);
-		const label = relative(process.cwd(), absolute).replaceAll("\\", "/");
+		const label    = relative(process.cwd(), absolute).replaceAll("\\", "/")                                         ;
 		reports.push(formatResult(aligner, label, source, result, groupsOnly));
+		if (write && result.misaligned > 0) {
+			// The re-parse is the last gate: an output that parses differently from its source is never written.
+			const parse = compareParse(aligner.language, source, result.output);
+			reports.push(`  parse=${parse.status} tool=${parse.tool}${parse.delta.map(line => `\n    ${line}`).join("")}`);
+			if (parse.status === "changed") failed = true;
+			else writeFileSync(absolute, result.output);
+		}
 		for (const line of explain) reports.push(formatExplain(aligner, result, line));
 		if (result.misaligned > 0 && !write) failed = true;
 	}
