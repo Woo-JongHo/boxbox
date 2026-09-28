@@ -27,7 +27,9 @@ See [`docs/design.md`](docs/design.md) for the product direction.
 - **Python, Java, Go, Rust, JavaScript, C, C++** — language profilers (`scripts/<lang>/01_group-regions.ts`, `06_align-tables.ts`) on a shared line engine (`scripts/common/table-engine.ts`). String and comment masking prevents structural misreads, and rows that fail lossless decomposition are refused.
 
 ```bash
-bun skills/xxx/scripts/go/06_align-tables.ts --file main.go --write
+bun skills/xxx/scripts/rust/06_align-tables.ts --file lib.rs --write
+bun skills/xxx/scripts/go/06_align-tables.ts --file main.go             # Go: report only by default
+bun skills/xxx/scripts/go/06_align-tables.ts --file main.go --write --enable-go
 bun skills/xxx/scripts/python/06_align-tables.ts --file models.py
 ```
 
