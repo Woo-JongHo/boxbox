@@ -57,3 +57,15 @@ export function preservesTokens(before: string, after: string): boolean {
 	const right = tokenStream(after ) ;
 	return left.length === right.length && left.every((token, index) => token === right[index]);
 }
+
+/**
+ * Like `preservesTokens`, but line breaks may move: every token and comment must be identical while breaks are
+ * inserted, never removed. The declaration vertical form uses it: its edit ranges are single-line rows by
+ * construction, so any break in the output is an inserted one.
+ */
+export function preservesTokensWithBreaks(before: string, after: string): boolean {
+	const dropBreaks = (tokens: readonly string[]): readonly string[] => tokens.filter(token => !token.startsWith(`${String(SyntaxKind.NewLineTrivia)}:`)) ;
+	const left       = dropBreaks(tokenStream(before))                                                                                                     ;
+	const right      = dropBreaks(tokenStream(after ))                                                                                                     ;
+	return left.length === right.length && left.every((token, index) => token === right[index]);
+}

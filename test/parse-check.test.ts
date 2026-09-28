@@ -26,7 +26,10 @@ describe("compareParse", () => {
 describe("syntacticDiagnostics (TypeScript)", () => {
 	test("reports parse errors by line and code, and none for valid code", async () => {
 		const root = resolve(import.meta.dir, "..")                      ;
-		const file = resolve(root, "skills/xxx/fixtures/table-kinds.ts") ;
+		const file = resolve(
+			root                                ,
+			"skills/xxx/fixtures/table-kinds.ts"
+		);
 		expect(await syntacticDiagnostics(root, file, await Bun.file(file).text())).toEqual([]);
 	});
 });

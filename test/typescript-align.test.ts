@@ -165,14 +165,78 @@ describe("typescript call layer", () => {
 			'const bb = pick(x)     ;',
 		]);
 	});
+});
 
-	test("keeps one layer when one argument is 20 columns wider than the second widest", () => {
+describe("typescript declaration vertical form", () => {
+	test("takes the outlier row vertical when one argument is 20 columns wider than the second widest", () => {
 		expect(alignLines([
 			'const open = charTokenAt(source, skipTrivia(source.text, node.expression.getEnd()));',
 			'const close = charTokenAt(source, node.getEnd() - 1);',
 		])).toEqual([
-			'const open  = charTokenAt(source, skipTrivia(source.text, node.expression.getEnd())) ;',
-			'const close = charTokenAt(source, node.getEnd() - 1)                                 ;',
+			'const open  = charTokenAt(',
+			'\tsource                                           ,',
+			'\tskipTrivia(source.text, node.expression.getEnd())',
+			');',
+			'const close = charTokenAt(source, node.getEnd() - 1);',
+		]);
+	});
+
+	test("keeps the call layer on the remaining rows when one row goes vertical", () => {
+		expect(alignLines([
+			'const a = pair(alpha, tiny, gamma);',
+			'const bb = pair(alpha, a-much-longer-second-argument, gamma);',
+			'const cc = pair(alpha, small, gamma);',
+		])).toEqual([
+			'const a  = pair(alpha, tiny , gamma) ;',
+			'const bb = pair(',
+			'\talpha                        ,',
+			'\ta-much-longer-second-argument,',
+			'\tgamma',
+			');',
+			'const cc = pair(alpha, small, gamma) ;',
+		]);
+	});
+
+	test("takes every row vertical when each is the outlier of its own column", () => {
+		expect(alignLines([
+			'const left = pair(veryLongFirstArgumentHere, x);',
+			'const right = pair(y, veryLongSecondArgumentHere);',
+		])).toEqual([
+			'const left  = pair(',
+			'\tveryLongFirstArgumentHere,',
+			'\tx',
+			');',
+			'const right = pair(',
+			'\ty                         ,',
+			'\tveryLongSecondArgumentHere',
+			');',
+		]);
+	});
+
+	test("keeps a single-argument call flat; a vertical row leaves the table on the next run", () => {
+		expect(alignLines([
+			'const wide = lone(greatlyWiderSingleArgumentText);',
+			'const slim = lone(short);',
+		])).toEqual([
+			'const wide = lone(greatlyWiderSingleArgumentText) ;',
+			'const slim = lone(short)                          ;',
+		]);
+		const once = alignLines([
+			'const open = charTokenAt(source, skipTrivia(source.text, node.expression.getEnd()));',
+			'const close = charTokenAt(source, node.getEnd() - 1);',
+		]);
+		expect(alignLines(once)).toEqual(once);
+	});
+
+	test("call statements keep one flat layer instead of going vertical", () => {
+		expect(alignLines([
+			'expect(handle(wideArgumentExpression)).toBe(true);',
+			'expect(handle(x)).toBe(false);',
+			'expect(handle(y)).toBe(true);',
+		])).toEqual([
+			'expect(handle(wideArgumentExpression)).toBe(true ) ;',
+			'expect(handle(x)                     ).toBe(false) ;',
+			'expect(handle(y)                     ).toBe(true ) ;',
 		]);
 	});
 });

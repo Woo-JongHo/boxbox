@@ -152,7 +152,7 @@ const PARSES = new Set(["ok"  , "changed", "skipped", "not-run"]) ;
 |---|---|---|
 | N1 | Call layer: callee, `(`, top-level `,`, `)` inside declaration values and call-statement subjects | ✅ done 2026-09-28 |
 | N2 | List layer: `[ ]` / `{ }` of literals — element widths, `,` and closing column | ✅ done 2026-09-28 |
-| N3 | Outliers in declaration tables: when one row is far longer, the vertical form (as for imports) | ⬜ todo |
+| N3 | Outliers in declaration tables: when one row is far longer, the vertical form (as for imports) | ✅ done 2026-09-28 |
 | N4 | Hand-made samples: guard-row tables and subscript cells from `00_normalize-imports.ts` | ⬜ todo |
 | N5 | Python: the same layers on the line engine's bundle rows | ⬜ todo |
 
@@ -163,6 +163,8 @@ const PARSES = new Set(["ok"  , "changed", "skipped", "not-run"]) ;
 | 3 — list | the bracket column, each item `,` right after the widest item, the next item one space later, and the closing `]` / `}` right after the widest last item | slots: the declaration value, each argument of the layered call, and the matcher arguments of call statements; every row has the slot with the same shape (array arity, or the same object property names), every item is a string/number/boolean literal, no item is 20+ columns wider than the second widest in its column (import rule B); a trailing comma or a multi-line form refuses the slot; dropping the call layer drops the list slots inside its arguments (matcher slots survive) |
 
 N2 implementation notes (done 2026-09-28): `callLayer` in `grid-kinds.ts` was generalized into `itemLayer`, a cell layer over items (call arguments, array elements, object properties). List slots are derived per row by `rowListCells` and tagged `layer: "call" | "list:<slot>"` with slot names `list:value`, `list:arg<i>`, `list:matcher-arg<i>`; boundaries carry slot-qualified axes (`list-arg2-comma1`, …) registered in `KIND_AXES` and `AXIS_NOTES`. `withLayers` gates the call layer as in N1 and each list slot across the run: same shape (arity or property names), all items literal, no 20+-column outlier in any item column.
+
+N3 implementation notes (done 2026-09-28): in a declaration table whose rows share callee and arity, the row holding the outlier argument (import rule B) takes the vertical form instead of dropping the layer for everyone — arguments one per line under the `(`, non-last argument commas right after the widest argument, `);` on the statement's indentation, `=` at the table's `=` column; the remaining rows keep the call layer when no outlier is left among them. The render only inserts line breaks and padding, so `06_align-tables.ts` gates such a group with the new `preservesTokensWithBreaks` (tokens and comments byte-identical, breaks only inserted; the strict gate still covers every other edit) plus the re-parse gate. Calls with one argument, different callees, and call statements never go vertical. A vertical row leaves the table on the next run, so the write is stable.
 
 Hand-made reference samples (user, `00_normalize-imports.ts`): guard rows `if (…) { state = … ; … continue; }` with aligned condition cell, `{ … ;` and `continue`; subscript cells `chars[index    ]!` / `chars[index + 1] ;`; a multi-line object literal whose continuation lines align on the first property.
 

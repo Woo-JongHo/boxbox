@@ -56,6 +56,16 @@ expect(states(key)).toEqual(["PASS", "FIXABLE"]) ;
 expect(states(key)).toEqual(["ok"  , "changed"]) ;
 ```
 
+**Vertical form.** When one row's call argument is 20 or more columns wider than the second widest in its column (the import outlier rule B), that row takes the vertical form instead of dragging the table wide: the row goes to its own multi-line statement — arguments one per line under the opening `(`, each non-last argument comma right after the widest argument (the horizontal call-layer rule), and the closing `);` on the statement's indentation — while the remaining rows keep the call layer. The vertical row keeps the table's `=` column. The render only inserts line breaks and padding; a row left vertical leaves the table on the next run and is never touched again.
+
+```ts
+const open  = charTokenAt(
+	source                                           ,
+	skipTrivia(source.text, node.expression.getEnd()),
+);
+const close = charTokenAt(source, node.getEnd() - 1);
+```
+
 ## Registration objects · enum members · case rows
 
 ```ts

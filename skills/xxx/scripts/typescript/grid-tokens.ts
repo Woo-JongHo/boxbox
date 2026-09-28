@@ -98,7 +98,12 @@ export function bracketsOf(node: Node, source: SourceFile): { readonly open: Bou
 	if (isObjectLiteralExpression(node)) return pairAt("object-literal-brace", source, node);
 	if (isArrayLiteralExpression(node)) return pairAt("array-bracket", source, node);
 	if (isCallExpression(node)) {
-		const open  = charTokenAt("call-paren", source, skipTrivia(source.text, node.expression.getEnd()), "(") ;
+		const open  = charTokenAt(
+			"call-paren"                                     ,
+			source                                           ,
+			skipTrivia(source.text, node.expression.getEnd()),
+			"("
+		);
 		const close = charTokenAt("call-paren", source, node.getEnd() - 1, ")")                                 ;
 		return open && close ? { open, close } : undefined;
 	}
