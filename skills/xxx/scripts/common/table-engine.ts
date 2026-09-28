@@ -7,7 +7,10 @@
  * 1. Reassemble the profile slots with their original gaps; if the result differs from the code part, refuse the row (no lossy decomposition).
  * 2. Blank lines, comment lines, block comment interiors and profile-refused rows break a region — different sections never share widths.
  * 3. Runs shorter than minRows (2 rows by default) are reported but not aligned.
+ * 4. The candidate output is compared with the source by changedLines (preservation.ts). A table whose edits change
+ *    anything but horizontal whitespace between tokens is refused as a whole and reported in `refused`.
  */
+import { changedLines }    from "./preservation.ts";
 import { displayWidth }    from "./display-width.ts";
 import { maskSource }      from "./code-text.ts";
 import type { CodeSyntax } from "./code-text.ts";
@@ -74,6 +77,8 @@ export interface AlignResult {
 	readonly edits   : number                   ;
 	readonly details : readonly DetectedTable[] ;
 	readonly pairs   : readonly PairGroup[]     ;
+	/** Tables whose edits failed the whitespace-only check; never applied. */
+	readonly refused : readonly DetectedTable[] ;
 }
 
 export interface AlignOptions {
@@ -152,9 +157,8 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 	}
 	flush();
 
-	const details : DetectedTable[] = []                           ;
-	const pairs   : PairGroup[]     = []                           ;
-	const editsByLine               = new Map<number, TableEdit>() ;
+	const candidates : DetectedTable[] = [] ;
+	const pairs      : PairGroup[]     = [] ;
 
 	for (const run of runs) {
 		const signature = signatureOf(run[0].profile);
@@ -178,11 +182,9 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 				? code + " ".repeat(commentColumn - displayWidth(code)) + row.comment
 				: code;
 			if (after === lines[row.index]) return;
-			const edit: TableEdit = { index: row.index, before: lines[row.index], after };
-			tableEdits.push(edit);
-			if (options.apply) editsByLine.set(row.index, edit);
+			tableEdits.push({ index: row.index, before: lines[row.index], after });
 		});
-		details.push({
+		candidates.push({
 			startLine : run[0].index + 1,
 			endLine   : run[run.length - 1].index + 1,
 			rows      : run.length,
@@ -192,6 +194,8 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		});
 	}
 
+	const { details, refused } = refuseUnsafeTables(source, lines, candidates, aligner);
+	const editsByLine = new Map(details.flatMap(table => table.edits.map(edit => [edit.index, edit] as const)));
 	const output = options.apply
 		? lines.map((line, index) => editsByLine.get(index)?.after ?? line).join("\n")
 		: source;
@@ -204,5 +208,28 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		edits: options.apply ? misaligned : 0,
 		details,
 		pairs,
+		refused,
 	};
+}
+
+/**
+ * Applies every table's edits, then refuses the tables that own a line failing the whitespace-only check and
+ * repeats until the output passes. A failure that no remaining edited line explains (an edit that broke string or
+ * comment state for later lines) refuses every table that still has edits.
+ */
+function refuseUnsafeTables(source: string, lines: readonly string[], tables: readonly DetectedTable[], aligner: LineProfiler): { readonly details: readonly DetectedTable[]; readonly refused: readonly DetectedTable[] } {
+	let kept                       = [...tables] ;
+	const refused: DetectedTable[] = []          ;
+	for (;;) {
+		const afterByLine = new Map(kept.flatMap(table => table.edits.map(edit => [edit.index, edit.after] as const)));
+		if (afterByLine.size === 0) break;
+		const candidate = lines.map((line, index) => afterByLine.get(index) ?? line).join("\n");
+		const changed   = new Set(changedLines(source, candidate, aligner.syntax));
+		if (changed.size === 0) break;
+		const culprits = kept.filter(table => table.edits.some(edit => changed.has(edit.index)));
+		const drop     = new Set(culprits.length > 0 ? culprits : kept.filter(table => table.edits.length > 0));
+		refused.push(...drop);
+		kept = kept.filter(table => !drop.has(table));
+	}
+	return { details: kept, refused };
 }

@@ -340,7 +340,8 @@ The author's convention is a preset, not the law. Users customize without touchi
 | REVIEW | `06_align-tables.ts` check mode, `--explain` | Partial (3 states) |
 | REFUSE | Lossless decomposition failure | Exists |
 | Type uncertainty | `02_audit-type-uncertainty.ts`, `03_audit-optional-types.ts` | Exists (TS) |
-| Output re-parse / token-stream check | `table-engine.ts` checks only exact reassembly of slots; tests strip whitespace | **Missing** |
+| Token-stream preservation | `common/preservation.ts` (line engine, mask-based: indentation, string/comment bytes, token joins) and `typescript/token-preservation.ts` (TypeScript scanner); unsafe tables are refused and reported as `refused=` | Exists (M1 T2) |
+| Output re-parse | — | **Missing** (M1 T3) |
 | Minimum 3 rows for fixes | `table-engine.ts` floors `minRows` at 2; CLI default is 3 | Partial |
 | Go gofmt stability | Go golden fixtures use spaces and are rewritten by `gofmt` | **Missing** |
 | Preset `recommended` | `references/readability-contract.md` | Mixed with Base |

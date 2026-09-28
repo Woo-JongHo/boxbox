@@ -4,6 +4,8 @@
  * (`:`, `;`, `=`, `(`, `)`, `,`, `}`, `//`), and aligns them at minimum width with --write. Conditional-type `:`,
  * for-header `;`, empty statements, one-line execution blocks, and rows split by JSDoc or blank lines are not
  * row candidates and are never aligned. --explain <line> reports which kind the line was detected as and its axes.
+ * Every table's edits must pass the scanner-based whitespace-only check (token-preservation.ts); a table that does
+ * not is refused and reported, never written.
  */
 import { isInterfaceDeclaration } from "typescript/unstable/ast";
 import type { Node, SourceFile }  from "typescript/unstable/ast";
@@ -11,6 +13,7 @@ import type { Node, SourceFile }  from "typescript/unstable/ast";
 import { ROW_KINDS, displayColumn, runsOf, syntaxKindName } from "./grid-kinds.ts";
 import type { DetectedRow }                                 from "./grid-kinds.ts";
 import { loadSourceFile }                                   from "./load-source-file.ts";
+import { preservesTokens }                                  from "./token-preservation.ts";
 
 interface Edit {
 	readonly start : number ;
@@ -184,11 +187,14 @@ async function main(): Promise<void> {
 	const result: CollectResult = { groups: [], candidates: [], compressed: [] };
 	collect(source, source, minRows, new Set<Node>(), explainLine === undefined ? undefined : explainLine, result);
 	collectCompressed(source, source, result);
-	const groups = [...result.groups].sort((left, right) => left.startLine - right.startLine);
-	const compressedMembers = result.compressed.reduce((count, entry) => count + entry.members, 0);
+	const detected          = [...result.groups].sort((left, right) => left.startLine - right.startLine)                                              ;
+	const refused           = detected.filter(group => group.edits.length > 0 && !preservesTokens(source.text, applyEdits(source.text, group.edits))) ;
+	const groups            = detected.filter(group => !refused.includes(group))                                                                      ;
+	const compressedMembers = result.compressed.reduce((count, entry) => count + entry.members, 0)                                                    ;
 
 	const totalEdits = groups.reduce((count, group) => count + group.edits.length, 0);
-	console.log(`align-tables file=${relative} groups=${groups.length} misaligned=${groups.filter(group => group.edits.length > 0).length} edits=${totalEdits} compressed=${result.compressed.length} compressed-members=${compressedMembers}${write ? " write=true" : ""}`);
+	console.log(`align-tables file=${relative} groups=${groups.length} misaligned=${groups.filter(group => group.edits.length > 0).length} edits=${totalEdits} compressed=${result.compressed.length} compressed-members=${compressedMembers} refused=${refused.length}${write ? " write=true" : ""}`);
+	for (const group of refused) console.log(`  ${String(group.startLine).padStart(4)}-${group.endLine}  ${group.kind} refused — the edit would change more than whitespace between tokens`);
 	for (const entry of result.compressed) console.log(`  compressed  interface-members  line=${entry.line} members=${entry.members} — expanding is a structural change, so it is not fixed automatically`);
 	for (const group of groups) {
 		const range = group.startLine === group.endLine ? `${group.startLine}` : `${group.startLine}-${group.endLine}`;
@@ -220,7 +226,9 @@ async function main(): Promise<void> {
 		for (let index = 1; index < edits.length; index += 1) {
 			if (edits[index - 1]!.end > edits[index]!.start) throw new Error(`alignment edits overlap: ${relative}`);
 		}
-		await Bun.write(`${root}/${relative}`, applyEdits(source.text, edits));
+		const output = applyEdits(source.text, edits);
+		if (!preservesTokens(source.text, output)) throw new Error(`combined alignment edits change more than whitespace; nothing written: ${relative}`);
+		await Bun.write(`${root}/${relative}`, output);
 	}
 	if (!write && totalEdits > 0) process.exit(1);
 }

@@ -19,6 +19,8 @@ M1 is done when:
 
 ## How we work
 
+**Standing check for every task:** every `.ts` file under `skills/xxx/scripts/`, `scripts/` and `test/` passes both `06_align-tables.ts --file` (misaligned=0) and `00_normalize-imports.ts` (changed=0), plus `bun run check`.
+
 1. **One task at a time.** Only the task marked `▶ active` is worked on.
 2. **Each task has acceptance criteria and verification commands.** A task is not done until every command passes and its output is shown to the user.
 3. **The user confirms before the next task starts.** Then the task is marked `✅ done` with the date, and committed if the user approves the commit.
@@ -33,7 +35,8 @@ Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked`
 |---|---|---|
 | T0 | Baseline commit | ✅ done 2026-09-28 |
 | T1 | Green self-check | ✅ done 2026-09-28 |
-| T2 | Token-stream preservation | ▶ active |
+| T2 | Token-stream preservation | ✅ done 2026-09-28 |
+| T2.5 | Import table cells | ▶ active |
 | T3 | Output re-parse | ⬜ todo |
 | T3.5 | Mutation tests | ⬜ todo |
 | T4 | 3-row floor for fixes | ⬜ todo |
@@ -69,6 +72,21 @@ Today the harness compares output and input with *all* whitespace stripped, whic
 - **Scope:** a shared check built on the existing mask: code outside strings/comments must match token by token, and every string and comment must be byte-identical. The line engine and the TypeScript aligner call it before returning an edit; on failure the row/table is refused. The harness asserts it instead of `stripWhitespace`.
 - **Accept:** a new test proves that an edit which changes spacing *inside* a string is refused; all language suites use the new assertion.
 - **Verify:** `bun test`; the new negative test fails if the check is removed.
+
+### T2.5 — Import table cells
+
+User-confirmed rule change (2026-09-28): one-line imports apply contract rules 8 and 35 — the `{ }` binding list is a fixed-width cell and the terminating `;` is a column.
+
+```ts
+import        { alignSource              } from "./table-engine.ts" ;
+import type   { LineProfiler, RowProfile } from "./table-engine.ts" ;
+import React, { useState, useEffect      } from "react"             ;
+```
+
+- **Columns:** the head cell between `import` and `{` (empty, `type`, or `Default,` — TypeScript forbids `type` together with a default), `{`, names left-aligned one space after `{`, `}`, `from`, module specifier, `;`. Value and `type` imports share one table (option A).
+- **Not in the table:** imports without `{ }` (default only, namespace, `defer`, side-effect, `import x = require`) break the table; they form their own table only when 3+ of them are contiguous. Imports with attributes (`with { … }`) stay excluded from automatic fixes. Multi-line imports (over 120 columns) break the table. `export … from` re-exports form separate tables with the same rule. Files without semicolons (ASI style) get no `;` column.
+- **Accept:** `00_normalize-imports.ts --write` produces the form above; the fold/unfold rule at 120 columns uses the aligned line width; the whole repository is realigned; SKILL.md STEP0 and contract rule 2 describe the new form.
+- **Verify:** `bun test` (new cases for head cell, brace cell, `;` column, breaks), standing self-check across the repository.
 
 ### T3 — Output re-parse
 
@@ -139,6 +157,8 @@ Findings outside the active task. Pull into a milestone when relevant.
 
 - The `;` axis can pad short rows far past column 120 when one row is long (seen in `stress-corpus.ts` during T1, fixed there by extracting a duplicated expression). The checker should warn when alignment pushes a table past 120 columns, pointing to the contract's "simplify the exceptional element first" step.
 - `scripts/stress-corpus.ts` still has ten lines over 130 columns that are not tables.
+- The TypeScript check refuses per table but cannot yet prove an end-to-end refusal (detectors only emit whitespace edits); T3.5 mutation tests should exercise it.
+- `.tsx` is not covered by the TypeScript token check (JSX text whitespace is significant); decide before supporting TSX.
 - The stress corpus uses OpenJDK (GPL with classpath exception): keep it for checks only, never copy snippets into fixtures (see design §5.2).
 - Choose the final product name, then replace `xxx` / `XXX` in one pass.
 - Choose a license before publishing.
