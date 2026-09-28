@@ -18,8 +18,8 @@ const TEST_ALIGNER: LineProfiler = {
 	columnAxes    : ["name", "value"],
 	canonicalGaps : { colon: " ", value: " ", semicolon: " " },
 	profile(code: string, masked: string): RowProfile | null {
-		const match = /^([ \t]*)([A-Za-z_][A-Za-z0-9_]*)(\s*):(\s*)(.+?)(\s*);$/du.exec(masked);
-		const indices = match?.indices;
+		const match   = /^([ \t]*)([A-Za-z_][A-Za-z0-9_]*)(\s*):(\s*)(.+?)(\s*);$/du.exec(masked) ;
+		const indices = match?.indices                                                            ;
 		if (!match || !indices) return null;
 		const at = (group: number): string => {
 			const range = indices[group];
@@ -39,23 +39,23 @@ const TEST_ALIGNER: LineProfiler = {
 
 describe("maskSource", () => {
 	test("preserves geometry and masks only string contents", () => {
-		const source = `let a = "x:y=z;"; // tail: 1\nlet b = 2;`;
-		const mask = maskSource(source, SYNTAX);
+		const source = `let a = "x:y=z;"; // tail: 1\nlet b = 2;` ;
+		const mask   = maskSource(source, SYNTAX)                 ;
 		expect(mask.text.length  ).toBe   (source.length                             ) ;
 		expect(mask.text         ).toBe   (`let a = "      "; // tail: 1\nlet b = 2;`) ;
 		expect(mask.commentStarts).toEqual([18, -1]                                  ) ;
 	});
 
 	test("marks lines inside block comments with opensInBlock", () => {
-		const source = `a : 1 ;\n/* begin\n   span */\nb : 2 ;`;
-		const mask = maskSource(source, SYNTAX);
+		const source = `a : 1 ;\n/* begin\n   span */\nb : 2 ;` ;
+		const mask   = maskSource(source, SYNTAX)               ;
 		expect(mask.opensInBlock).toEqual([false, false, true, false]);
 		expect(mask.text.split("\n")[2]).toBe("          ");
 	});
 
 	test("quotes inside comments do not open strings", () => {
-		const source = `a : 1 ; // don't "open\nb : 2 ;`;
-		const mask = maskSource(source, SYNTAX);
+		const source = `a : 1 ; // don't "open\nb : 2 ;` ;
+		const mask   = maskSource(source, SYNTAX)        ;
 		expect(mask.commentStarts[0]).toBe(8);
 		expect(mask.text.split("\n")[1]).toBe("b : 2 ;");
 	});
@@ -90,8 +90,8 @@ describe("alignSource", () => {
 	].join("\n");
 
 	test("aligns columns at the minimum width of the actual longest cell", () => {
-		const result = alignSource(SOURCE, TEST_ALIGNER, { minRows: 3, apply: true });
-		const outputLines = result.output.split("\n");
+		const result      = alignSource(SOURCE, TEST_ALIGNER, { minRows: 3, apply: true }) ;
+		const outputLines = result.output.split("\n")                                      ;
 		expect(outputLines[0]   ).toBe("short      : 1   ;") ;
 		expect(outputLines[1]   ).toBe("longername : 22  ;") ;
 		expect(outputLines[2]   ).toBe("m          : 333 ;") ;
@@ -100,8 +100,8 @@ describe("alignSource", () => {
 	});
 
 	test("blank lines and comments break sections — a later section never shares an earlier section's width", () => {
-		const result = alignSource(SOURCE, TEST_ALIGNER, { minRows: 3, apply: true });
-		const outputLines = result.output.split("\n");
+		const result      = alignSource(SOURCE, TEST_ALIGNER, { minRows: 3, apply: true }) ;
+		const outputLines = result.output.split("\n")                                      ;
 		expect(outputLines[4]                              ).toBe   ("breaks : region ;") ;
 		expect(outputLines[5]                              ).toBe   ("a      : 1      ;") ;
 		expect(result.details.map(table => table.startLine)).toEqual([1, 5]             ) ;
@@ -110,6 +110,12 @@ describe("alignSource", () => {
 	test("a 2-row run is reported as a pair and not aligned", () => {
 		const result = alignSource(SOURCE, TEST_ALIGNER, { minRows: 3, apply: true });
 		expect(result.pairs).toEqual([{ startLine: 9, endLine: 10, rows: 2, signature: "|name>colon>value>semicolon" }]);
+		expect(result.output.split("\n")[8]).toBe("xx : 1 ;");
+	});
+
+	test("minRows below 3 is raised to 3: a 2-row run stays unaligned even when asked", () => {
+		const result = alignSource(SOURCE, TEST_ALIGNER, { minRows: 2, apply: true });
+		expect(result.pairs.map(pair => pair.rows)).toEqual([2]);
 		expect(result.output.split("\n")[8]).toBe("xx : 1 ;");
 	});
 

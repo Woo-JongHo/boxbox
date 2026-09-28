@@ -23,8 +23,8 @@ const SYNTAX: CodeSyntax = {
 /** One word that may carry namespace qualification (::) and template arguments (up to one level of nesting). */
 const SEGMENT = String.raw`[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*(?:<(?:[^<>]|<[^<>]*>)*>)?`;
 /** Type cell that may carry pointers, references, const, etc. Parentheses signal function pointers and are excluded outright. */
-const TYPE = String.raw`${SEGMENT}(?:[ \t]*[*&]+|[ \t]+(?:const|constexpr|static|inline|mutable|volatile|unsigned|signed|short|long)|[ \t]+${SEGMENT})*(?:[ \t]*[*&]+)?`;
-const NAME = String.raw`[A-Za-z_]\w*`;
+const TYPE = String.raw`${SEGMENT}(?:[ \t]*[*&]+|[ \t]+(?:const|constexpr|static|inline|mutable|volatile|unsigned|signed|short|long)|[ \t]+${SEGMENT})*(?:[ \t]*[*&]+)?` ;
+const NAME = String.raw`[A-Za-z_]\w*`                                                                                                                                    ;
 
 /** Designated initializer `.field = value,` */
 const DESIGNATED = new RegExp(String.raw`^([ \t]*)(\.${NAME})([ \t]*)=([ \t]*)([^ ,=;].*?)([ \t]*),$`, "du");
@@ -66,8 +66,8 @@ const blockedType = (type: string): boolean => {
 const continuationValue = (value: string): boolean => value.includes("=") || value.includes(";");
 
 function profileDesignated(code: string, masked: string): RowProfile | null {
-	const match  = DESIGNATED.exec(masked);
-	const indices = match?.indices;
+	const match   = DESIGNATED.exec(masked) ;
+	const indices = match?.indices          ;
 	if (!match || !indices) return null;
 	if (continuationValue(cell(masked, indices, 5))) return null;
 	return {
@@ -82,8 +82,8 @@ function profileDesignated(code: string, masked: string): RowProfile | null {
 }
 
 function profileEnumConstant(code: string, masked: string): RowProfile | null {
-	const match  = ENUM_CONSTANT.exec(masked);
-	const indices = match?.indices;
+	const match   = ENUM_CONSTANT.exec(masked) ;
+	const indices = match?.indices             ;
 	if (!match || !indices) return null;
 	if (continuationValue(cell(masked, indices, 5))) return null;
 	return {
@@ -98,8 +98,8 @@ function profileEnumConstant(code: string, masked: string): RowProfile | null {
 }
 
 function profileDefine(code: string, masked: string): RowProfile | null {
-	const match  = DEFINE.exec(masked);
-	const indices = match?.indices;
+	const match   = DEFINE.exec(masked) ;
+	const indices = match?.indices      ;
 	if (!match || !indices) return null;
 	return {
 		indent : cell(code, indices, 1),
@@ -112,8 +112,8 @@ function profileDefine(code: string, masked: string): RowProfile | null {
 }
 
 function profileField(code: string, masked: string): RowProfile | null {
-	const match  = FIELD.exec(masked);
-	const indices = match?.indices;
+	const match   = FIELD.exec(masked) ;
+	const indices = match?.indices     ;
 	if (!match || !indices) return null;
 	const type = cell(code, indices, 2);
 	if (blockedType(type)) return null;
@@ -128,8 +128,8 @@ function profileField(code: string, masked: string): RowProfile | null {
 }
 
 function profileFieldInit(code: string, masked: string): RowProfile | null {
-	const match  = FIELD_INIT.exec(masked);
-	const indices = match?.indices;
+	const match   = FIELD_INIT.exec(masked) ;
+	const indices = match?.indices          ;
 	if (!match || !indices) return null;
 	const type = cell(code, indices, 2);
 	if (blockedType(type)) return null;
@@ -164,8 +164,8 @@ function profileBundle(code: string, masked: string): RowProfile | null {
 		stops.push(comma);
 	}
 	if (stops.length === 0) return null;
-	const edges = [openAt + 1, ...stops.map(comma => comma + 1)];
-	const slots: Slot[] = [slot("open", "{", "")];
+	const edges         = [openAt + 1, ...stops.map(comma => comma + 1)] ;
+	const slots: Slot[] = [slot("open", "{", "")]                        ;
 	for (let position = 0; position < edges.length; position += 1) {
 		const from = edges[position]                                     ;
 		const to   = position < stops.length ? stops[position] : closeAt ;

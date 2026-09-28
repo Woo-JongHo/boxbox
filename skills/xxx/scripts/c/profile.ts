@@ -69,8 +69,8 @@ export const C_SYNTAX: CodeSyntax = {
 };
 
 function macroProfile(code: string, masked: string): RowProfile | null {
-	const match = MACRO.exec(masked);
-	const indices = match?.indices;
+	const match   = MACRO.exec(masked) ;
+	const indices = match?.indices     ;
 	if (!match || !indices) return null;
 	const slots: Slot[] = [
 		{ axis: "directive", text: sliceAt(code, indices, 2), gapBefore: ""                             },
@@ -81,15 +81,15 @@ function macroProfile(code: string, masked: string): RowProfile | null {
 }
 
 function fieldProfile(code: string, masked: string): RowProfile | null {
-	const match = FIELD.exec(masked);
-	const indices = match?.indices;
+	const match   = FIELD.exec(masked) ;
+	const indices = match?.indices     ;
 	if (!match || !indices) return null;
-	const type = sliceAt(code, indices, 2);
-	const tokens = type.split(/[ \t]+/u);
+	const type   = sliceAt(code, indices, 2) ;
+	const tokens = type.split(/[ \t]+/u)     ;
 	if (tokens.some(token => !TYPE_TOKEN.test(token))) return null;
 	if (CONTROL_KEYWORDS.has(tokens[0] ?? "")) return null;
-	const stars = indices[4];
-	const nameRange = indices[5];
+	const stars     = indices[4] ;
+	const nameRange = indices[5] ;
 	if (!nameRange) return null;
 	const name = code.slice((stars ?? nameRange)[0], nameRange[1]);
 	if (C_KEYWORDS.has(name.replace(/^\*+/u, ""))) return null;
@@ -110,8 +110,8 @@ function assignProfile(code: string, masked: string): RowProfile | null {
 	const match      = designated ? DESIGNATED.exec(masked) : enumMatch ;
 	const indices    = match?.indices                                   ;
 	if (!match || !indices) return null;
-	const equalEnd = indices[4]?.[1];
-	const valueRange = indices[6];
+	const equalEnd   = indices[4]?.[1] ;
+	const valueRange = indices[6]      ;
 	if (equalEnd === undefined || !valueRange) return null;
 	if (masked[equalEnd] === "=") return null;
 	if (VALUE_UNSAFE.test(masked.slice(valueRange[0], valueRange[1]))) return null;
@@ -135,17 +135,17 @@ function assignProfile(code: string, masked: string): RowProfile | null {
  * (`}` + trailer) is last in the row, so padding cell columns never creates trailing whitespace.
  */
 function groupProfile(code: string, masked: string): RowProfile | null {
-	const match = GROUP.exec(masked);
-	const indices = match?.indices;
+	const match   = GROUP.exec(masked) ;
+	const indices = match?.indices     ;
 	if (!match || !indices) return null;
-	const interior = indices[2];
-	const trailer = indices[3];
+	const interior = indices[2] ;
+	const trailer  = indices[3] ;
 	if (!interior || !trailer) return null;
 	if (GROUP_UNSAFE.test(masked.slice(interior[0], interior[1]))) return null;
 
 	// Cut cell ranges by mask coordinates. Commas inside string cells are spaces in the mask, so they are not boundaries.
-	const bounds: Array<{ start: number; end: number }> = [];
-	let boundStart = interior[0];
+	const bounds: Array<{ start: number; end: number }> = []          ;
+	let boundStart                                      = interior[0] ;
 	for (let index = interior[0]; index < interior[1]; index += 1) {
 		if (masked[index] === ",") {
 			bounds.push({ start: boundStart, end: index });
@@ -157,8 +157,8 @@ function groupProfile(code: string, masked: string): RowProfile | null {
 
 	const cells: Array<{ text: string; gap: string; commaGap: string; end: number }> = [];
 	for (const bound of bounds) {
-		const raw = code.slice(bound.start, bound.end);
-		const text = raw.trim();
+		const raw  = code.slice(bound.start, bound.end) ;
+		const text = raw.trim()                         ;
 		if (text === "") return null; // empty cell from consecutive commas or after a trailing comma
 		const cellStart = bound.start + raw.indexOf(text);
 		if (text.startsWith('"') || text.startsWith("'")) {

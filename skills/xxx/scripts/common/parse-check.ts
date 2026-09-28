@@ -89,8 +89,8 @@ export function compareParse(language: string, before: string, after: string): P
  * suite cannot quietly skip its parse checks in CI.
  */
 export function parserAvailable(language: string): boolean {
-	const toolchain = TOOLCHAINS[language];
-	const present   = toolchain !== undefined && hasTool(toolchain.tool);
+	const toolchain = TOOLCHAINS[language]                               ;
+	const present   = toolchain !== undefined && hasTool(toolchain.tool) ;
 	if (!present && process.env.XXX_REQUIRE_PARSERS === "1") throw new Error(`parser required but not installed: ${toolchain?.tool ?? language}`);
 	return present;
 }

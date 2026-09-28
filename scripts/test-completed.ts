@@ -105,7 +105,7 @@ for (const file of ["table-kinds.ts", "table-alignment.ts", "grid-regions.ts"]) 
 rmSync(join(OUT, "tmp"), { recursive: true, force: true });
 
 for (const entry of entries) {
-	const aligned  = join(OUT, entry.language, entry.title)                                          ;
+	const aligned  = join(OUT, entry.language, entry.title)                                                                     ;
 	const original = join(OUT, entry.language, ...entry.title.split("/").slice(0, -1), "before", entry.title.split("/").pop()!) ;
 	mkdirSync(join(aligned, ".."), { recursive: true });
 	mkdirSync(join(original, ".."), { recursive: true });

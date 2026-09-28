@@ -54,8 +54,8 @@ describe("java profile refusal rules", () => {
 	});
 
 	test("does not read = ; inside strings as structure and keeps them whole in the value cell", () => {
-		const line = '    String LABEL = "a=b;c=d // e";';
-		const profile = JAVA_ALIGNER.profile(line, maskedOf(line));
+		const line    = '    String LABEL = "a=b;c=d // e";'       ;
+		const profile = JAVA_ALIGNER.profile(line, maskedOf(line)) ;
 		expect(profile?.slots.map(slot => [slot.axis, slot.text])).toEqual([
 			["type", "String"],
 			["name", "LABEL"],
@@ -79,8 +79,8 @@ describe("java profile refusal rules", () => {
 	test("reassembling enum constants adds no space between the name and the parenthesis", () => {
 		const line = '        Beta(22, "x=y"),';
 		expect(losslessOf(line)).toBe(line);
-		const profile = JAVA_ALIGNER.profile(line, maskedOf(line));
-		const canonical = profile!.indent + profile!.slots.map((slot, position) => `${position === 0 ? "" : JAVA_ALIGNER.canonicalGaps[slot.axis] ?? " "}${slot.text}`).join("");
+		const profile   = JAVA_ALIGNER.profile(line, maskedOf(line))                                                                                                             ;
+		const canonical = profile!.indent + profile!.slots.map((slot, position) => `${position === 0 ? "" : JAVA_ALIGNER.canonicalGaps[slot.axis] ?? " "}${slot.text}`).join("") ;
 		expect(canonical).toBe(line);
 	});
 
@@ -116,8 +116,8 @@ describe("java alignment properties", () => {
 			'        {"ccc", 333, "z"},',
 			"    };",
 		].join("\n");
-		const result = alignSource(source, JAVA_ALIGNER, { minRows: 3, apply: true });
-		const lines = result.output.split("\n");
+		const result = alignSource(source, JAVA_ALIGNER, { minRows: 3, apply: true }) ;
+		const lines  = result.output.split("\n")                                      ;
 		expect(lines[1]         ).toBe('        {"alpha", 1  , "x" },') ;
 		expect(lines[2]         ).toBe('        {"b"    , 22 , "yy"},') ;
 		expect(lines[3]         ).toBe('        {"ccc"  , 333, "z" },') ;

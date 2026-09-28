@@ -10,8 +10,8 @@ export interface LoadedSource {
 }
 
 export function repositoryFile(root: string, value: string): { absolute: string; relative: string } {
-	const absolute = resolve(root, value);
-	const path     = relative(root, absolute).replaceAll("\\", "/");
+	const absolute = resolve(root, value)                           ;
+	const path     = relative(root, absolute).replaceAll("\\", "/") ;
 	if (!path || path === ".." || path.startsWith("../")) throw new Error(`target must be a file inside the repository: ${value}`);
 	if (!existsSync(absolute) || !statSync(absolute).isFile()) throw new Error(`target is not a regular file: ${value}`);
 	const physical = relative(realpathSync(root), realpathSync(absolute)).replaceAll("\\", "/");

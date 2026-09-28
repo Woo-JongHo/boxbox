@@ -13,8 +13,8 @@ import      { loadSourceFile   } from "./load-source-file.ts"   ;
 
 function operatorOf(node: Node, source: SourceFile): string | undefined {
 	if (syntaxKindName(node) !== "BinaryExpression") return undefined;
-	const token = (node as unknown as { operatorToken: Node }).operatorToken;
-	const text = source.text.slice(token.getStart(source), token.getEnd());
+	const token = (node as unknown as { operatorToken: Node }).operatorToken ;
+	const text  = source.text.slice(token.getStart(source), token.getEnd())  ;
 	return text === "&&" || text === "||" ? text : undefined;
 }
 
@@ -44,8 +44,8 @@ function lineIndent(source: SourceFile, position: number): string {
 }
 
 function parentKind(parent: Node, grandparent: Node): "if" | "return" | "variable" | "expression" | undefined {
-	const parentName = syntaxKindName(parent);
-	const grandName  = syntaxKindName(grandparent);
+	const parentName = syntaxKindName(parent)      ;
+	const grandName  = syntaxKindName(grandparent) ;
 	if (parentName === "IfStatement") return "if";
 	if (parentName === "ReturnStatement") return "return";
 	if (parentName === "VariableDeclaration" && (grandName === "VariableStatement" || grandName === "VariableDeclarationList")) return "variable";
@@ -75,8 +75,8 @@ function collectWraps(node: Node, source: SourceFile, minOperands: number, wraps
 				const text = source.text.slice(operand.getStart(source), operand.getEnd());
 				return index === 0 ? `${lead}${text}` : `${indent}${op} ${text}`;
 			});
-			const body = lines.join("\n");
-			const text = parentForm === "if" ? body : `(\n${body}\n${lineIndent(source, node.getStart(source))})`;
+			const body = lines.join("\n")                                                                         ;
+			const text = parentForm === "if" ? body : `(\n${body}\n${lineIndent(source, node.getStart(source))})` ;
 			wraps.push({ start: node.getStart(source), end: node.getEnd(), text });
 		} else if (operands.length >= minOperands && singleLine) {
 			skipped.push(`line=${source.getLineAndCharacterOfPosition(node.getStart(source)).line + 1} parent=${parentForm ?? "table row/other"}`);
@@ -114,8 +114,8 @@ async function main(): Promise<void> {
 	const { file, write, minOperands } = parseArguments();
 	const { source, relative } = await loadSourceFile(root, file);
 
-	const wraps: Wrap[] = [];
-	const skipped: string[] = [];
+	const wraps   : Wrap[]   = [] ;
+	const skipped : string[] = [] ;
 	collectWraps(source, source, minOperands, wraps, skipped, undefined, undefined);
 
 	console.log(`wrap-conditions file=${relative} chains=${wraps.length} skipped=${skipped.length}${write ? " write=true" : ""}`);

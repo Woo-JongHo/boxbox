@@ -35,8 +35,8 @@ test("rust: preserves type cells containing lifetimes", () => {
 		`let b: &'a str = "y";`,
 		`let c: &str = "z";`,
 	].join("\n");
-	const result = alignSource(source, RUST_ALIGNER, { minRows: 3, apply: true });
-	const lines = result.output.split("\n");
+	const result = alignSource(source, RUST_ALIGNER, { minRows: 3, apply: true }) ;
+	const lines  = result.output.split("\n")                                      ;
 	expect(lines[0]         ).toBe(`let a: &'static str = "x:y";`) ;
 	expect(lines[1]         ).toBe(`let b: &'a str      = "y"  ;`) ;
 	expect(lines[2]         ).toBe(`let c: &str         = "z"  ;`) ;
@@ -57,8 +57,8 @@ test("rust: let mut rows align on the keyword axis together with name and value 
 		"let mut step  = 2;",
 		"let mut total   = base + step;",
 	].join("\n");
-	const result = alignSource(source, RUST_ALIGNER, { minRows: 3, apply: true });
-	const lines = result.output.split("\n");
+	const result = alignSource(source, RUST_ALIGNER, { minRows: 3, apply: true }) ;
+	const lines  = result.output.split("\n")                                      ;
 	expect(lines[0]).toBe("let mut base  = 10         ;") ;
 	expect(lines[1]).toBe("let mut step  = 2          ;") ;
 	expect(lines[2]).toBe("let mut total = base + step;") ;

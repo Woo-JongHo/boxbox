@@ -92,8 +92,8 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 		}
 
 		if (syntax.cppRaw && character === "R" && source[index + 1] === '"') {
-			let cursor = index + 2;
-			let delimiter = "";
+			let cursor    = index + 2 ;
+			let delimiter = ""        ;
 			while (cursor < source.length && source[cursor] !== "(" && source[cursor] !== "\n" && delimiter.length < 16) { delimiter += source[cursor]; cursor += 1; }
 			if (source[cursor] === "(") {
 				const close = `)${delimiter}"`;
@@ -109,8 +109,8 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 
 		const openToken = strings.find(token => source.startsWith(token, index));
 		if (openToken) {
-			const spec = syntax.strings.find(candidate => candidate.open === openToken);
-			const spec0 = spec as StringSpec;
+			const spec  = syntax.strings.find(candidate => candidate.open === openToken) ;
+			const spec0 = spec as StringSpec                                             ;
 			index = consumeString(source, masked, index, index + openToken.length, spec0.close, spec0.escape);
 			continue;
 		}

@@ -39,8 +39,8 @@ function alignRows(source: SourceFile, rows: readonly DetectedRow[]): { axes: re
 	for (const row of rows) {
 		const sequence = [...row.boundaries].sort((left, right) => left.from - right.from);
 		for (let index = 0; index + 1 < sequence.length; index += 1) {
-			const before = sequence[index]!.axis;
-			const after = sequence[index + 1]!.axis;
+			const before = sequence[index]!.axis     ;
+			const after  = sequence[index + 1]!.axis ;
 			if (before === after) continue;
 			if (!edges.has(before)) edges.set(before, new Set());
 			edges.get(before)!.add(after);
@@ -50,8 +50,8 @@ function alignRows(source: SourceFile, rows: readonly DetectedRow[]): { axes: re
 	for (const row of rows) for (const boundary of row.boundaries) {
 		minFromOfAxis.set(boundary.axis, Math.min(minFromOfAxis.get(boundary.axis) ?? Number.MAX_SAFE_INTEGER, displayColumn(source, boundary.from)));
 	}
-	const visited = new Set<string>();
-	const ordered: string[] = [];
+	const visited           = new Set<string>() ;
+	const ordered: string[] = []                ;
 	const visit = (axis: string): void => {
 		if (visited.has(axis)) return;
 		visited.add(axis);
@@ -78,8 +78,8 @@ function alignRows(source: SourceFile, rows: readonly DetectedRow[]): { axes: re
 		}
 		axes.push(`${axis}=${target}`);
 		for (const [position, entry] of entries.entries()) {
-			const boundary = entry.boundary!;
-			const pad = pads[position]!;
+			const boundary = entry.boundary! ;
+			const pad      = pads[position]! ;
 			if (pad !== boundary.at - boundary.from) edits.push({ start: boundary.from, end: boundary.at, text: " ".repeat(pad) });
 			shifts[entry.index] += pad - (boundary.at - boundary.from);
 		}
@@ -91,13 +91,13 @@ function buildGroup(source: SourceFile, kindName: string, groupName: string, run
 	const { axes, skipped, edits } = alignRows(source, run);
 	if (process.env.DEBUG_ALIGN) {
 		for (const row of run) {
-			const line = source.getLineAndCharacterOfPosition(row.node.getStart(source)).line + 1;
-			const text = source.text.slice(row.node.getStart(source), row.node.getEnd()).slice(0, 50);
+			const line = source.getLineAndCharacterOfPosition(row.node.getStart(source)).line + 1     ;
+			const text = source.text.slice(row.node.getStart(source), row.node.getEnd()).slice(0, 50) ;
 			console.error(`    row line=${line} [${text}] ${row.boundaries.map(b => `${b.axis}(from=${displayColumn(source, b.from)},at=${displayColumn(source, b.at)})`).join(" ")}`);
 		}
 	}
-	const first = run[0]!.node;
-	const last = run.at(-1)!.node;
+	const first = run[0]!.node     ;
+	const last  = run.at(-1)!.node ;
 	return {
 		kind      : groupName,
 		startLine : source.getLineAndCharacterOfPosition(first.getStart(source)).line + 1,
@@ -118,8 +118,8 @@ interface CollectResult {
 /** Finds interfaces whose member table is compressed onto one physical line. Expanding is a structural change, so it is not fixed automatically. */
 function collectCompressed(source: SourceFile, node: Node, result: CollectResult): void {
 	if (isInterfaceDeclaration(node) && node.members.length >= 2) {
-		const startLine = source.getLineAndCharacterOfPosition(node.getStart(source)).line;
-		const endLine = source.getLineAndCharacterOfPosition(node.getEnd() - 1).line;
+		const startLine = source.getLineAndCharacterOfPosition(node.getStart(source)).line ;
+		const endLine   = source.getLineAndCharacterOfPosition(node.getEnd() - 1).line     ;
 		if (startLine === endLine) result.compressed.push({ line: startLine + 1, members: node.members.length });
 	}
 	node.forEachChild(child => {
@@ -139,7 +139,7 @@ function collect(source: SourceFile, node: Node, minRows: number, seen: Set<Node
 			}
 		}
 		for (const run of runsOf(source, siblings, kind)) {
-			if (run.length < minRows) continue;
+			if (run.length < (kind.minRows?.(run) ?? minRows)) continue;
 			result.groups.push(buildGroup(source, kind.name, kind.groupName ? kind.groupName(run) : kind.name, run));
 		}
 	}
@@ -191,8 +191,8 @@ async function writeGroups(root: string, relative: string, text: string, groups:
 	const output = applyEdits(text, edits);
 	if (!preservesTokens(text, output)) throw new Error(`combined alignment edits change more than whitespace; nothing written: ${relative}`);
 	// Re-parse gate: the written file must produce the same syntactic diagnostics as the source, or it is restored.
-	const absolute = `${root}/${relative}`;
-	const before   = await syntacticDiagnostics(root, absolute, text);
+	const absolute = `${root}/${relative}`                            ;
+	const before   = await syntacticDiagnostics(root, absolute, text) ;
 	await Bun.write(absolute, output);
 	const after = await syntacticDiagnostics(root, absolute, output);
 	if (before.join("|") !== after.join("|")) {
@@ -226,8 +226,8 @@ async function main(): Promise<void> {
 	for (const group of refused) console.log(`  ${String(group.startLine).padStart(4)}-${group.endLine}  ${group.kind} refused — the edit would change more than whitespace between tokens`);
 	for (const entry of result.compressed) console.log(`  compressed  interface-members  line=${entry.line} members=${entry.members} — expanding is a structural change, so it is not fixed automatically`);
 	for (const group of groups) {
-		const range = group.startLine === group.endLine ? `${group.startLine}` : `${group.startLine}-${group.endLine}`;
-		const axes = [...group.axes, ...group.skipped.map(axis => `${axis}=skip`)].join(" ");
+		const range = group.startLine === group.endLine ? `${group.startLine}` : `${group.startLine}-${group.endLine}` ;
+		const axes  = [...group.axes, ...group.skipped.map(axis => `${axis}=skip`)].join(" ")                          ;
 		console.log(`  ${range.padStart(9)}  ${group.kind.padEnd(18)} rows=${String(group.rowCount).padStart(2)}  ${axes}  edits=${group.edits.length}`);
 	}
 	if (explainLine !== undefined) {
@@ -255,7 +255,7 @@ async function main(): Promise<void> {
 		// Mid-line tabs change width with their position, so one pass can shift a later column; repeat until stable.
 		let passes = 1;
 		for (; passes < MAX_PASSES; passes += 1) {
-			const next    = await loadSourceFile(root, file)                                 ;
+			const next    = await loadSourceFile(root, file)                                         ;
 			const pending = safeGroups(next.source, minRows).filter(group => group.edits.length > 0) ;
 			if (pending.length === 0) break;
 			await writeGroups(root, relative, next.source.text, pending);

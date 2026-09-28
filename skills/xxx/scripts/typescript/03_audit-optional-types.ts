@@ -25,8 +25,8 @@ function naturalNumber(name: string, value: string): number {
 }
 
 function repositoryPath(root: string, value: string): string {
-	const absolute = resolve(root, value);
-	const path     = relative(root, absolute).replaceAll("\\", "/");
+	const absolute = resolve(root, value)                           ;
+	const path     = relative(root, absolute).replaceAll("\\", "/") ;
 	if (!path || path === ".." || path.startsWith("../")) throw new Error(`--file must be a file inside the repository: ${value}`);
 	if (!existsSync(absolute) || !statSync(absolute).isFile()) throw new Error(`--file target is not a regular file: ${value}`);
 	const physical = relative(realpathSync(root), realpathSync(absolute)).replaceAll("\\", "/");
@@ -37,8 +37,8 @@ function repositoryPath(root: string, value: string): string {
 function options(root: string): Options {
 	const values = new Map<string, string>();
 	for (let index = 2; index < process.argv.length; index += 2) {
-		const name  = process.argv[index];
-		const value = process.argv[index + 1];
+		const name  = process.argv[index]     ;
+		const value = process.argv[index + 1] ;
 		if (name !== "--max-errors" && name !== "--top" && name !== "--file") throw new Error(`unknown option: ${name ?? ""}`);
 		if (values.has(name)) throw new Error(`duplicate option: ${name}`);
 		if (!value || value.startsWith("--")) throw new Error(`${name} requires a value.`);
@@ -87,8 +87,8 @@ function compareText(left: string, right: string): number {
 	return left < right ? -1 : left > right ? 1 : 0;
 }
 
-const root               = process.cwd();
-const binary             = resolve(root, "node_modules/.bin/tsc");
+const root   = process.cwd()                          ;
+const binary = resolve(root, "node_modules/.bin/tsc") ;
 const { maxErrors, top, file } = options(root);
 const result      = runTypeScript(root, binary)                                                               ;
 const decoder     = new TextDecoder()                                                                         ;
@@ -101,8 +101,8 @@ if (result.exitCode !== 0 && diagnostics.length === 0) {
 	process.exit(2);
 }
 
-const byFile = new Map<string, number>();
-const byCode = new Map<string, number>();
+const byFile = new Map<string, number>() ;
+const byCode = new Map<string, number>() ;
 for (const diagnostic of diagnostics) {
 	byFile.set(diagnostic.file, (byFile.get(diagnostic.file) ?? 0) + 1);
 	byCode.set(diagnostic.code, (byCode.get(diagnostic.code) ?? 0) + 1);

@@ -24,8 +24,8 @@ function indentationAt(source: SourceFile, position: number): string {
 }
 
 function interfaceEdits(source: SourceFile): readonly Edit[] {
-	const edits: Edit[] = [];
-	const newline = source.text.includes("\r\n") ? "\r\n" : "\n";
+	const edits: Edit[] = []                                           ;
+	const newline       = source.text.includes("\r\n") ? "\r\n" : "\n" ;
 	const visit = (node: Node): void => {
 		if (isInterfaceDeclaration(node) && node.members.length > 0) {
 			const first        = node.members[0]!                             ;
@@ -41,8 +41,8 @@ function interfaceEdits(source: SourceFile): readonly Edit[] {
 				edits.push({ start: open + 1, end: first.getStart(source), text: `${newline}${memberIndent}` });
 			}
 			for (let index = 1; index < node.members.length; index += 1) {
-				const previous = node.members[index - 1]!;
-				const current = node.members[index]!;
+				const previous = node.members[index - 1]! ;
+				const current  = node.members[index]!     ;
 				if (lineOf(source, previous.getStart(source)) !== lineOf(source, current.getStart(source))) continue;
 				const gap = source.text.slice(previous.getEnd(), current.getStart(source));
 				if (!/^[ \t]*$/u.test(gap)) throw new Error("a comment between interface members on the same line is not split automatically.");

@@ -64,8 +64,8 @@ function isUnsafe(masked: string): boolean {
 
 /** Cuts the value cell by source coordinates and refuses uncertain values. It must not be empty, start with = (== comparison), or contain ; or ,. */
 function valueSlot(code: string, masked: string, match: RegExpExecArray, gapGroup: number, textGroup: number): Slot | null {
-	const gapRange  = match.indices?.[gapGroup];
-	const textRange = match.indices?.[textGroup];
+	const gapRange  = match.indices?.[gapGroup]  ;
+	const textRange = match.indices?.[textGroup] ;
 	if (!gapRange || !textRange) return null;
 	const text = code.slice(textRange[0], textRange[1]);
 	if (text.trim() === "" || text.startsWith("=")) return null;
@@ -82,20 +82,20 @@ function valueSlot(code: string, masked: string, match: RegExpExecArray, gapGrou
  * close slot (closing bracket + trailer) is last in the row, so padding cell columns never creates trailing whitespace.
  */
 function bundleProfile(code: string, masked: string): RowProfile | null {
-	const match = BUNDLED.exec(masked);
-	const indices = match?.indices;
+	const match   = BUNDLED.exec(masked) ;
+	const indices = match?.indices       ;
 	if (!match || !indices) return null;
-	const open = match[2];
-	const close = match[4];
+	const open  = match[2] ;
+	const close = match[4] ;
 	if ((open === "[") !== (close === "]")) return null; // mismatched bracket pair is not a bundle
-	const interior = indices[3];
-	const trailer = indices[5];
+	const interior = indices[3] ;
+	const trailer  = indices[5] ;
 	if (!interior || !trailer) return null;
 	if (BUNDLE_UNSAFE.test(masked.slice(interior[0], interior[1]))) return null;
 
 	// Cut cell ranges by mask coordinates. Commas inside string cells are spaces in the mask, so they are not boundaries.
-	const bounds: Array<{ start: number; end: number }> = [];
-	let boundStart = interior[0];
+	const bounds: Array<{ start: number; end: number }> = []          ;
+	let boundStart                                      = interior[0] ;
 	for (let index = interior[0]; index < interior[1]; index += 1) {
 		if (masked[index] === ",") {
 			bounds.push({ start: boundStart, end: index });
@@ -107,8 +107,8 @@ function bundleProfile(code: string, masked: string): RowProfile | null {
 
 	const cells: Array<{ text: string; gap: string; commaGap: string; end: number }> = [];
 	for (const bound of bounds) {
-		const raw = code.slice(bound.start, bound.end);
-		const text = raw.trim();
+		const raw  = code.slice(bound.start, bound.end) ;
+		const text = raw.trim()                         ;
 		if (text === "") return null; // empty cell from consecutive commas or after a trailing comma
 		const cellStart = bound.start + raw.indexOf(text);
 		if (text.startsWith('"') || text.startsWith("'")) {

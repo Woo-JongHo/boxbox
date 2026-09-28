@@ -46,8 +46,8 @@ const NAIVE: LineProfiler = {
 	columnAxes    : ["name", "head"],
 	canonicalGaps : { colon: " ", head: " ", tail: " ", semicolon: " " },
 	profile(code: string): ReturnType<LineProfiler["profile"]> {
-		const match = /^(\w+)(\s*):(\s*)(\S+)(\s+)(\S+)(\s*);$/du.exec(code);
-		const indices = match?.indices;
+		const match   = /^(\w+)(\s*):(\s*)(\S+)(\s+)(\S+)(\s*);$/du.exec(code) ;
+		const indices = match?.indices                                         ;
 		if (!match || !indices) return null;
 		const at = (group: number): string => code.slice(indices[group]![0], indices[group]![1]);
 		return {
@@ -65,8 +65,8 @@ const NAIVE: LineProfiler = {
 
 describe("engine refusal", () => {
 	test("a table whose alignment would change a string is refused, not applied", () => {
-		const source = 'a : "p q" ;\nbb : "pp qq" ;\nccc : "ppp qqqq" ;';
-		const result = alignSource(source, NAIVE, { minRows: 3, apply: true });
+		const source = 'a : "p q" ;\nbb : "pp qq" ;\nccc : "ppp qqqq" ;'       ;
+		const result = alignSource(source, NAIVE, { minRows: 3, apply: true }) ;
 		expect(result.output        ).toBe(source) ;
 		expect(result.refused.length).toBe(1     ) ;
 		expect(result.tables        ).toBe(0     ) ;

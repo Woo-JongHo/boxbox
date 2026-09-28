@@ -66,8 +66,8 @@ function tailSlots(code: string, masked: string, match: RegExpExecArray, restGro
 	while (valueEnd > valueStart && /\s/.test(masked.charAt(valueEnd - 1))) valueEnd -= 1;
 	if (valueStart === valueEnd) return null;
 	if (masked.slice(valueStart, valueEnd).includes(";")) return null;
-	const value     : Slot = { axis: "value",     text: code.slice(valueStart, valueEnd), gapBefore: code.slice(tailStart, valueStart) };
-	const semicolon : Slot = { axis: "semicolon", text: ";", gapBefore: code.slice(valueEnd, semicolonAt) };
+	const value     : Slot = { axis: "value",     text: code.slice(valueStart, valueEnd), gapBefore: code.slice(tailStart, valueStart) } ;
+	const semicolon : Slot = { axis: "semicolon", text: ";", gapBefore: code.slice(valueEnd, semicolonAt) }                              ;
 	return [value, semicolon];
 }
 
@@ -82,14 +82,14 @@ function bundleProfile(code: string, masked: string): RowProfile | null {
 	const match   = GROUP.exec(masked) ;
 	const indices = match?.indices     ;
 	if (!match || !indices) return null;
-	const interior = indices[2];
-	const trailer  = indices[3];
+	const interior = indices[2] ;
+	const trailer  = indices[3] ;
 	if (!interior || !trailer) return null;
 	if (GROUP_UNSAFE.test(masked.slice(interior[0], interior[1]))) return null;
 
 	// Cut cell ranges by mask coordinates. Commas inside string cells are spaces in the mask, so they are not boundaries.
-	const bounds: Array<{ start: number; end: number }> = [];
-	let boundStart = interior[0];
+	const bounds: Array<{ start: number; end: number }> = []          ;
+	let boundStart                                      = interior[0] ;
 	for (let index = interior[0]; index < interior[1]; index += 1) {
 		if (masked[index] === ",") {
 			bounds.push({ start: boundStart, end: index });

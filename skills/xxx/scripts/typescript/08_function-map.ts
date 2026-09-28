@@ -56,8 +56,8 @@ function parseMap(source: SourceFile): ParsedMap {
 }
 
 function alignedMapLines(rows: readonly MapRow[]): readonly string[] {
-	const widths = MAP_COLUMNS.map((column, index) => Math.max(displayWidth(column), ...rows.map(row => displayWidth(row.cells[index] ?? ""))));
-	const render = (cells: readonly string[]): string => "// " + cells.map((cell, index) => index === MAP_COLUMNS.length - 1 ? cell : cell + " ".repeat(Math.max(0, widths[index]! - displayWidth(cell)))).join(" | ");
+	const widths = MAP_COLUMNS.map((column, index) => Math.max(displayWidth(column), ...rows.map(row => displayWidth(row.cells[index] ?? ""))))                                                                        ;
+	const render = (cells: readonly string[]): string => "// " + cells.map((cell, index) => index === MAP_COLUMNS.length - 1 ? cell : cell + " ".repeat(Math.max(0, widths[index]! - displayWidth(cell)))).join(" | ") ;
 	return [render([...MAP_COLUMNS]), ...rows.map(row => render(row.cells))];
 }
 
@@ -68,8 +68,8 @@ function collectDeclarations(node: Node, source: SourceFile, out: Map<string, De
 		name = node.name.text;
 		params = [...node.parameters];
 	} else if (isVariableStatement(node)) {
-		const declaration = node.declarationList.declarations[0];
-		const initializer = declaration?.initializer;
+		const declaration = node.declarationList.declarations[0] ;
+		const initializer = declaration?.initializer             ;
 		if (declaration && initializer && (isArrowFunction(initializer) || isFunctionExpression(initializer))) {
 			name = declaration.name.getText(source);
 			params = [...initializer.parameters];
@@ -98,8 +98,8 @@ async function main(): Promise<void> {
 		const width = Math.max(...[...declarations.keys()].map(name => name.length), 8);
 		console.log(`// GROUP     | FUNCTION${" ".repeat(Math.max(0, width - 8))} | INPUT | RETURN | CALLS | ROLE`);
 		for (const declaration of declarations.values()) {
-			const pad = " ".repeat(Math.max(0, width - declaration.name.length));
-			const inputs = `${declaration.params} param(s)`;
+			const pad    = " ".repeat(Math.max(0, width - declaration.name.length)) ;
+			const inputs = `${declaration.params} param(s)`                         ;
 			console.log(`// TODO      | ${declaration.name}${pad} | ${inputs} | TODO   | TODO  | TODO`);
 		}
 		process.exit(0);
@@ -128,8 +128,8 @@ async function main(): Promise<void> {
 			}
 		}
 	}
-	const mapped = rows.map(row => row.cells[1]);
-	const undeclared = [...declarations.keys()].filter(name => !mapped.includes(name));
+	const mapped     = rows.map(row => row.cells[1])                                   ;
+	const undeclared = [...declarations.keys()].filter(name => !mapped.includes(name)) ;
 	console.log(`function-map file=${relative} map-entries=${rows.length} declarations=${declarations.size} undeclared=${undeclared.length} errors=${errors.length} map-misaligned=${mapMisaligned}${write ? " write=true" : ""}`);
 	for (const error of errors) console.log(`  ${error}`);
 	if (undeclared.length > 0) console.log(`  declarations missing from the map: ${undeclared.join(", ")}`);

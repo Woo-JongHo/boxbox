@@ -35,8 +35,8 @@ export function runAlignCli(aligner: LineProfiler, args: readonly string[], over
 	const explain    = numbers(args, "--explain")                        ;
 	const groupsOnly = overrides.groupsOnly || args.includes("--groups") ;
 
-	const reports: string[] = [];
-	let failed = false;
+	const reports: string[] = []    ;
+	let failed              = false ;
 	for (const file of files) {
 		const absolute = resolve(file)                                                                                   ;
 		const source   = readFileSync(absolute, "utf8")                                                                  ;
@@ -57,8 +57,8 @@ export function runAlignCli(aligner: LineProfiler, args: readonly string[], over
 }
 
 function formatResult(aligner: LineProfiler, label: string, source: string, result: AlignResult, groupsOnly: boolean): string {
-	const command = groupsOnly ? "group-regions" : "align-tables";
-	const head = `${command} file=${label} groups=${result.groups} tables=${result.tables} misaligned=${result.misaligned} edits=${result.edits} refused=${result.refused.length}`;
+	const command = groupsOnly ? "group-regions" : "align-tables"                                                                                                                     ;
+	const head    = `${command} file=${label} groups=${result.groups} tables=${result.tables} misaligned=${result.misaligned} edits=${result.edits} refused=${result.refused.length}` ;
 	const body = groupsOnly
 		? result.details.map(table => `  ${padRange(table.startLine, table.endLine)}  rows=${table.rows} axes=${table.axes.join(">")}`).join("\n")
 		: result.details.map(table => `  ${padRange(table.startLine, table.endLine)}  rows=${table.rows} widths=${table.widths.join(",")}`).join("\n");

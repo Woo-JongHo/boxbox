@@ -106,8 +106,8 @@ function git(target: string, args: readonly string[]): void {
 }
 
 function ensureClone(config: LanguageConfig): string {
-	const slug   = config.repo.replaceAll("/", "__");
-	const target = join(CLONES, slug);
+	const slug   = config.repo.replaceAll("/", "__") ;
+	const target = join(CLONES, slug)                ;
 	if (spawnSync("git", ["-C", target, "rev-parse", "HEAD"], { encoding: "utf8" }).status === 0) {
 		// Fill the worktree if it is empty (e.g. after --no-checkout; compatible with reused clones). Ignore the collector's temp files.
 		const hasWorktree = readdirSync(target).some(entry => entry !== ".git" && entry !== ".xxx-ls-tree.txt");
@@ -115,8 +115,8 @@ function ensureClone(config: LanguageConfig): string {
 		return target;
 	}
 	mkdirSync(target, { recursive: true });
-	const sparse  = config.dirs.length > 0;
-	const cloneArgs = ["clone", "--depth", "1"];
+	const sparse    = config.dirs.length > 0    ;
+	const cloneArgs = ["clone", "--depth", "1"] ;
 	if (sparse) cloneArgs.push("--filter=blob:none", "--sparse");
 	cloneArgs.push(`https://github.com/${config.repo}.git`, target);
 	const clone = spawnSync("git", cloneArgs, { encoding: "utf8", timeout: 600_000 });
@@ -126,14 +126,14 @@ function ensureClone(config: LanguageConfig): string {
 }
 
 function collectCandidates(config: LanguageConfig, target: string): readonly Candidate[] {
-	const scopes = config.dirs.length > 0 ? config.dirs : [""];
-	const candidates: Candidate[] = [];
+	const scopes                  = config.dirs.length > 0 ? config.dirs : [""] ;
+	const candidates: Candidate[] = []                                          ;
 	for (const scope of scopes) {
 		const scopeDir = scope === "" ? target : join(target, scope);
 		const walk = (dir: string): void => {
 			for (const entry of readdirSync(dir)) {
-				const path = join(dir, entry);
-				const stat = statSync(path);
+				const path = join(dir, entry) ;
+				const stat = statSync(path)   ;
 				if (stat.isDirectory()) { walk(path); continue; }
 				if (!entry.endsWith(config.ext)) continue;
 				const relative = scope === "" ? path.slice(target.length + 1) : path.slice(target.length + 1);

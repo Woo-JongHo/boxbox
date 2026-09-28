@@ -30,7 +30,7 @@ Therefore the longest code is not always the alignment basis. First decide wheth
 - **Column**: a repeated syntax boundary such as `:`, `( )`, `{ }`, `< >`, `=>`, `from`, `= await`, `//`.
 - **Cell**: the actual identifier, type, value, statement or note between columns.
 - **Sub-table**: an inner grid re-decomposed into name, separator and type when a repeated structure such as `:` appears again inside a cell.
-- **Alignment policy**: align contiguous repeated blocks of three or more comparable rows at minimum width. A two-row table accepted by the user is kept as an exception. Methods of a public Port split by JSDoc or different lifecycle responsibilities are not merged into one table. Preserve the `import`, `:`, `=>` and `case` axes of a reference file accepted by the user. The inner width of `( )` in a repeated function table is set by the actual longest argument, not by existing spaces; only short values are centered within that minimum width.
+- **Alignment policy**: align contiguous repeated blocks of three or more comparable rows at minimum width. User-confirmed exceptions: `=` declaration tables and imports align from two rows. Other two-row groups are reported as pairs and never fixed automatically. Methods of a public Port split by JSDoc or different lifecycle responsibilities are not merged into one table. Preserve the `import`, `:`, `=>` and `case` axes of a reference file accepted by the user. The inner width of `( )` in a repeated function table is set by the actual longest argument, not by existing spaces; only short values are centered within that minimum width.
 
 ## Confirmed rules
 
