@@ -337,7 +337,7 @@ The author's convention is a preset, not the law. Users customize without touchi
 | Base kinds and slots | `scripts/<lang>/profile.ts`, `scripts/typescript/grid-kinds.ts` | Exists, as code |
 | Gap / insert spacing | Contract "authoring axis contract" section | Exists, in prose |
 | Group detection | `01_group-regions.ts`, `common/table-engine.ts` | Exists |
-| REVIEW | `06_align-tables.ts` check mode, `--explain` | Partial (3 states) |
+| REVIEW | `06_align-tables.ts` check mode, `--explain`, `--json` with the shared versioned result (`common/result-json.ts`): PASS / FIXABLE / SUGGEST / REFUSE per group | Partial (UNCERTAIN not produced yet) |
 | REFUSE | Lossless decomposition failure | Exists |
 | Type uncertainty | `02_audit-type-uncertainty.ts`, `03_audit-optional-types.ts` | Exists (TS) |
 | Token-stream preservation | `common/preservation.ts` (line engine, mask-based: indentation, string/comment bytes, token joins) and `typescript/token-preservation.ts` (TypeScript scanner); unsafe tables are refused and reported as `refused=` | Exists (M1 T2) |

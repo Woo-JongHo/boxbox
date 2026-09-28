@@ -7,13 +7,15 @@
  * Every table's edits must pass the scanner-based whitespace-only check (token-preservation.ts); a table that does
  * not is refused and reported, never written.
  */
-import      { isInterfaceDeclaration                           } from "typescript/unstable/ast" ;
-import type { Node, SourceFile                                 } from "typescript/unstable/ast" ;
+import      { isInterfaceDeclaration                           } from "typescript/unstable/ast"  ;
+import type { Node, SourceFile                                 } from "typescript/unstable/ast"  ;
 
-import      { ROW_KINDS, displayColumn, runsOf, syntaxKindName } from "./grid-kinds.ts"         ;
-import type { DetectedRow                                      } from "./grid-kinds.ts"         ;
-import      { loadSourceFile, syntacticDiagnostics             } from "./load-source-file.ts"   ;
-import      { preservesTokens                                  } from "./token-preservation.ts" ;
+import      { ROW_KINDS, displayColumn, runsOf, syntaxKindName } from "./grid-kinds.ts"          ;
+import type { DetectedRow                                      } from "./grid-kinds.ts"          ;
+import      { loadSourceFile, syntacticDiagnostics             } from "./load-source-file.ts"    ;
+import      { envelope, summarize                              } from "../common/result-json.ts" ;
+import type { ResultGroup, ResultParse                         } from "../common/result-json.ts" ;
+import      { preservesTokens                                  } from "./token-preservation.ts"  ;
 
 interface Edit {
 	readonly start : number ;
@@ -160,6 +162,7 @@ interface Arguments {
 	readonly write       : boolean            ;
 	readonly minRows     : number             ;
 	readonly explainLine : number | undefined ;
+	readonly json        : boolean            ;
 }
 
 function parseArguments(): Arguments {
@@ -170,9 +173,9 @@ function parseArguments(): Arguments {
 	const minRows      = minRowsIndex < 0 ? 3 : Number(raw[minRowsIndex + 1])         ;
 	const explainLine  = explainIndex < 0 ? undefined : Number(raw[explainIndex + 1]) ;
 	if (raw[0] !== "--file" || !raw[1] || (!Number.isInteger(minRows) || minRows < 3) || (explainLine !== undefined && !Number.isInteger(explainLine))) {
-		throw new Error("usage: 06_align-tables.ts --file <repository TypeScript file> [--write] [--min-rows 3] [--explain <line>]");
+		throw new Error("usage: 06_align-tables.ts --file <repository TypeScript file> [--write] [--min-rows 3] [--explain <line>] [--json]");
 	}
-	return { file: raw[1], write, minRows, explainLine };
+	return { file: raw[1], write, minRows, explainLine, json: raw.includes("--json") };
 }
 
 function errorMessage(value: unknown): string {
@@ -210,7 +213,8 @@ function safeGroups(source: SourceFile, minRows: number): readonly TableGroup[] 
 
 async function main(): Promise<void> {
 	const root = process.cwd();
-	const { file, write, minRows, explainLine } = parseArguments();
+	const { file, write, minRows, explainLine, json } = parseArguments();
+	const say = (line: string): void => { if (!json) console.log(line); };
 	const { source, relative } = await loadSourceFile(root, file);
 
 	const result: CollectResult = { groups: [], candidates: [], compressed: [] };
@@ -222,13 +226,13 @@ async function main(): Promise<void> {
 	const compressedMembers = result.compressed.reduce((count, entry) => count + entry.members, 0)                                                    ;
 
 	const totalEdits = groups.reduce((count, group) => count + group.edits.length, 0);
-	console.log(`align-tables file=${relative} groups=${groups.length} misaligned=${groups.filter(group => group.edits.length > 0).length} edits=${totalEdits} compressed=${result.compressed.length} compressed-members=${compressedMembers} refused=${refused.length}${write ? " write=true" : ""}`);
-	for (const group of refused) console.log(`  ${String(group.startLine).padStart(4)}-${group.endLine}  ${group.kind} refused — the edit would change more than whitespace between tokens`);
-	for (const entry of result.compressed) console.log(`  compressed  interface-members  line=${entry.line} members=${entry.members} — expanding is a structural change, so it is not fixed automatically`);
+	say(`align-tables file=${relative} groups=${groups.length} misaligned=${groups.filter(group => group.edits.length > 0).length} edits=${totalEdits} compressed=${result.compressed.length} compressed-members=${compressedMembers} refused=${refused.length}${write ? " write=true" : ""}`);
+	for (const group of refused) say(`  ${String(group.startLine).padStart(4)}-${group.endLine}  ${group.kind} refused — the edit would change more than whitespace between tokens`);
+	for (const entry of result.compressed) say(`  compressed  interface-members  line=${entry.line} members=${entry.members} — expanding is a structural change, so it is not fixed automatically`);
 	for (const group of groups) {
 		const range = group.startLine === group.endLine ? `${group.startLine}` : `${group.startLine}-${group.endLine}` ;
 		const axes  = [...group.axes, ...group.skipped.map(axis => `${axis}=skip`)].join(" ")                          ;
-		console.log(`  ${range.padStart(9)}  ${group.kind.padEnd(18)} rows=${String(group.rowCount).padStart(2)}  ${axes}  edits=${group.edits.length}`);
+		say(`  ${range.padStart(9)}  ${group.kind.padEnd(18)} rows=${String(group.rowCount).padStart(2)}  ${axes}  edits=${group.edits.length}`);
 	}
 	if (explainLine !== undefined) {
 		if (result.candidates.length === 0) console.log(`explain line=${explainLine} no row candidate`);
@@ -249,7 +253,16 @@ async function main(): Promise<void> {
 		}
 		process.exit(0);
 	}
-	if (result.compressed.length > 0) process.exit(1);
+	const report = (parse: ResultParse): void => {
+		if (!json) return;
+		const resultGroups: ResultGroup[] = [
+			...groups.map(group => ({ kind: group.kind, startLine: group.startLine, endLine: group.endLine, rows: group.rowCount, axes: group.axes, state: group.edits.length > 0 ? "FIXABLE" as const : "PASS" as const, edits: group.edits.length })),
+			...refused.map(group => ({ kind: group.kind, startLine: group.startLine, endLine: group.endLine, rows: group.rowCount, axes: group.axes, state: "REFUSE" as const, edits: group.edits.length })),
+			...result.compressed.map(entry => ({ kind: "interface-members-compressed", startLine: entry.line, endLine: entry.line, rows: entry.members, axes: [], state: "SUGGEST" as const, edits: 0 })),
+		].sort((left, right) => left.startLine - right.startLine);
+		console.log(JSON.stringify(envelope([{ file: relative, language: "typescript", mode: write ? "write" : "check", summary: summarize(resultGroups), groups: resultGroups, parse }]), null, 2));
+	};
+	if (result.compressed.length > 0) { report({ status: "not-run", tool: "typescript" }); process.exit(1); }
 	if (write && totalEdits > 0) {
 		await writeGroups(root, relative, source.text, groups);
 		// Mid-line tabs change width with their position, so one pass can shift a later column; repeat until stable.
@@ -262,8 +275,9 @@ async function main(): Promise<void> {
 		}
 		const final = await loadSourceFile(root, file);
 		if (safeGroups(final.source, minRows).some(group => group.edits.length > 0)) throw new Error(`alignment did not converge within ${MAX_PASSES} passes: ${relative}`);
-		console.log(`  parse=ok tool=typescript passes=${passes}`);
-	}
+		say(`  parse=ok tool=typescript passes=${passes}`);
+		report({ status: "ok", tool: "typescript", passes });
+	} else report({ status: "not-run", tool: "typescript" });
 	if (!write && totalEdits > 0) process.exit(1);
 }
 

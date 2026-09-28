@@ -42,8 +42,8 @@ Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked`
 | T3.6 | TEST_COMPLETED folder | ✅ done 2026-09-28 |
 | T4 | Row floors per kind | ✅ done 2026-09-28 |
 | T5 | Go alignment off by default | ✅ done 2026-09-28 |
-| T6 | Shared `Result` JSON | ▶ active |
-| T7 | Close M1 | ⬜ todo |
+| T6 | Shared `Result` JSON | ✅ done 2026-09-28 |
+| T7 | Close M1 | ▶ active |
 
 ### T0 — Baseline commit
 
@@ -139,33 +139,27 @@ A place to check aligned results by eye in an editor (design §6, L4 review, fir
 - **Scope:** update `design.md` §10 rows, README status, and this file; write the next milestone's tasks in detail.
 - **Accept:** the M1 checklist under *Goal* is all true.
 
-## M1.5 — Test foundation (after M1, before M2)
+## M1.5 — Data for TypeScript and Python (after M1, before M2)
 
-Why: today's tests prove safety, not quality. Goldens were produced by the engine itself, seven languages have two hand-written files of about 100 lines each, and no real code has been judged by a person (review 2026-09-28).
+Why: today's tests prove safety, not quality. Goldens were produced by the engine itself and no real code has been judged by a person. The principles are the same for every language; what makes a language solid is **judged real data**. TypeScript and Python get it first (user decision 2026-09-28); Java, Go, Rust, JavaScript, C, C++, Kotlin and Swift stay light (current fixtures plus the safety net).
 
 | # | Task | Status |
 |---|---|---|
-| F1 | Language × region × construct fixture matrix | ⬜ todo |
-| F2 | Verdict status in TEST_COMPLETED | ⬜ todo |
-| F3 | Pinned real-code slice for review | ⬜ todo |
-| F4 | Edge inputs: CRLF, BOM, large files, Rust parser | ⬜ todo |
-| F5 | Swift (light) | ⬜ todo |
-| F6 | Kotlin (light) | ⬜ todo |
-| F7 | Python on the official tokenizer and AST | ⬜ todo |
+| D1 | Pinned corpus for TypeScript and Python | ⬜ todo |
+| D2 | Signatures: group every aligned table into types | ⬜ todo |
+| D3 | Judging in TEST_COMPLETED and verdict records | ⬜ todo |
+| D4 | Learning: verdicts become cases, rules and registry changes | ⬜ todo |
+| D5 | Measures: judged share, wrong-grouping rate, unseen types | ⬜ todo |
+| D6 | Edge inputs: CRLF, BOM, large files, Rust parser | ⬜ todo |
+| D7 | Swift and Kotlin (light) | ⬜ todo |
 
-**Language tiers (user decision 2026-09-28):** TypeScript and Python are the strongest, most hardened languages. Java, Go, Rust, JavaScript, C, C++, Kotlin and Swift stay light: current fixtures plus the safety net (token check, re-parse, mutation tests); deep work waits.
-
-| Tier | Languages | F1 matrix | F3 real code | New layout features |
-|---|---|---|---|---|
-| Strong | TypeScript, Python | all regions 01–04 | yes, judged | first |
-| Light | Java, Go, Rust, JavaScript, C, C++, Kotlin, Swift | list of supported forms only | later | later |
-
-- **F1:** `fixtures/<language>/<region>/<construct>/` with `input`, `expected` and `case.json` (approver, date, rule id, or "refused by design"), following the rule taxonomy (design §4.3). A generated coverage table per language: constructs that exist in the language, covered, deliberately unsupported.
-- **F2:** `SUMMARY.txt` marks each result `approved` or `unjudged`; only user-approved expectations count as goldens. Existing goldens start as `unjudged`.
-- **F3:** 3–5 permissively licensed repositories per language pinned by commit SHA (subset of design §5.2), aligned results sampled into `TEST_COMPLETED/corpus/<language>/` for review; nothing from them is committed except the manifest.
-- **F5 Swift / F6 Kotlin** (added 2026-09-28 at the user's request), built directly on the F1 structure: a `CodeSyntax` that handles nested block comments (`/* /* */ */`), multi-line strings (`"""`), Swift raw strings (`#"…"#`) and interpolation with nested strings (`\(…)`, `${…}`) — a masking extension that the mutation tests must cover; a profile per region; fixtures and construct matrix; re-parse with `swiftc -parse` and `kotlinc` (not installed locally yet; CI installs both); mutation tests; discovery text in manifests, SKILL.md and the contract test.
-- **F7 Python strong:** replace mask estimates with Python's own `tokenize` for the whitespace-only check (exact tokens, including f-strings and nested quotes), and group rows by `ast` structure like TypeScript's `01_group-regions`, so Python matches TypeScript's level of proof.
-- **F4:** CRLF and BOM files, a multi-thousand-line file per language with a time budget, and `rustfmt` installed locally so Rust re-parse stops being skipped.
+- **D1:** `corpus/manifest.json` (committed) pins permissively licensed repositories by commit SHA — TypeScript candidates: vscode, prisma, trpc, zod; Python candidates: requests, fastapi, pydantic, django — plus the user's private repositories as local-only sources (never committed). Sources are fetched into `~/.cache/xxx/corpus/`.
+- **D2:** every detected table gets a signature (language, container context, kind, ordered axis IDs, nesting, result state — design §6 L2); thousands of tables collapse into hundreds of types, ranked by frequency × risk.
+- **D3:** representatives per type are exported to `TEST_COMPLETED/corpus/<language>/<type>/` (aligned file, original, context); the user judges each type: `correct`, `different-role`, `missing-kind`, `taste`, `unsure`. Verdicts are stored as records (`corpus/verdicts.jsonl`, committed; no third-party code in it). `SUMMARY.txt` shows `approved` / `unjudged` per result.
+- **D4:** each verdict becomes a minimized, synthetic-identifier case under `fixtures/<language>/<region>/<construct>/` (the construct matrix grows from data, not by hand); `different-role` becomes a grouping rule, `missing-kind` a new kind, `correct` a pinned golden (design §7). The promotion gate keeps judged results from changing silently.
+- **D5:** per language: share of tables in judged types, wrong-grouping rate from verdicts, share of types never seen before in a new repository.
+- **D6:** CRLF and BOM files, a multi-thousand-line file with a time budget, `rustfmt` locally.
+- **D7:** Swift and Kotlin as light languages — nested block comments, multi-line and raw strings, interpolation in the mask; re-parse with `swiftc -parse` / `kotlinc` (Kotlin in CI only); mutation tests; discovery text.
 
 ## Next milestones (detailed when they become active)
 
@@ -207,6 +201,7 @@ Findings outside the active task. Pull into a milestone when relevant.
 - T3.5 findings (fixed): (1) the preservation check treated trailing whitespace after a line comment as content, so 10–57 tables per 1,000 variants were refused although the edit was safe; (2) the TypeScript aligner was not idempotent in one pass when lines contain mid-line tabs — `--write` now repeats until stable (max 5 passes).
 - T3.5 cost: `bun run check` takes ~19 s with the default mutation counts (1,000 per line-engine language, 5 TypeScript variants). Large runs: `XXX_MUTATIONS=20000` (~2 min, passed 140,000 variants), `XXX_TS_MUTATIONS=100` (~2 min, passed).
 - T3.5 deviation: TypeScript runs 5 variants by default instead of 1,000, because each variant starts TypeScript 7 servers through the CLI. A pure in-process TypeScript alignment API would lift this (M3).
+- Python on its official `tokenize` / `ast` (engine-level strengthening, moved out of M1.5 on 2026-09-28): revisit when verdicts show the regex profiler missing Python structure.
 - `.tsx` is not covered by the TypeScript token check (JSX text whitespace is significant); decide before supporting TSX.
 - The stress corpus uses OpenJDK (GPL with classpath exception): keep it for checks only, never copy snippets into fixtures (see design §5.2).
 - Choose the final product name, then replace `xxx` / `XXX` in one pass.

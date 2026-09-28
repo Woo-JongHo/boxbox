@@ -1,14 +1,17 @@
 /**
  * CLI shared by every language's 01_group-regions.ts and 06_align-tables.ts shims.
- * Usage: 06_align-tables.ts --file <target file>... [--write] [--min-rows 3] [--explain <line>]
+ * Usage: 06_align-tables.ts --file <target file>... [--write] [--min-rows 3] [--explain <line>] [--json]
  *        01_group-regions.ts --file <target file>... [--min-rows 3]
- * Fails with exit code 1 when anything is misaligned and --write is absent.
+ * Fails with exit code 1 when anything is misaligned and --write is absent. --json prints the shared versioned
+ * result (result-json.ts) instead of the text report.
  */
-import      { readFileSync, writeFileSync } from "node:fs"           ;
-import      { relative, resolve           } from "node:path"         ;
-import      { compareParse                } from "./parse-check.ts"  ;
-import      { alignSource                 } from "./table-engine.ts" ;
-import type { AlignResult, LineProfiler   } from "./table-engine.ts" ;
+import      { readFileSync, writeFileSync          } from "node:fs"           ;
+import      { relative, resolve                    } from "node:path"         ;
+import      { compareParse                         } from "./parse-check.ts"  ;
+import      { alignSource                          } from "./table-engine.ts" ;
+import type { AlignResult, LineProfiler            } from "./table-engine.ts" ;
+import      { envelope, summarize                  } from "./result-json.ts"  ;
+import type { FileResult, ResultGroup, ResultParse } from "./result-json.ts"  ;
 
 /** Re-exported so CodeSyntax can also be imported from this module. */
 export type { CodeSyntax } from "./code-text.ts";
@@ -34,26 +37,41 @@ export function runAlignCli(aligner: LineProfiler, args: readonly string[], over
 	const write      = args.includes("--write") && !overrides.groupsOnly ;
 	const explain    = numbers(args, "--explain")                        ;
 	const groupsOnly = overrides.groupsOnly || args.includes("--groups") ;
+	const json       = args.includes("--json")                           ;
 
-	const reports: string[] = []    ;
-	let failed              = false ;
+	const reports : string[]     = []    ;
+	const results : FileResult[] = []    ;
+	let failed                   = false ;
 	for (const file of files) {
 		const absolute = resolve(file)                                                                                   ;
 		const source   = readFileSync(absolute, "utf8")                                                                  ;
 		const result   = alignSource(source, aligner, { minRows: Number.isFinite(minRows) ? minRows : 3, apply: write }) ;
 		const label    = relative(process.cwd(), absolute).replaceAll("\\", "/")                                         ;
 		reports.push(formatResult(aligner, label, source, result, groupsOnly));
+		let parsed: ResultParse = { status: "not-run", tool: "" };
 		if (write && result.misaligned > 0) {
 			// The re-parse is the last gate: an output that parses differently from its source is never written.
 			const parse = compareParse(aligner.language, source, result.output);
+			parsed = { status: parse.status, tool: parse.tool };
 			reports.push(`  parse=${parse.status} tool=${parse.tool}${parse.delta.map(line => `\n    ${line}`).join("")}`);
 			if (parse.status === "changed") failed = true;
 			else writeFileSync(absolute, result.output);
 		}
+		results.push(fileResult(aligner, label, write, result, parsed));
 		for (const line of explain) reports.push(formatExplain(aligner, result, line));
 		if (result.misaligned > 0 && !write) failed = true;
 	}
-	return { report: reports.join("\n"), code: failed ? 1 : 0 };
+	return { report: json ? JSON.stringify(envelope(results), null, 2) : reports.join("\n"), code: failed ? 1 : 0 };
+}
+
+/** Maps an engine result to the shared result: tables PASS/FIXABLE, pairs SUGGEST, refused tables REFUSE. */
+function fileResult(aligner: LineProfiler, file: string, write: boolean, result: AlignResult, parse: ResultParse): FileResult {
+	const groups: ResultGroup[] = [
+		...result.details.map(table => ({ kind: "table", startLine: table.startLine, endLine: table.endLine, rows: table.rows, axes: table.axes, state: table.edits.length > 0 ? "FIXABLE" as const : "PASS" as const, edits: table.edits.length })),
+		...result.pairs.map(pair => ({ kind: "pair", startLine: pair.startLine, endLine: pair.endLine, rows: pair.rows, axes: pair.signature.split("|")[1]?.split(">") ?? [], state: "SUGGEST" as const, edits: 0 })),
+		...result.refused.map(table => ({ kind: "table", startLine: table.startLine, endLine: table.endLine, rows: table.rows, axes: table.axes, state: "REFUSE" as const, edits: table.edits.length })),
+	].sort((left, right) => left.startLine - right.startLine);
+	return { file, language: aligner.language, mode: write ? "write" : "check", summary: summarize(groups), groups, parse };
 }
 
 function formatResult(aligner: LineProfiler, label: string, source: string, result: AlignResult, groupsOnly: boolean): string {
