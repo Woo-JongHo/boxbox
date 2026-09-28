@@ -59,8 +59,8 @@ function targetArgument(): string {
 }
 
 function repositoryFile(root: string, value: string): { absolute: string; relative: string } {
-	const absolute = resolve(root, value);
-	const path     = relative(root, absolute).replaceAll("\\", "/");
+	const absolute = resolve(root, value)                           ;
+	const path     = relative(root, absolute).replaceAll("\\", "/") ;
 	if (!path || path === ".." || path.startsWith("../")) throw new Error(`--file must be a file inside the repository: ${value}`);
 	if (!existsSync(absolute) || !statSync(absolute).isFile()) throw new Error(`--file target is not a regular file: ${value}`);
 	const physical = relative(realpathSync(root), realpathSync(absolute)).replaceAll("\\", "/");
@@ -131,8 +131,8 @@ async function main(): Promise<void> {
 		}
 		if (isNonNullExpression(node)) add("non-null-assertion", node.expression.getEnd(), node);
 		if (isAsExpression(node)) {
-			const between = source.text.slice(node.expression.getEnd(), node.type.getStart(source));
-			const offset  = /\bas\b/u.exec(between)?.index;
+			const between = source.text.slice(node.expression.getEnd(), node.type.getStart(source)) ;
+			const offset  = /\bas\b/u.exec(between)?.index                                          ;
 			add("as-assertion", offset === undefined ? node.getStart(source) : node.expression.getEnd() + offset, node);
 		}
 		if (isTypeAssertion(node)) add("angle-bracket-assertion", node.getStart(source), node);

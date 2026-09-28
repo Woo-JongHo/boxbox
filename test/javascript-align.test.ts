@@ -41,8 +41,8 @@ describe("javascript profile specific properties", () => {
 			'wideKey: "e=f",',
 			"tiny: 1,",
 		].join("\n");
-		const result = align(source);
-		const lines = result.output.split("\n");
+		const result = align(source)             ;
+		const lines  = result.output.split("\n") ;
 		expect(lines[0]).toBe('mid    : "a:b=c;d",') ;
 		expect(lines[1]).toBe('wideKey: "e=f"    ,') ;
 		expect(lines[2]).toBe("tiny   : 1        ,") ;
@@ -66,8 +66,8 @@ describe("javascript profile specific properties", () => {
 	});
 
 	test("cuts template literals and quoted keys as single cells", () => {
-		const template = "tiny: `sum:${1 + 2} = 3`,";
-		const quoted   = '"open:key": v,';
+		const template = "tiny: `sum:${1 + 2} = 3`," ;
+		const quoted   = '"open:key": v,'            ;
 		for (const [line, axis, expected] of [
 			[template, "value", "`sum:${1 + 2} = 3`"],
 			[quoted, "key", '"open:key"'],

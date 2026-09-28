@@ -48,8 +48,8 @@ function rowContainersOf(node: Node): readonly RowContainer[] {
 function contiguousRuns(rows: readonly Node[]): readonly (readonly Node[])[] {
 	const runs: Node[][] = [];
 	for (const row of rows) {
-		const current = runs.at(-1);
-		const previous = current?.[0];
+		const current  = runs.at(-1)  ;
+		const previous = current?.[0] ;
 		if (current && previous && previous.kind === row.kind) current.push(row);
 		else runs.push([row]);
 	}
@@ -64,8 +64,8 @@ function collect(node: Node, source: TsSourceFile, minRows: number, groups: Grou
 	for (const container of rowContainersOf(node)) {
 		for (const run of contiguousRuns(container.rows)) {
 			if (run.length >= minRows) {
-				const first = run[0];
-				const last  = run.at(-1) ?? first;
+				const first = run[0]              ;
+				const last  = run.at(-1) ?? first ;
 				groups.push({
 					containerLabel : container.label,
 					kind           : SyntaxKind[first.kind] ?? `Kind${first.kind}`,
@@ -100,8 +100,8 @@ function errorMessage(value: unknown): string {
 }
 
 async function main(): Promise<void> {
-	const root    = process.cwd();
-	const minRows = minRowsArgument();
+	const root    = process.cwd()     ;
+	const minRows = minRowsArgument() ;
 	const { source, relative } = await loadSourceFile(root, targetArgument());
 
 	const groups: Group[] = [];

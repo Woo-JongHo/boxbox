@@ -6,7 +6,8 @@
  * Safety rules:
  * 1. Reassemble the profile slots with their original gaps; if the result differs from the code part, refuse the row (no lossy decomposition).
  * 2. Blank lines, comment lines, block comment interiors and profile-refused rows break a region — different sections never share widths.
- * 3. Runs shorter than minRows (2 rows by default) are reported but not aligned.
+ * 3. Runs shorter than minRows are reported as pairs but not aligned. Automatic fixes never apply to fewer than
+ *    3 rows: a lower minRows is raised to 3 (a 2-row table needs a recorded human decision, not a flag).
  * 4. The candidate output is compared with the source by changedLines (preservation.ts). A table whose edits change
  *    anything but horizontal whitespace between tokens is refused as a whole and reported in `refused`.
  */
@@ -94,8 +95,8 @@ function signatureOf(profile: RowProfile): string {
 }
 
 function rebuildCode(aligner: LineProfiler, profile: RowProfile, widths: readonly number[] | null): string {
-	const parts: string[] = [profile.indent];
-	const lastIndex = profile.slots.length - 1;
+	const parts: string[] = [profile.indent]         ;
+	const lastIndex       = profile.slots.length - 1 ;
 	profile.slots.forEach((slot, position) => {
 		if (position > 0) parts.push(canonicalGap(aligner, slot.axis));
 		// The last cell of a row has nothing after it to align, so it is not padded — never create trailing whitespace.
@@ -110,7 +111,7 @@ function rebuildCode(aligner: LineProfiler, profile: RowProfile, widths: readonl
 }
 
 export function alignSource(source: string, aligner: LineProfiler, options: AlignOptions): AlignResult {
-	const minRows     = Math.max(2, options.minRows)       ;
+	const minRows     = Math.max(3, options.minRows)       ;
 	const mask        = maskSource(source, aligner.syntax) ;
 	const lines       = source.split("\n")                 ;
 	const maskedLines = mask.text.split("\n")              ;
@@ -128,8 +129,8 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		const codeEnd      = commentStart >= 0 ? commentStart : line.length            ;
 		const comment      = codeEnd < line.length ? line.slice(codeEnd).trim() : null ;
 		// Leftover spaces before a comment are replaced by the computed gap on reassembly, so strip them from the code part.
-		const code       = comment !== null ? line.slice(0, codeEnd).replace(/\s+$/u, "") : line.slice(0, codeEnd);
-		const maskedCode = comment !== null ? maskedLines[index].slice(0, codeEnd).replace(/\s+$/u, "") : maskedLines[index].slice(0, codeEnd);
+		const code       = comment !== null ? line.slice(0, codeEnd).replace(/\s+$/u, "") : line.slice(0, codeEnd)                             ;
+		const maskedCode = comment !== null ? maskedLines[index].slice(0, codeEnd).replace(/\s+$/u, "") : maskedLines[index].slice(0, codeEnd) ;
 		if (maskedCode.trim() === "") return;
 		const profile = aligner.profile(code, maskedCode);
 		if (!profile) return;
@@ -141,8 +142,8 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		accepted.push({ index, profile, comment });
 	});
 
-	const runs: Accepted[][] = [];
-	let current: Accepted[] = [];
+	const runs  : Accepted[][] = [] ;
+	let current : Accepted[]   = [] ;
 	const flush = (): void => {
 		if (current.length >= 2) runs.push(current);
 		current = [];
@@ -169,8 +170,8 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		const widths = run[0].profile.slots.map((_, position) =>
 			Math.max(...run.map(row => displayWidth(row.profile.slots[position].text))),
 		);
-		const alignedCodes = run.map(row => rebuildCode(aligner, row.profile, widths));
-		const commentRows = run.map(row => row.comment !== null);
+		const alignedCodes = run.map(row => rebuildCode(aligner, row.profile, widths)) ;
+		const commentRows  = run.map(row => row.comment !== null)                      ;
 		const commentColumn = Math.max(
 			0,
 			...run.map((row, position) => commentRows[position] ? displayWidth(alignedCodes[position]) : 0),
@@ -223,11 +224,11 @@ function refuseUnsafeTables(source: string, lines: readonly string[], tables: re
 	for (;;) {
 		const afterByLine = new Map(kept.flatMap(table => table.edits.map(edit => [edit.index, edit.after] as const)));
 		if (afterByLine.size === 0) break;
-		const candidate = lines.map((line, index) => afterByLine.get(index) ?? line).join("\n");
-		const changed   = new Set(changedLines(source, candidate, aligner.syntax));
+		const candidate = lines.map((line, index) => afterByLine.get(index) ?? line).join("\n") ;
+		const changed   = new Set(changedLines(source, candidate, aligner.syntax))              ;
 		if (changed.size === 0) break;
-		const culprits = kept.filter(table => table.edits.some(edit => changed.has(edit.index)));
-		const drop     = new Set(culprits.length > 0 ? culprits : kept.filter(table => table.edits.length > 0));
+		const culprits = kept.filter(table => table.edits.some(edit => changed.has(edit.index)))                ;
+		const drop     = new Set(culprits.length > 0 ? culprits : kept.filter(table => table.edits.length > 0)) ;
 		refused.push(...drop);
 		kept = kept.filter(table => !drop.has(table));
 	}

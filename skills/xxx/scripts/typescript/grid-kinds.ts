@@ -58,6 +58,8 @@ export interface RowKind {
 	readonly detect     : (source: SourceFile, node: Node) => readonly RowBoundary[] | undefined ;
 	/** Changes the reported name depending on the detected rows (e.g. declaration-equals when aligning the `=` axis). */
 	readonly groupName? : (run: readonly DetectedRow[]) => string;
+	/** Row floor for this run when it differs from the general floor (user-confirmed: `=` declaration tables from 2 rows). */
+	readonly minRows?   : (run: readonly DetectedRow[]) => number | undefined;
 }
 
 /** Returns the token position only if only whitespace lies between from and the token; undefined with comments or ASI. */
@@ -77,16 +79,16 @@ export function displayColumn(source: SourceFile, position: number): number {
 
 /** Checks that the row owns its line; false when other code shares the line, as in a one-line execution block. */
 export function ownLineOf(source: SourceFile, node: Node, rest: RegExp): boolean {
-	const start = node.getStart(source);
-	const line = source.getLineAndCharacterOfPosition(start).line;
+	const start = node.getStart(source)                            ;
+	const line  = source.getLineAndCharacterOfPosition(start).line ;
 	if (line !== source.getLineAndCharacterOfPosition(node.getEnd() - 1).line) return false;
 	if (skipTrivia(source.text, source.getPositionOfLineAndCharacter(line, 0)) !== start) return false;
 	const lineEnd = source.text.indexOf("\n", node.getEnd());
 	return rest.test(source.text.slice(node.getEnd(), lineEnd < 0 ? source.text.length : lineEnd).replace(/\r$/u, ""));
 }
 
-const LINE_REST  = /^[ \t]*(?:\/\/.*)?$/u;
-const COMMA_REST = /^[ \t]*,?[ \t]*(?:\/\/.*)?$/u;
+const LINE_REST  = /^[ \t]*(?:\/\/.*)?$/u         ;
+const COMMA_REST = /^[ \t]*,?[ \t]*(?:\/\/.*)?$/u ;
 /** Tail after an object row's closing `}`: allows `)`, `;`, `,`, `as const` and `satisfies X`. */
 const CLOSER_REST = /^[ \t]*(?:(?:as const|satisfies [A-Za-z_$][\w$.<>[\]"']*)?[ \t]*(?:\)|;|,))?[ \t]*(?:\/\/.*)?$/u;
 /** Returns the start of the tail after the closing `}` (`as const`/`satisfies`/`)`/`;`/`,`); undefined when there is no tail. */
@@ -120,12 +122,12 @@ function detectDeclaration(source: SourceFile, node: Node): readonly RowBoundary
 	const boundaries: RowBoundary[] = []                               ;
 	const colon                     = tokenAfter(source, nameEnd, ":") ;
 	if (colon) boundaries.push({ axis: "colon", from: nameEnd, at: colon });
-	const equalsAnchor = declaration.type ? declaration.type.getEnd() : nameEnd;
-	const equals = tokenAfter(source, equalsAnchor, "=");
+	const equalsAnchor = declaration.type ? declaration.type.getEnd() : nameEnd ;
+	const equals       = tokenAfter(source, equalsAnchor, "=")                  ;
 	if (equals) boundaries.push({ axis: "equals", from: equalsAnchor, at: equals });
 	if (!colon && !equals) return undefined;
-	const contentEnd = node.declarationList.getEnd();
-	const semicolon = tokenAfter(source, contentEnd, ";");
+	const contentEnd = node.declarationList.getEnd()       ;
+	const semicolon  = tokenAfter(source, contentEnd, ";") ;
 	if (!semicolon) return undefined;
 	boundaries.push({ axis: "semicolon", from: contentEnd, at: semicolon });
 	const comment = trailingComment(source, semicolon + 1);
@@ -136,8 +138,8 @@ function detectDeclaration(source: SourceFile, node: Node): readonly RowBoundary
 function detectTypeAlias(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
 	if (!isTypeAliasDeclaration(node)) return undefined;
 	if (!ownLineOf(source, node, LINE_REST)) return undefined;
-	const anchor = node.typeParameters ? (node.typeParameters as unknown as { readonly end: number }).end : node.name.getEnd();
-	const equals = tokenAfter(source, anchor, "=");
+	const anchor = node.typeParameters ? (node.typeParameters as unknown as { readonly end: number }).end : node.name.getEnd() ;
+	const equals = tokenAfter(source, anchor, "=")                                                                             ;
 	if (!equals) return undefined;
 	const semicolon = tokenAfter(source, node.type.getEnd(), ";");
 	if (!semicolon) return undefined;
@@ -157,11 +159,11 @@ function detectMember(source: SourceFile, node: Node): readonly RowBoundary[] | 
 	const boundaries: RowBoundary[] = []                                        ;
 	const colon                     = tokenAfter(source, nameEnd, ":")          ;
 	if (colon) boundaries.push({ axis: "colon", from: nameEnd, at: colon });
-	const equalsAnchor = node.type ? node.type.getEnd() : nameEnd;
-	const equals = isPropertyDeclaration(node) && node.initializer ? tokenAfter(source, equalsAnchor, "=") : undefined;
+	const equalsAnchor = node.type ? node.type.getEnd() : nameEnd                                                            ;
+	const equals       = isPropertyDeclaration(node) && node.initializer ? tokenAfter(source, equalsAnchor, "=") : undefined ;
 	if (equals) boundaries.push({ axis: "equals", from: equalsAnchor, at: equals });
-	const contentEnd = (node.initializer ?? node.type)?.getEnd() ?? nameEnd;
-	const semicolon = tokenAfter(source, contentEnd, ";");
+	const contentEnd = (node.initializer ?? node.type)?.getEnd() ?? nameEnd ;
+	const semicolon  = tokenAfter(source, contentEnd, ";")                  ;
 	if (!semicolon) return undefined;
 	boundaries.push({ axis: "semicolon", from: contentEnd, at: semicolon });
 	const comment = trailingComment(source, semicolon + 1);
@@ -172,8 +174,8 @@ function detectMember(source: SourceFile, node: Node): readonly RowBoundary[] | 
 function detectMethod(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
 	if (!isMethodSignatureDeclaration(node) && !isMethodDeclaration(node)) return undefined;
 	if (!ownLineOf(source, node, LINE_REST)) return undefined;
-	const nameEnd = node.name.getEnd();
-	const open = tokenAfter(source, nameEnd, "(");
+	const nameEnd = node.name.getEnd()               ;
+	const open    = tokenAfter(source, nameEnd, "(") ;
 	if (!open) return undefined;
 	const parameters    = node.parameters                                        ;
 	const hasParameters = parameters.length > 0                                  ;
@@ -186,8 +188,8 @@ function detectMethod(source: SourceFile, node: Node): readonly RowBoundary[] | 
 	const typeColon = node.type ? tokenAfter(source, close + 1, ":") : undefined;
 	// The return-type `:` is aligned as an insert axis (from==at) to preserve the existing `):` convention.
 	if (typeColon) boundaries.push({ axis: "colon", from: typeColon, at: typeColon, insert: true });
-	const commentAnchor = node.type ? node.type.getEnd() : node.getEnd();
-	const comment = trailingComment(source, commentAnchor);
+	const commentAnchor = node.type ? node.type.getEnd() : node.getEnd() ;
+	const comment       = trailingComment(source, commentAnchor)         ;
 	if (comment) boundaries.push(comment);
 	return boundaries;
 }
@@ -199,8 +201,8 @@ function detectEnumMember(source: SourceFile, node: Node): readonly RowBoundary[
 	const boundaries: RowBoundary[] = []                                                              ;
 	const equals                    = node.initializer ? tokenAfter(source, nameEnd, "=") : undefined ;
 	if (equals) boundaries.push({ axis: "equals", from: nameEnd, at: equals });
-	const valueEnd = node.initializer ? node.initializer.getEnd() : nameEnd;
-	const comma = tokenAfter(source, valueEnd, ",");
+	const valueEnd = node.initializer ? node.initializer.getEnd() : nameEnd ;
+	const comma    = tokenAfter(source, valueEnd, ",")                      ;
 	if (!comma) return undefined;
 	boundaries.push({ axis: "comma", from: valueEnd, at: comma });
 	const comment = trailingComment(source, comma + 1);
@@ -235,8 +237,8 @@ function detectAssignments(source: SourceFile, node: Node): readonly RowBoundary
 	if (syntaxKindName(expression) !== "BinaryExpression") return undefined;
 	const binary = expression as unknown as { operatorToken: Node; left: Node; right: Node };
 	if (source.text.slice(binary.operatorToken.getStart(source), binary.operatorToken.getEnd()) !== "=") return undefined;
-	const boundaries: RowBoundary[] = [];
-	const equals = tokenAfter(source, binary.left.getEnd(), "=");
+	const boundaries: RowBoundary[] = []                                            ;
+	const equals                    = tokenAfter(source, binary.left.getEnd(), "=") ;
 	if (equals === undefined) return undefined;
 	boundaries.push({ axis: "equals", from: binary.left.getEnd(), at: equals });
 	const semicolon = tokenAfter(source, binary.right.getEnd(), ";");
@@ -285,8 +287,8 @@ function detectCaseClause(source: SourceFile, node: Node): readonly RowBoundary[
 	const colon = tokenAfter(source, node.expression.getEnd(), ":");
 	if (!colon) return undefined;
 	// The label `:` is aligned as an insert axis (from==at) to preserve the `case "a":` convention.
-	const boundaries: RowBoundary[] = [{ axis: "case-colon", from: colon, at: colon, insert: true }];
-	const statements = node.statements;
+	const boundaries: RowBoundary[] = [{ axis: "case-colon", from: colon, at: colon, insert: true }] ;
+	const statements                = node.statements                                                ;
 	if (statements.length > 0) {
 		const call = firstCallOf(statements[0]!);
 		if (call) {
@@ -318,13 +320,13 @@ function objectLiteralOf(node: Node): ObjectLiteralExpression | undefined {
 function detectObjectRow(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
 	if (!isObjectLiteralExpression(node) && objectLiteralOf(node) === undefined) return undefined;
 	if (!ownLineOf(source, node, CLOSER_REST)) return undefined;
-	const obj = objectLiteralOf(node)!;
-	const properties = [...obj.properties];
+	const obj        = objectLiteralOf(node)! ;
+	const properties = [...obj.properties]    ;
 	if (properties.length === 0 || !properties.every(isPropertyAssignment)) return undefined;
 	const openBrace = obj.getStart(source);
 	if (source.text[openBrace] !== "{") return undefined;
-	const boundaries: RowBoundary[] = [{ axis: "open-brace", from: openBrace, at: openBrace, insert: true }];
-	let propertyAnchor = openBrace + 1;
+	const boundaries: RowBoundary[] = [{ axis: "open-brace", from: openBrace, at: openBrace, insert: true }] ;
+	let propertyAnchor              = openBrace + 1                                                          ;
 	for (let index = 0; index < properties.length; index += 1) {
 		const property  = properties[index]! as PropertyAssignment          ;
 		const nameStart = property.name.getStart(source)                    ;
@@ -359,8 +361,8 @@ function detectObjectRow(source: SourceFile, node: Node): readonly RowBoundary[]
 function detectRegistrationRow(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
 	if (!isPropertyAssignment(node)) return undefined;
 	if (!ownLineOf(source, node, COMMA_REST)) return undefined;
-	const nameEnd = (node.postfixToken ?? node.name).getEnd();
-	const colon = tokenAfter(source, nameEnd, ":");
+	const nameEnd = (node.postfixToken ?? node.name).getEnd() ;
+	const colon   = tokenAfter(source, nameEnd, ":")          ;
 	if (!colon) return undefined;
 	const boundaries: RowBoundary[] = [{ axis: "colon", from: nameEnd, at: colon }];
 	if (spacesOnly(source, colon + 1, node.initializer.getStart())) {
@@ -380,6 +382,7 @@ export const ROW_KINDS: readonly RowKind[] = [
 		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
 		detect     : detectDeclaration,
 		groupName  : run => run.some(row => row.boundaries.some(boundary => boundary.axis === "equals")) ? "declaration-equals" : "declaration",
+		minRows    : run => run.every(row => row.boundaries.some(boundary => boundary.axis === "equals")) ? 2 : undefined,
 	},
 	{
 		name       : "type-alias",

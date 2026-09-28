@@ -12,8 +12,8 @@ afterEach(() => {
 
 /** Writes `lines` to a temporary file, normalizes it in place and returns the result. */
 function normalize(lines: readonly string[]): string {
-	const workspace = mkdtempSync(join(import.meta.dir, "normalize-imports-"));
-	const target    = join(workspace, "imports.ts")                        ;
+	const workspace = mkdtempSync(join(import.meta.dir, "normalize-imports-")) ;
+	const target    = join(workspace, "imports.ts")                            ;
 	workspaces.push(workspace);
 	writeFileSync(target, lines.join("\n") + "\n");
 	const run = Bun.spawnSync(["bun", script, "--write", relative(root, target)], { cwd: root, stderr: "pipe", stdout: "pipe" });

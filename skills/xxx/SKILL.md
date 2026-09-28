@@ -57,7 +57,7 @@ Decide in this order:
 - Each same-role declaration or execution is one row.
 - Identifiers, separators, keywords, types, statements and notes are comparable columns and cells.
 - When `( )`, `{ }` or `< >` contain another repeated structure, build a sub-table inside that cell.
-- Apply tabular alignment when three or more comparable same-role rows are contiguous. Make a table from two rows only when the user confirmed the comparison is useful.
+- Apply tabular alignment when three or more comparable same-role rows are contiguous. Exceptions confirmed by the user: `=` declaration tables and imports align from two rows. Other two-row groups are reported as pairs and never fixed automatically; `--min-rows` cannot go below 3 for fixes.
 - A contract mixing JSDoc, optional capabilities and different lifecycle responsibilities — such as a public Port — is not one table. Rows split by JSDoc or blank lines are separate semantic units; do not insert inner spaces to align the closing `>` of return types.
 - Column 120 is a signal to consider structural splitting when creating a new alignment, not a ceiling for dismantling a canonical grid. Preserve the syntax axes of an existing grid the user accepted, regardless of width.
 - Left-align feature/function names and execution cells. Recompute the inner width of `( )` in a repeated function table from the actual longest argument, and center only the short arguments within that minimum width.

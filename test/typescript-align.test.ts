@@ -18,8 +18,8 @@ afterEach(() => {
 
 describe("typescript call statement alignment", () => {
 	test("aligns subject/matcher parentheses, dots and semicolons of consecutive call statements", () => {
-		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-"));
-		const target    = join(workspace, "calls.ts")                         ;
+		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
+		const target    = join(workspace, "calls.ts")                             ;
 		workspaces.push(workspace);
 		writeFileSync(target, [
 			'expect(lstatSync(skill).isDirectory()).toBe(true);',
@@ -27,7 +27,7 @@ describe("typescript call statement alignment", () => {
 			'expect(realpathSync(skill)).not.toBe(realpathSync(pluginSkill));',
 		].join("\n") + "\n");
 
-		const file   = relative(root, target)                                                             ;
+		const file   = relative(root, target)                                                                                   ;
 		const result = Bun.spawnSync(["bun", script, "--file", file, "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" }) ;
 		expect(result.exitCode).toBe(0);
 		expect(result.stdout.toString()).toContain("call-statements");
@@ -41,8 +41,8 @@ describe("typescript call statement alignment", () => {
 
 describe("typescript object row alignment", () => {
 	test("aligns braces, properties, colons, values and commas of object rows", () => {
-		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-"));
-		const target    = join(workspace, "objects.ts")                       ;
+		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
+		const target    = join(workspace, "objects.ts")                           ;
 		workspaces.push(workspace);
 		writeFileSync(target, [
 			"const boundaries: RowBoundary[] = [",
@@ -54,7 +54,7 @@ describe("typescript object row alignment", () => {
 			"] ;",
 		].join("\n") + "\n");
 
-		const file   = relative(root, target)                                                                                       ;
+		const file   = relative(root, target)                                                                                   ;
 		const result = Bun.spawnSync(["bun", script, "--file", file, "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" }) ;
 		expect(result.exitCode).toBe(0);
 		expect(result.stdout.toString()).toContain("object-rows");
@@ -83,5 +83,34 @@ describe("typescript whitespace-only guarantee", () => {
 		expect(result.stdout.toString()                             ).toContain("refused=0") ;
 		expect(result.stdout.toString()                             ).toContain("parse=ok" ) ;
 		expect(preservesTokens(before, readFileSync(target, "utf8"))).toBe     (true       ) ;
+	});
+});
+
+describe("typescript row floors", () => {
+	test("a 2-row = declaration table is aligned; a 2-row group of another kind is not", () => {
+		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
+		const target    = join(workspace, "floors.ts")                            ;
+		workspaces.push(workspace);
+		writeFileSync(target, [
+			"const value = chars[index]!;",
+			"const nextValue = chars[index + 1];",
+			"",
+			"interface Pair {",
+			"\ta: string;",
+			"\tlonger: number;",
+			"}",
+		].join("\n") + "\n");
+
+		const result = Bun.spawnSync(["bun", script, "--file", relative(root, target), "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" });
+		expect(result.exitCode).toBe(0);
+		expect(readFileSync(target, "utf8")).toBe([
+			"const value     = chars[index]!    ;",
+			"const nextValue = chars[index + 1] ;",
+			"",
+			"interface Pair {",
+			"\ta: string;",
+			"\tlonger: number;",
+			"}",
+		].join("\n") + "\n");
 	});
 });

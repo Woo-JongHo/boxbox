@@ -29,8 +29,8 @@ function lexicalMask(source: string): string {
 	let state: "code" | "single" | "double" | "template" | "line" | "block" = "code"           ;
 	let escaped                                                             = false            ;
 	for (let index = 0; index < chars.length; index += 1) {
-		const value = chars[index    ]!;
-		const next  = chars[index + 1] ;
+		const value = chars[index    ]! ;
+		const next  = chars[index + 1]  ;
 		if (state === "code") {
 			if (value === "/" && next === "/") { state = "line"    ; chars[index] = chars[index + 1] = " "; index += 1; continue; }
 			if (value === "/" && next === "*") { state = "block"   ; chars[index] = chars[index + 1] = " "; index += 1; continue; }
@@ -69,8 +69,8 @@ function lexicalMask(source: string): string {
 
 function importRows(source: string, file: string): readonly ImportRow[] {
 	void file;
-	const mask    = lexicalMask(source);
-	const pattern = /^import[ \t]+(?!["'])(?:type[ \t]+)?[^"'=();]+?[ \t]+from[ \t]+["'][^"'\n]*["'](?:[ \t]+(?:with|assert)[ \t]*\{[^{}\n]*\})?[ \t]*;?[ \t]*\r?$/gmu;
+	const mask    = lexicalMask(source)                                                                                                                                ;
+	const pattern = /^import[ \t]+(?!["'])(?:type[ \t]+)?[^"'=();]+?[ \t]+from[ \t]+["'][^"'\n]*["'](?:[ \t]+(?:with|assert)[ \t]*\{[^{}\n]*\})?[ \t]*;?[ \t]*\r?$/gmu ;
 	const ranges  = [...mask.matchAll(pattern)].map(match => {
 		const matchedEnd = match.index + match[0].length;
 		return { start: match.index, end: mask[matchedEnd - 1] === "\r" ? matchedEnd - 1 : matchedEnd };
@@ -118,8 +118,8 @@ function splitNamedImport(row: string, file: string): readonly string[] {
 	const open   = clause.indexOf("{")     ;
 	const close  = clause.lastIndexOf("}") ;
 	if (open < 0 || close < open) return [row];
-	const before = clause.slice(0, open).replace(/,\s*$/u, "").trim();
-	const entries = clause.slice(open + 1, close).split(",").map(value => value.trim()).filter(Boolean);
+	const before  = clause.slice(0, open).replace(/,\s*$/u, "").trim()                                  ;
+	const entries = clause.slice(open + 1, close).split(",").map(value => value.trim()).filter(Boolean) ;
 	if (entries.some(value => /^type\s+as\s+[A-Za-z_$][\w$]*$/u.test(value))) return [row];
 	const types = entries.filter(value => /^type\s+/u.test(value));
 	if (types.length === 0) return [row];
@@ -129,8 +129,8 @@ function splitNamedImport(row: string, file: string): readonly string[] {
 	const terminator       = /;\s*$/u.test(row) ? ";" : ""                     ;
 	const result: string[] = []                                                ;
 	if (before || values.length > 0) {
-		const named = values.length > 0 ? `{ ${values.join(", ")} }` : "";
-		const valueClause = [before, named].filter(Boolean).join(", ");
+		const named       = values.length > 0 ? `{ ${values.join(", ")} }` : "" ;
+		const valueClause = [before, named].filter(Boolean).join(", ")          ;
 		result.push(`import ${valueClause} from ${module}${terminator}`);
 	}
 	result.push(`import type { ${types.map(value => value.replace(/^type\s+/u, "")).join(", ")} } from ${module}${terminator}`);
@@ -216,8 +216,8 @@ function renderSection(rows: readonly TableImport[], newline: string): readonly 
 	}
 	const vertical = new Set<number>();
 	rows.forEach((row, index) => { if (row.entries.length > 1 && displayWidth(compactLine(row)) > MAX_WIDTH) vertical.add(index); });
-	const widths = rows.map((row, index) => vertical.has(index) ? -1 : displayWidth(row.entries.join(", ")));
-	const order  = widths.map((width, index) => ({ width, index })).filter(entry => entry.width >= 0).sort((left, right) => right.width - left.width);
+	const widths = rows.map((row, index) => vertical.has(index) ? -1 : displayWidth(row.entries.join(", ")))                                          ;
+	const order  = widths.map((width, index) => ({ width, index })).filter(entry => entry.width >= 0).sort((left, right) => right.width - left.width) ;
 	const [first, second] = order;
 	if (first && second && first.width - second.width >= OUTLIER_GAP && rows[first.index]!.entries.length > 1) vertical.add(first.index);
 	for (;;) {
@@ -236,11 +236,11 @@ function renderTable(rows: readonly TableImport[], vertical: ReadonlySet<number>
 	const namesWidth  = Math.max(...rows.map((row, index) => vertical.has(index)
 		? Math.max(...row.entries.map(entry => displayWidth(entry))) + 2
 		: displayWidth(row.entries.join(", "))));
-	const moduleWidth = Math.max(...rows.map(row => displayWidth(row.module)));
-	const namesColumn = headWidth + 3;
+	const moduleWidth = Math.max(...rows.map(row => displayWidth(row.module))) ;
+	const namesColumn = headWidth + 3                                          ;
 	return rows.map((row, index) => {
-		const tail   = row.terminator ? `${pad(row.module, moduleWidth)} ;` : row.module;
-		const suffix = row.suffix ? ` ${row.suffix}` : "";
+		const tail   = row.terminator ? `${pad(row.module, moduleWidth)} ;` : row.module ;
+		const suffix = row.suffix ? ` ${row.suffix}` : ""                                ;
 		if (!vertical.has(index)) return `${pad(row.head, headWidth)} { ${pad(row.entries.join(", "), namesWidth)} } from ${tail}${suffix}`;
 		const names = row.entries.map(entry => `${" ".repeat(namesColumn)}${pad(entry, namesWidth - 2)} ,`);
 		return [`${pad(row.head, headWidth)} {`, ...names, `${" ".repeat(namesColumn + namesWidth + 1)}} from ${tail}${suffix}`].join(newline);
@@ -250,11 +250,11 @@ function renderTable(rows: readonly TableImport[], vertical: ReadonlySet<number>
 function normalizeOnce(source: string, file: string): string {
 	const rows = importRows(source, file);
 	if (rows.length === 0) return source;
-	const newline = source.includes("\r\n") ? "\r\n" : "\n";
-	const terminators = new Map<number, Set<boolean>>();
+	const newline     = source.includes("\r\n") ? "\r\n" : "\n" ;
+	const terminators = new Map<number, Set<boolean>>()         ;
 	for (const row of rows) {
-		const styles = terminators.get(row.section) ?? new Set<boolean>();
-		const at = commentIndex(row.text);
+		const styles = terminators.get(row.section) ?? new Set<boolean>() ;
+		const at     = commentIndex(row.text)                             ;
 		styles.add(/;[ \t]*$/u.test(at < 0 ? row.text : row.text.slice(0, at)));
 		terminators.set(row.section, styles);
 	}
@@ -274,8 +274,8 @@ function normalizeOnce(source: string, file: string): string {
 	}
 	let offset = 0;
 	const replacements = rows.map((row, index) => {
-		const count = split[index]!.length;
-		const text = output.slice(offset, offset + count).join(newline);
+		const count = split[index]!.length                               ;
+		const text  = output.slice(offset, offset + count).join(newline) ;
 		offset += count;
 		return { ...row, text };
 	});
@@ -302,8 +302,8 @@ let changed   = 0                                ;
 let errors    = 0                                ;
 for (const absolute of targets) {
 	try {
-		const before = readFileSync(absolute, "utf8");
-		const after = normalize(before, absolute);
+		const before = readFileSync(absolute, "utf8") ;
+		const after  = normalize(before, absolute)    ;
 		if (after === before) continue;
 		changed += 1;
 		console.log(`${write ? "fixed" : "invalid"} ${relative(root, absolute)}`);

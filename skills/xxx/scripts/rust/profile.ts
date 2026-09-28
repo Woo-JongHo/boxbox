@@ -181,8 +181,8 @@ const variantRow = (code: string, indices: RegExpIndicesArray): RowProfile | nul
 const armRow = (code: string, indices: RegExpIndicesArray): RowProfile | null => {
 	const gaps = gapsOf(code, indices, [3, 4, 6]);
 	if (gaps === null) return null;
-	const pattern = cellOf(code, indices, 2);
-	const action  = cellOf(code, indices, 5);
+	const pattern = cellOf(code, indices, 2) ;
+	const action  = cellOf(code, indices, 5) ;
 	if (pattern.trim() === "" || action.trim() === "") return null;
 	const slots: Slot[] = [
 		{ axis : "pattern" , text : pattern , gapBefore : ""      },
@@ -213,8 +213,8 @@ function bundleProfile(code: string, masked: string): RowProfile | null {
 	if (GROUP_UNSAFE.test(masked.slice(interior[0], interior[1]))) return null; // row with nesting, assignment or slice type remaining
 
 	// Cut cell ranges by mask coordinates. Commas inside string/char cells are spaces in the mask, so they are not boundaries.
-	const bounds: Array<{ start: number; end: number }> = [];
-	let boundStart = interior[0];
+	const bounds: Array<{ start: number; end: number }> = []          ;
+	let boundStart                                      = interior[0] ;
 	for (let index = interior[0]; index < interior[1]; index += 1) {
 		if (masked[index] === ",") {
 			bounds.push({ start: boundStart, end: index });

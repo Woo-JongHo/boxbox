@@ -17,8 +17,8 @@ import      {
               test          ,
                               } from "bun:test"  ;
 
-const ROOT = resolve(import.meta.dir, "..");
-const homes: string[] = [];
+const ROOT            = resolve(import.meta.dir, "..") ;
+const homes: string[] = []                             ;
 
 function temporaryHome(): string {
 	const home = mkdtempSync(join(tmpdir(), "xxx-install-"));
@@ -67,8 +67,8 @@ describe("install.sh lifecycle", () => {
 	});
 
 	test("never overwrites a regular file owned by the user", () => {
-		const home = temporaryHome();
-		const target = join(home, ".codex/skills/xxx");
+		const home   = temporaryHome()                 ;
+		const target = join(home, ".codex/skills/xxx") ;
 		mkdirSync(target, { recursive: true });
 		writeFileSync(join(target, "owner.txt"), "keep\n");
 

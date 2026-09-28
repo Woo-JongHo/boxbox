@@ -35,8 +35,8 @@ function joinable(left: string, right: string): boolean {
 
 /** Collapses each whitespace run to one space when removing it would join two tokens, and to nothing otherwise. */
 function normalizeCode(code: string): string {
-	let result = "";
-	let index  = 0;
+	let result = "" ;
+	let index  = 0  ;
 	while (index < code.length) {
 		if (!BLANK.test(code[index]!)) {
 			result += code[index];
@@ -45,8 +45,8 @@ function normalizeCode(code: string): string {
 		}
 		let end = index;
 		while (end < code.length && BLANK.test(code[end]!)) end += 1;
-		const left  = result[result.length - 1] ?? "";
-		const right = code[end] ?? "";
+		const left  = result[result.length - 1] ?? "" ;
+		const right = code[end] ?? ""                 ;
 		if (left !== "" && right !== "" && joinable(left, right)) result += " ";
 		index = end;
 	}

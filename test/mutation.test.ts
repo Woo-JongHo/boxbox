@@ -50,8 +50,8 @@ const align = (source: string, aligner: LineProfiler): string => alignSource(sou
 
 /** Returns the first broken invariant for `variant`, or undefined when all hold. */
 function violation(variant: string, aligner: LineProfiler): string | undefined {
-	const result = alignSource(variant, aligner, { minRows: 3, apply: true });
-	const once   = result.output;
+	const result = alignSource(variant, aligner, { minRows: 3, apply: true }) ;
+	const once   = result.output                                              ;
 	if (changedLines(variant, once, aligner.syntax).length > 0) return "changed more than whitespace between tokens";
 	// A refusal is safe, but here it means a profiler and the preservation check disagree — a bug to find.
 	if (result.refused.length > 0) return `refused ${result.refused.length} table(s)`;
@@ -61,8 +61,8 @@ function violation(variant: string, aligner: LineProfiler): string | undefined {
 
 describe("mutation invariants", () => {
 	for (const language of LANGUAGES) {
-		const name    = language.aligner.language ;
-		const sources = ["tables", "tricky"].map(file => readFileSync(`${FIXTURES}${name}/${file}.${language.extension}`, "utf8"));
+		const name    = language.aligner.language                                                                                  ;
+		const sources = ["tables", "tricky"].map(file => readFileSync(`${FIXTURES}${name}/${file}.${language.extension}`, "utf8")) ;
 
 		test(`${name}: ${VARIANTS} variants keep whitespace-only output and idempotence`, () => {
 			for (let seed = 1; seed <= VARIANTS; seed += 1) {
@@ -98,8 +98,8 @@ describe("mutation invariants (TypeScript aligner)", () => {
 		const workspace = mkdtempSync(join(import.meta.dir, "mutation-ts-"));
 		try {
 			for (let seed = 1; seed <= TS_VARIANTS; seed += 1) {
-				const variant = mutate(source, { syntax: JAVASCRIPT_ALIGNER.syntax, comment: "//" }, seed);
-				const target  = join(workspace, `variant-${seed}.ts`);
+				const variant = mutate(source, { syntax: JAVASCRIPT_ALIGNER.syntax, comment: "//" }, seed) ;
+				const target  = join(workspace, `variant-${seed}.ts`)                                      ;
 				writeFileSync(target, variant);
 				const file  = relative(root, target)                                                                                   ;
 				const first = Bun.spawnSync(["bun", script, "--file", file, "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" }) ;

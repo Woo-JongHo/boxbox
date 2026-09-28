@@ -23,8 +23,8 @@ describe("python profile specific properties", () => {
 			`    "debug": True,`,
 			"}",
 		].join("\n");
-		const result = align(source);
-		const lines = result.output.split("\n");
+		const result = align(source)             ;
+		const lines  = result.output.split("\n") ;
 		expect(lines[1]     ).toBe(`    "host" : "localhost:8080",`) ;
 		expect(lines[2]     ).toBe(`    "port" : 8080            ,`) ;
 		expect(lines[3]     ).toBe(`    "debug": True            ,`) ;
@@ -39,8 +39,8 @@ describe("python profile specific properties", () => {
 			`    label: str = "x"`,
 			"    verbose: bool = True",
 		].join("\n");
-		const result = align(source);
-		const lines = result.output.split("\n");
+		const result = align(source)             ;
+		const lines  = result.output.split("\n") ;
 		expect(lines[2]         ).toBe("    retries: int  = 3"   ) ;
 		expect(lines[3]         ).toBe(`    label  : str  = "x"` ) ;
 		expect(lines[4]         ).toBe("    verbose: bool = True") ;
@@ -53,8 +53,8 @@ describe("python profile specific properties", () => {
 			"level:int=3",
 			"name:str='x'",
 		].join("\n");
-		const result = align(source);
-		const lines = result.output.split("\n");
+		const result = align(source)             ;
+		const lines  = result.output.split("\n") ;
 		expect(lines[0]).toBe("ratio: float = 0.5") ;
 		expect(lines[1]).toBe("level: int   = 3"  ) ;
 		expect(lines[2]).toBe("name : str   = 'x'") ;
@@ -82,8 +82,8 @@ describe("python profile specific properties", () => {
 			`    ("delta", 4, "w"),`,
 			"]",
 		].join("\n");
-		const result = align(source);
-		const lines = result.output.split("\n");
+		const result = align(source)             ;
+		const lines  = result.output.split("\n") ;
 		expect(lines[1]).toBe(`    ["alpha", 1  , "x"  ],`) ;
 		expect(lines[2]).toBe(`    ["b"    , 22 , "yy" ],`) ;
 		expect(lines[3]).toBe(`    ["ccc"  , 333, "zzz"],`) ;

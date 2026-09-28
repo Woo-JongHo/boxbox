@@ -45,8 +45,8 @@ const BUNDLE_JUNK = /[[\]{}()=]/u                                               
 /** String literal form of a bundle cell — accepts "", '' and ``; commas and brackets inside are blanked by the mask. */
 const STRING_CELL = /^(?:"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`[^`\\]*(?:\\.[^`\\]*)*`)$/u                  ;
 /** Scalar form of a bundle cell — signed decimal numbers and identifiers (including true/false/null/undefined). */
-const NUMBER_CELL = /^[+-]?(?:[0-9][0-9_]*(?:\.[0-9_]*)?|\.[0-9_]+)(?:[eE][+-]?[0-9]+)?$/u                    ;
-const IDENT_CELL  = /^[A-Za-z_$][A-Za-z0-9_$]*$/u                                                             ;
+const NUMBER_CELL = /^[+-]?(?:[0-9][0-9_]*(?:\.[0-9_]*)?|\.[0-9_]+)(?:[eE][+-]?[0-9]+)?$/u ;
+const IDENT_CELL  = /^[A-Za-z_$][A-Za-z0-9_$]*$/u                                          ;
 
 const CLOSERS: Record<string, string> = { ")": "(", "]": "[", "}": "{" };
 
@@ -126,14 +126,14 @@ function isScalarCell(masked: string, start: number, text: string): boolean {
 function bundleProfile(code: string, masked: string, match: RegExpExecArray): RowProfile | null {
 	const indices = match.indices        ;
 	if (!indices) return null            ;
-	const interior = indices[2]          ;
-	const trailer  = indices[3]          ;
+	const interior = indices[2] ;
+	const trailer  = indices[3] ;
 	if (!interior || !trailer) return null;
 	if (BUNDLE_JUNK.test(masked.slice(interior[0], interior[1]))) return null;
 
 	// Cut cell ranges by mask coordinates. Commas inside string cells are spaces in the mask, so they are not boundaries.
-	const bounds: Array<{ start: number; end: number }> = [];
-	let boundStart = interior[0];
+	const bounds: Array<{ start: number; end: number }> = []          ;
+	let boundStart                                      = interior[0] ;
 	for (let index = interior[0]; index < interior[1]; index += 1) {
 		if (masked[index] === ",") {
 			bounds.push({ start: boundStart, end: index });
@@ -145,8 +145,8 @@ function bundleProfile(code: string, masked: string, match: RegExpExecArray): Ro
 
 	const cells: Array<{ text: string; gap: string; commaGap: string; end: number }> = [];
 	for (const bound of bounds) {
-		const raw  = code.slice(bound.start, bound.end);
-		const text = raw.trim()                                     ;
+		const raw  = code.slice(bound.start, bound.end) ;
+		const text = raw.trim()                         ;
 		if (text === "") return null; // empty cell from consecutive commas or before the closing bracket
 		const cellStart = bound.start + raw.indexOf(text)           ;
 		if (!isScalarCell(masked, cellStart, text)) return null     ;

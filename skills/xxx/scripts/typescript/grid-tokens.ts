@@ -98,8 +98,8 @@ export function bracketsOf(node: Node, source: SourceFile): { readonly open: Bou
 	if (isObjectLiteralExpression(node)) return pairAt("object-literal-brace", source, node);
 	if (isArrayLiteralExpression(node)) return pairAt("array-bracket", source, node);
 	if (isCallExpression(node)) {
-		const open  = charTokenAt("call-paren", source, skipTrivia(source.text, node.expression.getEnd()), "(");
-		const close = charTokenAt("call-paren", source, node.getEnd() - 1, ")");
+		const open  = charTokenAt("call-paren", source, skipTrivia(source.text, node.expression.getEnd()), "(") ;
+		const close = charTokenAt("call-paren", source, node.getEnd() - 1, ")")                                 ;
 		return open && close ? { open, close } : undefined;
 	}
 	return undefined;
@@ -115,8 +115,8 @@ function pairAt(role: BoundaryRole, source: SourceFile, node: Node): { readonly 
  * and call arguments have no comma in the row itself, only in the enclosing node, so the two are treated separately.
  */
 export function boundaryAxesOf(container: Node, row: Node, source: SourceFile): readonly BoundaryRole[] {
-	const axes: BoundaryRole[] = [];
-	const colon = colonOf(row, source);
+	const axes: BoundaryRole[] = []                   ;
+	const colon                = colonOf(row, source) ;
 	if (colon) axes.push(colon.role);
 	const semicolon = semicolonOf(row, source);
 	if (semicolon) axes.push(semicolon.role);

@@ -40,8 +40,8 @@ Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked`
 | T3 | Output re-parse | ✅ done 2026-09-28 |
 | T3.5 | Mutation tests | ✅ done 2026-09-28 |
 | T3.6 | TEST_COMPLETED folder | ✅ done 2026-09-28 |
-| T4 | Row floors per kind | ▶ active |
-| T5 | Go alignment off by default | ⬜ todo |
+| T4 | Row floors per kind | ✅ done 2026-09-28 |
+| T5 | Go alignment off by default | ▶ active |
 | T6 | Shared `Result` JSON | ⬜ todo |
 | T7 | Close M1 | ⬜ todo |
 
@@ -116,11 +116,11 @@ A place to check aligned results by eye in an editor (design §6, L4 review, fir
 - **Accept:** all eight languages are present; failing files are marked `FAIL` in `SUMMARY.txt`.
 - **Verify:** run the command; the user reviews the folder.
 
-### T4 — 3-row floor for fixes
+### T4 — Row floors per kind
 
-- **Scope:** the line engine floors `minRows` at 2 (`Math.max(2, …)` in `table-engine.ts`); change the floor for **fixes** to 3. Two-row groups are only reported as pairs. The `--min-rows 2` promotion path in SKILL.md and the pilot doc is replaced by "record a human Decision" (implemented later in M4; until then pairs are report-only).
-- **Accept:** `--min-rows 2 --write` does not change a 2-row group in any language; docs no longer advertise `--min-rows 2` as a fix path.
-- **Verify:** `bun test`; `grep -rn "min-rows 2" skills docs` shows only the new wording.
+- **Scope:** fixes apply from 3 rows, with two user-confirmed exceptions from 2 rows: TypeScript `=` declaration tables (`declaration-equals`) and imports. The line engine raises any `minRows` below 3 to 3, so `--min-rows 2 --write` no longer promotes pairs. Line-engine `=` declarations per language are decided in F1.
+- **Accept:** a 2-row TypeScript `=` declaration table is aligned; a 2-row group of any other kind, and any 2-row line-engine group even with `--min-rows 2`, is left unchanged; docs no longer advertise `--min-rows 2` as a fix path.
+- **Verify:** `bun test`; `grep -rn "min-rows 2" skills docs` shows only the reporting option of `01_group-regions.ts` and history notes.
 
 ### T5 — Go alignment off by default
 
@@ -149,10 +149,13 @@ Why: today's tests prove safety, not quality. Goldens were produced by the engin
 | F2 | Verdict status in TEST_COMPLETED | ⬜ todo |
 | F3 | Pinned real-code slice for review | ⬜ todo |
 | F4 | Edge inputs: CRLF, BOM, large files, Rust parser | ⬜ todo |
+| F5 | Swift | ⬜ todo |
+| F6 | Kotlin | ⬜ todo |
 
 - **F1:** `fixtures/<language>/<region>/<construct>/` with `input`, `expected` and `case.json` (approver, date, rule id, or "refused by design"), following the rule taxonomy (design §4.3). A generated coverage table per language: constructs that exist in the language, covered, deliberately unsupported.
 - **F2:** `SUMMARY.txt` marks each result `approved` or `unjudged`; only user-approved expectations count as goldens. Existing goldens start as `unjudged`.
 - **F3:** 3–5 permissively licensed repositories per language pinned by commit SHA (subset of design §5.2), aligned results sampled into `TEST_COMPLETED/corpus/<language>/` for review; nothing from them is committed except the manifest.
+- **F5 Swift / F6 Kotlin** (added 2026-09-28 at the user's request), built directly on the F1 structure: a `CodeSyntax` that handles nested block comments (`/* /* */ */`), multi-line strings (`"""`), Swift raw strings (`#"…"#`) and interpolation with nested strings (`\(…)`, `${…}`) — a masking extension that the mutation tests must cover; a profile per region; fixtures and construct matrix; re-parse with `swiftc -parse` and `kotlinc` (not installed locally yet; CI installs both); mutation tests; discovery text in manifests, SKILL.md and the contract test.
 - **F4:** CRLF and BOM files, a multi-thousand-line file per language with a time budget, and `rustfmt` installed locally so Rust re-parse stops being skipped.
 
 ## Next milestones (detailed when they become active)

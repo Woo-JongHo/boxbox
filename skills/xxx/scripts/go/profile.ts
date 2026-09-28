@@ -113,18 +113,18 @@ const rowFrom = (code: string, indices: RegExpIndicesArray, columns: readonly Co
  * are refused. The close slot (`}` + trailer) is last in the row, so padding cell columns never creates trailing whitespace.
  */
 function bundleProfile(code: string, masked: string): RowProfile | null {
-	const match = GROUP.exec(masked);
-	const indices = match?.indices;
+	const match   = GROUP.exec(masked) ;
+	const indices = match?.indices     ;
 	if (!match || !indices) return null;
-	const interior = indices[2];
-	const trailer = indices[3];
+	const interior = indices[2] ;
+	const trailer  = indices[3] ;
 	if (!interior || !trailer) return null;
 	const interiorText = masked.slice(interior[0], interior[1]);
 	if (GROUP_UNSAFE.test(interiorText) || GROUP_FUNC.test(interiorText)) return null;
 
 	// Cut cell ranges by mask coordinates. Commas inside string cells are spaces in the mask, so they are not boundaries.
-	const bounds: Array<{ start: number; end: number }> = [];
-	let boundStart = interior[0];
+	const bounds: Array<{ start: number; end: number }> = []          ;
+	let boundStart                                      = interior[0] ;
 	for (let index = interior[0]; index < interior[1]; index += 1) {
 		if (masked[index] === ",") {
 			bounds.push({ start: boundStart, end: index });
@@ -136,8 +136,8 @@ function bundleProfile(code: string, masked: string): RowProfile | null {
 
 	const cells: Array<{ text: string; gap: string; commaGap: string; end: number }> = [];
 	for (const bound of bounds) {
-		const raw = code.slice(bound.start, bound.end);
-		const text = raw.trim();
+		const raw  = code.slice(bound.start, bound.end) ;
+		const text = raw.trim()                         ;
 		if (text === "") return null; // empty cell from consecutive commas or after a trailing comma
 		const cellStart = bound.start + raw.indexOf(text);
 		if (text.startsWith('"') || text.startsWith("'") || text.startsWith("`")) {
