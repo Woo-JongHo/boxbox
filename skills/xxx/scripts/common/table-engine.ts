@@ -51,12 +51,14 @@ export interface TableEdit {
 }
 
 export interface DetectedTable {
-	readonly startLine : number               ;
-	readonly endLine   : number               ;
-	readonly rows      : number               ;
-	readonly axes      : readonly string[]    ;
-	readonly widths    : readonly number[]    ;
-	readonly edits     : readonly TableEdit[] ;
+	readonly startLine : number ;
+	readonly endLine   : number ;
+	readonly rows      : number ;
+	/** The shared indentation of the run — the line engine's nesting signal (design §6 L2). */
+	readonly indent : string               ;
+	readonly axes   : readonly string[]    ;
+	readonly widths : readonly number[]    ;
+	readonly edits  : readonly TableEdit[] ;
 }
 
 export interface PairGroup {
@@ -189,6 +191,7 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 			startLine : run[0].index + 1,
 			endLine   : run[run.length - 1].index + 1,
 			rows      : run.length,
+			indent    : run[0].profile.indent,
 			axes      : run[0].profile.slots.map(slot => slot.axis),
 			widths,
 			edits     : tableEdits,
