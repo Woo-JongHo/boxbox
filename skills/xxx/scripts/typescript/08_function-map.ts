@@ -5,16 +5,16 @@
  * match the parameter count, and names listed in CALLS must exist in the file. --scaffold scans the
  * declarations and prints a map skeleton with only GROUP and ROLE left empty to stdout.
  */
-import {
-	isArrowFunction,
-	isFunctionDeclaration,
-	isFunctionExpression,
-	isVariableStatement,
-} from "typescript/unstable/ast";
-import type { Node, SourceFile } from "typescript/unstable/ast";
+import      {
+              isArrowFunction       ,
+              isFunctionDeclaration ,
+              isFunctionExpression  ,
+              isVariableStatement   ,
+                                      } from "typescript/unstable/ast"    ;
+import type { Node, SourceFile        } from "typescript/unstable/ast"    ;
 
-import { displayWidth }   from "../common/display-width.ts";
-import { loadSourceFile } from "./load-source-file.ts";
+import      { displayWidth            } from "../common/display-width.ts" ;
+import      { loadSourceFile          } from "./load-source-file.ts"      ;
 
 interface MapRow {
 	readonly line : number;

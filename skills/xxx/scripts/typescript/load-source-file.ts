@@ -1,8 +1,8 @@
-import { existsSync, realpathSync, statSync } from "node:fs";
-import { relative, resolve }                  from "node:path";
+import      { existsSync, realpathSync, statSync } from "node:fs"                   ;
+import      { relative, resolve                  } from "node:path"                 ;
 
-import { API }             from "typescript/unstable/async";
-import type { SourceFile } from "typescript/unstable/ast";
+import      { API                                } from "typescript/unstable/async" ;
+import type { SourceFile                         } from "typescript/unstable/ast"   ;
 
 export interface LoadedSource {
 	readonly source   : SourceFile;

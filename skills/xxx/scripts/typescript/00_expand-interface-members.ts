@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
-import { readFileSync, writeFileSync } from "node:fs";
-import { relative }                    from "node:path";
+import      { readFileSync, writeFileSync    } from "node:fs"                 ;
+import      { relative                       } from "node:path"               ;
 
-import { isInterfaceDeclaration } from "typescript/unstable/ast";
-import type { Node, SourceFile }  from "typescript/unstable/ast";
+import      { isInterfaceDeclaration         } from "typescript/unstable/ast" ;
+import type { Node, SourceFile               } from "typescript/unstable/ast" ;
 
-import { loadSourceFile, repositoryFile } from "./load-source-file.ts";
+import      { loadSourceFile, repositoryFile } from "./load-source-file.ts"   ;
 
 interface Edit {
 	readonly start : number ;

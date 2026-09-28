@@ -4,37 +4,42 @@
  * columns without knowing the kind. To add a case: 01 which kind is it → 02 which axis is missing → 03 register
  * the kind and axes in this file, add rows to fixtures/table-kinds.ts, and pin them with test/typescript-align.test.ts.
  */
-import {
-	isArrayLiteralExpression,
-	isBlock,
-	isAwaitExpression,
-	isCallExpression,
-	isCaseClause,
-	isReturnStatement,
-	isClassDeclaration,
-	isEnumDeclaration,
-	isExpressionStatement,
-	isEnumMember,
-	isIdentifier,
-	isInterfaceDeclaration,
-	isMethodDeclaration,
-	isMethodSignatureDeclaration,
-	isObjectLiteralExpression,
-	isPropertyAssignment,
-	isPropertyAccessExpression,
-	isPropertyDeclaration,
-	isPropertySignatureDeclaration,
-	isSourceFile,
-	isSwitchStatement,
-	isTypeAliasDeclaration,
-	isTypeLiteralNode,
-	isVariableStatement,
-	SyntaxKind,
-} from "typescript/unstable/ast";
-import type { ObjectLiteralExpression, Node, PropertyAssignment, SourceFile } from "typescript/unstable/ast";
-import { skipTrivia }                                                         from "typescript/unstable/ast/scanner";
+import      {
+              isArrayLiteralExpression       ,
+              isBlock                        ,
+              isAwaitExpression              ,
+              isCallExpression               ,
+              isCaseClause                   ,
+              isReturnStatement              ,
+              isClassDeclaration             ,
+              isEnumDeclaration              ,
+              isExpressionStatement          ,
+              isEnumMember                   ,
+              isIdentifier                   ,
+              isInterfaceDeclaration         ,
+              isMethodDeclaration            ,
+              isMethodSignatureDeclaration   ,
+              isObjectLiteralExpression      ,
+              isPropertyAssignment           ,
+              isPropertyAccessExpression     ,
+              isPropertyDeclaration          ,
+              isPropertySignatureDeclaration ,
+              isSourceFile                   ,
+              isSwitchStatement              ,
+              isTypeAliasDeclaration         ,
+              isTypeLiteralNode              ,
+              isVariableStatement            ,
+              SyntaxKind                     ,
+                                               } from "typescript/unstable/ast"         ;
+import type {
+              ObjectLiteralExpression        ,
+              Node                           ,
+              PropertyAssignment             ,
+              SourceFile                     ,
+                                               } from "typescript/unstable/ast"         ;
+import      { skipTrivia                       } from "typescript/unstable/ast/scanner" ;
 
-import { displayWidth } from "../common/display-width.js";
+import      { displayWidth                     } from "../common/display-width.js"      ;
 
 export interface RowBoundary {
 	readonly axis : string ;

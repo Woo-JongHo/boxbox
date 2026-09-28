@@ -1,26 +1,31 @@
 #!/usr/bin/env bun
 
-import { existsSync, realpathSync, statSync } from "node:fs";
-import { relative, resolve }                  from "node:path";
+import      { existsSync, realpathSync, statSync } from "node:fs"                   ;
+import      { relative, resolve                  } from "node:path"                 ;
 
-import { API }                                                                      from "typescript/unstable/async";
-import {
-	SyntaxKind,
-	isAsExpression,
-	isIdentifier,
-	isJSDocOptionalType,
-	isMethodDeclaration,
-	isMethodSignatureDeclaration,
-	isNamedTupleMember,
-	isNonNullExpression,
-	isOptionalTypeNode,
-	isParameterDeclaration,
-	isPropertyDeclaration,
-	isPropertySignatureDeclaration,
-	isTypeAssertion,
-	isVariableDeclaration,
-} from "typescript/unstable/ast";
-import type { Node, PropertyDeclaration, PropertySignatureDeclaration, SourceFile } from "typescript/unstable/ast";
+import      { API                                } from "typescript/unstable/async" ;
+import      {
+              SyntaxKind                       ,
+              isAsExpression                   ,
+              isIdentifier                     ,
+              isJSDocOptionalType              ,
+              isMethodDeclaration              ,
+              isMethodSignatureDeclaration     ,
+              isNamedTupleMember               ,
+              isNonNullExpression              ,
+              isOptionalTypeNode               ,
+              isParameterDeclaration           ,
+              isPropertyDeclaration            ,
+              isPropertySignatureDeclaration   ,
+              isTypeAssertion                  ,
+              isVariableDeclaration            ,
+                                                 } from "typescript/unstable/ast"   ;
+import type {
+              Node                             ,
+              PropertyDeclaration              ,
+              PropertySignatureDeclaration     ,
+              SourceFile                       ,
+                                                 } from "typescript/unstable/ast"   ;
 
 type FindingKind =
 	| "optional-property"

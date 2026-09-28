@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
-import { existsSync, realpathSync, statSync } from "node:fs";
-import { relative, resolve }                  from "node:path";
+import      { existsSync, realpathSync, statSync } from "node:fs"   ;
+import      { relative, resolve                  } from "node:path" ;
 
 interface Diagnostic {
 	file    : string ;

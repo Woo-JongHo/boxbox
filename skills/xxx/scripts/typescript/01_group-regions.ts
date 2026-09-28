@@ -5,20 +5,20 @@
  * contiguous runs of the same SyntaxKind, recursing into nested containers the same way.
  * Rows with different roles (e.g. the ternary `:` vs a property `:`) have different SyntaxKinds and are already separated here.
  */
-import {
-	SyntaxKind,
-	isArrayLiteralExpression,
-	isBlock,
-	isCallExpression,
-	isClassDeclaration,
-	isInterfaceDeclaration,
-	isObjectLiteralExpression,
-	isSourceFile,
-} from "typescript/unstable/ast";
-import type { Node, SourceFile as TsSourceFile } from "typescript/unstable/ast";
+import      {
+              SyntaxKind                     ,
+              isArrayLiteralExpression       ,
+              isBlock                        ,
+              isCallExpression               ,
+              isClassDeclaration             ,
+              isInterfaceDeclaration         ,
+              isObjectLiteralExpression      ,
+              isSourceFile                   ,
+                                               } from "typescript/unstable/ast" ;
+import type { Node, SourceFile as TsSourceFile } from "typescript/unstable/ast" ;
 
-import { boundaryAxesOf } from "./grid-tokens.ts";
-import { loadSourceFile } from "./load-source-file.ts";
+import      { boundaryAxesOf                   } from "./grid-tokens.ts"        ;
+import      { loadSourceFile                   } from "./load-source-file.ts"   ;
 
 interface RowContainer {
 	readonly label : string;

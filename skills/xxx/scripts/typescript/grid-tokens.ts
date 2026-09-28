@@ -4,21 +4,21 @@
  * inside strings, comments or ternaries never collide. This judgment does not replace grouping —
  * 01_group-regions.ts already separates roles by grouping sibling rows of the same SyntaxKind.
  */
-import {
-	isArrayLiteralExpression,
-	isBlock,
-	isCallExpression,
-	isConditionalExpression,
-	isExpressionStatement,
-	isObjectLiteralExpression,
-	isParameterDeclaration,
-	isPropertyAssignment,
-	isPropertyDeclaration,
-	isPropertySignatureDeclaration,
-	isVariableStatement,
-} from "typescript/unstable/ast";
-import type { Node, SourceFile } from "typescript/unstable/ast";
-import { skipTrivia }            from "typescript/unstable/ast/scanner";
+import      {
+              isArrayLiteralExpression       ,
+              isBlock                        ,
+              isCallExpression               ,
+              isConditionalExpression        ,
+              isExpressionStatement          ,
+              isObjectLiteralExpression      ,
+              isParameterDeclaration         ,
+              isPropertyAssignment           ,
+              isPropertyDeclaration          ,
+              isPropertySignatureDeclaration ,
+              isVariableStatement            ,
+                                               } from "typescript/unstable/ast"         ;
+import type { Node, SourceFile                 } from "typescript/unstable/ast"         ;
+import      { skipTrivia                       } from "typescript/unstable/ast/scanner" ;
 
 export type BoundaryRole =
 	| "type-annotation-colon"

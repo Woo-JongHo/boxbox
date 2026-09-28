@@ -13,8 +13,12 @@
  * `{`, `(` or `[`; rows with a string hidden in a gap; rows whose type is uncertain, such as func literals and
  * anonymous struct/interface; bundle rows with keys, nesting, calls or assignment remaining.
  */
-import type { CodeSyntax }                     from "../common/code-text.ts";
-import type { LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
+import type { CodeSyntax     } from "../common/code-text.ts"    ;
+import type {
+              LineProfiler ,
+              RowProfile   ,
+              Slot         ,
+                             } from "../common/table-engine.ts" ;
 
 const GO_SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],
