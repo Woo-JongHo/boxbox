@@ -1,0 +1,69 @@
+{
+	"schemaVersion": 1,
+	"sources": [
+		{
+			"id": "vscode",
+			"language": "typescript",
+			"repository": "microsoft/vscode",
+			"commit": "e5af3e349f303d03914bef81d3f2caafeeb4e002",
+			"license": "MIT",
+			"paths": []
+		},
+		{
+			"id": "prisma",
+			"language": "typescript",
+			"repository": "prisma/prisma",
+			"commit": "50de232d35fd8f5f95847dd790c235f4bc2382c1",
+			"license": "Apache-2.0",
+			"paths": []
+		},
+		{
+			"id": "trpc",
+			"language": "typescript",
+			"repository": "trpc/trpc",
+			"commit": "ec0b0a47ab6c6ffabcb2ba6b80fa08c1410145a9",
+			"license": "MIT",
+			"paths": []
+		},
+		{
+			"id": "zod",
+			"language": "typescript",
+			"repository": "colinhacks/zod",
+			"commit": "2bf7b0630d5378033e90bcee82cb32b0fe04628e",
+			"license": "MIT",
+			"paths": []
+		},
+		{
+			"id": "requests",
+			"language": "python",
+			"repository": "psf/requests",
+			"commit": "611c6162cbc4ac2020a2f91c7cfa4f3abf9bbb60",
+			"license": "Apache-2.0",
+			"paths": []
+		},
+		{
+			"id": "fastapi",
+			"language": "python",
+			"repository": "fastapi/fastapi",
+			"commit": "192b12197eb04c2b4a691cce7d87261b21716714",
+			"license": "MIT",
+			"paths": []
+		},
+		{
+			"id": "pydantic",
+			"language": "python",
+			"repository": "pydantic/pydantic",
+			"commit": "bb6da4cfbb1f559885ea2fa207ec93853bfeac64",
+			"license": "MIT",
+			"paths": []
+		},
+		{
+			"id": "django",
+			"language": "python",
+			"repository": "django/django",
+			"commit": "9e06baf2e4dd17834b5deaf3a3e6ae3bff2fcf26",
+			"license": "BSD-3-Clause",
+			"paths": []
+		}
+	]
+}
