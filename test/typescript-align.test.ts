@@ -81,6 +81,7 @@ describe("typescript whitespace-only guarantee", () => {
 		const result = Bun.spawnSync(["bun", script, "--file", relative(root, target), "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" });
 		expect(result.exitCode                                      ).toBe     (0          ) ;
 		expect(result.stdout.toString()                             ).toContain("refused=0") ;
+		expect(result.stdout.toString()                             ).toContain("parse=ok" ) ;
 		expect(preservesTokens(before, readFileSync(target, "utf8"))).toBe     (true       ) ;
 	});
 });

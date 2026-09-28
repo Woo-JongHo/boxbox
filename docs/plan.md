@@ -37,8 +37,8 @@ Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked`
 | T1 | Green self-check | ✅ done 2026-09-28 |
 | T2 | Token-stream preservation | ✅ done 2026-09-28 |
 | T2.5 | Import table cells | ✅ done 2026-09-28 |
-| T3 | Output re-parse | ▶ active |
-| T3.5 | Mutation tests | ⬜ todo |
+| T3 | Output re-parse | ✅ done 2026-09-28 |
+| T3.5 | Mutation tests | ▶ active |
 | T4 | 3-row floor for fixes | ⬜ todo |
 | T5 | Go alignment off by default | ⬜ todo |
 | T6 | Shared `Result` JSON | ⬜ todo |
@@ -166,6 +166,8 @@ Findings outside the active task. Pull into a milestone when relevant.
 - Import tables are aligned from 2 rows (the pre-existing import rule), unlike other tables (3). Decide whether imports follow the 3-row floor in T4.
 - Hand-made reference samples for M3 (2026-09-28, `00_normalize-imports.ts`): guard-row table (`if (…) { state = … ; … continue; }` with aligned condition cell, `{ … ;` and `continue`), subscript cells (`chars[index    ]!` / `chars[index + 1] ;`), and a multi-line object literal whose continuation lines align on the first property.
 - Declaration tables (01.2 and 04.2): align `=` from 2 rows, let a multi-line declaration's first line join the `=` column, keep declarations and plain assignments apart (agreed 2026-09-28); inner `( )` `[ ]` `{ }` `;` cells follow the M3 sub-table rule, with the vertical form for outliers as in imports.
+- T3: Rust re-parse is unverified locally (`rustfmt` not installed); CI installs it and runs with `XXX_REQUIRE_PARSERS=1`, but the workflow change is unverified until the branch is pushed.
+- T3: the TypeScript re-parse gate starts two TypeScript 7 servers per written file (~0.3 s); fine for `--write`, revisit for bulk runs.
 - `.tsx` is not covered by the TypeScript token check (JSX text whitespace is significant); decide before supporting TSX.
 - The stress corpus uses OpenJDK (GPL with classpath exception): keep it for checks only, never copy snippets into fixtures (see design §5.2).
 - Choose the final product name, then replace `xxx` / `XXX` in one pass.

@@ -2,11 +2,12 @@
  * Harness for per-language alignment suites. Each language test checks preservation, idempotence, golden,
  * traps and no alignment of 2-row groups with this one function. Language-specific properties are added by each test file's own test() calls.
  */
-import      { readFileSync } from "node:fs"                                      ;
-import      { expect, test } from "bun:test"                                     ;
-import      { changedLines } from "../skills/xxx/scripts/common/preservation.ts" ;
-import      { alignSource  } from "../skills/xxx/scripts/common/table-engine.ts" ;
-import type { LineProfiler } from "../skills/xxx/scripts/common/table-engine.ts" ;
+import      { readFileSync                  } from "node:fs"                                      ;
+import      { expect, test                  } from "bun:test"                                     ;
+import      { compareParse, parserAvailable } from "../skills/xxx/scripts/common/parse-check.ts"  ;
+import      { changedLines                  } from "../skills/xxx/scripts/common/preservation.ts" ;
+import      { alignSource                   } from "../skills/xxx/scripts/common/table-engine.ts" ;
+import type { LineProfiler                  } from "../skills/xxx/scripts/common/table-engine.ts" ;
 
 export interface LanguageSuiteInput {
 	readonly aligner     : LineProfiler;
@@ -29,6 +30,15 @@ export function defineLanguageSuite(input: LanguageSuiteInput): void {
 		const result = align(source);
 		expect(changedLines(source, result.output, aligner.syntax)).toEqual([]);
 		expect(result.refused).toEqual([]);
+	});
+
+	const parseLabel = parserAvailable(aligner.language) ? "" : " (parser not installed — skipped, not passed)";
+	test.skipIf(!parserAvailable(aligner.language))(`${aligner.language}: the aligned table and trap files parse like their sources${parseLabel}`, () => {
+		for (const file of [source, tricky]) {
+			const result = compareParse(aligner.language, file, align(file).output);
+			expect(result.delta).toEqual([]);
+			expect(result.status).toBe("ok");
+		}
 	});
 
 	test(`${aligner.language}: alignment is idempotent — running twice gives the same result`, () => {

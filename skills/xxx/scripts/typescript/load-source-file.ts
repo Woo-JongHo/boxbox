@@ -30,3 +30,20 @@ export async function loadSourceFile(root: string, value: string): Promise<Loade
 	if (!source) throw new Error(`cannot read the TypeScript source AST: ${target.relative}`);
 	return { source, relative: target.relative };
 }
+
+/**
+ * Syntactic (parse) diagnostics of a repository file as `line:code` keys, read from disk by a fresh TypeScript 7
+ * server. Columns are left out because alignment moves columns but never lines.
+ */
+export async function syntacticDiagnostics(root: string, absolute: string, text: string): Promise<readonly string[]> {
+	const api = new API({ cwd: root });
+	try {
+		const state   = await api.updateSnapshot({ openFiles: [absolute] }) ;
+		const project = await state.getDefaultProjectForFile(absolute)      ;
+		if (!project) throw new Error(`cannot find a TypeScript project: ${absolute}`);
+		const found = await project.program.getSyntacticDiagnostics(absolute);
+		return found.map(diagnostic => `${text.slice(0, diagnostic.pos).split("\n").length}:${diagnostic.code}`).sort();
+	} finally {
+		await api.close();
+	}
+}

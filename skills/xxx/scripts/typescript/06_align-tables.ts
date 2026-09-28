@@ -7,18 +7,13 @@
  * Every table's edits must pass the scanner-based whitespace-only check (token-preservation.ts); a table that does
  * not is refused and reported, never written.
  */
-import      { isInterfaceDeclaration } from "typescript/unstable/ast" ;
-import type { Node, SourceFile       } from "typescript/unstable/ast" ;
+import      { isInterfaceDeclaration                           } from "typescript/unstable/ast" ;
+import type { Node, SourceFile                                 } from "typescript/unstable/ast" ;
 
-import      {
-              ROW_KINDS            ,
-              displayColumn        ,
-              runsOf               ,
-              syntaxKindName       ,
-                                     } from "./grid-kinds.ts"         ;
-import type { DetectedRow            } from "./grid-kinds.ts"         ;
-import      { loadSourceFile         } from "./load-source-file.ts"   ;
-import      { preservesTokens        } from "./token-preservation.ts" ;
+import      { ROW_KINDS, displayColumn, runsOf, syntaxKindName } from "./grid-kinds.ts"         ;
+import type { DetectedRow                                      } from "./grid-kinds.ts"         ;
+import      { loadSourceFile, syntacticDiagnostics             } from "./load-source-file.ts"   ;
+import      { preservesTokens                                  } from "./token-preservation.ts" ;
 
 interface Edit {
 	readonly start : number ;
@@ -233,7 +228,16 @@ async function main(): Promise<void> {
 		}
 		const output = applyEdits(source.text, edits);
 		if (!preservesTokens(source.text, output)) throw new Error(`combined alignment edits change more than whitespace; nothing written: ${relative}`);
-		await Bun.write(`${root}/${relative}`, output);
+		// Re-parse gate: the written file must produce the same syntactic diagnostics as the source, or it is restored.
+		const absolute = `${root}/${relative}`;
+		const before   = await syntacticDiagnostics(root, absolute, source.text);
+		await Bun.write(absolute, output);
+		const after = await syntacticDiagnostics(root, absolute, output);
+		if (before.join("|") !== after.join("|")) {
+			await Bun.write(absolute, source.text);
+			throw new Error(`aligned output parses differently (before ${before.join(",") || "none"}, after ${after.join(",") || "none"}); restored: ${relative}`);
+		}
+		console.log("  parse=ok tool=typescript");
 	}
 	if (!write && totalEdits > 0) process.exit(1);
 }
