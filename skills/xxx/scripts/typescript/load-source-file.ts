@@ -21,14 +21,20 @@ export function repositoryFile(root: string, value: string): { absolute: string;
 }
 
 export async function loadSourceFile(root: string, value: string): Promise<LoadedSource> {
-	const target  = repositoryFile(root, value)                                ;
-	const api     = new API({ cwd: root })                                     ;
-	const state   = await api.updateSnapshot({ openFiles: [target.absolute] }) ;
-	const project = await state.getDefaultProjectForFile(target.absolute)      ;
-	if (!project) throw new Error(`cannot find a TypeScript project: ${target.relative}`);
-	const source = await project.program.getSourceFile(target.absolute);
-	if (!source) throw new Error(`cannot read the TypeScript source AST: ${target.relative}`);
-	return { source, relative: target.relative };
+	const target = repositoryFile(root, value) ;
+	const api    = new API({ cwd: root })      ;
+	// The returned AST is plain client data, so the server closes right away — one unclosed server per call
+	// leaks gigabytes across a test run or a corpus scan.
+	try {
+		const state   = await api.updateSnapshot({ openFiles: [target.absolute] }) ;
+		const project = await state.getDefaultProjectForFile(target.absolute)      ;
+		if (!project) throw new Error(`cannot find a TypeScript project: ${target.relative}`)     ;
+		const source = await project.program.getSourceFile(target.absolute)                       ;
+		if (!source) throw new Error(`cannot read the TypeScript source AST: ${target.relative}`) ;
+		return { source, relative: target.relative }                                              ;
+	} finally {
+		await api.close()                                                                         ;
+	}
 }
 
 /**

@@ -66,10 +66,12 @@ export function runAlignCli(aligner: LineProfiler, args: readonly string[], over
 
 /** Maps an engine result to the shared result: tables PASS/FIXABLE, pairs SUGGEST, refused tables REFUSE. */
 function fileResult(aligner: LineProfiler, file: string, write: boolean, result: AlignResult, parse: ResultParse): FileResult {
+	// The line engine has no AST container; the shared indent of a run is its nesting signal (a tab or four spaces per level).
+	const depthOf = (indent: string): number => Math.floor(indent.replaceAll("\t", "    ").length / 4)                                  ;
 	const groups: ResultGroup[] = [
-		...result.details.map(table => ({ kind: "table", startLine: table.startLine, endLine: table.endLine, rows: table.rows, axes: table.axes, state: table.edits.length > 0 ? "FIXABLE" as const : "PASS" as const, edits: table.edits.length })),
+		...result.details.map(table => ({ kind: "table", startLine: table.startLine, endLine: table.endLine, rows: table.rows, axes: table.axes, state: table.edits.length > 0 ? "FIXABLE" as const : "PASS" as const, edits: table.edits.length, depth: depthOf(table.indent) })),
 		...result.pairs.map(pair => ({ kind: "pair", startLine: pair.startLine, endLine: pair.endLine, rows: pair.rows, axes: pair.signature.split("|")[1]?.split(">") ?? [], state: "SUGGEST" as const, edits: 0 })),
-		...result.refused.map(table => ({ kind: "table", startLine: table.startLine, endLine: table.endLine, rows: table.rows, axes: table.axes, state: "REFUSE" as const, edits: table.edits.length })),
+		...result.refused.map(table => ({ kind: "table", startLine: table.startLine, endLine: table.endLine, rows: table.rows, axes: table.axes, state: "REFUSE" as const, edits: table.edits.length, depth: depthOf(table.indent) })),
 	].sort((left, right) => left.startLine - right.startLine);
 	return { file, language: aligner.language, mode: write ? "write" : "check", summary: summarize(groups), groups, parse };
 }

@@ -41,6 +41,9 @@ interface TableGroup {
 	readonly axes     : readonly string[] ;
 	readonly skipped  : readonly string[] ;
 	readonly edits    : readonly Edit[]   ;
+	/** The immediate AST container of the table (SourceFile, Block, InterfaceDeclaration, …) and its nesting depth. */
+	readonly context   : string            ;
+	readonly depth     : number            ;
 }
 
 function alignRows(source: SourceFile, rows: readonly DetectedRow[]): { axes: readonly string[]; skipped: readonly string[]; targets: ReadonlyMap<string, number>; edits: readonly Edit[] } {
@@ -101,7 +104,7 @@ function alignRows(source: SourceFile, rows: readonly DetectedRow[]): { axes: re
 	return { axes, skipped, targets, edits };
 }
 
-function buildGroup(source: SourceFile, kindName: string, groupName: string, run: readonly DetectedRow[]): TableGroup {
+function buildGroup(source: SourceFile, kindName: string, groupName: string, run: readonly DetectedRow[], context: string, depth: number): TableGroup {
 	const straight = run.filter(row => row.vertical === undefined) ;
 	const marked   = run.filter(row => row.vertical !== undefined) ;
 	const aligned  = alignRows(source, straight)                   ;
@@ -131,6 +134,8 @@ function buildGroup(source: SourceFile, kindName: string, groupName: string, run
 		endLine   : source.getLineAndCharacterOfPosition(last.getEnd() - 1).line + 1,
 		rowCount  : run.length,
 		vertical  : marked.length,
+		context   : context,
+		depth     : depth,
 		axes      : aligned.axes,
 		skipped   : aligned.skipped,
 		edits,
@@ -138,9 +143,16 @@ function buildGroup(source: SourceFile, kindName: string, groupName: string, run
 }
 
 /** The gate a group's combined edit must pass: vertical rows may insert line breaks, nothing else may. */
-function groupPreserved(source: SourceFile, group: TableGroup): boolean {
+export function groupPreserved(source: SourceFile, group: TableGroup): boolean {
 	const after = applyEdits(source.text, group.edits);
 	return group.vertical > 0 ? preservesTokensWithBreaks(source.text, after) : preservesTokens(source.text, after);
+}
+
+/** Every detected table of a loaded file, including the ones whose edits fail the token gate (the corpus census). */
+export function censusGroups(source: SourceFile, minRows: number): readonly TableGroup[] {
+	const result: CollectResult = { groups: [], candidates: [], compressed: [] };
+	collect(source, source, minRows, new Set<Node>(), undefined, result);
+	return result.groups;
 }
 
 interface CollectResult {
@@ -162,7 +174,9 @@ function collectCompressed(source: SourceFile, node: Node, result: CollectResult
 	});
 }
 
-function collect(source: SourceFile, node: Node, minRows: number, seen: Set<Node>, explainLine: number | undefined, result: CollectResult): void {
+function collect(source: SourceFile, node: Node, minRows: number, seen: Set<Node>, explainLine: number | undefined, result: CollectResult, path: readonly string[] = []): void {
+	const isContainer = ROW_KINDS.some(kind => kind.containers(node, seen) !== undefined) ;
+	const childPath   = isContainer ? [...path, syntaxKindName(node)] : path              ;
 	for (const kind of ROW_KINDS) {
 		const siblings = kind.containers(node, seen);
 		if (!siblings) continue;
@@ -174,11 +188,11 @@ function collect(source: SourceFile, node: Node, minRows: number, seen: Set<Node
 		}
 		for (const run of runsOf(source, siblings, kind)) {
 			if (run.length < (kind.minRows?.(run) ?? minRows)) continue;
-			result.groups.push(buildGroup(source, kind.name, kind.groupName ? kind.groupName(run) : kind.name, run));
+			result.groups.push(buildGroup(source, kind.name, kind.groupName ? kind.groupName(run) : kind.name, run, syntaxKindName(node), path.length));
 		}
 	}
 	node.forEachChild(child => {
-		collect(source, child, minRows, seen, explainLine, result);
+		collect(source, child, minRows, seen, explainLine, result, childPath);
 		return undefined;
 	});
 }
@@ -291,8 +305,8 @@ async function main(): Promise<void> {
 	const report = (parse: ResultParse): void => {
 		if (!json) return;
 		const resultGroups: ResultGroup[] = [
-			...groups.map(group => ({ kind: group.kind, startLine: group.startLine, endLine: group.endLine, rows: group.rowCount, axes: group.axes, state: group.edits.length > 0 ? "FIXABLE" as const : "PASS" as const, edits: group.edits.length })),
-			...refused.map(group => ({ kind: group.kind, startLine: group.startLine, endLine: group.endLine, rows: group.rowCount, axes: group.axes, state: "REFUSE" as const, edits: group.edits.length })),
+			...groups.map(group => ({ kind: group.kind, startLine: group.startLine, endLine: group.endLine, rows: group.rowCount, axes: group.axes, state: group.edits.length > 0 ? "FIXABLE" as const : "PASS" as const, edits: group.edits.length, context: group.context, depth: group.depth })),
+			...refused.map(group => ({ kind: group.kind, startLine: group.startLine, endLine: group.endLine, rows: group.rowCount, axes: group.axes, state: "REFUSE" as const, edits: group.edits.length, context: group.context, depth: group.depth })),
 			...result.compressed.map(entry => ({ kind: "interface-members-compressed", startLine: entry.line, endLine: entry.line, rows: entry.members, axes: [], state: "SUGGEST" as const, edits: 0 })),
 		].sort((left, right) => left.startLine - right.startLine);
 		console.log(JSON.stringify(envelope([{ file: relative, language: "typescript", mode: write ? "write" : "check", summary: summarize(resultGroups), groups: resultGroups, parse }]), null, 2));
@@ -316,7 +330,7 @@ async function main(): Promise<void> {
 	if (!write && totalEdits > 0) process.exit(1);
 }
 
-try {
+if (import.meta.main) try {
 	await main();
 	process.exit(0);
 } catch (error) {

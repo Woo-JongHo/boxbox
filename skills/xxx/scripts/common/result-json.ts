@@ -15,6 +15,10 @@ export interface ResultGroup {
 	readonly axes      : readonly string[] ;
 	readonly state     : GroupState        ;
 	readonly edits     : number            ;
+	/** The immediate container of the table (TypeScript: the AST container kind); omitted where unknowable. */
+	readonly context?  : string            ;
+	/** How deeply nested the table's container is (0 = top level). */
+	readonly depth?    : number            ;
 }
 
 export interface ResultParse {
