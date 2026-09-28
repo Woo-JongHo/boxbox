@@ -12,12 +12,16 @@ const root                 = resolve(import.meta.dir, "..")                     
 const script               = resolve(root, "skills/xxx/scripts/typescript/06_align-tables.ts") ;
 const workspaces: string[] = []                                                                ;
 
+/** Every test here spawns the aligner, which starts a TypeScript 7 server — a busy machine can push one invocation past Bun's 5 s default. */
+const CLI_TIMEOUT = 60_000                                                                              ;
+const slowTest    = (name: string, fn: () => void): void => test(name, fn, CLI_TIMEOUT)                 ;
+
 afterEach(() => {
 	for (const workspace of workspaces.splice(0)) rmSync(workspace, { recursive: true, force: true });
 });
 
 describe("typescript call statement alignment", () => {
-	test("aligns subject/matcher parentheses, dots and semicolons of consecutive call statements", () => {
+	slowTest("aligns subject/matcher parentheses, dots and semicolons of consecutive call statements", () => {
 		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
 		const target    = join(workspace, "calls.ts")                             ;
 		workspaces.push(workspace);
@@ -40,7 +44,7 @@ describe("typescript call statement alignment", () => {
 });
 
 describe("typescript object row alignment", () => {
-	test("aligns braces, properties, colons, values and commas of object rows", () => {
+	slowTest("aligns braces, properties, colons, values and commas of object rows", () => {
 		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
 		const target    = join(workspace, "objects.ts")                           ;
 		workspaces.push(workspace);
@@ -71,7 +75,7 @@ describe("typescript object row alignment", () => {
 });
 
 describe("typescript whitespace-only guarantee", () => {
-	test("the fixture aligns with an identical token stream and no refused table", () => {
+	slowTest("the fixture aligns with an identical token stream and no refused table", () => {
 		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-"))                   ;
 		const target    = join(workspace, "table-kinds.ts")                                         ;
 		const before    = readFileSync(resolve(root, "skills/xxx/fixtures/table-kinds.ts"), "utf8") ;
@@ -87,7 +91,7 @@ describe("typescript whitespace-only guarantee", () => {
 });
 
 describe("typescript row floors", () => {
-	test("a 2-row = declaration table is aligned; a 2-row group of another kind is not", () => {
+	slowTest("a 2-row = declaration table is aligned; a 2-row group of another kind is not", () => {
 		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
 		const target    = join(workspace, "floors.ts")                            ;
 		workspaces.push(workspace);
@@ -127,7 +131,7 @@ function alignLines(lines: readonly string[]): readonly string[] {
 }
 
 describe("typescript call layer", () => {
-	test("aligns the commas and closing paren of the same call in declaration values", () => {
+	slowTest("aligns the commas and closing paren of the same call in declaration values", () => {
 		expect(alignLines([
 			'const left = diagnostics(toolchain, before);',
 			'const right = diagnostics(toolchain, after);',
@@ -137,7 +141,7 @@ describe("typescript call layer", () => {
 		]);
 	});
 
-	test("aligns the call inside call-statement subjects", () => {
+	slowTest("aligns the call inside call-statement subjects", () => {
 		expect(alignLines([
 			'expect(preservesTokens(text, text.replace("c  d", "c d"))).toBe(false);',
 			'expect(preservesTokens("let x = 1;", "letx = 1;")).toBe(false);',
@@ -149,7 +153,7 @@ describe("typescript call layer", () => {
 		]);
 	});
 
-	test("keeps one layer when the callee or the arity differs", () => {
+	slowTest("keeps one layer when the callee or the arity differs", () => {
 		expect(alignLines([
 			'const a = first(x, y);',
 			'const bb = second(x, y);',
@@ -168,7 +172,7 @@ describe("typescript call layer", () => {
 });
 
 describe("typescript declaration vertical form", () => {
-	test("takes the outlier row vertical when one argument is 20 columns wider than the second widest", () => {
+	slowTest("takes the outlier row vertical when one argument is 20 columns wider than the second widest", () => {
 		expect(alignLines([
 			'const open = charTokenAt(source, skipTrivia(source.text, node.expression.getEnd()));',
 			'const close = charTokenAt(source, node.getEnd() - 1);',
@@ -181,7 +185,7 @@ describe("typescript declaration vertical form", () => {
 		]);
 	});
 
-	test("keeps the call layer on the remaining rows when one row goes vertical", () => {
+	slowTest("keeps the call layer on the remaining rows when one row goes vertical", () => {
 		expect(alignLines([
 			'const a = pair(alpha, tiny, gamma);',
 			'const bb = pair(alpha, a-much-longer-second-argument, gamma);',
@@ -197,7 +201,7 @@ describe("typescript declaration vertical form", () => {
 		]);
 	});
 
-	test("takes every row vertical when each is the outlier of its own column", () => {
+	slowTest("takes every row vertical when each is the outlier of its own column", () => {
 		expect(alignLines([
 			'const left = pair(veryLongFirstArgumentHere, x);',
 			'const right = pair(y, veryLongSecondArgumentHere);',
@@ -213,7 +217,7 @@ describe("typescript declaration vertical form", () => {
 		]);
 	});
 
-	test("keeps a single-argument call flat; a vertical row leaves the table on the next run", () => {
+	slowTest("keeps a single-argument call flat; a vertical row leaves the table on the next run", () => {
 		expect(alignLines([
 			'const wide = lone(greatlyWiderSingleArgumentText);',
 			'const slim = lone(short);',
@@ -228,7 +232,7 @@ describe("typescript declaration vertical form", () => {
 		expect(alignLines(once)).toEqual(once);
 	});
 
-	test("call statements keep one flat layer instead of going vertical", () => {
+	slowTest("call statements keep one flat layer instead of going vertical", () => {
 		expect(alignLines([
 			'expect(handle(wideArgumentExpression)).toBe(true);',
 			'expect(handle(x)).toBe(false);',
@@ -242,7 +246,7 @@ describe("typescript declaration vertical form", () => {
 });
 
 describe("typescript hand-made samples", () => {
-	test("aligns the closing bracket of subscript declaration values", () => {
+	slowTest("aligns the closing bracket of subscript declaration values", () => {
 		expect(alignLines([
 			'const value = chars[index]!;',
 			'const next = chars[index + 1];',
@@ -252,7 +256,7 @@ describe("typescript hand-made samples", () => {
 		]);
 	});
 
-	test("keeps subscript values flat when the objects differ or a row has none", () => {
+	slowTest("keeps subscript values flat when the objects differ or a row has none", () => {
 		expect(alignLines([
 			'const value = chars[index]!;',
 			'const next = other[index];',
@@ -269,7 +273,7 @@ describe("typescript hand-made samples", () => {
 		]);
 	});
 
-	test("aligns ragged guard rows onto the hand-made form", () => {
+	slowTest("aligns ragged guard rows onto the hand-made form", () => {
 		expect(alignLines([
 			'if (value === "/" && next === "/") { state = "line"; chars[index] = " "; index += 1; continue; }',
 			'if (value === "/" && next === "*") { state = "block"; chars[index] = " "; index += 1; continue; }',
@@ -281,7 +285,7 @@ describe("typescript hand-made samples", () => {
 		]);
 	});
 
-	test("keeps the hand-aligned guard sample of 00_normalize-imports unchanged", () => {
+	slowTest("keeps the hand-aligned guard sample of 00_normalize-imports unchanged", () => {
 		const sample = [
 			'\t\t\tif (value === "/" && next === "/") { state = "line"    ; chars[index] = chars[index + 1] = " "; index += 1; continue; }',
 			'\t\t\tif (value === "/" && next === "*") { state = "block"   ; chars[index] = chars[index + 1] = " "; index += 1; continue; }',
@@ -292,7 +296,7 @@ describe("typescript hand-made samples", () => {
 		expect(alignLines(sample)).toEqual(sample);
 	});
 
-	test("blocks that do not end in continue and two-row groups stay as written", () => {
+	slowTest("blocks that do not end in continue and two-row groups stay as written", () => {
 		expect(alignLines([
 			'if (value === "/") { state = "line"; index += 1; }',
 			'if (value === "*") { state = "block"; index += 1; }',
@@ -304,7 +308,7 @@ describe("typescript hand-made samples", () => {
 });
 
 describe("typescript list layer", () => {
-	test("aligns the elements, commas and closing bracket of the same literal list in a call", () => {
+	slowTest("aligns the elements, commas and closing bracket of the same literal list in a call", () => {
 		expect(alignLines([
 			'const STATES = new Set(["PASS", "FIXABLE", "SUGGEST", "REFUSE"]);',
 			'const PARSES = new Set(["ok", "changed", "skipped", "not-run"]);',
@@ -314,7 +318,7 @@ describe("typescript list layer", () => {
 		]);
 	});
 
-	test("aligns the literal list of a matcher argument", () => {
+	slowTest("aligns the literal list of a matcher argument", () => {
 		expect(alignLines([
 			'expect(states(key)).toEqual(["PASS", "FIXABLE"]);',
 			'expect(states(key)).toEqual(["ok", "changed"]);',
@@ -326,7 +330,7 @@ describe("typescript list layer", () => {
 		]);
 	});
 
-	test("aligns a declaration value that is itself a literal list", () => {
+	slowTest("aligns a declaration value that is itself a literal list", () => {
 		expect(alignLines([
 			'const short = ["a", "bb"];',
 			'const longer = ["c", "dd"];',
@@ -342,7 +346,7 @@ describe("typescript list layer", () => {
 		]);
 	});
 
-	test("keeps a list with identifiers compact and aligns only the row layer", () => {
+	slowTest("keeps a list with identifiers compact and aligns only the row layer", () => {
 		expect(alignLines([
 			'const argv = ["bun", "run", script];',
 			'const args = ["bun", "run", other];',
@@ -352,7 +356,7 @@ describe("typescript list layer", () => {
 		]);
 	});
 
-	test("keeps the call layer but drops the list slot when the arity differs", () => {
+	slowTest("keeps the call layer but drops the list slot when the arity differs", () => {
 		expect(alignLines([
 			'const a = pick(["x"], "tail");',
 			'const b = pick(["x", "yy"], "tail");',
@@ -362,7 +366,7 @@ describe("typescript list layer", () => {
 		]);
 	});
 
-	test("drops the call layer and the lists inside its arguments when the callee differs", () => {
+	slowTest("drops the call layer and the lists inside its arguments when the callee differs", () => {
 		expect(alignLines([
 			'const a = first(["x"], y);',
 			'const bb = pick(["zz"], y);',
@@ -372,7 +376,7 @@ describe("typescript list layer", () => {
 		]);
 	});
 
-	test("drops a list whose item is 20 columns wider than the second widest", () => {
+	slowTest("drops a list whose item is 20 columns wider than the second widest", () => {
 		expect(alignLines([
 			'const widths = ["tiny", "a-very-much-longer-element-string"];',
 			'const others = ["ok", "fine"];',
@@ -382,7 +386,7 @@ describe("typescript list layer", () => {
 		]);
 	});
 
-	test("drops a list with a trailing comma or a multi-line form", () => {
+	slowTest("drops a list with a trailing comma or a multi-line form", () => {
 		expect(alignLines([
 			'const trail = ["a", "bb",];',
 			'const other = ["c", "dd", "e"];',
