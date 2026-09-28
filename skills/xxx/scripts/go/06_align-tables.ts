@@ -12,5 +12,5 @@ const enabled = args.includes("--enable-go")                                    
 const passed  = args.filter(argument => argument !== "--enable-go" && (enabled || argument !== "--write")) ;
 const result  = runAlignCli(GO_ALIGNER, passed)                                                            ;
 console.log(result.report);
-if (!enabled) console.log("  go=report-only — gofmt owns Go layout; pass --enable-go to align and write");
+if (!enabled && !args.includes("--json")) console.log("  go=report-only — gofmt owns Go layout; pass --enable-go to align and write");
 process.exit(enabled ? result.code : 0);
