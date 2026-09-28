@@ -22,6 +22,9 @@ const width = 1920;
 const height = 1080;
 const depth = 3;
 
+const value = chars[index]!;
+const next = chars[index + 1];
+
 const rails = {
 	dashboard: new DashboardRail(get, synthetic),
 	workflow: new WorkflowRail(get, synthetic),
@@ -42,3 +45,15 @@ function pick(input: string): string {
 		default: return "rest";
 	}
 }
+
+function guardSample(value: string, next: string, state: string): void {
+	for (;;) {
+		if (value === "/" && next === "/") { state = "line"; index += 1; continue; }
+		if (value === "/" && next === "*") { state = "block"; index += 1; continue; }
+		if (value === "`") { state = "template"; continue; }
+		if (value === "'") { state = "single"; continue; }
+		if (value === '"') { state = "double"; continue; }
+		break;
+	}
+}
+

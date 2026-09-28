@@ -42,7 +42,7 @@ function interfaceEdits(source: SourceFile): readonly Edit[] {
 			}
 			for (let index = 1; index < node.members.length; index += 1) {
 				const previous = node.members[index - 1]! ;
-				const current  = node.members[index]!     ;
+				const current  = node.members[index    ]! ;
 				if (lineOf(source, previous.getStart(source)) !== lineOf(source, current.getStart(source))) continue;
 				const gap = source.text.slice(previous.getEnd(), current.getStart(source));
 				if (!/^[ \t]*$/u.test(gap)) throw new Error("a comment between interface members on the same line is not split automatically.");

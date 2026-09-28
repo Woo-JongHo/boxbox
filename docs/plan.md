@@ -153,7 +153,7 @@ const PARSES = new Set(["ok"  , "changed", "skipped", "not-run"]) ;
 | N1 | Call layer: callee, `(`, top-level `,`, `)` inside declaration values and call-statement subjects | ✅ done 2026-09-28 |
 | N2 | List layer: `[ ]` / `{ }` of literals — element widths, `,` and closing column | ✅ done 2026-09-28 |
 | N3 | Outliers in declaration tables: when one row is far longer, the vertical form (as for imports) | ✅ done 2026-09-28 |
-| N4 | Hand-made samples: guard-row tables and subscript cells from `00_normalize-imports.ts` | ⬜ todo |
+| N4 | Hand-made samples: guard-row tables and subscript cells from `00_normalize-imports.ts` | ✅ done 2026-09-28 |
 | N5 | Python: the same layers on the line engine's bundle rows | ⬜ todo |
 
 | Layer | Aligned | Condition |
@@ -165,6 +165,8 @@ const PARSES = new Set(["ok"  , "changed", "skipped", "not-run"]) ;
 N2 implementation notes (done 2026-09-28): `callLayer` in `grid-kinds.ts` was generalized into `itemLayer`, a cell layer over items (call arguments, array elements, object properties). List slots are derived per row by `rowListCells` and tagged `layer: "call" | "list:<slot>"` with slot names `list:value`, `list:arg<i>`, `list:matcher-arg<i>`; boundaries carry slot-qualified axes (`list-arg2-comma1`, …) registered in `KIND_AXES` and `AXIS_NOTES`. `withLayers` gates the call layer as in N1 and each list slot across the run: same shape (arity or property names), all items literal, no 20+-column outlier in any item column.
 
 N3 implementation notes (done 2026-09-28): in a declaration table whose rows share callee and arity, the row holding the outlier argument (import rule B) takes the vertical form instead of dropping the layer for everyone — arguments one per line under the `(`, non-last argument commas right after the widest argument, `);` on the statement's indentation, `=` at the table's `=` column; the remaining rows keep the call layer when no outlier is left among them. The render only inserts line breaks and padding, so `06_align-tables.ts` gates such a group with the new `preservesTokensWithBreaks` (tokens and comments byte-identical, breaks only inserted; the strict gate still covers every other edit) plus the re-parse gate. Calls with one argument, different callees, and call statements never go vertical. A vertical row leaves the table on the next run, so the write is stable.
+
+N4 implementation notes (done 2026-09-28): two constructs from the hand-aligned `lexicalMask` in `00_normalize-imports.ts`. (1) Subscript cells — a declaration value that is a subscript read (a leading `!` is fine) gains a `subscript-close` insert axis: `]` right after the widest index, kept only when every row has the subscript on the same object with no outlier index. (2) Guard rows — a new `guard-statements` kind for consecutive one-line `if (…) { …; continue; }` statements (block ends in `continue`, no `else`): the condition's closing `)`, the first statement's `;` and the `continue` column are insert axes; the statements in between stay as written. The hand-aligned sample is the engine's fixed point. The third hand-made sample (a multi-line object literal whose continuation lines align on the first property) is not covered yet — see backlog.
 
 Hand-made reference samples (user, `00_normalize-imports.ts`): guard rows `if (…) { state = … ; … continue; }` with aligned condition cell, `{ … ;` and `continue`; subscript cells `chars[index    ]!` / `chars[index + 1] ;`; a multi-line object literal whose continuation lines align on the first property.
 
@@ -221,3 +223,4 @@ Findings outside the active task. Pull into a milestone when relevant.
 - Choose the final product name, then replace `xxx` / `XXX` in one pass.
 - Choose a license before publishing.
 - The rules for YAML/JSON (design §4.3, 3.4) need a horizontal-only safety rule before any implementation.
+- N4 leftover: a multi-line object literal whose continuation lines align on the first property (hand-made sample, `00_normalize-imports.ts`) — not covered by the guard-row and subscript work; decide with M1.5 judging.
