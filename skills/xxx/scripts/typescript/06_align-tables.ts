@@ -5,17 +5,25 @@
  * for-header `;`, empty statements, one-line execution blocks, and rows split by JSDoc or blank lines are not
  * row candidates and are never aligned. --explain <line> reports which kind the line was detected as and its axes.
  * Every table's edits must pass the scanner-based whitespace-only check (token-preservation.ts); a table that does
- * not is refused and reported, never written.
+ * not is refused and reported, never written. A declaration row whose call argument is the outlier of its column
+ * (import rule B) takes the vertical form instead: its arguments one per line under the opening `(`, which only
+ * inserts line breaks, so such a group passes the break-preserving variant of the token check.
  */
-import      { isInterfaceDeclaration                           } from "typescript/unstable/ast"  ;
-import type { Node, SourceFile                                 } from "typescript/unstable/ast"  ;
+import      { isInterfaceDeclaration                     } from "typescript/unstable/ast"  ;
+import type { Node, SourceFile                           } from "typescript/unstable/ast"  ;
 
-import      { ROW_KINDS, displayColumn, runsOf, syntaxKindName } from "./grid-kinds.ts"          ;
-import type { DetectedRow                                      } from "./grid-kinds.ts"          ;
-import      { loadSourceFile, syntacticDiagnostics             } from "./load-source-file.ts"    ;
-import      { envelope, summarize                              } from "../common/result-json.ts" ;
-import type { ResultGroup, ResultParse                         } from "../common/result-json.ts" ;
-import      { preservesTokens                                  } from "./token-preservation.ts"  ;
+import      {
+              ROW_KINDS                                ,
+              displayColumn                            ,
+              runsOf                                   ,
+              syntaxKindName                           ,
+              verticalCallText                         ,
+                                                         } from "./grid-kinds.ts"          ;
+import type { DetectedRow                                } from "./grid-kinds.ts"          ;
+import      { loadSourceFile, syntacticDiagnostics       } from "./load-source-file.ts"    ;
+import      { envelope, summarize                        } from "../common/result-json.ts" ;
+import type { ResultGroup, ResultParse                   } from "../common/result-json.ts" ;
+import      { preservesTokens, preservesTokensWithBreaks } from "./token-preservation.ts"  ;
 
 interface Edit {
 	readonly start : number ;
@@ -24,16 +32,18 @@ interface Edit {
 }
 
 interface TableGroup {
-	readonly kind      : string            ;
-	readonly startLine : number            ;
-	readonly endLine   : number            ;
-	readonly rowCount  : number            ;
-	readonly axes      : readonly string[] ;
-	readonly skipped   : readonly string[] ;
-	readonly edits     : readonly Edit[]   ;
+	readonly kind      : string ;
+	readonly startLine : number ;
+	readonly endLine   : number ;
+	readonly rowCount  : number ;
+	/** Rows rendered as the declaration vertical form; their edits replace the whole row and may insert line breaks. */
+	readonly vertical : number            ;
+	readonly axes     : readonly string[] ;
+	readonly skipped  : readonly string[] ;
+	readonly edits    : readonly Edit[]   ;
 }
 
-function alignRows(source: SourceFile, rows: readonly DetectedRow[]): { axes: readonly string[]; skipped: readonly string[]; edits: readonly Edit[] } {
+function alignRows(source: SourceFile, rows: readonly DetectedRow[]): { axes: readonly string[]; skipped: readonly string[]; targets: ReadonlyMap<string, number>; edits: readonly Edit[] } {
 	// Axis processing order must follow the actual source order within a row. Some rows have `:` before `=`
 	// and some have only `=`, so collect the precedence of adjacent boundary pairs into a topological order.
 	// If this order breaks, shifts from later-axis edits leak into earlier-axis contracts and never converge.
@@ -61,11 +71,12 @@ function alignRows(source: SourceFile, rows: readonly DetectedRow[]): { axes: re
 		ordered.push(axis);
 	};
 	for (const axis of [...minFromOfAxis.keys()].sort((left, right) => minFromOfAxis.get(left)! - minFromOfAxis.get(right)!)) visit(axis);
-	const axisOrder          = ordered.reverse()                      ;
-	const shifts             = new Array<number>(rows.length).fill(0) ;
-	const edits   : Edit[]   = []                                     ;
-	const axes    : string[] = []                                     ;
-	const skipped : string[] = []                                     ;
+	const axisOrder                     = ordered.reverse()                      ;
+	const shifts                        = new Array<number>(rows.length).fill(0) ;
+	const edits   : Edit[]              = []                                     ;
+	const axes    : string[]            = []                                     ;
+	const skipped : string[]            = []                                     ;
+	const targets : Map<string, number> = new Map()                              ;
 	for (const axis of axisOrder) {
 		const entries = rows.map((row, index) => ({ row, index, boundary: row.boundaries.find(candidate => candidate.axis === axis) })).filter(entry => entry.boundary !== undefined);
 		if (entries.length < 2) continue;
@@ -79,6 +90,7 @@ function alignRows(source: SourceFile, rows: readonly DetectedRow[]): { axes: re
 			continue;
 		}
 		axes.push(`${axis}=${target}`);
+		targets.set(axis, target);
 		for (const [position, entry] of entries.entries()) {
 			const boundary = entry.boundary! ;
 			const pad      = pads[position]! ;
@@ -86,11 +98,24 @@ function alignRows(source: SourceFile, rows: readonly DetectedRow[]): { axes: re
 			shifts[entry.index] += pad - (boundary.at - boundary.from);
 		}
 	}
-	return { axes, skipped, edits };
+	return { axes, skipped, targets, edits };
 }
 
 function buildGroup(source: SourceFile, kindName: string, groupName: string, run: readonly DetectedRow[]): TableGroup {
-	const { axes, skipped, edits } = alignRows(source, run);
+	const straight = run.filter(row => row.vertical === undefined) ;
+	const marked   = run.filter(row => row.vertical !== undefined) ;
+	const aligned  = alignRows(source, straight)                   ;
+	// The vertical rows take the table's `=` column; with no aligned equals axis, the widest anchor of the run sets it.
+	const equalsRows   = run.filter(row => row.boundaries.some(boundary => boundary.axis === "equals"))                                                                                    ;
+	const equalsTarget = aligned.targets.get("equals") ?? Math.max(...equalsRows.map(row => displayColumn(source, row.boundaries.find(boundary => boundary.axis === "equals")!.from))) + 1 ;
+	const newline      = source.text.includes("\r\n") ? "\r\n" : "\n"                                                                                                                      ;
+	// The render carries the statement's own indentation, so the edit replaces the whole line's code, from its start.
+	const verticalEdits = marked.map(row => {
+		const start     = row.node.getStart(source)                                                                 ;
+		const lineStart = source.getPositionOfLineAndCharacter(source.getLineAndCharacterOfPosition(start).line, 0) ;
+		return { start: lineStart, end: row.node.getEnd(), text: verticalCallText(source, row, equalsTarget, newline) }             ;
+	})                                                                                                                                                                                      ;
+	const edits         = [...aligned.edits, ...verticalEdits]                                                                                                                              ;
 	if (process.env.DEBUG_ALIGN) {
 		for (const row of run) {
 			const line = source.getLineAndCharacterOfPosition(row.node.getStart(source)).line + 1     ;
@@ -105,10 +130,17 @@ function buildGroup(source: SourceFile, kindName: string, groupName: string, run
 		startLine : source.getLineAndCharacterOfPosition(first.getStart(source)).line + 1,
 		endLine   : source.getLineAndCharacterOfPosition(last.getEnd() - 1).line + 1,
 		rowCount  : run.length,
-		axes,
-		skipped,
+		vertical  : marked.length,
+		axes      : aligned.axes,
+		skipped   : aligned.skipped,
 		edits,
 	};
+}
+
+/** The gate a group's combined edit must pass: vertical rows may insert line breaks, nothing else may. */
+function groupPreserved(source: SourceFile, group: TableGroup): boolean {
+	const after = applyEdits(source.text, group.edits);
+	return group.vertical > 0 ? preservesTokensWithBreaks(source.text, after) : preservesTokens(source.text, after);
 }
 
 interface CollectResult {
@@ -192,7 +224,9 @@ async function writeGroups(root: string, relative: string, text: string, groups:
 		if (edits[index - 1]!.end > edits[index]!.start) throw new Error(`alignment edits overlap: ${relative}`);
 	}
 	const output = applyEdits(text, edits);
-	if (!preservesTokens(text, output)) throw new Error(`combined alignment edits change more than whitespace; nothing written: ${relative}`);
+	// Vertical rows may insert line breaks; every other edit is whitespace-only between tokens on one line.
+	const preserved = groups.some(group => group.vertical > 0) ? preservesTokensWithBreaks(text, output) : preservesTokens(text, output) ;
+	if (!preserved) throw new Error(`combined alignment edits change more than whitespace; nothing written: ${relative}`);
 	// Re-parse gate: the written file must produce the same syntactic diagnostics as the source, or it is restored.
 	const absolute = `${root}/${relative}`                            ;
 	const before   = await syntacticDiagnostics(root, absolute, text) ;
@@ -208,7 +242,7 @@ async function writeGroups(root: string, relative: string, text: string, groups:
 function safeGroups(source: SourceFile, minRows: number): readonly TableGroup[] {
 	const result: CollectResult = { groups: [], candidates: [], compressed: [] };
 	collect(source, source, minRows, new Set<Node>(), undefined, result);
-	return result.groups.filter(group => group.edits.length === 0 || preservesTokens(source.text, applyEdits(source.text, group.edits)));
+	return result.groups.filter(group => group.edits.length === 0 || groupPreserved(source, group));
 }
 
 async function main(): Promise<void> {
@@ -220,19 +254,20 @@ async function main(): Promise<void> {
 	const result: CollectResult = { groups: [], candidates: [], compressed: [] };
 	collect(source, source, minRows, new Set<Node>(), explainLine === undefined ? undefined : explainLine, result);
 	collectCompressed(source, source, result);
-	const detected          = [...result.groups].sort((left, right) => left.startLine - right.startLine)                                              ;
-	const refused           = detected.filter(group => group.edits.length > 0 && !preservesTokens(source.text, applyEdits(source.text, group.edits))) ;
-	const groups            = detected.filter(group => !refused.includes(group))                                                                      ;
-	const compressedMembers = result.compressed.reduce((count, entry) => count + entry.members, 0)                                                    ;
+	const detected          = [...result.groups].sort((left, right) => left.startLine - right.startLine)         ;
+	const refused           = detected.filter(group => group.edits.length > 0 && !groupPreserved(source, group)) ;
+	const groups            = detected.filter(group => !refused.includes(group))                                 ;
+	const compressedMembers = result.compressed.reduce((count, entry) => count + entry.members, 0)               ;
 
 	const totalEdits = groups.reduce((count, group) => count + group.edits.length, 0);
 	say(`align-tables file=${relative} groups=${groups.length} misaligned=${groups.filter(group => group.edits.length > 0).length} edits=${totalEdits} compressed=${result.compressed.length} compressed-members=${compressedMembers} refused=${refused.length}${write ? " write=true" : ""}`);
 	for (const group of refused) say(`  ${String(group.startLine).padStart(4)}-${group.endLine}  ${group.kind} refused — the edit would change more than whitespace between tokens`);
 	for (const entry of result.compressed) say(`  compressed  interface-members  line=${entry.line} members=${entry.members} — expanding is a structural change, so it is not fixed automatically`);
 	for (const group of groups) {
-		const range = group.startLine === group.endLine ? `${group.startLine}` : `${group.startLine}-${group.endLine}` ;
-		const axes  = [...group.axes, ...group.skipped.map(axis => `${axis}=skip`)].join(" ")                          ;
-		say(`  ${range.padStart(9)}  ${group.kind.padEnd(18)} rows=${String(group.rowCount).padStart(2)}  ${axes}  edits=${group.edits.length}`);
+		const range    = group.startLine === group.endLine ? `${group.startLine}` : `${group.startLine}-${group.endLine}` ;
+		const axes     = [...group.axes, ...group.skipped.map(axis => `${axis}=skip`)].join(" ")                          ;
+		const vertical = group.vertical > 0 ? `  vertical=${group.vertical}` : ""                                         ;
+		say(`  ${range.padStart(9)}  ${group.kind.padEnd(18)} rows=${String(group.rowCount).padStart(2)}  ${axes}  edits=${group.edits.length}${vertical}`);
 	}
 	if (explainLine !== undefined) {
 		if (result.candidates.length === 0) console.log(`explain line=${explainLine} no row candidate`);

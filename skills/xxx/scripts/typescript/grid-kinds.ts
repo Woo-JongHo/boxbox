@@ -720,6 +720,8 @@ export const KIND_AXES: Readonly<Record<string, { readonly gap: readonly string[
 export interface DetectedRow {
 	readonly node       : Node;
 	readonly boundaries : readonly RowBoundary[];
+	/** The nested call to render as the vertical form (declaration outlier rows). Such rows leave the horizontal column math. */
+	readonly vertical?  : Node;
 }
 
 /** Groups only contiguous same-kind rows among container siblings. Blank lines, comments or other statements in between break the table. */
@@ -749,36 +751,93 @@ const OUTLIER_GAP = 20;
 /**
  * Keeps the call layer only when every row calls the same callee with the same arity and no argument column has an
  * outlier; keeps a list slot only when every row has the same literal list there (same shape, no outlier column).
- * Dropping the call layer drops the list slots inside its arguments; the matcher slots of call statements survive.
+ * In declaration tables the outlier rows go vertical instead, and the rest keep the call layer when no outlier is
+ * left among them. Dropping the call layer drops the list slots inside its arguments; matcher slots survive.
  */
 function withLayers(source: SourceFile, kind: RowKind, run: readonly DetectedRow[]): readonly DetectedRow[] {
 	const tags = new Set(run.flatMap(row => row.boundaries.filter(boundary => boundary.layer !== undefined).map(boundary => boundary.layer!))) ;
 	if (tags.size === 0) return run                                                                                                           ;
 	const keep       = new Set<string>()                                                                        ;
+	let rows         = run                                                                                      ;
 	const calls      = run.map(row => kind.layerCall?.(row.node))                                               ;
 	const signatures = new Set(calls.map(call => call === undefined ? undefined : callSignature(source, call))) ;
 	const complete   = run.every(row => row.boundaries.some(boundary => boundary.axis === "call-close-paren"))  ;
-	if (tags.has("call") && complete && signatures.size === 1 && !signatures.has(undefined) && !hasOutlier(source, calls.map(call => callArguments(call!)))) keep.add("call");
+	const sameCall   = tags.has("call") && complete && signatures.size === 1 && !signatures.has(undefined)      ;
+	if (sameCall) {
+		const widths = itemWidths(source, calls.map(call => callArguments(call!))) ;
+		if (!hasOutlierWidths(widths)) keep.add("call")                            ;
+		else if (kind.name === "declaration") rows = withVerticalOutliers(run, keep, calls as readonly Node[], widths) ;
+	}
 	for (const tag of tags) {
 		if (!tag.startsWith("list:")) continue                                   ;
 		if (tag.startsWith("list:arg") && !keep.has("call")) continue            ;
 		const cells = run.map(row => rowListCells(source, kind.name, row.node).get(tag)) ;
 		if (cells.some(cell => cell === undefined)) continue                     ;
 		if (!sameShape(source, cells as readonly ListCell[])) continue           ;
-		if (hasOutlier(source, cells.map(cell => (cell as ListCell).items))) continue ;
+		if (hasOutlierWidths(itemWidths(source, cells.map(cell => (cell as ListCell).items)))) continue ;
 		keep.add(tag)                                                            ;
 	}
-	if (keep.size === tags.size) return run;
-	return run.map(row => ({ node: row.node, boundaries: row.boundaries.filter(boundary => boundary.layer === undefined || keep.has(boundary.layer)) }));
+	if (keep.size === tags.size) return rows;
+	return rows.map(row => ({ node: row.node, vertical: row.vertical, boundaries: row.boundaries.filter(boundary => boundary.layer === undefined || keep.has(boundary.layer)) }));
+}
+
+/**
+ * Marks the row whose argument is the outlier of a column (import rule B) for the vertical form — only when the
+ * call has two or more arguments, so the render actually shortens the row. The remaining rows keep the call layer
+ * when no outlier is left among them; otherwise they fall back to one flat layer.
+ */
+function withVerticalOutliers(run: readonly DetectedRow[], keep: Set<string>, calls: readonly Node[], widths: readonly (readonly number[])[]): readonly DetectedRow[] {
+	const arity  = widths[0]!.length    ;
+	const marked = run.map(() => false) ;
+	if (arity >= 2) {
+		for (let index = 0; index < arity; index += 1) {
+			const order = widths.map((row, position) => ({ width: row[index] ?? 0, position })).sort((left, right) => right.width - left.width) ;
+			if (order[0]!.width - (order[1]?.width ?? 0) < OUTLIER_GAP) continue    ;
+			if (callArguments(calls[order[0]!.position]!).length < 2) continue      ;
+			marked[order[0]!.position] = true                                       ;
+		}
+	}
+	if (!marked.some(Boolean)) return run ;
+	const remaining = widths.filter((_, position) => !marked[position]) ;
+	if (remaining.length > 0 && !hasOutlierWidths(remaining)) keep.add("call") ;
+	return run.map((row, position) => marked[position] ? { node: row.node, boundaries: row.boundaries, vertical: calls[position]! } : row) ;
 }
 
 /** An item cell this much wider than the second widest in its column is an outlier (import rule B); the layer is not applied. */
-function hasOutlier(source: SourceFile, itemsPerRow: readonly (readonly Node[])[]): boolean {
-	const columns = itemsPerRow[0]!.map((_, index) => itemsPerRow.map(items => displayWidth(source.text.slice(items[index]!.getStart(source), items[index]!.getEnd()))));
+function hasOutlierWidths(widthsPerRow: readonly (readonly number[])[]): boolean {
+	const columns = widthsPerRow[0]!.map((_, index) => widthsPerRow.map(widths => widths[index]!));
 	return columns.some(widths => {
 		const [widest = 0, second = 0] = [...widths].sort((left, right) => right - left);
 		return widest - second >= OUTLIER_GAP;
 	});
+}
+
+/** The display widths of every item cell per row, the input of the outlier rule. */
+function itemWidths(source: SourceFile, itemsPerRow: readonly (readonly Node[])[]): readonly (readonly number[])[] {
+	return itemsPerRow.map(items => items.map(item => displayWidth(source.text.slice(item.getStart(source), item.getEnd()))));
+}
+
+/**
+ * The vertical form of a declaration outlier row: the call's arguments one per line under the opening `(`, each
+ * non-last argument comma right after the widest argument (the horizontal call-layer rule), and the closing `);`
+ * on the statement's indentation — with the `=` at the table's `=` column. The trailing `//` note and everything
+ * after the statement stay in place. Only whitespace and inserted line breaks change.
+ */
+export function verticalCallText(source: SourceFile, row: DetectedRow, equalsTarget: number, newline: string): string {
+	const call      = row.vertical!                                                                                                                                             ;
+	const node      = row.node                                                                                                                                                  ;
+	const start     = node.getStart(source)                                                                                                                                     ;
+	const lineStart = source.getPositionOfLineAndCharacter(source.getLineAndCharacterOfPosition(start).line, 0)                                                                 ;
+	const indent    = source.text.slice(lineStart, start)                                                                                                                       ;
+	const equals    = row.boundaries.find(boundary => boundary.axis === "equals")!                                                                                              ;
+	const callee    = (call as unknown as { readonly expression: Node }).expression                                                                                             ;
+	const texts     = callArguments(call).map(item => source.text.slice(item.getStart(source), item.getEnd()))                                                                  ;
+	const widest    = Math.max(...texts.map(text => displayWidth(text)))                                                                                                        ;
+	const pad       = Math.max(1, equalsTarget - displayColumn(source, equals.from))                                                                                            ;
+	const lines     = [`${source.text.slice(lineStart, equals.from)}${" ".repeat(pad)}= ${source.text.slice(callee.getStart(source), callee.getEnd()).replace(/\s+/gu, " ")}(`] ;
+	lines.push(...texts.map((text, index) => `${indent}\t${index + 1 < texts.length ? `${text}${" ".repeat(widest - displayWidth(text))},` : text}`));
+	lines.push(`${indent});`);
+	return lines.join(newline);
 }
 
 /** Rows keep a list slot only when every list there has the same items: equal arity for arrays, equal property names for objects. */
