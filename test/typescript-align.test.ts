@@ -13,8 +13,8 @@ const script               = resolve(root, "skills/xxx/scripts/typescript/06_ali
 const workspaces: string[] = []                                                                ;
 
 /** Every test here spawns the aligner, which starts a TypeScript 7 server — a busy machine can push one invocation past Bun's 5 s default. */
-const CLI_TIMEOUT = 60_000                                                                              ;
-const slowTest    = (name: string, fn: () => void): void => test(name, fn, CLI_TIMEOUT)                 ;
+const CLI_TIMEOUT = 60_000                                                              ;
+const slowTest    = (name: string, fn: () => void): void => test(name, fn, CLI_TIMEOUT) ;
 
 afterEach(() => {
 	for (const workspace of workspaces.splice(0)) rmSync(workspace, { recursive: true, force: true });

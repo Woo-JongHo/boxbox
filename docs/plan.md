@@ -178,7 +178,7 @@ Why: today's tests prove safety, not quality. Goldens were produced by the engin
 
 | # | Task | Status |
 |---|---|---|
-| D1 | Pinned corpus for TypeScript and Python | ⬜ todo |
+| D1 | Pinned corpus for TypeScript and Python | ✅ done 2026-09-28 |
 | D2 | Signatures: group every aligned table into types | ⬜ todo |
 | D3 | Judging in TEST_COMPLETED and verdict records | ⬜ todo |
 | D4 | Learning: verdicts become cases, rules and registry changes | ⬜ todo |
@@ -186,7 +186,7 @@ Why: today's tests prove safety, not quality. Goldens were produced by the engin
 | D6 | Edge inputs: CRLF, BOM, large files, Rust parser | ⬜ todo |
 | D7 | Swift and Kotlin (light) | ⬜ todo |
 
-- **D1:** `corpus/manifest.json` (committed) pins permissively licensed repositories by commit SHA — TypeScript candidates: vscode, prisma, trpc, zod; Python candidates: requests, fastapi, pydantic, django — plus the user's private repositories as local-only sources (never committed). Sources are fetched into `~/.cache/xxx/corpus/`.
+- **D1:** `corpus/manifest.json` (committed) pins permissively licensed repositories by commit SHA — TypeScript candidates: vscode, prisma, trpc, zod; Python candidates: requests, fastapi, pydantic, django — plus the user's private repositories as local-only sources (never committed). Sources are fetched into `~/.cache/xxx/corpus/`. Done 2026-09-28: `scripts/corpus-fetch.ts` materializes each source as a shallow worktree at the pinned commit (idempotent re-runs); private repositories go into gitignored `corpus/local.json` (same schema, merged, duplicate ids refused); `test/corpus.test.ts` validates the manifest and the gitignore entry without network. All eight sources verified fetched at their pinned commits; per-source `paths` fields scope future scanning.
 - **D2:** every detected table gets a signature (language, container context, kind, ordered axis IDs, nesting, result state — design §6 L2); thousands of tables collapse into hundreds of types, ranked by frequency × risk.
 - **D3:** representatives per type are exported to `TEST_COMPLETED/corpus/<language>/<type>/` (aligned file, original, context); the user judges each type: `correct`, `different-role`, `missing-kind`, `taste`, `unsure`. Verdicts are stored as records (`corpus/verdicts.jsonl`, committed; no third-party code in it). `SUMMARY.txt` shows `approved` / `unjudged` per result.
 - **D4:** each verdict becomes a minimized, synthetic-identifier case under `fixtures/<language>/<region>/<construct>/` (the construct matrix grows from data, not by hand); `different-role` becomes a grouping rule, `missing-kind` a new kind, `correct` a pinned golden (design §7). The promotion gate keeps judged results from changing silently.
