@@ -38,8 +38,9 @@ Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked`
 | T2 | Token-stream preservation | ✅ done 2026-09-28 |
 | T2.5 | Import table cells | ✅ done 2026-09-28 |
 | T3 | Output re-parse | ✅ done 2026-09-28 |
-| T3.5 | Mutation tests | ▶ active |
-| T4 | 3-row floor for fixes | ⬜ todo |
+| T3.5 | Mutation tests | ✅ done 2026-09-28 |
+| T3.6 | TEST_COMPLETED folder | ✅ done 2026-09-28 |
+| T4 | Row floors per kind | ▶ active |
 | T5 | Go alignment off by default | ⬜ todo |
 | T6 | Shared `Result` JSON | ⬜ todo |
 | T7 | Close M1 | ⬜ todo |
@@ -107,6 +108,14 @@ Generate thousands of variants from the existing fixtures and prove the invarian
 - **Accept:** at least 1,000 variants per language run in `bun test` under a time budget (seed fixed; a larger run is available via an environment variable); zero invariant failures, or every failure fixed and pinned as a fixture.
 - **Verify:** `bun test`; `XXX_MUTATIONS=20000 bun test test/mutation.test.ts`.
 
+### T3.6 — TEST_COMPLETED folder
+
+A place to check aligned results by eye in an editor (design §6, L4 review, first version). An HTML page was tried first and replaced by plain files at the user's request.
+
+- **Scope:** `bun scripts/test-completed.ts [--samples 3]` rebuilds `TEST_COMPLETED/` (git-ignored): per language, every fixture and seeded mutation samples as aligned files, each original under `before/`, and `SUMMARY.txt` with the safety results per file (tables, refused, whitespace-only, idempotent, parse).
+- **Accept:** all eight languages are present; failing files are marked `FAIL` in `SUMMARY.txt`.
+- **Verify:** run the command; the user reviews the folder.
+
 ### T4 — 3-row floor for fixes
 
 - **Scope:** the line engine floors `minRows` at 2 (`Math.max(2, …)` in `table-engine.ts`); change the floor for **fixes** to 3. Two-row groups are only reported as pairs. The `--min-rows 2` promotion path in SKILL.md and the pilot doc is replaced by "record a human Decision" (implemented later in M4; until then pairs are report-only).
@@ -129,6 +138,22 @@ Generate thousands of variants from the existing fixtures and prove the invarian
 
 - **Scope:** update `design.md` §10 rows, README status, and this file; write the next milestone's tasks in detail.
 - **Accept:** the M1 checklist under *Goal* is all true.
+
+## M1.5 — Test foundation (after M1, before M2)
+
+Why: today's tests prove safety, not quality. Goldens were produced by the engine itself, seven languages have two hand-written files of about 100 lines each, and no real code has been judged by a person (review 2026-09-28).
+
+| # | Task | Status |
+|---|---|---|
+| F1 | Language × region × construct fixture matrix | ⬜ todo |
+| F2 | Verdict status in TEST_COMPLETED | ⬜ todo |
+| F3 | Pinned real-code slice for review | ⬜ todo |
+| F4 | Edge inputs: CRLF, BOM, large files, Rust parser | ⬜ todo |
+
+- **F1:** `fixtures/<language>/<region>/<construct>/` with `input`, `expected` and `case.json` (approver, date, rule id, or "refused by design"), following the rule taxonomy (design §4.3). A generated coverage table per language: constructs that exist in the language, covered, deliberately unsupported.
+- **F2:** `SUMMARY.txt` marks each result `approved` or `unjudged`; only user-approved expectations count as goldens. Existing goldens start as `unjudged`.
+- **F3:** 3–5 permissively licensed repositories per language pinned by commit SHA (subset of design §5.2), aligned results sampled into `TEST_COMPLETED/corpus/<language>/` for review; nothing from them is committed except the manifest.
+- **F4:** CRLF and BOM files, a multi-thousand-line file per language with a time budget, and `rustfmt` installed locally so Rust re-parse stops being skipped.
 
 ## Next milestones (detailed when they become active)
 
@@ -162,12 +187,14 @@ Findings outside the active task. Pull into a milestone when relevant.
 
 - The `;` axis can pad short rows far past column 120 when one row is long (seen in `stress-corpus.ts` during T1, fixed there by extracting a duplicated expression). The checker should warn when alignment pushes a table past 120 columns, pointing to the contract's "simplify the exceptional element first" step.
 - `scripts/stress-corpus.ts` still has ten lines over 130 columns that are not tables.
-- The TypeScript check refuses per table but cannot yet prove an end-to-end refusal (detectors only emit whitespace edits); T3.5 mutation tests should exercise it.
 - Import tables are aligned from 2 rows (the pre-existing import rule), unlike other tables (3). Decide whether imports follow the 3-row floor in T4.
 - Hand-made reference samples for M3 (2026-09-28, `00_normalize-imports.ts`): guard-row table (`if (…) { state = … ; … continue; }` with aligned condition cell, `{ … ;` and `continue`), subscript cells (`chars[index    ]!` / `chars[index + 1] ;`), and a multi-line object literal whose continuation lines align on the first property.
 - Declaration tables (01.2 and 04.2): align `=` from 2 rows, let a multi-line declaration's first line join the `=` column, keep declarations and plain assignments apart (agreed 2026-09-28); inner `( )` `[ ]` `{ }` `;` cells follow the M3 sub-table rule, with the vertical form for outliers as in imports.
 - T3: Rust re-parse is unverified locally (`rustfmt` not installed); CI installs it and runs with `XXX_REQUIRE_PARSERS=1`, but the workflow change is unverified until the branch is pushed.
 - T3: the TypeScript re-parse gate starts two TypeScript 7 servers per written file (~0.3 s); fine for `--write`, revisit for bulk runs.
+- T3.5 findings (fixed): (1) the preservation check treated trailing whitespace after a line comment as content, so 10–57 tables per 1,000 variants were refused although the edit was safe; (2) the TypeScript aligner was not idempotent in one pass when lines contain mid-line tabs — `--write` now repeats until stable (max 5 passes).
+- T3.5 cost: `bun run check` takes ~19 s with the default mutation counts (1,000 per line-engine language, 5 TypeScript variants). Large runs: `XXX_MUTATIONS=20000` (~2 min, passed 140,000 variants), `XXX_TS_MUTATIONS=100` (~2 min, passed).
+- T3.5 deviation: TypeScript runs 5 variants by default instead of 1,000, because each variant starts TypeScript 7 servers through the CLI. A pure in-process TypeScript alignment API would lift this (M3).
 - `.tsx` is not covered by the TypeScript token check (JSX text whitespace is significant); decide before supporting TSX.
 - The stress corpus uses OpenJDK (GPL with classpath exception): keep it for checks only, never copy snippets into fixtures (see design §5.2).
 - Choose the final product name, then replace `xxx` / `XXX` in one pass.

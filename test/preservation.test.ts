@@ -28,6 +28,11 @@ describe("changedLines", () => {
 		expect(changedLines("/* a  b */\nc;" , "/* a b */\nc;"    , SYNTAX)).toEqual([0]) ;
 	});
 
+	test("whitespace at the end of a line comment may go; at the end of a continuing string it may not", () => {
+		expect(changedLines("a = 1; // note  "  , "a = 1; // note"  , SYNTAX)).toEqual([] ) ;
+		expect(changedLines('a = "x  \nb";'    , 'a = "x\nb";'    , SYNTAX)).toEqual([0]) ;
+	});
+
 	test("flags indentation changes and line count changes", () => {
 		expect(changedLines("  a = 1;"   , "    a = 1;", SYNTAX)).toEqual([0]);
 		expect(changedLines("a;\nb;"     , "a; b;"     , SYNTAX)).toEqual([0, 1]);

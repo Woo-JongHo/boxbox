@@ -3,7 +3,9 @@
  * horizontal whitespace between tokens. Per line it compares three keys:
  *
  * 1. Indentation — leading whitespace is never touched (Python and YAML give it meaning).
- * 2. Protected text — string interiors and comments, compared byte for byte in order.
+ * 2. Protected text — string interiors and comments, compared byte for byte in order. The one exception is
+ *    whitespace at the end of a line that ends in a line comment: it is not content, so it may be removed. Trailing
+ *    whitespace inside a string that continues on the next line stays protected.
  * 3. Code shape — code outside protected text, where a whitespace run survives as one space only between
  *    two word characters or two operator characters (`let x` never becomes `letx`, `==` never `= =`) and
  *    disappears everywhere else (`a:` and `a :` are the same code).
@@ -73,7 +75,7 @@ function lineKeys(source: string, syntax: CodeSyntax): LineKey[] {
 			if (run !== null) { runs.push(run); run = null; }
 			code += line[column];
 		}
-		if (run !== null) runs.push(run);
+		if (run !== null) runs.push(commentStart >= 0 ? run.replace(/[ \t]+$/u, "") : run);
 		return { indent: line.slice(0, indentEnd), code: normalizeCode(code), protected: runs };
 	});
 }
