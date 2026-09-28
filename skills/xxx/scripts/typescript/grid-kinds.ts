@@ -14,6 +14,7 @@ import      {
               isClassDeclaration             ,
               isEnumDeclaration              ,
               isExpressionStatement          ,
+              isIfStatement                  ,
               isEnumMember                   ,
               isIdentifier                   ,
               isInterfaceDeclaration         ,
@@ -52,8 +53,8 @@ export interface RowBoundary {
 	readonly layer?  : LayerTag;
 }
 
-/** Which nested cell a boundary belongs to: the call layer, or one named list slot (`list:<slot>`). */
-export type LayerTag = "call" | `list:${string}` ;
+/** Which nested cell a boundary belongs to: the call layer, a subscript cell, or one named list slot (`list:<slot>`). */
+export type LayerTag = "call" | "subscript" | `list:${string}` ;
 
 /** One literal list a list slot may align: the open bracket position, the item nodes, the close bracket position. */
 export interface ListCell {
@@ -284,6 +285,18 @@ function listAxisPrefix(tag: string): string {
 	return tag.replace(/^list:/u, "list-");
 }
 
+/** The subscript a declaration's value consists of, as `chars[index + 1]` in `const next = chars[index + 1] ;` — a leading `!` is fine. */
+function subscriptPartsOf(source: SourceFile, node: Node): { readonly object: string; readonly index: Node; readonly close: number } | undefined {
+	if (!isVariableStatement(node)) return undefined                                                     ;
+	const declared = node.declarationList.declarations[0]?.initializer                                   ;
+	if (declared === undefined) return undefined                                                         ;
+	const unwrapped = syntaxKindName(declared) === "NonNullExpression" ? (declared as unknown as { readonly expression: Node }).expression : declared ;
+	if (syntaxKindName(unwrapped) !== "ElementAccessExpression") return undefined                        ;
+	const parts  = unwrapped as unknown as { readonly expression: Node; readonly argumentExpression: Node } ;
+	const object = source.text.slice(parts.expression.getStart(source), parts.expression.getEnd())          ;
+	return { object, index: parts.argumentExpression, close: unwrapped.getEnd() - 1 }                        ;
+}
+
 /** Callee text (whitespace-collapsed, `new`/`await` included) and arity; rows share the call layer only when these match. */
 function callSignature(source: SourceFile, call: Node): string {
 	const callee = (call as unknown as { readonly expression: Node }).expression;
@@ -308,6 +321,13 @@ function detectDeclaration(source: SourceFile, node: Node): readonly RowBoundary
 	const call = equals ? declarationCall(node) : undefined;
 	if (call) boundaries.push(...callLayer(source, call) ?? []);
 	for (const [tag, cell] of rowListCells(source, "declaration", node)) boundaries.push(...itemLayer(source, cell, listAxisPrefix(tag), tag));
+	const subscript = equals && !call ? subscriptPartsOf(source, node) : undefined                             ;
+	if (subscript) {
+		const closeBracket = tokenAfter(source, subscript.index.getEnd(), "]") ;
+		if (closeBracket !== undefined && closeBracket === subscript.close) {
+			boundaries.push({ axis: "subscript-close", from: subscript.index.getEnd(), at: closeBracket, insert: true, layer: "subscript" });
+		}
+	}
 	const contentEnd = node.declarationList.getEnd()       ;
 	const semicolon  = tokenAfter(source, contentEnd, ";") ;
 	if (!semicolon) return undefined;
@@ -466,6 +486,39 @@ function detectCallStatement(source: SourceFile, node: Node): readonly RowBounda
 	return boundaries;
 }
 
+/**
+ * A guard row: a one-line `if (…) { …; continue; }` whose block ends in `continue`, with no `else`. Aligned cells
+ * are the condition's closing `)` (hugging the widest condition), the first statement's `;` (hugging the widest
+ * first statement) and the `continue` column; the statements in between stay as written.
+ */
+function detectGuard(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
+	if (!isIfStatement(node)) return undefined                        ;
+	if (node.elseStatement !== undefined) return undefined            ;
+	if (!ownLineOf(source, node, LINE_REST)) return undefined         ;
+	const closeParen = tokenAfter(source, node.expression.getEnd(), ")") ;
+	if (closeParen === undefined) return undefined                    ;
+	const thenStatement = node.thenStatement                                    ;
+	if (syntaxKindName(thenStatement) !== "Block") return undefined             ;
+	const statements = (thenStatement as unknown as { readonly statements: readonly Node[] }).statements ;
+	if (statements.length < 2) return undefined                                 ;
+	// A statement node includes its `;`, so the padding anchor is the first statement's expression.
+	const first          = statements[0]!                                       ;
+	if (syntaxKindName(first) !== "ExpressionStatement") return undefined       ;
+	const firstExpression = (first as unknown as { readonly expression: Node }).expression ;
+	const firstSemicolon  = tokenAfter(source, firstExpression.getEnd(), ";")              ;
+	if (firstSemicolon === undefined) return undefined                          ;
+	const last = statements.at(-1)!                                             ;
+	if (syntaxKindName(last) !== "ContinueStatement") return undefined          ;
+	const boundaries: RowBoundary[] = [
+		{ axis : "guard-close-paren" , from : node.expression.getEnd() , at : closeParen            , insert : true },
+		{ axis : "guard-semi1"       , from : firstExpression.getEnd() , at : firstSemicolon        , insert : true },
+		{ axis : "guard-continue"    , from : last.getStart(source)    , at : last.getStart(source) , insert : true },
+	];
+	const comment = trailingComment(source, node.getEnd());
+	if (comment) boundaries.push(comment);
+	return boundaries;
+}
+
 function detectCaseClause(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
 	if (!isCaseClause(node)) return undefined;
 	if (!ownLineOf(source, node, LINE_REST)) return undefined;
@@ -620,6 +673,12 @@ export const ROW_KINDS: readonly RowKind[] = [
 		layerCall  : node => kindLayerCall("call-statements", node),
 	},
 	{
+		name       : "guard-statements",
+		gap        : "blank",
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
+		detect     : detectGuard,
+	},
+	{
 		name       : "enum-member",
 		gap        : "comma",
 		containers : node => isEnumDeclaration(node) ? node.members : undefined,
@@ -689,6 +748,10 @@ export const AXIS_NOTES: Readonly<Record<string, string>> = {
 	"list-matcher-arg-comma" : "`,` of a list inside a matcher argument, right after the widest item",
 	"list-matcher-arg-el"    : "start column of the next item of a list inside a matcher argument",
 	"list-matcher-arg-close" : "closing `]` or `}` of a list inside a matcher argument, right after the widest last item",
+	"subscript-close"        : "`]` of a declaration's subscript value, right after the widest index",
+	"guard-close-paren"      : "`)` of a guard row's condition, right after the widest condition",
+	"guard-semi1"            : "first statement's `;` of a guard row, right after the widest first statement",
+	"guard-continue"         : "start column of the trailing `continue;` in a guard row",
 };
 
 export function syntaxKindName(node: Node): string {
@@ -702,7 +765,8 @@ export function syntaxKindName(node: Node): string {
  */
 export const KIND_AXES: Readonly<Record<string, { readonly gap: readonly string[]; readonly insert: readonly string[] }>> = {
 	"declaration"        : { gap: ["colon", "semicolon"], insert: ["comment"] },
-	"declaration-equals" : { gap: ["colon", "equals", "call-arg{i}", "list-value-comma{i}", "list-value-el{i}", "list-arg{i}-comma{i}", "list-arg{i}-el{i}", "semicolon"], insert: ["call-open-paren", "call-comma{i}", "call-close-paren", "list-value-open", "list-value-close", "list-arg{i}-open", "list-arg{i}-close", "comment"] },
+	"declaration-equals" : { gap: ["colon", "equals", "call-arg{i}", "list-value-comma{i}", "list-value-el{i}", "list-arg{i}-comma{i}", "list-arg{i}-el{i}", "semicolon"], insert: ["call-open-paren", "call-comma{i}", "call-close-paren", "list-value-open", "list-value-close", "list-arg{i}-open", "list-arg{i}-close", "subscript-close", "comment"] },
+	"guard-statements"   : { gap: [], insert: ["guard-close-paren", "guard-semi1", "guard-continue"] },
 	"type-alias"         : { gap: ["equals", "semicolon"], insert: ["comment"] },
 	"method-signature"   : { gap: [], insert: ["open-paren", "close-paren", "colon", "comment"] },
 	"class-method"       : { gap: [], insert: ["open-paren", "close-paren", "colon", "comment"] },
@@ -767,6 +831,12 @@ function withLayers(source: SourceFile, kind: RowKind, run: readonly DetectedRow
 		const widths = itemWidths(source, calls.map(call => callArguments(call!))) ;
 		if (!hasOutlierWidths(widths)) keep.add("call")                            ;
 		else if (kind.name === "declaration") rows = withVerticalOutliers(run, keep, calls as readonly Node[], widths) ;
+	}
+	if (tags.has("subscript") && kind.name === "declaration") {
+		const parts    = run.map(row => subscriptPartsOf(source, row.node))                                     ;
+		const complete = run.every(row => row.boundaries.some(boundary => boundary.axis === "subscript-close")) ;
+		if (complete && parts.every(part => part !== undefined) && new Set(parts.map(part => part!.object)).size === 1
+			&& !hasOutlierWidths(itemWidths(source, parts.map(part => [part!.index])))) keep.add("subscript") ;
 	}
 	for (const tag of tags) {
 		if (!tag.startsWith("list:")) continue                                   ;

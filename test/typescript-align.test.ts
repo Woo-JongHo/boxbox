@@ -104,8 +104,8 @@ describe("typescript row floors", () => {
 		const result = Bun.spawnSync(["bun", script, "--file", relative(root, target), "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" });
 		expect(result.exitCode).toBe(0);
 		expect(readFileSync(target, "utf8")).toBe([
-			"const value     = chars[index]!    ;",
-			"const nextValue = chars[index + 1] ;",
+			"const value     = chars[index    ]! ;",
+			"const nextValue = chars[index + 1]  ;",
 			"",
 			"interface Pair {",
 			"\ta: string;",
@@ -237,6 +237,68 @@ describe("typescript declaration vertical form", () => {
 			'expect(handle(wideArgumentExpression)).toBe(true ) ;',
 			'expect(handle(x)                     ).toBe(false) ;',
 			'expect(handle(y)                     ).toBe(true ) ;',
+		]);
+	});
+});
+
+describe("typescript hand-made samples", () => {
+	test("aligns the closing bracket of subscript declaration values", () => {
+		expect(alignLines([
+			'const value = chars[index]!;',
+			'const next = chars[index + 1];',
+		])).toEqual([
+			'const value = chars[index    ]! ;',
+			'const next  = chars[index + 1]  ;',
+		]);
+	});
+
+	test("keeps subscript values flat when the objects differ or a row has none", () => {
+		expect(alignLines([
+			'const value = chars[index]!;',
+			'const next = other[index];',
+		])).toEqual([
+			'const value = chars[index]! ;',
+			'const next  = other[index]  ;',
+		]);
+		expect(alignLines([
+			'const value = chars[index]!;',
+			'const next = tokens.next;',
+		])).toEqual([
+			'const value = chars[index]! ;',
+			'const next  = tokens.next   ;',
+		]);
+	});
+
+	test("aligns ragged guard rows onto the hand-made form", () => {
+		expect(alignLines([
+			'if (value === "/" && next === "/") { state = "line"; chars[index] = " "; index += 1; continue; }',
+			'if (value === "/" && next === "*") { state = "block"; chars[index] = " "; index += 1; continue; }',
+			'if (value === "`") { state = "template"; chars[index] = " "; continue; }',
+		])).toEqual([
+			'if (value === "/" && next === "/") { state = "line"    ; chars[index] = " "; index += 1; continue; }',
+			'if (value === "/" && next === "*") { state = "block"   ; chars[index] = " "; index += 1; continue; }',
+			'if (value === "`"                ) { state = "template"; chars[index] = " ";             continue; }',
+		]);
+	});
+
+	test("keeps the hand-aligned guard sample of 00_normalize-imports unchanged", () => {
+		const sample = [
+			'\t\t\tif (value === "/" && next === "/") { state = "line"    ; chars[index] = chars[index + 1] = " "; index += 1; continue; }',
+			'\t\t\tif (value === "/" && next === "*") { state = "block"   ; chars[index] = chars[index + 1] = " "; index += 1; continue; }',
+			'\t\t\tif (value === "`"                ) { state = "template"; chars[index] = " ";                                continue; }',
+			'\t\t\tif (value === "\'"                ) { state = "single"  ;                                                    continue; }',
+			'\t\t\tif (value === \'"\'                ) { state = "double"  ;                                                    continue; }',
+		];
+		expect(alignLines(sample)).toEqual(sample);
+	});
+
+	test("blocks that do not end in continue and two-row groups stay as written", () => {
+		expect(alignLines([
+			'if (value === "/") { state = "line"; index += 1; }',
+			'if (value === "*") { state = "block"; index += 1; }',
+		])).toEqual([
+			'if (value === "/") { state = "line"; index += 1; }',
+			'if (value === "*") { state = "block"; index += 1; }',
 		]);
 	});
 });

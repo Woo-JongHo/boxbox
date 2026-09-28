@@ -66,6 +66,20 @@ const open  = charTokenAt(
 const close = charTokenAt(source, node.getEnd() - 1);
 ```
 
+**Subscript cells.** When a declaration's value is a subscript read (`chars[index]!`, `chars[index + 1]` — a leading `!` is fine), the closing `]` sits right after the widest index in the column. The slot is kept only when every row has the subscript on the same object and no index is an outlier (import rule B).
+
+```ts
+const value = chars[index    ]! ;
+const next  = chars[index + 1]  ;
+```
+
+**Guard rows.** Consecutive one-line `if (…) { …; continue; }` statements whose block ends in `continue` and has no `else` form a table: the condition's closing `)` hugs the widest condition, the first statement's `;` hugs the widest first statement, and the trailing `continue` shares one column. The statements in between stay as written.
+
+```ts
+if (value === "/" && next === "/") { state = "line"    ; chars[index] = chars[index + 1] = " "; index += 1; continue; }
+if (value === "`"                ) { state = "template"; chars[index] = " ";                                continue; }
+```
+
 ## Registration objects · enum members · case rows
 
 ```ts

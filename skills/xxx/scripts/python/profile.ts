@@ -64,7 +64,7 @@ function isUnsafe(masked: string): boolean {
 
 /** Cuts the value cell by source coordinates and refuses uncertain values. It must not be empty, start with = (== comparison), or contain ; or ,. */
 function valueSlot(code: string, masked: string, match: RegExpExecArray, gapGroup: number, textGroup: number): Slot | null {
-	const gapRange  = match.indices?.[gapGroup]  ;
+	const gapRange  = match.indices?.[gapGroup ] ;
 	const textRange = match.indices?.[textGroup] ;
 	if (!gapRange || !textRange) return null;
 	const text = code.slice(textRange[0], textRange[1]);

@@ -37,7 +37,7 @@ function repositoryPath(root: string, value: string): string {
 function options(root: string): Options {
 	const values = new Map<string, string>();
 	for (let index = 2; index < process.argv.length; index += 2) {
-		const name  = process.argv[index]     ;
+		const name  = process.argv[index    ] ;
 		const value = process.argv[index + 1] ;
 		if (name !== "--max-errors" && name !== "--top" && name !== "--file") throw new Error(`unknown option: ${name ?? ""}`);
 		if (values.has(name)) throw new Error(`duplicate option: ${name}`);
