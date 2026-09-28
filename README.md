@@ -1,60 +1,79 @@
-# woo-readability
+# xxx
 
-표형(엑셀식) 가독성 규칙으로 TypeScript 제품 파일을 한 파일씩 조사·수정·검증하는 `woo-code-readability` 스킬의 멀티 에이전트 플러그인이다. 99_www 저장소의 정본 스킬에서 프로젝트 전용 부분(description의 저장소 명칭, LAYERS.md 참조, Woo Receipt 거버넌스 절)을 분리해, 여러 코딩 에이전트가 같은 규칙 원본을 공유하도록 단일 소스로 배포한다.
+> Working name. `xxx` / `XXX` is a placeholder that will be replaced by the final brand name in one pass.
 
-caveman·ponytail과 같은 부류의 에이전트 스킬 플러그인이며, SKILL.md(Agent Skills 표준 포맷) 본문은 도구 무관이고 도구별 차이는 설치 위치와 매니페스트뿐이다.
+A multi-agent skill plugin that inspects, fixes and verifies source files one at a time against tabular ("spreadsheet-style") readability rules. Same-role rows are first given the same minimal structure; the remaining syntax boundaries are then aligned into minimum-width columns. When the structure is uncertain, it refuses rather than guesses.
 
-## 구성
+It belongs to the same family of agent skill plugins as caveman and ponytail. The SKILL.md body (Agent Skills format) is tool-agnostic; the only per-tool differences are install location and manifest.
 
-| 경로 | 내용 |
+See [`docs/design.md`](docs/design.md) for the product direction.
+
+## Contents
+
+| Path | Contents |
 |---|---|
-| `skills/woo-code-readability/` | 스킬 본문(`SKILL.md`), 규칙 references, AST·LSP 검사기 scripts, fixtures |
-| `agents/readability-inspector.md` | Claude Code·ZCode 읽기 전용 서브에이전트(Write/Edit 금지) |
-| `codex/readability-inspector.toml` | Codex 읽기 전용 에이전트 정의(`sandbox_mode = "read-only"`) |
-| `.claude-plugin/` | 플러그인·마켓플레이스 매니페스트(Claude Code와 호환 도구가 인식) |
-| `docs/agent-portability.md` | 에이전트별 스킬 발견 경로·설치 방식·검증 상태 |
-| `docs/www-pilot-2026-09-26.md` | 99_www 파일럿 측정 — `;`·`=` 어긋남의 원인 분류 |
-| `install.sh` | 에이전트별 디렉터리에 symlink/copy로 설치·제거 |
+| `skills/xxx/` | Skill body (`SKILL.md`), rule references, AST/LSP checker scripts, fixtures |
+| `agents/readability-inspector.md` | Read-only subagent for Claude Code and ZCode (Write/Edit disallowed) |
+| `codex/readability-inspector.toml` | Read-only agent definition for Codex (`sandbox_mode = "read-only"`) |
+| `.claude-plugin/` | Plugin and marketplace manifests (recognized by Claude Code and compatible tools) |
+| `docs/design.md` | Product design: modes, invariants, data model, customization, roadmap |
+| `docs/agent-portability.md` | Skill discovery paths, install methods and verification status per agent |
+| `docs/pilot-2026-09-26.md` | Pilot measurement — root causes of `;`/`=` misalignment |
+| `install.sh` | Install and uninstall into each agent's directories via symlink or copy |
 
-## 지원 언어
+## Supported languages
 
-- **TypeScript** — AST·LSP 기반 검사기(`scripts/typescript/`, 표 종류 등록부 grid-kinds)
-- **Python·Java·Go·Rust·JavaScript·C·C++** — 공통 라인 엔진(`scripts/common/table-engine.ts`) 위의 언어 프로파일러(`scripts/<언어>/01_group-regions.ts`, `06_align-tables.ts`). 문자열·주석 마스킹으로 구조를 오판하지 않고, 무손실 분해에 실패한 행은 거부한다.
+- **TypeScript** — AST/LSP-based checkers (`scripts/typescript/`, with the grid-kinds table registry).
+- **Python, Java, Go, Rust, JavaScript, C, C++** — language profilers (`scripts/<lang>/01_group-regions.ts`, `06_align-tables.ts`) on a shared line engine (`scripts/common/table-engine.ts`). String and comment masking prevents structural misreads, and rows that fail lossless decomposition are refused.
 
 ```bash
-bun skills/woo-code-readability/scripts/go/06_align-tables.ts --file main.go --write
-bun skills/woo-code-readability/scripts/python/06_align-tables.ts --file models.py
+bun skills/xxx/scripts/go/06_align-tables.ts --file main.go --write
+bun skills/xxx/scripts/python/06_align-tables.ts --file models.py
 ```
 
-## 설치
+## Install
 
-가장 간단한 방법은 설치 스크립트다. 기본은 심볼릭 링크여서 이 저장소의 규칙을 고치면 모든 에이전트에 즉시 반영된다.
+> [!IMPORTANT]
+> **XXX runs after your formatter and overrides its layout.** Formatters such as Prettier, black and rustfmt remove vertical alignment, so XXX must always be the final pass: the canonical form of a file is `xxx(formatter(file))`. Replace direct formatter calls in format-on-save, git hooks and CI (for example `prettier --check`) with `xxx format` / `xxx check`, which run your formatter first and XXX last. Go is the exception: gofmt's layout is enforced across the Go ecosystem, so Go alignment is off by default until it is proven gofmt-stable. See [design §3.5](docs/design.md#35-formatter-coexistence--xxx-runs-last).
+>
+> *`xxx format` / `xxx check` are planned (roadmap P0.5); today the per-language `06_align-tables.ts` scripts are the entry points.*
+
+The install script is the simplest route. It symlinks by default, so edits to the rules in this repository reach every agent immediately.
 
 ```bash
-./install.sh zcode codex   # ZCode와 Codex에 연결
-./install.sh claude        # Claude Code 전역 skills·agents에 연결
-./install.sh pi            # 현재 프로젝트 .pi/skills/에 복사 (pi·oh-my-pi)
-./install.sh --copy zcode  # 링크 대신 복사
+./install.sh zcode codex   # link into ZCode and Codex
+./install.sh claude        # link into Claude Code's global skills and agents
+./install.sh pi            # copy into the current project's .pi/skills/ (pi, oh-my-pi)
+./install.sh --copy zcode  # copy instead of link
 ./install.sh --uninstall zcode codex
 ```
 
-마켓플레이스 방식도 지원한다(저장소를 GitHub에 올린 뒤):
+Marketplace installs are supported too (once the repository is on GitHub):
 
-- Claude Code: `/plugin marketplace add <owner>/<repo>` → `/plugin install woo-readability@woo-plugins`
-- ZCode: `.claude-plugin/` 호환 매니페스트를 인식하므로 같은 저장소를 마켓플레이스로 추가한다
+- Claude Code: `/plugin marketplace add <owner>/<repo>` → `/plugin install xxx@xxx-plugins`
+- ZCode: recognizes the `.claude-plugin/` compatible manifests, so add the same repository as a marketplace.
 
-## 요구 사항
+## Requirements
 
-- `bun` — AST 검사기(`scripts/typescript/*.ts`) 실행
-- `node` + 대상 프로젝트의 `node_modules/.bin/tsc` — hover 검사(`05_inspect-hover.mjs`)만 사용
-- 이 저장소에서 `bun install`(또는 `npm install`) — 검사기가 쓰는 `typescript@7`을 고정 설치. `install.sh`가 자동으로 실행한다.
+- `bun` — runs the AST checkers (`scripts/typescript/*.ts`).
+- `node` + the target project's `node_modules/.bin/tsc` — used only by the hover check (`05_inspect-hover.mjs`).
+- `bun install` (or `npm install`) in this repository — pins the `typescript@7` the checkers use. `install.sh` runs it automatically.
 
-## 규칙 단일 소스 원칙
+## Single source of rules
 
-과거에 같은 스킬이 `~/.codex/skills/`에 복사본으로 존재해 description·스크립트 경로·규칙이 정본과 갈라진 적이 있다. 이 플러그인은 그 갈라짐을 구조적으로 막는다:
+A copy of the skill once drifted from the canonical version in its description, script paths and rules. This plugin prevents that structurally:
 
-- 규칙·스크립트의 원본은 이 저장소 하나뿐이고, 에이전트들은 symlink로 연결한다.
-- 프로젝트 고유 거버넌스는 프로젝트 쪽 오버레이에 둔다. 예: 99_www는 이 스킬 자체를 바꿀 때 Woo Receipt(`CODE-READABILITY-MAINTAIN`)를 남기는 절을 자기 AGENTS.md·스킬 오버레이로 소유한다.
-- 정본에 가까워진 규칙은 사용자 피드백으로 확정된 것만 이 저장소의 SKILL.md와 references에 반영한다.
+- Rules and scripts exist only in this repository; agents link to it.
+- Project-specific governance lives in a project-side overlay, not here.
+- Only rules confirmed by user feedback are promoted into this repository's SKILL.md and references.
 
-스킬 본문의 명령 예는 `<SKILL>` 플레이스홀더(스킬 폴더 경로)를 쓰므로, 설치 위치가 어디든 동일하게 동작한다.
+Command examples in the skill body use the `<SKILL>` placeholder (the skill folder path), so they work wherever the skill is installed.
+
+## Development
+
+```bash
+bun install
+bun run check   # bun test && tsc --noEmit && bash -n install.sh (same as CI)
+```
+
+Contributor and agent rules — including the English-only policy — are in [`AGENTS.md`](AGENTS.md).
