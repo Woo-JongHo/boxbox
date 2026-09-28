@@ -35,11 +35,11 @@ const MODIFIERS  = `${MODIFIER}(?:\\s+${MODIFIER})*`                            
 /** Rows with an unclosed paren or brace, annotation lines, and rows starting with control-flow or declaration keywords are excluded from row candidates. */
 const RESERVED_START = /^(?:if|for|while|switch|do|else|try|catch|finally|return|throw|new|break|continue|case|default|synchronized|assert|import|package|class|interface|enum|record|extends|implements|this|super)\b/;
 
-const ENUM_WITH_ARGS = new RegExp(`^([ \\t]*)(${IDENTIFIER})(\\s*)(\\([^()]*\\))(\\s*),$`, "du")                    ;
-const ENUM_BARE      = new RegExp(`^([ \\t]*)(${IDENTIFIER})(\\s*),$`, "du")                                        ;
+const ENUM_WITH_ARGS = new RegExp(`^([ \\t]*)(${IDENTIFIER})(\\s*)(\\([^()]*\\))(\\s*),$`                   , "du") ;
+const ENUM_BARE      = new RegExp(`^([ \\t]*)(${IDENTIFIER})(\\s*),$`                                       , "du") ;
 const INITIALIZED    = new RegExp(`^([ \\t]*)(${MODIFIERS})(\\s+)(${TYPE})(\\s+)(${IDENTIFIER})(\\s*)=(.*)$`, "du") ;
-const DECLARED       = new RegExp(`^([ \\t]*)(${MODIFIERS})(\\s+)(${TYPE})(\\s+)(${IDENTIFIER})(\\s*);$`, "du")     ;
-const PLAIN_INIT     = new RegExp(`^([ \\t]*)(${TYPE})(\\s+)(${IDENTIFIER})(\\s*)=(.*)$`, "du")                     ;
+const DECLARED       = new RegExp(`^([ \\t]*)(${MODIFIERS})(\\s+)(${TYPE})(\\s+)(${IDENTIFIER})(\\s*);$`    , "du") ;
+const PLAIN_INIT     = new RegExp(`^([ \\t]*)(${TYPE})(\\s+)(${IDENTIFIER})(\\s*)=(.*)$`                    , "du") ;
 
 /** `{ cell , cell ... } trailer` — trailer holds the following `,` or `;` verbatim. */
 const GROUP = /^([ \t]*)\{(.*)\}([,;]?)$/du;

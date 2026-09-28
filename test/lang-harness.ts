@@ -42,7 +42,7 @@ export function defineLanguageSuite(input: LanguageSuiteInput): void {
 	});
 
 	test(`${aligner.language}: alignment is idempotent — running twice gives the same result`, () => {
-		const once  = align(source)      ;
+		const once  = align(source     ) ;
 		const twice = align(once.output) ;
 		expect(twice.output).toBe(once.output);
 		expect(twice.misaligned).toBe(0);

@@ -19,6 +19,7 @@ import      {
               isInterfaceDeclaration         ,
               isMethodDeclaration            ,
               isMethodSignatureDeclaration   ,
+              isNewExpression                ,
               isObjectLiteralExpression      ,
               isPropertyAssignment           ,
               isPropertyAccessExpression     ,
@@ -45,8 +46,10 @@ export interface RowBoundary {
 	readonly axis : string ;
 	readonly from : number ;
 	readonly at   : number ;
-	/** true for an insert axis aligned at the existing column (`(`, `)`, `):`, `":`, `//`); false for a gap axis that keeps at least one space. */
+	/** true for an insert axis with no minimum gap (`(`, `)`, `):`, `":`, `//`, call-layer `,`); false for a gap axis that keeps at least one space. */
 	readonly insert? : boolean;
+	/** true for a boundary of the nested call layer; the layer is kept only when every row of the run calls the same callee with the same arity. */
+	readonly layer?  : boolean;
 }
 
 export type GapRule = "blank" | "comma";
@@ -60,6 +63,8 @@ export interface RowKind {
 	readonly groupName? : (run: readonly DetectedRow[]) => string;
 	/** Row floor for this run when it differs from the general floor (user-confirmed: `=` declaration tables from 2 rows). */
 	readonly minRows?   : (run: readonly DetectedRow[]) => number | undefined;
+	/** The row's nested call (declaration value, call-statement subject argument) whose `(`, `,`, `)` form the call layer. */
+	readonly layerCall? : (node: Node) => Node | undefined;
 }
 
 /** Returns the token position only if only whitespace lies between from and the token; undefined with comments or ASI. */
@@ -111,6 +116,70 @@ function trailingComment(source: SourceFile, after: number): RowBoundary | undef
 	return { axis: "comment", from: at, at, insert: true };
 }
 
+/** A call or `new` expression with at least one argument, looking through `await`; undefined otherwise. */
+function callWithArguments(node: Node | undefined): Node | undefined {
+	if (node === undefined) return undefined;
+	const current = isAwaitExpression(node) ? node.expression : node;
+	if (isCallExpression(current) && current.arguments.length > 0) return current;
+	if (isNewExpression(current) && (current.arguments?.length ?? 0) > 0) return current;
+	return undefined;
+}
+
+function callArguments(call: Node): readonly Node[] {
+	return (call as unknown as { readonly arguments?: readonly Node[] }).arguments ?? [];
+}
+
+/** The call a declaration's value consists of, as in `const STATES = new Set([...]) ;`. */
+function declarationCall(node: Node): Node | undefined {
+	if (!isVariableStatement(node)) return undefined;
+	return callWithArguments(node.declarationList.declarations[0]?.initializer);
+}
+
+/** The call inside a call statement's subject, as `preservesTokens(a, b)` in `expect(preservesTokens(a, b)).toBe(false);`. */
+function subjectCall(node: Node): Node | undefined {
+	if (!isExpressionStatement(node)) return undefined;
+	const expression = unwrapExpression(node.expression);
+	if (!isCallExpression(expression) || !isPropertyAccessExpression(expression.expression)) return undefined;
+	let subject: Node = expression.expression.expression;
+	while (isPropertyAccessExpression(subject)) subject = subject.expression;
+	if (!isCallExpression(subject) || subject.arguments.length !== 1) return undefined;
+	const argument = subject.arguments[0]!;
+	return isCallExpression(argument) && argument.arguments.length > 0 ? argument : undefined;
+}
+
+/**
+ * Layer 2 — the call cell: `(` at its column, each top-level argument `,` right after the widest argument, one
+ * space before the next argument, and `)` right after the widest last argument. Undefined when the call carries
+ * type arguments, a trailing comma or anything but spaces between the tokens.
+ */
+function callLayer(source: SourceFile, call: Node): readonly RowBoundary[] | undefined {
+	if ((call as unknown as { readonly typeArguments?: unknown }).typeArguments) return undefined;
+	const callee = (call as unknown as { readonly expression: Node }).expression ;
+	const open   = tokenAfter(source, callee.getEnd(), "(")                      ;
+	const items  = callArguments(call)                                           ;
+	if (open === undefined || items.length === 0) return undefined;
+	const boundaries: RowBoundary[] = [{ axis: "call-open-paren", from: open, at: open, insert: true, layer: true }];
+	for (let index = 0; index + 1 < items.length; index += 1) {
+		const end   = items[index]!.getEnd()             ;
+		const comma = tokenAfter(source, end, ",")       ;
+		const next  = items[index + 1]!.getStart(source) ;
+		if (comma === undefined || !spacesOnly(source, comma + 1, next)) return undefined;
+		boundaries.push({ axis: `call-comma${index + 1}`, from: end, at: comma, insert: true, layer: true });
+		boundaries.push({ axis: `call-arg${index + 2}`, from: comma + 1, at: next, layer: true });
+	}
+	const last  = items.at(-1)!.getEnd()        ;
+	const close = tokenAfter(source, last, ")") ;
+	if (close === undefined || close !== call.getEnd() - 1) return undefined;
+	boundaries.push({ axis: "call-close-paren", from: last, at: close, insert: true, layer: true });
+	return boundaries;
+}
+
+/** Callee text (whitespace-collapsed, `new`/`await` included) and arity; rows share the call layer only when these match. */
+function callSignature(source: SourceFile, call: Node): string {
+	const callee = (call as unknown as { readonly expression: Node }).expression;
+	return `${source.text.slice(call.getStart(source), callee.getEnd()).replace(/\s+/gu, " ")}/${callArguments(call).length}`;
+}
+
 function detectDeclaration(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
 	if (!isVariableStatement(node)) return undefined;
 	const declarations = node.declarationList.declarations;
@@ -126,6 +195,8 @@ function detectDeclaration(source: SourceFile, node: Node): readonly RowBoundary
 	const equals       = tokenAfter(source, equalsAnchor, "=")                  ;
 	if (equals) boundaries.push({ axis: "equals", from: equalsAnchor, at: equals });
 	if (!colon && !equals) return undefined;
+	const call = equals ? declarationCall(node) : undefined;
+	if (call) boundaries.push(...callLayer(source, call) ?? []);
 	const contentEnd = node.declarationList.getEnd()       ;
 	const semicolon  = tokenAfter(source, contentEnd, ";") ;
 	if (!semicolon) return undefined;
@@ -270,12 +341,14 @@ function detectCallStatement(source: SourceFile, node: Node): readonly RowBounda
 	const semicolon = tokenAfter(source, expression.getEnd(), ";");
 	if (semicolon === undefined) return undefined;
 	const boundaries: RowBoundary[] = [
-		{ axis : "subject-close-paren" , from : subjectClose        , at : subjectClose , insert : true },
-		{ axis : "matcher-dot"         , from : matcherDot          , at : matcherDot   , insert : true },
-		{ axis : "matcher-open-paren"  , from : matcherOpen         , at : matcherOpen  , insert : true },
-		{ axis : "matcher-close-paren" , from : matcherClose        , at : matcherClose , insert : true },
-		{ axis : "semicolon"           , from : expression.getEnd() , at : semicolon                    },
+		{ axis : "subject-close-paren" , from : subject.arguments[0]!.getEnd() , at : subjectClose , insert : true },
+		{ axis : "matcher-dot"         , from : matcherDot                     , at : matcherDot   , insert : true },
+		{ axis : "matcher-open-paren"  , from : matcherOpen                    , at : matcherOpen  , insert : true },
+		{ axis : "matcher-close-paren" , from : matcherClose                   , at : matcherClose , insert : true },
+		{ axis : "semicolon"           , from : expression.getEnd()            , at : semicolon                    },
 	];
+	const inner = subjectCall(node);
+	if (inner) boundaries.push(...callLayer(source, inner) ?? []);
 	const comment = trailingComment(source, semicolon + 1);
 	if (comment) boundaries.push(comment);
 	return boundaries;
@@ -383,6 +456,7 @@ export const ROW_KINDS: readonly RowKind[] = [
 		detect     : detectDeclaration,
 		groupName  : run => run.some(row => row.boundaries.some(boundary => boundary.axis === "equals")) ? "declaration-equals" : "declaration",
 		minRows    : run => run.every(row => row.boundaries.some(boundary => boundary.axis === "equals")) ? 2 : undefined,
+		layerCall  : declarationCall,
 	},
 	{
 		name       : "type-alias",
@@ -431,6 +505,7 @@ export const ROW_KINDS: readonly RowKind[] = [
 		gap        : "blank",
 		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
 		detect     : detectCallStatement,
+		layerCall  : subjectCall,
 	},
 	{
 		name       : "enum-member",
@@ -486,6 +561,10 @@ export const AXIS_NOTES: Readonly<Record<string, string>> = {
 	"open-brace"          : "opening `{` of an object row",
 	"close-brace"         : "closing `}` of an object row",
 	"tail"                : "tail after an object row's `}` (`,` `;` `)` `as const`)",
+	"call-open-paren"     : "`(` of the nested call cell (same callee and arity in every row)",
+	"call-comma"          : "top-level argument `,` of the nested call cell, right after the widest argument",
+	"call-arg"            : "start column of the next argument of the nested call cell",
+	"call-close-paren"    : "`)` of the nested call cell, right after the widest last argument",
 };
 
 export function syntaxKindName(node: Node): string {
@@ -499,7 +578,7 @@ export function syntaxKindName(node: Node): string {
  */
 export const KIND_AXES: Readonly<Record<string, { readonly gap: readonly string[]; readonly insert: readonly string[] }>> = {
 	"declaration"        : { gap: ["colon", "semicolon"], insert: ["comment"] },
-	"declaration-equals" : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
+	"declaration-equals" : { gap: ["colon", "equals", "call-arg{i}", "semicolon"], insert: ["call-open-paren", "call-comma{i}", "call-close-paren", "comment"] },
 	"type-alias"         : { gap: ["equals", "semicolon"], insert: ["comment"] },
 	"method-signature"   : { gap: [], insert: ["open-paren", "close-paren", "colon", "comment"] },
 	"class-method"       : { gap: [], insert: ["open-paren", "close-paren", "colon", "comment"] },
@@ -509,7 +588,7 @@ export const KIND_AXES: Readonly<Record<string, { readonly gap: readonly string[
 	"enum-member"        : { gap: ["equals", "comma"], insert: ["comment"] },
 	"case-clause"        : { gap: [], insert: ["case-colon", "call-paren", "return-tail"] },
 	"assignments"        : { gap: ["equals", "semicolon"], insert: ["comment"] },
-	"call-statements"    : { gap: ["semicolon"], insert: ["subject-close-paren", "matcher-dot", "matcher-open-paren", "matcher-close-paren", "comment"] },
+	"call-statements"    : { gap: ["call-arg{i}", "semicolon"], insert: ["call-open-paren", "call-comma{i}", "call-close-paren", "subject-close-paren", "matcher-dot", "matcher-open-paren", "matcher-close-paren", "comment"] },
 	"object-rows"        : { gap: ["property{i}", "colon{i}", "value{i}", "comma{i}", "close-brace"], insert: ["open-brace", "tail"] },
 	"registration"       : { gap: ["colon", "value"], insert: [] },
 };
@@ -537,5 +616,32 @@ export function runsOf(source: SourceFile, siblings: readonly Node[], kind: RowK
 		previousEnd = sibling.getEnd();
 	}
 	if (current.length > 0) runs.push(current);
-	return runs.filter(run => run.length > 0);
+	return runs.filter(run => run.length > 0).map(run => withCallLayer(source, kind, run));
+}
+
+/** An argument cell this much wider than the second widest in its column is an outlier (import rule B); the layer is not applied. */
+const OUTLIER_GAP = 20;
+
+/**
+ * Keeps the call layer only when every row calls the same callee with the same arity and no argument column has an
+ * outlier; otherwise the rows stay one layer.
+ */
+function withCallLayer(source: SourceFile, kind: RowKind, run: readonly DetectedRow[]): readonly DetectedRow[] {
+	if (!run.some(row => row.boundaries.some(boundary => boundary.layer))) return run;
+	const calls      = run.map(row => kind.layerCall?.(row.node))                                               ;
+	const signatures = new Set(calls.map(call => call === undefined ? undefined : callSignature(source, call))) ;
+	const complete   = run.every(row => row.boundaries.some(boundary => boundary.axis === "call-close-paren"))  ;
+	if (complete && signatures.size === 1 && !signatures.has(undefined) && !hasOutlier(source, calls as readonly Node[])) return run;
+	return run.map(row => ({ node: row.node, boundaries: row.boundaries.filter(boundary => !boundary.layer) }));
+}
+
+function hasOutlier(source: SourceFile, calls: readonly Node[]): boolean {
+	const columns = callArguments(calls[0]!).map((_, index) => calls.map(call => {
+		const argument = callArguments(call)[index]!;
+		return displayWidth(source.text.slice(argument.getStart(source), argument.getEnd()));
+	}));
+	return columns.some(widths => {
+		const [widest = 0, second = 0] = [...widths].sort((left, right) => right - left);
+		return widest - second >= OUTLIER_GAP;
+	});
 }

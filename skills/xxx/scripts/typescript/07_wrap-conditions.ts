@@ -44,7 +44,7 @@ function lineIndent(source: SourceFile, position: number): string {
 }
 
 function parentKind(parent: Node, grandparent: Node): "if" | "return" | "variable" | "expression" | undefined {
-	const parentName = syntaxKindName(parent)      ;
+	const parentName = syntaxKindName(parent     ) ;
 	const grandName  = syntaxKindName(grandparent) ;
 	if (parentName === "IfStatement") return "if";
 	if (parentName === "ReturnStatement") return "return";

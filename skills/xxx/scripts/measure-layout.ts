@@ -39,7 +39,7 @@ function parseLines(value: string | undefined, lineCount: number): ReadonlySet<n
 	for (const part of value.split(",")) {
 		const range = /^(\d+)(?:-(\d+))?$/u.exec(part.trim());
 		if (!range) throw new Error(`invalid lines spec: ${part}`);
-		const start = Number(range[1])             ;
+		const start = Number(range[1]            ) ;
 		const end   = Number(range[2] ?? range[1]) ;
 		if (start < 1 || end < start || end > lineCount) throw new Error(`lines spec out of range: ${part}`);
 		for (let line = start; line <= end; line += 1) lines.add(line);

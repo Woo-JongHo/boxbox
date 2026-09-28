@@ -23,9 +23,9 @@ describe("changedLines", () => {
 	});
 
 	test("flags any change inside strings and comments", () => {
-		expect(changedLines('a = "p q";'     , 'a = "p   q";'     , SYNTAX)).toEqual([0]) ;
-		expect(changedLines("a = 1; // x  y" , "a = 1; // x y"    , SYNTAX)).toEqual([0]) ;
-		expect(changedLines("/* a  b */\nc;" , "/* a b */\nc;"    , SYNTAX)).toEqual([0]) ;
+		expect(changedLines('a = "p q";'    , 'a = "p   q";' , SYNTAX)).toEqual([0]) ;
+		expect(changedLines("a = 1; // x  y", "a = 1; // x y", SYNTAX)).toEqual([0]) ;
+		expect(changedLines("/* a  b */\nc;", "/* a b */\nc;", SYNTAX)).toEqual([0]) ;
 	});
 
 	test("whitespace at the end of a line comment may go; at the end of a continuing string it may not", () => {
@@ -81,10 +81,10 @@ describe("preservesTokens (TypeScript scanner)", () => {
 
 	test("flags changes inside templates, regular expressions and comments, and joined tokens", () => {
 		const text = "const a = `x ${ {k: b} } y  z`; // c  d\nlet q = /a b/g; const r = n / 2 / m;";
-		expect(preservesTokens(text, text.replace("y  z", "y z"))    ).toBe(false) ;
-		expect(preservesTokens(text, text.replace("/a b/", "/a  b/"))).toBe(false) ;
-		expect(preservesTokens(text, text.replace("c  d", "c d"))    ).toBe(false) ;
-		expect(preservesTokens("let x = 1;", "letx = 1;")            ).toBe(false) ;
-		expect(preservesTokens("a == b;", "a = = b;")                ).toBe(false) ;
+		expect(preservesTokens(text        , text.replace("y  z", "y z")    )).toBe(false) ;
+		expect(preservesTokens(text        , text.replace("/a b/", "/a  b/"))).toBe(false) ;
+		expect(preservesTokens(text        , text.replace("c  d", "c d")    )).toBe(false) ;
+		expect(preservesTokens("let x = 1;", "letx = 1;"                    )).toBe(false) ;
+		expect(preservesTokens("a == b;"   , "a = = b;"                     )).toBe(false) ;
 	});
 });

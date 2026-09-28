@@ -54,13 +54,13 @@ const GAP         = "([ \\t]+)"                                                 
 const TAG         = "(\\x60[^\\x60\\n]*\\x60)"                                                                              ;
 const KEY         = `(?:${TYPE_CORE}|\\x60[^\\x60\\n]*\\x60|"[^"\\n]*")`                                                    ;
 
-const FIELD_TAGGED = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}(${GO_TYPE})${GAP}${TAG}[ \\t]*$`, "du")                    ;
-const FIELD_PLAIN  = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}(${GO_TYPE})[ \\t]*$`, "du")                                ;
+const FIELD_TAGGED = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}(${GO_TYPE})${GAP}${TAG}[ \\t]*$`                   , "du") ;
+const FIELD_PLAIN  = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}(${GO_TYPE})[ \\t]*$`                               , "du") ;
 const CONST_TYPED  = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}(${GO_TYPE})${GAP}=(?!=)([ \\t]*)([^\\n]+?)[ \\t]*$`, "du") ;
-const CONST_PLAIN  = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}=(?!=)([ \\t]*)([^\\n]+?)[ \\t]*$`, "du")                   ;
-const MAP_ROW      = new RegExp(`^${INDENT}(${KEY})([ \\t]*):(?!=)([ \\t]*)([^\\n]+?)([ \\t]*)(,)?[ \\t]*$`, "du")                   ;
-const IMPORT_ALIAS = new RegExp(`^${INDENT}([A-Za-z_.][A-Za-z0-9_.]*)${GAP}("[^"\\n]*")[ \\t]*$`, "du")                              ;
-const IMPORT_PLAIN = new RegExp(`^${INDENT}("[^"\\n]*")[ \\t]*$`, "du")                                                              ;
+const CONST_PLAIN  = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}=(?!=)([ \\t]*)([^\\n]+?)[ \\t]*$`                  , "du") ;
+const MAP_ROW      = new RegExp(`^${INDENT}(${KEY})([ \\t]*):(?!=)([ \\t]*)([^\\n]+?)([ \\t]*)(,)?[ \\t]*$`                  , "du") ;
+const IMPORT_ALIAS = new RegExp(`^${INDENT}([A-Za-z_.][A-Za-z0-9_.]*)${GAP}("[^"\\n]*")[ \\t]*$`                             , "du") ;
+const IMPORT_PLAIN = new RegExp(`^${INDENT}("[^"\\n]*")[ \\t]*$`                                                             , "du") ;
 
 /** `{ cell , cell ... } trailer` — trailer holds the following `,`, `;` or nothing verbatim. */
 const GROUP = /^([ \t]*)\{(.*)\}([,;]?)[ \t]*$/du;

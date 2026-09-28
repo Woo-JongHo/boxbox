@@ -28,8 +28,8 @@ describe("plugin distribution contract", () => {
 			const relative = String(plugin[field]).replace(/^\.\//u, "");
 			expect(existsSync(resolve(ROOT, relative))).toBe(true);
 		}
-		expect(existsSync(resolve(ROOT, "skills/xxx/SKILL.md"))             ).toBe(true) ;
-		expect(existsSync(resolve(ROOT, "agents/readability-inspector.md")) ).toBe(true) ;
+		expect(existsSync(resolve(ROOT, "skills/xxx/SKILL.md")             )).toBe(true) ;
+		expect(existsSync(resolve(ROOT, "agents/readability-inspector.md") )).toBe(true) ;
 		expect(existsSync(resolve(ROOT, "codex/readability-inspector.toml"))).toBe(true) ;
 	});
 
