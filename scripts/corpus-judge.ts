@@ -30,12 +30,14 @@ import      { spawnSync        } from "node:child_process"     ;
 import      { createHash       } from "node:crypto"            ;
 import      { readCensusReport } from "./corpus-signatures.ts" ;
 
-const ROOT            = join(import.meta.dir, "..")                                                      ;
-export const QUEUE    = join(process.env["HOME"] ?? "", ".cache", "xxx", "corpus", "review-queue.jsonl") ;
-const CACHE           = join(process.env["HOME"] ?? "", ".cache", "xxx", "corpus")                       ;
-const OUT             = join(ROOT, "TEST_COMPLETED", "corpus")                                           ;
-const LOG             = join(ROOT, "corpus", "verdicts.jsonl")                                           ;
-export const VERDICTS = ["correct", "different-role", "missing-kind", "taste", "unsure"]                 ;
+const ROOT  = join(import.meta.dir, "..")                                ;
+const CACHE = join(process.env["HOME"] ?? "", ".cache", "xxx", "corpus") ;
+
+const OUT = join(ROOT, "TEST_COMPLETED", "corpus"        ) ;
+const LOG = join(ROOT, "corpus"        , "verdicts.jsonl") ;
+
+export const QUEUE    = join(CACHE, "review-queue.jsonl")                                ;
+export const VERDICTS = ["correct", "different-role", "missing-kind", "taste", "unsure"] ;
 
 interface TableSpot {
 	readonly source    : string ;
