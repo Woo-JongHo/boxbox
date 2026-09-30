@@ -6,6 +6,12 @@
 import      { displayWidth            } from "./display-width.ts" ;
 import type { FileResult, ResultGroup } from "./result-json.ts"   ;
 import      { patternOf               } from "./surface.ts"       ;
+import      {
+              lookup                ,
+              type ConventionDb     ,
+              type LookupResult     ,
+                                      } from "./conventions.ts"   ;
+import      { lookupKeyOf             } from "./signature.ts"     ;
 
 export const REPORT_SCHEMA_VERSION = 1;
 
@@ -99,6 +105,22 @@ export interface Report {
 	readonly ok            : boolean                ;
 	/** --baseline을 준 경우에만 있다. */
 	readonly comparison?   : AlarmComparison        ;
+	/** 패턴 DB 조회 결과 (S5a, 보고만). DB를 주지 않으면 없다. */
+	readonly conventions?  : ConventionSummary      ;
+}
+
+/** 표 하나의 패턴 DB 조회 결과. */
+export interface ConventionLookup extends LookupResult {
+	readonly startLine : number ;
+	readonly endLine   : number ;
+	readonly kind      : string ;
+	readonly key       : string ;
+}
+
+export interface ConventionSummary {
+	readonly counts  : Readonly<Record<LookupResult["status"], number>> ;
+	readonly lookups : readonly ConventionLookup[]                      ;
+	readonly records : number                                           ;
 }
 
 export interface ReportInput {
@@ -108,6 +130,8 @@ export interface ReportInput {
 	/** --write 뒤 다시 돌린 check 결과. 멱등 검사(S3)에만 쓴다 */
 	readonly recheck?   : FileResult          ;
 	readonly limits?    : ReportLimits        ;
+	/** 패턴 DB. 주면 표마다 조회한다(보고만, 동작 불변). */
+	readonly db?        : ConventionDb        ;
 }
 
 const ALARM_LABELS: Readonly<Record<AlarmId, string>> = {
@@ -229,6 +253,22 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 	return alarms.sort((left, right) => left.startLine - right.startLine || left.id.localeCompare(right.id));
 }
 
+/** 표마다 조회 키로 패턴 DB를 찾는다. 2행 쌍은 표가 아니므로 조회하지 않는다. */
+function conventionsOf(result: FileResult, db: ConventionDb): ConventionSummary {
+	const counts                       = { approved: 0, rejected: 0, unknown: 0, conflict: 0 } ;
+	const lookups : ConventionLookup[] = []                                                    ;
+
+	for (const group of result.groups) {
+		if (group.kind === "pair") continue;
+
+		const key   = lookupKeyOf(result.language, group.context, group.kind, group.axes) ;
+		const found = lookup(db, key, result.file)                                        ;
+		counts[found.status] += 1;
+		lookups.push({ startLine: group.startLine, endLine: group.endLine, kind: group.kind, key, ...found });
+	}
+	return { counts, lookups, records: db.total };
+}
+
 export function buildReport(input: ReportInput): Report {
 	const limits                         = input.limits ?? DEFAULT_LIMITS ;
 	const checks                         = checksOf(input)                ;
@@ -244,6 +284,7 @@ export function buildReport(input: ReportInput): Report {
 		checks                                                ,
 		alarms        : alarmsOf(input, limits)               ,
 		ok            : checks.every(check => check.status !== "fail") ,
+		...(input.db ? { conventions: conventionsOf(input.result, input.db) } : {}),
 	};
 }
 
@@ -283,6 +324,10 @@ export function renderReport(report: Report): string {
 	for (const check of report.checks) lines.push(`  ${check.id} ${padDisplay(check.label, 22)} ${padDisplay(STATUS_TEXT[check.status], 20)} ${check.detail}`) ;
 	const states = Object.entries(report.states).map(([state, count]) => `${state} ${count}`).join(" · ")                                        ;
 	lines.push("", `그룹 ${Object.values(report.states).reduce((sum, count) => sum + count, 0)}개: ${states || "없음"}`, "")                     ;
+	if (report.conventions) {
+		const { counts, records } = report.conventions;
+		lines.push(`패턴 DB: 승인 ${counts.approved} · 거절 ${counts.rejected} · 미지정 ${counts.unknown} · 충돌 ${counts.conflict}  (레코드 ${records}개, 보고만)`, "");
+	}
 	const renderAlarm = (alarm: ReportAlarm): string => {
 		const where = alarm.startLine === alarm.endLine ? `${alarm.startLine}행` : `${alarm.startLine}–${alarm.endLine}행`;
 		return `  ${alarm.id} ${padDisplay(alarm.label, 14)} ${padDisplay(where, 12)} ${alarm.detail}  → ${alarm.hint}`   ;
