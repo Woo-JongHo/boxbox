@@ -258,8 +258,8 @@ Decisions (2026-09-30):
 | S3.6 | 작성 시 훅 (`docs/authoring-flow.md`, Codex 검토 반영). **첫 범위:** Claude Code 한 곳, 쓰기 전 GUIDE 주입 + 쓴 뒤 **읽기 전용** 리포트, 기준본 기록과 새/기존 알람 구분. **미룸:** 자동 공백 정렬(호스트 실행 계약 실측 후, 순서 보장 못 하면 금지), Codex·Cursor 어댑터, DB 승인 배선 | 실제 호스트에서 쓰기 → 훅 발동 → 새 알람만 전달, 지연 측정 기록 | ▶ active — 구현·흉내 검증 완료 2026-09-30 (`hooks/hooks.json`, `scripts/hook.ts`, `common/hook.ts`: 세션 시작 핵심 3줄, 새 파일 안내 세션당 1회, 쓴 뒤 읽기 전용 리포트로 새 알람만, 에이전트가 고칠 수 있는 알람만 A0·A1·A3·A4·A7·A9, 지연 기록). 남음: 실제 Claude Code에 설치해 확인 |
 | S4 | 약속 규칙 파일 스키마 + WHEN W1–W4 + 사용자 덮어쓰기(`.xxx/config.json`: 규칙 끄기·범위·장르; 불변식을 끄려 하면 스키마 오류); 약속 후보 "위치별 인자 열"(같은 호출 이름이면 인자 수가 달라도 인자 i를 같은 열에: 순수 위치 인자만, 공통 앞 인자 2개 이상, 패딩 상한, 판정으로 확정); 줄 폭 기준: 기준 환경 실측 → 한계선(hard)·권장선(soft), 120 고정값 교체(`docs/research/column-width.md`) | 스키마 테스트, 실측 기록 | ⬜ todo |
 | S5a | **패턴 레코드 + 조회(보고만)** (= M1.7 P3–P4, Codex 조회 검토 반영): 조회 키 `v1\|language\|context\|kind\|axes`(깊이 제외, 빈 context는 `-`, 진단용 시그니처와 분리), 레코드 id·key·pattern·status·scope·examples·evidence·versions·approvedBy(shape는 S5e), preset + 프로젝트 층, 같은 층·키·범위 상충은 충돌, 리포트가 표마다 approved/rejected/unknown/conflict를 붙임. 동작 불변. 결과 JSON에 키를 넣는 일은 S5d | 조회 결정성·층·충돌 테스트, 동작 불변 | ✅ done 2026-09-30 |
-| S5b | 예문·결정 레코드 (Codex DB 검토 반영: 규칙별 필수 알람 has/lacks, 판정별 테스트 의미, 버전·상태·해시·대체, 결정은 문서 해시를 가리키는 색인, taste는 근거에서 제외). 패턴 레코드의 근거이자 테스트 | 모든 승인 예문이 테스트로 돔 | ▶ active |
-| S5c | 처음 채우기: 코퍼스 상위 유형과 오늘 결정에서 패턴·예문 후보를 만들고 사용자 승인으로 적재 | 승인 기록, 테스트 통과 | ⬜ todo |
+| S5b | 예문·결정 레코드 (Codex DB 검토 반영: 규칙별 필수 알람 has/lacks, 판정별 테스트 의미, 버전·상태·해시·대체, 결정은 문서 해시를 가리키는 색인, taste는 근거에서 제외). 패턴 레코드의 근거이자 테스트 | 모든 승인 예문이 테스트로 돔 | ✅ done 2026-09-30 (`common/examples.ts`, `scripts/examples-check.ts`, preset `examples.jsonl`·`decisions.jsonl` 비어 있음) |
+| S5c | 처음 채우기: 코퍼스 상위 유형과 오늘 결정에서 패턴·예문 후보를 만들고 사용자 승인으로 적재 | 승인 기록, 테스트 통과 | ▶ active |
 | S5d | 조회를 게이트로: 승인된 패턴만 FIX, 거절은 그대로, 모르는 것은 SUGGEST + 후보 대기열 | 코퍼스 상태 변화 보고서 확인 | ⬜ todo |
 | S5e | M3와 연결: 모양(shape)을 코드(`grid-kinds.ts` `KIND_AXES`, profile)에서 패턴 DB로 옮김 | 기존 golden 동일 | ⬜ todo |
 | S6 | 엔진 CLI 패키지화, 배포본 `plugin/` 분리 (R1–R3) | 깨끗한 환경에서 마켓플레이스 설치 후 실행 | ⬜ todo |
