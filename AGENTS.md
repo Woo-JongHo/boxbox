@@ -7,7 +7,8 @@ Working rules and a structure map for any coding agent (Claude Code, Codex, ZCod
 개발 단계에서는 **새로 쓰는 문서·주석·계획을 한국어로** 쓴다. 공개 배포 직전에 레포 전체를 영어로 번역한다(`docs/plan.md` M1.8 S8).
 
 - **한국어로 쓰는 것:** Markdown 문서(`docs/`, `SKILL.md`, `references/`), 코드 주석과 JSDoc, 테스트 이름과 assertion 메시지, 계획 파일.
-- **영어로 유지하는 것 (번역 대상이 아님):** 코드 식별자, 파일·경로 이름, 규칙·문형 ID(`DEFINE` 등), CLI 출력과 오류 메시지, 매니페스트 `description`.
+- **영어로 유지하는 것 (번역 대상이 아님):** 코드 식별자, 파일·경로 이름, 규칙·문형 ID(`DEFINE` 등), CLI 오류 메시지, 매니페스트 `description`.
+- **예외 — 검사 리포트 본문:** `scripts/report.ts`의 사람이 읽는 출력(안전 검사·알람 라벨과 설명)은 개발 중 한국어로 두고 S8에서 영어로 바꾼다(2026-09-30 결정). JSON 필드 이름과 ID(`S1`, `A1` …)는 영어다.
 - **git에 남는 것은 영어:** 커밋 메시지, PR 제목·본문, 브랜치 이름. 배포 전에 번역할 수 없는 기록이기 때문이다.
 - 이미 영어로 된 기존 문서는 억지로 번역하지 않는다. 손대는 부분부터 한국어로 쓴다.
 - 사용자와의 대화는 한국어.
@@ -111,7 +112,7 @@ bun run scripts/stress-corpus.ts   # optional; clones OSS repos into /tmp, write
 
 - Runtime is Bun (TypeScript scripts run directly); `05_inspect-hover.mjs` runs on Node.
 - Code in this repo is itself held to the skill's rules: aligned import/declaration tables, tabs for indentation. Run the relevant `06_align-tables.ts` on files you change.
-- **속성이 다르면 빈 줄로 나눈다** (`skills/xxx/references/grammar.md` 1절 문단 규칙). 속성은 문형(`DEFINE`, `WHEN`, `EXIT`, `DO` …)과, 정의라면 공간(값/타입)이다. 예: `const` 묶음과 `expect` 묶음, 정의와 확인(`if … throw`)과 결과(`return`). 정렬 표는 같은 속성 안에서만 만들고, 속성이 다른 줄에 손으로 열을 맞추지 않는다.
+- **속성이 다르면 빈 줄로 나눈다** (`skills/xxx/references/grammar.md` 1절 문단 규칙). 속성은 문형(`DEFINE`, `WHEN`, `EXIT`, `DO` …)과, 정의라면 공간(값/타입)이다. 예: `const` 묶음과 `expect` 묶음, 정의와 확인(`if … throw`)과 결과(`return`). 정렬 표는 같은 속성 안에서만 만들고, 속성이 다른 줄에 손으로 열을 맞추지 않는다. 예외: 바로 위에서 정의한 이름을 검사하는 guard는 정의에 붙여 둔다. **소급 적용은 손대는 파일부터** 한다(건드리지 않은 파일은 바꾸지 않는다).
 - **타입 정의는 따로 묶는다.** `type`·`interface`를 값 정의(`const`) 사이에 하나씩 끼우지 않고, 타입 정의끼리 한 묶음으로 둔다. 순서를 옮기는 일은 공백 수정이 아니므로 엔진은 제안만 한다.
 - **`test/`와 `scripts/`는 엔진을 `@/`로 import한다** (`tsconfig.json` `paths`: `@/*` = `skills/xxx/scripts/*`). 배포되는 엔진 코드(`skills/xxx/scripts/**`) 안에서는 상대 경로를 쓴다: `install.sh --copy`는 스킬 폴더만 복사하고 `tsconfig.json`을 가져가지 않는다. 엔진 번들링(M1.8 S6)에서 다시 정한다.
 - Keep `version` identical in `package.json`, `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` (enforced by tests).
