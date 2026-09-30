@@ -30,11 +30,12 @@ import      { spawnSync        } from "node:child_process"     ;
 import      { createHash       } from "node:crypto"            ;
 import      { readCensusReport } from "./corpus-signatures.ts" ;
 
-const ROOT     = join(import.meta.dir, "..")                                      ;
-const CACHE    = join(process.env["HOME"] ?? "", ".cache", "xxx", "corpus")       ;
-const OUT      = join(ROOT, "TEST_COMPLETED", "corpus")                           ;
-const LOG      = join(ROOT, "corpus", "verdicts.jsonl")                           ;
-const VERDICTS = ["correct", "different-role", "missing-kind", "taste", "unsure"] ;
+const ROOT            = join(import.meta.dir, "..")                                                      ;
+export const QUEUE    = join(process.env["HOME"] ?? "", ".cache", "xxx", "corpus", "review-queue.jsonl") ;
+const CACHE           = join(process.env["HOME"] ?? "", ".cache", "xxx", "corpus")                       ;
+const OUT             = join(ROOT, "TEST_COMPLETED", "corpus")                                           ;
+const LOG             = join(ROOT, "corpus", "verdicts.jsonl")                                           ;
+export const VERDICTS = ["correct", "different-role", "missing-kind", "taste", "unsure"]                 ;
 
 interface TableSpot {
 	readonly source    : string ;
@@ -86,12 +87,36 @@ export function latestVerdicts(logLines: readonly string[]): ReadonlyMap<string,
 	return latest                                                                       ;
 }
 
-export function renderSummary(types: readonly { readonly signature: string; readonly count: number; readonly edits: number }[], verdicts: ReadonlyMap<string, VerdictRecord>): string {
+/** AI 사전 판정(M1.8 S3.5 ③): 제안일 뿐이며 판정 기록(verdicts.jsonl)이 아니다. */
+export interface Suggestion {
+	readonly schemaVersion : number            ;
+	readonly signature     : string            ;
+	readonly rank          : number            ;
+	readonly verdict       : string            ;
+	readonly reason        : string            ;
+	readonly flags         : readonly string[] ;
+	readonly reviewer      : string            ;
+	readonly date          : string            ;
+}
+
+/** 제안 대기열을 읽는다. 같은 시그니처는 마지막 제안이 이긴다. */
+export function latestSuggestions(logLines: readonly string[]): ReadonlyMap<string, Suggestion> {
+	const latest = new Map<string, Suggestion>()                    ;
+	for (const line of logLines) {
+		if (line.trim() === "") continue                            ;
+		const suggestion = JSON.parse(line) as Suggestion           ;
+		latest.set(suggestion.signature, suggestion)                ;
+	}
+	return latest                                                   ;
+}
+
+export function renderSummary(types: readonly { readonly signature: string; readonly count: number; readonly edits: number }[], verdicts: ReadonlyMap<string, VerdictRecord>, suggestions: ReadonlyMap<string, Suggestion> = new Map()): string {
 	const lines = [`corpus judging — ${types.length} types`, `verdicts: ${VERDICTS.join(" | ")}`]         ;
 	types.forEach((type, index) => {
 		const record = verdicts.get(type.signature)                                                                               ;
 		const state  = record === undefined ? "unjudged" : record.verdict === "correct" ? "approved" : `judged-${record.verdict}` ;
-		lines.push(`${String(index + 1).padStart(3, "0")}  ${state.padEnd(18)} count=${String(type.count).padStart(5)} edits=${String(type.edits).padStart(5)}  ${type.signature}`) ;
+		const ai     = suggestions.get(type.signature)?.verdict                                                                   ;
+		lines.push(`${String(index + 1).padStart(3, "0")}  ${state.padEnd(18)} ${`ai=${ai ?? "-"}`.padEnd(17)} count=${String(type.count).padStart(5)} edits=${String(type.edits).padStart(5)}  ${type.signature}`) ;
 	})                                                                                                  ;
 	return `${lines.join("\n")}\n`                                                                      ;
 }
@@ -143,9 +168,10 @@ function exportRepresentatives(limit: number, reps: number): void {
 }
 
 function renderTypeSummary(): string {
-	const report = readCensusReport<SignatureType>()                            ;
-	const log    = existsSync(LOG) ? readFileSync(LOG, "utf8").split("\n") : [] ;
-	return renderSummary(report.types, latestVerdicts(log))                                                              ;
+	const report = readCensusReport<SignatureType>()                                ;
+	const log    = existsSync(LOG) ? readFileSync(LOG, "utf8").split("\n") : []     ;
+	const queue  = existsSync(QUEUE) ? readFileSync(QUEUE, "utf8").split("\n") : [] ;
+	return renderSummary(report.types, latestVerdicts(log), latestSuggestions(queue))                                    ;
 }
 
 function recordVerdict(rank: number, verdict: string, note: string): void {
@@ -158,19 +184,24 @@ function recordVerdict(rank: number, verdict: string, note: string): void {
 	console.log(`verdict recorded: rank ${rank} ${verdict} — ${type.signature}`)                                           ;
 }
 
-const args = process.argv.slice(2)                                                                                ;
-const flag = (name: string): string | undefined => args.includes(name) ? args[args.indexOf(name) + 1] : undefined ;
-if (args.includes("--verdict")) {
-	const rank    = Number(flag("--verdict"))                 ;
-	const verdict = args[args.indexOf("--verdict") + 2] ?? "" ;
-	recordVerdict(rank, verdict, flag("--note") ?? "")                    ;
-} else if (args.includes("--status")) {
-	console.log(renderTypeSummary())                                      ;
-} else {
-	const limit  = Number(flag("--limit") ?? Number.MAX_SAFE_INTEGER) ;
-	const reps   = Number(flag("--reps") ?? 2)                        ;
-	const report = readCensusReport<SignatureType>()                  ;
-	exportRepresentatives(limit, reps)                                                                               ;
-	writeFileSync(join(OUT, "SUMMARY.txt"), renderTypeSummary())                                                     ;
-	console.log(`corpus-judge exported ${Math.min(limit, report.types.length)} types to ${OUT}`)                     ;
+function main(): void {
+	const args = process.argv.slice(2)                                                                                ;
+	const flag = (name: string): string | undefined => args.includes(name) ? args[args.indexOf(name) + 1] : undefined ;
+	if (args.includes("--verdict")) {
+		const rank    = Number(flag("--verdict"))                 ;
+		const verdict = args[args.indexOf("--verdict") + 2] ?? "" ;
+		recordVerdict(rank, verdict, flag("--note") ?? "")                    ;
+	} else if (args.includes("--status")) {
+		console.log(renderTypeSummary())                                      ;
+	} else {
+		const limit  = Number(flag("--limit") ?? Number.MAX_SAFE_INTEGER) ;
+		const reps   = Number(flag("--reps") ?? 2)                        ;
+		const report = readCensusReport<SignatureType>()                  ;
+		exportRepresentatives(limit, reps)                                                                               ;
+		writeFileSync(join(OUT, "SUMMARY.txt"), renderTypeSummary())                                                     ;
+		console.log(`corpus-judge exported ${Math.min(limit, report.types.length)} types to ${OUT}`)                     ;
+	}
 }
+
+// import만으로는 아무 일도 하지 않는다 (예전에는 import 시 자료를 다시 내보냈다).
+if (import.meta.main) main() ;

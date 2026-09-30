@@ -254,13 +254,15 @@ Decisions (2026-09-30):
 | S2 | `grammar.md`: 4단위, 문형 9개(`EXIT` 추가, Codex 검토 반영), 역할, 문단 목적, 장르 + 코퍼스 근거. 1차 범위 TypeScript, Python (Java는 S2.5로 보류) | 코퍼스 표 100% 대응 재확인 (TS 7,214 · Py 879 · Java 162) | ✅ done 2026-09-30 |
 | S2.5 | Java 허용 라이선스 코퍼스 고정(Apache-2.0 후보: guava, commons-lang, spring-framework) + census의 Java 지원. Codex 검토 3 | Java 표를 고정 코퍼스에서 다시 집계, 문형 100% 대응 | ⏸ 보류 — Java는 1차 범위에서 제외 (2026-09-30) |
 | S3 | 표현형 데이터 스키마 (kind → 문형) | 기존 kind 전부 매핑, 테스트. Python 모호 행(`a = v`)을 확실한 행과 한 표로 묶지 않음(문법 판정 규칙 3) | ✅ done 2026-09-30 |
-| S3.5 | 검사 리포트 + AI 확인 루프: 안전 검사 S1–S4 통과/미통과 + 알람 A1–A9(한계선·권장선 초과, 모호, REFUSE, 2행 쌍, 이상값 셀, 큰 변경량, 대응 안 된 kind, 정렬로 덮은 의심)을 텍스트와 `--json`으로. AI는 알람만 읽고 판정·수정을 제안해 `.xxx/cache/review-queue`에 쌓고, 적재는 사람 확인 후. 먼저 코퍼스 182개 유형에 적용(M1.5 판정 병목) | 리포트 결정성 테스트, 코퍼스 유형에 AI 제안이 붙음 | ▶ active — ① 리포트 완료 2026-09-30 (`scripts/report.ts`, `common/report.ts`), ② 기준본 비교 완료 2026-09-30 (`--baseline <파일|none>`; 기준본 대비 새 알람·기존 알람 구분, 종류·대상별 짝짓기, `docs/authoring-flow.md` 3절), ③ AI 확인 루프 남음, ④ 알람 A10 "문단 안 속성 섞임"(표가 아닌 문장도 문형으로 분류 필요, 문법 1절 문단 규칙과 정의 직후 guard 예외) |
+| S3.5 | 검사 리포트 + AI 확인 루프: 안전 검사 S1–S4 통과/미통과 + 알람 A1–A9(한계선·권장선 초과, 모호, REFUSE, 2행 쌍, 이상값 셀, 큰 변경량, 대응 안 된 kind, 정렬로 덮은 의심)을 텍스트와 `--json`으로. AI는 알람만 읽고 판정·수정을 제안해 `.xxx/cache/review-queue`에 쌓고, 적재는 사람 확인 후. 먼저 코퍼스 182개 유형에 적용(M1.5 판정 병목) | 리포트 결정성 테스트, 코퍼스 유형에 AI 제안이 붙음 | ▶ active — ① 리포트 완료 2026-09-30 (`scripts/report.ts`, `common/report.ts`), ② 기준본 비교 완료 2026-09-30 (`--baseline <파일|none>`; 기준본 대비 새 알람·기존 알람 구분, 종류·대상별 짝짓기, `docs/authoring-flow.md` 3절), ③ AI 사전 판정 1차 완료 2026-09-30 (상위 20개, Codex; 아래 노트), ④ 알람 A10 "문단 안 속성 섞임"(표가 아닌 문장도 문형으로 분류 필요, 문법 1절 문단 규칙과 정의 직후 guard 예외) |
 | S3.6 | 작성 시 훅 (`docs/authoring-flow.md`, Codex 검토 반영). **첫 범위:** Claude Code 한 곳, 쓰기 전 GUIDE 주입 + 쓴 뒤 **읽기 전용** 리포트, 기준본 기록과 새/기존 알람 구분. **미룸:** 자동 공백 정렬(호스트 실행 계약 실측 후, 순서 보장 못 하면 금지), Codex·Cursor 어댑터, DB 승인 배선 | 실제 호스트에서 쓰기 → 훅 발동 → 새 알람만 전달, 지연 측정 기록 | ⬜ todo |
 | S4 | 약속 규칙 파일 스키마 + WHEN W1–W4 + 사용자 덮어쓰기(`.xxx/config.json`: 규칙 끄기·범위·장르; 불변식을 끄려 하면 스키마 오류); 줄 폭 기준: 기준 환경 실측 → 한계선(hard)·권장선(soft), 120 고정값 교체(`docs/research/column-width.md`) | 스키마 테스트, 실측 기록 | ⬜ todo |
 | S5 | 예문 DB 스키마 → M1.7 P2–P5 재개 (키에 `pattern`) | P2 검증 | ⬜ todo |
 | S6 | 엔진 CLI 패키지화, 배포본 `plugin/` 분리 (R1–R3) | 깨끗한 환경에서 마켓플레이스 설치 후 실행 | ⬜ todo |
 | S7 | 문서 재배선: AGENTS.md, SKILL.md(절차만), design.md, `readability-contract.md` 해체 | `bun run check`, 링크 확인 | ⬜ todo |
 | S8 | 배포 전 영어 번역(검사 리포트 본문 포함) + 한국어 잔존 검사(CJK 테스트 데이터 제외) | CI 검사 통과 | ⬜ todo |
+
+S3.5 ③ 노트 (2026-09-30): `scripts/corpus-triage.ts`가 상위 20개 유형의 대표 사례(공개 소스만)를 Codex에 보내고, 판정 후보를 `~/.cache/xxx/corpus/review-queue.jsonl`에 쓴다. SUMMARY.txt에 `ai=` 칸으로 보인다. **제안일 뿐, 판정 기록은 사람이 `--verdict`로만 쓴다.** 결과: correct 13, taste 7, different-role·missing-kind 0 — 상위 20개에서 묶음 오류는 없었다. taste 7개 중 3개는 긴 예외 요소에 맞춘 패딩(covers-reducible)이고, 3개는 `expect` 단언 표(call-statements). **발견:** Codex가 거의 모든 유형에 `;` 앞 공백을 "불필요"로 짚었다(pushed-apart). `;` 열은 작성자가 승인한 약속인데 AI는 그걸 모르고 일반 취향으로 판단했다 → AI에게 활성 약속(3층)을 함께 줘야 약속 기준으로 판정한다. 같은 작업에서 `corpus-judge.ts`가 import 시 CLI를 돌던 백로그 항목을 고쳤다(`bun run check` 약 165초 → 29초).
 
 근거 자료(연구 인용, 코퍼스 측정: 문형 분포, 함수 본문 51.5%, 우리 코드의 if/for/문단 측정)는 S2에서 `docs/research/`로 옮긴다.
 
@@ -296,4 +298,4 @@ Findings outside the active task. Pull into a milestone when relevant.
 - Choose a license before publishing.
 - The rules for YAML/JSON (design §4.3, 3.4) need a horizontal-only safety rule before any implementation.
 - N4 leftover: a multi-line object literal whose continuation lines align on the first property (hand-made sample, `00_normalize-imports.ts`) — not covered by the guard-row and subscript work; decide with M1.5 judging.
-- `scripts/corpus-judge.ts` runs its CLI at module load (no `import.meta.main` guard), so `bun test` re-exports `TEST_COMPLETED/corpus/` on every run and fails when the census report is stale (seen in M1.7 P1).
+- ~~`scripts/corpus-judge.ts` runs its CLI at module load~~ — 2026-09-30 고침 (`import.meta.main` 가드).
