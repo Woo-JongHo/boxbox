@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 /**
  * Corpus census (plan M1.5 D2): runs the aligners over the fetched corpus and collapses every detected table
- * into an L2 signature type — (language, container context, kind, ordered axis IDs, nesting depth, result state,
- * design §6). Thousands of tables collapse into a few hundred types, ranked by frequency × risk so the judged
+ * into a signature type — the pattern identity of skills/xxx/scripts/common/signature.ts (language, container context,
+ * kind, ordered axis IDs, nesting depth); result states are counted per type, not keyed (design §4.1). Thousands of tables collapse into a few hundred types, ranked by frequency × risk so the judged
  * representatives of D3 sample the tables that matter first. The report is written to
  * ~/.cache/xxx/corpus/signatures.json; third-party source never enters this repository.
  *
@@ -12,20 +12,21 @@
  * so raise --max-files to scan a whole tree. Local-only sources are included when present.
  */
 import      {
-              existsSync                 ,
-              readdirSync                ,
-              readFileSync               ,
-              realpathSync               ,
-              statSync                   ,
-              mkdirSync                  ,
-              writeFileSync              ,
-                                           } from "node:fs"                                             ;
-import      { homedir                      } from "node:os"                                             ;
-import      { join, relative               } from "node:path"                                           ;
-import      { API                          } from "typescript/unstable/async"                           ;
-import      { alignSource                  } from "../skills/xxx/scripts/common/table-engine.ts"        ;
-import      { PYTHON_ALIGNER               } from "../skills/xxx/scripts/python/profile.ts"             ;
-import      { censusGroups, groupPreserved } from "../skills/xxx/scripts/typescript/06_align-tables.ts" ;
+              existsSync                                ,
+              readdirSync                               ,
+              readFileSync                              ,
+              realpathSync                              ,
+              statSync                                  ,
+              mkdirSync                                 ,
+              writeFileSync                             ,
+                                                          } from "node:fs"                                             ;
+import      { homedir                                     } from "node:os"                                             ;
+import      { join, relative                              } from "node:path"                                           ;
+import      { API                                         } from "typescript/unstable/async"                           ;
+import      { alignSource                                 } from "../skills/xxx/scripts/common/table-engine.ts"        ;
+import      { PYTHON_ALIGNER                              } from "../skills/xxx/scripts/python/profile.ts"             ;
+import      { indentDepth, signatureOf, SIGNATURE_VERSION } from "../skills/xxx/scripts/common/signature.ts"           ;
+import      { censusGroups, groupPreserved                } from "../skills/xxx/scripts/typescript/06_align-tables.ts" ;
 
 const ROOT  = join(import.meta.dir, "..")                ;
 const CACHE = join(homedir(), ".cache", "xxx", "corpus") ;
@@ -53,15 +54,23 @@ interface TableSpot {
 }
 
 interface SignatureType {
-	readonly signature : string               ;
-	readonly language  : string               ;
-	readonly kind      : string               ;
-	readonly state     : string               ;
-	readonly count     : number               ;
-	readonly rows      : number               ;
-	readonly edits     : number               ;
-	readonly score     : number               ;
-	readonly examples  : readonly TableSpot[] ;
+	readonly signature : string                           ;
+	readonly language  : string                           ;
+	readonly kind      : string                           ;
+	readonly states    : Readonly<Record<string, number>> ;
+	readonly count     : number                           ;
+	readonly rows      : number                           ;
+	readonly edits     : number                           ;
+	readonly score     : number                           ;
+	readonly examples  : readonly TableSpot[]             ;
+}
+
+/** Reads a census report; an older report (keyed with the result state) must be regenerated, never matched. */
+export function readCensusReport<T>(path: string = join(CACHE, "signatures.json")): { readonly types: readonly T[] } {
+	if (!existsSync(path)) throw new Error(`no census report: ${path} — run scripts/corpus-signatures.ts first`)             ;
+	const report = JSON.parse(readFileSync(path, "utf8")) as { readonly schemaVersion?: number; readonly signatureVersion?: number; readonly types: readonly T[] } ;
+	if (report.schemaVersion !== 2 || report.signatureVersion !== SIGNATURE_VERSION) throw new Error(`stale census report: ${path} — rerun scripts/corpus-signatures.ts`) ;
+	return report                                                                                                              ;
 }
 
 const readManifest = (name: string): CorpusManifest => {
@@ -76,17 +85,6 @@ const readManifest = (name: string): CorpusManifest => {
 	return parsed                                                                              ;
 } ;
 
-/** Normalizes one axis id for typing: `axis=target` loses its column, digit runs become `{i}`, a callee becomes `call:*`. */
-export function normalizeAxis(axis: string): string {
-	const bare  = axis.split("=")[0]!                  ;
-	const typed = bare.replace(/^call:.+$/u, "call:*") ;
-	return typed.replace(/\d+/gu, "{i}")   ;
-}
-
-/** The L2 signature of one table: (language, container context, kind, ordered axis ids, depth, state). */
-export function signatureOf(language: string, context: string, kind: string, axes: readonly string[], depth: number, state: string): string {
-	return `${language}|${context}|${kind}|${axes.map(normalizeAxis).join(">")}|d${depth}|${state}` ;
-}
 
 function walkFiles(root: string, extension: string, limit: number): readonly string[] {
 	const found: string[] = []                ;
@@ -177,12 +175,13 @@ async function censusSource(source: CorpusSource, maxFiles: number): Promise<Cen
 						const ast = await project.program.getSourceFile(file)            ;
 						if (!ast) continue                                               ;
 						for (const group of censusGroups(ast, 3)) {
-							const safe = groupPreserved(ast, group)                        ;
+							const safe  = groupPreserved(ast, group)                                      ;
+							const state = group.edits.length === 0 ? "PASS" : safe ? "FIXABLE" : "REFUSE" ;
 							rows.push({
-								signature : signatureOf(source.language, group.context, group.kind, group.axes, group.depth, group.edits.length === 0 ? "PASS" : safe ? "FIXABLE" : "REFUSE"),
+								signature : signatureOf(source.language, group.context, group.kind, group.axes, group.depth),
 								language  : source.language   ,
 								kind      : group.kind        ,
-								state     : group.edits.length === 0 ? "PASS" : safe ? "FIXABLE" : "REFUSE",
+								state     : state             ,
 								rows      : group.rowCount    ,
 								edits     : group.edits.length,
 								spot      : { source: source.id, file: label(file), startLine: group.startLine, endLine: group.endLine, rows: group.rowCount },
@@ -220,40 +219,42 @@ async function censusSource(source: CorpusSource, maxFiles: number): Promise<Cen
 		const spotOf = (startLine: number, endLine: number): TableSpot => ({ source: source.id, file: label, startLine, endLine, rows: endLine - startLine + 1 }) ;
 		for (const table of result.details) {
 			const state = table.edits.length === 0 ? "PASS" : "FIXABLE"                    ;
-			rows.push({ signature: signatureOf(source.language, "", "table", table.axes, Math.floor(table.indent.replaceAll("\t", "    ").length / 4), state), language: source.language, kind: "table", state, rows: table.rows, edits: table.edits.length, spot: spotOf(table.startLine, table.endLine) }) ;
+			rows.push({ signature: signatureOf(source.language, "", "table", table.axes, indentDepth(table.indent)), language: source.language, kind: "table", state, rows: table.rows, edits: table.edits.length, spot: spotOf(table.startLine, table.endLine) }) ;
 		}
 		for (const table of result.refused) {
-			rows.push({ signature: signatureOf(source.language, "", "table", table.axes, Math.floor(table.indent.replaceAll("\t", "    ").length / 4), "REFUSE"), language: source.language, kind: "table", state: "REFUSE", rows: table.rows, edits: table.edits.length, spot: spotOf(table.startLine, table.endLine) }) ;
+			rows.push({ signature: signatureOf(source.language, "", "table", table.axes, indentDepth(table.indent)), language: source.language, kind: "table", state: "REFUSE", rows: table.rows, edits: table.edits.length, spot: spotOf(table.startLine, table.endLine) }) ;
 		}
 	}
 	return { files: files.length, rows }                  ;
 }
 
+/** Representatives prefer tables with edits to judge (FIXABLE), then aligned ones (PASS), then refused ones. */
+const EXAMPLE_ORDER = ["FIXABLE", "PASS", "REFUSE"] ;
+
 function collapse(rows: readonly CensusRow[]): readonly SignatureType[] {
 	interface Accumulator {
-		readonly signature : string      ;
-		readonly language  : string      ;
-		readonly kind      : string      ;
-		readonly state     : string      ;
-		count              : number      ;
-		rows               : number      ;
-		edits              : number      ;
-		readonly examples  : TableSpot[] ;
+		readonly signature : string                      ;
+		readonly language  : string                      ;
+		readonly kind      : string                      ;
+		readonly states    : Record<string, number>      ;
+		count              : number                      ;
+		rows               : number                      ;
+		edits              : number                      ;
+		readonly spots     : Record<string, TableSpot[]> ;
 	}
 	const types = new Map<string, Accumulator>()                          ;
 	for (const row of rows) {
-		const found = types.get(row.signature)                            ;
-		if (found) {
-			found.count += 1                                              ;
-			found.rows  += row.rows                                       ;
-			found.edits += row.edits                                      ;
-			if (found.examples.length < 3) found.examples.push(row.spot)  ;
-			continue                                                      ;
-		}
-		types.set(row.signature, { signature: row.signature, language: row.language, kind: row.kind, state: row.state, count: 1, rows: row.rows, edits: row.edits, examples: [row.spot] }) ;
+		const type = types.get(row.signature) ?? { signature: row.signature, language: row.language, kind: row.kind, states: {}, count: 0, rows: 0, edits: 0, spots: {} } ;
+		types.set(row.signature, type)                                    ;
+		type.count             += 1                                       ;
+		type.rows              += row.rows                                ;
+		type.edits             += row.edits                               ;
+		type.states[row.state]  = (type.states[row.state] ?? 0) + 1       ;
+		const spots             = type.spots[row.state] ??= []            ;
+		if (spots.length < 3) spots.push(row.spot)                        ;
 	}
 	return [...types.values()]
-		.map(type => ({ signature: type.signature, language: type.language, kind: type.kind, state: type.state, count: type.count, rows: type.rows, edits: type.edits, score: type.count * type.edits, examples: type.examples }))
+		.map(type => ({ signature: type.signature, language: type.language, kind: type.kind, states: type.states, count: type.count, rows: type.rows, edits: type.edits, score: type.count * type.edits, examples: EXAMPLE_ORDER.flatMap(state => type.spots[state] ?? []).slice(0, 3) }))
 		.sort((left, right) => right.score - left.score || right.count - left.count) ;
 }
 
@@ -273,8 +274,8 @@ async function main(): Promise<void> {
 		all.push(...census.rows)                            ;
 		console.error(`corpus-signatures ${source.id} files=${census.files} tables=${census.rows.length}${census.failedBatches ? ` failedBatches=${census.failedBatches}` : ""}`) ;
 	}
-	const types  = collapse(all)                                                                                                                              ;
-	const report = { schemaVersion: 1, sources: sources.map(source => source.id), maxFiles, filesScanned: scanned, failedBatches, tables: all.length, types } ;
+	const types  = collapse(all)                                                                                                                                                                   ;
+	const report = { schemaVersion: 2, signatureVersion: SIGNATURE_VERSION, sources: sources.map(source => source.id), maxFiles, filesScanned: scanned, failedBatches, tables: all.length, types } ;
 	mkdirSync(CACHE, { recursive: true })                              ;
 	const out = join(CACHE, "signatures.json")                         ;
 	writeFileSync(out, `${JSON.stringify(report, null, "\t")}\n`)      ;

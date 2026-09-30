@@ -1,15 +1,15 @@
 import      { describe, expect, test                  } from "bun:test"                   ;
 import      { latestVerdicts, renderSummary, typeSlug } from "../scripts/corpus-judge.ts" ;
 
-const SIG_A = "typescript|Block|declaration-equals|equals>semicolon|d1|FIXABLE" ;
-const SIG_B = "python||table|key>colon>value>comma|d2|FIXABLE"                  ;
+const SIG_A = "typescript|Block|declaration-equals|equals>semicolon|d1" ;
+const SIG_B = "python||table|key>colon>value>comma|d2"                  ;
 
 describe("corpus judging", () => {
 	test("type slugs are rank-padded, sanitized and unique per signature", () => {
 		const a = typeSlug(SIG_A, 3 ) ;
 		const b = typeSlug(SIG_B, 41) ;
-		expect(a                 ).toMatch(/^003-declaration-equals-FIXABLE-d1-[0-9a-f]{8}$/u) ;
-		expect(b                 ).toMatch(/^041-table-FIXABLE-d2-[0-9a-f]{8}$/u             ) ;
+		expect(a                 ).toMatch(/^003-declaration-equals-d1-[0-9a-f]{8}$/u        ) ;
+		expect(b                 ).toMatch(/^041-table-d2-[0-9a-f]{8}$/u                     ) ;
 		expect(a === b           ).toBe   (false                                             ) ;
 		expect(typeSlug(SIG_A, 3)).toBe   (a                                                 ) ;
 	});
@@ -30,9 +30,9 @@ describe("corpus judging", () => {
 
 	test("the summary marks approved, judged and unjudged types by rank", () => {
 		const types = [
-			{ signature : SIG_A                                                                  , count : 1077 , edits : 3962 },
-			{ signature : SIG_B                                                                  , count : 201  , edits : 887  },
-			{ signature : "typescript|SourceFile|declaration-equals|equals>semicolon|d0|FIXABLE" , count : 266  , edits : 1431 },
+			{ signature : SIG_A                                                          , count : 1077 , edits : 3962 },
+			{ signature : SIG_B                                                          , count : 201  , edits : 887  },
+			{ signature : "typescript|SourceFile|declaration-equals|equals>semicolon|d0" , count : 266  , edits : 1431 },
 		]                                                                                                                   ;
 		const verdicts = latestVerdicts([
 			JSON.stringify({ schemaVersion: 1, signature: SIG_A, verdict: "correct", judge: "user", date: "2026-09-29", note: "" }),

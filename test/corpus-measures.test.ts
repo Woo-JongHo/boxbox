@@ -1,9 +1,9 @@
 import      { describe, expect, test             } from "bun:test"                      ;
 import      { measuresOf, unseenShare, verdictOf } from "../scripts/corpus-measures.ts" ;
 
-const TS  = "typescript|Block|declaration-equals|equals>semicolon|d1|FIXABLE"      ;
-const TS2 = "typescript|SourceFile|declaration-equals|equals>semicolon|d0|FIXABLE" ;
-const PY  = "python||table|key>colon>value>comma|d2|FIXABLE"                       ;
+const TS  = "typescript|Block|declaration-equals|equals>semicolon|d1"      ;
+const TS2 = "typescript|SourceFile|declaration-equals|equals>semicolon|d0" ;
+const PY  = "python||table|key>colon>value>comma|d2"                       ;
 
 describe("corpus measures", () => {
 	test("the last verdict per signature wins", () => {
@@ -17,9 +17,9 @@ describe("corpus measures", () => {
 
 	test("judged share, table share and wrong-grouping rate come out per language", () => {
 		const types = [
-			{ signature : TS  , language : "typescript" , count : 100 , state : "FIXABLE" },
-			{ signature : TS2 , language : "typescript" , count : 300 , state : "FIXABLE" },
-			{ signature : PY  , language : "python"     , count : 200 , state : "FIXABLE" },
+			{ signature : TS  , language : "typescript" , count : 100 },
+			{ signature : TS2 , language : "typescript" , count : 300 },
+			{ signature : PY  , language : "python"     , count : 200 },
 		]                                                                                          ;
 		const verdicts = verdictOf([
 			JSON.stringify({ schemaVersion: 1, signature: TS, verdict: "different-role", judge: "user", date: "2026-09-29", note: "" }),
@@ -38,7 +38,7 @@ describe("corpus measures", () => {
 	});
 
 	test("taste and unsure are judgments, not grouping misses", () => {
-		const types = [{ signature: TS, language: "typescript", count: 50, state: "FIXABLE" }]                     ;
+		const types = [{ signature: TS, language: "typescript", count: 50}]                     ;
 		const verdicts = verdictOf([
 			JSON.stringify({ schemaVersion: 1, signature: TS, verdict: "taste", judge: "user", date: "2026-09-29", note: "" }),
 		])                                                                                                         ;

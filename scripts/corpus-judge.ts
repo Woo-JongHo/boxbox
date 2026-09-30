@@ -18,21 +18,21 @@
  * drift, aligned.txt carries the original lines with a note instead of a wrong slice.
  */
 import      {
-              copyFileSync  ,
-              existsSync    ,
-              mkdirSync     ,
-              readFileSync  ,
-              rmSync        ,
-              writeFileSync ,
-                              } from "node:fs"            ;
-import      { join            } from "node:path"          ;
-import      { spawnSync       } from "node:child_process" ;
-import      { createHash      } from "node:crypto"        ;
+              copyFileSync   ,
+              existsSync     ,
+              mkdirSync      ,
+              readFileSync   ,
+              rmSync         ,
+              writeFileSync  ,
+                               } from "node:fs"                ;
+import      { join             } from "node:path"              ;
+import      { spawnSync        } from "node:child_process"     ;
+import      { createHash       } from "node:crypto"            ;
+import      { readCensusReport } from "./corpus-signatures.ts" ;
 
 const ROOT     = join(import.meta.dir, "..")                                      ;
 const CACHE    = join(process.env["HOME"] ?? "", ".cache", "xxx", "corpus")       ;
 const OUT      = join(ROOT, "TEST_COMPLETED", "corpus")                           ;
-const REPORT   = join(CACHE, "signatures.json")                                   ;
 const LOG      = join(ROOT, "corpus", "verdicts.jsonl")                           ;
 const VERDICTS = ["correct", "different-role", "missing-kind", "taste", "unsure"] ;
 
@@ -45,15 +45,15 @@ interface TableSpot {
 }
 
 interface SignatureType {
-	readonly signature : string               ;
-	readonly language  : string               ;
-	readonly kind      : string               ;
-	readonly state     : string               ;
-	readonly count     : number               ;
-	readonly rows      : number               ;
-	readonly edits     : number               ;
-	readonly score     : number               ;
-	readonly examples  : readonly TableSpot[] ;
+	readonly signature : string                           ;
+	readonly language  : string                           ;
+	readonly kind      : string                           ;
+	readonly states    : Readonly<Record<string, number>> ;
+	readonly count     : number                           ;
+	readonly rows      : number                           ;
+	readonly edits     : number                           ;
+	readonly score     : number                           ;
+	readonly examples  : readonly TableSpot[]             ;
 }
 
 interface VerdictRecord {
@@ -65,13 +65,13 @@ interface VerdictRecord {
 	readonly note          : string ;
 }
 
-/** Short unique directory name for a type: rank, sanitized kind, state+depth tail, signature hash. */
+/** Short unique directory name for a type: rank, sanitized kind, depth, signature hash. */
 export function typeSlug(signature: string, rank: number): string {
 	const parts = signature.split("|")                                           ;
 	const kind  = (parts[2] ?? "type").replace(/[^A-Za-z0-9]+/gu, "-")           ;
 	const depth = (parts[4] ?? "d0").replace(/\D/gu, "") || "0"                  ;
 	const hash  = createHash("sha1").update(signature).digest("hex").slice(0, 8) ;
-	return `${String(rank).padStart(3, "0")}-${kind.slice(0, 32)}-${parts[5] ?? ""}-d${depth}-${hash}` ;
+	return `${String(rank).padStart(3, "0")}-${kind.slice(0, 32)}-d${depth}-${hash}` ;
 }
 
 /** Parses the verdict log; the LAST record for a signature wins. */
@@ -112,9 +112,8 @@ function alignedSlice(language: string, absolute: string, before: string, startL
 }
 
 function exportRepresentatives(limit: number, reps: number): void {
-	if (!existsSync(REPORT)) throw new Error(`no census report: ${REPORT} — run scripts/corpus-signatures.ts first`)      ;
-	const report = JSON.parse(readFileSync(REPORT, "utf8")) as { readonly types: readonly SignatureType[] } ;
-	const types  = report.types.slice(0, limit)                                                             ;
+	const report = readCensusReport<SignatureType>() ;
+	const types  = report.types.slice(0, limit)      ;
 	mkdirSync(OUT, { recursive: true })                                                                                  ;
 	const work  = join(OUT, ".work")                                                                                     ;
 	mkdirSync(work, { recursive: true })                                                                                 ;
@@ -123,7 +122,7 @@ function exportRepresentatives(limit: number, reps: number): void {
 			const rank = index + 1                                                ;
 			const dir  = join(OUT, type.language, typeSlug(type.signature, rank)) ;
 			mkdirSync(dir, { recursive: true })                                                                          ;
-			writeFileSync(join(dir, "context.txt"), `${JSON.stringify({ signature: type.signature, count: type.count, edits: type.edits, state: type.state, representatives: type.examples.slice(0, reps) }, null, 2)}\n`) ;
+			writeFileSync(join(dir, "context.txt"), `${JSON.stringify({ signature: type.signature, count: type.count, edits: type.edits, states: type.states, representatives: type.examples.slice(0, reps) }, null, 2)}\n`) ;
 			for (const [position, spot] of type.examples.slice(0, reps).entries()) {
 				const originalPath = join(CACHE, spot.source, spot.file)                                                 ;
 				if (!existsSync(originalPath)) continue                                                                  ;
@@ -144,15 +143,15 @@ function exportRepresentatives(limit: number, reps: number): void {
 }
 
 function renderTypeSummary(): string {
-	const report = JSON.parse(readFileSync(REPORT, "utf8")) as { readonly types: readonly SignatureType[] } ;
-	const log    = existsSync(LOG) ? readFileSync(LOG, "utf8").split("\n") : []                             ;
+	const report = readCensusReport<SignatureType>()                            ;
+	const log    = existsSync(LOG) ? readFileSync(LOG, "utf8").split("\n") : [] ;
 	return renderSummary(report.types, latestVerdicts(log))                                                              ;
 }
 
 function recordVerdict(rank: number, verdict: string, note: string): void {
 	if (!VERDICTS.includes(verdict)) throw new Error(`unknown verdict "${verdict}" — use one of: ${VERDICTS.join(", ")}`) ;
-	const report = JSON.parse(readFileSync(REPORT, "utf8")) as { readonly types: readonly SignatureType[] } ;
-	const type   = report.types[rank - 1]                                                                   ;
+	const report = readCensusReport<SignatureType>() ;
+	const type   = report.types[rank - 1]            ;
 	if (type === undefined) throw new Error(`no type at rank ${rank} — the report holds ${report.types.length} types`)     ;
 	const record: VerdictRecord = { schemaVersion: 1, signature: type.signature, verdict, judge: "user", date: new Date().toISOString().slice(0, 10), note } ;
 	writeFileSync(LOG, `${existsSync(LOG) ? readFileSync(LOG, "utf8") : ""}${JSON.stringify(record)}\n`)                   ;
@@ -168,10 +167,9 @@ if (args.includes("--verdict")) {
 } else if (args.includes("--status")) {
 	console.log(renderTypeSummary())                                      ;
 } else {
-	if (!existsSync(REPORT)) throw new Error(`no census report: ${REPORT} — run scripts/corpus-signatures.ts first`) ;
-	const limit  = Number(flag("--limit") ?? Number.MAX_SAFE_INTEGER)                                       ;
-	const reps   = Number(flag("--reps") ?? 2)                                                              ;
-	const report = JSON.parse(readFileSync(REPORT, "utf8")) as { readonly types: readonly SignatureType[] } ;
+	const limit  = Number(flag("--limit") ?? Number.MAX_SAFE_INTEGER) ;
+	const reps   = Number(flag("--reps") ?? 2)                        ;
+	const report = readCensusReport<SignatureType>()                  ;
 	exportRepresentatives(limit, reps)                                                                               ;
 	writeFileSync(join(OUT, "SUMMARY.txt"), renderTypeSummary())                                                     ;
 	console.log(`corpus-judge exported ${Math.min(limit, report.types.length)} types to ${OUT}`)                     ;

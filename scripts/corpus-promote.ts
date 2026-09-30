@@ -12,21 +12,21 @@
  *   bun scripts/corpus-promote.ts --report        # pending non-correct verdicts
  */
 import      {
-              existsSync    ,
-              mkdirSync     ,
-              readFileSync  ,
-              readdirSync   ,
-              rmSync        ,
-              writeFileSync ,
-                              } from "node:fs"            ;
-import      { tmpdir          } from "node:os"            ;
-import      { join            } from "node:path"          ;
-import      { spawnSync       } from "node:child_process" ;
-import      { createHash      } from "node:crypto"        ;
+              existsSync     ,
+              mkdirSync      ,
+              readFileSync   ,
+              readdirSync    ,
+              rmSync         ,
+              writeFileSync  ,
+                               } from "node:fs"                ;
+import      { tmpdir           } from "node:os"                ;
+import      { join             } from "node:path"              ;
+import      { spawnSync        } from "node:child_process"     ;
+import      { createHash       } from "node:crypto"            ;
+import      { readCensusReport } from "./corpus-signatures.ts" ;
 
 const ROOT     = join(import.meta.dir, "..")                                ;
 const CACHE    = join(process.env["HOME"] ?? "", ".cache", "xxx", "corpus") ;
-const REPORT   = join(CACHE, "signatures.json")                             ;
 const LOG      = join(ROOT, "corpus", "verdicts.jsonl")                     ;
 const FIXTURES = join(ROOT, "skills", "xxx", "fixtures")                    ;
 
@@ -145,10 +145,10 @@ function main(): void {
 		console.log(`pending=${pending.length} judged=${records.length}`)      ;
 		return                                                                ;
 	}
-	const rankIndex = args.indexOf("--rank")                                                                   ;
-	const rank      = rankIndex >= 0 ? Number(args[rankIndex + 1]) : Number.NaN                                ;
-	const census    = JSON.parse(readFileSync(REPORT, "utf8")) as { readonly types: readonly SignatureType[] } ;
-	const type      = census.types[rank - 1]                                                                   ;
+	const rankIndex = args.indexOf("--rank")                                    ;
+	const rank      = rankIndex >= 0 ? Number(args[rankIndex + 1]) : Number.NaN ;
+	const census    = readCensusReport<SignatureType>()                         ;
+	const type      = census.types[rank - 1]                                    ;
 	if (type === undefined) throw new Error(`no type at rank ${rank} — run scripts/corpus-judge.ts --status`) ;
 	const record = readVerdicts().filter(candidate => candidate.signature === type.signature).at(-1) ;
 	if (record === undefined) throw new Error(`rank ${rank} has no verdict yet — judge it with scripts/corpus-judge.ts --verdict ${rank} <verdict>`)  ;
