@@ -250,9 +250,10 @@ Decisions (2026-09-30):
 |---|---|---|---|
 | S0 | 이 지도 기록, M1.7 보류, AGENTS.md 언어 정책 교체, 메모리 갱신 | 사용자 승인, `bun run check` | ✅ done 2026-09-30 |
 | S1 | `charter.md` (한 페이지): 원칙, 가치관, 정체성, 불변식 | 문구 확정 | ✅ done 2026-09-30 |
-| S2 | `grammar.md`: 4단위, 문형 8개, 역할, 문단 목적, 장르 + 코퍼스 근거 | 코퍼스 8,093표 100% 대응 재확인 | ▶ active |
-| S3 | 표현형 데이터 스키마 (kind → 문형) | 기존 kind 전부 매핑, 테스트 | ⬜ todo |
-| S4 | 약속 규칙 파일 스키마 + WHEN W1–W4 + 사용자 덮어쓰기(`.xxx/config.json`: 규칙 끄기·범위·장르; 불변식을 끄려 하면 스키마 오류) | 스키마 테스트 | ⬜ todo |
+| S2 | `grammar.md`: 4단위, 문형 9개(`EXIT` 추가, Codex 검토 반영), 역할, 문단 목적, 장르 + 코퍼스 근거. 1차 범위 TypeScript, Python, Java | 코퍼스 표 100% 대응 재확인 (TS 7,214 · Py 879 · Java 162) | ✅ done 2026-09-30 |
+| S2.5 | Java 허용 라이선스 코퍼스 고정(Apache-2.0 후보: guava, commons-lang, spring-framework) + census의 Java 지원. Codex 검토 3 | Java 표를 고정 코퍼스에서 다시 집계, 문형 100% 대응 | ▶ active |
+| S3 | 표현형 데이터 스키마 (kind → 문형) | 기존 kind 전부 매핑, 테스트. Python 모호 행(`a = v`)을 확실한 행과 한 표로 묶지 않음(문법 판정 규칙 3) | ⬜ todo |
+| S4 | 약속 규칙 파일 스키마 + WHEN W1–W4 + 사용자 덮어쓰기(`.xxx/config.json`: 규칙 끄기·범위·장르; 불변식을 끄려 하면 스키마 오류); 줄 폭 기준: 기준 환경 실측 → 한계선(hard)·권장선(soft), 120 고정값 교체(`docs/research/column-width.md`) | 스키마 테스트, 실측 기록 | ⬜ todo |
 | S5 | 예문 DB 스키마 → M1.7 P2–P5 재개 (키에 `pattern`) | P2 검증 | ⬜ todo |
 | S6 | 엔진 CLI 패키지화, 배포본 `plugin/` 분리 (R1–R3) | 깨끗한 환경에서 마켓플레이스 설치 후 실행 | ⬜ todo |
 | S7 | 문서 재배선: AGENTS.md, SKILL.md(절차만), design.md, `readability-contract.md` 해체 | `bun run check`, 링크 확인 | ⬜ todo |
