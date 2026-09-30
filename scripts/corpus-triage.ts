@@ -17,6 +17,7 @@ import      { spawnSync                                            } from "node:
 import      { patternNameOf                                        } from "./corpus-measures.ts"   ;
 import      { QUEUE, typeSlug, VERDICTS, type Suggestion           } from "./corpus-judge.ts"      ;
 import      { readCensusReport                                     } from "./corpus-signatures.ts" ;
+import      { appendUsage, codexTokens                             } from "@/common/usage.ts"      ;
 
 const ROOT  = join(import.meta.dir, "..")                               ;
 const OUT   = join(ROOT, "TEST_COMPLETED", "corpus")                    ;
@@ -123,6 +124,8 @@ function main(): void {
 	const suggestions = parseSuggestions(run.stdout, ranks, version, new Date().toISOString().slice(0, 10)) ;
 	const previous    = existsSync(QUEUE) ? readFileSync(QUEUE, "utf8") : ""                                ;
 	writeFileSync(QUEUE, `${previous}${suggestions.map(suggestion => JSON.stringify(suggestion)).join("\n")}${suggestions.length > 0 ? "\n" : ""}`);
+	const tokens      = codexTokens(run.stderr)                                                                                            ;
+	appendUsage(join(QUEUE, "..", "ai-usage.jsonl"), { date: new Date().toISOString(), source: version, event: "corpus-triage", chars: readFileSync(prompt, "utf8").length, tokens: tokens ?? 0, estimated: tokens === undefined });
 	writeFileSync(join(work, "codex-output.md"), run.stdout);
 	console.log(`corpus-triage suggestions=${suggestions.length}/${blocks.length} queue=${QUEUE} raw=${join(work, "codex-output.md")}`);
 }

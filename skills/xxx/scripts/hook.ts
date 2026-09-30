@@ -10,28 +10,29 @@
  * 입력은 stdin의 호스트 JSON이다. XXX_HOOKS=off이면 아무것도 하지 않는다. 훅이 실패해도 편집을 막지 않는다(종료 코드 0).
  * 지연은 `.xxx/cache/hook-timing.jsonl`에 남긴다(S3.6 확인 기준).
  */
-import      { spawnSync               } from "node:child_process" ;
+import      { spawnSync                   } from "node:child_process" ;
 import      {
-              appendFileSync        ,
-              existsSync            ,
-              mkdirSync             ,
-              readdirSync           ,
-              readFileSync          ,
-              rmSync                ,
-              statSync              ,
-              writeFileSync         ,
-                                      } from "node:fs"            ;
-import      { extname, join, relative } from "node:path"          ;
-import      { fileURLToPath           } from "node:url"           ;
+              appendFileSync            ,
+              existsSync                ,
+              mkdirSync                 ,
+              readdirSync               ,
+              readFileSync              ,
+              rmSync                    ,
+              statSync                  ,
+              writeFileSync             ,
+                                          } from "node:fs"            ;
+import      { extname, join, relative     } from "node:path"          ;
+import      { fileURLToPath               } from "node:url"           ;
 import      {
-              coreLines             ,
-              hookTarget            ,
-              newFileGuide          ,
-              postMessage           ,
-              sessionGuide          ,
-              type HookInput        ,
-                                      } from "./common/hook.ts"   ;
-import type { Report                  } from "./common/report.ts" ;
+              coreLines                 ,
+              hookTarget                ,
+              newFileGuide              ,
+              postMessage               ,
+              sessionGuide              ,
+              type HookInput            ,
+                                          } from "./common/hook.ts"   ;
+import type { Report                      } from "./common/report.ts" ;
+import      { appendUsage, estimateTokens } from "./common/usage.ts"  ;
 
 const CHARTER = fileURLToPath(new URL("../references/charter.md", import.meta.url)) ;
 const REPORT  = fileURLToPath(new URL("./report.ts", import.meta.url)             ) ;
@@ -52,12 +53,16 @@ function cacheDir(project: string): string {
 	return dir;
 }
 
-function emit(event: string, context: string): void {
+/** 에이전트에게 글을 주입하고, 그 양을 `.xxx/cache/usage.jsonl`에 남긴다(추정 토큰). */
+function emit(event: string, context: string, project?: string, file?: string): void {
 	console.log(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: context } }));
+	if (!project) return;
+
+	appendUsage(join(cacheDir(project), "usage.jsonl"), { date: new Date().toISOString(), source: "hook", event, chars: context.length, tokens: estimateTokens(context), estimated: true, ...(file ? { file } : {}) });
 }
 
 function session(): void {
-	emit("SessionStart", sessionGuide(coreLines(readFileSync(CHARTER, "utf8"))));
+	emit("SessionStart", sessionGuide(coreLines(readFileSync(CHARTER, "utf8"))), process.env["CLAUDE_PROJECT_DIR"]);
 }
 
 function pre(input: HookInput, project: string): void {
@@ -74,7 +79,7 @@ function pre(input: HookInput, project: string): void {
 	if (!isNew || existsSync(marker)) return;
 
 	writeFileSync(marker, "");
-	emit("PreToolUse", newFileGuide(target.language));
+	emit("PreToolUse", newFileGuide(target.language), project, relative(project, target.file));
 }
 
 function post(input: HookInput, project: string): void {
@@ -100,7 +105,7 @@ function post(input: HookInput, project: string): void {
 	}
 
 	const message = postMessage(report);
-	if (message) emit("PostToolUse", message);
+	if (message) emit("PostToolUse", message, project, file);
 }
 
 function main(): void {
