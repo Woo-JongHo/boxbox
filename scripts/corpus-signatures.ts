@@ -65,12 +65,22 @@ interface SignatureType {
 	readonly examples  : readonly TableSpot[]             ;
 }
 
-/** Reads a census report; an older report (keyed with the result state) must be regenerated, never matched. */
-export function readCensusReport<T>(path: string = join(CACHE, "signatures.json")): { readonly types: readonly T[] } {
-	if (!existsSync(path)) throw new Error(`no census report: ${path} — run scripts/corpus-signatures.ts first`)             ;
-	const report = JSON.parse(readFileSync(path, "utf8")) as { readonly schemaVersion?: number; readonly signatureVersion?: number; readonly types: readonly T[] } ;
-	if (report.schemaVersion !== 2 || report.signatureVersion !== SIGNATURE_VERSION) throw new Error(`stale census report: ${path} — rerun scripts/corpus-signatures.ts`) ;
-	return report                                                                                                              ;
+/** 센서스 리포트의 모양. schemaVersion과 signatureVersion이 맞지 않는 예전 리포트는 읽지 않고 다시 만든다. */
+interface CensusReport<T> {
+	readonly schemaVersion?    : number       ;
+	readonly signatureVersion? : number       ;
+	readonly types             : readonly T[] ;
+}
+
+/** 센서스 리포트를 읽는다. 예전 리포트(결과 상태가 키에 섞인 것)는 짝지어 쓰지 않고 오류로 알린다. */
+export function readCensusReport<T>(path: string = join(CACHE, "signatures.json")): CensusReport<T> {
+	if (!existsSync(path)) throw new Error(`no census report: ${path} — run scripts/corpus-signatures.ts first`);
+
+	const report = JSON.parse(readFileSync(path, "utf8")) as CensusReport<T>                   ;
+	const stale  = report.schemaVersion !== 2 || report.signatureVersion !== SIGNATURE_VERSION ;
+	if (stale) throw new Error(`stale census report: ${path} — rerun scripts/corpus-signatures.ts`);
+
+	return report;
 }
 
 const readManifest = (name: string): CorpusManifest => {
