@@ -1,9 +1,16 @@
-import      { describe, expect, test                    } from "bun:test"                                      ;
-import      { spawnSync                                 } from "node:child_process"                            ;
-import      { join                                      } from "node:path"                                     ;
-import      { displayWidth                              } from "../skills/xxx/scripts/common/display-width.ts" ;
-import      { buildReport, DEFAULT_LIMITS, renderReport } from "../skills/xxx/scripts/common/report.ts"        ;
-import type { FileResult, ResultGroup                   } from "../skills/xxx/scripts/common/result-json.ts"   ;
+import      { describe, expect, test                   } from "bun:test"                                      ;
+import      { spawnSync                                } from "node:child_process"                            ;
+import      { mkdtempSync, readFileSync, writeFileSync } from "node:fs"                                       ;
+import      { tmpdir                                   } from "node:os"                                       ;
+import      { join                                     } from "node:path"                                     ;
+import      { displayWidth                             } from "../skills/xxx/scripts/common/display-width.ts" ;
+import      {
+              buildReport                            ,
+              compareAlarms                          ,
+              DEFAULT_LIMITS                         ,
+              renderReport                           ,
+                                                       } from "../skills/xxx/scripts/common/report.ts"        ;
+import type { FileResult, ResultGroup                  } from "../skills/xxx/scripts/common/result-json.ts"   ;
 
 const ROOT = join(import.meta.dir, "..") ;
 
@@ -118,5 +125,51 @@ describe("검사 리포트 — 출력", () => {
 		expect(run.status                          ).toBe     (0   ) ;
 		expect(report.ok                           ).toBe     (true) ;
 		expect(report.alarms.map(alarm => alarm.id)).toContain("A5") ;
+	});
+});
+
+describe("검사 리포트 — 기준본 비교", () => {
+	const long     = `const x = "${"a".repeat(DEFAULT_LIMITS.hard)}";`                                                     ;
+	const other    = `const y = "${"b".repeat(DEFAULT_LIMITS.hard)}";`                                                     ;
+	const alarmsOf = (...lines: readonly string[]) => buildReport({ result: fileResult([]), text: text(...lines) }).alarms ;
+
+	test("같은 파일이면 모두 기존 알람, 새 알람 0", () => {
+		const comparison = compareAlarms(alarmsOf("a", long), alarmsOf("a", long)) ;
+		expect(comparison.newAlarms     ).toEqual([]) ;
+		expect(comparison.existingAlarms).toHaveLength(1) ;
+	});
+
+	test("줄이 밀리거나 공백만 바뀌어도 같은 알람으로 짝지어진다", () => {
+		const comparison = compareAlarms(alarmsOf("", "", long.replace(" = ", "   =   ")), alarmsOf(long)) ;
+		expect(comparison.newAlarms     ).toEqual([]) ;
+		expect(comparison.resolvedAlarms).toEqual([]) ;
+	});
+
+	test("하나가 사라지고 하나가 생기면 새 알람 1, 사라진 알람 1 (총개수 비교의 구멍을 막는다)", () => {
+		const comparison = compareAlarms(alarmsOf(other), alarmsOf(long)) ;
+		expect(comparison.newAlarms.map(alarm => alarm.anchor)     ).toEqual([other]) ;
+		expect(comparison.resolvedAlarms.map(alarm => alarm.anchor)).toEqual([long ]) ;
+	});
+
+	test("같은 알람이 여럿이면 개수만큼만 짝지어진다", () => {
+		const comparison = compareAlarms(alarmsOf(long, long, long), alarmsOf(long)) ;
+		expect(comparison.existingAlarms).toHaveLength(1) ;
+		expect(comparison.newAlarms     ).toHaveLength(2) ;
+	});
+
+	test("CLI: --baseline으로 편집에서 생긴 알람만 새 알람이 되고, --baseline none이면 전부 새 알람", () => {
+		const dir     = mkdtempSync(join(tmpdir(), "xxx-report-"))                               ;
+		const fixture = readFileSync(join(ROOT, "skills/xxx/fixtures/python/tables.py"), "utf8") ;
+		writeFileSync(join(dir, "base.py"), fixture)                                                                  ;
+		writeFileSync(join(dir, "cur.py" ), fixture.replace('    "port": 8080,', `    "port": 8080,\n    "description": "${"x".repeat(120)}",`)) ;
+		const run     = (...extra: readonly string[]) => JSON.parse(spawnSync(process.execPath, [join(ROOT, "skills/xxx/scripts/report.ts"), "--file", "cur.py", "--json", ...extra], { cwd: dir, encoding: "utf8" }).stdout) as ReturnType<typeof buildReport> ;
+		const edited  = run("--baseline", "base.py")                                                                                                                                                                                                            ;
+		const created = run("--baseline", "none"   )                                                                                                                                                                                                            ;
+		expect(edited.comparison?.newAlarms.map(alarm => alarm.id).sort()).toEqual(["A1", "A3"]            ) ;
+		expect(edited.comparison?.existingAlarms.length                  ).toBe   (edited.alarms.length - 2) ;
+		expect(created.comparison?.newAlarms.length                      ).toBe   (created.alarms.length   ) ;
+		const missing = spawnSync(process.execPath, [join(ROOT, "skills/xxx/scripts/report.ts"), "--file", "cur.py", "--baseline", "nope.py"], { cwd: dir, encoding: "utf8" }) ;
+		expect(missing.status).not.toBe(0)          ;
+		expect(missing.stderr).toContain("기준본이 없음") ;
 	});
 });
