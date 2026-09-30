@@ -14,6 +14,7 @@ import      { spawnSync                                } from "node:child_proces
 import      { existsSync, readFileSync                 } from "node:fs"                 ;
 import      { fileURLToPath                            } from "node:url"                ;
 import      { buildReport, compareAlarms, renderReport } from "./common/report.ts"      ;
+import      { loadConventions                          } from "./common/conventions.ts" ;
 import type { FileResult, ResultEnvelope               } from "./common/result-json.ts" ;
 
 const LANGUAGES: readonly (readonly [RegExp, string])[] = [
@@ -68,12 +69,12 @@ function main(): void {
 	const file   = fileAt >= 0 ? args[fileAt + 1] : undefined ;
 	if (!file) throw new Error("usage: report.ts --file <target file> [--baseline <file|none>] [--write] [--json]");
 
-	const write    = args.includes("--write")                                           ;
-	const language = languageOf(file)                                                   ;
-	const result   = runAligner(language, file, write)                                  ;
-	const recheck  = write ? runAligner(language, file, false) : undefined              ;
-	const current  = buildReport({ result, text: readFileSync(file, "utf8"), recheck }) ;
-	const report   = baselineOf(args, language, current)                                ;
+	const write    = args.includes("--write")                                                                               ;
+	const language = languageOf(file)                                                                                       ;
+	const result   = runAligner(language, file, write)                                                                      ;
+	const recheck  = write ? runAligner(language, file, false) : undefined                                                  ;
+	const current  = buildReport({ result, text: readFileSync(file, "utf8"), recheck, db: loadConventions(process.cwd()) }) ;
+	const report   = baselineOf(args, language, current)                                                                    ;
 
 	console.log(args.includes("--json") ? JSON.stringify(report, null, 2) : renderReport(report));
 	process.exit(report.ok ? 0 : 1);
