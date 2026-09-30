@@ -262,6 +262,7 @@ Decisions (2026-09-30):
 | S5c | 처음 채우기: 코퍼스 상위 유형과 오늘 결정에서 패턴·예문 후보를 만들고 사용자 승인으로 적재 | 승인 기록, 테스트 통과 | ▶ active |
 | S5d | 조회를 게이트로: 승인된 패턴만 FIX, 거절은 그대로, 모르는 것은 SUGGEST + 후보 대기열 | 코퍼스 상태 변화 보고서 확인 | ⬜ todo |
 | S5e | M3와 연결: 모양(shape)을 코드(`grid-kinds.ts` `KIND_AXES`, profile)에서 패턴 DB로 옮김 | 기존 golden 동일 | ⬜ todo |
+| E1 | **모델 평가 하네스** (`docs/research/model-eval.md`): 가격 정본(Codex·Claude), 이 시스템이 돌 때만 정확히 측정(`purpose` system/dev-review, 입력·캐시·출력 분리), 동일 조건 7규칙, 정확도는 κ·macro-F1·Wilson·McNemar·반복 σ, 축은 과제×모델×강도×프롬프트(경량 우선: gpt-6-luna, claude-haiku-4-5), 헛돌면 한 단계 올리기(완료 항목당 비용 보고) | 파일럿 결과표, 통과 기준 확정 | ⬜ todo |
 | S6 | 엔진 CLI 패키지화, 배포본 `plugin/` 분리 (R1–R3) | 깨끗한 환경에서 마켓플레이스 설치 후 실행 | ⬜ todo |
 | S7 | 문서 재배선: AGENTS.md, SKILL.md(절차만), design.md, `readability-contract.md` 해체 | `bun run check`, 링크 확인 | ⬜ todo |
 | S8 | 배포 전 영어 번역(검사 리포트 본문 포함) + 한국어 잔존 검사(CJK 테스트 데이터 제외) | CI 검사 통과 | ⬜ todo |
