@@ -10,22 +10,18 @@
  *   bun scripts/corpus-measures.ts
  *   bun scripts/corpus-measures.ts --baseline <signatures.json>
  */
-import      {
-              existsSync   ,
-              readFileSync ,
-                             } from "node:fs"   ;
-import      { join           } from "node:path" ;
+import      { existsSync, readFileSync } from "node:fs"                ;
+import      { join                     } from "node:path"              ;
+import      { readCensusReport         } from "./corpus-signatures.ts" ;
 
-const ROOT   = join(import.meta.dir, "..")                                ;
-const CACHE  = join(process.env["HOME"] ?? "", ".cache", "xxx", "corpus") ;
-const REPORT = join(CACHE, "signatures.json")                             ;
-const LOG    = join(ROOT, "corpus", "verdicts.jsonl")                     ;
+const ROOT  = join(import.meta.dir, "..")                                ;
+const CACHE = join(process.env["HOME"] ?? "", ".cache", "xxx", "corpus") ;
+const LOG   = join(ROOT, "corpus", "verdicts.jsonl")                     ;
 
 interface SignatureType {
 	readonly signature : string ;
 	readonly language  : string ;
 	readonly count     : number ;
-	readonly state     : string ;
 }
 
 export interface Measures {
@@ -91,8 +87,7 @@ export function unseenShare(current: readonly { readonly signature: string }[], 
 }
 
 function main(): void {
-	if (!existsSync(REPORT)) throw new Error(`no census report: ${REPORT} — run scripts/corpus-signatures.ts first`) ;
-	const report      = JSON.parse(readFileSync(REPORT, "utf8")) as { readonly types: readonly SignatureType[] }                   ;
+	const report      = readCensusReport<SignatureType>()                                                                          ;
 	const logPath     = join(ROOT, "corpus", "verdicts.jsonl")                                                                     ;
 	const logLines    = existsSync(logPath) ? readFileSync(logPath, "utf8").split("\n") : []                                       ;
 	const verdicts    = verdictOf(logLines)                                                                                        ;
@@ -105,7 +100,7 @@ function main(): void {
 	const judged = [...verdicts.keys()].length                                                                       ;
 	console.log(`measures verdicts=${judged}`)                                                                       ;
 	if (baselineArg !== undefined) {
-		const baseline = JSON.parse(readFileSync(resolveBaseline(baselineArg), "utf8")) as { readonly types: readonly SignatureType[] } ;
+		const baseline = readCensusReport<SignatureType>(resolveBaseline(baselineArg)) ;
 		console.log(`measures unseenShare=${fraction(unseenShare(report.types, baseline.types))}`)                       ;
 	} else {
 		console.log("measures unseenShare=N/A (pass --baseline <signatures.json> to compare against an older census)")   ;
