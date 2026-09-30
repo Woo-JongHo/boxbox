@@ -104,7 +104,7 @@ export function bracketsOf(node: Node, source: SourceFile): { readonly open: Bou
 			skipTrivia(source.text, node.expression.getEnd()),
 			"("
 		);
-		const close = charTokenAt("call-paren", source, node.getEnd() - 1, ")")                                 ;
+		const close = charTokenAt("call-paren", source, node.getEnd() - 1, ")");
 		return open && close ? { open, close } : undefined;
 	}
 	return undefined;

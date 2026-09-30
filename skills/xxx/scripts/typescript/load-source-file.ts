@@ -33,7 +33,7 @@ export async function loadSourceFile(root: string, value: string): Promise<Loade
 		if (!source) throw new Error(`cannot read the TypeScript source AST: ${target.relative}`) ;
 		return { source, relative: target.relative }                                              ;
 	} finally {
-		await api.close()                                                                         ;
+		await api.close();
 	}
 }
 

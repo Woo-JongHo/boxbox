@@ -74,19 +74,19 @@ export function typeSlug(signature: string, rank: number): string {
 	const kind  = (parts[2] ?? "type").replace(/[^A-Za-z0-9]+/gu, "-")           ;
 	const depth = (parts[4] ?? "d0").replace(/\D/gu, "") || "0"                  ;
 	const hash  = createHash("sha1").update(signature).digest("hex").slice(0, 8) ;
-	return `${String(rank).padStart(3, "0")}-${kind.slice(0, 32)}-d${depth}-${hash}` ;
+	return `${String(rank).padStart(3, "0")}-${kind.slice(0, 32)}-d${depth}-${hash}`;
 }
 
 /** Parses the verdict log; the LAST record for a signature wins. */
 export function latestVerdicts(logLines: readonly string[]): ReadonlyMap<string, VerdictRecord> {
-	const latest = new Map<string, VerdictRecord>()                                     ;
+	const latest = new Map<string, VerdictRecord>();
 	for (const line of logLines) {
 		const trimmed = line.trim()                                                     ;
 		if (trimmed === "") continue                                                    ;
 		const record = JSON.parse(trimmed) as VerdictRecord                             ;
 		latest.set(record.signature, record)                                            ;
 	}
-	return latest                                                                       ;
+	return latest;
 }
 
 /** AI 사전 판정(M1.8 S3.5 ③): 제안일 뿐이며 판정 기록(verdicts.jsonl)이 아니다. */
@@ -103,17 +103,17 @@ export interface Suggestion {
 
 /** 제안 대기열을 읽는다. 같은 시그니처는 마지막 제안이 이긴다. */
 export function latestSuggestions(logLines: readonly string[]): ReadonlyMap<string, Suggestion> {
-	const latest = new Map<string, Suggestion>()                    ;
+	const latest = new Map<string, Suggestion>();
 	for (const line of logLines) {
 		if (line.trim() === "") continue                            ;
 		const suggestion = JSON.parse(line) as Suggestion           ;
 		latest.set(suggestion.signature, suggestion)                ;
 	}
-	return latest                                                   ;
+	return latest;
 }
 
 export function renderSummary(types: readonly { readonly signature: string; readonly count: number; readonly edits: number }[], verdicts: ReadonlyMap<string, VerdictRecord>, suggestions: ReadonlyMap<string, Suggestion> = new Map()): string {
-	const lines = [`corpus judging — ${types.length} types`, `verdicts: ${VERDICTS.join(" | ")}`]         ;
+	const lines = [`corpus judging — ${types.length} types`, `verdicts: ${VERDICTS.join(" | ")}`];
 	types.forEach((type, index) => {
 		const record = verdicts.get(type.signature)                                                                               ;
 		const state  = record === undefined ? "unjudged" : record.verdict === "correct" ? "approved" : `judged-${record.verdict}` ;
@@ -126,16 +126,16 @@ export function renderSummary(types: readonly { readonly signature: string; read
 function alignedSlice(language: string, absolute: string, before: string, startLine: number, endLine: number): { readonly lines: readonly string[]; readonly note: string } {
 	const aligner = language === "typescript"
 		? join(ROOT, "skills", "xxx", "scripts", "typescript", "06_align-tables.ts")
-		: join(ROOT, "skills", "xxx", "scripts", "python", "06_align-tables.ts")                        ;
-	const result = spawnSync("bun", [aligner, "--file", absolute, "--write"], { encoding: "utf8", timeout: 300_000 }) ;
-	if (result.status !== 0) return { lines: [], note: `alignment failed: ${result.stderr.toString().split("\n")[0]}` }  ;
+		: join(ROOT, "skills", "xxx", "scripts", "python", "06_align-tables.ts");
+	const result = spawnSync("bun", [aligner, "--file", absolute, "--write"], { encoding: "utf8", timeout: 300_000 });
+	if (result.status !== 0) return { lines: [], note: `alignment failed: ${result.stderr.toString().split("\n")[0]}` };
 	const afterLines  = readFileSync(absolute, "utf8").split("\n") ;
 	const beforeLines = before.split("\n")                         ;
 	if (afterLines.length === beforeLines.length) {
-		return { lines: afterLines.slice(startLine - 1, endLine).map(line => line.replace(/\r$/u, "")), note: "" }       ;
+		return { lines: afterLines.slice(startLine - 1, endLine).map(line => line.replace(/\r$/u, "")), note: "" };
 	}
 	// the vertical form inserted breaks somewhere in the file — the slice would be wrong, so show the original
-	return { lines: beforeLines.slice(startLine - 1, endLine).map(line => line.replace(/\r$/u, "")), note: "the aligned file has a different line count here (vertical form); showing the original lines" } ;
+	return { lines: beforeLines.slice(startLine - 1, endLine).map(line => line.replace(/\r$/u, "")), note: "the aligned file has a different line count here (vertical form); showing the original lines" };
 }
 
 function exportRepresentatives(limit: number, reps: number): void {
@@ -148,24 +148,24 @@ function exportRepresentatives(limit: number, reps: number): void {
 		for (const [index, type] of types.entries()) {
 			const rank = index + 1                                                ;
 			const dir  = join(OUT, type.language, typeSlug(type.signature, rank)) ;
-			mkdirSync(dir, { recursive: true })                                                                          ;
-			writeFileSync(join(dir, "context.txt"), `${JSON.stringify({ signature: type.signature, count: type.count, edits: type.edits, states: type.states, representatives: type.examples.slice(0, reps) }, null, 2)}\n`) ;
+			mkdirSync(dir, { recursive: true });
+			writeFileSync(join(dir, "context.txt"), `${JSON.stringify({ signature: type.signature, count: type.count, edits: type.edits, states: type.states, representatives: type.examples.slice(0, reps) }, null, 2)}\n`);
 			for (const [position, spot] of type.examples.slice(0, reps).entries()) {
 				const originalPath = join(CACHE, spot.source, spot.file)                                                 ;
 				if (!existsSync(originalPath)) continue                                                                  ;
 				const before        = readFileSync(originalPath, "utf8")                                                               ;
 				const originalLines = before.split("\n").slice(spot.startLine - 1, spot.endLine).map(line => line.replace(/\r$/u, "")) ;
 				const tag           = `rep${position + 1}`                                                                             ;
-				writeFileSync(join(dir, `${tag}-original.txt`), `${originalLines.join("\n")}\n`)                         ;
-				const tempFile = join(work, `${typeSlug(type.signature, rank)}-${tag}`.replace(/[^\w.-]+/gu, "_") + (spot.file.endsWith(".py") ? ".py" : ".ts")) ;
-				copyFileSync(originalPath, tempFile)                                                                     ;
+				writeFileSync(join(dir, `${tag}-original.txt`), `${originalLines.join("\n")}\n`);
+				const tempFile = join(work, `${typeSlug(type.signature, rank)}-${tag}`.replace(/[^\w.-]+/gu, "_") + (spot.file.endsWith(".py") ? ".py" : ".ts"));
+				copyFileSync(originalPath, tempFile);
 				const aligned = alignedSlice(type.language, tempFile, before, spot.startLine, spot.endLine)                       ;
 				const body    = aligned.note === "" ? aligned.lines.join("\n") : `# ${aligned.note}\n${originalLines.join("\n")}` ;
-				writeFileSync(join(dir, `${tag}-aligned.txt`), `${body}\n`)                                              ;
+				writeFileSync(join(dir, `${tag}-aligned.txt`), `${body}\n`);
 			}
 		}
 	} finally {
-		rmSync(work, { recursive: true, force: true })                                                                   ;
+		rmSync(work, { recursive: true, force: true });
 	}
 }
 
@@ -173,15 +173,15 @@ function renderTypeSummary(): string {
 	const report = readCensusReport<SignatureType>()                                ;
 	const log    = existsSync(LOG) ? readFileSync(LOG, "utf8").split("\n") : []     ;
 	const queue  = existsSync(QUEUE) ? readFileSync(QUEUE, "utf8").split("\n") : [] ;
-	return renderSummary(report.types, latestVerdicts(log), latestSuggestions(queue))                                    ;
+	return renderSummary(report.types, latestVerdicts(log), latestSuggestions(queue));
 }
 
 function recordVerdict(rank: number, verdict: string, note: string): void {
-	if (!VERDICTS.includes(verdict)) throw new Error(`unknown verdict "${verdict}" — use one of: ${VERDICTS.join(", ")}`) ;
+	if (!VERDICTS.includes(verdict)) throw new Error(`unknown verdict "${verdict}" — use one of: ${VERDICTS.join(", ")}`);
 	const report = readCensusReport<SignatureType>() ;
 	const type   = report.types[rank - 1]            ;
-	if (type === undefined) throw new Error(`no type at rank ${rank} — the report holds ${report.types.length} types`)     ;
-	const record: VerdictRecord = { schemaVersion: 1, signature: type.signature, verdict, judge: "user", date: new Date().toISOString().slice(0, 10), note } ;
+	if (type === undefined) throw new Error(`no type at rank ${rank} — the report holds ${report.types.length} types`);
+	const record: VerdictRecord = { schemaVersion: 1, signature: type.signature, verdict, judge: "user", date: new Date().toISOString().slice(0, 10), note };
 	writeFileSync(LOG, `${existsSync(LOG) ? readFileSync(LOG, "utf8") : ""}${JSON.stringify(record)}\n`)                   ;
 	console.log(`verdict recorded: rank ${rank} ${verdict} — ${type.signature}`)                                           ;
 }
@@ -192,9 +192,9 @@ function main(): void {
 	if (args.includes("--verdict")) {
 		const rank    = Number(flag("--verdict"))                 ;
 		const verdict = args[args.indexOf("--verdict") + 2] ?? "" ;
-		recordVerdict(rank, verdict, flag("--note") ?? "")                    ;
+		recordVerdict(rank, verdict, flag("--note") ?? "");
 	} else if (args.includes("--status")) {
-		console.log(renderTypeSummary())                                      ;
+		console.log(renderTypeSummary());
 	} else {
 		const limit  = Number(flag("--limit") ?? Number.MAX_SAFE_INTEGER) ;
 		const reps   = Number(flag("--reps") ?? 2)                        ;
@@ -206,4 +206,4 @@ function main(): void {
 }
 
 // import만으로는 아무 일도 하지 않는다 (예전에는 import 시 자료를 다시 내보냈다).
-if (import.meta.main) main() ;
+if (import.meta.main) main();

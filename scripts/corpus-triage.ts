@@ -30,7 +30,7 @@ interface CensusType {
 }
 
 interface Context {
-	readonly representatives : readonly { readonly source: string; readonly file: string; readonly startLine: number }[] ;
+	readonly representatives : readonly { readonly source: string; readonly file: string; readonly startLine: number }[];
 }
 
 const INSTRUCTIONS = `You pre-triage tables found by a whitespace-only code aligner. For each type below you see up to two
@@ -61,9 +61,9 @@ function typeBlock(type: CensusType, rank: number, publicSources: ReadonlySet<st
 	for (const [index, spot] of context.representatives.slice(0, 2).entries()) {
 		const original = join(dir, `rep${index + 1}-original.txt`) ;
 		const aligned  = join(dir, `rep${index + 1}-aligned.txt` ) ;
-		if (!publicSources.has(spot.source) || !existsSync(original) || !existsSync(aligned)) continue ;
+		if (!publicSources.has(spot.source) || !existsSync(original) || !existsSync(aligned)) continue;
 
-		parts.push(`representative ${index + 1} (${spot.source}:${spot.file}:${spot.startLine})`, "original:", "```", readFileSync(original, "utf8").trimEnd(), "```", "aligned:", "```", readFileSync(aligned, "utf8").trimEnd(), "```") ;
+		parts.push(`representative ${index + 1} (${spot.source}:${spot.file}:${spot.startLine})`, "original:", "```", readFileSync(original, "utf8").trimEnd(), "```", "aligned:", "```", readFileSync(aligned, "utf8").trimEnd(), "```");
 	}
 
 	return parts.length > 1 ? parts.join("\n") : undefined;
@@ -122,9 +122,9 @@ function main(): void {
 
 	const suggestions = parseSuggestions(run.stdout, ranks, version, new Date().toISOString().slice(0, 10)) ;
 	const previous    = existsSync(QUEUE) ? readFileSync(QUEUE, "utf8") : ""                                ;
-	writeFileSync(QUEUE, `${previous}${suggestions.map(suggestion => JSON.stringify(suggestion)).join("\n")}${suggestions.length > 0 ? "\n" : ""}`) ;
-	writeFileSync(join(work, "codex-output.md"), run.stdout)                                                                           ;
-	console.log(`corpus-triage suggestions=${suggestions.length}/${blocks.length} queue=${QUEUE} raw=${join(work, "codex-output.md")}`) ;
+	writeFileSync(QUEUE, `${previous}${suggestions.map(suggestion => JSON.stringify(suggestion)).join("\n")}${suggestions.length > 0 ? "\n" : ""}`);
+	writeFileSync(join(work, "codex-output.md"), run.stdout);
+	console.log(`corpus-triage suggestions=${suggestions.length}/${blocks.length} queue=${QUEUE} raw=${join(work, "codex-output.md")}`);
 }
 
 if (import.meta.main) main();

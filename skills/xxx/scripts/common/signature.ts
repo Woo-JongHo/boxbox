@@ -15,7 +15,7 @@ export function normalizeAxis(axis: string): string {
 
 /** The identity key of one table: `language|context|kind|axis>axis|d<depth>`. */
 export function signatureOf(language: string, context: string, kind: string, axes: readonly string[], depth: number): string {
-	return `${language}|${context}|${kind}|${axes.map(normalizeAxis).join(">")}|d${depth}` ;
+	return `${language}|${context}|${kind}|${axes.map(normalizeAxis).join(">")}|d${depth}`;
 }
 
 /** Nesting depth of a line-engine table from its shared indentation (a tab counts as four columns). */

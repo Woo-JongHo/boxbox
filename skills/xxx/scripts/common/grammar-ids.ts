@@ -8,8 +8,8 @@ export const PATTERNS           = ["IMPORT", "DEFINE", "DESCRIBE", "MAP", "LIST"
 export const PARAGRAPH_PURPOSES = ["CHECK", "PREPARE", "DECIDE", "ACT", "RESULT"] as const                                                       ;
 export const GENRES             = ["BUSINESS", "ALGORITHM", "TEST", "CONFIG"] as const                                                           ;
 
-export type Pattern = (typeof PATTERNS)[number] ;
+export type Pattern = (typeof PATTERNS)[number];
 
 export function isPattern(value: unknown): value is Pattern {
-	return typeof value === "string" && (PATTERNS as readonly string[]).includes(value) ;
+	return typeof value === "string" && (PATTERNS as readonly string[]).includes(value);
 }

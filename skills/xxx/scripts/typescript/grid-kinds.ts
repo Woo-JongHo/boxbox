@@ -54,7 +54,7 @@ export interface RowBoundary {
 }
 
 /** Which nested cell a boundary belongs to: the call layer, a subscript cell, or one named list slot (`list:<slot>`). */
-export type LayerTag = "call" | "subscript" | `list:${string}` ;
+export type LayerTag = "call" | "subscript" | `list:${string}`;
 
 /** One literal list a list slot may align: the open bracket position, the item nodes, the close bracket position. */
 export interface ListCell {
@@ -257,27 +257,27 @@ function declarationValueList(source: SourceFile, node: Node): ListCell | undefi
 
 /** The literal list slots of one row: each layered-call argument, the declaration value itself, and the matcher arguments. */
 function rowListCells(source: SourceFile, kindName: string, node: Node): ReadonlyMap<LayerTag, ListCell> {
-	const cells = new Map<LayerTag, ListCell>()                                      ;
+	const cells = new Map<LayerTag, ListCell>();
 	if (kindName === "call-statements") {
-		const matcher = matcherCallOf(node)                                          ;
+		const matcher = matcherCallOf(node);
 		if (matcher) for (const [index, argument] of callArguments(matcher).entries()) {
 			const cell = literalListOf(source, argument)                             ;
 			if (cell) cells.set(`list:matcher-arg${index + 1}`, cell)                ;
 		}
 	}
-	const call = kindLayerCall(kindName, node)                                       ;
+	const call = kindLayerCall(kindName, node);
 	if (call) {
 		for (const [index, argument] of callArguments(call).entries()) {
 			const cell = literalListOf(source, argument)                             ;
 			if (cell) cells.set(`list:arg${index + 1}`, cell)                        ;
 		}
-		return cells                                                                   ;
+		return cells;
 	}
 	if (kindName === "declaration") {
 		const cell = declarationValueList(source, node)                              ;
 		if (cell) cells.set("list:value", cell)                                      ;
 	}
-	return cells                                                                     ;
+	return cells;
 }
 
 /** The boundary axis prefix of a list slot tag: `list:arg2` → `list-arg2`. */
@@ -290,11 +290,11 @@ function subscriptPartsOf(source: SourceFile, node: Node): { readonly object: st
 	if (!isVariableStatement(node)) return undefined                                                     ;
 	const declared = node.declarationList.declarations[0]?.initializer                                   ;
 	if (declared === undefined) return undefined                                                         ;
-	const unwrapped = syntaxKindName(declared) === "NonNullExpression" ? (declared as unknown as { readonly expression: Node }).expression : declared ;
-	if (syntaxKindName(unwrapped) !== "ElementAccessExpression") return undefined                        ;
+	const unwrapped = syntaxKindName(declared) === "NonNullExpression" ? (declared as unknown as { readonly expression: Node }).expression : declared;
+	if (syntaxKindName(unwrapped) !== "ElementAccessExpression") return undefined;
 	const parts  = unwrapped as unknown as { readonly expression: Node; readonly argumentExpression: Node } ;
 	const object = source.text.slice(parts.expression.getStart(source), parts.expression.getEnd())          ;
-	return { object, index: parts.argumentExpression, close: unwrapped.getEnd() - 1 }                        ;
+	return { object, index: parts.argumentExpression, close: unwrapped.getEnd() - 1 };
 }
 
 /** Callee text (whitespace-collapsed, `new`/`await` included) and arity; rows share the call layer only when these match. */
@@ -321,9 +321,9 @@ function detectDeclaration(source: SourceFile, node: Node): readonly RowBoundary
 	const call = equals ? declarationCall(node) : undefined;
 	if (call) boundaries.push(...callLayer(source, call) ?? []);
 	for (const [tag, cell] of rowListCells(source, "declaration", node)) boundaries.push(...itemLayer(source, cell, listAxisPrefix(tag), tag));
-	const subscript = equals && !call ? subscriptPartsOf(source, node) : undefined                             ;
+	const subscript = equals && !call ? subscriptPartsOf(source, node) : undefined;
 	if (subscript) {
-		const closeBracket = tokenAfter(source, subscript.index.getEnd(), "]") ;
+		const closeBracket = tokenAfter(source, subscript.index.getEnd(), "]");
 		if (closeBracket !== undefined && closeBracket === subscript.close) {
 			boundaries.push({ axis: "subscript-close", from: subscript.index.getEnd(), at: closeBracket, insert: true, layer: "subscript" });
 		}
@@ -495,12 +495,12 @@ function detectGuard(source: SourceFile, node: Node): readonly RowBoundary[] | u
 	if (!isIfStatement(node)) return undefined                        ;
 	if (node.elseStatement !== undefined) return undefined            ;
 	if (!ownLineOf(source, node, LINE_REST)) return undefined         ;
-	const closeParen = tokenAfter(source, node.expression.getEnd(), ")") ;
-	if (closeParen === undefined) return undefined                    ;
+	const closeParen = tokenAfter(source, node.expression.getEnd(), ")");
+	if (closeParen === undefined) return undefined;
 	const thenStatement = node.thenStatement                                    ;
 	if (syntaxKindName(thenStatement) !== "Block") return undefined             ;
-	const statements = (thenStatement as unknown as { readonly statements: readonly Node[] }).statements ;
-	if (statements.length < 2) return undefined                                 ;
+	const statements = (thenStatement as unknown as { readonly statements: readonly Node[] }).statements;
+	if (statements.length < 2) return undefined;
 	// A statement node includes its `;`, so the padding anchor is the first statement's expression.
 	const first          = statements[0]!                                       ;
 	if (syntaxKindName(first) !== "ExpressionStatement") return undefined       ;
@@ -819,8 +819,8 @@ const OUTLIER_GAP = 20;
  * left among them. Dropping the call layer drops the list slots inside its arguments; matcher slots survive.
  */
 function withLayers(source: SourceFile, kind: RowKind, run: readonly DetectedRow[]): readonly DetectedRow[] {
-	const tags = new Set(run.flatMap(row => row.boundaries.filter(boundary => boundary.layer !== undefined).map(boundary => boundary.layer!))) ;
-	if (tags.size === 0) return run                                                                                                           ;
+	const tags = new Set(run.flatMap(row => row.boundaries.filter(boundary => boundary.layer !== undefined).map(boundary => boundary.layer!)));
+	if (tags.size === 0) return run;
 	const keep       = new Set<string>()                                                                        ;
 	let rows         = run                                                                                      ;
 	const calls      = run.map(row => kind.layerCall?.(row.node))                                               ;
@@ -830,22 +830,22 @@ function withLayers(source: SourceFile, kind: RowKind, run: readonly DetectedRow
 	if (sameCall) {
 		const widths = itemWidths(source, calls.map(call => callArguments(call!))) ;
 		if (!hasOutlierWidths(widths)) keep.add("call")                            ;
-		else if (kind.name === "declaration") rows = withVerticalOutliers(run, keep, calls as readonly Node[], widths) ;
+		else if (kind.name === "declaration") rows = withVerticalOutliers(run, keep, calls as readonly Node[], widths);
 	}
 	if (tags.has("subscript") && kind.name === "declaration") {
 		const parts    = run.map(row => subscriptPartsOf(source, row.node))                                     ;
 		const complete = run.every(row => row.boundaries.some(boundary => boundary.axis === "subscript-close")) ;
 		if (complete && parts.every(part => part !== undefined) && new Set(parts.map(part => part!.object)).size === 1
-			&& !hasOutlierWidths(itemWidths(source, parts.map(part => [part!.index])))) keep.add("subscript") ;
+			&& !hasOutlierWidths(itemWidths(source, parts.map(part => [part!.index])))) keep.add("subscript");
 	}
 	for (const tag of tags) {
 		if (!tag.startsWith("list:")) continue                                   ;
 		if (tag.startsWith("list:arg") && !keep.has("call")) continue            ;
-		const cells = run.map(row => rowListCells(source, kind.name, row.node).get(tag)) ;
+		const cells = run.map(row => rowListCells(source, kind.name, row.node).get(tag));
 		if (cells.some(cell => cell === undefined)) continue                     ;
 		if (!sameShape(source, cells as readonly ListCell[])) continue           ;
-		if (hasOutlierWidths(itemWidths(source, cells.map(cell => (cell as ListCell).items)))) continue ;
-		keep.add(tag)                                                            ;
+		if (hasOutlierWidths(itemWidths(source, cells.map(cell => (cell as ListCell).items)))) continue;
+		keep.add(tag);
 	}
 	if (keep.size === tags.size) return rows;
 	return rows.map(row => ({ node: row.node, vertical: row.vertical, boundaries: row.boundaries.filter(boundary => boundary.layer === undefined || keep.has(boundary.layer)) }));
@@ -861,16 +861,16 @@ function withVerticalOutliers(run: readonly DetectedRow[], keep: Set<string>, ca
 	const marked = run.map(() => false) ;
 	if (arity >= 2) {
 		for (let index = 0; index < arity; index += 1) {
-			const order = widths.map((row, position) => ({ width: row[index] ?? 0, position })).sort((left, right) => right.width - left.width) ;
+			const order = widths.map((row, position) => ({ width: row[index] ?? 0, position })).sort((left, right) => right.width - left.width);
 			if (order[0]!.width - (order[1]?.width ?? 0) < OUTLIER_GAP) continue    ;
 			if (callArguments(calls[order[0]!.position]!).length < 2) continue      ;
 			marked[order[0]!.position] = true                                       ;
 		}
 	}
-	if (!marked.some(Boolean)) return run ;
-	const remaining = widths.filter((_, position) => !marked[position]) ;
-	if (remaining.length > 0 && !hasOutlierWidths(remaining)) keep.add("call") ;
-	return run.map((row, position) => marked[position] ? { node: row.node, boundaries: row.boundaries, vertical: calls[position]! } : row) ;
+	if (!marked.some(Boolean)) return run;
+	const remaining = widths.filter((_, position) => !marked[position]);
+	if (remaining.length > 0 && !hasOutlierWidths(remaining)) keep.add("call");
+	return run.map((row, position) => marked[position] ? { node: row.node, boundaries: row.boundaries, vertical: calls[position]! } : row);
 }
 
 /** An item cell this much wider than the second widest in its column is an outlier (import rule B); the layer is not applied. */

@@ -19,7 +19,7 @@ import type { FileResult, ResultEnvelope               } from "./common/result-j
 const LANGUAGES: readonly (readonly [RegExp, string])[] = [
 	[/\.[cm]?ts$/u, "typescript"],
 	[/\.py$/u     , "python"    ],
-] ;
+];
 
 function languageOf(file: string): string {
 	const found = LANGUAGES.find(([extension]) => extension.test(file));
@@ -79,4 +79,4 @@ function main(): void {
 	process.exit(report.ok ? 0 : 1);
 }
 
-if (import.meta.main) main() ;
+if (import.meta.main) main();

@@ -84,16 +84,16 @@ export function readCensusReport<T>(path: string = join(CACHE, "signatures.json"
 }
 
 const readManifest = (name: string): CorpusManifest => {
-	const path = join(ROOT, "corpus", name)                                                    ;
+	const path = join(ROOT, "corpus", name);
 	if (!existsSync(path)) {
 		// the committed manifest is required; local.json is optional
 		if (name === "manifest.json") throw new Error(`missing manifest: ${path}`)             ;
 		return { schemaVersion: 1, sources: [] }                                               ;
 	}
-	const parsed = JSON.parse(readFileSync(path, "utf8")) as CorpusManifest                    ;
-	if (parsed.schemaVersion !== 1 || !Array.isArray(parsed.sources)) throw new Error(`bad manifest: ${path}`) ;
-	return parsed                                                                              ;
-} ;
+	const parsed = JSON.parse(readFileSync(path, "utf8")) as CorpusManifest;
+	if (parsed.schemaVersion !== 1 || !Array.isArray(parsed.sources)) throw new Error(`bad manifest: ${path}`);
+	return parsed;
+};
 
 
 function walkFiles(root: string, extension: string, limit: number): readonly string[] {
@@ -103,9 +103,9 @@ function walkFiles(root: string, extension: string, limit: number): readonly str
 		if (found.length >= limit) return                               ;
 		let entries: string[]                                           ;
 		try {
-			entries = readdirSync(dir).sort()                           ;
+			entries = readdirSync(dir).sort();
 		} catch {
-			return                                                      ;
+			return;
 		}
 		for (const entry of entries) {
 			if (found.length >= limit) return                           ;
@@ -117,19 +117,19 @@ function walkFiles(root: string, extension: string, limit: number): readonly str
 				real        = realpathSync(full)                        ;
 				isDirectory = statSync(full).isDirectory()              ;
 			} catch {
-				continue                                                ;
+				continue;
 			}
 			if (seen.has(real)) continue                                ;
 			seen.add(real)                                              ;
 			if (isDirectory) {
 				// hidden directories (.github, .agents, …) and vendor trees are not product source
-				if (entry === "node_modules" || entry.startsWith(".")) continue ;
+				if (entry === "node_modules" || entry.startsWith(".")) continue;
 				visit(full)                                             ;
 				continue                                                ;
 			}
-			if (!entry.endsWith(extension)) continue                    ;
-			if (entry.endsWith(".d.ts") || entry.endsWith(".tsx")) continue ;
-			found.push(full)                                            ;
+			if (!entry.endsWith(extension)) continue;
+			if (entry.endsWith(".d.ts") || entry.endsWith(".tsx")) continue;
+			found.push(full);
 		}
 	}                                                                 ;
 	visit(root)                                                       ;
@@ -162,23 +162,23 @@ async function censusSource(source: CorpusSource, maxFiles: number): Promise<Cen
 		// A batch that triggers huge-project inference can wedge the server for many minutes (vscode's src/), so every
 		// server call runs under a watchdog; a wedged batch is skipped and the server is rebuilt before continuing.
 		const watchdog = async <T>(work: Promise<T>, what: string): Promise<T | null> => {
-			let timer: ReturnType<typeof setTimeout> | undefined ;
-			const timeout = new Promise<null>(resolve => { timer = setTimeout(() => resolve(null), 900_000); }) ;
+			let timer: ReturnType<typeof setTimeout> | undefined;
+			const timeout = new Promise<null>(resolve => { timer = setTimeout(() => resolve(null), 900_000); });
 			// a rejected batch is a failure (false), a timed-out batch is a wedged server (null)
-			const settled = await Promise.race([work.catch(() => false as unknown as T), timeout])              ;
+			const settled = await Promise.race([work.catch(() => false as unknown as T), timeout]);
 			clearTimeout(timer)                                                                                  ;
 			if (settled === null) console.error(`corpus-signatures ${source.id} ${what} timed out after 900s`)   ;
 			return settled                                                                                       ;
-		}                                                                                                        ;
+		};
 		let api           = new API({ cwd: root }) ;
 		let batchesFailed = 0                      ;
 		try {
-			const size = 25                                                  ;
+			const size = 25;
 			for (let index = 0; index < files.length; index += size) {
 				const batch = files.slice(index, index + size)                                     ;
 				const label = (file: string): string => relative(root, file).replaceAll("\\", "/") ;
 				const run = async (): Promise<boolean> => {
-					const state = await api.updateSnapshot({ openFiles: batch }) ;
+					const state = await api.updateSnapshot({ openFiles: batch });
 					for (const file of batch) {
 						const project = await state.getDefaultProjectForFile(file)       ;
 						if (!project) continue                                           ;
@@ -195,51 +195,51 @@ async function censusSource(source: CorpusSource, maxFiles: number): Promise<Cen
 								rows      : group.rowCount    ,
 								edits     : group.edits.length,
 								spot      : { source: source.id, file: label(file), startLine: group.startLine, endLine: group.endLine, rows: group.rowCount },
-							})                     ;
+							});
 						}
 					}
-					return true                                                     ;
-				}                                                                    ;
+					return true;
+				};
 				// the first wedge may be huge-project inference doing real work (vscode src/), so the SAME batch is
 				// retried once; only a second wedge rebuilds the server and skips the batch
-				let settled: boolean | null = false                                  ;
+				let settled: boolean | null = false;
 				for (let attempt = 1; attempt <= 2; attempt += 1) {
-					settled = await watchdog(run(), `batch ${Math.floor(index / size) + 1} attempt ${attempt}`) ;
-					if (settled !== null) break                                      ;
-				}                                                                    ;
+					settled = await watchdog(run(), `batch ${Math.floor(index / size) + 1} attempt ${attempt}`);
+					if (settled !== null) break;
+				};
 				if (settled === null || settled === false) {
-					batchesFailed += 1                                                          ;
+					batchesFailed += 1;
 					if (settled === null) {
 						await watchdog(api.close().then(() => undefined), "close")               ;
 						api = new API({ cwd: root })                                             ;
 					}
-					console.error(`corpus-signatures ${source.id} batch ${Math.floor(index / size) + 1} SKIPPED${batchesFailed > 0 ? ` failedBatches=${batchesFailed}` : ""}`) ;
+					console.error(`corpus-signatures ${source.id} batch ${Math.floor(index / size) + 1} SKIPPED${batchesFailed > 0 ? ` failedBatches=${batchesFailed}` : ""}`);
 				} else {
-					console.error(`corpus-signatures ${source.id} batch ${Math.floor(index / size) + 1}/${Math.ceil(files.length / size)} tables=${rows.length}${batchesFailed > 0 ? ` failedBatches=${batchesFailed}` : ""}`) ;
+					console.error(`corpus-signatures ${source.id} batch ${Math.floor(index / size) + 1}/${Math.ceil(files.length / size)} tables=${rows.length}${batchesFailed > 0 ? ` failedBatches=${batchesFailed}` : ""}`);
 				}
 			}
 		} finally {
-			await watchdog(api.close().then(() => undefined), "close")               ;
+			await watchdog(api.close().then(() => undefined), "close");
 		}
-		return { files: files.length, rows, failedBatches: batchesFailed } ;
+		return { files: files.length, rows, failedBatches: batchesFailed };
 	}
 	for (const file of files) {
 		const label  = relative(root, file).replaceAll("\\", "/")                                                                                                 ;
 		const result = alignSource(readFileSync(file, "utf8"), PYTHON_ALIGNER, { minRows: 3, apply: false })                                                      ;
 		const spotOf = (startLine: number, endLine: number): TableSpot => ({ source: source.id, file: label, startLine, endLine, rows: endLine - startLine + 1 }) ;
 		for (const table of result.details) {
-			const state = table.edits.length === 0 ? "PASS" : "FIXABLE"                    ;
-			rows.push({ signature: signatureOf(source.language, "", "table", table.axes, indentDepth(table.indent)), language: source.language, kind: "table", state, rows: table.rows, edits: table.edits.length, spot: spotOf(table.startLine, table.endLine) }) ;
+			const state = table.edits.length === 0 ? "PASS" : "FIXABLE";
+			rows.push({ signature: signatureOf(source.language, "", "table", table.axes, indentDepth(table.indent)), language: source.language, kind: "table", state, rows: table.rows, edits: table.edits.length, spot: spotOf(table.startLine, table.endLine) });
 		}
 		for (const table of result.refused) {
-			rows.push({ signature: signatureOf(source.language, "", "table", table.axes, indentDepth(table.indent)), language: source.language, kind: "table", state: "REFUSE", rows: table.rows, edits: table.edits.length, spot: spotOf(table.startLine, table.endLine) }) ;
+			rows.push({ signature: signatureOf(source.language, "", "table", table.axes, indentDepth(table.indent)), language: source.language, kind: "table", state: "REFUSE", rows: table.rows, edits: table.edits.length, spot: spotOf(table.startLine, table.endLine) });
 		}
 	}
-	return { files: files.length, rows }                  ;
+	return { files: files.length, rows };
 }
 
 /** Representatives prefer tables with edits to judge (FIXABLE), then aligned ones (PASS), then refused ones. */
-const EXAMPLE_ORDER = ["FIXABLE", "PASS", "REFUSE"] ;
+const EXAMPLE_ORDER = ["FIXABLE", "PASS", "REFUSE"];
 
 function collapse(rows: readonly CensusRow[]): readonly SignatureType[] {
 	interface Accumulator {
@@ -252,9 +252,9 @@ function collapse(rows: readonly CensusRow[]): readonly SignatureType[] {
 		edits              : number                      ;
 		readonly spots     : Record<string, TableSpot[]> ;
 	}
-	const types = new Map<string, Accumulator>()                          ;
+	const types = new Map<string, Accumulator>();
 	for (const row of rows) {
-		const type = types.get(row.signature) ?? { signature: row.signature, language: row.language, kind: row.kind, states: {}, count: 0, rows: 0, edits: 0, spots: {} } ;
+		const type = types.get(row.signature) ?? { signature: row.signature, language: row.language, kind: row.kind, states: {}, count: 0, rows: 0, edits: 0, spots: {} };
 		types.set(row.signature, type)                                    ;
 		type.count             += 1                                       ;
 		type.rows              += row.rows                                ;
@@ -265,7 +265,7 @@ function collapse(rows: readonly CensusRow[]): readonly SignatureType[] {
 	}
 	return [...types.values()]
 		.map(type => ({ signature: type.signature, language: type.language, kind: type.kind, states: type.states, count: type.count, rows: type.rows, edits: type.edits, score: type.count * type.edits, examples: EXAMPLE_ORDER.flatMap(state => type.spots[state] ?? []).slice(0, 3) }))
-		.sort((left, right) => right.score - left.score || right.count - left.count) ;
+		.sort((left, right) => right.score - left.score || right.count - left.count);
 }
 
 async function main(): Promise<void> {
@@ -280,17 +280,17 @@ async function main(): Promise<void> {
 	for (const source of sources) {
 		const census = await censusSource(source, maxFiles) ;
 		scanned[source.id] = census.files                   ;
-		if (census.failedBatches) failedBatches[source.id] = census.failedBatches ;
-		all.push(...census.rows)                            ;
-		console.error(`corpus-signatures ${source.id} files=${census.files} tables=${census.rows.length}${census.failedBatches ? ` failedBatches=${census.failedBatches}` : ""}`) ;
+		if (census.failedBatches) failedBatches[source.id] = census.failedBatches;
+		all.push(...census.rows);
+		console.error(`corpus-signatures ${source.id} files=${census.files} tables=${census.rows.length}${census.failedBatches ? ` failedBatches=${census.failedBatches}` : ""}`);
 	}
 	const types  = collapse(all)                                                                                                                                                                   ;
 	const report = { schemaVersion: 2, signatureVersion: SIGNATURE_VERSION, sources: sources.map(source => source.id), maxFiles, filesScanned: scanned, failedBatches, tables: all.length, types } ;
 	mkdirSync(CACHE, { recursive: true })                              ;
 	const out = join(CACHE, "signatures.json")                         ;
 	writeFileSync(out, `${JSON.stringify(report, null, "\t")}\n`)      ;
-	console.error(`corpus-signatures tables=${all.length} types=${types.length} report=${out}`) ;
-	console.log(JSON.stringify(types.slice(0, 20).map(type => ({ signature: type.signature, count: type.count, edits: type.edits })), null, 2)) ;
+	console.error(`corpus-signatures tables=${all.length} types=${types.length} report=${out}`);
+	console.log(JSON.stringify(types.slice(0, 20).map(type => ({ signature: type.signature, count: type.count, edits: type.edits })), null, 2));
 }
 
-if (import.meta.main) await main() ;
+if (import.meta.main) await main();

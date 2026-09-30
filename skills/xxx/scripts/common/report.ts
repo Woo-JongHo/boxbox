@@ -7,7 +7,7 @@ import      { displayWidth            } from "./display-width.ts" ;
 import type { FileResult, ResultGroup } from "./result-json.ts"   ;
 import      { patternOf               } from "./surface.ts"       ;
 
-export const REPORT_SCHEMA_VERSION = 1 ;
+export const REPORT_SCHEMA_VERSION = 1;
 
 /** 알람 기준. 숫자는 약속(3층)의 기본값이며 사용자가 바꿀 수 있다. hard/soft는 실측 전 추정치다. */
 export interface ReportLimits {
@@ -18,17 +18,46 @@ export interface ReportLimits {
 	/** 이상값: 가장 긴 행이 두 번째로 긴 행보다 이만큼 넓으면 알람 (import 규칙 B와 같은 20) */
 	readonly outlierGap   : number ;
 	/** 공백 낭비: 표 안에서 정렬 공백 ÷ 내용 글자가 이 비율을 넘으면 알람 */
-	readonly paddingRatio : number ;
+	readonly paddingRatio : number;
 	/** 큰 변경량: 한 그룹의 대기 중인 편집이 이 수 이상이면 알람 */
 	readonly largeEdits   : number ;
 }
 
-export const DEFAULT_LIMITS: ReportLimits = { hard: 118, soft: 100, outlierGap: 20, paddingRatio: 0.5, largeEdits: 20 } ;
+/** 줄 끝 `;`의 표시 열. 끝이 `;`가 아니면 undefined. */
+const semicolonColumn = (line: string): number | undefined => /;\r?$/u.test(line) ? displayWidth(line.replace(/\r?$/u, "")) : undefined;
+
+/** 들여쓰기가 같은 바로 위·아래 줄. */
+const indentOf = (line: string): string => /^[ \t]*/u.exec(line)![0];
+
+/**
+ * 표 밖 정렬 공백(A12)의 대상이면 `;` 앞 공백 칸 수를 돌려준다. 엔진이 표로 보지 않은 문장 체제 줄 중, 다른 정렬 공백 없이
+ * 끝 `;` 앞에만 공백이 있고, 이웃 줄(같은 들여쓰기)과 `;` 열을 함께 이루지도 않는 줄이다. 손으로 여러 열을 맞춘 줄이나
+ * 이웃과 열을 이루는 줄은 엔진이 아직 모르는 표일 수 있으므로 건드리지 않는다(확실할 때만). 주석과 import 줄
+ * (00_normalize-imports.ts의 담당)은 제외한다. `scripts/strip-stray-padding.ts`도 이 함수를 쓴다.
+ */
+export function straySemicolonPadding(lines: readonly string[], index: number): number | undefined {
+	const line = lines[index] ?? "";
+	if (/^\s*(\/\/|\*|\/\*|import\b|export\s.*\bfrom\b|\}\s*from\b)/u.test(line)) return undefined;
+
+	const padding = /\S([ \t]+);\r?$/u.exec(line);
+	if (!padding) return undefined;
+
+	const body = line.slice(0, padding.index + 1).replace(/^[ \t]*/u, "");
+	if (/ {2,}|\t/u.test(body)) return undefined;
+
+	const column    = semicolonColumn(line)                                                                                                              ;
+	const neighbors = [lines[index - 1], lines[index + 1]].filter((other): other is string => other !== undefined && indentOf(other) === indentOf(line)) ;
+	if (neighbors.some(other => semicolonColumn(other) === column)) return undefined;
+
+	return padding[1]!.length;
+}
+
+export const DEFAULT_LIMITS: ReportLimits = { hard: 118, soft: 100, outlierGap: 20, paddingRatio: 0.5, largeEdits: 20 };
 
 /** 2행부터 자동 수정이 허용된 kind (사용자 승인, 헌장 불변식 4) */
-const TWO_ROW_KINDS = new Set(["declaration-equals", "import-declarations"]) ;
+const TWO_ROW_KINDS = new Set(["declaration-equals", "import-declarations"]);
 
-export type CheckStatus = "pass" | "fail" | "not-run" | "skipped" ;
+export type CheckStatus = "pass" | "fail" | "not-run" | "skipped";
 
 export interface ReportCheck {
 	readonly id     : "S1" | "S2" | "S3" | "S4" ;
@@ -37,7 +66,7 @@ export interface ReportCheck {
 	readonly detail : string                    ;
 }
 
-export type AlarmId = "A0" | "A1" | "A2" | "A3" | "A4" | "A5" | "A6" | "A7" | "A8" | "A9" ;
+export type AlarmId = "A0" | "A1" | "A2" | "A3" | "A4" | "A5" | "A6" | "A7" | "A8" | "A9" | "A12";
 
 export interface ReportAlarm {
 	readonly id        : AlarmId ;
@@ -82,21 +111,22 @@ export interface ReportInput {
 }
 
 const ALARM_LABELS: Readonly<Record<AlarmId, string>> = {
-	A0 : "정렬 대기"       ,
-	A1 : "한계선 초과"     ,
-	A2 : "권장선 초과"     ,
-	A3 : "이상값 행"       ,
-	A4 : "분해 실패"       ,
-	A5 : "문형 모호"       ,
-	A6 : "2행 쌍"          ,
-	A7 : "공백 낭비"       ,
-	A8 : "문형 대응 없음"  ,
-	A9 : "큰 변경량"       ,
-} ;
+	A0  : "정렬 대기"       ,
+	A1  : "한계선 초과"     ,
+	A2  : "권장선 초과"     ,
+	A3  : "이상값 행"       ,
+	A4  : "분해 실패"       ,
+	A5  : "문형 모호"       ,
+	A6  : "2행 쌍"          ,
+	A7  : "공백 낭비"       ,
+	A8  : "문형 대응 없음"  ,
+	A9  : "큰 변경량"       ,
+	A12 : "표 밖 정렬 공백" ,
+};
 
 function patternName(language: string, group: ResultGroup): string | undefined {
-	const match = patternOf(language, { kind: language === "typescript" ? group.kind : undefined, axes: group.axes }) ;
-	return match ? [match.pattern, ...match.alternatives].join("|") : undefined                                     ;
+	const match = patternOf(language, { kind: language === "typescript" ? group.kind : undefined, axes: group.axes });
+	return match ? [match.pattern, ...match.alternatives].join("|") : undefined;
 }
 
 const PARSE_DETAIL: Readonly<Record<FileResult["parse"]["status"], (tool: string) => string>> = {
@@ -104,10 +134,10 @@ const PARSE_DETAIL: Readonly<Record<FileResult["parse"]["status"], (tool: string
 	"changed" : tool => `${tool} 파서 진단이 달라져 쓰기를 되돌림`                ,
 	"skipped" : tool => `${tool} 파서가 설치되어 있지 않음`                       ,
 	"not-run" : ()   => "check 모드는 파일을 쓰지 않으므로 --write 때만 확인"     ,
-} ;
+};
 
 function checksOf(input: ReportInput): readonly ReportCheck[] {
-	const { result, recheck } = input                                                                                     ;
+	const { result, recheck } = input;
 	const refused     = result.groups.filter(group => group.state === "REFUSE").length                                               ;
 	const floorBreaks = result.groups.filter(group => group.state === "FIXABLE" && group.rows < 3 && !TWO_ROW_KINDS.has(group.kind)) ;
 	const parse       = result.parse.status                                                                                          ;
@@ -117,7 +147,7 @@ function checksOf(input: ReportInput): readonly ReportCheck[] {
 		{ id : "S2" , label : "재파싱 진단 동일"     , status : parse === "ok" ? "pass" : parse === "changed" ? "fail" : parse      , detail : PARSE_DETAIL[parse](result.parse.tool || result.language)                                                                                                       },
 		{ id : "S3" , label : "멱등"                 , status : idempotent === undefined ? "not-run" : idempotent ? "pass" : "fail" , detail : idempotent === undefined ? "--write 뒤 다시 검사할 때만 확인" : `다시 검사한 대기 편집 ${recheck!.summary.edits}`                                               },
 		{ id : "S4" , label : "자동 수정은 3행 이상" , status : floorBreaks.length === 0 ? "pass" : "fail"                          , detail : floorBreaks.length === 0 ? "2행 예외는 declaration-equals, import만" : floorBreaks.map(group => `${group.startLine}-${group.endLine} ${group.kind}`).join(", ") },
-	] ;
+	];
 }
 
 /** 표 안에서 정렬용으로 보이는 공백(2칸 이상 연속, 들여쓰기 제외)과 내용 글자 수. */
@@ -125,38 +155,46 @@ function paddingOf(line: string): { readonly padding: number; readonly content: 
 	const body    = line.replace(/^[ \t]*/u, "")                                                       ;
 	const padding = [...body.matchAll(/ {2,}/gu)].reduce((sum, match) => sum + match[0].length - 1, 0) ;
 	const content = body.replace(/\s/gu, "").length                                                    ;
-	return { padding, content }                                                                   ;
+	return { padding, content };
 }
 
 function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlarm[] {
-	const { result, text } = input                                                                 ;
+	const { result, text } = input;
 	const lines                 = text.split("\n").map(line => line.replace(/\r$/u, ""))                    ;
 	const widthOf               = (lineNumber: number): number => displayWidth(lines[lineNumber - 1] ?? "") ;
 	const alarms: ReportAlarm[] = []                                                                        ;
 	const push = (id: AlarmId, startLine: number, endLine: number, detail: string, hint: string): void => {
-		const anchor = (lines[startLine - 1] ?? "").trim().replace(/\s+/gu, " ")                   ;
-		alarms.push({ id, label: ALARM_LABELS[id], startLine, endLine, detail, hint, anchor })       ;
-	}                                                                                              ;
+		const anchor = (lines[startLine - 1] ?? "").trim().replace(/\s+/gu, " ");
+		alarms.push({ id, label: ALARM_LABELS[id], startLine, endLine, detail, hint, anchor });
+	};
 	const groupAt = (lineNumber: number): ResultGroup | undefined =>
-		result.groups.find(group => group.startLine <= lineNumber && lineNumber <= group.endLine)    ;
+		result.groups.find(group => group.startLine <= lineNumber && lineNumber <= group.endLine);
 
 	// ① 화면 축: 가로 스크롤이 생기는 줄. 같은 표 안의 줄은 알람 하나로 묶고, 문형과 열 수(밀도 축)를 함께 적는다.
-	const reported = new Set<ResultGroup>()                                                                          ;
+	const reported = new Set<ResultGroup>();
 	for (let lineNumber = 1; lineNumber <= lines.length; lineNumber += 1) {
 		const width = widthOf(lineNumber)                                                                            ;
 		if (width <= limits.hard) continue                                                                           ;
 		const group = groupAt(lineNumber)                                  ;
 		const hint  = "넘는 행만 세로형으로, 또는 예외 요소를 먼저 단순화" ;
 		if (!group) {
-			push("A1", lineNumber, lineNumber, `${width}칸 > 한계 ${limits.hard} · 표 밖`, hint)                      ;
-			continue                                                                                                 ;
+			push("A1", lineNumber, lineNumber, `${width}칸 > 한계 ${limits.hard} · 표 밖`, hint);
+			continue;
 		}
 		if (reported.has(group)) continue                                                                            ;
 		reported.add(group)                                                                                          ;
 		const rows   = Array.from({ length: group.endLine - group.startLine + 1 }, (_, index) => group.startLine + index) ;
 		const over   = rows.filter(row => widthOf(row) > limits.hard)                                                     ;
 		const widest = Math.max(...over.map(widthOf))                                                                     ;
-		push("A1", group.startLine, group.endLine, `${over.length}행이 한계 ${limits.hard} 초과 (최대 ${widest}칸) · 문형 ${patternName(result.language, group) ?? "?"} · 열 ${group.axes.length}`, hint) ;
+		push("A1", group.startLine, group.endLine, `${over.length}행이 한계 ${limits.hard} 초과 (최대 ${widest}칸) · 문형 ${patternName(result.language, group) ?? "?"} · 열 ${group.axes.length}`, hint);
+	}
+
+	// 표 밖 정렬 공백: 비교할 행이 없으니 열도 없어야 한다(문법 1절, 문장 체제).
+	for (let lineNumber = 1; lineNumber <= lines.length; lineNumber += 1) {
+		if (groupAt(lineNumber)) continue;
+
+		const padding = straySemicolonPadding(lines, lineNumber - 1);
+		if (padding !== undefined) push("A12", lineNumber, lineNumber, `; 앞 공백 ${padding}칸`, "표 밖에서는 열을 맞추지 않는다: 공백을 지운다");
 	}
 
 	for (const group of result.groups) {
@@ -166,36 +204,36 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 		const pattern = patternName(result.language, group)                                                                ;
 		const span    = [group.startLine, group.endLine] as const                                                          ;
 
-		if (widest > limits.soft && widest <= limits.hard) push("A2", ...span, `표 폭 ${widest} > 권장 ${limits.soft}`, "허용 구간. 단순화할 수 있는지 검토") ;
+		if (widest > limits.soft && widest <= limits.hard) push("A2", ...span, `표 폭 ${widest} > 권장 ${limits.soft}`, "허용 구간. 단순화할 수 있는지 검토");
 
-		const sorted = [...widths].sort((left, right) => right - left)                                                     ;
+		const sorted = [...widths].sort((left, right) => right - left);
 		if (sorted.length >= 3 && sorted[0]! - sorted[1]! >= limits.outlierGap) {
-			const row = rows[widths.indexOf(sorted[0]!)]!                                                                  ;
-			push("A3", row, row, `가장 긴 행이 두 번째보다 ${sorted[0]! - sorted[1]!}칸 넓음`, "그 행의 예외 요소를 먼저 단순화")                  ;
+			const row = rows[widths.indexOf(sorted[0]!)]!;
+			push("A3", row, row, `가장 긴 행이 두 번째보다 ${sorted[0]! - sorted[1]!}칸 넓음`, "그 행의 예외 요소를 먼저 단순화");
 		}
 
-		if (group.state === "FIXABLE") push("A0", ...span, `${group.kind} ${group.rows}행, 대기 편집 ${group.edits}`, "공백 정렬로 해결(안전): 06_align-tables.ts --file <파일> --write") ;
-		if (group.state === "REFUSE" ) push("A4", ...span, `${group.kind}: 손실 없이 나눌 수 없음`, "행 구조를 확인. 엔진 버그면 fixture로")          ;
-		if (group.state === "SUGGEST") push("A6", ...span, `${group.kind} ${group.rows}행`, "표로 만들지는 사람이 결정")                          ;
+		if (group.state === "FIXABLE") push("A0", ...span, `${group.kind} ${group.rows}행, 대기 편집 ${group.edits}`, "공백 정렬로 해결(안전): 06_align-tables.ts --file <파일> --write");
+		if (group.state === "REFUSE" ) push("A4", ...span, `${group.kind}: 손실 없이 나눌 수 없음`, "행 구조를 확인. 엔진 버그면 fixture로");
+		if (group.state === "SUGGEST") push("A6", ...span, `${group.kind} ${group.rows}행`, "표로 만들지는 사람이 결정");
 
-		if (pattern === undefined) push("A8", ...span, `${group.kind} (축 ${group.axes.map(axis => axis.split("=")[0]).join(">")})`, "표현형 데이터에 대응 추가")    ;
-		else if (pattern.includes("|")) push("A5", ...span, `${pattern}`, "엔진이 가를 수 없는 문형. 판정으로 정함")                              ;
+		if (pattern === undefined) push("A8", ...span, `${group.kind} (축 ${group.axes.map(axis => axis.split("=")[0]).join(">")})`, "표현형 데이터에 대응 추가");
+		else if (pattern.includes("|")) push("A5", ...span, `${pattern}`, "엔진이 가를 수 없는 문형. 판정으로 정함");
 
-		const padding = rows.map(row => paddingOf(lines[row - 1] ?? "")).reduce((sum, cell) => ({ padding: sum.padding + cell.padding, content: sum.content + cell.content }), { padding: 0, content: 0 }) ;
+		const padding = rows.map(row => paddingOf(lines[row - 1] ?? "")).reduce((sum, cell) => ({ padding: sum.padding + cell.padding, content: sum.content + cell.content }), { padding: 0, content: 0 });
 		if (padding.content > 0 && padding.padding / padding.content > limits.paddingRatio) {
-			push("A7", ...span, `정렬 공백 ${padding.padding} / 내용 ${padding.content}`, "공백이 의미 단위를 떼어 놓는지 확인")                 ;
+			push("A7", ...span, `정렬 공백 ${padding.padding} / 내용 ${padding.content}`, "공백이 의미 단위를 떼어 놓는지 확인");
 		}
 
-		if (group.state === "FIXABLE" && group.edits >= limits.largeEdits) push("A9", ...span, `대기 편집 ${group.edits}`, "변경 전후를 사람이 확인") ;
+		if (group.state === "FIXABLE" && group.edits >= limits.largeEdits) push("A9", ...span, `대기 편집 ${group.edits}`, "변경 전후를 사람이 확인");
 	}
-	return alarms.sort((left, right) => left.startLine - right.startLine || left.id.localeCompare(right.id)) ;
+	return alarms.sort((left, right) => left.startLine - right.startLine || left.id.localeCompare(right.id));
 }
 
 export function buildReport(input: ReportInput): Report {
 	const limits                         = input.limits ?? DEFAULT_LIMITS ;
 	const checks                         = checksOf(input)                ;
 	const states: Record<string, number> = {}                             ;
-	for (const group of input.result.groups) states[group.state] = (states[group.state] ?? 0) + 1 ;
+	for (const group of input.result.groups) states[group.state] = (states[group.state] ?? 0) + 1;
 	return {
 		schemaVersion : REPORT_SCHEMA_VERSION                 ,
 		file          : input.result.file                     ,
@@ -206,14 +244,14 @@ export function buildReport(input: ReportInput): Report {
 		checks                                                ,
 		alarms        : alarmsOf(input, limits)               ,
 		ok            : checks.every(check => check.status !== "fail") ,
-	} ;
+	};
 }
 
-const alarmKey = (alarm: ReportAlarm): string => `${alarm.id}|${alarm.anchor}` ;
+const alarmKey = (alarm: ReportAlarm): string => `${alarm.id}|${alarm.anchor}`;
 
 /** 결과의 알람을 기준본의 알람과 종류·대상으로 하나씩 짝짓는다. 같은 키가 여럿이면 개수만큼만 짝지어진다. */
 export function compareAlarms(current: readonly ReportAlarm[], baseline: readonly ReportAlarm[]): AlarmComparison {
-	const unmatched = new Map<string, ReportAlarm[]>()                                  ;
+	const unmatched = new Map<string, ReportAlarm[]>();
 	for (const alarm of baseline) {
 		const bucket = unmatched.get(alarmKey(alarm)) ?? []                             ;
 		bucket.push(alarm)                                                              ;
@@ -226,18 +264,18 @@ export function compareAlarms(current: readonly ReportAlarm[], baseline: readonl
 		if (match) existingAlarms.push(alarm)                                           ;
 		else newAlarms.push(alarm)                                                      ;
 	}
-	return { newAlarms, existingAlarms, resolvedAlarms: [...unmatched.values()].flat() } ;
+	return { newAlarms, existingAlarms, resolvedAlarms: [...unmatched.values()].flat() };
 }
 
 /** 리포트에 기준본 비교를 붙인다. 안전 검사와 종료 코드는 그대로다. */
 export function withBaseline(report: Report, baseline: Report): Report {
-	return { ...report, comparison: compareAlarms(report.alarms, baseline.alarms) } ;
+	return { ...report, comparison: compareAlarms(report.alarms, baseline.alarms) };
 }
 
 /** 표시 폭(한글 2칸) 기준으로 오른쪽을 채운다. */
-const padDisplay = (value: string, width: number): string => value + " ".repeat(Math.max(0, width - displayWidth(value))) ;
+const padDisplay = (value: string, width: number): string => value + " ".repeat(Math.max(0, width - displayWidth(value)));
 
-const STATUS_TEXT: Readonly<Record<CheckStatus, string>> = { "pass": "통과", "fail": "미통과", "not-run": "해당 없음", "skipped": "건너뜀 (도구 없음)" } ;
+const STATUS_TEXT: Readonly<Record<CheckStatus, string>> = { "pass": "통과", "fail": "미통과", "not-run": "해당 없음", "skipped": "건너뜀 (도구 없음)" };
 
 /** 사람이 읽는 리포트. */
 export function renderReport(report: Report): string {
@@ -246,20 +284,20 @@ export function renderReport(report: Report): string {
 	const states = Object.entries(report.states).map(([state, count]) => `${state} ${count}`).join(" · ")                                        ;
 	lines.push("", `그룹 ${Object.values(report.states).reduce((sum, count) => sum + count, 0)}개: ${states || "없음"}`, "")                     ;
 	const renderAlarm = (alarm: ReportAlarm): string => {
-		const where = alarm.startLine === alarm.endLine ? `${alarm.startLine}행` : `${alarm.startLine}–${alarm.endLine}행` ;
+		const where = alarm.startLine === alarm.endLine ? `${alarm.startLine}행` : `${alarm.startLine}–${alarm.endLine}행`;
 		return `  ${alarm.id} ${padDisplay(alarm.label, 14)} ${padDisplay(where, 12)} ${alarm.detail}  → ${alarm.hint}`   ;
-	}                                                                                                                      ;
-	const limits = `(한계 ${report.limits.hard} · 권장 ${report.limits.soft}: 추정치, 실측 대기)`                            ;
-	const { comparison } = report                                                                                          ;
+	};
+	const limits = `(한계 ${report.limits.hard} · 권장 ${report.limits.soft}: 추정치, 실측 대기)`;
+	const { comparison } = report;
 	if (!comparison) {
 		lines.push(`알람 ${report.alarms.length}건  ${limits}`, ...report.alarms.map(renderAlarm))                            ;
 	} else {
 		lines.push(`새 알람 ${comparison.newAlarms.length}건  ${limits}`, ...comparison.newAlarms.map(renderAlarm))           ;
-		lines.push("", `기존 알람 ${comparison.existingAlarms.length}건 (기준본에도 있던 것, 이번 편집의 책임 아님)`)          ;
-		lines.push(...comparison.existingAlarms.map(renderAlarm))                                                             ;
-		lines.push("", `사라진 알람 ${comparison.resolvedAlarms.length}건`)                                                  ;
+		lines.push("", `기존 알람 ${comparison.existingAlarms.length}건 (기준본에도 있던 것, 이번 편집의 책임 아님)`);
+		lines.push(...comparison.existingAlarms.map(renderAlarm));
+		lines.push("", `사라진 알람 ${comparison.resolvedAlarms.length}건`);
 		lines.push(...comparison.resolvedAlarms.map(alarm => `  ${alarm.id} ${padDisplay(alarm.label, 14)} 기준본 ${alarm.startLine}행: ${alarm.anchor}`)) ;
 	}
-	lines.push("", report.ok ? "결과: 안전 검사 통과 (알람은 실패로 치지 않음)" : "결과: 안전 검사 미통과")                                   ;
-	return lines.join("\n")                                                                                                                         ;
+	lines.push("", report.ok ? "결과: 안전 검사 통과 (알람은 실패로 치지 않음)" : "결과: 안전 검사 미통과");
+	return lines.join("\n");
 }

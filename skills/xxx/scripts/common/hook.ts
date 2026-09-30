@@ -19,12 +19,12 @@ export interface HookTarget {
 	readonly language : string ;
 }
 
-const WRITE_TOOLS = new Set(["Write", "Edit", "MultiEdit"]) ;
+const WRITE_TOOLS = new Set(["Write", "Edit", "MultiEdit"]);
 
 const LANGUAGES: readonly (readonly [RegExp, string])[] = [
 	[/\.[cm]?ts$/u, "typescript"],
 	[/\.py$/u     , "python"    ],
-] ;
+];
 
 /** 훅이 볼 대상인가: 쓰기 도구이고, 1차 범위 언어이고, .d.ts나 .xxx 안의 파일이 아니다. */
 export function hookTarget(input: HookInput): HookTarget | undefined {
@@ -61,16 +61,16 @@ export function newFileGuide(language: string): string {
 }
 
 const renderAlarm = (alarm: ReportAlarm): string => {
-	const where = alarm.startLine === alarm.endLine ? `${alarm.startLine}행` : `${alarm.startLine}–${alarm.endLine}행` ;
+	const where = alarm.startLine === alarm.endLine ? `${alarm.startLine}행` : `${alarm.startLine}–${alarm.endLine}행`;
 
 	return `- ${alarm.id} ${alarm.label} ${where}: ${alarm.detail} → ${alarm.hint}`;
-}                                                                                                                      ;
+};
 
 /**
  * 에이전트가 이번 편집에서 직접 고칠 수 있는 알람. A2(권장선, 허용 구간)는 알리지 않고, A5(문형 모호)·A6(2행 쌍)·A8(대응 없음)은
  * 엔진이나 사람이 판단할 일이라 에이전트에게 보내지 않는다(판정 대기열의 몫).
  */
-export const AGENT_ALARMS: ReadonlySet<string> = new Set(["A0", "A1", "A3", "A4", "A7", "A9"]) ;
+export const AGENT_ALARMS: ReadonlySet<string> = new Set(["A0", "A1", "A3", "A4", "A7", "A9", "A12"]);
 
 /** 쓴 뒤의 리포트에서 에이전트에게 알릴 문장. 새 알람도 안전 검사 실패도 없으면 undefined(아무것도 출력하지 않음). */
 export function postMessage(report: Report, limit = 12): string | undefined {

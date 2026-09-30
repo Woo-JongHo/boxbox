@@ -56,22 +56,22 @@ function slotAt(code: string, match: RegExpExecArray, group: number): string {
 function valueSlot(code: string, match: RegExpExecArray, gapGroup: number, textGroup: number): Slot | null {
 	const gapRange  = match.indices?.[gapGroup ] ;
 	const textRange = match.indices?.[textGroup] ;
-	if (!gapRange || !textRange) return null      ;
-	const text = code.slice(textRange[0], textRange[1]) ;
-	if (text.trim() === "" || text.startsWith("=")) return null ;
-	return { axis: "value", text, gapBefore: code.slice(gapRange[0], gapRange[1]) } ;
+	if (!gapRange || !textRange) return null;
+	const text = code.slice(textRange[0], textRange[1]);
+	if (text.trim() === "" || text.startsWith("=")) return null;
+	return { axis: "value", text, gapBefore: code.slice(gapRange[0], gapRange[1]) };
 }
 
 function profileSwift(code: string, masked: string): RowProfile | null {
-	const trimmed = masked.trim()                                    ;
-	if (trimmed === "" || trimmed.startsWith("@") || RESERVED_START.test(trimmed)) return null ;
-	if (UNSAFE.test(masked)) return null                             ;
+	const trimmed = masked.trim();
+	if (trimmed === "" || trimmed.startsWith("@") || RESERVED_START.test(trimmed)) return null;
+	if (UNSAFE.test(masked)) return null;
 
-	const letTyped = LET_TYPED.exec(masked)                          ;
+	const letTyped = LET_TYPED.exec(masked);
 	if (letTyped) {
-		if (slotAt(code, letTyped, 11) !== "") return null           ;
-		const value = valueSlot(code, letTyped, 9, 10)          ;
-		if (!value) return null                                      ;
+		if (slotAt(code, letTyped, 11) !== "") return null;
+		const value = valueSlot(code, letTyped, 9, 10);
+		if (!value) return null;
 		return {
 			indent : slotAt(code, letTyped, 1)                       ,
 			slots  : [
@@ -82,14 +82,14 @@ function profileSwift(code: string, masked: string): RowProfile | null {
 				{ axis: "equal"   , text: "="                     , gapBefore: slotAt(code, letTyped, 8) },
 				value                                                              ,
 			],
-		}                                                                ;
+		};
 	}
 
-	const letPlain = LET_PLAIN.exec(masked)                          ;
+	const letPlain = LET_PLAIN.exec(masked);
 	if (letPlain) {
-		if (slotAt(code, letPlain, 8) !== "") return null            ;
-		const value = valueSlot(code, letPlain, 6, 7)           ;
-		if (!value) return null                                      ;
+		if (slotAt(code, letPlain, 8) !== "") return null;
+		const value = valueSlot(code, letPlain, 6, 7);
+		if (!value) return null;
 		return {
 			indent : slotAt(code, letPlain, 1)                       ,
 			slots  : [
@@ -98,13 +98,13 @@ function profileSwift(code: string, masked: string): RowProfile | null {
 				{ axis: "equal"   , text: "="                     , gapBefore: slotAt(code, letPlain, 5) },
 				value                                                              ,
 			],
-		}                                                                ;
+		};
 	}
 
-	const dictRow = DICT_ROW.exec(masked)                            ;
+	const dictRow = DICT_ROW.exec(masked);
 	if (dictRow) {
-		const value = valueSlot(code, dictRow, 4, 5)         ;
-		if (!value) return null                                      ;
+		const value = valueSlot(code, dictRow, 4, 5);
+		if (!value) return null;
 		return {
 			indent : slotAt(code, dictRow, 1)                        ,
 			slots  : [
@@ -113,14 +113,14 @@ function profileSwift(code: string, masked: string): RowProfile | null {
 				value                                                                                 ,
 				{ axis: "comma", text: ","                      , gapBefore: slotAt(code, dictRow, 6) },
 			],
-		}                                                             ;
+		};
 	}
 
-	const assigned = ASSIGNED.exec(masked)                           ;
+	const assigned = ASSIGNED.exec(masked);
 	if (assigned) {
-		if (slotAt(code, assigned, 6) !== "") return null            ;
-		const value = valueSlot(code, assigned, 4, 5)        ;
-		if (!value) return null                                      ;
+		if (slotAt(code, assigned, 6) !== "") return null;
+		const value = valueSlot(code, assigned, 4, 5);
+		if (!value) return null;
 		return {
 			indent : slotAt(code, assigned, 1)                       ,
 			slots  : [
@@ -128,10 +128,10 @@ function profileSwift(code: string, masked: string): RowProfile | null {
 				{ axis: "equal" , text: "="                     , gapBefore: slotAt(code, assigned, 3) },
 				value                                                                                 ,
 			],
-		}                                                             ;
+		};
 	}
 
-	return null                                                      ;
+	return null;
 }
 
 export const SWIFT_ALIGNER: LineProfiler = {

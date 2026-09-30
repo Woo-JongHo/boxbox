@@ -37,7 +37,7 @@ const CHARTER = fileURLToPath(new URL("../references/charter.md", import.meta.ur
 const REPORT  = fileURLToPath(new URL("./report.ts", import.meta.url)             ) ;
 
 /** 쓰기가 일어나지 않아 짝(post)을 잃은 기준본은 이 시간이 지나면 지운다. */
-const STALE_MS = 60 * 60 * 1000 ;
+const STALE_MS = 60 * 60 * 1000;
 
 /** 프로젝트의 캐시 폴더. 스스로 git에서 빠지도록 `*` 한 줄짜리 .gitignore를 두고, 오래된 기준본을 치운다. */
 function cacheDir(project: string): string {
