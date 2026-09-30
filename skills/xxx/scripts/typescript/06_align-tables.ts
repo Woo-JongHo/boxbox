@@ -116,7 +116,7 @@ function buildGroup(source: SourceFile, kindName: string, groupName: string, run
 	const verticalEdits = marked.map(row => {
 		const start     = row.node.getStart(source)                                                                 ;
 		const lineStart = source.getPositionOfLineAndCharacter(source.getLineAndCharacterOfPosition(start).line, 0) ;
-		return { start: lineStart, end: row.node.getEnd(), text: verticalCallText(source, row, equalsTarget, newline) }             ;
+		return { start: lineStart, end: row.node.getEnd(), text: verticalCallText(source, row, equalsTarget, newline) };
 	})                                                                                                                                                                                      ;
 	const edits         = [...aligned.edits, ...verticalEdits]                                                                                                                              ;
 	if (process.env.DEBUG_ALIGN) {
@@ -239,7 +239,7 @@ async function writeGroups(root: string, relative: string, text: string, groups:
 	}
 	const output = applyEdits(text, edits);
 	// Vertical rows may insert line breaks; every other edit is whitespace-only between tokens on one line.
-	const preserved = groups.some(group => group.vertical > 0) ? preservesTokensWithBreaks(text, output) : preservesTokens(text, output) ;
+	const preserved = groups.some(group => group.vertical > 0) ? preservesTokensWithBreaks(text, output) : preservesTokens(text, output);
 	if (!preserved) throw new Error(`combined alignment edits change more than whitespace; nothing written: ${relative}`);
 	// Re-parse gate: the written file must produce the same syntactic diagnostics as the source, or it is restored.
 	const absolute = `${root}/${relative}`                            ;

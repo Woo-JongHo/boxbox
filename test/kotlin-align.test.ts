@@ -43,27 +43,27 @@ describe("kotlin profile specific properties", () => {
 			"val b22   = 22",
 			"val c333  = 333",
 			"val d4444 = 4444",
-		])                                                                       ;
+		]);
 	});
 
 	test("string templates are masked, so their dollar punctuation is invisible", () => {
 		const code   = `val label = "count: \${value} of \${total}"` ;
 		const masked = maskSource(code, KOTLIN_ALIGNER.syntax)       ;
 		const row    = KOTLIN_ALIGNER.profile(code, masked.text)!    ;
-		expect(row).not.toBeNull()                                               ;
-		expect(row.slots.map(slot => slot.axis).join("|")).toBe("keyword|name|equal|value")  ;
-		expect(row.slots[3]!.text).toBe(`"count: \${value} of \${total}"`)       ;
+		expect(row).not.toBeNull();
+		expect(row.slots.map(slot => slot.axis).join("|")).toBe("keyword|name|equal|value");
+		expect(row.slots[3]!.text).toBe(`"count: \${value} of \${total}"`);
 	});
 
 	test("declaration and control-flow rows are refused", () => {
-		const maskedOf = (code: string): string => maskSource(code, KOTLIN_ALIGNER.syntax).text   ;
+		const maskedOf = (code: string): string => maskSource(code, KOTLIN_ALIGNER.syntax).text;
 		for (const code of [
 			"fun render(values: Map<String, Any>): String {",
 			"if (value == 3) {",
 			"val shape = make(shape)",
 			"val list = listOf(1, 2, 3)",
 		])                                                                                       {
-			expect(KOTLIN_ALIGNER.profile(code, maskedOf(code))).toBeNull()                      ;
+			expect(KOTLIN_ALIGNER.profile(code, maskedOf(code))).toBeNull();
 		}
 	});
 });

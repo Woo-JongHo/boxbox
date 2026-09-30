@@ -28,7 +28,7 @@ const COMMENTARY = ["note: a = b;", "x : y , z", "가나다 = 1", "😀 {}", "k:
 export interface MutatorSyntax {
 	readonly syntax  : CodeSyntax ;
 	/** Token that starts a line comment in this language. */
-	readonly comment : string     ;
+	readonly comment : string;
 }
 
 /** Returns one variant of `source` for `seed`. */

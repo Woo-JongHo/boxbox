@@ -7,7 +7,7 @@ import      { readFileSync            } from "node:fs"          ;
 import      { fileURLToPath           } from "node:url"         ;
 import      { isPattern, type Pattern } from "./grammar-ids.ts" ;
 
-export const SURFACE_SCHEMA_VERSION = 1 ;
+export const SURFACE_SCHEMA_VERSION = 1;
 
 /** 한 표현형: TypeScript는 kind로, 라인 엔진 언어는 축 순서의 앞부분으로 찾는다. */
 export interface SurfaceForm {
@@ -33,24 +33,24 @@ export interface PatternMatch {
 
 /** 데이터 한 벌을 검증한다. 문법에 없는 ID, 찾는 방법이 없거나 둘 다 있는 형태는 오류다. */
 export function validateSurface(value: unknown, language: string): SurfaceData {
-	const data = value as SurfaceData                                                                              ;
-	if (data?.schemaVersion !== SURFACE_SCHEMA_VERSION) throw new Error(`surface ${language}: schemaVersion must be ${SURFACE_SCHEMA_VERSION}`) ;
-	if (data.language !== language) throw new Error(`surface ${language}: language field is ${String(data.language)}`)                       ;
-	if (!Array.isArray(data.forms) || data.forms.length === 0) throw new Error(`surface ${language}: forms must be a non-empty array`)         ;
+	const data = value as SurfaceData;
+	if (data?.schemaVersion !== SURFACE_SCHEMA_VERSION) throw new Error(`surface ${language}: schemaVersion must be ${SURFACE_SCHEMA_VERSION}`);
+	if (data.language !== language) throw new Error(`surface ${language}: language field is ${String(data.language)}`);
+	if (!Array.isArray(data.forms) || data.forms.length === 0) throw new Error(`surface ${language}: forms must be a non-empty array`);
 	for (const [index, form] of data.forms.entries()) {
 		const where = `surface ${language} form ${index}`                                                                              ;
 		if (!isPattern(form.pattern)) throw new Error(`${where}: unknown pattern ${String(form.pattern)}`)                             ;
 		for (const alternative of form.alternatives ?? []) {
-			if (!isPattern(alternative)) throw new Error(`${where}: unknown alternative ${String(alternative)}`)                       ;
+			if (!isPattern(alternative)) throw new Error(`${where}: unknown alternative ${String(alternative)}`);
 		}
 		const byKind = typeof form.kind === "string"                                ;
 		const byAxes = Array.isArray(form.axesPrefix) && form.axesPrefix.length > 0 ;
-		if (byKind === byAxes) throw new Error(`${where}: exactly one of kind or axesPrefix is required`)                               ;
+		if (byKind === byAxes) throw new Error(`${where}: exactly one of kind or axesPrefix is required`);
 	}
-	return data                                                                                                                        ;
+	return data;
 }
 
-const loaded = new Map<string, SurfaceData>() ;
+const loaded = new Map<string, SurfaceData>();
 
 /** `skills/xxx/base/<language>.json`을 읽는다. 데이터가 없는 언어는 undefined. */
 export function surfaceOf(language: string): SurfaceData | undefined {
@@ -58,9 +58,9 @@ export function surfaceOf(language: string): SurfaceData | undefined {
 	if (cached) return cached                                                             ;
 	let text: string                                                                      ;
 	try {
-		text = readFileSync(fileURLToPath(new URL(`../../base/${language}.json`, import.meta.url)), "utf8") ;
+		text = readFileSync(fileURLToPath(new URL(`../../base/${language}.json`, import.meta.url)), "utf8");
 	} catch {
-		return undefined                                                                  ;
+		return undefined;
 	}
 	const data = validateSurface(JSON.parse(text), language)                              ;
 	loaded.set(language, data)                                                            ;
@@ -68,7 +68,7 @@ export function surfaceOf(language: string): SurfaceData | undefined {
 }
 
 /** 축 id에서 열 위치(`=17`)를 뗀다. */
-const bareAxis = (axis: string): string => axis.split("=")[0]! ;
+const bareAxis = (axis: string): string => axis.split("=")[0]!;
 
 /** 표 하나의 문형. 첫 번째로 맞는 형태가 이긴다. 맞는 형태가 없으면 undefined(알람 A8의 대상). */
 export function patternOf(language: string, table: { readonly kind?: string; readonly axes: readonly string[] }): PatternMatch | undefined {
@@ -79,8 +79,8 @@ export function patternOf(language: string, table: { readonly kind?: string; rea
 		if (form.kind !== undefined) {
 			if (form.kind !== table.kind) continue                                                                      ;
 			if (form.hasAxis !== undefined && !axes.includes(form.hasAxis)) continue                                    ;
-		} else if (!form.axesPrefix!.every((axis, index) => axes[index] === axis)) continue                            ;
-		return { pattern: form.pattern, alternatives: form.alternatives ?? [] }                                         ;
+		} else if (!form.axesPrefix!.every((axis, index) => axes[index] === axis)) continue;
+		return { pattern: form.pattern, alternatives: form.alternatives ?? [] };
 	}
-	return undefined                                                                                                    ;
+	return undefined;
 }

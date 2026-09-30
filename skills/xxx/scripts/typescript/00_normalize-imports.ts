@@ -11,7 +11,7 @@ interface ImportRow {
 	readonly end   : number ;
 	readonly block : number ;
 	/** Blocks separated only by blank lines form one section; code between imports starts a new section. */
-	readonly section : number ;
+	readonly section : number;
 }
 
 interface ParsedImport {
@@ -170,7 +170,7 @@ const HEAD_WIDTH  = "import type".length ;
 /** An import goes vertical when its one-line form exceeds this width. */
 const MAX_WIDTH   = 120                  ;
 /** An import also goes vertical when its names are this much wider than the second-widest names in the section. */
-const OUTLIER_GAP = 20                   ;
+const OUTLIER_GAP = 20;
 
 const pad = (value: string, width: number): string => value + " ".repeat(Math.max(0, width - displayWidth(value)));
 

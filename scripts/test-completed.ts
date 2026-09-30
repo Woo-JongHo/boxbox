@@ -34,7 +34,7 @@ const argv     = process.argv.slice(2)                                 ;
 const SAMPLES  = Number(argv[argv.indexOf("--samples") + 1] ?? 3) || 3 ;
 
 interface Entry {
-	readonly language : string            ;
+	readonly language : string;
 	/** Path inside the language folder, e.g. `tables.py` or `mutations/seed-01.py`. */
 	readonly title  : string            ;
 	readonly before : string            ;

@@ -14,7 +14,7 @@ describe("edge inputs", () => {
 			"LONG_TIMEOUT = 90\r",
 			"DEBUG        = False\r",
 			"",
-		])                                                                                ;
+		]);
 	});
 
 	test("CRLF dict rows are no longer refused by the trailing \r", () => {
@@ -29,12 +29,12 @@ describe("edge inputs", () => {
 		const source = "\uFEFFDEFAULT = 3\nLONG_TIMEOUT = 90\nDEBUG = False\n" ;
 		const result = align(source)                                           ;
 		expect(result.output.startsWith("\uFEFFDEFAULT = 3\n")).toBe(true)                ; // BOM + refused first row stay untouched
-		expect(result.output.split("\n").slice(1, 3)).toEqual(["LONG_TIMEOUT = 90", "DEBUG = False"]) ;
+		expect(result.output.split("\n").slice(1, 3)).toEqual(["LONG_TIMEOUT = 90", "DEBUG = False"]);
 	});
 
 	test("a multi-thousand-line file aligns within the time budget", () => {
-		const rows: string[] = []                                                         ;
-		for (let index = 0; index < 3000; index += 1) rows.push(`setting${index} = ${index}`) ;
+		const rows: string[] = [];
+		for (let index = 0; index < 3000; index += 1) rows.push(`setting${index} = ${index}`);
 		const source  = rows.join("\n") + "\n" ;
 		const started = Date.now()             ;
 		const result  = align(source)          ;

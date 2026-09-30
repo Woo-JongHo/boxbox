@@ -48,11 +48,11 @@ const ASSIGNED  = new RegExp(`^${INDENT}${NAME}${GAP}=${GAP}${VALUE}${GAP}$`    
 /** Bundle rows `[ cell , cell ... ] trailer` and `( cell , cell ... ) trailer` — trailer holds the following `,` verbatim. */
 const BUNDLED       = /^([ \t]*)([[(])(.*)([\])])(,?)[ \t]*$/du                                         ;
 /** String form of a bundle cell — commas and brackets inside are blanked by the mask. */
-const BUNDLE_STRING = /^"(?:[^"\\]|\\.)*"$|^'(?:[^'\\]|\\.)*'$/u                                        ;
+const BUNDLE_STRING = /^"(?:[^"\\]|\\.)*"$|^'(?:[^'\\]|\\.)*'$/u;
 /** Scalar form of a bundle cell — signed decimal, hex and exponent numbers and identifiers (including True, False, None). */
 const BUNDLE_SCALAR = /^(?:[+-]?(?:0[xX][0-9A-Fa-f_]+|[0-9][0-9_]*(?:\.[0-9_]+)?(?:[eE][+-]?[0-9]+)?)|[A-Za-z_][A-Za-z0-9_]*)$/u;
 /** If these characters remain in the mask inside a bundle row, it involves nesting, assignment, indexing or continuation — do not attempt decomposition. */
-const BUNDLE_UNSAFE = /[[\]{}()=\\]/u                                                                   ;
+const BUNDLE_UNSAFE = /[[\]{}()=\\]/u;
 
 function slotAt(code: string, match: RegExpExecArray, group: number): string {
 	const range = match.indices?.[group];
@@ -153,7 +153,7 @@ function assignedCallProfile(code: string, masked: string): RowProfile | null {
 	const nameRange = indices[2] ;
 	const inner     = indices[7] ;
 	if (!nameRange || !inner) return null;
-	const callee = slotAt(code, match, 5)                                            ;
+	const callee = slotAt(code, match, 5);
 
 	const slots: Slot[] = [
 		{ axis : "name"           , text : slotAt(code, match, 2) , gapBefore : ""                     },
@@ -172,16 +172,16 @@ function assignedCallProfile(code: string, masked: string): RowProfile | null {
 	if (isWrapped) {
 		const cells = BUNDLE_UNSAFE.test(masked.slice(trimmedStart + 1, trimmedEnd - 1))
 			? null
-			: cellsIn(code, masked, trimmedStart + 1, trimmedEnd - 1) ;
+			: cellsIn(code, masked, trimmedStart + 1, trimmedEnd - 1);
 		if (!cells) return null;
-		const wrap = trimmed[0]!                                                                                                                     ;
+		const wrap = trimmed[0]!;
 		slots.push({ axis: wrap === "{" ? "open{" : wrap === "[" ? "open[" : "open(", text: code[trimmedStart] ?? "", gapBefore: code.slice(inner[0], trimmedStart) });
 		cells.forEach((cell, position) => {
 			slots.push({ axis: position === 0 ? "cell" : "arg", text: cell.text, gapBefore: cell.gap });
 			if (position < cells.length - 1) slots.push({ axis: "comma", text: ",", gapBefore: cell.commaGap });
 		});
 		slots.push({ axis: trimmed.at(-1) === "}" ? "close}" : trimmed.at(-1) === "]" ? "close]" : "close)", text: code[trimmedEnd - 1] ?? "", gapBefore: code.slice(cells[cells.length - 1].end, trimmedEnd - 1) });
-		contentEnd = trimmedEnd                                                                                      ;
+		contentEnd = trimmedEnd;
 	} else {
 		const cells = cellsIn(code, masked, inner[0], inner[1]);
 		if (!cells) return null;
@@ -189,7 +189,7 @@ function assignedCallProfile(code: string, masked: string): RowProfile | null {
 			slots.push({ axis: position === 0 ? "cell" : "arg", text: cell.text, gapBefore: cell.gap });
 			if (position < cells.length - 1) slots.push({ axis: "comma", text: ",", gapBefore: cell.commaGap });
 		});
-		contentEnd = cells[cells.length - 1]!.end                                                                    ;
+		contentEnd = cells[cells.length - 1]!.end;
 	}
 	slots.push({ axis: "close)", text: ")", gapBefore: code.slice(contentEnd, inner[1]) });
 	return { indent: slotAt(code, match, 1), slots };

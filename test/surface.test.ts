@@ -15,7 +15,7 @@ function idsInSection(number: number): readonly string[] {
 	const start = GRAMMAR.indexOf(`\n## ${number}. `)             ;
 	const end   = GRAMMAR.indexOf("\n## ", start + 1)             ;
 	const body  = GRAMMAR.slice(start, end < 0 ? undefined : end) ;
-	return [...body.matchAll(/^\| `([A-Z]+)` \|/gmu)].map(match => match[1]!)                            ;
+	return [...body.matchAll(/^\| `([A-Z]+)` \|/gmu)].map(match => match[1]!);
 }
 
 describe("문법 ID 레지스트리", () => {
@@ -31,7 +31,7 @@ describe("문법 ID 레지스트리", () => {
 describe("표현형 — TypeScript", () => {
 	test("엔진의 모든 kind가 문형에 대응된다", () => {
 		for (const kind of Object.keys(KIND_AXES)) {
-			expect(patternOf("typescript", { kind, axes: [] }), kind).toBeDefined() ;
+			expect(patternOf("typescript", { kind, axes: [] }), kind).toBeDefined();
 		}
 	});
 
@@ -46,7 +46,7 @@ describe("표현형 — TypeScript", () => {
 	});
 
 	test("모르는 kind는 대응되지 않는다 (알람 A8의 대상)", () => {
-		expect(patternOf("typescript", { kind: "not-a-kind", axes: [] })).toBeUndefined() ;
+		expect(patternOf("typescript", { kind: "not-a-kind", axes: [] })).toBeUndefined();
 	});
 });
 
@@ -56,14 +56,14 @@ describe("표현형 — Python", () => {
 		let tables = 0                                                                                           ;
 		for (const dir of dirs) {
 			for (const file of readdirSync(dir, { recursive: true }).map(String).filter(name => name.endsWith(".py"))) {
-				const result = alignSource(readFileSync(join(dir, file), "utf8"), PYTHON_ALIGNER, { minRows: 3, apply: false }) ;
+				const result = alignSource(readFileSync(join(dir, file), "utf8"), PYTHON_ALIGNER, { minRows: 3, apply: false });
 				for (const table of [...result.details, ...result.refused]) {
-					tables += 1                                                                                            ;
-					expect(patternOf("python", { axes: table.axes }), `${file}:${table.startLine}`).toBeDefined()         ;
+					tables += 1;
+					expect(patternOf("python", { axes: table.axes }), `${file}:${table.startLine}`).toBeDefined();
 				}
 			}
 		}
-		expect(tables).toBeGreaterThan(0) ;
+		expect(tables).toBeGreaterThan(0);
 	});
 
 	test("선언과 대입이 같은 문법인 `a = v`는 모호로 표시된다", () => {
@@ -83,7 +83,7 @@ describe("표현형 데이터 검증", () => {
 	});
 
 	test("문법에 없는 ID, 찾는 방법이 없거나 둘인 형태, 다른 언어 이름은 거부된다", () => {
-		const base = { schemaVersion: 1, language: "python" }                                                                                  ;
+		const base = { schemaVersion: 1, language: "python" };
 
 		expect(() => validateSurface({ ...base, forms: [{ kind: "x", pattern: "ASSIGN" }] }, "python")                     ).toThrow("unknown pattern"    ) ;
 		expect(() => validateSurface({ ...base, forms: [{ kind: "x", pattern: "MAP", alternatives: ["BIND"] }] }, "python")).toThrow("unknown alternative") ;

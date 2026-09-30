@@ -33,7 +33,7 @@ describe("corpus judging", () => {
 			{ signature : SIG_A                                                          , count : 1077 , edits : 3962 },
 			{ signature : SIG_B                                                          , count : 201  , edits : 887  },
 			{ signature : "typescript|SourceFile|declaration-equals|equals>semicolon|d0" , count : 266  , edits : 1431 },
-		]                                                                                                                   ;
+		];
 		const verdicts = latestVerdicts([
 			JSON.stringify({ schemaVersion: 1, signature: SIG_A, verdict: "correct", judge: "user", date: "2026-09-29", note: "" }),
 			JSON.stringify({ schemaVersion: 1, signature: SIG_B, verdict: "missing-kind", judge: "user", date: "2026-09-29", note: "" }),

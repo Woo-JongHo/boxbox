@@ -109,7 +109,7 @@ describe("python profile specific properties", () => {
 				"third  = diagnostics(toolchain, during)",
 			].join("\n"),
 		]) {
-			const result = align(source) ;
+			const result = align(source);
 			expect(result.tables    ).toBe(0     ) ;
 			expect(result.output    ).toBe(source) ;
 		}
