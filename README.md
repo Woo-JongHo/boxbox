@@ -81,4 +81,4 @@ bun install
 bun run check   # bun test && tsc --noEmit && bash -n install.sh (same as CI)
 ```
 
-Contributor and agent rules — including the English-only policy — are in [`AGENTS.md`](AGENTS.md).
+Contributor and agent rules — including the language policy — are in [`AGENTS.md`](AGENTS.md).

@@ -6,7 +6,9 @@ The working plan for XXX. Product direction lives in [`design.md`](design.md); t
 
 **North star:** a readability plugin any coding agent can plug in, that aligns same-role code into readable tables and never changes behavior — learning from judged cases until it can safely change and generate code.
 
-**Current milestone — M1.5, awaiting human verdicts.** All engineering tasks are done 2026-09-29 (D1 pinned corpus, D2 signature types, D3 judging material exported, D4 promotion mechanism, D5 measures, D6 edge inputs, D7 Swift and Kotlin). The milestone closes when the user records verdicts: `bun scripts/corpus-judge.ts --verdict <rank> <verdict>` over the types in `TEST_COMPLETED/corpus/SUMMARY.txt`. M1.6 Nested tables closed 2026-09-28 (call layer, list layer, vertical outliers, guard rows and subscript cells, Python assigned calls).
+**현재 마일스톤 — M1.8 언어 모델과 배포 (2026-09-30).** 최상단 원칙·문법부터 배포 구조까지 위에서 아래로 설계한다. M1.7 P2–P5는 S5까지 보류(공개 키에 `pattern`이 들어갈지 여기서 정해짐). M1.5 판정은 병행 가능.
+
+**Previous milestone — M1.5, awaiting human verdicts.** All engineering tasks are done 2026-09-29 (D1 pinned corpus, D2 signature types, D3 judging material exported, D4 promotion mechanism, D5 measures, D6 edge inputs, D7 Swift and Kotlin). The milestone closes when the user records verdicts: `bun scripts/corpus-judge.ts --verdict <rank> <verdict>` over the types in `TEST_COMPLETED/corpus/SUMMARY.txt`. M1.6 Nested tables closed 2026-09-28 (call layer, list layer, vertical outliers, guard rows and subscript cells, Python assigned calls).
 
 **M1 Safety proof — done 2026-09-28.** Every automatic edit is *proven* safe in code, not just promised in prose. Criteria and result:
 
@@ -194,6 +196,70 @@ Why: today's tests prove safety, not quality. Goldens were produced by the engin
 - **D6:** CRLF and BOM files, a multi-thousand-line file with a time budget, `rustfmt` locally. Done 2026-09-29: `test/edge-inputs.test.ts`. Found and fixed a real gap — CRLF line endings made the line engine silently refuse every row (the trailing `\r` failed the row regexes and the trailing-whitespace guard); the engine now strips `\r` for profiling and restores it on output, so CRLF files align with their endings preserved. BOM lines stay untouched, and a 3,000-line single-table file aligns well inside the budget. rustfmt was already covered by the T3 skip-locally mechanism.
 - **D7:** Swift and Kotlin as light languages — nested block comments, multi-line and raw strings, interpolation in the mask; re-parse with `swiftc -parse` / `kotlinc` (Kotlin in CI only); mutation tests; discovery text. Done 2026-09-29: `maskSource` gained nested block comments (`BlockCommentSpec.nested`); `scripts/swift/` and `scripts/kotlin/` profiles accept four row forms (let/val·var typed and plain bindings, assignments, quoted dictionary rows), refusing calls, containers, closures and declarations; fixtures (tables/tricky/golden) for both; `swiftc`/`kotlinc` parse gates registered (kotlinc installed by the CI workflow, so its parse gate runs there but skips locally); mutation tests registered; discovery text updated in the manifests, SKILL.md and AGENTS.md.
 
+## M1.7 — Pattern DB slice (parallel to M1.5 verdicts, before M2)
+
+Why: the product is a pattern checker — "does this code match the approved patterns in my database?" (user direction 2026-09-30). Design §3–4 already calls this the Registry (Convention / Evidence / Decision records), but only the collecting side exists (census, signatures, verdicts, promotion). Nothing at runtime can look a group up: the signature lives in `scripts/corpus-signatures.ts` (not shipped), includes the result state, and the aligners never emit it.
+
+Decisions (2026-09-30):
+
+- **Retrieval is an exact signature-key lookup, never vector similarity.** Deterministic (invariant 7); an unknown key means `SUGGEST` / `UNCERTAIN`, never a best-effort fix (invariant 2). Similarity retrieval ("RAG") belongs only to GUIDE, where agents consume approved patterns and golden examples at authoring time.
+- **The database is git-tracked JSON/JSONL files.** No server and no native dependency, so the plugin installs anywhere; approvals stay reviewable as diffs. SQLite may come later as a cache index only.
+- **Two databases, layered:** the preset DB ships read-only with the plugin; the project DB is `.xxx/conventions.json`, owned by the user. Project > Preset.
+- **The DB gates, it does not draw.** The engine still computes every column; the DB only decides whether a group may be fixed. The M1 safety proof is unchanged.
+- **The signature key is a public contract**: versioned, with a migration rule when its format changes.
+
+| # | Task | Status |
+|---|---|---|
+| P1 | Shared signature module: identity key without result state | ✅ done 2026-09-30 |
+| P2 | `signature` per group in the `Result` JSON (both engines) | ⏸ blocked (M1.8 S5까지) |
+| P3 | Convention record schema and loader (preset + project) | ⏸ blocked (M1.8 S5까지) |
+| P4 | Lookup step, report-only: `convention: approved \| rejected \| unknown` | ⏸ blocked (M1.8 S5까지) |
+| P5 | Promotion writes `correct` verdicts into the preset conventions | ⏸ blocked (M1.8 S5까지) |
+
+- **P1:** move `signatureOf` / `normalizeAxis` from `scripts/corpus-signatures.ts` into `skills/xxx/scripts/common/signature.ts`; the identity key is `(language, context, kind, axes, depth)` with a key version, and the state is a separate field. `corpus-signatures.ts` imports it. **Verify:** regenerate `signatures.json` and compare type counts (only splits caused by removing the state may differ); `bun run check`.
+  P1 implementation notes (2026-09-30): `skills/xxx/scripts/common/signature.ts` holds `SIGNATURE_VERSION`, `normalizeAxis`, `signatureOf` (no state argument) and `indentDepth`. The census report moves to `schemaVersion: 2` with `signatureVersion`; each type counts its results in `states` instead of being keyed by one, and its representatives prefer FIXABLE tables. `readCensusReport` refuses an older report, so judge, measures and promote never match stale keys. Rerun on the pinned corpus: 8,093 tables collapse into 182 types (was 197); the 197 old keys minus their state give exactly the 182 new keys with identical per-state counts (14 keys held more than one state). `TEST_COMPLETED/corpus/` was re-exported with the new slugs (`<rank>-<kind>-d<depth>-<hash>`).
+- **P2:** every group in `--json` carries `signature`; bump `schemaVersion`. **Verify:** the schema test covers one TypeScript file and one file per line-engine language.
+- **P3:** a `Convention` schema (design §4.1) and a loader for `skills/xxx/presets/recommended/conventions.json` and `<repo>/.xxx/conventions.json`. **Verify:** loader unit tests — missing files, conflicts (project wins), schema errors fail loudly.
+- **P4:** check mode annotates each group with its convention status; write behavior is unchanged. **Verify:** every golden fixture unchanged; `--json` shows the field.
+- **P5:** `corpus-promote.ts` records a `correct` verdict as an approved preset convention (the Decision stays in `corpus/verdicts.jsonl`). **Verify:** one verdict end to end — verdict → convention → check reports `approved`.
+- **Later:** switch the lookup into a gate (`unknown` → `SUGGEST`), give line-engine groups a real `context` and `kind` (today `""` / `"table"`, so different roles can share a key), and the GUIDE renderer — absorbed into M3, M5 and M7.
+
+## M1.8 — 언어 모델과 배포 (2026-09-30~)
+
+왜: 목적이 공개 배포로 정해졌다. 원칙은 "가독성 좋은 코드", 가치관은 "코드는 언어다". 쓰게 유도하는 것(GUIDE)과 검사하는 것(REVIEW)이 같은 문법과 약속을 봐야 하고, 그 약속과 예문을 담는 곳이 DB다. 이 틀을 위에서 아래로 한 층씩 확정한다.
+
+### 결정 사항
+
+- **레포는 하나.** 스킬 폴더는 Agent Skills 공개 표준이라 Claude Code, Codex, Gemini CLI, Copilot, Cursor 등이 같은 폴더를 읽는다. 호스트별 차이는 매니페스트뿐이다.
+- **산출물은 둘.** 엔진 CLI 패키지(`npx xxx …`; CI·훅·에디터·에이전트가 모두 호출)와 얇은 에이전트 어댑터(`SKILL.md` + 매니페스트).
+- **배포 차단 요소:** R1 마켓플레이스 설치 시 `node_modules`가 없어 TS 엔진이 안 돈다, R2 bun 필수, R3 에이전트 밖(CI·훅) 사용처, R4 Preset DB는 엔진과 같이 버전이 붙어야 함, R5 이름·라이선스. 또 `marketplace.json`의 `source: "./"`는 레포 전체를 내려보내므로 배포본은 `plugin/`으로 분리한다.
+- **규범 5층** (아래 층은 위 층의 ID만 쓴다. 아래로 갈수록 자주 바뀌고 권한이 약하다):
+
+| 층 | 위치 | 책임 |
+|---|---|---|
+| 0 헌장 | `skills/xxx/references/charter.md` | 원칙, 가치관, 안전 불변식 |
+| 1 문법 | `skills/xxx/references/grammar.md` | 단위(단어·문장·문단·글), 문형, 역할, 문단 목적, 장르 — 모든 ID 정의 |
+| 2 표현형 | `base/<language>/` (데이터) | 문형 → kind, 기호, 어순, 분해 조건 |
+| 3 약속 | `presets/recommended/rules/`, 사용자 `.xxx/rules/` | 허용 모양 중 무엇을 쓰는가, 등급(FIX/SUGGEST/GUIDE) |
+| 4 예문집 | Preset DB, 사용자 `.xxx/` DB (JSON/JSONL) | 승인 예문, 판정 이력 |
+
+- **핵심 원칙이 모든 모델에 닿는 경로:** ① 엔진 코드와 테스트(모델과 무관하게 강제) ② `charter.md` 원문 ③ `SKILL.md` 맨 위 3–5줄(스킬 발동 시) ④ 사용자 레포 `AGENTS.md`의 표시 구간(`xxx init`이 기록, 대부분의 에이전트가 항상 읽음). ③·④는 ②에서 생성하고 테스트로 고정한다. `CLAUDE.md`(`@AGENTS.md`)는 유지한다 — Claude Code는 `CLAUDE.md`가 없을 때만 `AGENTS.md`를 읽고, 구버전·Bedrock·Vertex에는 그 대체 읽기가 없다.
+- **언어:** 개발 중 한국어, 배포 전 영어 번역(AGENTS.md 언어 정책).
+
+| # | 작업 | 확인 기준 | 상태 |
+|---|---|---|---|
+| S0 | 이 지도 기록, M1.7 보류, AGENTS.md 언어 정책 교체, 메모리 갱신 | 사용자 승인, `bun run check` | ✅ done 2026-09-30 |
+| S1 | `charter.md` (한 페이지): 원칙, 가치관, 불변식 | 문구 확정 | ▶ active |
+| S2 | `grammar.md`: 4단위, 문형 8개, 역할, 문단 목적, 장르 + 코퍼스 근거 | 코퍼스 8,093표 100% 대응 재확인 | ⬜ todo |
+| S3 | 표현형 데이터 스키마 (kind → 문형) | 기존 kind 전부 매핑, 테스트 | ⬜ todo |
+| S4 | 약속 규칙 파일 스키마 + WHEN W1–W4 | 스키마 테스트 | ⬜ todo |
+| S5 | 예문 DB 스키마 → M1.7 P2–P5 재개 (키에 `pattern`) | P2 검증 | ⬜ todo |
+| S6 | 엔진 CLI 패키지화, 배포본 `plugin/` 분리 (R1–R3) | 깨끗한 환경에서 마켓플레이스 설치 후 실행 | ⬜ todo |
+| S7 | 문서 재배선: AGENTS.md, SKILL.md(절차만), design.md, `readability-contract.md` 해체 | `bun run check`, 링크 확인 | ⬜ todo |
+| S8 | 배포 전 영어 번역 + 한국어 잔존 검사(CJK 테스트 데이터 제외) | CI 검사 통과 | ⬜ todo |
+
+근거 자료(연구 인용, 코퍼스 측정: 문형 분포, 함수 본문 51.5%, 우리 코드의 if/for/문단 측정)는 S2에서 `docs/research/`로 옮긴다.
+
 ## Next milestones (detailed when they become active)
 
 | Milestone | Design phase | Outcome |
@@ -226,3 +292,4 @@ Findings outside the active task. Pull into a milestone when relevant.
 - Choose a license before publishing.
 - The rules for YAML/JSON (design §4.3, 3.4) need a horizontal-only safety rule before any implementation.
 - N4 leftover: a multi-line object literal whose continuation lines align on the first property (hand-made sample, `00_normalize-imports.ts`) — not covered by the guard-row and subscript work; decide with M1.5 judging.
+- `scripts/corpus-judge.ts` runs its CLI at module load (no `import.meta.main` guard), so `bun test` re-exports `TEST_COMPLETED/corpus/` on every run and fails when the census report is stale (seen in M1.7 P1).

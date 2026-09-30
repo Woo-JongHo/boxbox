@@ -2,18 +2,17 @@
 
 Working rules and a structure map for any coding agent (Claude Code, Codex, ZCode, Pi, ...) editing this repository. `CLAUDE.md` imports this file, so keep it as the single source.
 
-## Language policy — English only
+## 언어 정책 — 개발 중 한국어, 배포 전 영어 번역 (2026-09-30 결정)
 
-This repository is being prepared for public release. **Everything you write here must be in English:**
+개발 단계에서는 **새로 쓰는 문서·주석·계획을 한국어로** 쓴다. 공개 배포 직전에 레포 전체를 영어로 번역한다(`docs/plan.md` M1.8 S8).
 
-- Source code identifiers, comments, JSDoc, CLI output and error messages
-- Markdown docs, `SKILL.md`, `references/`, agent definitions, manifests (`description` fields)
-- Test names and assertion messages
-- Commit messages, PR titles and descriptions, branch names
+- **한국어로 쓰는 것:** Markdown 문서(`docs/`, `SKILL.md`, `references/`), 코드 주석과 JSDoc, 테스트 이름과 assertion 메시지, 계획 파일.
+- **영어로 유지하는 것 (번역 대상이 아님):** 코드 식별자, 파일·경로 이름, 규칙·문형 ID(`DEFINE` 등), CLI 출력과 오류 메시지, 매니페스트 `description`.
+- **git에 남는 것은 영어:** 커밋 메시지, PR 제목·본문, 브랜치 이름. 배포 전에 번역할 수 없는 기록이기 때문이다.
+- 이미 영어로 된 기존 문서는 억지로 번역하지 않는다. 손대는 부분부터 한국어로 쓴다.
+- 사용자와의 대화는 한국어.
 
-Do not add Korean (or any non-English) prose anywhere. Converse with the user in whatever language they use; only repository artifacts are English-only.
-
-The only allowed exception is **CJK test data** — string literals that exist to exercise display-width handling, such as `"범위"` in `skills/xxx/fixtures/c/tables*.c`. Keep them, and do not add prose around them in another language.
+**CJK 테스트 데이터**(표시 폭 검사용 문자열, 예: `skills/xxx/fixtures/c/tables*.c`의 `"범위"`)는 번역 대상이 아니다. S8의 한국어 잔존 검사에서도 제외한다.
 
 `test/plugin-contract.test.ts` pins the discovery text `TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, and Kotlin`. Change it together with the manifests and the `SKILL.md` frontmatter.
 
