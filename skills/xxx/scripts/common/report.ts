@@ -46,6 +46,15 @@ export interface ReportAlarm {
 	readonly endLine   : number  ;
 	readonly detail    : string  ;
 	readonly hint      : string  ;
+	/** 기준본과 짝지을 때 쓰는 대상: 알람 첫 줄의 내용(공백을 하나로 접음). 줄 번호나 정렬 공백이 바뀌어도 같다. */
+	readonly anchor    : string  ;
+}
+
+/** 기준본 대비 알람 비교 (docs/authoring-flow.md 3절): 종류와 대상으로 짝짓고, 개수로 비교하지 않는다. */
+export interface AlarmComparison {
+	readonly newAlarms      : readonly ReportAlarm[] ;
+	readonly existingAlarms : readonly ReportAlarm[] ;
+	readonly resolvedAlarms : readonly ReportAlarm[] ;
 }
 
 export interface Report {
@@ -59,6 +68,8 @@ export interface Report {
 	readonly alarms        : readonly ReportAlarm[]           ;
 	/** 안전 검사가 하나라도 fail이면 false. 알람은 실패로 치지 않는다. */
 	readonly ok            : boolean                ;
+	/** --baseline을 준 경우에만 있다. */
+	readonly comparison?   : AlarmComparison        ;
 }
 
 export interface ReportInput {
@@ -122,7 +133,8 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 	const widthOf               = (lineNumber: number): number => displayWidth(lines[lineNumber - 1] ?? "") ;
 	const alarms: ReportAlarm[] = []                                                                        ;
 	const push = (id: AlarmId, startLine: number, endLine: number, detail: string, hint: string): void => {
-		alarms.push({ id, label: ALARM_LABELS[id], startLine, endLine, detail, hint })               ;
+		const anchor = (lines[startLine - 1] ?? "").trim().replace(/\s+/gu, " ")                   ;
+		alarms.push({ id, label: ALARM_LABELS[id], startLine, endLine, detail, hint, anchor })       ;
 	}                                                                                              ;
 	const groupAt = (lineNumber: number): ResultGroup | undefined =>
 		result.groups.find(group => group.startLine <= lineNumber && lineNumber <= group.endLine)    ;
@@ -195,6 +207,31 @@ export function buildReport(input: ReportInput): Report {
 	} ;
 }
 
+const alarmKey = (alarm: ReportAlarm): string => `${alarm.id}|${alarm.anchor}` ;
+
+/** 결과의 알람을 기준본의 알람과 종류·대상으로 하나씩 짝짓는다. 같은 키가 여럿이면 개수만큼만 짝지어진다. */
+export function compareAlarms(current: readonly ReportAlarm[], baseline: readonly ReportAlarm[]): AlarmComparison {
+	const unmatched = new Map<string, ReportAlarm[]>()                                  ;
+	for (const alarm of baseline) {
+		const bucket = unmatched.get(alarmKey(alarm)) ?? []                             ;
+		bucket.push(alarm)                                                              ;
+		unmatched.set(alarmKey(alarm), bucket)                                          ;
+	}
+	const newAlarms      : ReportAlarm[] = [] ;
+	const existingAlarms : ReportAlarm[] = [] ;
+	for (const alarm of current) {
+		const match = unmatched.get(alarmKey(alarm))?.shift()                           ;
+		if (match) existingAlarms.push(alarm)                                           ;
+		else newAlarms.push(alarm)                                                      ;
+	}
+	return { newAlarms, existingAlarms, resolvedAlarms: [...unmatched.values()].flat() } ;
+}
+
+/** 리포트에 기준본 비교를 붙인다. 안전 검사와 종료 코드는 그대로다. */
+export function withBaseline(report: Report, baseline: Report): Report {
+	return { ...report, comparison: compareAlarms(report.alarms, baseline.alarms) } ;
+}
+
 /** 표시 폭(한글 2칸) 기준으로 오른쪽을 채운다. */
 const padDisplay = (value: string, width: number): string => value + " ".repeat(Math.max(0, width - displayWidth(value))) ;
 
@@ -206,10 +243,20 @@ export function renderReport(report: Report): string {
 	for (const check of report.checks) lines.push(`  ${check.id} ${padDisplay(check.label, 22)} ${padDisplay(STATUS_TEXT[check.status], 20)} ${check.detail}`) ;
 	const states = Object.entries(report.states).map(([state, count]) => `${state} ${count}`).join(" · ")                                        ;
 	lines.push("", `그룹 ${Object.values(report.states).reduce((sum, count) => sum + count, 0)}개: ${states || "없음"}`, "")                     ;
-	lines.push(`알람 ${report.alarms.length}건  (한계 ${report.limits.hard} · 권장 ${report.limits.soft}: 추정치, 실측 대기)`)                    ;
-	for (const alarm of report.alarms) {
-		const where = alarm.startLine === alarm.endLine ? `${alarm.startLine}행` : `${alarm.startLine}–${alarm.endLine}행`                         ;
-		lines.push(`  ${alarm.id} ${padDisplay(alarm.label, 14)} ${padDisplay(where, 12)} ${alarm.detail}  → ${alarm.hint}`)                                ;
+	const renderAlarm = (alarm: ReportAlarm): string => {
+		const where = alarm.startLine === alarm.endLine ? `${alarm.startLine}행` : `${alarm.startLine}–${alarm.endLine}행` ;
+		return `  ${alarm.id} ${padDisplay(alarm.label, 14)} ${padDisplay(where, 12)} ${alarm.detail}  → ${alarm.hint}`   ;
+	}                                                                                                                      ;
+	const limits = `(한계 ${report.limits.hard} · 권장 ${report.limits.soft}: 추정치, 실측 대기)`                            ;
+	const { comparison } = report                                                                                          ;
+	if (!comparison) {
+		lines.push(`알람 ${report.alarms.length}건  ${limits}`, ...report.alarms.map(renderAlarm))                            ;
+	} else {
+		lines.push(`새 알람 ${comparison.newAlarms.length}건  ${limits}`, ...comparison.newAlarms.map(renderAlarm))           ;
+		lines.push("", `기존 알람 ${comparison.existingAlarms.length}건 (기준본에도 있던 것, 이번 편집의 책임 아님)`)          ;
+		lines.push(...comparison.existingAlarms.map(renderAlarm))                                                             ;
+		lines.push("", `사라진 알람 ${comparison.resolvedAlarms.length}건`)                                                  ;
+		lines.push(...comparison.resolvedAlarms.map(alarm => `  ${alarm.id} ${padDisplay(alarm.label, 14)} 기준본 ${alarm.startLine}행: ${alarm.anchor}`)) ;
 	}
 	lines.push("", report.ok ? "결과: 안전 검사 통과 (알람은 실패로 치지 않음)" : "결과: 안전 검사 미통과")                                   ;
 	return lines.join("\n")                                                                                                                         ;
