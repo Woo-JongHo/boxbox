@@ -1,0 +1,13 @@
+{
+	"schemaVersion": 1,
+	"language": "python",
+	"forms": [
+		{ "axesPrefix": ["name", "colon", "type", "equal"], "pattern": "DESCRIBE", "alternatives": ["DEFINE"], "note": "클래스 본문이면 기본값 있는 필드, 함수 안이면 정의. 라인 엔진은 컨테이너를 모른다 (문법 판정 규칙 4)" },
+		{ "axesPrefix": ["name", "colon", "type"], "pattern": "DESCRIBE" },
+		{ "axesPrefix": ["key", "colon"], "pattern": "MAP" },
+		{ "axesPrefix": ["name", "equal"], "pattern": "DEFINE", "alternatives": ["CHANGE"], "note": "선언과 대입의 문법이 같다. 스코프 분석 전에는 모호 (문법 판정 규칙 2)" },
+		{ "axesPrefix": ["open("], "pattern": "LIST" },
+		{ "axesPrefix": ["open["], "pattern": "LIST" },
+		{ "axesPrefix": ["open{"], "pattern": "LIST" }
+	]
+}

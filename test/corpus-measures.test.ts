@@ -1,5 +1,11 @@
-import      { describe, expect, test             } from "bun:test"                      ;
-import      { measuresOf, unseenShare, verdictOf } from "../scripts/corpus-measures.ts" ;
+import      { describe, expect, test } from "bun:test"                      ;
+import      {
+              measuresOf           ,
+              patternNameOf        ,
+              patternSharesOf      ,
+              unseenShare          ,
+              verdictOf            ,
+                                     } from "../scripts/corpus-measures.ts" ;
 
 const TS  = "typescript|Block|declaration-equals|equals>semicolon|d1"      ;
 const TS2 = "typescript|SourceFile|declaration-equals|equals>semicolon|d0" ;
@@ -50,5 +56,14 @@ describe("corpus measures", () => {
 		expect(unseenShare([{ signature: TS }, { signature: PY }], baseline)                    ).toBe       (0    ) ;
 		expect(unseenShare([{ signature: TS }, { signature: PY }, { signature: TS2 }], baseline)).toBeCloseTo(1 / 3) ;
 		expect(unseenShare([], baseline)                                                        ).toBe       (0    ) ;
+	});
+
+	test("센서스 유형은 표현형 데이터로 문형에 대응되고, 모호하면 대안과 함께 적힌다", () => {
+		expect(patternNameOf(TS                                     )).toBe("DEFINE"       ) ;
+		expect(patternNameOf("python||table|name>equal>value|d1"    )).toBe("DEFINE|CHANGE") ;
+		expect(patternNameOf("typescript|Block|not-a-kind|equals|d1")).toBe("unmapped"     ) ;
+		const shares = patternSharesOf([{ signature: TS, language: "typescript", count: 3 }, { signature: TS2, language: "typescript", count: 4 }, { signature: PY, language: "python", count: 5 }]) ;
+		expect(shares.get("typescript")?.get("DEFINE")).toBe(7) ;
+		expect(shares.get("python"    )?.get("MAP"   )).toBe(5) ;
 	});
 });

@@ -9,10 +9,14 @@
  * Usage:
  *   bun scripts/corpus-measures.ts
  *   bun scripts/corpus-measures.ts --baseline <signatures.json>
+ *
+ * 문형 분포(M1.8 S3): 언어별로 표 수를 문형(표현형 데이터, `common/surface.ts`)에 대응시켜 함께 출력한다.
+ * 대응되지 않는 유형은 `unmapped`로 센다. 모호한 문형은 `DEFINE|CHANGE`처럼 대안과 함께 적는다.
  */
-import      { existsSync, readFileSync } from "node:fs"                ;
-import      { join                     } from "node:path"              ;
-import      { readCensusReport         } from "./corpus-signatures.ts" ;
+import      { existsSync, readFileSync } from "node:fs"                                 ;
+import      { join                     } from "node:path"                               ;
+import      { patternOf                } from "../skills/xxx/scripts/common/surface.ts" ;
+import      { readCensusReport         } from "./corpus-signatures.ts"                  ;
 
 const ROOT  = join(import.meta.dir, "..")                                ;
 const CACHE = join(process.env["HOME"] ?? "", ".cache", "xxx", "corpus") ;
@@ -86,6 +90,26 @@ export function unseenShare(current: readonly { readonly signature: string }[], 
 	return current.length === 0 ? 0 : fresh.length / current.length  ;
 }
 
+/** 센서스 유형 하나의 문형 이름. 시그니처는 `language|context|kind|axis>axis|d<depth>`; 라인 엔진의 kind `table`은 쓰지 않는다. */
+export function patternNameOf(signature: string): string {
+	const [language = "", , kind = "", axes = ""] = signature.split("|")                                     ;
+	const match = patternOf(language, { kind: language === "typescript" ? kind : undefined, axes: axes.split(">") }) ;
+	if (!match) return "unmapped"                                                                            ;
+	return [match.pattern, ...match.alternatives].join("|")                                                  ;
+}
+
+/** 언어별 문형 → 표 수. */
+export function patternSharesOf(types: readonly SignatureType[]): ReadonlyMap<string, ReadonlyMap<string, number>> {
+	const shares = new Map<string, Map<string, number>>()                                                    ;
+	for (const type of types) {
+		const bucket = shares.get(type.language) ?? new Map<string, number>() ;
+		const name   = patternNameOf(type.signature)                          ;
+		bucket.set(name, (bucket.get(name) ?? 0) + type.count)                                               ;
+		shares.set(type.language, bucket)                                                                    ;
+	}
+	return shares                                                                                            ;
+}
+
 function main(): void {
 	const report      = readCensusReport<SignatureType>()                                                                          ;
 	const logPath     = join(ROOT, "corpus", "verdicts.jsonl")                                                                     ;
@@ -96,6 +120,10 @@ function main(): void {
 	console.log(`measures language types tables judgedTypes judgedShare tableShare wrongGrouping`)                   ;
 	for (const measure of [...measures.values()].sort((left, right) => left.language.localeCompare(right.language))) {
 		console.log(`measures ${measure.language} ${measure.types} ${measure.tables} ${measure.judgedTypes} ${fraction(measure.judgedShare)} ${fraction(measure.tableShare)} ${fraction(measure.wrongGrouping)}`) ;
+	}
+	for (const [language, bucket] of [...patternSharesOf(report.types)].sort(([left], [right]) => left.localeCompare(right))) {
+		const cells = [...bucket].sort((left, right) => right[1] - left[1]).map(([name, count]) => `${name}=${count}`) ;
+		console.log(`measures patterns ${language} ${cells.join(" ")}`)                                              ;
 	}
 	const judged = [...verdicts.keys()].length                                                                       ;
 	console.log(`measures verdicts=${judged}`)                                                                       ;
