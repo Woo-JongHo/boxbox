@@ -1,8 +1,8 @@
-import      { describe, expect, test   } from "bun:test"                                     ;
-import      { maskSource               } from "../skills/xxx/scripts/common/code-text.ts"    ;
-import type { CodeSyntax               } from "../skills/xxx/scripts/common/code-text.ts"    ;
-import      { alignSource              } from "../skills/xxx/scripts/common/table-engine.ts" ;
-import type { LineProfiler, RowProfile } from "../skills/xxx/scripts/common/table-engine.ts" ;
+import      { describe, expect, test   } from "bun:test"                 ;
+import      { maskSource               } from "@/common/code-text.ts"    ;
+import type { CodeSyntax               } from "@/common/code-text.ts"    ;
+import      { alignSource              } from "@/common/table-engine.ts" ;
+import type { LineProfiler, RowProfile } from "@/common/table-engine.ts" ;
 
 const SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],

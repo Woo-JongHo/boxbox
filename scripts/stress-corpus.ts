@@ -12,19 +12,19 @@ import      {
               readFileSync     ,
               statSync         ,
               writeFileSync    ,
-                                 } from "node:fs"                                      ;
-import      { homedir            } from "node:os"                                      ;
-import      { basename, join     } from "node:path"                                    ;
-import      { spawnSync          } from "node:child_process"                           ;
-import type { CodeSyntax         } from "../skills/xxx/scripts/common/code-text.ts"    ;
-import      { changedLines       } from "../skills/xxx/scripts/common/preservation.ts" ;
-import      { C_ALIGNER          } from "../skills/xxx/scripts/c/profile.ts"           ;
-import      { CPP_ALIGNER        } from "../skills/xxx/scripts/cpp/profile.ts"         ;
-import      { GO_ALIGNER         } from "../skills/xxx/scripts/go/profile.ts"          ;
-import      { JAVA_ALIGNER       } from "../skills/xxx/scripts/java/profile.ts"        ;
-import      { JAVASCRIPT_ALIGNER } from "../skills/xxx/scripts/javascript/profile.ts"  ;
-import      { PYTHON_ALIGNER     } from "../skills/xxx/scripts/python/profile.ts"      ;
-import      { RUST_ALIGNER       } from "../skills/xxx/scripts/rust/profile.ts"        ;
+                                 } from "node:fs"                  ;
+import      { homedir            } from "node:os"                  ;
+import      { basename, join     } from "node:path"                ;
+import      { spawnSync          } from "node:child_process"       ;
+import type { CodeSyntax         } from "@/common/code-text.ts"    ;
+import      { changedLines       } from "@/common/preservation.ts" ;
+import      { C_ALIGNER          } from "@/c/profile.ts"           ;
+import      { CPP_ALIGNER        } from "@/cpp/profile.ts"         ;
+import      { GO_ALIGNER         } from "@/go/profile.ts"          ;
+import      { JAVA_ALIGNER       } from "@/java/profile.ts"        ;
+import      { JAVASCRIPT_ALIGNER } from "@/javascript/profile.ts"  ;
+import      { PYTHON_ALIGNER     } from "@/python/profile.ts"      ;
+import      { RUST_ALIGNER       } from "@/rust/profile.ts"        ;
 
 const ROOT   = join(import.meta.dir, "..")                       ;
 const OUT    = join(ROOT, "stress")                              ;

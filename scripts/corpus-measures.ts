@@ -13,10 +13,10 @@
  * 문형 분포(M1.8 S3): 언어별로 표 수를 문형(표현형 데이터, `common/surface.ts`)에 대응시켜 함께 출력한다.
  * 대응되지 않는 유형은 `unmapped`로 센다. 모호한 문형은 `DEFINE|CHANGE`처럼 대안과 함께 적는다.
  */
-import      { existsSync, readFileSync } from "node:fs"                                 ;
-import      { join                     } from "node:path"                               ;
-import      { patternOf                } from "../skills/xxx/scripts/common/surface.ts" ;
-import      { readCensusReport         } from "./corpus-signatures.ts"                  ;
+import      { existsSync, readFileSync } from "node:fs"                ;
+import      { join                     } from "node:path"              ;
+import      { patternOf                } from "@/common/surface.ts"    ;
+import      { readCensusReport         } from "./corpus-signatures.ts" ;
 
 const ROOT  = join(import.meta.dir, "..")                                ;
 const CACHE = join(process.env["HOME"] ?? "", ".cache", "xxx", "corpus") ;

@@ -34,6 +34,7 @@ describe("corpus measures", () => {
 		const measures = measuresOf(types, verdicts) ;
 		const ts       = measures.get("typescript")! ;
 		const py       = measures.get("python")!     ;
+
 		expect(ts.types        ).toBe       (2   ) ;
 		expect(ts.judgedTypes  ).toBe       (1   ) ;
 		expect(ts.judgedShare  ).toBeCloseTo(0.5 ) ;
@@ -53,6 +54,7 @@ describe("corpus measures", () => {
 
 	test("unseen share counts the signatures a new census has that the baseline lacks", () => {
 		const baseline = [{ signature: TS }, { signature: PY }]                                                    ;
+
 		expect(unseenShare([{ signature: TS }, { signature: PY }], baseline)                    ).toBe       (0    ) ;
 		expect(unseenShare([{ signature: TS }, { signature: PY }, { signature: TS2 }], baseline)).toBeCloseTo(1 / 3) ;
 		expect(unseenShare([], baseline)                                                        ).toBe       (0    ) ;
@@ -63,6 +65,7 @@ describe("corpus measures", () => {
 		expect(patternNameOf("python||table|name>equal>value|d1"    )).toBe("DEFINE|CHANGE") ;
 		expect(patternNameOf("typescript|Block|not-a-kind|equals|d1")).toBe("unmapped"     ) ;
 		const shares = patternSharesOf([{ signature: TS, language: "typescript", count: 3 }, { signature: TS2, language: "typescript", count: 4 }, { signature: PY, language: "python", count: 5 }]) ;
+
 		expect(shares.get("typescript")?.get("DEFINE")).toBe(7) ;
 		expect(shares.get("python"    )?.get("MAP"   )).toBe(5) ;
 	});

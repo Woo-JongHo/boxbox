@@ -1,6 +1,6 @@
-import      { describe, expect, test } from "bun:test"                                     ;
-import      { alignSource            } from "../skills/xxx/scripts/common/table-engine.ts" ;
-import      { PYTHON_ALIGNER         } from "../skills/xxx/scripts/python/profile.ts"      ;
+import      { describe, expect, test } from "bun:test"                 ;
+import      { alignSource            } from "@/common/table-engine.ts" ;
+import      { PYTHON_ALIGNER         } from "@/python/profile.ts"      ;
 
 const align = (source: string): ReturnType<typeof alignSource> => alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true });
 

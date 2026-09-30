@@ -4,11 +4,11 @@
  * refused, function pointers and function-like macros refused, = ; inside strings not read as structure, bundle-row
  * inner cell alignment, and refusal of nesting and assignment.
  */
-import      { readFileSync           } from "node:fs"                                      ;
-import      { describe, expect, test } from "bun:test"                                     ;
-import      { alignSource            } from "../skills/xxx/scripts/common/table-engine.ts" ;
-import      { CPP_ALIGNER            } from "../skills/xxx/scripts/cpp/profile.ts"         ;
-import      { defineLanguageSuite    } from "./lang-harness.ts"                            ;
+import      { readFileSync           } from "node:fs"                  ;
+import      { describe, expect, test } from "bun:test"                 ;
+import      { alignSource            } from "@/common/table-engine.ts" ;
+import      { CPP_ALIGNER            } from "@/cpp/profile.ts"         ;
+import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
 	aligner     : CPP_ALIGNER,

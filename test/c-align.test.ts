@@ -1,7 +1,7 @@
-import      { describe, expect, test } from "bun:test"                                     ;
-import      { C_ALIGNER              } from "../skills/xxx/scripts/c/profile.ts"           ;
-import      { alignSource            } from "../skills/xxx/scripts/common/table-engine.ts" ;
-import      { defineLanguageSuite    } from "./lang-harness.ts"                            ;
+import      { describe, expect, test } from "bun:test"                 ;
+import      { C_ALIGNER              } from "@/c/profile.ts"           ;
+import      { alignSource            } from "@/common/table-engine.ts" ;
+import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
 	aligner     : C_ALIGNER,
