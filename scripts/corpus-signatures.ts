@@ -19,14 +19,14 @@ import      {
               statSync                                  ,
               mkdirSync                                 ,
               writeFileSync                             ,
-                                                          } from "node:fs"                                             ;
-import      { homedir                                     } from "node:os"                                             ;
-import      { join, relative                              } from "node:path"                                           ;
-import      { API                                         } from "typescript/unstable/async"                           ;
-import      { alignSource                                 } from "../skills/xxx/scripts/common/table-engine.ts"        ;
-import      { PYTHON_ALIGNER                              } from "../skills/xxx/scripts/python/profile.ts"             ;
-import      { indentDepth, signatureOf, SIGNATURE_VERSION } from "../skills/xxx/scripts/common/signature.ts"           ;
-import      { censusGroups, groupPreserved                } from "../skills/xxx/scripts/typescript/06_align-tables.ts" ;
+                                                          } from "node:fs"                         ;
+import      { homedir                                     } from "node:os"                         ;
+import      { join, relative                              } from "node:path"                       ;
+import      { API                                         } from "typescript/unstable/async"       ;
+import      { alignSource                                 } from "@/common/table-engine.ts"        ;
+import      { PYTHON_ALIGNER                              } from "@/python/profile.ts"             ;
+import      { indentDepth, signatureOf, SIGNATURE_VERSION } from "@/common/signature.ts"           ;
+import      { censusGroups, groupPreserved                } from "@/typescript/06_align-tables.ts" ;
 
 const ROOT  = join(import.meta.dir, "..")                ;
 const CACHE = join(homedir(), ".cache", "xxx", "corpus") ;

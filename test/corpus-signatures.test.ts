@@ -1,7 +1,7 @@
-import      { describe, expect, test                  } from "bun:test"                                     ;
-import      { alignSource                             } from "../skills/xxx/scripts/common/table-engine.ts" ;
-import      { PYTHON_ALIGNER                          } from "../skills/xxx/scripts/python/profile.ts"      ;
-import      { indentDepth, normalizeAxis, signatureOf } from "../skills/xxx/scripts/common/signature.ts"    ;
+import      { describe, expect, test                  } from "bun:test"                 ;
+import      { alignSource                             } from "@/common/table-engine.ts" ;
+import      { PYTHON_ALIGNER                          } from "@/python/profile.ts"      ;
+import      { indentDepth, normalizeAxis, signatureOf } from "@/common/signature.ts"    ;
 
 describe("pattern signature", () => {
 	test("axis ids lose their column, fold digit runs and generalize callees", () => {

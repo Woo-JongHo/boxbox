@@ -1,8 +1,8 @@
-import      { describe, expect, test } from "bun:test"                                     ;
-import      { alignSource            } from "../skills/xxx/scripts/common/table-engine.ts" ;
-import      { maskSource             } from "../skills/xxx/scripts/common/code-text.ts"    ;
-import      { KOTLIN_ALIGNER         } from "../skills/xxx/scripts/kotlin/profile.ts"      ;
-import      { defineLanguageSuite    } from "./lang-harness.ts"                            ;
+import      { describe, expect, test } from "bun:test"                 ;
+import      { alignSource            } from "@/common/table-engine.ts" ;
+import      { maskSource             } from "@/common/code-text.ts"    ;
+import      { KOTLIN_ALIGNER         } from "@/kotlin/profile.ts"      ;
+import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
 	aligner     : KOTLIN_ALIGNER,

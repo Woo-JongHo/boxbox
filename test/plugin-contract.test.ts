@@ -1,7 +1,7 @@
-import      { existsSync, readFileSync } from "node:fs"                                        ;
-import      { resolve                  } from "node:path"                                      ;
-import      { describe, expect, test   } from "bun:test"                                       ;
-import      { AXIS_NOTES, KIND_AXES    } from "../skills/xxx/scripts/typescript/grid-kinds.ts" ;
+import      { existsSync, readFileSync } from "node:fs"                    ;
+import      { resolve                  } from "node:path"                  ;
+import      { describe, expect, test   } from "bun:test"                   ;
+import      { AXIS_NOTES, KIND_AXES    } from "@/typescript/grid-kinds.ts" ;
 
 const ROOT                    = resolve(import.meta.dir, "..")                                                               ;
 const read                    = (path: string): string => readFileSync(resolve(ROOT, path), "utf8")                          ;

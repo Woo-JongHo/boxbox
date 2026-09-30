@@ -5,8 +5,8 @@
  * Mutations: re-spacing existing inner whitespace with spaces and tabs, spaces before `;`/`,` and after `,`,
  * separators, CJK and emoji inside strings and comments, and inserted comment lines or trailing comments.
  */
-import      { maskSource } from "../skills/xxx/scripts/common/code-text.ts" ;
-import type { CodeSyntax } from "../skills/xxx/scripts/common/code-text.ts" ;
+import      { maskSource } from "@/common/code-text.ts" ;
+import type { CodeSyntax } from "@/common/code-text.ts" ;
 
 /** mulberry32: small, fast, seeded PRNG. */
 export function random(seed: number): () => number {

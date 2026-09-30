@@ -1,17 +1,11 @@
-import      { describe, expect, test                } from "bun:test"                                       ;
-import      { readdirSync, readFileSync             } from "node:fs"                                        ;
-import      { join                                  } from "node:path"                                      ;
-import      { alignSource                           } from "../skills/xxx/scripts/common/table-engine.ts"   ;
-import      {
-              GENRES                              ,
-              PARAGRAPH_PURPOSES                  ,
-              PATTERNS                            ,
-              ROLES                               ,
-              UNITS                               ,
-                                                    } from "../skills/xxx/scripts/common/grammar-ids.ts"    ;
-import      { patternOf, surfaceOf, validateSurface } from "../skills/xxx/scripts/common/surface.ts"        ;
-import      { PYTHON_ALIGNER                        } from "../skills/xxx/scripts/python/profile.ts"        ;
-import      { KIND_AXES                             } from "../skills/xxx/scripts/typescript/grid-kinds.ts" ;
+import      { describe, expect, test                             } from "bun:test"                   ;
+import      { readdirSync, readFileSync                          } from "node:fs"                    ;
+import      { join                                               } from "node:path"                  ;
+import      { alignSource                                        } from "@/common/table-engine.ts"   ;
+import      { GENRES, PARAGRAPH_PURPOSES, PATTERNS, ROLES, UNITS } from "@/common/grammar-ids.ts"    ;
+import      { patternOf, surfaceOf, validateSurface              } from "@/common/surface.ts"        ;
+import      { PYTHON_ALIGNER                                     } from "@/python/profile.ts"        ;
+import      { KIND_AXES                                          } from "@/typescript/grid-kinds.ts" ;
 
 const ROOT    = join(import.meta.dir, "..")                                          ;
 const GRAMMAR = readFileSync(join(ROOT, "skills/xxx/references/grammar.md"), "utf8") ;
@@ -90,6 +84,7 @@ describe("표현형 데이터 검증", () => {
 
 	test("문법에 없는 ID, 찾는 방법이 없거나 둘인 형태, 다른 언어 이름은 거부된다", () => {
 		const base = { schemaVersion: 1, language: "python" }                                                                                  ;
+
 		expect(() => validateSurface({ ...base, forms: [{ kind: "x", pattern: "ASSIGN" }] }, "python")                     ).toThrow("unknown pattern"    ) ;
 		expect(() => validateSurface({ ...base, forms: [{ kind: "x", pattern: "MAP", alternatives: ["BIND"] }] }, "python")).toThrow("unknown alternative") ;
 		expect(() => validateSurface({ ...base, forms: [{ pattern: "MAP" }] }, "python")                                   ).toThrow("exactly one"        ) ;

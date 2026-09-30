@@ -1,9 +1,9 @@
-import      { describe, expect, test } from "bun:test"                                               ;
-import type { CodeSyntax             } from "../skills/xxx/scripts/common/code-text.ts"              ;
-import      { changedLines           } from "../skills/xxx/scripts/common/preservation.ts"           ;
-import      { alignSource            } from "../skills/xxx/scripts/common/table-engine.ts"           ;
-import      { preservesTokens        } from "../skills/xxx/scripts/typescript/token-preservation.ts" ;
-import type { LineProfiler           } from "../skills/xxx/scripts/common/table-engine.ts"           ;
+import      { describe, expect, test } from "bun:test"                           ;
+import type { CodeSyntax             } from "@/common/code-text.ts"              ;
+import      { changedLines           } from "@/common/preservation.ts"           ;
+import      { alignSource            } from "@/common/table-engine.ts"           ;
+import      { preservesTokens        } from "@/typescript/token-preservation.ts" ;
+import type { LineProfiler           } from "@/common/table-engine.ts"           ;
 
 const SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],

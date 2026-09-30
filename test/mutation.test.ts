@@ -4,29 +4,24 @@
  * parsers are slow).
  * XXX_MUTATIONS scales the variant count per language (default 1000); a failure prints its seed and a minimized input.
  */
-import      {
-              mkdtempSync                 ,
-              readFileSync                ,
-              rmSync                      ,
-              writeFileSync               ,
-                                            } from "node:fs"                                                ;
-import      { join, relative                } from "node:path"                                              ;
-import      { preservesTokens               } from "../skills/xxx/scripts/typescript/token-preservation.ts" ;
-import      { describe, expect, test        } from "bun:test"                                               ;
-import      { compareParse, parserAvailable } from "../skills/xxx/scripts/common/parse-check.ts"            ;
-import      { changedLines                  } from "../skills/xxx/scripts/common/preservation.ts"           ;
-import      { alignSource                   } from "../skills/xxx/scripts/common/table-engine.ts"           ;
-import type { LineProfiler                  } from "../skills/xxx/scripts/common/table-engine.ts"           ;
-import      { C_ALIGNER                     } from "../skills/xxx/scripts/c/profile.ts"                     ;
-import      { CPP_ALIGNER                   } from "../skills/xxx/scripts/cpp/profile.ts"                   ;
-import      { GO_ALIGNER                    } from "../skills/xxx/scripts/go/profile.ts"                    ;
-import      { JAVA_ALIGNER                  } from "../skills/xxx/scripts/java/profile.ts"                  ;
-import      { JAVASCRIPT_ALIGNER            } from "../skills/xxx/scripts/javascript/profile.ts"            ;
-import      { PYTHON_ALIGNER                } from "../skills/xxx/scripts/python/profile.ts"                ;
-import      { RUST_ALIGNER                  } from "../skills/xxx/scripts/rust/profile.ts"                  ;
-import      { SWIFT_ALIGNER                 } from "../skills/xxx/scripts/swift/profile.ts"                 ;
-import      { KOTLIN_ALIGNER                } from "../skills/xxx/scripts/kotlin/profile.ts"                ;
-import      { minimize, mutate              } from "./mutator.ts"                                           ;
+import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                            ;
+import      { join, relative                                   } from "node:path"                          ;
+import      { preservesTokens                                  } from "@/typescript/token-preservation.ts" ;
+import      { describe, expect, test                           } from "bun:test"                           ;
+import      { compareParse, parserAvailable                    } from "@/common/parse-check.ts"            ;
+import      { changedLines                                     } from "@/common/preservation.ts"           ;
+import      { alignSource                                      } from "@/common/table-engine.ts"           ;
+import type { LineProfiler                                     } from "@/common/table-engine.ts"           ;
+import      { C_ALIGNER                                        } from "@/c/profile.ts"                     ;
+import      { CPP_ALIGNER                                      } from "@/cpp/profile.ts"                   ;
+import      { GO_ALIGNER                                       } from "@/go/profile.ts"                    ;
+import      { JAVA_ALIGNER                                     } from "@/java/profile.ts"                  ;
+import      { JAVASCRIPT_ALIGNER                               } from "@/javascript/profile.ts"            ;
+import      { PYTHON_ALIGNER                                   } from "@/python/profile.ts"                ;
+import      { RUST_ALIGNER                                     } from "@/rust/profile.ts"                  ;
+import      { SWIFT_ALIGNER                                    } from "@/swift/profile.ts"                 ;
+import      { KOTLIN_ALIGNER                                   } from "@/kotlin/profile.ts"                ;
+import      { minimize, mutate                                 } from "./mutator.ts"                       ;
 
 const VARIANTS     = Number(process.env.XXX_MUTATIONS ?? 1000)                    ;
 const PARSE_SAMPLE = Math.max(3, Math.floor(VARIANTS / 200))                      ;

@@ -1,7 +1,7 @@
-import      { describe, expect, test        } from "bun:test"                                             ;
-import      { resolve                       } from "node:path"                                            ;
-import      { compareParse, parserAvailable } from "../skills/xxx/scripts/common/parse-check.ts"          ;
-import      { syntacticDiagnostics          } from "../skills/xxx/scripts/typescript/load-source-file.ts" ;
+import      { describe, expect, test        } from "bun:test"                         ;
+import      { resolve                       } from "node:path"                        ;
+import      { compareParse, parserAvailable } from "@/common/parse-check.ts"          ;
+import      { syntacticDiagnostics          } from "@/typescript/load-source-file.ts" ;
 
 /** A valid snippet and a whitespace-free break of it, per language. */
 const CASES: Readonly<Record<string, readonly [string, string]>> = {
