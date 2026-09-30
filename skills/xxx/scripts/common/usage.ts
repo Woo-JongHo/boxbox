@@ -13,6 +13,10 @@ export interface UsageRecord {
 	readonly tokens    : number  ;
 	readonly estimated : boolean ;
 	readonly file?     : string  ;
+	/** 이 토큰을 처리한 모델. 훅 주입분은 호스트 모델이 받으며, 호스트가 알려주지 않으면 "host". */
+	readonly model?    : string  ;
+	/** 추론 강도 (Codex의 reasoning effort 등). */
+	readonly effort?   : string  ;
 }
 
 /** 추정 토큰: ASCII 4글자당 1, 그 밖 1글자당 1. */
@@ -31,6 +35,14 @@ export function codexTokens(stderr: string): number | undefined {
 	const match = /tokens used\s*\n?\s*([\d,]+)/u.exec(stderr);
 
 	return match ? Number(match[1]!.replaceAll(",", "")) : undefined;
+}
+
+/** Codex CLI가 stderr 머리에 남기는 모델과 추론 강도. */
+export function codexModel(stderr: string): { readonly model?: string; readonly effort?: string } {
+	const model  = /^model:\s*(\S+)/mu.exec(stderr)?.[1]            ;
+	const effort = /^reasoning effort:\s*(\S+)/mu.exec(stderr)?.[1] ;
+
+	return { ...(model ? { model } : {}), ...(effort ? { effort } : {}) };
 }
 
 export function appendUsage(path: string, record: UsageRecord): void {

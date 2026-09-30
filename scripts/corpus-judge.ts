@@ -99,6 +99,7 @@ export interface Suggestion {
 	readonly flags         : readonly string[] ;
 	readonly reviewer      : string            ;
 	readonly date          : string            ;
+	readonly model?        : string            ;
 }
 
 /** 제안 대기열을 읽는다. 같은 시그니처는 마지막 제안이 이긴다. */
