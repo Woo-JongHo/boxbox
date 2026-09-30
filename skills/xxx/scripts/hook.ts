@@ -58,7 +58,7 @@ function emit(event: string, context: string, project?: string, file?: string): 
 	console.log(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: context } }));
 	if (!project) return;
 
-	appendUsage(join(cacheDir(project), "usage.jsonl"), { date: new Date().toISOString(), source: "hook", event, chars: context.length, tokens: estimateTokens(context), estimated: true, ...(file ? { file } : {}) });
+	appendUsage(join(cacheDir(project), "usage.jsonl"), { date: new Date().toISOString(), source: "hook", event, chars: context.length, tokens: estimateTokens(context), estimated: true, model: "host", ...(file ? { file } : {}) });
 }
 
 function session(): void {

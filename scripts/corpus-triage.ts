@@ -17,7 +17,7 @@ import      { spawnSync                                            } from "node:
 import      { patternNameOf                                        } from "./corpus-measures.ts"   ;
 import      { QUEUE, typeSlug, VERDICTS, type Suggestion           } from "./corpus-judge.ts"      ;
 import      { readCensusReport                                     } from "./corpus-signatures.ts" ;
-import      { appendUsage, codexTokens                             } from "@/common/usage.ts"      ;
+import      { appendUsage, codexModel, codexTokens                 } from "@/common/usage.ts"      ;
 
 const ROOT  = join(import.meta.dir, "..")                               ;
 const OUT   = join(ROOT, "TEST_COMPLETED", "corpus")                    ;
@@ -121,11 +121,11 @@ function main(): void {
 	const run     = spawnSync("codex", ["exec", "--skip-git-repo-check", "--sandbox", "read-only", "-C", work, "-"], { input: readFileSync(prompt, "utf8"), encoding: "utf8", maxBuffer: 16 * 1024 * 1024 }) ;
 	if (run.status !== 0) throw new Error(`codex failed (${run.status}): ${run.stderr.slice(-2000)}`);
 
-	const suggestions = parseSuggestions(run.stdout, ranks, version, new Date().toISOString().slice(0, 10)) ;
-	const previous    = existsSync(QUEUE) ? readFileSync(QUEUE, "utf8") : ""                                ;
+	const suggestions = parseSuggestions(run.stdout, ranks, version, new Date().toISOString().slice(0, 10)).map(suggestion => ({ ...suggestion, ...codexModel(run.stderr) })) ;
+	const previous    = existsSync(QUEUE) ? readFileSync(QUEUE, "utf8") : ""                                                                                                  ;
 	writeFileSync(QUEUE, `${previous}${suggestions.map(suggestion => JSON.stringify(suggestion)).join("\n")}${suggestions.length > 0 ? "\n" : ""}`);
 	const tokens      = codexTokens(run.stderr)                                                                                            ;
-	appendUsage(join(QUEUE, "..", "ai-usage.jsonl"), { date: new Date().toISOString(), source: version, event: "corpus-triage", chars: readFileSync(prompt, "utf8").length, tokens: tokens ?? 0, estimated: tokens === undefined });
+	appendUsage(join(QUEUE, "..", "ai-usage.jsonl"), { date: new Date().toISOString(), source: version, event: "corpus-triage", chars: readFileSync(prompt, "utf8").length, tokens: tokens ?? 0, estimated: tokens === undefined, ...codexModel(run.stderr) });
 	writeFileSync(join(work, "codex-output.md"), run.stdout);
 	console.log(`corpus-triage suggestions=${suggestions.length}/${blocks.length} queue=${QUEUE} raw=${join(work, "codex-output.md")}`);
 }
