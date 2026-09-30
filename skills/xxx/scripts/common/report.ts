@@ -37,7 +37,7 @@ export interface ReportCheck {
 	readonly detail : string                    ;
 }
 
-export type AlarmId = "A1" | "A2" | "A3" | "A4" | "A5" | "A6" | "A7" | "A8" | "A9" ;
+export type AlarmId = "A0" | "A1" | "A2" | "A3" | "A4" | "A5" | "A6" | "A7" | "A8" | "A9" ;
 
 export interface ReportAlarm {
 	readonly id        : AlarmId ;
@@ -82,6 +82,7 @@ export interface ReportInput {
 }
 
 const ALARM_LABELS: Readonly<Record<AlarmId, string>> = {
+	A0 : "정렬 대기"       ,
 	A1 : "한계선 초과"     ,
 	A2 : "권장선 초과"     ,
 	A3 : "이상값 행"       ,
@@ -173,6 +174,7 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 			push("A3", row, row, `가장 긴 행이 두 번째보다 ${sorted[0]! - sorted[1]!}칸 넓음`, "그 행의 예외 요소를 먼저 단순화")                  ;
 		}
 
+		if (group.state === "FIXABLE") push("A0", ...span, `${group.kind} ${group.rows}행, 대기 편집 ${group.edits}`, "공백 정렬로 해결(안전): 06_align-tables.ts --file <파일> --write") ;
 		if (group.state === "REFUSE" ) push("A4", ...span, `${group.kind}: 손실 없이 나눌 수 없음`, "행 구조를 확인. 엔진 버그면 fixture로")          ;
 		if (group.state === "SUGGEST") push("A6", ...span, `${group.kind} ${group.rows}행`, "표로 만들지는 사람이 결정")                          ;
 
