@@ -185,10 +185,11 @@ REL1 전체 확정이나 REL2 전체 완료로 간주하지 않는다.
 
 ## 현재 구현 — REL6 최초 승인 데이터
 
-**⏸ 승인 답변 대기 — 후보를 제시했으나 아직 실제 승인은 없다.** 답변 전에는 candidate를 approved로
-바꾸지 않는다. TS/Python의 실제 조회 키 범위와 전후 예문은 `docs/candidates/initial-rules.md`다.
-승인된 항목만 세 preset DB와 문서 hash에 반영하고 설치본 여정을 다시 검사한다.
-다음 독립 구현은 REL9의 얇은 CLI 호출 어댑터이며, 실제 호스트 수용은 아직 미실측이다.
+**✅ done(위임 승인, 아침 감사 대상) — 2026-10-08 사용자의 기준 위임 아래 후보 2건을 승인해 프리셋에 반영했다.**
+TS SourceFile 단일호출 선언 표와 Python 같은 indent 단순 대입 3행+ 표가
+`skills/xxx/presets/recommended/` 3종과 영문 decision 문서에 해시 고정돼 실렸고,
+격리 설치본에서 dry-run → 원자 교체 → 재검사 PASS 고정점까지 실측했다
+([판정 근거](reviews/2026-10-08-first-preset-format.md)). 사용자가 기각하면 프리셋을 되돌린다.
 
 ## 현재 구현 — DATA1 실코드 DB 적재
 
@@ -321,8 +322,8 @@ REL 상태의 단일 소스는 이 문서의 REL 표다 — 하네스는 표를 
 - **검증:** **기존** `bun test test/typescript-align.test.ts test/python-align.test.ts`; **신설** 선택한 TS/Python formatter 조합의 고정점, child-process failure와 version 변경 테스트.
 ### REL9 — 실제 호스트 수용
 
-- **현재 구현:** Claude/Codex 스킬·inspector 어댑터와 Claude hook 모의 검증은 있다. 실제 훅 수용 증거와 Codex용 동등한 작성 훅은 없다.
-- **남은 일:** 호스트 검증 전에 README·SKILL·package/plugin/marketplace 매니페스트의 지원 등급·호출 경로와 discovery text 고정 테스트를 맞춘다. 고정 host 버전에서 discovery, GUIDE, read-only REVIEW, CLI 호출과 오류 표시를 실측한다.
+- **현재 구현:** 2026-10-08 실측 완료 — Claude Code 2.1.290 실설치·`plugin validate` 통과·훅 3종 어댑터 실측(기록은 `CLAUDE_PLUGIN_DATA`만, 타깃 프로젝트 무오염), Codex는 `codex exec` 실세션에서 스킬 발견→shim→npx→CLI→엔진 경로 확인. [증거](reviews/2026-10-08-rel9-host-acceptance.md).
+- **남은 일:** Claude 라이브 세션 1건(사용자 OAuth 재로그인 후). npm 미발행이라 로컬 tarball 브리지 전제는 publish 후 재확인한다.
 - **수락 기준:** REL1에서 확정한 호스트가 동일 CLI 결과를 받고 read-only inspector 경계를 지키며 버전·artifact hash·log가 남는다. 스킬 호출과 작성 훅 지원을 별도 표시한다.
 - **검증:** **기존** `bun test test/hook.test.ts test/plugin-contract.test.ts`; **신설** 확정된 실제 호스트의 수용 시나리오. 모의 실행만으로 통과하지 않는다.
 ### REL10 — clean artifact 설치·갱신·제거
