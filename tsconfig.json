@@ -10,6 +10,6 @@
 		"types"                       : ["bun-types"],
 		"paths"                       : { "@/*": ["./skills/xxx/scripts/*"] }
 	},
-	"include": ["skills/**/*.ts", "test/**/*.ts"],
+	"include": ["skills/**/*.ts", "test/**/*.ts", "harness/**/*.ts"],
 	"exclude": ["skills/**/fixtures/**"]
 }

@@ -31,7 +31,7 @@ export const PYTHON_SYNTAX: CodeSyntax = {
 };
 
 const INDENT = "([ \\t]*)"                                              ;
-const NAME   = "([A-Za-z_][A-Za-z0-9_]*)"                               ;
+const NAME   = "([A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*)" ;
 const QUOTED = "(\"[^\"]*\"|'[^']*')"                                   ;
 const TYPE   = "([A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*)" ;
 const GAP    = "(\\s*)"                                                 ;
@@ -147,7 +147,7 @@ function cellsIn(code: string, masked: string, start: number, end: number): Arra
  * not a call row and stays refused with the other unsafe values.
  */
 function assignedCallProfile(code: string, masked: string): RowProfile | null {
-	const match   = /^([ \t]*)([A-Za-z_][A-Za-z0-9_]*)(\s*)=(\s*)([A-Za-z_][A-Za-z0-9_.]*)(\s*)\((.*)\)[ \t]*$/du.exec(masked) ;
+	const match   = /^([ \t]*)([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)(\s*)=(\s*)([A-Za-z_][A-Za-z0-9_.]*)(\s*)\((.*)\)[ \t]*$/du.exec(masked) ;
 	const indices = match?.indices                                                                                             ;
 	if (!match || !indices) return null;
 	const nameRange = indices[2] ;

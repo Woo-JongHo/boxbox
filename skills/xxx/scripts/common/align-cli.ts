@@ -8,6 +8,7 @@
 import      { readFileSync, writeFileSync          } from "node:fs"           ;
 import      { relative, resolve                    } from "node:path"         ;
 import      { compareParse                         } from "./parse-check.ts"  ;
+import      { updateFileAtomicallySync             } from "./safe-file.ts"    ;
 import      { alignSource                          } from "./table-engine.ts" ;
 import type { AlignResult, LineProfiler            } from "./table-engine.ts" ;
 import      { envelope, summarize                  } from "./result-json.ts"  ;
@@ -34,29 +35,39 @@ export function runAlignCli(aligner: LineProfiler, args: readonly string[], over
 	const files = args.flatMap((argument, index) => argument === "--file" ? [args[index + 1]] : []);
 	if (files.length === 0) return { report: "usage: --file <target file>... [--write] [--min-rows 3] [--explain <line>] [--groups]", code: 2 };
 	const minRows    = Number(flag(args, "--min-rows") ?? 3)             ;
-	const write      = args.includes("--write") && !overrides.groupsOnly ;
 	const explain    = numbers(args, "--explain")                        ;
 	const groupsOnly = overrides.groupsOnly || args.includes("--groups") ;
+	const write      = args.includes("--write") && !groupsOnly           ;
 	const json       = args.includes("--json")                           ;
 
 	const reports : string[]     = []    ;
 	const results : FileResult[] = []    ;
 	let failed                   = false ;
 	for (const file of files) {
-		const absolute = resolve(file)                                                                                   ;
-		const source   = readFileSync(absolute, "utf8")                                                                  ;
-		const result   = alignSource(source, aligner, { minRows: Number.isFinite(minRows) ? minRows : 3, apply: write }) ;
-		const label    = relative(process.cwd(), absolute).replaceAll("\\", "/")                                         ;
-		reports.push(formatResult(aligner, label, source, result, groupsOnly));
-		let parsed: ResultParse = { status: "not-run", tool: "" };
-		if (write && result.misaligned > 0) {
-			// The re-parse is the last gate: an output that parses differently from its source is never written.
-			const parse = compareParse(aligner.language, source, result.output);
-			parsed = { status: parse.status, tool: parse.tool };
-			reports.push(`  parse=${parse.status} tool=${parse.tool}${parse.delta.map(line => `\n    ${line}`).join("")}`);
-			if (parse.status === "changed") failed = true;
-			else writeFileSync(absolute, result.output);
+		const absolute = resolve(file)                                           ;
+		const label    = relative(process.cwd(), absolute).replaceAll("\\", "/") ;
+		let source     = ""                                                      ;
+		let result!    : AlignResult                                             ;
+		let parsed     : ResultParse = { status: "not-run", tool: "" } ;
+		let parseReport              = ""                              ;
+		if (write) {
+			updateFileAtomicallySync(absolute, ({ initial, working }) => {
+				source = initial.toString("utf8");
+				result = alignSource(source, aligner, { minRows: Number.isFinite(minRows) ? minRows : 3, apply: true });
+				if (result.misaligned === 0) return;
+				// 작업본 검증이 끝나도 helper가 최초 identity와 bytes를 commit 직전에 다시 확인한다.
+				const parse = compareParse(aligner.language, source, result.output);
+				parsed = { status: parse.status, tool: parse.tool };
+				parseReport = `  parse=${parse.status} tool=${parse.tool}${parse.delta.map(line => `\n    ${line}`).join("")}`;
+				if (parse.status === "changed") failed = true;
+				else writeFileSync(working, result.output);
+			});
+		} else {
+			source = readFileSync(absolute, "utf8");
+			result = alignSource(source, aligner, { minRows: Number.isFinite(minRows) ? minRows : 3, apply: false });
 		}
+		reports.push(formatResult(aligner, label, source, result, groupsOnly));
+		if (parseReport !== "") reports.push(parseReport);
 		results.push(fileResult(aligner, label, write, result, parsed));
 		for (const line of explain) reports.push(formatExplain(aligner, result, line));
 		if (result.misaligned > 0 && !write) failed = true;

@@ -1,7 +1,8 @@
 /**
  * 패턴 DB (M1.8 S5a): 검사기가 표마다 조회하는 패턴 레코드를 읽고 찾는다. 조회는 조회 키의 정확 일치와 범위(glob)뿐이며,
- * 유사도는 쓰지 않는다(헌장 불변식 7). 층은 프로젝트(`.xxx/conventions.jsonl`)가 preset(`presets/recommended/conventions.jsonl`)을
- * 이긴다. 같은 층에서 같은 키·같은 구체성의 범위가 서로 다른 상태를 말하면 충돌이다(파일 순서로 정하지 않는다).
+ * 유사도는 쓰지 않는다(헌장 불변식 7). 층은 project → user → preset 순으로 이긴다. 기존 report loader는
+ * 프로젝트(`.xxx/conventions.jsonl`)와 preset(`presets/recommended/conventions.jsonl`)만 읽고, 승인 gate loader가 user root를 명시적으로 받는다.
+ * 같은 층에서 같은 키·같은 구체성의 범위가 서로 다른 상태를 말하면 충돌이다(파일 순서로 정하지 않는다).
  * `rejected`는 "자동 수정하지 않는다"는 뜻이며 이미 정렬된 코드를 흐트러뜨리지 않는다. 이 단계에서는 결과를 보고만 한다.
  */
 import      { existsSync, readFileSync } from "node:fs"          ;
@@ -13,7 +14,7 @@ import      { LOOKUP_KEY_VERSION       } from "./signature.ts"   ;
 export const CONVENTION_SCHEMA_VERSION = 1;
 
 export type ConventionStatus = "approved" | "rejected" | "candidate";
-export type ConventionLayer  = "project" | "preset";
+export type ConventionLayer  = "project" | "user" | "preset";
 
 export interface Convention {
 	readonly schemaVersion : number                           ;
@@ -131,14 +132,14 @@ export function globToRegExp(glob: string): RegExp {
 const specificity = (scope: string): number => scope.replace(/[*?]/gu, "").length;
 
 /**
- * 조회: 프로젝트 층 → preset 층 순서로, 키가 같고 범위가 파일에 맞는 레코드 중 가장 구체적인 범위를 고른다.
+ * 조회: project → user → preset 순서로, 키가 같고 범위가 파일에 맞는 레코드 중 가장 구체적인 범위를 고른다.
  * 가장 구체적인 레코드들이 서로 다른 상태면 충돌이다. candidate는 승인이 아니므로 unknown으로 본다.
  */
 export function lookup(db: ConventionDb, key: string, file: string): LookupResult {
 	const path       = file.replaceAll("\\", "/").replace(/^\.\//u, "")                                  ;
 	const candidates = (db.byKey.get(key) ?? []).filter(record => globToRegExp(record.scope).test(path)) ;
 
-	for (const layer of ["project", "preset"] as const) {
+	for (const layer of ["project", "user", "preset"] as const) {
 		const inLayer = candidates.filter(record => record.layer === layer);
 		if (inLayer.length === 0) continue;
 
