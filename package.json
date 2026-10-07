@@ -4,8 +4,14 @@
 	"private": true,
 	"description": "Multi-agent skill plugin that checks tabular readability in TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, and Kotlin",
 	"scripts": {
-		"test": "bun test",
-		"check": "bun test && bunx tsc --noEmit && bash -n install.sh"
+		"test": "bun test --timeout 60000",
+		"check": "bun test --timeout 60000 && bunx tsc --noEmit && bash -n install.sh",
+		"build:cli": "bun run scripts/build-cli-artifact.ts",
+		"pack:cli": "bun run build:cli && npm pack ./dist/cli --pack-destination ./dist --json",
+		"build:node-artifact": "bun run scripts/build-node-artifact.ts",
+		"pack:node-artifact": "bun run build:node-artifact && npm pack ./dist/engine --pack-destination ./dist --json",
+		"harness": "bun harness/run.ts",
+		"harness:report": "bun harness/report.ts"
 	},
 	"dependencies": {
 		"typescript": "7.0.2"

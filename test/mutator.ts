@@ -5,8 +5,8 @@
  * Mutations: re-spacing existing inner whitespace with spaces and tabs, spaces before `;`/`,` and after `,`,
  * separators, CJK and emoji inside strings and comments, and inserted comment lines or trailing comments.
  */
-import      { maskSource } from "../skills/xxx/scripts/common/code-text.ts" ;
-import type { CodeSyntax } from "../skills/xxx/scripts/common/code-text.ts" ;
+import      { maskSource } from "@/common/code-text.ts" ;
+import type { CodeSyntax } from "@/common/code-text.ts" ;
 
 /** mulberry32: small, fast, seeded PRNG. */
 export function random(seed: number): () => number {
@@ -20,15 +20,15 @@ export function random(seed: number): () => number {
 	};
 }
 
-const pick       = <T>(next: () => number, values: readonly T[]): T => values[Math.floor(next() * values.length)]! ;
-const GAPS       = [" ", "  ", "   ", "\t", " \t", "\t "] as const                                                 ;
-const PROTECTED  = [":", "=", ";", ",", "//", "#", "가", "漢", "😀", " ", "  ", "=>", "{}", "()", "[]"] as const    ;
-const COMMENTARY = ["note: a = b;", "x : y , z", "가나다 = 1", "😀 {}", "k: v; // nested", "a  =  b"] as const      ;
+const pick      = <T>(next: () => number, values: readonly T[]): T => values[Math.floor(next() * values.length)]! ;
+const GAPS      = [" ", "  ", "   ", "\t", " \t", "\t "] as const                                                 ;
+const PROTECTED = [":", "=", ";", ",", "//", "#", "가", "漢", "😀", " ", "  ", "=>", "{}", "()", "[]"] as const    ; // cjk-test-data
+const COMMENTARY = ["note: a = b;", "x : y , z", "가나다 = 1", "😀 {}", "k: v; // nested", "a  =  b"] as const      ; // cjk-test-data
 
 export interface MutatorSyntax {
 	readonly syntax  : CodeSyntax ;
 	/** Token that starts a line comment in this language. */
-	readonly comment : string     ;
+	readonly comment : string;
 }
 
 /** Returns one variant of `source` for `seed`. */

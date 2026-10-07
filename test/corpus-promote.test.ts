@@ -27,32 +27,32 @@ describe("verdict promotion", () => {
 		workspaces.push(dir)                                                                                  ;
 		mkdirSync(dir, { recursive: true })                                                                   ;
 		writeFileSync(join(dir, "tables.py"), scaffoldFor("python", "table"))                                 ;
-		writeFileSync(join(dir, "verdict.json"), JSON.stringify({ schemaVersion: 1, signature: "probe", verdict: "correct", date: "2026-09-29" })) ;
-		let gate = checkGate()                                                                                ;
-		expect(gate.failures.some(failure => failure.includes("099-gateprobe") && failure.includes("golden"))).toBe(true) ;
+		writeFileSync(join(dir, "verdict.json"), JSON.stringify({ schemaVersion: 1, signature: "probe", verdict: "correct", date: "2026-09-29" }));
+		let gate = checkGate();
+		expect(gate.failures.some(failure => failure.includes("099-gateprobe") && failure.includes("golden"))).toBe(true);
 		const aligned = spawnAligner(aligner, join(dir, "tables.py"))                                         ;
 		writeFileSync(join(dir, "tables.aligned.py"), aligned)                                                ;
 		gate = checkGate()                                                                                    ;
 		expect(gate.failures.some(failure => failure.includes("099-gateprobe"))).toBe(false)                  ;
 		writeFileSync(join(dir, "tables.aligned.py"), "alpha = first(1,    22)\nbeta = first(2, 33)\ngamma = first(3, 44)\n") ;
-		gate = checkGate()                                                                                    ;
-		expect(gate.failures.some(failure => failure.includes("099-gateprobe") && failure.includes("drifted"))).toBe(true) ;
+		gate = checkGate();
+		expect(gate.failures.some(failure => failure.includes("099-gateprobe") && failure.includes("drifted"))).toBe(true);
 	});
 
 	test("fixtureDir pins the fixture to the signature hash under the language corpus tree", () => {
-		const dir = fixtureDir("typescript", "typescript|Block|declaration-equals|equals>semicolon|d1|FIXABLE", 1) ;
+		const dir = fixtureDir("typescript", "typescript|Block|declaration-equals|equals>semicolon|d1|FIXABLE", 1);
 		expect(dir.startsWith(join(FIXTURES, "typescript", "corpus", "001-"))).toBe(true) ;
 		expect(dir.endsWith("001-")).toBe(false)                                          ;
-		expect(readFileSyncSafe(dir)).toBeUndefined()                                      ;
+		expect(readFileSyncSafe(dir)).toBeUndefined();
 	});
 
 	test("the aligner is the promotion gate's only engine dependency", () => {
-		expect(scaffoldFor("typescript", "unknown-kind").split("\n")[0]).toBe("const value1 = initial1;") ;
+		expect(scaffoldFor("typescript", "unknown-kind").split("\n")[0]).toBe("const value1 = initial1;");
 	});
 });
 
 function spawnAligner(aligner: string, file: string): string {
-	const { spawnSync } = require("node:child_process") as typeof import("node:child_process") ;
+	const { spawnSync } = require("node:child_process") as typeof import("node:child_process");
 	const result = spawnSync("bun", [aligner, "--file", file, "--write"], { encoding: "utf8" }) ;
 	if (result.status !== 0) throw new Error(`alignment failed: ${result.stderr}`)              ;
 	return readFileSync(file, "utf8")                                                           ;
@@ -60,8 +60,8 @@ function spawnAligner(aligner: string, file: string): string {
 
 function readFileSyncSafe(path: string): string | undefined {
 	try {
-		return readFileSync(path, "utf8") ;
+		return readFileSync(path, "utf8");
 	} catch {
-		return undefined                  ;
+		return undefined;
 	}
 }

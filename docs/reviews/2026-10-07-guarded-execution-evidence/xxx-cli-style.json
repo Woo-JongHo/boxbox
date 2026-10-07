@@ -1,0 +1,319 @@
+{
+  "schemaVersion": 1,
+  "tool": "xxx",
+  "results": [
+    {
+      "file": "skills/xxx/scripts/cli.ts",
+      "language": "typescript",
+      "mode": "check",
+      "summary": {
+        "groups": 21,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "groups": [
+        {
+          "kind": "interface-members",
+          "startLine": 47,
+          "endLine": 50,
+          "rows": 4,
+          "axes": [
+            "colon=22",
+            "semicolon=39"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "InterfaceDeclaration",
+          "depth": 1
+        },
+        {
+          "kind": "interface-members",
+          "startLine": 54,
+          "endLine": 58,
+          "rows": 5,
+          "axes": [
+            "colon=27",
+            "semicolon=81"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "InterfaceDeclaration",
+          "depth": 1
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 89,
+          "endLine": 90,
+          "rows": 2,
+          "axes": [
+            "equals=19",
+            "semicolon=46"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 97,
+          "endLine": 99,
+          "rows": 3,
+          "axes": [
+            "equals=19",
+            "semicolon=50"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 114,
+          "endLine": 117,
+          "rows": 4,
+          "axes": [
+            "equals=15",
+            "colon=17",
+            "semicolon=46"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 139,
+          "endLine": 140,
+          "rows": 2,
+          "axes": [
+            "equals=19",
+            "semicolon=48"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "interface-members",
+          "startLine": 155,
+          "endLine": 157,
+          "rows": 3,
+          "axes": [
+            "colon=29",
+            "semicolon=48"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "InterfaceDeclaration",
+          "depth": 1
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 161,
+          "endLine": 165,
+          "rows": 5,
+          "axes": [
+            "equals=21",
+            "semicolon=90"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 171,
+          "endLine": 173,
+          "rows": 3,
+          "axes": [
+            "equals=26",
+            "semicolon=131"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "registration",
+          "startLine": 184,
+          "endLine": 187,
+          "rows": 4,
+          "axes": [
+            "colon=20",
+            "value=22"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "ObjectLiteralExpression",
+          "depth": 2
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 208,
+          "endLine": 212,
+          "rows": 5,
+          "axes": [
+            "equals=22",
+            "semicolon=258"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 214,
+          "endLine": 216,
+          "rows": 3,
+          "axes": [
+            "equals=25",
+            "semicolon=87"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 2
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 223,
+          "endLine": 224,
+          "rows": 2,
+          "axes": [
+            "equals=23",
+            "semicolon=108"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 2
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 235,
+          "endLine": 239,
+          "rows": 5,
+          "axes": [
+            "equals=27",
+            "semicolon=217"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 254,
+          "endLine": 255,
+          "rows": 2,
+          "axes": [
+            "equals=17",
+            "semicolon=33"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "registration",
+          "startLine": 260,
+          "endLine": 266,
+          "rows": 7,
+          "axes": [
+            "colon=26",
+            "value=28"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "ObjectLiteralExpression",
+          "depth": 3
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 310,
+          "endLine": 311,
+          "rows": 2,
+          "axes": [
+            "equals=20",
+            "semicolon=54"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 315,
+          "endLine": 318,
+          "rows": 4,
+          "axes": [
+            "equals=22",
+            "semicolon=166"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "registration",
+          "startLine": 341,
+          "endLine": 344,
+          "rows": 4,
+          "axes": [
+            "colon=28",
+            "value=30"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "ObjectLiteralExpression",
+          "depth": 3
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 356,
+          "endLine": 358,
+          "rows": 3,
+          "axes": [
+            "equals=18",
+            "semicolon=40"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 380,
+          "endLine": 382,
+          "rows": 3,
+          "axes": [
+            "equals=27",
+            "semicolon=231"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 3
+        }
+      ],
+      "parse": {
+        "status": "not-run",
+        "tool": "typescript"
+      }
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+	"schemaVersion": 1,
+	"recordType": "run",
+	"runId": "2026-10-06T05-36-28-555Z-83387981",
+	"startedAt": "2026-10-06T05:36:28.555Z",
+	"git": {
+		"branch": "m1-safety-proof",
+		"sha": "8338798187295b1c2cd9b737750cb84d22297f32",
+		"dirty": true,
+		"ahead": 27
+	},
+	"host": {
+		"platform": "darwin-arm64",
+		"bun": "1.4.0",
+		"node": "v22.22.3"
+	},
+	"preconditions": {
+		"npmCache": {
+			"typescript": true,
+			"typescriptNative": true
+		}
+	},
+	"requestedStages": [
+		"self-align",
+		"check",
+		"pack",
+		"artifact-journey",
+		"corpus-gate",
+		"eval"
+	],
+	"stages": [
+		{
+			"id": "self-align",
+			"ok": true,
+			"skipped": false,
+			"exitCode": 0,
+			"durationMs": 36083,
+			"metrics": {
+				"files": 132,
+				"changed": 0,
+				"errors": 0,
+				"misaligned": 0,
+				"misalignedFiles": 0,
+				"compressed": 0
+			}
+		},
+		{
+			"id": "check",
+			"ok": true,
+			"skipped": false,
+			"exitCode": 0,
+			"durationMs": 185418,
+			"metrics": {
+				"pass": 412,
+				"skip": 5,
+				"fail": 0,
+				"tests": 417,
+				"testFiles": 46
+			}
+		},
+		{
+			"id": "pack",
+			"ok": true,
+			"skipped": false,
+			"exitCode": 0,
+			"durationMs": 1202,
+			"metrics": {
+				"artifacts": 2
+			}
+		},
+		{
+			"id": "artifact-journey",
+			"ok": true,
+			"skipped": false,
+			"exitCode": 0,
+			"durationMs": 14926,
+			"metrics": {
+				"pass": 2,
+				"fail": 0
+			}
+		},
+		{
+			"id": "corpus-gate",
+			"ok": true,
+			"skipped": false,
+			"exitCode": 0,
+			"durationMs": 78,
+			"metrics": {
+				"checked": 0,
+				"failures": 0
+			}
+		},
+		{
+			"id": "eval",
+			"ok": true,
+			"skipped": true,
+			"exitCode": null,
+			"durationMs": 0,
+			"metrics": {
+				"reason": "유료 모델 호출 — --with-eval로만 실행"
+			}
+		}
+	],
+	"artifacts": [
+		{
+			"stage": "pack",
+			"target": "dist/cli",
+			"name": "xxx-0.2.0.tgz",
+			"bytes": 35405,
+			"sha256": "9dff8f7e9bf3236ee49fc2d22d40ceab7fd3119b1bd45a4f862d45b2e503705d",
+			"files": 6,
+			"version": "0.2.0"
+		},
+		{
+			"stage": "pack",
+			"target": "dist/engine",
+			"name": "xxx-0.2.0.tgz",
+			"bytes": 21918,
+			"sha256": "0afc8a6d8276ae4c742e75115b12700630edd8869a25758a7d16bb0ea3c2e58d",
+			"files": 3,
+			"version": "0.2.0"
+		}
+	],
+	"completion": {
+		"complete": true,
+		"requested": 6,
+		"succeeded": 5,
+		"failed": 0,
+		"skipped": 1
+	},
+	"ok": true,
+	"note": "H1 전체 실행 — eval.ts 정렬·import 정규화 5건 해소 후",
+	"limitations": [
+		"eval 미실행(유료 모델 호출, opt-in)"
+	]
+}

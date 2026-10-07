@@ -41,9 +41,9 @@ const DECLARATOR = /,\s*[A-Za-z_$][\w$]*\s*=(?!=)/;
 /** Bundle row `[cell, cell, ...]` — split into indent, interior and trailing `,`/`;` tail. */
 const BUNDLE_ROW  = /^([ \t]*)\[(.+)\]([,;]?)$/du                                                             ;
 /** If these characters remain in the mask inside a bundle, it mixes nesting, assignment, calls or objects — do not attempt decomposition. */
-const BUNDLE_JUNK = /[[\]{}()=]/u                                                                             ;
+const BUNDLE_JUNK = /[[\]{}()=]/u;
 /** String literal form of a bundle cell — accepts "", '' and ``; commas and brackets inside are blanked by the mask. */
-const STRING_CELL = /^(?:"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`[^`\\]*(?:\\.[^`\\]*)*`)$/u                  ;
+const STRING_CELL = /^(?:"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`[^`\\]*(?:\\.[^`\\]*)*`)$/u;
 /** Scalar form of a bundle cell — signed decimal numbers and identifiers (including true/false/null/undefined). */
 const NUMBER_CELL = /^[+-]?(?:[0-9][0-9_]*(?:\.[0-9_]*)?|\.[0-9_]+)(?:[eE][+-]?[0-9]+)?$/u ;
 const IDENT_CELL  = /^[A-Za-z_$][A-Za-z0-9_$]*$/u                                          ;

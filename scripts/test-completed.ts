@@ -5,27 +5,27 @@
  * safety results per file. Usage:
  *   bun scripts/test-completed.ts [--samples 3]
  */
-import      { spawnSync          } from "node:child_process"                                     ;
+import      { spawnSync          } from "node:child_process"                 ;
 import      {
               mkdirSync        ,
               readFileSync     ,
               rmSync           ,
               writeFileSync    ,
-                                 } from "node:fs"                                                ;
-import      { join               } from "node:path"                                              ;
-import      { compareParse       } from "../skills/xxx/scripts/common/parse-check.ts"            ;
-import      { changedLines       } from "../skills/xxx/scripts/common/preservation.ts"           ;
-import      { alignSource        } from "../skills/xxx/scripts/common/table-engine.ts"           ;
-import type { LineProfiler       } from "../skills/xxx/scripts/common/table-engine.ts"           ;
-import      { C_ALIGNER          } from "../skills/xxx/scripts/c/profile.ts"                     ;
-import      { CPP_ALIGNER        } from "../skills/xxx/scripts/cpp/profile.ts"                   ;
-import      { GO_ALIGNER         } from "../skills/xxx/scripts/go/profile.ts"                    ;
-import      { JAVA_ALIGNER       } from "../skills/xxx/scripts/java/profile.ts"                  ;
-import      { JAVASCRIPT_ALIGNER } from "../skills/xxx/scripts/javascript/profile.ts"            ;
-import      { PYTHON_ALIGNER     } from "../skills/xxx/scripts/python/profile.ts"                ;
-import      { RUST_ALIGNER       } from "../skills/xxx/scripts/rust/profile.ts"                  ;
-import      { preservesTokens    } from "../skills/xxx/scripts/typescript/token-preservation.ts" ;
-import      { mutate             } from "../test/mutator.ts"                                     ;
+                                 } from "node:fs"                            ;
+import      { join               } from "node:path"                          ;
+import      { compareParse       } from "@/common/parse-check.ts"            ;
+import      { changedLines       } from "@/common/preservation.ts"           ;
+import      { alignSource        } from "@/common/table-engine.ts"           ;
+import type { LineProfiler       } from "@/common/table-engine.ts"           ;
+import      { C_ALIGNER          } from "@/c/profile.ts"                     ;
+import      { CPP_ALIGNER        } from "@/cpp/profile.ts"                   ;
+import      { GO_ALIGNER         } from "@/go/profile.ts"                    ;
+import      { JAVA_ALIGNER       } from "@/java/profile.ts"                  ;
+import      { JAVASCRIPT_ALIGNER } from "@/javascript/profile.ts"            ;
+import      { PYTHON_ALIGNER     } from "@/python/profile.ts"                ;
+import      { RUST_ALIGNER       } from "@/rust/profile.ts"                  ;
+import      { preservesTokens    } from "@/typescript/token-preservation.ts" ;
+import      { mutate             } from "../test/mutator.ts"                 ;
 
 const ROOT     = join(import.meta.dir, "..")                           ;
 const OUT      = join(ROOT, "TEST_COMPLETED")                          ;
@@ -34,7 +34,7 @@ const argv     = process.argv.slice(2)                                 ;
 const SAMPLES  = Number(argv[argv.indexOf("--samples") + 1] ?? 3) || 3 ;
 
 interface Entry {
-	readonly language : string            ;
+	readonly language : string;
 	/** Path inside the language folder, e.g. `tables.py` or `mutations/seed-01.py`. */
 	readonly title  : string            ;
 	readonly before : string            ;

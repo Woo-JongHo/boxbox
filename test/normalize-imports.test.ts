@@ -77,7 +77,7 @@ describe("import table cells", () => {
 		expect(normalize([
 			'import { afterEach, describe, expect, test } from "bun:test";',
 			'import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";',
-			'import { preservesTokens } from "../skills/xxx/scripts/typescript/token-preservation.ts";',
+			'import { preservesTokens } from "@/typescript/token-preservation.ts";',
 		]).split("\n").every(line => line.length <= 120)).toBe(true);
 	});
 

@@ -53,22 +53,22 @@ function slotAt(code: string, match: RegExpExecArray, group: number): string {
 function valueSlot(code: string, match: RegExpExecArray, gapGroup: number, textGroup: number): Slot | null {
 	const gapRange  = match.indices?.[gapGroup ] ;
 	const textRange = match.indices?.[textGroup] ;
-	if (!gapRange || !textRange) return null      ;
-	const text = code.slice(textRange[0], textRange[1]) ;
-	if (text.trim() === "" || text.startsWith("=")) return null ;
-	return { axis: "value", text, gapBefore: code.slice(gapRange[0], gapRange[1]) } ;
+	if (!gapRange || !textRange) return null;
+	const text = code.slice(textRange[0], textRange[1]);
+	if (text.trim() === "" || text.startsWith("=")) return null;
+	return { axis: "value", text, gapBefore: code.slice(gapRange[0], gapRange[1]) };
 }
 
 function profileKotlin(code: string, masked: string): RowProfile | null {
-	const trimmed = masked.trim()                                    ;
-	if (trimmed === "" || trimmed.startsWith("@") || RESERVED_START.test(trimmed)) return null ;
-	if (UNSAFE.test(masked)) return null                             ;
+	const trimmed = masked.trim();
+	if (trimmed === "" || trimmed.startsWith("@") || RESERVED_START.test(trimmed)) return null;
+	if (UNSAFE.test(masked)) return null;
 
-	const valTyped = VAL_TYPED.exec(masked)                          ;
+	const valTyped = VAL_TYPED.exec(masked);
 	if (valTyped) {
-		if (slotAt(code, valTyped, 11) !== "") return null           ;
-		const value = valueSlot(code, valTyped, 9, 10)          ;
-		if (!value) return null                                      ;
+		if (slotAt(code, valTyped, 11) !== "") return null;
+		const value = valueSlot(code, valTyped, 9, 10);
+		if (!value) return null;
 		return {
 			indent : slotAt(code, valTyped, 1)                       ,
 			slots  : [
@@ -79,14 +79,14 @@ function profileKotlin(code: string, masked: string): RowProfile | null {
 				{ axis: "equal"   , text: "="                     , gapBefore: slotAt(code, valTyped, 8) },
 				value                                                              ,
 			],
-		}                                                                ;
+		};
 	}
 
-	const valPlain = VAL_PLAIN.exec(masked)                          ;
+	const valPlain = VAL_PLAIN.exec(masked);
 	if (valPlain) {
-		if (slotAt(code, valPlain, 8) !== "") return null            ;
-		const value = valueSlot(code, valPlain, 6, 7)           ;
-		if (!value) return null                                      ;
+		if (slotAt(code, valPlain, 8) !== "") return null;
+		const value = valueSlot(code, valPlain, 6, 7);
+		if (!value) return null;
 		return {
 			indent : slotAt(code, valPlain, 1)                       ,
 			slots  : [
@@ -95,13 +95,13 @@ function profileKotlin(code: string, masked: string): RowProfile | null {
 				{ axis: "equal"   , text: "="                     , gapBefore: slotAt(code, valPlain, 5) },
 				value                                                              ,
 			],
-		}                                                                ;
+		};
 	}
 
-	const dictRow = DICT_ROW.exec(masked)                            ;
+	const dictRow = DICT_ROW.exec(masked);
 	if (dictRow) {
-		const value = valueSlot(code, dictRow, 4, 5)         ;
-		if (!value) return null                                      ;
+		const value = valueSlot(code, dictRow, 4, 5);
+		if (!value) return null;
 		return {
 			indent : slotAt(code, dictRow, 1)                        ,
 			slots  : [
@@ -110,14 +110,14 @@ function profileKotlin(code: string, masked: string): RowProfile | null {
 				value                                                                                 ,
 				{ axis: "comma", text: ","                      , gapBefore: slotAt(code, dictRow, 6) },
 			],
-		}                                                             ;
+		};
 	}
 
-	const assigned = ASSIGNED.exec(masked)                           ;
+	const assigned = ASSIGNED.exec(masked);
 	if (assigned) {
-		if (slotAt(code, assigned, 6) !== "") return null            ;
-		const value = valueSlot(code, assigned, 4, 5)        ;
-		if (!value) return null                                      ;
+		if (slotAt(code, assigned, 6) !== "") return null;
+		const value = valueSlot(code, assigned, 4, 5);
+		if (!value) return null;
 		return {
 			indent : slotAt(code, assigned, 1)                       ,
 			slots  : [
@@ -125,10 +125,10 @@ function profileKotlin(code: string, masked: string): RowProfile | null {
 				{ axis: "equal" , text: "="                     , gapBefore: slotAt(code, assigned, 3) },
 				value                                                                                 ,
 			],
-		}                                                             ;
+		};
 	}
 
-	return null                                                      ;
+	return null;
 }
 
 export const KOTLIN_ALIGNER: LineProfiler = {

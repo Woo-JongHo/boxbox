@@ -1,8 +1,8 @@
-import      { afterEach, describe, expect, test } from "bun:test"                                    ;
-import      { copyFileSync, mkdtempSync, rmSync } from "node:fs"                                     ;
-import      { join, relative, resolve           } from "node:path"                                   ;
-import      { RESULT_SCHEMA_VERSION, summarize  } from "../skills/xxx/scripts/common/result-json.ts" ;
-import type { FileResult, ResultEnvelope        } from "../skills/xxx/scripts/common/result-json.ts" ;
+import      { afterEach, describe, expect, test } from "bun:test"                ;
+import      { copyFileSync, mkdtempSync, rmSync } from "node:fs"                 ;
+import      { join, relative, resolve           } from "node:path"               ;
+import      { RESULT_SCHEMA_VERSION, summarize  } from "@/common/result-json.ts" ;
+import type { FileResult, ResultEnvelope        } from "@/common/result-json.ts" ;
 
 const root                 = resolve(import.meta.dir, "..") ;
 const workspaces: string[] = []                             ;

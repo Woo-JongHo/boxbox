@@ -348,7 +348,8 @@ The author's convention is a preset, not the law. Users customize without touchi
 | Preset `recommended` | `references/readability-contract.md` | Mixed with Base |
 | GUIDE | Handwritten contract sections | Manual |
 | LEARN | `scripts/stress-corpus.ts` (measurement only) | Missing |
-| Evidence / Decision / cases | — | Missing |
+| Evidence / Decision / cases | `scripts/corpus-signatures.ts` (census), `corpus/verdicts.jsonl` (decisions), `scripts/corpus-promote.ts` (cases) | Partial (corpus only; no project space) |
+| Lookup (pattern DB) | Signature exists only in `scripts/corpus-signatures.ts`, keyed with the result state; no runtime lookup | Missing (plan M1.7: exact key lookup over git-tracked JSON, never similarity) |
 | Customization space | — | Missing |
 
 ## 11. Roadmap

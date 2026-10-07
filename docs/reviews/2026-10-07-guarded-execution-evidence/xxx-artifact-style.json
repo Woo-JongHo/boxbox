@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "tool": "xxx",
+  "results": [
+    {
+      "file": "test/public-artifact.test.ts",
+      "language": "typescript",
+      "mode": "check",
+      "summary": {
+        "groups": 11,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "groups": [
+        {
+          "kind": "declaration-equals",
+          "startLine": 19,
+          "endLine": 20,
+          "rows": 2,
+          "axes": [
+            "equals=28",
+            "semicolon=61"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "SourceFile",
+          "depth": 0
+        },
+        {
+          "kind": "registration",
+          "startLine": 30,
+          "endLine": 33,
+          "rows": 4,
+          "axes": [
+            "colon=17",
+            "value=19"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "ObjectLiteralExpression",
+          "depth": 2
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 49,
+          "endLine": 51,
+          "rows": 3,
+          "axes": [
+            "equals=24",
+            "semicolon=57"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 2
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 72,
+          "endLine": 74,
+          "rows": 3,
+          "axes": [
+            "equals=25",
+            "semicolon=239"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 2
+        },
+        {
+          "kind": "call-statements",
+          "startLine": 75,
+          "endLine": 77,
+          "rows": 3,
+          "axes": [
+            "subject-close-paren=36",
+            "matcher-dot=37",
+            "matcher-open-paren=45",
+            "matcher-close-paren=69",
+            "semicolon=71"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 2
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 89,
+          "endLine": 90,
+          "rows": 2,
+          "axes": [
+            "equals=26",
+            "semicolon=67"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 2
+        },
+        {
+          "kind": "object-rows",
+          "startLine": 137,
+          "endLine": 139,
+          "rows": 3,
+          "axes": [
+            "open-brace=12",
+            "property1=14",
+            "colon1=19",
+            "value1=21",
+            "comma1=35",
+            "property2=37",
+            "colon2=42",
+            "value2=44",
+            "comma2=46",
+            "property3=48",
+            "colon3=54",
+            "value3=56",
+            "comma3=58",
+            "property4=60",
+            "colon4=67",
+            "value4=69",
+            "close-brace=74",
+            "tail=75"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "ArrayLiteralExpression",
+          "depth": 3
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 144,
+          "endLine": 145,
+          "rows": 2,
+          "axes": [
+            "equals=23",
+            "semicolon=110"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 2
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 158,
+          "endLine": 164,
+          "rows": 7,
+          "axes": [
+            "equals=24",
+            "semicolon=123"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 2
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 169,
+          "endLine": 172,
+          "rows": 4,
+          "axes": [
+            "equals=30",
+            "semicolon=479"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 2
+        },
+        {
+          "kind": "object-rows",
+          "startLine": 195,
+          "endLine": 197,
+          "rows": 3,
+          "axes": [
+            "open-brace=12",
+            "property1=14",
+            "colon1=19",
+            "value1=21",
+            "comma1=35",
+            "property2=37",
+            "colon2=42",
+            "value2=44",
+            "comma2=46",
+            "property3=48",
+            "colon3=54",
+            "value3=56",
+            "comma3=90",
+            "property4=92",
+            "colon4=99",
+            "value4=101",
+            "close-brace=106",
+            "tail=107"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "ArrayLiteralExpression",
+          "depth": 3
+        }
+      ],
+      "parse": {
+        "status": "not-run",
+        "tool": "typescript"
+      }
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+---
+name: xxx
+description: Use when inspecting, fixing and verifying TypeScript and Python files one at a time against tabular readability rules, where same-role rows share one structure and their syntax boundaries are aligned into minimum-width columns.
+---
+
+# XXX Code Readability
+
+Let the reader follow the execution flow from top to bottom and compare same-role rows vertically.
+Treat code like spreadsheet data — rows, columns and cells — but first give every same-role row **the same minimal
+composition**, then pin the remaining syntax boundaries into minimum-width columns. Do not impose a general formatter's
+taste; apply automatically only rules a human has approved.
+
+## Running the engine
+
+Every check and fix goes through the one engine CLI. Run it from the root of the target repository.
+
+```bash
+npx --yes xxx@0.2.0 doctor                      # runtime, parser, config and approval data status
+npx --yes xxx@0.2.0 check  --file <file> --json  # read-only check
+npx --yes xxx@0.2.0 guide  --file <file> --json  # approved rules and examples that apply to this file
+npx --yes xxx@0.2.0 format --file <file> --dry-run --json
+npx --yes xxx@0.2.0 format --file <file> --json
+```
+
+- The first public stage accepts TypeScript and Python files **one at a time**. Fixing Python requires a runnable `python3`.
+- `format` writes only when an explicit formatter, human approval proof, re-parsing and a two-run fixed point all pass.
+  If any is missing it refuses; a refusal is a safety behavior, not a failure. Pass the refusal reason to the user as is.
+- Do not look for or run other alignment scripts or bypass options.
+
+## Workflow
+
+1. Handle only the one file the user named. Wait for the user's feedback before moving to the next file.
+2. Read the groups (`groups`) and states (`PASS`, `FIXABLE`, `REFUSE`) from `check --json`. `REFUSE` means the structure
+   cannot be split losslessly, so do not fix those rows.
+3. Check the approved rules with `guide --json`. If approved rules exist, apply them with `format --dry-run` → `format`.
+4. If there are no approved rules, do not align by hand; report the candidate groups and the evidence to the user.
+5. After a fix, rerun `check --json` to confirm `misaligned=0`, and never claim a verification passed that you did not run.
+
+## Rule documents
+
+Read the documents in this folder when a judgment is needed.
+
+- `references/charter.md` — principles and safety invariants
+- `references/grammar.md` — grammar units, patterns, roles, paragraphs (split with a blank line when the property differs)
+- `references/readability-contract.md` — confirmed rules, discarded rules, column-check order
+- `references/typescript-grid-template.md` — per-role TypeScript table templates
+
+## Authoring hooks
+
+The plugin hooks check TypeScript and Python files changed during the session, read-only, and report the result. They never fix anything automatically.
+Records stay in the host's plugin data folder, and no files are created in the target project.
