@@ -45,7 +45,7 @@ afterEach(() => {
 });
 
 describe("public CLI local package artifact", () => {
-	test("the isolated installed xxx bin keeps the empty preset and applies only synthetic project approvals safely", () => {
+	test("the isolated installed xxx bin ships the approved preset and applies only approved rules safely", () => {
 		const temporary = workspace()                    ;
 		const project   = join(temporary, "project")     ;
 		const packs     = join(temporary, "public-pack") ;
@@ -62,6 +62,8 @@ describe("public CLI local package artifact", () => {
 			"package.json",
 			"presets/recommended/conventions.jsonl",
 			"presets/recommended/decisions.jsonl",
+			"presets/recommended/docs/public/decisions/py-simple-assignments.md",
+			"presets/recommended/docs/public/decisions/ts-sourcefile-call-declarations.md",
 			"presets/recommended/examples.jsonl",
 		]);
 
@@ -78,8 +80,9 @@ describe("public CLI local package artifact", () => {
 		expect(manifest.exports     ).toBeUndefined()               ;
 		expect(existsSync(join(installed, "dist/internal-runner.js"))).toBe(false);
 		for (const name of ["conventions.jsonl", "examples.jsonl", "decisions.jsonl"]) {
-			expect(readFileSync(join(installed, "presets/recommended", name), "utf8")).toBe("");
+			expect(readFileSync(join(installed, "presets/recommended", name), "utf8")).toContain("ts-sourcefile-call-declarations");
 		}
+		expect(readFileSync(join(installed, "presets/recommended/conventions.jsonl"), "utf8")).toContain("py-simple-assignments");
 		expect(existsSync(join(installed, "presets/recommended/docs/candidates/initial-rules.md"))).toBe(false);
 
 		const pythonLookup = run("sh", ["-lc", "command -v python3"], { cwd: project });

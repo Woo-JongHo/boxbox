@@ -75,7 +75,7 @@ function diagnostics(toolchain: Toolchain, source: string, timeoutMs: number): r
 		const rustfmtDiff = toolchain.tool === "rustfmt"
 			&& run.status === 1
 			&& `${run.stderr ?? ""}`.trim() === ""
-			&& /Diff in \S*xxx-parse-[^/\s]*\/Input\.rs at line \d+:/u.test(output)
+			&& /Diff in \S*xxx-parse-[^/\s]*\/Input\.rs(?::\d+:| at line \d+:)/u.test(output)
 			&& /^-/mu.test(output)
 			&& /^\+/mu.test(output);
 		const diagnosticExit = parsed.length > 0 && (
