@@ -1,0 +1,27 @@
+{
+	"name": "xxx",
+	"version": "0.2.0",
+	"description": "Inspects TypeScript and Python files one at a time against tabular readability rules and formats only through human-approved rules, plus a read-only inspector.",
+	"author": {
+		"name": "Woo-JongHo"
+	},
+	"keywords": [
+		"readability",
+		"typescript",
+		"python",
+		"code-style",
+		"align"
+	],
+	"skills": "./skills/",
+	"interface": {
+		"displayName": "XXX",
+		"shortDescription": "Tabular readability checks for TypeScript and Python",
+		"longDescription": "Checks one TypeScript or Python file at a time against a spreadsheet-style readability contract and formats only through human-approved rules.",
+		"developerName": "Woo-JongHo",
+		"category": "Coding",
+		"capabilities": [
+			"Read",
+			"Write"
+		]
+	}
+}
