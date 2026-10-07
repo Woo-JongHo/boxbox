@@ -4,3 +4,11 @@ stress/
 .video_agent/
 TEST_COMPLETED/
 corpus/local.json
+eval/
+.xxx/cache/
+dist/
+.gjc/
+.claude/
+.agents/
+.zcode/
+.www/

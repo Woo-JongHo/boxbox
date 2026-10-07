@@ -81,7 +81,7 @@ export interface AlignResult {
 	readonly details : readonly DetectedTable[] ;
 	readonly pairs   : readonly PairGroup[]     ;
 	/** Tables whose edits failed the whitespace-only check; never applied. */
-	readonly refused : readonly DetectedTable[] ;
+	readonly refused : readonly DetectedTable[];
 }
 
 export interface AlignOptions {

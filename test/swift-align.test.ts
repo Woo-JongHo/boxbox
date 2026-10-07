@@ -1,8 +1,8 @@
-import      { describe, expect, test } from "bun:test"                                     ;
-import      { alignSource            } from "../skills/xxx/scripts/common/table-engine.ts" ;
-import      { maskSource             } from "../skills/xxx/scripts/common/code-text.ts"    ;
-import      { SWIFT_ALIGNER          } from "../skills/xxx/scripts/swift/profile.ts"       ;
-import      { defineLanguageSuite    } from "./lang-harness.ts"                            ;
+import      { describe, expect, test } from "bun:test"                 ;
+import      { alignSource            } from "@/common/table-engine.ts" ;
+import      { maskSource             } from "@/common/code-text.ts"    ;
+import      { SWIFT_ALIGNER          } from "@/swift/profile.ts"       ;
+import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
 	aligner     : SWIFT_ALIGNER,
@@ -43,27 +43,27 @@ describe("swift profile specific properties", () => {
 			"let b22   = 22",
 			"let c333  = 333",
 			"let d4444 = 4444",
-		])                                                                       ;
+		]);
 	});
 
 	test("raw strings and interpolation are masked, so their punctuation is invisible", () => {
 		const code   = `let label = #"raw \(value) #tag"#`       ;
 		const masked = maskSource(code, SWIFT_ALIGNER.syntax)    ;
 		const row    = SWIFT_ALIGNER.profile(code, masked.text)! ;
-		expect(row).not.toBeNull()                                               ;
-		expect(row.slots.map(slot => slot.axis).join("|")).toBe("keyword|name|equal|value")  ;
-		expect(row.slots[3]!.text).toBe(`#"raw \(value) #tag"#`)                 ;
+		expect(row).not.toBeNull();
+		expect(row.slots.map(slot => slot.axis).join("|")).toBe("keyword|name|equal|value");
+		expect(row.slots[3]!.text).toBe(`#"raw \(value) #tag"#`);
 	});
 
 	test("declaration and control-flow rows are refused", () => {
-		const maskedOf = (code: string): string => maskSource(code, SWIFT_ALIGNER.syntax).text    ;
+		const maskedOf = (code: string): string => maskSource(code, SWIFT_ALIGNER.syntax).text;
 		for (const code of [
 			"func render(_ values: [String: Any]) -> String {",
 			"if value == 3 {",
 			"let shape = make(shape)",
 			"let list = [1, 2, 3]",
 		])                                                                                       {
-			expect(SWIFT_ALIGNER.profile(code, maskedOf(code))).toBeNull()                       ;
+			expect(SWIFT_ALIGNER.profile(code, maskedOf(code))).toBeNull();
 		}
 	});
 });

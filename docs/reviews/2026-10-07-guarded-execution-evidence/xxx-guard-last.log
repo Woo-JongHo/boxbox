@@ -1,0 +1,48 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/guarded-run.test.ts:
+{"schemaVersion":1,"tool":"xxx","command":"run","runId":"093355c4-60d5-4504-88b4-6cb2376ef8e2","root":"/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-7GCQ5n","engineVersion":"test","runtime":{"node":"26.3.0","bunVersion":"1.4.0"},"startedAt":"2026-10-07T02:25:03.504Z","finishedAt":"2026-10-07T02:25:03.895Z","state":"PASS","childExitCode":0,"preflight":"PASS","validation":"PASS","errorCode":null,"before":{},"after":{"one.py":"98752ee28d5484bdc2814fb70adb6a0b2fb31f6a9b8ee7ae81fd2fc9cf300b3b"},"afterSnapshotComplete":true,"ignoredSymlinks":[],"changed":["one.py"],"checked":[{"file":"one.py","result":{"file":"one.py","language":"python","mode":"check","summary":{"groups":0,"misaligned":0,"edits":0,"refused":0,"suggested":0},"groups":[],"parse":{"status":"not-run","tool":"test"}}}],"unsupported":[],"deleted":[],"excludedDirectories":[".git",".xxx","node_modules",".venv","venv","__pycache__","dist","build"],"symlinkDirectoriesFollowed":false,"nativeHookVerified":false,"automaticFixPerformed":false}
+(pass) 검사 성공과 변경 없음, 인자 비저장을 구분한다 [419.55ms]
+xxx run: TOOL_ERROR; run=78320f09-b3d2-4f05-9b0f-3cce90d5fa9e; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-r3qFgm/.xxx/runs/78320f09-b3d2-4f05-9b0f-3cce90d5fa9e.json
+(pass) preflight 실패는 실행 전에 종료되고 기록된다 [8.60ms]
+xxx run: CHILD_FAILED; run=0209607a-80fe-40cb-a9f1-2de5936343ab; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-xRcLSF/.xxx/runs/0209607a-80fe-40cb-a9f1-2de5936343ab.json
+xxx run: UNSUPPORTED; run=31bdfece-7fca-4261-9d99-668f1dd35538; checked=0; changed=1
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-C1gYY5/.xxx/runs/31bdfece-7fca-4261-9d99-668f1dd35538.json
+xxx run: NO_CHANGES; run=9f4f32a5-e795-48f0-8a50-0d2462bbea6b; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-scuIn6/.xxx/runs/9f4f32a5-e795-48f0-8a50-0d2462bbea6b.json
+(pass) child 실패, 미지원, 무변경은 PASS가 아니다 [408.85ms]
+xxx run: TOOL_ERROR; run=d5a3c94a-0d32-4767-b34f-deb22c27e7a1; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-0lPJoh/.xxx/runs/d5a3c94a-0d32-4767-b34f-deb22c27e7a1.json
+(pass) 검사 오류와 실행 불가능은 종료 기록을 남긴다 [9.47ms]
+xxx run: TOOL_ERROR; run=9d86e7e7-bbeb-4de2-bdad-6e6e13f74d1c; checked=0; changed=1
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-CaGPt5/.xxx/runs/9d86e7e7-bbeb-4de2-bdad-6e6e13f74d1c.json
+(pass) 변경한 심볼릭 코드파일은 검사 승인하지 않는다 [98.34ms]
+xxx run: NO_CHANGES; run=580d99c1-2fb8-476d-8130-00c28cce2c6e; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-wpX8HL/.xxx/runs/580d99c1-2fb8-476d-8130-00c28cce2c6e.json
+(pass) status는 실행 밖 변경을 STALE로 표시한다 [123.40ms]
+{"schemaVersion":1,"tool":"xxx","command":"run","runId":"99e98e37-772f-4ed0-894b-7fa0ebf6a23d","root":"/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-zpcewG","engineVersion":"test","runtime":{"node":"26.3.0","bunVersion":"1.4.0"},"startedAt":"2026-10-07T02:25:04.563Z","finishedAt":"2026-10-07T02:25:04.681Z","state":"FAIL","childExitCode":0,"preflight":"PASS","validation":"FAIL","errorCode":null,"before":{},"after":{"bad.py":"1f206b11c23e28cc250ded7fc0098d3823a8467a54340f1ac4e535cb8544493f"},"afterSnapshotComplete":true,"ignoredSymlinks":[],"changed":["bad.py"],"checked":[{"file":"bad.py","result":{"file":"bad.py","language":"python","mode":"check","summary":{"groups":0,"misaligned":1,"edits":0,"refused":0,"suggested":0},"groups":[],"parse":{"status":"not-run","tool":"test"}}}],"unsupported":[],"deleted":[],"excludedDirectories":[".git",".xxx","node_modules",".venv","venv","__pycache__","dist","build"],"symlinkDirectoriesFollowed":false,"nativeHookVerified":false,"automaticFixPerformed":false}
+{"schemaVersion":1,"tool":"xxx","command":"run","runId":"b7c5394f-5b7a-4316-bc42-83ab3d444bb3","root":"/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-sIibnh","engineVersion":"test","runtime":{"node":"26.3.0","bunVersion":"1.4.0"},"startedAt":"2026-10-07T02:25:04.684Z","finishedAt":"2026-10-07T02:25:04.805Z","state":"TOOL_ERROR","childExitCode":0,"preflight":"PASS","validation":"NOT_RUN","errorCode":"GUARD_ERROR","before":{},"after":{"bad.py":"1f206b11c23e28cc250ded7fc0098d3823a8467a54340f1ac4e535cb8544493f"},"afterSnapshotComplete":true,"ignoredSymlinks":[],"changed":["bad.py"],"checked":[],"unsupported":[],"deleted":[],"excludedDirectories":[".git",".xxx","node_modules",".venv","venv","__pycache__","dist","build"],"symlinkDirectoriesFollowed":false,"nativeHookVerified":false,"automaticFixPerformed":false}
+(pass) 검사 실패와 검사 예외를 구분하고 child 결과를 보존한다 [245.41ms]
+
+test/cli.test.ts:
+(pass) public CLI > help와 version은 실제 진입 API에서 동작한다 [361.38ms]
+(pass) public CLI > init은 기존 사용자 파일을 보존하고 재실행해도 설정을 덮지 않는다 [225.59ms]
+(pass) public CLI > 손상되거나 알 수 없는 설정은 명시적으로 실패하고 보존한다 [306.78ms]
+(pass) public CLI > check는 init 없이 한 Python 파일을 읽기 전용 검사하고 미정렬이면 1을 반환한다 [129.04ms]
+(pass) public CLI > format은 쓰기를 거절하고 dry-run도 파일을 바꾸지 않는다 [251.59ms]
+(pass) public CLI > 검증된 테스트 승인과 formatter가 있으면 GUIDE와 dry-run 및 실제 format이 같은 pipeline을 쓴다 [3272.84ms]
+(pass) public CLI > GUIDE는 빈 registry와 후보 데이터를 지침으로 노출하지 않는다 [411.43ms]
+(pass) public CLI > unknown·rejected·conflict·stale 승인은 format을 거절하고 원본을 보존한다 [3279.33ms]
+(pass) public CLI > doctor는 Python 부재, 설정과 승인 DB 부재를 준비 완료로 표시하지 않는다 [316.52ms]
+(pass) public CLI > doctor는 실행 가능 상태와 format 구성 및 전체 출시 readiness를 분리한다 [168.28ms]
+(pass) public CLI > 사용법 오류도 stdout에 JSON 하나만 내고 알 수 없는 언어와 옵션을 거절한다 [294.53ms]
+(pass) public CLI > 경로 탈출과 init 쓰기용 심볼릭 링크를 거절한다 [1863.96ms]
+(pass) public CLI > 부모 디렉터리 심볼릭 링크 탈출과 설정에서 끈 언어를 거절한다 [890.63ms]
+(pass) public CLI > 명시 언어가 확장자와 다르면 실패하고 TS 파일은 언어를 추론한다 [1372.89ms]
+
+ 21 pass
+ 0 fail
+ 120 expect() calls
+Ran 21 tests across 2 files. [14.73s]

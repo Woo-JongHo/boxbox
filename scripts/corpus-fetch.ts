@@ -36,9 +36,9 @@ function readManifest(path: string, required: boolean): CorpusManifest {
 		if (!required) return { schemaVersion: 1, sources: [] }                                       ;
 		throw new Error(`missing manifest: ${path}`)                                                  ;
 	}
-	const parsed = JSON.parse(readFileSync(path, "utf8")) as CorpusManifest                           ;
-	if (parsed.schemaVersion !== 1 || !Array.isArray(parsed.sources)) throw new Error(`bad manifest: ${path}`) ;
-	return parsed                                                                                     ;
+	const parsed = JSON.parse(readFileSync(path, "utf8")) as CorpusManifest;
+	if (parsed.schemaVersion !== 1 || !Array.isArray(parsed.sources)) throw new Error(`bad manifest: ${path}`);
+	return parsed;
 }
 
 function runGit(args: readonly string[], cwd: string | undefined, what: string): void {
@@ -47,14 +47,14 @@ function runGit(args: readonly string[], cwd: string | undefined, what: string):
 }
 
 function headOf(target: string): string | undefined {
-	const result = spawnSync("git", ["-C", target, "rev-parse", "HEAD"], { encoding: "utf8" }) ;
-	return result.status === 0 ? result.stdout.toString().trim() : undefined                  ;
+	const result = spawnSync("git", ["-C", target, "rev-parse", "HEAD"], { encoding: "utf8" });
+	return result.status === 0 ? result.stdout.toString().trim() : undefined;
 }
 
 function materialize(source: CorpusSource): string {
 	const target = join(CACHE, source.id)                        ;
 	const url    = `https://github.com/${source.repository}.git` ;
-	if (headOf(target) === source.commit) return "current"               ;
+	if (headOf(target) === source.commit) return "current";
 	if (!existsSync(join(target, ".git"))) {
 		mkdirSync(target, { recursive: true })                           ;
 		runGit(["init", target], undefined, "init")                      ;
@@ -62,18 +62,18 @@ function materialize(source: CorpusSource): string {
 	}
 	runGit(["fetch", "--depth", "1", "origin", source.commit], target, "fetch")   ;
 	runGit(["checkout", "--detach", "FETCH_HEAD"], target, "checkout")            ;
-	if (headOf(target) !== source.commit) throw new Error(`${source.id}: worktree is not at the pinned commit`) ;
-	return "fetched"                                                             ;
+	if (headOf(target) !== source.commit) throw new Error(`${source.id}: worktree is not at the pinned commit`);
+	return "fetched";
 }
 
 /** Merges the committed manifest with the local-only sources; a duplicate id is refused, never silently dropped. */
 export function mergeSources(manifest: CorpusManifest, local: CorpusManifest): readonly CorpusSource[] {
-	const ids = new Set(manifest.sources.map(source => source.id))                      ;
+	const ids = new Set(manifest.sources.map(source => source.id));
 	for (const source of local.sources) {
 		if (ids.has(source.id)) throw new Error(`duplicate corpus id: ${source.id}`)    ;
 		ids.add(source.id)                                                              ;
 	}
-	return [...manifest.sources, ...local.sources]                                      ;
+	return [...manifest.sources, ...local.sources];
 }
 
 function main(): void {
@@ -84,15 +84,15 @@ function main(): void {
 	let failures = 0                                                                    ;
 	for (const source of sources) {
 		try {
-			const state = materialize(source)                                           ;
-			console.log(`corpus-fetch ${source.id} ${state} (${source.language} ${source.repository} @ ${source.commit.slice(0, 12)})`) ;
+			const state = materialize(source);
+			console.log(`corpus-fetch ${source.id} ${state} (${source.language} ${source.repository} @ ${source.commit.slice(0, 12)})`);
 		} catch (error) {
-			failures += 1                                                               ;
-			console.error(`corpus-fetch ${source.id} failed: ${error instanceof Error ? error.message : String(error)}`) ;
+			failures += 1;
+			console.error(`corpus-fetch ${source.id} failed: ${error instanceof Error ? error.message : String(error)}`);
 		}
 	}
 	console.log(`corpus-fetch files=${sources.length} failures=${failures}`)            ;
 	if (failures > 0) process.exit(1)                                                   ;
 }
 
-if (import.meta.main) main() ;
+if (import.meta.main) main();

@@ -1,8 +1,8 @@
-import      { describe, expect, test } from "bun:test"                                     ;
-import      { maskSource             } from "../skills/xxx/scripts/common/code-text.ts"    ;
-import      { alignSource            } from "../skills/xxx/scripts/common/table-engine.ts" ;
-import      { JAVA_ALIGNER           } from "../skills/xxx/scripts/java/profile.ts"        ;
-import      { defineLanguageSuite    } from "./lang-harness.ts"                            ;
+import      { describe, expect, test } from "bun:test"                 ;
+import      { maskSource             } from "@/common/code-text.ts"    ;
+import      { alignSource            } from "@/common/table-engine.ts" ;
+import      { JAVA_ALIGNER           } from "@/java/profile.ts"        ;
+import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
 	aligner     : JAVA_ALIGNER,

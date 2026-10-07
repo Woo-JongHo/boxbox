@@ -1,0 +1,14 @@
+{
+	"description": "xxx: checks TypeScript and Python files changed during the session, read-only. Records stay in the plugin data folder; no files are created in the user's project.",
+	"hooks": {
+		"SessionStart": [
+			{ "hooks": [ { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/xxx hook session", "timeout": 120 } ] }
+		],
+		"PostToolUse": [
+			{ "matcher": "Write|Edit|MultiEdit|apply_patch", "hooks": [ { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/xxx hook post", "timeout": 120 } ] }
+		],
+		"Stop": [
+			{ "hooks": [ { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/xxx hook stop", "timeout": 120 } ] }
+		]
+	}
+}

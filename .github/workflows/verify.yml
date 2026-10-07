@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22.22.3"
+          package-manager-cache: false
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.0
@@ -32,6 +36,12 @@ jobs:
           sudo unzip -q /tmp/kotlin.zip -d /opt
           echo "/opt/kotlinc/bin" >> "$GITHUB_PATH"
       - run: bun install --frozen-lockfile
+      # 격리 artifact 테스트는 offline 설치를 검사하므로 npm 의존성 캐시를 먼저 채운다.
+      - name: Prepare npm cache for offline artifact tests
+        run: |
+          artifact_cache_seed="$(mktemp -d)"
+          trap 'rm -rf "$artifact_cache_seed"' EXIT
+          npm install --prefix "$artifact_cache_seed" --ignore-scripts --no-audit --no-fund typescript@7.0.2
       # Every language parser must be present in CI: a missing parser fails instead of skipping.
       - run: bun run check
         env:

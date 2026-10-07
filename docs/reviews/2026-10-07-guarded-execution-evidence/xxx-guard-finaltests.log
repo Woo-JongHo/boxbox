@@ -1,0 +1,48 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/guarded-run.test.ts:
+{"schemaVersion":1,"tool":"xxx","command":"run","runId":"e6699247-7a5f-463d-9b95-14ce8c3108a0","root":"/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-b3GsIO","engineVersion":"test","runtime":{"node":"26.3.0","bunVersion":"1.4.0"},"startedAt":"2026-10-07T02:24:21.630Z","finishedAt":"2026-10-07T02:24:21.662Z","state":"PASS","childExitCode":0,"preflight":"PASS","validation":"PASS","errorCode":null,"before":{},"after":{"one.py":"98752ee28d5484bdc2814fb70adb6a0b2fb31f6a9b8ee7ae81fd2fc9cf300b3b"},"afterSnapshotComplete":true,"ignoredSymlinks":[],"changed":["one.py"],"checked":[{"file":"one.py","result":{"file":"one.py","language":"python","mode":"check","summary":{"groups":0,"misaligned":0,"edits":0,"refused":0,"suggested":0},"groups":[],"parse":{"status":"not-run","tool":"test"}}}],"unsupported":[],"deleted":[],"excludedDirectories":[".git",".xxx","node_modules",".venv","venv","__pycache__","dist","build"],"symlinkDirectoriesFollowed":false,"nativeHookVerified":false,"automaticFixPerformed":false}
+(pass) 검사 성공과 변경 없음, 인자 비저장을 구분한다 [37.43ms]
+xxx run: TOOL_ERROR; run=db33a929-1635-494d-9259-d23344b6f780; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-6Af3SC/.xxx/runs/db33a929-1635-494d-9259-d23344b6f780.json
+(pass) preflight 실패는 실행 전에 종료되고 기록된다 [4.73ms]
+xxx run: CHILD_FAILED; run=a185e826-3177-477a-915d-f3af081e5ffd; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-QbIoct/.xxx/runs/a185e826-3177-477a-915d-f3af081e5ffd.json
+xxx run: UNSUPPORTED; run=09700c7b-a5ad-4734-8f8e-0586b87adddb; checked=0; changed=1
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-Qe1DU2/.xxx/runs/09700c7b-a5ad-4734-8f8e-0586b87adddb.json
+xxx run: NO_CHANGES; run=4b1b3021-4c10-4882-89d3-c1b6f0684f0f; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-eD03PN/.xxx/runs/4b1b3021-4c10-4882-89d3-c1b6f0684f0f.json
+(pass) child 실패, 미지원, 무변경은 PASS가 아니다 [191.76ms]
+xxx run: TOOL_ERROR; run=77b1959d-8dcb-4370-8eb3-4155f86485e1; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-Q4QXQ1/.xxx/runs/77b1959d-8dcb-4370-8eb3-4155f86485e1.json
+(pass) 검사 오류와 실행 불가능은 종료 기록을 남긴다 [3.31ms]
+xxx run: TOOL_ERROR; run=f355fa47-c741-454e-905a-15170a401bc9; checked=0; changed=1
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-Y83v2S/.xxx/runs/f355fa47-c741-454e-905a-15170a401bc9.json
+(pass) 변경한 심볼릭 코드파일은 검사 승인하지 않는다 [31.27ms]
+xxx run: NO_CHANGES; run=c117ec9b-f781-42af-b9a5-ffd8ccbeaeda; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/xxx-guard-o6mmcK/.xxx/runs/c117ec9b-f781-42af-b9a5-ffd8ccbeaeda.json
+(pass) status는 실행 밖 변경을 STALE로 표시한다 [30.85ms]
+
+test/cli.test.ts:
+(pass) public CLI > help와 version은 실제 진입 API에서 동작한다 [103.39ms]
+(pass) public CLI > init은 기존 사용자 파일을 보존하고 재실행해도 설정을 덮지 않는다 [109.73ms]
+(pass) public CLI > 손상되거나 알 수 없는 설정은 명시적으로 실패하고 보존한다 [111.39ms]
+(pass) public CLI > check는 init 없이 한 Python 파일을 읽기 전용 검사하고 미정렬이면 1을 반환한다 [49.10ms]
+(pass) public CLI > format은 쓰기를 거절하고 dry-run도 파일을 바꾸지 않는다 [109.84ms]
+(pass) public CLI > 검증된 테스트 승인과 formatter가 있으면 GUIDE와 dry-run 및 실제 format이 같은 pipeline을 쓴다 [1483.21ms]
+(pass) public CLI > GUIDE는 빈 registry와 후보 데이터를 지침으로 노출하지 않는다 [167.15ms]
+(pass) public CLI > unknown·rejected·conflict·stale 승인은 format을 거절하고 원본을 보존한다 [650.80ms]
+(pass) public CLI > doctor는 Python 부재, 설정과 승인 DB 부재를 준비 완료로 표시하지 않는다 [50.29ms]
+(pass) public CLI > doctor는 실행 가능 상태와 format 구성 및 전체 출시 readiness를 분리한다 [95.29ms]
+(pass) public CLI > 사용법 오류도 stdout에 JSON 하나만 내고 알 수 없는 언어와 옵션을 거절한다 [251.75ms]
+(pass) public CLI > 경로 탈출과 init 쓰기용 심볼릭 링크를 거절한다 [113.98ms]
+(pass) public CLI > 부모 디렉터리 심볼릭 링크 탈출과 설정에서 끈 언어를 거절한다 [91.59ms]
+(pass) public CLI > 명시 언어가 확장자와 다르면 실패하고 TS 파일은 언어를 추론한다 [407.90ms]
+
+test/public-artifact.test.ts:
+(pass) 공개 CLI 로컬 패키지 산출물 > 격리 설치한 xxx bin이 빈 preset을 보존하고 synthetic 프로젝트 승인만 안전하게 적용한다 [8997.95ms]
+
+ 21 pass
+ 0 fail
+ 229 expect() calls
+Ran 21 tests across 3 files. [13.16s]

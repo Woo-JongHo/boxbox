@@ -1,7 +1,9 @@
-import      { existsSync, readFileSync } from "node:fs"                                        ;
-import      { resolve                  } from "node:path"                                      ;
-import      { describe, expect, test   } from "bun:test"                                       ;
-import      { AXIS_NOTES, KIND_AXES    } from "../skills/xxx/scripts/typescript/grid-kinds.ts" ;
+import      { existsSync, lstatSync, readdirSync } from "node:fs"                    ;
+import      { readFileSync, statSync             } from "node:fs"                    ;
+import      { join, resolve                      } from "node:path"                  ;
+import      { describe, expect, test             } from "bun:test"                   ;
+import      { AXIS_NOTES, KIND_AXES              } from "@/typescript/grid-kinds.ts" ;
+import      { pluginDrift                        } from "../scripts/sync-plugin.ts"  ;
 
 const ROOT                    = resolve(import.meta.dir, "..")                                                               ;
 const read                    = (path: string): string => readFileSync(resolve(ROOT, path), "utf8")                          ;
@@ -9,38 +11,68 @@ const parseJson               = (path: string): Record<string, unknown> => JSON.
 const LANGUAGE_DISCOVERY_TEXT = "TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, and Kotlin"                  ;
 
 describe("plugin distribution contract", () => {
-	test("package, plugin and marketplace share version and identity", () => {
-		const packageJson = parseJson("package.json")                                   ;
-		const plugin      = parseJson(".claude-plugin/plugin.json")                     ;
-		const marketplace = parseJson(".claude-plugin/marketplace.json")                ;
-		const entry       = (marketplace.plugins as Array<Record<string, unknown>>)[0]! ;
+	test("package, Claude and Codex manifests and both marketplaces share name and version", () => {
+		const packageJson = parseJson("package.json")                                                                     ;
+		const claude      = parseJson("plugin/.claude-plugin/plugin.json")                                                ;
+		const codex       = parseJson("plugin/.codex-plugin/plugin.json")                                                 ;
+		const entry       = (parseJson(".claude-plugin/marketplace.json").plugins as Array<Record<string, unknown>>)[0]!  ;
+		const codexEntry  = (parseJson(".agents/plugins/marketplace.json").plugins as Array<Record<string, unknown>>)[0]! ;
 
-		expect(plugin.name   ).toBe(packageJson.name   ) ;
-		expect(entry.name    ).toBe(packageJson.name   ) ;
-		expect(plugin.version).toBe(packageJson.version) ;
-		expect(entry.version ).toBe(packageJson.version) ;
-		expect(entry.source  ).toBe("./"               ) ;
-	});
-
-	test("skills and agents referenced by the manifest exist", () => {
-		const plugin = parseJson(".claude-plugin/plugin.json");
-		for (const field of ["skills", "agents"] as const) {
-			const relative = String(plugin[field]).replace(/^\.\//u, "");
-			expect(existsSync(resolve(ROOT, relative))).toBe(true);
+		for (const manifest of [claude, codex]) {
+			expect(manifest.name   ).toBe(packageJson.name   ) ;
+			expect(manifest.version).toBe(packageJson.version) ;
 		}
-		expect(existsSync(resolve(ROOT, "skills/xxx/SKILL.md")             )).toBe(true) ;
-		expect(existsSync(resolve(ROOT, "agents/readability-inspector.md") )).toBe(true) ;
-		expect(existsSync(resolve(ROOT, "codex/readability-inspector.toml"))).toBe(true) ;
+		expect(entry.name       ).toBe   (packageJson.name                     ) ;
+		expect(entry.version    ).toBe   (packageJson.version                  ) ;
+		expect(entry.source     ).toBe   ("./plugin"                           ) ;
+		expect(codexEntry.name  ).toBe   (packageJson.name                     ) ;
+		expect(codexEntry.source).toEqual({ source: "local", path: "./plugin" }) ;
 	});
 
-	test("discovery descriptions list every supported language", () => {
-		const descriptions = [
-			String(parseJson("package.json").description),
-			String(parseJson(".claude-plugin/plugin.json").description),
+	test("plugin components live inside the plugin folder", () => {
+		// Agents are discovered from the default location: with an agents array in the manifest, Claude Code 2.1.286 did not detect the inspector.
+		expect(parseJson("plugin/.claude-plugin/plugin.json").agents).toBeUndefined();
+		for (const path of ["agents/readability-inspector.md", "skills/xxx/SKILL.md", "hooks/hooks.json", "scripts/xxx", "README.md"]) expect(existsSync(resolve(ROOT, "plugin", path))).toBe(true);
+		expect(statSync(resolve(ROOT, "plugin/scripts/xxx")).mode & 0o111   ).not.toBe(0   ) ;
+		expect(existsSync(resolve(ROOT, "skills/xxx/SKILL.md")             ))    .toBe(true) ;
+		expect(existsSync(resolve(ROOT, "agents/readability-inspector.md") ))    .toBe(true) ;
+		expect(existsSync(resolve(ROOT, "codex/readability-inspector.toml")))    .toBe(true) ;
+	});
+
+	test("the development skill lists every language; the shipped plugin introduces only the first public scope", () => {
+		for (const description of [String(parseJson("package.json").description), read("skills/xxx/SKILL.md").split("---", 3)[1] ?? ""]) {
+			expect(description).toContain(LANGUAGE_DISCOVERY_TEXT);
+		}
+		const published = [
+			String(parseJson("plugin/.claude-plugin/plugin.json").description),
+			String(parseJson("plugin/.codex-plugin/plugin.json").description),
 			String((parseJson(".claude-plugin/marketplace.json").plugins as Array<Record<string, unknown>>)[0]!.description),
-			read("skills/xxx/SKILL.md").split("---", 3)[1] ?? "",
+			read("plugin/skills/xxx/SKILL.md").split("---", 3)[1] ?? "",
 		];
-		for (const description of descriptions) expect(description).toContain(LANGUAGE_DISCOVERY_TEXT);
+		for (const description of published) expect(description).toContain("TypeScript and Python");
+	});
+
+	test("the plugin folder does not drift from the single source", () => {
+		expect(pluginDrift()).toEqual([]);
+	});
+
+	test("hooks call only the shim inside the plugin, and the shim pins the exact engine version", () => {
+		const hooks    = JSON.parse(read("plugin/hooks/hooks.json")) as { hooks: Record<string, Array<{ hooks: Array<{ command: string }> }>> } ;
+		const commands = Object.values(hooks.hooks).flat().flatMap(entry => entry.hooks.map(hook => hook.command))                              ;
+		expect(commands.length).toBe(3);
+		for (const command of commands) expect(command).toMatch(/^"\$\{CLAUDE_PLUGIN_ROOT\}"\/scripts\/xxx hook (session|post|stop)$/u);
+		expect(read("plugin/scripts/xxx")).toContain(`exec npx --yes "xxx@${String(parseJson("package.json").version)}" "$@"`);
+	});
+
+	test("the plugin folder stays within the directory submission limits", () => {
+		const files = readdirSync(resolve(ROOT, "plugin"), { recursive: true, withFileTypes: true }).filter(entry => !entry.isDirectory());
+		expect(files.length).toBeLessThanOrEqual(512);
+		for (const entry of files) {
+			const path = join(entry.parentPath, entry.name);
+			expect(lstatSync(path).isSymbolicLink()         )    .toBe        (false     ) ;
+			expect(statSync(path).size                      )    .toBeLessThan(256 * 1024) ;
+			expect([".DS_Store", "Thumbs.db", "desktop.ini"]).not.toContain   (entry.name) ;
+		}
 	});
 
 	test("shipped docs never instruct running a nonexistent repository test", () => {

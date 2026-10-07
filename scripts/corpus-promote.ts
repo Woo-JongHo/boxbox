@@ -12,21 +12,21 @@
  *   bun scripts/corpus-promote.ts --report        # pending non-correct verdicts
  */
 import      {
-              existsSync    ,
-              mkdirSync     ,
-              readFileSync  ,
-              readdirSync   ,
-              rmSync        ,
-              writeFileSync ,
-                              } from "node:fs"            ;
-import      { tmpdir          } from "node:os"            ;
-import      { join            } from "node:path"          ;
-import      { spawnSync       } from "node:child_process" ;
-import      { createHash      } from "node:crypto"        ;
+              existsSync     ,
+              mkdirSync      ,
+              readFileSync   ,
+              readdirSync    ,
+              rmSync         ,
+              writeFileSync  ,
+                               } from "node:fs"                ;
+import      { tmpdir           } from "node:os"                ;
+import      { join             } from "node:path"              ;
+import      { spawnSync        } from "node:child_process"     ;
+import      { createHash       } from "node:crypto"            ;
+import      { readCensusReport } from "./corpus-signatures.ts" ;
 
 const ROOT     = join(import.meta.dir, "..")                                ;
 const CACHE    = join(process.env["HOME"] ?? "", ".cache", "xxx", "corpus") ;
-const REPORT   = join(CACHE, "signatures.json")                             ;
 const LOG      = join(ROOT, "corpus", "verdicts.jsonl")                     ;
 const FIXTURES = join(ROOT, "skills", "xxx", "fixtures")                    ;
 
@@ -47,8 +47,8 @@ interface VerdictRecord {
 
 /** The fixture directory of a promoted type: skills/xxx/fixtures/<language>/corpus/<rank>-<hash8>. */
 export function fixtureDir(language: string, signature: string, rank: number): string {
-	const hash = createHash("sha1").update(signature).digest("hex").slice(0, 8) ;
-	return join(FIXTURES, language, "corpus", `${String(rank).padStart(3, "0")}-${hash}`) ;
+	const hash = createHash("sha1").update(signature).digest("hex").slice(0, 8);
+	return join(FIXTURES, language, "corpus", `${String(rank).padStart(3, "0")}-${hash}`);
 }
 
 /** The minimized synthetic scaffold a promoted fixture starts from; the author refines it to the judged shape. */
@@ -58,30 +58,30 @@ export function scaffoldFor(language: string, kind: string): string {
 			"const settings1 = { retries: 3 };"  ,
 			"const settings2 = { retries: 33 };",
 			"const settings3 = { retries: 333 };",
-		].join("\n") + "\n"                                                                                   ;
+		].join("\n") + "\n";
 		if (kind === "interface-members") return [
 			"interface Sample {"                 ,
 			"\tfirst: string;"                   ,
 			"\tsecond: number;"                  ,
 			"}"                                  ,
-		].join("\n") + "\n"                                                                                   ;
+		].join("\n") + "\n";
 		return [
 			"const value1 = initial1;"           ,
 			"const value2 = initial2;"           ,
 			"const value33 = initial33;"         ,
-		].join("\n") + "\n"                                                                                   ;
+		].join("\n") + "\n";
 	}
 	return [
 		"alpha = first(1, 22)"               ,
 		"beta = first(2, 33)"                ,
 		"gamma = first(3, 44)"               ,
-	].join("\n") + "\n"                                                                                       ;
+	].join("\n") + "\n";
 }
 
 function runAligner(language: string, file: string): void {
 	const aligner = language === "typescript"
 		? join(ROOT, "skills", "xxx", "scripts", "typescript", "06_align-tables.ts")
-		: join(ROOT, "skills", "xxx", "scripts", "python", "06_align-tables.ts")                              ;
+		: join(ROOT, "skills", "xxx", "scripts", "python", "06_align-tables.ts");
 	const result = spawnSync("bun", [aligner, "--file", file, "--write"], { encoding: "utf8", timeout: 300_000 })  ;
 	if (result.status !== 0) throw new Error(`alignment failed: ${result.stderr.toString().split("\n")[0]}`)       ;
 }
@@ -105,52 +105,52 @@ export function checkGate(): { readonly checked: number; readonly failures: read
 				failures.push(`${language}/${entry}: missing verdict.json`)                    ;
 				continue                                                                       ;
 			}
-			const work = join(tmpdir(), `promote-gate-${entry}${language === "typescript" ? ".ts" : ".py"}`) ;
-			writeFileSync(work, readFileSync(tables, "utf8"))                                  ;
+			const work = join(tmpdir(), `promote-gate-${entry}${language === "typescript" ? ".ts" : ".py"}`);
+			writeFileSync(work, readFileSync(tables, "utf8"));
 			try {
-				runAligner(language, work)                                                     ;
+				runAligner(language, work);
 				if (readFileSync(work, "utf8") !== readFileSync(golden, "utf8")) {
-					failures.push(`${language}/${entry}: golden drifted from the current engine`)  ;
+					failures.push(`${language}/${entry}: golden drifted from the current engine`);
 				}
 			} catch (error) {
-				failures.push(`${language}/${entry}: ${error instanceof Error ? error.message : String(error)}`)  ;
+				failures.push(`${language}/${entry}: ${error instanceof Error ? error.message : String(error)}`);
 			} finally {
-				rmSync(work, { force: true })                                                  ;
+				rmSync(work, { force: true });
 			}
-			checked += 1                                                                       ;
+			checked += 1;
 		}
 	}
-	return { checked, failures }                                                               ;
+	return { checked, failures };
 }
 
 function readVerdicts(): readonly VerdictRecord[] {
 	return existsSync(LOG)
 		? readFileSync(LOG, "utf8").split("\n").filter(line => line.trim() !== "").map(line => JSON.parse(line) as VerdictRecord)
-		: []                                                                                                   ;
+		: [];
 }
 
 function main(): void {
-	const args = argsOf()                                                    ;
+	const args = argsOf();
 	if (args.includes("--check")) {
-		const gate = checkGate()                                             ;
-		for (const failure of gate.failures) console.error(`gate: ${failure}`) ;
-		console.log(`promotion gate checked=${gate.checked} failures=${gate.failures.length}`) ;
+		const gate = checkGate();
+		for (const failure of gate.failures) console.error(`gate: ${failure}`);
+		console.log(`promotion gate checked=${gate.checked} failures=${gate.failures.length}`);
 		if (gate.failures.length > 0) process.exit(1)                        ;
 		return                                                               ;
 	}
 	if (args.includes("--report")) {
 		const records = readVerdicts()                                         ;
 		const pending = records.filter(record => record.verdict !== "correct") ;
-		for (const record of pending) console.log(`pending ${record.verdict}: ${record.signature}${record.note === "" ? "" : ` — ${record.note}`}`) ;
-		console.log(`pending=${pending.length} judged=${records.length}`)      ;
-		return                                                                ;
+		for (const record of pending) console.log(`pending ${record.verdict}: ${record.signature}${record.note === "" ? "" : ` — ${record.note}`}`);
+		console.log(`pending=${pending.length} judged=${records.length}`);
+		return;
 	}
-	const rankIndex = args.indexOf("--rank")                                                                   ;
-	const rank      = rankIndex >= 0 ? Number(args[rankIndex + 1]) : Number.NaN                                ;
-	const census    = JSON.parse(readFileSync(REPORT, "utf8")) as { readonly types: readonly SignatureType[] } ;
-	const type      = census.types[rank - 1]                                                                   ;
-	if (type === undefined) throw new Error(`no type at rank ${rank} — run scripts/corpus-judge.ts --status`) ;
-	const record = readVerdicts().filter(candidate => candidate.signature === type.signature).at(-1) ;
+	const rankIndex = args.indexOf("--rank")                                    ;
+	const rank      = rankIndex >= 0 ? Number(args[rankIndex + 1]) : Number.NaN ;
+	const census    = readCensusReport<SignatureType>()                         ;
+	const type      = census.types[rank - 1]                                    ;
+	if (type === undefined) throw new Error(`no type at rank ${rank} — run scripts/corpus-judge.ts --status`);
+	const record = readVerdicts().filter(candidate => candidate.signature === type.signature).at(-1);
 	if (record === undefined) throw new Error(`rank ${rank} has no verdict yet — judge it with scripts/corpus-judge.ts --verdict ${rank} <verdict>`)  ;
 	if (record.verdict !== "correct") throw new Error(`rank ${rank} is "${record.verdict}" — only correct types promote to fixtures; see --report`)   ;
 	const dir = fixtureDir(type.language, type.signature, rank) ;
@@ -158,13 +158,13 @@ function main(): void {
 	mkdirSync(dir, { recursive: true })                                                             ;
 	writeFileSync(join(dir, `tables${ext}`), scaffoldFor(type.language, type.kind))                 ;
 	runAligner(type.language, join(dir, `tables${ext}`))                                            ;
-	writeFileSync(join(dir, `tables.aligned${ext}`), readFileSync(join(dir, `tables${ext}`), "utf8")) ;
-	writeFileSync(join(dir, "verdict.json"), `${JSON.stringify({ schemaVersion: 1, rank, signature: type.signature, verdict: record.verdict, date: record.date, note: record.note }, null, 2)}\n`) ;
-	console.log(`promoted rank ${rank} → skills/xxx/fixtures/${type.language}/corpus — refine tables${ext}, then rerun promote --rank ${rank} to refresh the golden`) ;
+	writeFileSync(join(dir, `tables.aligned${ext}`), readFileSync(join(dir, `tables${ext}`), "utf8"));
+	writeFileSync(join(dir, "verdict.json"), `${JSON.stringify({ schemaVersion: 1, rank, signature: type.signature, verdict: record.verdict, date: record.date, note: record.note }, null, 2)}\n`);
+	console.log(`promoted rank ${rank} → skills/xxx/fixtures/${type.language}/corpus — refine tables${ext}, then rerun promote --rank ${rank} to refresh the golden`);
 }
 
 function argsOf(): readonly string[] {
-	return process.argv.slice(2)                                             ;
+	return process.argv.slice(2);
 }
 
-if (import.meta.main) main() ;
+if (import.meta.main) main();
