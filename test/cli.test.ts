@@ -186,10 +186,11 @@ describe("public CLI", () => {
 		expect(check.status).toBe(0);
 	});
 
-	test("GUIDE never exposes an empty registry or candidate data as guidance", () => {
+	test("GUIDE never exposes an uncovered key or candidate data as guidance", () => {
 		const root = workspace();
 		pythonFixture(root);
-		const empty = invoke(root, ["guide", "--file", "table.py", "--json"]);
+		writeFileSync(join(root, "config.ts"), "const CONFIG = {\n\talpha: 1,\n\tmuch_longer: 22,\n\tmid: 3,\n};\n");
+		const empty = invoke(root, ["guide", "--file", "config.ts", "--json"]);
 		expect(empty.status).toBe(1);
 		expect(JSON.parse(empty.stdout).guides).toEqual([]);
 		mkdirSync(join(root, ".xxx"));
@@ -208,7 +209,7 @@ describe("public CLI", () => {
 			const conventionPath = join(root, ".xxx", "conventions.jsonl")                                     ;
 			const decisionPath   = join(root, ".xxx", "decisions.jsonl")                                       ;
 			const convention     = JSON.parse(readFileSync(conventionPath, "utf8")) as Record<string, unknown> ;
-			if (scenario === "unknown") convention.key = "v1|python|-|other|name>equal>value";
+			if (scenario === "unknown") convention.status = "candidate";
 			if (scenario === "rejected") convention.status = "rejected";
 			if (scenario === "conflict") writeFileSync(conventionPath, `${JSON.stringify(convention)}\n${JSON.stringify({ ...convention, id: "test-python-table-conflict" })}\n`);
 			else writeFileSync(conventionPath, `${JSON.stringify(convention)}\n`);
@@ -224,7 +225,7 @@ describe("public CLI", () => {
 		}
 	});
 
-	test("doctor never reports a missing Python, config or approval DB as ready", () => {
+	test("doctor never reports a missing Python or config as ready; shipped preset approvals resolve the approval check", () => {
 		const root   = workspace()                                                               ;
 		const result = invoke(root, ["doctor", "--json"], { PATH: "/definitely/no/tools/here" }) ;
 		const value  = JSON.parse(result.stdout)                                                 ;
@@ -234,7 +235,7 @@ describe("public CLI", () => {
 		expect(value.checks.config.detail     ).toContain      ("inherited defaults") ;
 		expect(value.checks.config.fingerprint).toMatch        (/^sha256:/          ) ;
 		expect(value.checks.config.layers     ).toHaveLength   (4                   ) ;
-		expect(value.checks.approval.ok       ).toBe           (false               ) ;
+		expect(value.checks.approval.ok       ).toBe           (true                ) ;
 		expect(value.limitations.length       ).toBeGreaterThan(0                   ) ;
 	});
 
