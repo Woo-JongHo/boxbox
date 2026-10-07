@@ -9,6 +9,5 @@ eval/
 dist/
 .gjc/
 .claude/
-.agents/
 .zcode/
 .www/
