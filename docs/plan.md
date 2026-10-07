@@ -213,6 +213,10 @@ TS SourceFile 단일호출 선언 표와 Python 같은 indent 단순 대입 3행
 **▶ active — 실제 데이터 기준으로 빈도 높은 후보부터 배포 규칙으로 구체화한다.**
 
 - 기존 두 초기 규칙의 키는 관측의 3.31%였다. 블록 선언·객체 속성·Python dict부터 전후·반례를 판정한다.
+- 2026-10-08 census 재구축(~/.cache/xxx/corpus, 8개 저장소 체크아웃 재사용) 결과 빈도 상위는
+  TS Block declaration-equals(224표), TS ObjectLiteralExpression registration colon>value(199+102표),
+  Python name>equal>value(172표 — 승인된 키의 depth 변형으로 이미 커버), TS TypeLiteral type-members(90표),
+  call-statements 체인(66·50표) 순이다. 다음 승격 후보는 **TS 블록 선언 표**, 그다음 **TS 객체 속성 표**다.
 - `.xxx/cache/corpus/REVIEW.md`를 사람 검토 진입점으로 사용한다.
 - 전후 행 대응 11개와 60초 timeout 1개를 재현·해소하고 회귀 사례로 남긴다.
 - 승인된 후보만 REL6 preset에 적재한다. 데이터의 양이나 기계 검증으로 사람 승인을 대신하지 않는다.
