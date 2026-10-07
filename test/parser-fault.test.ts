@@ -31,7 +31,7 @@ function fakePath(mode: string, tool = "python3"): string {
 	const directory  = join(scratch  , mode) ;
 	const executable = join(directory, tool) ;
 	mkdirSync(directory, { recursive: true });
-	writeFileSync(executable, `#!${BUN}\nimport { unlinkSync } from "node:fs";\nif (process.argv.includes("--version")) {\n if (process.env.FAKE_MODE === "probe-timeout") setInterval(() => {}, 1_000);\n if (process.env.FAKE_MODE === "vanish") unlinkSync(process.argv[1]);\n process.exit(0);\n}\nswitch (process.env.FAKE_MODE) {\n case "failure": console.error("internal failure"); process.exit(2);\n case "failure-error": console.error("1: error: internal failure"); process.exit(2);\n case "rust-empty": process.exit(1);\n case "signal": process.kill(process.pid, "SIGTERM"); break;\n case "timeout": setInterval(() => {}, 1_000); break;\n case "output": process.stdout.write("x".repeat(2_000_000)); break;\n default: process.exit(0);\n}\n`);
+	writeFileSync(executable, `#!${BUN}\nimport { unlinkSync } from "node:fs";\nif (process.argv.includes("--version")) {\n if (process.env.FAKE_MODE === "probe-timeout") { setInterval(() => {}, 1_000); } else { if (process.env.FAKE_MODE === "vanish") unlinkSync(process.argv[1]); process.exit(0); }\n}\nswitch (process.env.FAKE_MODE) {\n case "failure": console.error("internal failure"); process.exit(2);\n case "failure-error": console.error("1: error: internal failure"); process.exit(2);\n case "rust-empty": process.exit(1);\n case "signal": process.kill(process.pid, "SIGTERM"); break;\n case "timeout": setInterval(() => {}, 1_000); break;\n case "output": process.stdout.write("x".repeat(2_000_000)); break;\n default: process.exit(0);\n}\n`);
 	chmodSync(executable, 0o755);
 	return directory;
 }
