@@ -60,6 +60,24 @@ describe("python profile specific properties", () => {
 		expect(lines[2]).toBe("name : str   = 'x'") ;
 	});
 
+	test("attribute assignments form a table without changing Python syntax or non-whitespace tokens", () => {
+		const source = [
+			"self.a = 0",
+			"self.longer_name = 0",
+			"self.b = 0",
+		].join("\n");
+		const result = align(source);
+
+		expect(result.groups).toBe(1);
+		expect(result.output).toBe([
+			"self.a           = 0",
+			"self.longer_name = 0",
+			"self.b           = 0",
+		].join("\n"));
+		expect(Bun.spawnSync(["python3", "-c", `import ast; ast.parse(${JSON.stringify(result.output)})`]).exitCode).toBe(0);
+		expect(result.output.replaceAll(/\s/gu, "")).toBe(source.replaceAll(/\s/gu, ""));
+	});
+
 	test("assigned calls decompose into the call cell and argument columns", () => {
 		const source = [
 			"first  = diagnostics(toolchain, before)",

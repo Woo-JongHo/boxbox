@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "tool": "xxx",
+  "results": [
+    {
+      "file": "skills/xxx/scripts/common/guarded-run.ts",
+      "language": "typescript",
+      "mode": "check",
+      "summary": {
+        "groups": 8,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "groups": [
+        {
+          "kind": "declaration-equals",
+          "startLine": 16,
+          "endLine": 18,
+          "rows": 3,
+          "axes": [
+            "equals=16",
+            "semicolon=165"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "SourceFile",
+          "depth": 0
+        },
+        {
+          "kind": "type-alias",
+          "startLine": 20,
+          "endLine": 22,
+          "rows": 3,
+          "axes": [
+            "equals=16",
+            "semicolon=70"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "SourceFile",
+          "depth": 0
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 25,
+          "endLine": 29,
+          "rows": 5,
+          "axes": [
+            "equals=20",
+            "semicolon=70"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 49,
+          "endLine": 50,
+          "rows": 2,
+          "axes": [
+            "equals=26",
+            "semicolon=87"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 3
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 89,
+          "endLine": 90,
+          "rows": 2,
+          "axes": [
+            "equals=17",
+            "semicolon=118"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 97,
+          "endLine": 98,
+          "rows": 2,
+          "axes": [
+            "equals=20",
+            "semicolon=41"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "assignments",
+          "startLine": 116,
+          "endLine": 120,
+          "rows": 5,
+          "axes": [
+            "equals=37",
+            "semicolon=86"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 2
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 155,
+          "endLine": 156,
+          "rows": 2,
+          "axes": [
+            "equals=25",
+            "semicolon=102"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        }
+      ],
+      "parse": {
+        "status": "not-run",
+        "tool": "typescript"
+      }
+    }
+  ]
+}

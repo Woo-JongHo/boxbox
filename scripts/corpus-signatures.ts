@@ -12,26 +12,33 @@
  * so raise --max-files to scan a whole tree. Local-only sources are included when present.
  */
 import      {
-              existsSync                                ,
-              readdirSync                               ,
-              readFileSync                              ,
-              realpathSync                              ,
-              statSync                                  ,
-              mkdirSync                                 ,
-              writeFileSync                             ,
-                                                          } from "node:fs"                         ;
-import      { homedir                                     } from "node:os"                         ;
-import      { join, relative                              } from "node:path"                       ;
-import      { API                                         } from "typescript/unstable/async"       ;
-import      { alignSource                                 } from "@/common/table-engine.ts"        ;
-import      { PYTHON_ALIGNER                              } from "@/python/profile.ts"             ;
-import      { indentDepth, signatureOf, SIGNATURE_VERSION } from "@/common/signature.ts"           ;
-import      { censusGroups, groupPreserved                } from "@/typescript/06_align-tables.ts" ;
+              renameSync                 ,
+              existsSync                 ,
+              readdirSync                ,
+              readFileSync               ,
+              realpathSync               ,
+              statSync                   ,
+              mkdirSync                  ,
+              writeFileSync              ,
+                                           } from "node:fs"                         ;
+import      { createHash                   } from "node:crypto"                     ;
+import      { homedir                      } from "node:os"                         ;
+import      { join, relative               } from "node:path"                       ;
+import      { API                          } from "typescript/unstable/async"       ;
+import      { alignSource                  } from "@/common/table-engine.ts"        ;
+import      { PYTHON_ALIGNER               } from "@/python/profile.ts"             ;
+import      {
+              indentDepth                ,
+              lookupKeyOf                ,
+              signatureOf                ,
+              SIGNATURE_VERSION          ,
+                                           } from "@/common/signature.ts"           ;
+import      { censusGroups, groupPreserved } from "@/typescript/06_align-tables.ts" ;
 
 const ROOT  = join(import.meta.dir, "..")                ;
 const CACHE = join(homedir(), ".cache", "xxx", "corpus") ;
 
-interface CorpusSource {
+export interface CorpusSource {
 	readonly id         : string            ;
 	readonly language   : string            ;
 	readonly repository : string            ;
@@ -51,6 +58,21 @@ interface TableSpot {
 	readonly startLine : number ;
 	readonly endLine   : number ;
 	readonly rows      : number ;
+}
+
+export interface CorpusObservation {
+	readonly schemaVersion : 1                                                              ;
+	readonly id            : string                                                         ;
+	readonly lookupKey     : string                                                         ;
+	readonly signature     : string                                                         ;
+	readonly state         : string                                                         ;
+	readonly rows          : number                                                         ;
+	readonly edits         : number                                                         ;
+	readonly source        : Pick<CorpusSource, "id" | "repository" | "commit" | "license"> ;
+	readonly file          : string                                                         ;
+	readonly startLine     : number                                                         ;
+	readonly endLine       : number                                                         ;
+	readonly sourceHash    : string                                                         ;
 }
 
 interface SignatureType {
@@ -136,26 +158,58 @@ function walkFiles(root: string, extension: string, limit: number): readonly str
 	return found                                                      ;
 }
 
-interface CensusRow {
-	readonly signature : string    ;
-	readonly language  : string    ;
-	readonly kind      : string    ;
-	readonly state     : string    ;
-	readonly rows      : number    ;
-	readonly edits     : number    ;
-	readonly spot      : TableSpot ;
+export interface CensusRow {
+	readonly signature  : string    ;
+	readonly language   : string    ;
+	readonly kind       : string    ;
+	readonly state      : string    ;
+	readonly rows       : number    ;
+	readonly edits      : number    ;
+	readonly spot       : TableSpot ;
+	readonly lookupKey  : string    ;
+	readonly sourceHash : string    ;
 }
 
 interface CensusResult {
-	readonly files          : number               ;
+	readonly attempted      : number               ;
+	readonly succeeded      : number               ;
+	readonly capped         : boolean              ;
 	readonly rows           : readonly CensusRow[] ;
 	readonly failedBatches? : number               ;
+}
+
+const sha256 = (value: string): string => `sha256:${createHash("sha256").update(value).digest("hex")}`;
+
+export function observationOf(row: CensusRow, source: CorpusSource): CorpusObservation {
+	const value = {
+		schemaVersion : 1 as const,
+		lookupKey     : row.lookupKey,
+		signature     : row.signature,
+		state         : row.state,
+		rows          : row.rows,
+		edits         : row.edits,
+		source        : { id: source.id, repository: source.repository, commit: source.commit, license: source.license },
+		file          : row.spot.file,
+		startLine     : row.spot.startLine,
+		endLine       : row.spot.endLine,
+		sourceHash    : row.sourceHash,
+	};
+	return { ...value, id: sha256(JSON.stringify(value)) };
+}
+
+/** 완성된 스냅샷만 보이도록 같은 디렉터리의 임시 파일을 교체한다. */
+function replaceFile(path: string, text: string): void {
+	const temporary = `${path}.${process.pid}.${crypto.randomUUID()}.tmp`;
+	writeFileSync(temporary, text);
+	renameSync(temporary, path);
 }
 
 async function censusSource(source: CorpusSource, maxFiles: number): Promise<CensusResult> {
 	const root              = join(CACHE, source.id)                           ;
 	const suffix            = source.language === "typescript" ? ".ts" : ".py" ;
-	const files             = walkFiles(root, suffix, maxFiles)                ;
+	const discovered        = walkFiles(root, suffix, maxFiles + 1)            ;
+	const capped            = discovered.length > maxFiles                     ;
+	const files             = discovered.slice(0, maxFiles)                    ;
 	const rows: CensusRow[] = []                                               ;
 	if (source.language === "typescript") {
 		// One server for the whole source: opening per file spawns a TypeScript 7 project per file and leaks gigabytes.
@@ -172,32 +226,38 @@ async function censusSource(source: CorpusSource, maxFiles: number): Promise<Cen
 		};
 		let api           = new API({ cwd: root }) ;
 		let batchesFailed = 0                      ;
+		let succeeded     = 0                      ;
 		try {
 			const size = 25;
 			for (let index = 0; index < files.length; index += size) {
 				const batch = files.slice(index, index + size)                                     ;
 				const label = (file: string): string => relative(root, file).replaceAll("\\", "/") ;
 				const run = async (): Promise<boolean> => {
-					const state = await api.updateSnapshot({ openFiles: batch });
+					const batchRows: CensusRow[] = []                                             ;
+					const state                  = await api.updateSnapshot({ openFiles: batch }) ;
 					for (const file of batch) {
 						const project = await state.getDefaultProjectForFile(file)       ;
 						if (!project) continue                                           ;
 						const ast = await project.program.getSourceFile(file)            ;
 						if (!ast) continue                                               ;
+						const text = readFileSync(file, "utf8");
 						for (const group of censusGroups(ast, 3)) {
 							const safe  = groupPreserved(ast, group)                                      ;
 							const state = group.edits.length === 0 ? "PASS" : safe ? "FIXABLE" : "REFUSE" ;
-							rows.push({
-								signature : signatureOf(source.language, group.context, group.kind, group.axes, group.depth),
-								language  : source.language   ,
-								kind      : group.kind        ,
-								state     : state             ,
-								rows      : group.rowCount    ,
-								edits     : group.edits.length,
-								spot      : { source: source.id, file: label(file), startLine: group.startLine, endLine: group.endLine, rows: group.rowCount },
+							batchRows.push({
+								signature  : signatureOf(source.language, group.context, group.kind, group.axes, group.depth),
+								lookupKey  : lookupKeyOf(source.language, group.context, group.kind, group.axes),
+								language   : source.language   ,
+								kind       : group.kind        ,
+								state      : state             ,
+								rows       : group.rowCount    ,
+								edits      : group.edits.length,
+								spot       : { source: source.id, file: label(file), startLine: group.startLine, endLine: group.endLine, rows: group.rowCount },
+								sourceHash : sha256(text),
 							});
 						}
 					}
+					rows.push(...batchRows);
 					return true;
 				};
 				// the first wedge may be huge-project inference doing real work (vscode src/), so the SAME batch is
@@ -215,27 +275,35 @@ async function censusSource(source: CorpusSource, maxFiles: number): Promise<Cen
 					}
 					console.error(`corpus-signatures ${source.id} batch ${Math.floor(index / size) + 1} SKIPPED${batchesFailed > 0 ? ` failedBatches=${batchesFailed}` : ""}`);
 				} else {
+					succeeded += batch.length;
 					console.error(`corpus-signatures ${source.id} batch ${Math.floor(index / size) + 1}/${Math.ceil(files.length / size)} tables=${rows.length}${batchesFailed > 0 ? ` failedBatches=${batchesFailed}` : ""}`);
 				}
 			}
 		} finally {
 			await watchdog(api.close().then(() => undefined), "close");
 		}
-		return { files: files.length, rows, failedBatches: batchesFailed };
+		return { attempted: files.length, succeeded, capped, rows, failedBatches: batchesFailed };
 	}
+	let succeeded = 0;
 	for (const file of files) {
-		const label  = relative(root, file).replaceAll("\\", "/")                                                                                                 ;
-		const result = alignSource(readFileSync(file, "utf8"), PYTHON_ALIGNER, { minRows: 3, apply: false })                                                      ;
-		const spotOf = (startLine: number, endLine: number): TableSpot => ({ source: source.id, file: label, startLine, endLine, rows: endLine - startLine + 1 }) ;
-		for (const table of result.details) {
-			const state = table.edits.length === 0 ? "PASS" : "FIXABLE";
-			rows.push({ signature: signatureOf(source.language, "", "table", table.axes, indentDepth(table.indent)), language: source.language, kind: "table", state, rows: table.rows, edits: table.edits.length, spot: spotOf(table.startLine, table.endLine) });
-		}
-		for (const table of result.refused) {
-			rows.push({ signature: signatureOf(source.language, "", "table", table.axes, indentDepth(table.indent)), language: source.language, kind: "table", state: "REFUSE", rows: table.rows, edits: table.edits.length, spot: spotOf(table.startLine, table.endLine) });
+		try {
+			const label  = relative(root, file).replaceAll("\\", "/")                                                                                                 ;
+			const text   = readFileSync(file, "utf8")                                                                                                                 ;
+			const result = alignSource(text, PYTHON_ALIGNER, { minRows: 3, apply: false })                                                                            ;
+			const spotOf = (startLine: number, endLine: number): TableSpot => ({ source: source.id, file: label, startLine, endLine, rows: endLine - startLine + 1 }) ;
+			for (const table of result.details) {
+				const state = table.edits.length === 0 ? "PASS" : "FIXABLE";
+				rows.push({ signature: signatureOf(source.language, "", "table", table.axes, indentDepth(table.indent)), lookupKey: lookupKeyOf(source.language, "", "table", table.axes), language: source.language, kind: "table", state, rows: table.rows, edits: table.edits.length, spot: spotOf(table.startLine, table.endLine), sourceHash: sha256(text) });
+			}
+			for (const table of result.refused) {
+				rows.push({ signature: signatureOf(source.language, "", "table", table.axes, indentDepth(table.indent)), lookupKey: lookupKeyOf(source.language, "", "table", table.axes), language: source.language, kind: "table", state: "REFUSE", rows: table.rows, edits: table.edits.length, spot: spotOf(table.startLine, table.endLine), sourceHash: sha256(text) });
+			}
+			succeeded += 1;
+		} catch (error) {
+			console.error(`corpus-signatures ${source.id} file=${relative(root, file)} FAILED ${error instanceof Error ? error.message : String(error)}`);
 		}
 	}
-	return { files: files.length, rows };
+	return { attempted: files.length, succeeded, capped, rows };
 }
 
 /** Representatives prefer tables with edits to judge (FIXABLE), then aligned ones (PASS), then refused ones. */
@@ -269,26 +337,50 @@ function collapse(rows: readonly CensusRow[]): readonly SignatureType[] {
 }
 
 async function main(): Promise<void> {
-	const maxFilesIndex                          = process.argv.indexOf("--max-files")                               ;
-	const maxFiles                               = maxFilesIndex < 0 ? 400 : Number(process.argv[maxFilesIndex + 1]) ;
-	const manifest                               = readManifest("manifest.json")                                     ;
-	const local                                  = readManifest("local.json")                                        ;
-	const sources                                = [...manifest.sources, ...local.sources]                           ;
-	const all           : CensusRow[]            = []                                                                ;
-	const scanned       : Record<string, number> = {}                                                                ;
-	const failedBatches : Record<string, number> = {}                                                                ;
+	const maxFilesIndex                                                                                                                             = process.argv.indexOf("--max-files")                                                ;
+	const maxFiles                                                                                                                                  = maxFilesIndex < 0 ? 400 : Number(process.argv[maxFilesIndex + 1])                  ;
+	const maxPythonFilesIndex                                                                                                                       = process.argv.indexOf("--max-python-files")                                         ;
+	const maxPythonFiles                                                                                                                            = maxPythonFilesIndex < 0 ? maxFiles : Number(process.argv[maxPythonFilesIndex + 1]) ;
+	const manifest                                                                                                                                  = readManifest("manifest.json")                                                      ;
+	const local                                                                                                                                     = readManifest("local.json")                                                         ;
+	const sources                                                                                                                                   = [...manifest.sources, ...local.sources]                                            ;
+	const all           : CensusRow[]                                                                                                               = []                                                                                 ;
+	const sourceReports : Record<string, { attempted: number; succeeded: number; failed: number; capped: boolean; status: string; error?: string }> = {}                                                                                 ;
+	const failedBatches : Record<string, number>                                                                                                    = {}                                                                                 ;
 	for (const source of sources) {
-		const census = await censusSource(source, maxFiles) ;
-		scanned[source.id] = census.files                   ;
+		const root = join(CACHE, source.id);
+		if (!existsSync(root)) {
+			sourceReports[source.id] = { attempted: 0, succeeded: 0, failed: 0, capped: false, status: "missing", error: "checkout missing" };
+			console.error(`corpus-signatures ${source.id} MISSING checkout=${root}`);
+			continue;
+		}
+		const head         = Bun.spawnSync(["git", "-C", root, "rev-parse", "HEAD"])  ;
+		const actualCommit = head.exitCode === 0 ? head.stdout.toString().trim() : "" ;
+		if (actualCommit !== source.commit) {
+			sourceReports[source.id] = { attempted: 0, succeeded: 0, failed: 0, capped: false, status: "failed", error: `commit mismatch: expected ${source.commit}, got ${actualCommit || "unreadable"}` };
+			console.error(`corpus-signatures ${source.id} FAILED commit mismatch`);
+			continue;
+		}
+		const census = await censusSource(source, source.language === "python" ? maxPythonFiles : maxFiles) ;
+		sourceReports[source.id] = { attempted: census.attempted, succeeded: census.succeeded, failed: census.attempted - census.succeeded, capped: census.capped, status: census.succeeded === census.attempted ? "ok" : "partial" } ;
 		if (census.failedBatches) failedBatches[source.id] = census.failedBatches;
 		all.push(...census.rows);
-		console.error(`corpus-signatures ${source.id} files=${census.files} tables=${census.rows.length}${census.failedBatches ? ` failedBatches=${census.failedBatches}` : ""}`);
+		console.error(`corpus-signatures ${source.id} attempted=${census.attempted} succeeded=${census.succeeded} capped=${census.capped} tables=${census.rows.length}${census.failedBatches ? ` failedBatches=${census.failedBatches}` : ""}`);
 	}
-	const types  = collapse(all)                                                                                                                                                                   ;
-	const report = { schemaVersion: 2, signatureVersion: SIGNATURE_VERSION, sources: sources.map(source => source.id), maxFiles, filesScanned: scanned, failedBatches, tables: all.length, types } ;
+	const bySource     = new Map(sources.map(source => [source.id, source]))                                                                       ;
+	const filesScanned = Object.fromEntries(Object.entries(sourceReports).map(([id, status]) => [id, status.attempted]))                           ;
+	const observations = all.map(row => observationOf(row, bySource.get(row.spot.source)!)).sort((left, right) => left.id.localeCompare(right.id)) ;
+	if (new Set(observations.map(row => row.id)).size !== observations.length) throw new Error("duplicate corpus observation id");
+	const observationsText = observations.map(row => JSON.stringify(row)).join("\n") + (observations.length > 0 ? "\n" : "")                                                                                                                                               ;
+	const types            = collapse(all)                                                                                                                                                                                                                                 ;
+	const observationLink  = { schemaVersion: 1, path: "observations.jsonl", sha256: sha256(observationsText), rows: observations.length }                                                                                                                                 ;
+	const report           = { schemaVersion: 2, signatureVersion: SIGNATURE_VERSION, sources: sources.map(source => source.id), maxFiles, maxPythonFiles, filesScanned, sourceReports, failedBatches, tables: observations.length, observations: observationLink, types } ;
+	if (report.tables !== observations.length || types.reduce((count, type) => count + type.count, 0) !== observations.length) throw new Error("corpus observation count mismatch");
 	mkdirSync(CACHE, { recursive: true })                              ;
-	const out = join(CACHE, "signatures.json")                         ;
-	writeFileSync(out, `${JSON.stringify(report, null, "\t")}\n`)      ;
+	const observationsOut = join(CACHE, "observations.jsonl") ;
+	const out             = join(CACHE, "signatures.json"   ) ;
+	replaceFile(observationsOut, observationsText)                       ;
+	replaceFile(out, `${JSON.stringify(report, null, "\t")}\n`)       ;
 	console.error(`corpus-signatures tables=${all.length} types=${types.length} report=${out}`);
 	console.log(JSON.stringify(types.slice(0, 20).map(type => ({ signature: type.signature, count: type.count, edits: type.edits })), null, 2));
 }

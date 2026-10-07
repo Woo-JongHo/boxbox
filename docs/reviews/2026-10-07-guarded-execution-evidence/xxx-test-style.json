@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "tool": "xxx",
+  "results": [
+    {
+      "file": "test/guarded-run.test.ts",
+      "language": "typescript",
+      "mode": "check",
+      "summary": {
+        "groups": 6,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "groups": [
+        {
+          "kind": "declaration-equals",
+          "startLine": 14,
+          "endLine": 18,
+          "rows": 5,
+          "axes": [
+            "equals=22",
+            "semicolon=257"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "SourceFile",
+          "depth": 0
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 23,
+          "endLine": 24,
+          "rows": 2,
+          "axes": [
+            "equals=17",
+            "semicolon=45"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "call-statements",
+          "startLine": 25,
+          "endLine": 28,
+          "rows": 4,
+          "axes": [
+            "subject-close-paren=152",
+            "matcher-dot=157",
+            "matcher-open-paren=167",
+            "matcher-close-paren=176",
+            "semicolon=178"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 53,
+          "endLine": 54,
+          "rows": 2,
+          "axes": [
+            "equals=18",
+            "semicolon=27"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "declaration-equals",
+          "startLine": 65,
+          "endLine": 66,
+          "rows": 2,
+          "axes": [
+            "equals=29",
+            "semicolon=43"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        },
+        {
+          "kind": "call-statements",
+          "startLine": 83,
+          "endLine": 86,
+          "rows": 4,
+          "axes": [
+            "subject-close-paren=145",
+            "matcher-dot=150",
+            "matcher-open-paren=160",
+            "matcher-close-paren=192",
+            "semicolon=194"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 2
+        }
+      ],
+      "parse": {
+        "status": "not-run",
+        "tool": "typescript"
+      }
+    }
+  ]
+}

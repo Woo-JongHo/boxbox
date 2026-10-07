@@ -119,7 +119,7 @@ The first command fails and lists files when any file needs changes. `--write` m
 bun <SKILL>/scripts/typescript/06_align-tables.ts --file <target file> [--write] [--min-rows 3] [--explain <line>]
 ```
 
-The first command reports table kinds, axes and mismatch counts, and fails on any mismatch. Every table's edits must change nothing but whitespace between tokens (checked with the language's token stream: strings, comments, indentation and token boundaries stay byte-identical); a table that would change more is refused, never written, and counted as `refused=`. With `--write`, the output is also re-parsed by the language's official parser (TypeScript 7, python3, gofmt, node, clang, javac, rustfmt); if its diagnostics differ from the source, nothing is written (`parse=changed`). A missing parser reports `parse=skipped`, which is not a pass. Every aligner accepts `--json` and prints one versioned result (`schemaVersion`, per-file `summary`, per-group `state` PASS / FIXABLE / SUGGEST / REFUSE, `parse`) — agents and CI should read that instead of the text report. TypeScript `--write` repeats until nothing moves (mid-line tabs change width with position, so one pass can shift a later column) and fails if it does not converge within 5 passes (`passes=`). Use `--write` only after reading the file and confirming the table rows share a role, then rerun to prove `misaligned=0`. When something does not work: ① classify the kind with `--explain <line>`, ② identify missing or excess axes, ③ register the kind and axes in `grid-kinds.ts` and pin it with `fixtures/table-kinds.ts` and `test/typescript-align.test.ts`.
+The first command reports table kinds, axes and mismatch counts, and fails on any mismatch. Every table's edits must change nothing but whitespace between tokens (checked with the language's token stream: strings, comments, indentation and token boundaries stay byte-identical); a table that would change more is refused, never written, and counted as `refused=`. With `--write`, the output is also re-parsed by the language's official parser (TypeScript 7, python3, gofmt, node, clang, javac, rustfmt); if its diagnostics differ from the source, nothing is written (`parse=changed`). 파서가 없거나 실행에 실패하면 쓰기 전에 비영 종료한다. `XXX_REQUIRE_PARSERS=0`으로도 우회하지 않는다. 테스트의 선택적 parser skip은 제품 쓰기 허용을 뜻하지 않는다. Every aligner accepts `--json` and prints one versioned result (`schemaVersion`, per-file `summary`, per-group `state` PASS / FIXABLE / SUGGEST / REFUSE, `parse`) — agents and CI should read that instead of the text report. TypeScript `--write`는 임시 작업본에서 최대 5 pass까지 정렬·재파싱·수렴을 확인한 뒤 원본을 한 번 교체한다(`passes=`). 공통 라인 엔진도 검증한 작업본만 교체하며, commit 직전 외부 편집이 감지되면 거절한다. 실패한 작업본은 원본에 반영하지 않는다. Use `--write` only after reading the file and confirming the table rows share a role, then rerun to prove `misaligned=0`. When something does not work: ① classify the kind with `--explain <line>`, ② identify missing or excess axes, ③ register the kind and axes in `grid-kinds.ts` and pin it with `fixtures/table-kinds.ts` and `test/typescript-align.test.ts`.
 
 **STEP7 — Wrap condition chains.** Wrap `&&`/`||` chains listing four or more conditions on one physical line into the multi-line form of rule 38 (operators at line start). Only line breaks are inserted, so parentheses and evaluation order are preserved. Mixed-operator groups and chains inside table rows (registration-object arrows, for example) are excluded from automation — they are manual restructuring targets under rule 38.
 
@@ -190,5 +190,16 @@ node <SKILL>/scripts/typescript/05_inspect-hover.mjs \
 - When omission and explicit `undefined` mean the same state, call sites are unified on omitting the property, and the total `exactOptionalPropertyTypes` error count does not grow without justification.
 - Do not spread new tables with fewer than two comparison rows, or excessive whitespace absent from the canonical form.
 - Every changed TypeScript file passes the second lock: `00_normalize-imports.ts` check mode (changed=0) and `06_align-tables.ts --file` (misaligned=0; compressed is 0 or has a manual expansion plan). Write code per the [authoring axis contract](references/readability-contract.md) at authoring time; the checks prove it.
-- `bun run check`, the target behavior tests, `test/architecture.test.ts` where applicable, and `git diff --check` pass.
+- `bun run check`, the target behavior tests, and `git diff --check` pass.
 - Manually check changed files for `TODO`, `test.skip` and `test.only`.
+
+
+## 명시 실행과 호출 증거
+
+코드를 저작하는 셸 명령은 설치된 공개 CLI의 `xxx run --root <absolute-project> -- <command> [args...]`로 감싼다.
+작업 시작·완료에 `xxx status --root <absolute-project> --json`을 확인하고 run ID·검사 대상·판정을 보고한다.
+엔진이 없으면 호출 미실행으로 보고하고 CLI 설치 경로를 해결한다. 설치/skill 발견을 검사 실행으로 표현하지 않는다.
+`run`은 변경된 지원 파일의 읽기 전용 검사이며 구조 단순화와 자동 수정은 이 skill의 별도 저작 단계다.
+NO_CHANGES·NOT_INVOKED·UNSUPPORTED·TOOL_ERROR·STALE는 PASS가 아니다. FAIL 판정이 있으면 원인을 고친 뒤 다시 감싼 명령으로 검사한다.
+셸 실행기 밖 편집 도구를 쓰면 해당 변경은 감싼 실행의 증거가 없다고 보고하고 파일별 `xxx check --file`을 명시 실행한다.
+native hook의 등록·trust·호스트 수용은 별도 검증한다. 실행기 계약과 범위는 CLI 패키지 README의 “실행 범위와 지속 상태”를 따른다.
