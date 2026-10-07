@@ -1,12 +1,15 @@
 {
 	"name": "xxx-plugins",
-	"owner": { "name": "Woo-JongHo" },
+	"owner": {
+		"name": "Woo-JongHo"
+	},
 	"plugins": [
 		{
 			"name": "xxx",
-			"source": "./",
-			"description": "The xxx skill: inspects, fixes and verifies TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, and Kotlin against tabular readability rules",
+			"source": "./plugin",
+			"description": "Inspects TypeScript and Python files one at a time against tabular readability rules and formats only through human-approved rules, plus a read-only inspector.",
 			"version": "0.2.0"
 		}
-	]
+	],
+	"description": "XXX: tabular readability checks for TypeScript and Python"
 }
