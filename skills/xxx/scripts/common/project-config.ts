@@ -129,7 +129,7 @@ function formattersOf(value: unknown, where: string): ProjectConfig["formatters"
 	return result;
 }
 
-/** schema 1은 languages만 가진 옛 설정이며 원본을 쓰지 않고 메모리에서 schema 2 계층으로 바꾼다. */
+/** Schema 1 is the old languages-only config; it is converted in memory to the schema 2 layers without writing the original. */
 export function validateProjectConfig(value: unknown, where: string): ProjectConfig {
 	assertPlainObject(value, where);
 	if (value.schemaVersion === 1) {
@@ -173,7 +173,7 @@ function projectConfigPath(root: string): string {
 	return join(directory, "config.json");
 }
 
-/** XDG_CONFIG_HOME가 절대 경로일 때만 쓰고, 그 밖에는 표준 사용자 설정 위치를 쓴다. */
+/** Uses XDG_CONFIG_HOME only when it is an absolute path; otherwise uses the standard user config location. */
 export function userDataRoot(): string {
 	const xdg = process.env.XDG_CONFIG_HOME;
 	return resolve(join(xdg && isAbsolute(xdg) ? xdg : join(homedir(), ".config"), "xxx"));
@@ -200,7 +200,7 @@ function assertRealDirectory(path: string): void {
 	if (!status.isDirectory() || status.isSymbolicLink()) throw new Error(`${path}: user database path component must be a real directory, not a symlink`);
 }
 
-/** 절대 경로의 모든 기존 구성 요소를 검사하고, 필요할 때만 안전한 디렉터리를 한 단계씩 만든다. */
+/** Checks every existing component of an absolute path and creates safe directories one level at a time only when needed. */
 function prepareUserRoot(create: boolean): boolean {
 	const root   = userDataRoot() ;
 	const parsed = parse(root)    ;
@@ -234,7 +234,7 @@ function assertUserDatabaseFile(path: string): void {
 	if (!status.isFile() || status.isSymbolicLink()) throw new Error(`${path}: user database file must be a regular file, not a symlink`);
 }
 
-/** 사용자 DB는 빈 JSONL 파일만 만들며 기존 파일의 바이트는 읽거나 바꾸지 않는다. */
+/** The user DB only creates empty JSONL files; it never reads or changes the bytes of existing files. */
 export function initializeUserDatabase(): UserDatabaseInitialization {
 	const root        = userDataRoot()        ;
 	const createdRoot = prepareUserRoot(true) ;
@@ -257,7 +257,7 @@ export function initializeUserDatabase(): UserDatabaseInitialization {
 	return { root, createdRoot, files };
 }
 
-/** 레코드 본문을 출력하지 않고, 비어 있지 않은 JSONL 행 수만 보고한다. */
+/** Reports only the number of non-empty JSONL lines, never the record bodies. */
 export function userDatabaseStatus(): UserDatabaseStatus {
 	const root   = userDataRoot()         ;
 	const exists = prepareUserRoot(false) ;
@@ -306,7 +306,7 @@ export function resolveConfig(root: string, options: ResolveConfigOptions = {}):
 	return { effective, fingerprint, sources };
 }
 
-/** 기존 설정과 사용자 파일을 건드리지 않고 최소 schema 2 프로젝트 설정만 만든다. */
+/** Creates only a minimal schema 2 project config without touching existing config or user files. */
 export function initializeProjectConfig(root: string): { readonly created: boolean; readonly path: string } {
 	const absolute   = resolve(root)       ;
 	const rootStatus = lstatSync(absolute) ;

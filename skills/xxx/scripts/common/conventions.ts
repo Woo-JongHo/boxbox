@@ -1,9 +1,9 @@
 /**
- * 패턴 DB (M1.8 S5a): 검사기가 표마다 조회하는 패턴 레코드를 읽고 찾는다. 조회는 조회 키의 정확 일치와 범위(glob)뿐이며,
- * 유사도는 쓰지 않는다(헌장 불변식 7). 층은 project → user → preset 순으로 이긴다. 기존 report loader는
- * 프로젝트(`.xxx/conventions.jsonl`)와 preset(`presets/recommended/conventions.jsonl`)만 읽고, 승인 gate loader가 user root를 명시적으로 받는다.
- * 같은 층에서 같은 키·같은 구체성의 범위가 서로 다른 상태를 말하면 충돌이다(파일 순서로 정하지 않는다).
- * `rejected`는 "자동 수정하지 않는다"는 뜻이며 이미 정렬된 코드를 흐트러뜨리지 않는다. 이 단계에서는 결과를 보고만 한다.
+ * Pattern DB (M1.8 S5a): reads and looks up the pattern records the checker queries for each table. Lookup is only an exact lookup-key match plus a scope (glob);
+ * similarity is never used (charter invariant 7). Layers win in the order project → user → preset. The existing report loader
+ * reads only the project (`.xxx/conventions.jsonl`) and preset (`presets/recommended/conventions.jsonl`) layers; the approval-gate loader takes the user root explicitly.
+ * Within one layer, scopes with the same key and the same specificity that state different statuses are a conflict (file order never decides).
+ * `rejected` means "do not fix automatically"; it never disturbs code that is already aligned. At this stage the result is only reported.
  */
 import      { existsSync, readFileSync } from "node:fs"          ;
 import      { join                     } from "node:path"        ;
@@ -44,7 +44,7 @@ export interface LookupResult {
 
 const STATUSES: readonly string[] = ["approved", "rejected", "candidate"];
 
-/** 레코드 하나를 검증한다. 틀린 레코드는 조용히 넘기지 않고 오류다. */
+/** Validates one record. A malformed record is an error, never silently skipped. */
 export function validateConvention(value: unknown, where: string): Convention {
 	const record = value as Convention;
 	if (record?.schemaVersion !== CONVENTION_SCHEMA_VERSION) throw new Error(`${where}: schemaVersion must be ${CONVENTION_SCHEMA_VERSION}`);
@@ -58,7 +58,7 @@ export function validateConvention(value: unknown, where: string): Convention {
 	return record;
 }
 
-/** JSONL 본문을 읽는다. 빈 줄은 건너뛰고, 같은 층 안의 중복 id는 오류다. */
+/** Reads a JSONL body. Blank lines are skipped; a duplicate id within the same layer is an error. */
 export function parseConventions(text: string, layer: ConventionLayer, where: string): readonly LoadedConvention[] {
 	const records: LoadedConvention[] = []                ;
 	const ids                         = new Set<string>() ;
@@ -75,7 +75,7 @@ export function parseConventions(text: string, layer: ConventionLayer, where: st
 	return records;
 }
 
-/** 조회용 DB: (키 → 레코드들). 현재 키 버전이 아닌 레코드는 조회되지 않고 stale로 센다. */
+/** Lookup DB: (key → records). Records whose key version is not current are not looked up and are counted as stale. */
 export interface ConventionDb {
 	readonly byKey : ReadonlyMap<string, readonly LoadedConvention[]> ;
 	readonly stale : number                                           ;
@@ -101,7 +101,7 @@ export function indexConventions(records: readonly LoadedConvention[]): Conventi
 
 const PRESET = fileURLToPath(new URL("../../presets/recommended/conventions.jsonl", import.meta.url));
 
-/** preset과 프로젝트 DB를 읽는다. 파일이 없으면 그 층은 비어 있다. */
+/** Reads the preset and project DBs. A missing file means that layer is empty. */
 export function loadConventions(projectRoot: string): ConventionDb {
 	const project = join(projectRoot, ".xxx", "conventions.jsonl")                                                                                                           ;
 	const read    = (path: string, layer: ConventionLayer): readonly LoadedConvention[] => existsSync(path) ? parseConventions(readFileSync(path, "utf8"), layer, path) : [] ;
@@ -109,7 +109,7 @@ export function loadConventions(projectRoot: string): ConventionDb {
 	return indexConventions([...read(project, "project"), ...read(PRESET, "preset")]);
 }
 
-/** glob을 정규식으로: `**`는 경로 여러 단계, `*`는 한 단계 안, `?`는 한 글자. 경로는 `/`로 정규화해 비교한다. */
+/** Glob to regex: `**` spans several path segments, `*` stays within one, `?` is one character. Paths are normalized to `/` before comparing. */
 export function globToRegExp(glob: string): RegExp {
 	let source = "";
 	for (let index = 0; index < glob.length; index += 1) {
@@ -128,12 +128,12 @@ export function globToRegExp(glob: string): RegExp {
 	return new RegExp(`^${source}$`, "u");
 }
 
-/** 범위의 구체성: 와일드카드가 아닌 글자 수. 클수록 구체적이다. */
+/** Scope specificity: the number of non-wildcard characters. Larger is more specific. */
 const specificity = (scope: string): number => scope.replace(/[*?]/gu, "").length;
 
 /**
- * 조회: project → user → preset 순서로, 키가 같고 범위가 파일에 맞는 레코드 중 가장 구체적인 범위를 고른다.
- * 가장 구체적인 레코드들이 서로 다른 상태면 충돌이다. candidate는 승인이 아니므로 unknown으로 본다.
+ * Lookup: in project → user → preset order, among records with the same key whose scope matches the file, pick the most specific scope.
+ * If the most specific records state different statuses, it is a conflict. A candidate is not an approval, so it counts as unknown.
  */
 export function lookup(db: ConventionDb, key: string, file: string): LookupResult {
 	const path       = file.replaceAll("\\", "/").replace(/^\.\//u, "")                                  ;

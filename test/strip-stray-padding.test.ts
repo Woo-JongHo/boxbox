@@ -4,13 +4,13 @@ import      { stripSemicolonPadding  } from "../scripts/strip-stray-padding.ts" 
 
 const at = (text: string, line: number): number | undefined => straySemicolonPadding(text.split("\n"), line - 1);
 
-describe("표 밖 정렬 공백 (A12)", () => {
-	test("다른 정렬 공백 없이 끝 `;` 앞에만 공백이 있는 문장 줄은 대상이다", () => {
+describe("out-of-table padding (A12)", () => {
+	test("a statement line with spaces only before the trailing `;` and no other alignment spaces is a target", () => {
 		expect(at("\tif (stale) throw new Error(\"x\")      ;", 1)).toBe(6) ;
 		expect(at("\treturn data ;"                          , 1)).toBe(1) ;
 	});
 
-	test("이웃 줄과 `;` 열을 이루거나, 여러 열을 손으로 맞춘 줄은 건드리지 않는다", () => {
+	test("lines that form a `;` column with a neighbor, or are aligned by hand into several columns, are left alone", () => {
 		const pair = ["\treadonly alternatives? : readonly Pattern[]    ;", "\treadonly note?         : string                ;"].join("\n") ;
 
 		expect(at(pair, 1)).toBeUndefined() ;
@@ -18,13 +18,13 @@ describe("표 밖 정렬 공백 (A12)", () => {
 		expect(at("\tconst a   = 1   ;", 1)).toBeUndefined() ;
 	});
 
-	test("주석과 import 줄은 대상이 아니다", () => {
+	test("comments and import lines are not targets", () => {
 		expect(at("\t// note ;"                                 , 1)).toBeUndefined() ;
 		expect(at("import { a } from \"m\" ;"                   , 1)).toBeUndefined() ;
 		expect(at("                } from \"node:fs\"        ;", 1)).toBeUndefined() ;
 	});
 
-	test("정리는 대상 줄만 바꾸고, 판단은 원래 본문 기준이다", () => {
+	test("cleanup changes only target lines, judged against the original body", () => {
 		const before = ["\tconst data = value as T       ;", "\tif (x) throw new Error(\"y\")   ;", "", "\treturn data  ;"].join("\n") ;
 
 		expect(stripSemicolonPadding(before)).toBe(["\tconst data = value as T       ;", "\tif (x) throw new Error(\"y\")   ;", "", "\treturn data;"].join("\n")) ;

@@ -1,9 +1,9 @@
 /**
- * 하네스 실행 이력 저장소.
+ * Store for the harness run history.
  *
- * - `runs.jsonl`: append-only. 실행 1회가 1행(레코드 1개)이다. 부분 실행(스테이지 누락)도 기록한다.
- * - `latest.json`: `completion.complete`인 실행만 원자 교체로 갱신한다(09_observe-shapes 스냅샷 규율).
- * 둘 다 git-tracked라 diff로 이력·증거를 검토할 수 있다(M1.7 "DB는 git-tracked JSON/JSONL" 결정).
+ * - `runs.jsonl`: append-only. One run is one line (one record). Partial runs (missing stages) are recorded too.
+ * - `latest.json`: updated by atomic replacement only for runs with `completion.complete` (the 09_observe-shapes snapshot discipline).
+ * Both are git-tracked so history and evidence can be reviewed as diffs (M1.7 decision "the DB is git-tracked JSON/JSONL").
  */
 
 import      {
@@ -34,7 +34,7 @@ export interface RunStage {
 
 export interface RunArtifact {
 	readonly stage   : string ;
-	/** 산출 디렉터리 — CLI·엔진 tarball이 같은 파일명(xxx-<version>.tgz)을 공유하므로 이 필드로 구별한다. */
+	/** Output directory — the CLI and engine tarballs share the file name (xxx-<version>.tgz), so this field tells them apart. */
 	readonly target  : string ;
 	readonly name    : string ;
 	readonly bytes   : number ;
@@ -65,50 +65,50 @@ function fail(message: string): never {
 }
 
 function expectObject(value: unknown, field: string): Record<string, unknown> {
-	if (typeof value !== "object" || value === null || Array.isArray(value)) fail(`${field}는 객체여야 한다`);
+	if (typeof value !== "object" || value === null || Array.isArray(value)) fail(`${field} must be an object`);
 	return value as Record<string, unknown>;
 }
 
 function expectString(parent: Record<string, unknown>, field: string): string {
 	const value = parent[field];
-	if (typeof value !== "string" || value.length === 0) fail(`${field}는 비어 있지 않은 문자열이어야 한다`);
+	if (typeof value !== "string" || value.length === 0) fail(`${field} must be a non-empty string`);
 	return value;
 }
 
 function expectNumber(parent: Record<string, unknown>, field: string): number {
 	const value = parent[field];
-	if (typeof value !== "number" || !Number.isFinite(value)) fail(`${field}는 유한한 수여야 한다`);
+	if (typeof value !== "number" || !Number.isFinite(value)) fail(`${field} must be a finite number`);
 	return value;
 }
 
 function expectBoolean(parent: Record<string, unknown>, field: string): boolean {
 	const value = parent[field];
-	if (typeof value !== "boolean") fail(`${field}는 boolean이어야 한다`);
+	if (typeof value !== "boolean") fail(`${field} must be a boolean`);
 	return value;
 }
 
-/** 저장소에 들어가는 행의 최소 계약을 검증한다. 모르는 필드는 미래 버전을 위해 허용한다. */
+/** Validates the minimal contract of a stored line. Unknown fields are allowed for future versions. */
 export function validateRunRecord(value: unknown): RunRecord {
 	const record = expectObject(value, "root");
-	if (record.schemaVersion !== RUNS_SCHEMA_VERSION) fail(`schemaVersion은 ${RUNS_SCHEMA_VERSION}이어야 한다`);
-	if (record.recordType !== "run") fail(`recordType은 "run"이어야 한다`);
+	if (record.schemaVersion !== RUNS_SCHEMA_VERSION) fail(`schemaVersion must be ${RUNS_SCHEMA_VERSION}`);
+	if (record.recordType !== "run") fail(`recordType must be "run"`);
 	expectString(record, "runId");
 	expectString(record, "startedAt");
 	expectObject(record.git, "git");
 	expectObject(record.host, "host");
 	expectObject(record.preconditions, "preconditions");
 	const requested = record.requestedStages;
-	if (!Array.isArray(requested) || requested.some(id => typeof id !== "string")) fail("requestedStages는 문자열 배열이어야 한다");
-	if (!Array.isArray(record.stages)) fail("stages는 배열이어야 한다");
+	if (!Array.isArray(requested) || requested.some(id => typeof id !== "string")) fail("requestedStages must be an array of strings");
+	if (!Array.isArray(record.stages)) fail("stages must be an array");
 	for (const stage of record.stages) {
-		const entry = expectObject(stage, "stages 항목");
+		const entry = expectObject(stage, "stages entry");
 		expectString(entry, "id");
 		expectBoolean(entry, "ok");
 		expectBoolean(entry, "skipped");
 		expectNumber(entry, "durationMs");
 		expectObject(entry.metrics ?? {}, "metrics");
 	}
-	if (!Array.isArray(record.artifacts)) fail("artifacts는 배열이어야 한다");
+	if (!Array.isArray(record.artifacts)) fail("artifacts must be an array");
 	const completion = expectObject(record.completion, "completion");
 	expectBoolean(completion, "complete");
 	expectNumber(completion, "requested");
@@ -119,7 +119,7 @@ export function validateRunRecord(value: unknown): RunRecord {
 	return record as unknown as RunRecord;
 }
 
-/** 요청한 스테이지 수와 실행 결과에서 completion을 계산한다. */
+/** Computes completion from the number of requested stages and the run results. */
 export function completionOf(requestedStages: readonly string[], stages: readonly RunStage[]): RunRecord["completion"] {
 	const executed = stages.filter(stage => !stage.skipped) ;
 	const skipped  = stages.filter(stage => stage.skipped ) ;
@@ -137,7 +137,7 @@ export function appendRun(evidenceDir: string, record: RunRecord): void {
 	appendFileSync(join(evidenceDir, RUNS_FILE), `${JSON.stringify(record)}\n`);
 }
 
-/** runs.jsonl의 모든 실행을 오래된 순으로 읽는다. 파일이 없으면 빈 배열이다. */
+/** Reads every run in runs.jsonl, oldest first. An empty array if the file is missing. */
 export function readRuns(evidenceDir: string): RunRecord[] {
 	const path = join(evidenceDir, RUNS_FILE);
 	if (!existsSync(path)) return [];
@@ -146,7 +146,7 @@ export function readRuns(evidenceDir: string): RunRecord[] {
 		try {
 			return validateRunRecord(JSON.parse(line));
 		} catch (error) {
-			throw new Error(`${path} ${index + 1}행: ${String((error as Error).message)}`);
+			throw new Error(`${path} line ${index + 1}: ${String((error as Error).message)}`);
 		}
 	});
 }
@@ -161,9 +161,9 @@ export function readLatest(evidenceDir: string): RunRecord | null {
 	return validateRunRecord(JSON.parse(readFileSync(path, "utf8")));
 }
 
-/** 최신 완전 실행 스냅샷을 임시 파일 + rename으로 교체한다. 부분 실행은 거절한다. */
+/** Replaces the latest complete-run snapshot via a temporary file + rename. Partial runs are refused. */
 export function updateLatest(evidenceDir: string, record: RunRecord): void {
-	if (!record.completion.complete) throw new Error("latest.json은 완전 실행만 갱신한다");
+	if (!record.completion.complete) throw new Error("latest.json is updated only by a complete run");
 	mkdirSync(evidenceDir, { recursive: true });
 	const target    = join(evidenceDir, LATEST_FILE) ;
 	const temporary = `${target}.${process.pid}.tmp` ;

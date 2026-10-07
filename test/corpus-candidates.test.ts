@@ -40,13 +40,13 @@ function writeObservations(input: string, rows: readonly unknown[]): void {
 }
 
 describe("corpus candidate builder", () => {
-	test("대표는 소스 다양성을 먼저 확보하고 각 선택 안에서 상태 우선순위를 지킨다", () => {
+	test("representatives secure source diversity first and keep status priority within each pick", () => {
 		const row      = (id: string, source: string, state: string) => ({ schemaVersion: 1 as const, id, lookupKey: "v1|python|-|table|name>equal>value", signature: "sig", state, rows: 3, edits: 0, source: { id: source, repository: "local", commit: "a".repeat(40), license: "MIT" }, file: `${id}.py`, startLine: 1, endLine: 3, sourceHash: `sha256:${"0".repeat(64)}` }) ;
 		const selected = selectRepresentatives([row("a-pass", "a", "PASS"), row("a-fix", "a", "FIXABLE"), row("b-refuse", "b", "REFUSE"), row("b-pass", "b", "PASS"), row("c-refuse", "c", "REFUSE")], 3)                                                                                                                                                                         ;
 		expect(selected.map(value => value.id)).toEqual(["a-fix", "b-pass", "c-refuse"]);
 	});
 
-	test("실제 고정 checkout을 안전 복제해 전후를 검증하고 재실행 결과가 같다", () => {
+	test("safely copies the real pinned checkout, verifies before and after, and reruns identically", () => {
 		const item = fixture()                            ;
 		const key  = "v1|python|-|table|name>equal>value" ;
 		const observations = [
@@ -67,7 +67,7 @@ describe("corpus candidate builder", () => {
 		expect(readFileSync(join(item.output, "examples.jsonl"), "utf8")).toBe(before);
 	});
 
-	test("대표 추출 실패는 가짜 after 없이 남기고 모든 키의 후보는 유지한다", () => {
+	test("a failed representative extraction is kept without a fake after and every key keeps its candidate", () => {
 		const item = fixture()                                                                                                                                                                                                                                                                                                                                                                      ;
 		const rows = ["python", "ruby"].map((language, index) => ({ schemaVersion: 1, id: `ev-${index}`, lookupKey: `v1|${language}|-|table|name>equal>value`, signature: `sig-${index}`, state: "FIXABLE", rows: 3, edits: 3, source: { id: "sample", repository: "local", commit: item.commit, license: "MIT" }, file: "sample.py", startLine: 1, endLine: 3, sourceHash: tagged(item.source) })) ;
 		writeObservations(item.input, rows);
@@ -79,7 +79,7 @@ describe("corpus candidate builder", () => {
 		expect(readFileSync(join(item.output, "candidates.jsonl"), "utf8").trim().split("\n")                                                 ).toHaveLength(2   ) ;
 	});
 
-	test("TypeScript 대표도 native aligner의 parser 상태와 고정점을 검증한다", () => {
+	test("TypeScript representatives also verify the native aligner's parser status and fixed point", () => {
 		const item = fixture()                                                                                                                                                                                                                                                                                                                                  ;
 		const row  = { schemaVersion: 1, id: "ev-ts", lookupKey: "v1|typescript|SourceFile|declaration-equals|equals>semicolon", signature: "sig-ts", state: "FIXABLE", rows: 3, edits: 3, source: { id: "sample", repository: "local", commit: item.commit, license: "MIT" }, file: "sample.ts", startLine: 1, endLine: 3, sourceHash: tagged(item.sourceTs) } ;
 		writeObservations(item.input, [row]);
@@ -91,7 +91,7 @@ describe("corpus candidate builder", () => {
 		expect(readFileSync(join(item.input, "sample", "sample.ts"), "utf8"))    .toBe(item.sourceTs  ) ;
 	});
 
-	test("변화 없는 대표는 parser 미실행을 명시하고 검토 문서를 만든다", () => {
+	test("an unchanged representative states that the parser did not run, and a review document is written", () => {
 		const item = fixture()                                                                                                                                                                                                                                                                                                                  ;
 		const row  = { schemaVersion: 1, id: "ev-pass", lookupKey: "v1|python|-|table|name>equal>value", signature: "sig-pass", state: "PASS", rows: 3, edits: 0, source: { id: "sample", repository: "example/sample", commit: item.commit, license: "MIT" }, file: "aligned.py", startLine: 1, endLine: 3, sourceHash: tagged(item.aligned) } ;
 		writeObservations(item.input, [row]);
@@ -103,7 +103,7 @@ describe("corpus candidate builder", () => {
 		expect(readFileSync(join(item.output, "REVIEW.md"), "utf8")).toContain(`https://github.com/example/sample/blob/${item.commit}/aligned.py#L1-L3`) ;
 	});
 
-	test("관측 linkage와 원본 hash가 다르면 기존 정상 cache를 교체하지 않는다", () => {
+	test("does not replace a valid existing cache when the observation linkage or source hash differs", () => {
 		const item = fixture();
 		mkdirSync(item.output, { recursive: true });
 		writeFileSync(join(item.output, "sentinel"), "keep");

@@ -55,8 +55,8 @@ afterEach(() => {
 	for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe("공개 preset 배포 정책", () => {
-	test("승인 synthetic 규칙은 참조한 public 문서와 함께 준비된다", () => {
+describe("public preset release policy", () => {
+	test("approved synthetic rules are prepared together with the public documents they reference", () => {
 		const { root } = fixture();
 		expect(preparePublicPreset(root).map(file => file.path)).toEqual([
 			"conventions.jsonl",
@@ -66,7 +66,7 @@ describe("공개 preset 배포 정책", () => {
 		]);
 	});
 
-	test("참조한 승인 절만 추출하고 같은 원본 문서의 다른 절은 배포하지 않는다", () => {
+	test("extracts only the referenced approved section and never ships other sections of the same source document", () => {
 		const { root, decision } = fixture();
 		const approvedSection = readFileSync(join(root, "docs", "public", "rules.md"), "utf8");
 		writeFileSync(join(root, "docs", "public", "rules.md"), `${approvedSection}\n# Internal notes\nPRIVATE_CODE_DO_NOT_SHIP\n`);
@@ -80,14 +80,14 @@ describe("공개 preset 배포 정책", () => {
 		expect(sectionHash(publicDocument.text, "Rule"))    .toBe     (publicDecision.docHash                        ) ;
 	});
 
-	test("asserts 내부에 등록되지 않은 임의 필드를 넣으면 거절한다", () => {
+	test("refuses arbitrary unregistered fields inside asserts", () => {
 		const { root, examples } = fixture();
-		const leaked = { ...examples[0]!, asserts: { after: { privateSource: "내부 코드 조각" } } };
+		const leaked = { ...examples[0]!, asserts: { after: { privateSource: "internal code snippet" } } };
 		replaceExamples(root, [leaked, examples[1]!]);
 		expect(() => preparePublicPreset(root)).toThrow("unexpected fields: privateSource");
 	});
 
-	test("중복 JSON 키의 앞선 비공개 값은 정규화된 배포 JSONL에서 제거한다", () => {
+	test("drops an earlier private value of a duplicate JSON key from the normalized release JSONL", () => {
 		const { root, examples } = fixture();
 		const records = [
 			JSON.stringify(examples[0]!).replace('"before":', '"before":"PRIVATE_CODE_DO_NOT_SHIP","before":'),
@@ -99,21 +99,21 @@ describe("공개 preset 배포 정책", () => {
 		expect(JSON.parse(shipped.text.split("\n")[0]!).before).toBe(examples[0]!.before);
 	});
 
-	test("example.rules는 짧은 rule ID 배열이어야 한다", () => {
+	test("example.rules must be an array of short rule IDs", () => {
 		const { root, examples } = fixture();
 		const invalid = { ...examples[0]!, rules: "synthetic-rule" };
 		replaceExamples(root, [invalid, examples[1]!]);
 		expect(() => preparePublicPreset(root)).toThrow("rules must be an array");
 	});
 
-	test("versions 내부의 임의 필드도 거절한다", () => {
+	test("also refuses arbitrary fields inside versions", () => {
 		const { root, examples } = fixture();
 		const leaked = { ...examples[0]!, versions: { ...APPROVAL_VERSIONS, privateRepository: "internal" } };
 		replaceExamples(root, [leaked, examples[1]!]);
 		expect(() => preparePublicPreset(root)).toThrow("unexpected fields: privateRepository");
 	});
 
-	test("승인 synthetic 표기와 무관하게 source 경로와 비인가 license 값을 거절한다", () => {
+	test("refuses source paths and unauthorized license values regardless of the approved synthetic label", () => {
 		const { root, examples } = fixture();
 		const sourced = { ...examples[0]!, source: { kind: "synthetic", license: "MIT", path: "src/private.ts" } };
 		replaceExamples(root, [sourced, examples[1]!]);
@@ -123,7 +123,7 @@ describe("공개 preset 배포 정책", () => {
 		expect(() => preparePublicPreset(root)).toThrow("approved SPDX identifier");
 	});
 
-	test("docs/public 경로의 부모 symlink는 preset 내부를 가리켜도 거절한다", () => {
+	test("refuses a parent symlink on the docs/public path even when it points inside the preset", () => {
 		const { root, decision } = fixture();
 		rmSync(join(root, "docs", "public"), { recursive: true, force: true });
 		mkdirSync(join(root, "docs", "private"), { recursive: true });
@@ -133,7 +133,7 @@ describe("공개 preset 배포 정책", () => {
 		expect(() => preparePublicPreset(root)).toThrow("may not be symlinks");
 	});
 
-	test("docs/public 바깥으로 정규화되는 경로는 거절한다", () => {
+	test("refuses paths that normalize outside docs/public", () => {
 		const { root, decision } = fixture();
 		writeFileSync(join(root, "private.md"), "# Rule\n");
 		writeFileSync(join(root, "decisions.jsonl"), `${JSON.stringify({ ...decision, ref: "docs/public/../private.md#Rule" })}\n`);

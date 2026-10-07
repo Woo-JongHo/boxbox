@@ -10,8 +10,8 @@
  *   bun scripts/corpus-measures.ts
  *   bun scripts/corpus-measures.ts --baseline <signatures.json>
  *
- * 문형 분포(M1.8 S3): 언어별로 표 수를 문형(표현형 데이터, `common/surface.ts`)에 대응시켜 함께 출력한다.
- * 대응되지 않는 유형은 `unmapped`로 센다. 모호한 문형은 `DEFINE|CHANGE`처럼 대안과 함께 적는다.
+ * Pattern distribution (M1.8 S3): prints, per language, the table counts mapped to patterns (surface-form data, `common/surface.ts`).
+ * Unmapped types are counted as `unmapped`. Ambiguous patterns are written with their alternatives, as in `DEFINE|CHANGE`.
  */
 import      { existsSync, readFileSync } from "node:fs"                ;
 import      { join                     } from "node:path"              ;
@@ -90,7 +90,7 @@ export function unseenShare(current: readonly { readonly signature: string }[], 
 	return current.length === 0 ? 0 : fresh.length / current.length  ;
 }
 
-/** 센서스 유형 하나의 문형 이름. 시그니처는 `language|context|kind|axis>axis|d<depth>`; 라인 엔진의 kind `table`은 쓰지 않는다. */
+/** Pattern name of one census type. The signature is `language|context|kind|axis>axis|d<depth>`; the line engine's kind `table` is not used. */
 export function patternNameOf(signature: string): string {
 	const [language = "", , kind = "", axes = ""] = signature.split("|");
 	const match = patternOf(language, { kind: language === "typescript" ? kind : undefined, axes: axes.split(">") });
@@ -98,7 +98,7 @@ export function patternNameOf(signature: string): string {
 	return [match.pattern, ...match.alternatives].join("|")                                                  ;
 }
 
-/** 언어별 문형 → 표 수. */
+/** Per language: pattern → table count. */
 export function patternSharesOf(types: readonly SignatureType[]): ReadonlyMap<string, ReadonlyMap<string, number>> {
 	const shares = new Map<string, Map<string, number>>();
 	for (const type of types) {

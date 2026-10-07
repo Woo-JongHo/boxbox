@@ -60,7 +60,7 @@ describe("corpus measures", () => {
 		expect(unseenShare([], baseline)                                                        ).toBe       (0    ) ;
 	});
 
-	test("센서스 유형은 표현형 데이터로 문형에 대응되고, 모호하면 대안과 함께 적힌다", () => {
+	test("census types map to patterns through the surface-form data, and ambiguous ones are written with their alternatives", () => {
 		expect(patternNameOf(TS                                     )).toBe("DEFINE"       ) ;
 		expect(patternNameOf("python||table|name>equal>value|d1"    )).toBe("DEFINE|CHANGE") ;
 		expect(patternNameOf("typescript|Block|not-a-kind|equals|d1")).toBe("unmapped"     ) ;

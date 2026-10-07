@@ -1,15 +1,15 @@
 #!/usr/bin/env bun
 /**
- * 최소 평가 실행기 — 스모크용 (2026-10-01).
- * 공준 2(강제와 기록): 실행마다 매니페스트를 남긴다. 강제할 수 없는 것(공급자 무작위성,
- * CLI 숨은 시스템 지시, 응답의 모델 식별자 미노출)은 config.json에 명시한다.
- * 공준 5(조정자와 채점자의 분리): 채점은 이 스크립트의 결정적 대조가 한다.
+ * Minimal evaluation runner — for smoke tests (2026-10-01).
+ * Postulate 2 (enforce and record): leaves a manifest per run. What cannot be enforced (provider randomness,
+ * hidden CLI system instructions, model identifiers not exposed in responses) is stated in config.json.
+ * Postulate 5 (separate coordinator and grader): grading is this script's deterministic comparison.
  *
- * 사용:
- *   bun run scripts/eval.ts build     # eval/items/items.jsonl 생성 (A=기준, B=채굴, C=함정)
- *   bun run scripts/eval.ts run       # 주 실행 + 안정성 층(층화 부분표본 × 5회), 시드 셔플 (기본: gpt-6-sol medium)
- *   bun run scripts/eval.ts grade     # 마지막 run의 결정적 채점 + 잡음 바닥·Fleiss κ
- *   bun run scripts/eval.ts pack      # 사람 판정자용 블라인드 자료 팩 생성
+ * Usage:
+ *   bun run scripts/eval.ts build     # builds eval/items/items.jsonl (A=reference, B=mined, C=traps)
+ *   bun run scripts/eval.ts run       # main run + stability layer (stratified subsample × 5), seeded shuffle (default: gpt-6-sol medium)
+ *   bun run scripts/eval.ts grade     # deterministic grading of the last run + noise floor and Fleiss κ
+ *   bun run scripts/eval.ts pack      # builds a blind material pack for human judges
  */
 import      { spawnSync        } from "node:child_process" ;
 import      { createHash       } from "node:crypto"        ;
@@ -78,7 +78,7 @@ const ANCHOR_LANGS: Array<[string, string, string]> = [
 function cmdBuild(): void {
 	const items: Item[] = [];
 
-	// A층 — 기준 항목: fixtures golden 쌍. 정답은 구조적으로 correct.
+	// Layer A — reference items: fixture golden pairs. The answer is structurally correct.
 	for (const [dir, ext, lang] of ANCHOR_LANGS) {
 		const base       = join(ROOT, "skills/xxx/fixtures", dir) ;
 		const beforePath = join(base, `tables.${ext}`)            ;
@@ -87,16 +87,16 @@ function cmdBuild(): void {
 		items.push({
 			id: `A-${dir}-01`, layer: "A", lang,
 			source: `skills/xxx/fixtures/${dir}/tables.${ext}`,
-			kind: "(파일 전체, 여러 표)", axes: "(파일 전체)",
+			kind: "(whole file, several tables)", axes: "(whole file)",
 			before: read(beforePath), after: read(afterPath), expected: "correct",
 		});
 	}
 
-	// C층(수제) — different-role: 컴파일 후 소멸 선언(type)과 실행 선언(const/def/class)을 한 표로 묶은 제안.
+	// Layer C (hand-made) — different-role: a proposal that puts compile-time-erased declarations (type) and runtime declarations (const/def/class) in one table.
 	items.push({
 		id: "C-hand-ts-role", layer: "C", lang: "ts",
-		source: "hand-made (different-role 트랩)",
-		kind: "declaration 혼합 제안", axes: "colon,semicolon",
+		source: "hand-made (different-role trap)",
+		kind: "mixed declaration proposal", axes: "colon,semicolon",
 		before: [
 			"type FetchPort = (id: string) => Promise<Doc>;",
 			`type RenderMode = "grid" | "list";`,
@@ -113,8 +113,8 @@ function cmdBuild(): void {
 	});
 	items.push({
 		id: "C-hand-py-role", layer: "C", lang: "py",
-		source: "hand-made (different-role 트랩)",
-		kind: "declaration 혼합 제안", axes: "equal,value",
+		source: "hand-made (different-role trap)",
+		kind: "mixed declaration proposal", axes: "equal,value",
 		before: [
 			"WIDTH = 120",
 			'INDENT = "    "',
@@ -134,17 +134,17 @@ function cmdBuild(): void {
 		expected: "different-role",
 	});
 
-	// B층 + C층(채굴) — eval/corpus 스냅샷에서 01_group-regions로 채굴한다.
+	// Layers B + C (mined) — mined from the eval/corpus snapshot with 01_group-regions.
 	const occs: Occ[] = [];
 	const files = walk(join(EVAL, "corpus"))
 		.filter((f) => (/\.ts$|\.py$/.test(f)) && !f.includes("/.next/") && !f.includes("/dist/") && !f.endsWith(".d.ts"))
 		.sort();
 	for (const abs of files) {
 		const rel = relative(ROOT, abs);
-		try { occs.push(...groupRegions(rel)); } catch { /* 해석 실패 파일은 건너뛴다 */ }
+		try { occs.push(...groupRegions(rel)); } catch { /* skip files that fail to parse */ }
 	}
 
-	// B층 — 3행 이상, 등록 축 있음, 빈도 상위 키. after는 실제 06 정렬 결과. expected 없음(탐색).
+	// Layer B — 3+ rows, registered axes, top-frequency keys. after is the real 06 alignment result. No expected value (exploratory).
 	const bKeys = new Map<string, Occ[]>();
 	for (const o of occs) {
 		if (o.rows < 3 || o.axes === "-" ) continue;
@@ -168,13 +168,13 @@ function cmdBuild(): void {
 		bN += 1;
 		items.push({
 			id: `B-${String(bN).padStart(2, "0")}`, layer: "B", lang: o.lang,
-			source: o.file, kind: o.skind ?? "(python 축)", axes: o.axes,
+			source: o.file, kind: o.skind ?? "(python axes)", axes: o.axes,
 			before, after, expected: null,
 		});
 	}
 
-	// C층(채굴) — missing-kind: 3행 이상 표 같은 구조인데 축이 없음. 등록된 KIND로 지도되는
-	// 구문(import·const·type·guard 등)은 트랩이 안 된다(smoke의 C-miss-01 교훈) — 실행 흐름 구문만.
+	// Layer C (mined) — missing-kind: a 3+ row table-like structure without axes. Syntax that maps to a registered KIND
+	// (import, const, type, guard, ...) cannot be a trap (lesson from smoke C-miss-01) — execution-flow syntax only.
 	const PURE_MISS = new Set(["ForOfStatement", "ForStatement", "WhileStatement", "DoStatement", "FunctionDeclaration", "ReturnStatement", "TryStatement", "SwitchStatement"])                                                                                                                     ;
 	const MAPPED    = new Set(["ImportDeclaration", "FirstStatement", "VariableStatement", "TypeAliasDeclaration", "IfStatement", "ExpressionStatement", "PropertyAssignment", "PropertyDeclaration", "MethodDeclaration", "EnumMember", "CaseClause", "InterfaceDeclaration", "ClassDeclaration"]) ;
 	let mN          = 0                                                                                                                                                                                                                                                                             ;
@@ -190,25 +190,25 @@ function cmdBuild(): void {
 		mN += 1;
 		items.push({
 			id: `C-miss-${String(mN).padStart(2, "0")}`, layer: "C", lang: o.lang,
-			source: o.file, kind: o.skind ?? "(python 축)", axes: "-",
+			source: o.file, kind: o.skind ?? "(python axes)", axes: "-",
 			before, after: null, expected: "missing-kind",
 		});
 	}
 
-	// C층(채굴) — taste: 2행 묶음(=` 선언/import가 아닌), 사용자 확인이 필요한 영역.
+	// Layer C (mined) — taste: two-row groups (not `=` declarations/imports), an area that needs user confirmation.
 	let tN          = 0                 ;
 	const tasteSeen = new Set<string>() ;
 	for (const o of occs) {
 		if (tN >= 2) break;
 		if (o.rows !== 2 || tasteSeen.has(o.file)) continue;
-		if (o.skind === "ImportDeclaration" || (o.axes ?? "").includes("equal")) continue; // 규약상 표가 되는 2행은 제외
+		if (o.skind === "ImportDeclaration" || (o.axes ?? "").includes("equal")) continue; // two-row groups that become tables by convention are excluded
 		const before = fileLines(o.file, o.start, o.end);
 		if (!before) continue;
 		tasteSeen.add(o.file);
 		tN += 1;
 		items.push({
 			id: `C-taste-${String(tN).padStart(2, "0")}`, layer: "C", lang: o.lang,
-			source: o.file, kind: o.skind ?? "(python 축)", axes: o.axes,
+			source: o.file, kind: o.skind ?? "(python axes)", axes: o.axes,
 			before, after: null, expected: "taste",
 		});
 	}
@@ -216,7 +216,7 @@ function cmdBuild(): void {
 	writeFileSync(ITEMS, items.map((i) => JSON.stringify(i)).join("\n") + "\n");
 	const tally = { A: 0, B: 0, C: 0 } as Record<string, number>;
 	for (const i of items) tally[i.layer] += 1;
-	console.error(`items.jsonl: ${items.length}건 (A=${tally.A} B=${tally.B} C=${tally.C}) — B의 after 추출 실패는 after=null로 남긴다`);
+	console.error(`items.jsonl: ${items.length} item(s) (A=${tally.A} B=${tally.B} C=${tally.C}) — failed B after extraction is kept as after=null`);
 }
 
 // ---------------------------------------------------------------- run
@@ -236,8 +236,8 @@ function cmdRun(): void {
 	const home = join(runDir, "codex-home");
 	mkdirSync(home, { recursive: true });
 	cpSync(join(process.env.HOME ?? "", ".codex/auth.json"), join(home, "auth.json"));
-	// 조작 점검용 카나리: 프롬프트에는 이 토큰이 없다. 응답에 나오면 문맥 누출.
-	writeFileSync(join(runDir, "work", "canary-note.md"), `${CANARY} 격리 검증용 마커다. 읽지 않는다.\n`);
+	// Canary for tampering checks: the prompt does not contain this token. If it appears in a response, context leaked.
+	writeFileSync(join(runDir, "work", "canary-note.md"), `${CANARY} marker for isolation checks. Do not read.\n`);
 
 	const template     = read(join(INSTR, "prompt-template-v1.txt"))                                   ;
 	const instructions = read(join(INSTR, "judgment-v1.md"))                                           ;
@@ -246,8 +246,8 @@ function cmdRun(): void {
 	const cliVersion   = (spawnSync("codex", ["--version"], { encoding: "utf8" }).stdout ?? "").trim() ;
 	const workHash     = sha256(JSON.stringify(listWork(join(runDir, "work"))))                        ;
 
-	// 실행 계획: 주(모든 항목 1회) + 안정성(층화 부분표본 × reps, 주 실행과 별도 — 원고 7.5절).
-	// 전체를 시드로 섞어 같은 입력이 연달아 오지 않게 한다(명제 3). 반복을 다수결하지 않는다.
+	// Run plan: main (every item once) + stability (stratified subsample × reps, separate from the main run — manuscript section 7.5).
+	// The whole plan is shuffled with a seed so the same input does not come back to back (proposition 3). Repeats are never majority-voted.
 	const rnd     = mulberry32(seed)                                           ;
 	const byLayer = (l: "A" | "B" | "C") => items.filter((i) => i.layer === l) ;
 	const nA      = Math.max(1, Math.round(stbN * 0.25))                       ;
@@ -270,17 +270,17 @@ function cmdRun(): void {
 		order_seed: seed,
 		stability_design: {
 			subsample: sub.map((i) => i.id), strata: { A: nA, B: nB, C: sub.length - nA - nB },
-			reps, note: "반복은 주 실행과 별도이고 다수결하지 않는다(원고 7.5절). 반복은 전체 실행 순서에 섞여 배치된다(명제 3).",
+			reps, note: "Repeats are separate from the main run and never majority-voted (manuscript section 7.5). Repeats are interleaved into the overall run order (proposition 3).",
 		},
 		isolation: {
-			codex_home: "임시 홈 — auth.json만 포함(AGENTS.md·config·메모리·스킬 없음). 사전 프로브로 AGENTS.md 비로드 확인(2026-10-01)",
-			workdir: "비어있는 전용 폴더 + 카나리 파일",
-			sandbox: "read-only", git_repo_check: "skip(작업 폴더는 비저장소)",
+			codex_home: "temporary home — only auth.json (no AGENTS.md, config, memory or skills). A pre-probe confirmed AGENTS.md is not loaded (2026-10-01)",
+			workdir: "empty dedicated folder + canary file",
+			sandbox: "read-only", git_repo_check: "skip (the work folder is not a repository)",
 		},
 		workdir_sha256               : workHash,
-		model_identifier_in_response : "CLI가 노출하지 않음 — 요청 모델 id만 기록(원고 4절 모델 업데이트 항의 제한)",
-		uncontrollable               : ["공급자 무작위성(시드 지정 불가)", "CLI 숨은 시스템 지시(명제 1 — 결론을 CLI 조합으로 한정)"],
-		cost_basis                   : "CLI 구독 — API 정가 환산 안 함(토큰 사용량만 기록)",
+		model_identifier_in_response : "not exposed by the CLI — only the requested model id is recorded (limit of the model-update clause in manuscript section 4)",
+		uncontrollable               : ["provider randomness (no seed control)", "hidden CLI system instructions (proposition 1 — conclusions limited to the CLI combination)"],
+		cost_basis                   : "CLI subscription — not converted to API list price (token usage recorded only)",
 		started_at                   : new Date().toISOString(),
 		plan                         : plan.map(({ item, attempt }) => ({ id: item.id, attempt })),
 	}, null, "\t") + "\n");
@@ -289,7 +289,7 @@ function cmdRun(): void {
 	for (const { item, attempt } of plan) {
 		runOne({ runDir, home, manifestPath, template, instructions, schemaPath, schema, cliVersion, workHash, model, effort, item, attempt });
 	}
-	console.error(`run 완료: ${runDir}`);
+	console.error(`run complete: ${runDir}`);
 }
 
 function runOne(ctx: {
@@ -300,8 +300,8 @@ function runOne(ctx: {
 }): void {
 	const { runDir, home, manifestPath, template, instructions, schemaPath, schema, cliVersion, workHash, model, effort, item, attempt } = ctx;
 	const afterBlock = item.after == null
-		? "after: 없음 — 이 구조에는 아직 정렬 규칙(제안)이 없다."
-		: ["after (정렬기 제안):", "```" + item.lang, item.after ?? "", "```"].join("\n");
+		? "after: none — there is no alignment rule (proposal) for this structure yet."
+		: ["after (aligner proposal):", "```" + item.lang, item.after ?? "", "```"].join("\n");
 	const prompt = template
 		.replaceAll("<INSTRUCTIONS>", instructions)
 		.replaceAll("<LANG>", item.lang)
@@ -341,7 +341,7 @@ function runOne(ctx: {
 			const e = JSON.parse(line);
 			if (e.type === "turn.completed") usage = e.usage ?? null;
 			if (e.type === "thread.started") threadId = e.thread_id ?? null;
-		} catch { /* 이벤트가 아닌 줄 */ }
+		} catch { /* not an event line */ }
 	}
 
 	let judgment   : string | null = null ;
@@ -352,9 +352,9 @@ function runOne(ctx: {
 			const txt = read(respPath).trim().replace(/^```(json)?\s*/u, "").replace(/\s*```$/u, "") ;
 			const j   = JSON.parse(txt)                                                              ;
 			if (CATEGORIES.includes(j.judgment)) { judgment = j.judgment; reason = j.reason ?? null; }
-			else parseError = `범주 밖 값: ${String(j.judgment).slice(0, 40)}`;
-		} catch (e) { parseError = `JSON 해석 실패: ${String(e).slice(0, 60)}`; }
-	} else parseError = `응답 파일 없음(exit ${r.status}, ${String(r.stderr ?? "").split("\n")[0]?.slice(0, 60)})`;
+			else parseError = `value outside the categories: ${String(j.judgment).slice(0, 40)}`;
+		} catch (e) { parseError = `JSON parse failed: ${String(e).slice(0, 60)}`; }
+	} else parseError = `no response file (exit ${r.status}, ${String(r.stderr ?? "").split("\n")[0]?.slice(0, 60)})`;
 
 	const canaryLeak = (r.stdout ?? "").includes(CANARY) || (existsSync(respPath) ? read(respPath).includes(CANARY) : false);
 
@@ -363,19 +363,19 @@ function runOne(ctx: {
 		cli: "codex exec", cli_version: cliVersion, model_requested: model, effort,
 		template_version: "v1", tool_permission: "read-only sandbox", time_limit_s: 120,
 		prompt_sha256: sha256(prompt), workdir_sha256: workHash,
-		isolation: "CODEX_HOME=temp(auth.json만)", output_schema_sha256: sha256(schema),
+		isolation: "CODEX_HOME=temp (auth.json only)", output_schema_sha256: sha256(schema),
 		thread_id: threadId, started_at: new Date(t0).toISOString(), wall_ms: wall,
 		usage, exit_status: r.status,
 		judgment, reason, valid: judgment != null, parse_error: parseError, canary_leak: canaryLeak,
 	}) + "\n");
-	console.error(`${item.id} a${attempt} → ${judgment ?? `무효(${parseError})`} (${(wall / 1000).toFixed(1)}s)`);
+	console.error(`${item.id} a${attempt} → ${judgment ?? `invalid(${parseError})`} (${(wall / 1000).toFixed(1)}s)`);
 }
 
 // ---------------------------------------------------------------- grade
 
 function cmdGrade(): void {
 	const runDir = latestRun();
-	if (!runDir) throw new Error("run이 없다");
+	if (!runDir) throw new Error("no run");
 	const lines = read(join(runDir, "manifest.jsonl")).trim().split("\n").map((l) => JSON.parse(l)) ;
 	const first = lines.filter((l: any) => l.attempt === 1)                                         ;
 
@@ -387,14 +387,14 @@ function cmdGrade(): void {
 	const bDist: Record<string, number> = {}                                        ;
 	for (const l of bRows) { const k = l.judgment ?? "invalid"; bDist[k] = (bDist[k] ?? 0) + 1; }
 
-	// 위험 범주 재현율(C층: different-role / missing-kind, attempt 1)
+	// Risk-category recall (layer C: different-role / missing-kind, attempt 1)
 	const risk = ["different-role", "missing-kind"].map((c) => {
 		const rows = first.filter((l: any) => l.expected === c)       ;
 		const hit  = rows.filter((l: any) => l.judgment === c).length ;
 		return { category: c, hit, total: rows.length };
 	});
 
-	// 안정성 층(attempt >= 2): 잡음 바닥·최빈 라벨 비율·쌍별 불일치율·위험 뒤집힘·Fleiss κ(원고 7.5절).
+	// Stability layer (attempt >= 2): noise floor, modal-label share, pairwise disagreement, risk flips, Fleiss κ (manuscript section 7.5).
 	const itemsById  = new Map<string, Item>(read(ITEMS).trim().split("\n").map((l) => JSON.parse(l)).map((i: Item) => [i.id, i])) ;
 	const RISK       = new Set(["different-role", "missing-kind"])                                                                 ;
 	const stabByItem = new Map<string, Array<any>>()                                                                               ;
@@ -471,49 +471,49 @@ function cmdGrade(): void {
 		canary_leak_count : canary.length,
 		tokens            : { input_total: inputT, cached_input_total: cachedT, output_total: outputT },
 		wall_ms_avg       : wallAvg,
-		cost_note         : "CLI 구독 실행 — API 정가 환산 없음. 토큰 사용량만 기록(원고 부록 B는 API 기준).",
+		cost_note         : "CLI subscription run — not converted to API list price. Token usage recorded only (manuscript appendix B uses API pricing).",
 	};
 	writeFileSync(join(runDir, "grade.json"), JSON.stringify(summary, null, "\t") + "\n");
 
-	console.log(`=== 채점 요약 (${runDir}) ===`);
-	console.log(`A+C 정합: ${okN}/${scoreRows.length}`);
+	console.log(`=== grading summary (${runDir}) ===`);
+	console.log(`A+C agreement: ${okN}/${scoreRows.length}`);
 	for (const r of scoreRows) console.log(`  ${r.ok ? "✓" : "✗"} ${r.id}: expected=${r.expected} got=${r.got}`);
-	console.log(`위험 재현율(attempt1): ${risk.map((r) => `${r.category} ${r.hit}/${r.total}`).join(", ")}`);
-	console.log(`B 범주 분포(탐색): ${JSON.stringify(bDist)}`);
-	console.log(`잡음 바닥(쌍별 불일치): ${noiseFloor == null ? "측정 없음" : (noiseFloor * 100).toFixed(1) + "%"} · Fleiss κ(반복 간): ${fleissK == null ? "측정 없음" : fleissK.toFixed(3)}`);
-	for (const r of stabRows) console.log(`  ${r.flipped ? "↯" : "="} ${r.id}: ${r.labels.join(" | ")} (최빈 ${r.mode_ratio * 100}%)`);
-	console.log(`무효 ${invalid.length}건 · 카나리 누출 ${canary.length}건 · 토큰 in=${inputT}(cached ${cachedT}) out=${outputT} · 평균 ${(wallAvg / 1000).toFixed(1)}s/호출`);
+	console.log(`risk recall (attempt1): ${risk.map((r) => `${r.category} ${r.hit}/${r.total}`).join(", ")}`);
+	console.log(`B category distribution (exploratory): ${JSON.stringify(bDist)}`);
+	console.log(`noise floor (pairwise disagreement): ${noiseFloor == null ? "not measured" : (noiseFloor * 100).toFixed(1) + "%"} · Fleiss κ (across repeats): ${fleissK == null ? "not measured" : fleissK.toFixed(3)}`);
+	for (const r of stabRows) console.log(`  ${r.flipped ? "↯" : "="} ${r.id}: ${r.labels.join(" | ")} (mode ${r.mode_ratio * 100}%)`);
+	console.log(`${invalid.length} invalid · ${canary.length} canary leak(s) · tokens in=${inputT}(cached ${cachedT}) out=${outputT} · mean ${(wallAvg / 1000).toFixed(1)}s/call`);
 }
 
-// ---------------------------------------------------------------- pack (사람 판정자용)
+// ---------------------------------------------------------------- pack (for human judges)
 
 function cmdPack(): void {
 	const items: Item[] = read(ITEMS).trim().split("\n").map((l) => JSON.parse(l))               ;
 	const instructions  = read(join(INSTR, "judgment-v1.md"))                                    ;
 	const outDir        = join(EVAL, "judging", new Date().toISOString().slice(0, 10) + "-pack") ;
 	mkdirSync(join(outDir, "sheets"), { recursive: true });
-	// 블라인드: expected 칸과 모델 출력은 팩에 넣지 않는다. 판정 근거는 지침 v1뿐이다.
+	// Blind: the expected column and model outputs are not put in the pack. The only basis for judging is guideline v1.
 	for (const i of items) {
 		const sheet = [
-			`# ${i.id} (${i.layer}층 · ${i.lang})`, ``,
-			`언어: ${i.lang} · 표 종류 후보: ${i.kind} / 축: ${i.axes} · 출처: ${i.source}`, ``,
+			`# ${i.id} (layer ${i.layer} · ${i.lang})`, ``,
+			`Language: ${i.lang} · table kind candidate: ${i.kind} / axes: ${i.axes} · source: ${i.source}`, ``,
 			`before:`, "```" + i.lang, i.before, "```", ``,
 			i.after == null
-				? `after: 없음 — 아직 정렬 규칙(제안)이 없다.`
-				: [`after (정렬기 제안):`, "```" + i.lang, i.after, "```"].join("\n"),
-			``, `---`, `판정: (correct / different-role / missing-kind / taste / unsure 중 하나)`, `이유(한 문장):`, ``,
+				? `after: none — there is no alignment rule (proposal) yet.`
+				: [`after (aligner proposal):`, "```" + i.lang, i.after, "```"].join("\n"),
+			``, `---`, `Verdict: (one of correct / different-role / missing-kind / taste / unsure)`, `Reason (one sentence):`, ``,
 		].join("\n");
 		writeFileSync(join(outDir, "sheets", `${i.id}.md`), sheet);
 	}
-	writeFileSync(join(outDir, "answers-판정자이름.csv"), "id,judgment,reason\n" + items.map((i) => `${i.id},`).join("\n") + "\n");
+	writeFileSync(join(outDir, "answers-judge-name.csv"), "id,judgment,reason\n" + items.map((i) => `${i.id},`).join("\n") + "\n");
 	writeFileSync(join(outDir, "README.md"), [
-		`# 사람 판정 팩 (${new Date().toISOString().slice(0, 10)})`, ``,
-		`- sheets/의 각 항목에서 before/after를 보고 다섯 범주 중 하나로 판정한다. 모델 출력과 예상 정답은 일부러 빠져 있다(블라인드).`,
-		`- 판정자마다 \`answers-<이름>.csv\`를 복사해 id별 judgment와 한 문장 이유를 채운다. 판정자끼리 답을 보지 않는다(독립 판정).`,
-		`- 합의 전 라벨과 이견 항목은 그대로 보존한다. 이견 조정은 두 판정이 모두 끝난 뒤 별도로 한다.`,
-		`- 판정의 유일한 근거는 아래 지침이다:`, ``, instructions,
+		`# Human judgment pack (${new Date().toISOString().slice(0, 10)})`, ``,
+		`- For each item in sheets/, look at before/after and pick one of the five categories. Model outputs and expected answers are left out on purpose (blind).`,
+		`- Each judge copies \`answers-<name>.csv\` and fills in a judgment and a one-sentence reason per id. Judges do not see each other's answers (independent judging).`,
+		`- Labels before agreement and disputed items are kept as they are. Disagreements are reconciled separately after both judgments are finished.`,
+		`- The only basis for judging is the guideline below:`, ``, instructions,
 	].join("\n"));
-	console.error(`pack: ${outDir} (${items.length}건)`);
+	console.error(`pack: ${outDir} (${items.length} item(s))`);
 }
 
 // ---------------------------------------------------------------- helpers
@@ -585,14 +585,14 @@ function alignFileCopy(rel: string, tmpDir: string): string | null {
 	cpSync(join(ROOT, rel), tmp);
 	const lang = extname(rel) === ".py" ? "python" : "typescript";
 	spawnSync("bun", ["run", join(ROOT, "skills/xxx/scripts", lang, "06_align-tables.ts"), "--file", tmp, "--write"], { cwd: ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
-	// 06은 "정렬 필요 있음"도 exit 1로 알리므로 상태 코드가 아니라 산출물로 판단한다.
+	// 06 reports "alignment needed" with exit 1 too, so judge by the output, not the status code.
 	return existsSync(tmp) ? read(tmp) : null;
 }
 
 function extractAfter(aligned: string, before: string, start: number): string | null {
 	const rows = before.split("\n").length;
-	// 정렬은 공백만 바꾸므로(콜론 앞 이동 포함) 공백을 모두 지우면 첫 행 내용이 그대로 남는다.
-	// 세로형 줄바꿈으로 첫 행이 짧아졌을 경우를 대비해 접두어 매칭을 이중으로 둔다.
+	// Alignment changes only whitespace (including moving before colons), so removing all whitespace leaves the first row's content intact.
+	// In case vertical line breaks shortened the first row, prefix matching is doubled.
 	const squash = (s: string) => s.replace(/\s+/g, "") ;
 	const exact  = squash(before.split("\n")[0])        ;
 	const head   = exact.slice(0, 20)                   ;
@@ -626,6 +626,6 @@ else if (cmd === "run") cmdRun();
 else if (cmd === "grade") cmdGrade();
 else if (cmd === "pack") cmdPack();
 else {
-	console.error("사용: bun run scripts/eval.ts <build|run|grade|pack>");
+	console.error("Usage: bun run scripts/eval.ts <build|run|grade|pack>");
 	process.exit(1);
 }

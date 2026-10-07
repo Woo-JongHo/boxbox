@@ -1,12 +1,12 @@
 #!/usr/bin/env bun
 /**
- * 예문 검사 (M1.8 S5b). 승인된 예문마다 전·후 코드를 임시 파일로 써서 검사 리포트를 돌리고, 판정별 의미대로 확인한다.
- *   after-better / before-better / preferred-variant : asserts.before·after의 has/lacks 알람, fixedPoint면 정렬 대기 없음
- *   bad   : 엔진이 before를 고친 결과가 절대 after가 되지 않음
- *   taste : 검사하지 않음 (기록만)
- * 결정 레코드는 가리키는 문서 절의 해시가 지금 문서와 같은지 확인한다(다르면 다시 승인해야 한다).
+ * Example check (M1.8 S5b). For each approved example, writes the before/after code to temporary files, runs the check report and verifies the meaning of its verdict.
+ *   after-better / before-better / preferred-variant : has/lacks alarms in asserts.before·after; with fixedPoint, no pending alignment
+ *   bad   : the engine's fix of before never becomes after
+ *   taste : not checked (recorded only)
+ * For decision records, checks that the hash of the referenced document section matches the current document (re-approval is needed if not).
  *
- * 사용법: bun scripts/examples-check.ts
+ * Usage: bun scripts/examples-check.ts
  */
 import      { spawnSync          } from "node:child_process"   ;
 import      {
@@ -55,7 +55,7 @@ function assertAlarms(report: ReportJson, expect: AlarmAssert | undefined, side:
 	return failures;
 }
 
-/** 예문 하나를 검사해 실패 이유 목록을 돌려준다. 비어 있으면 통과. */
+/** Checks one example and returns the list of failure reasons. Empty means pass. */
 export function checkExample(example: Example): readonly string[] {
 	if (example.verdict === "taste" || example.status !== "approved") return [];
 
@@ -78,7 +78,7 @@ export function checkExample(example: Example): readonly string[] {
 	];
 }
 
-/** 결정 하나의 문서 해시를 확인한다. */
+/** Checks the document hash of one decision. */
 export function checkDecision(decision: Decision): readonly string[] {
 	const [path, heading] = decision.ref.split("#") as [string, string];
 	const file            = join(ROOT, path);

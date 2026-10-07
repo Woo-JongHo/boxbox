@@ -55,7 +55,7 @@ function runCli(path: string, target: string): ReturnType<typeof Bun.spawnSync> 
 	});
 }
 
-describe("파서 fault는 쓰기 전에 닫힌다", () => {
+describe("parser faults close before writing", () => {
 	for (const [mode, message, timeout] of [
 		["failure", "unrecognized status", 60_000],
 		["failure-error", "unrecognized status", 60_000],
@@ -65,20 +65,20 @@ describe("파서 fault는 쓰기 전에 닫힌다", () => {
 		["output" , "execution failed"   , 60_000],
 		["vanish" , "execution failed"   , 60_000],
 	] as const) {
-		test(`${mode}: 실행 fault를 오류로 보고한다`, () => {
+		test(`${mode}: reports an execution fault as an error`, () => {
 			const run = runCompare(mode, timeout);
 			expect(run.exitCode).toBe(7);
 			expect(run.stderr?.toString()).toContain(message);
 		});
 	}
 
-	test("rustfmt status 1도 인식 가능한 formatting diff가 없으면 거절한다", () => {
+	test("refuses rustfmt status 1 when there is no recognizable formatting diff", () => {
 		const run = runCompare("rust-empty", 60_000, "rust", "rustfmt");
 		expect(run.exitCode).toBe(7);
 		expect(run.stderr?.toString()).toContain("unrecognized status");
 	});
 
-	test("파서가 없어도 XXX_REQUIRE_PARSERS=0으로 쓰기를 우회할 수 없다", () => {
+	test("XXX_REQUIRE_PARSERS=0 cannot bypass writing without a parser", () => {
 		const target = join(scratch, "missing.py") ;
 		const empty  = join(scratch, "empty-path") ;
 		mkdirSync(empty);
@@ -90,7 +90,7 @@ describe("파서 fault는 쓰기 전에 닫힌다", () => {
 		expect(readFileSync(target, "utf8"))    .toBe     (SOURCE                       ) ;
 	});
 
-	test("파서가 비정상 종료하면 실제 Python CLI가 원본 bytes를 보존한다", () => {
+	test("when the parser exits abnormally, the real Python CLI preserves the original bytes", () => {
 		const target = join(scratch, "failure.py");
 		writeFileSync(target, SOURCE);
 
@@ -100,7 +100,7 @@ describe("파서 fault는 쓰기 전에 닫힌다", () => {
 		expect(readFileSync(target, "utf8"))    .toBe     (SOURCE               ) ;
 	});
 
-	test("실제 Python 파서는 성공한 출력을 쓰게 한다", () => {
+	test("the real Python parser lets successful output be written", () => {
 		expect(parserAvailable("python")).toBe(true);
 		const target = join(scratch, "success.py");
 		writeFileSync(target, SOURCE);

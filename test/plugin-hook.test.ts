@@ -19,14 +19,14 @@ function directory(): string {
 	return path;
 }
 
-/** npm 공개 전이므로 가짜 npx가 shim이 넘긴 정확 버전을 기록하고 저장소의 CLI로 넘긴다. */
+/** Before npm publication, a fake npx records the exact version the shim passes and forwards to the repository CLI. */
 function fakeNpx(bin: string, log: string): void {
 	const script = join(bin, "npx");
 	writeFileSync(script, `#!/bin/sh\necho "$1 $2" >> "${log}"\nshift 2\nexec "${process.execPath}" "${ENTRY}" "$@"\n`);
 	chmodSync(script, 0o755);
 }
 
-test("hooks.json 명령이 shim과 정확 버전 npx를 거쳐 CLI 훅을 실행하고 프로젝트에 파일을 남기지 않는다", () => {
+test("hooks.json commands run the CLI hook through the shim and exact-version npx and leave no files in the project", () => {
 	const project = directory()                                                                                                                                   ;
 	const data    = directory()                                                                                                                                   ;
 	const bin     = directory()                                                                                                                                   ;

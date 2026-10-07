@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 /**
- * AI 사용량·정확도 집계 (M1.8). 프로젝트의 훅 기록(`.xxx/cache/usage.jsonl`, 추정 토큰)과 외부 AI 기록
- * (`~/.cache/xxx/corpus/ai-usage.jsonl`, 도구가 보고한 토큰)을 모델·출처·이벤트별로 합치고, AI 사전 판정이 사람 판정과
- * 얼마나 일치하는지 계산한다. `--doc`이면 배포 비용 문서(docs/research/ai-cost.md)를 다시 만든다.
+ * AI usage and accuracy summary (M1.8). Combines the project's hook records (`.xxx/cache/usage.jsonl`, estimated tokens) and external AI records
+ * (`~/.cache/xxx/corpus/ai-usage.jsonl`, tokens reported by the tool) by model, source and event, and computes how often AI pre-verdicts agree
+ * with human verdicts. With `--doc` it regenerates the release cost document (docs/research/ai-cost.md).
  *
- * 사용법: bun scripts/usage-report.ts [--project <폴더>] [--doc]
+ * Usage: bun scripts/usage-report.ts [--project <folder>] [--doc]
  */
 import      { existsSync, readFileSync, writeFileSync  } from "node:fs"           ;
 import      { homedir                                  } from "node:os"           ;
@@ -24,7 +24,7 @@ export interface UsageRow {
 	readonly estimated : boolean ;
 }
 
-/** (모델, 출처, 이벤트)별로 합친다. 정렬은 모델 → 출처 → 이벤트. */
+/** Sums by (model, source, event). Sorted by model → source → event. */
 export function usageRows(records: readonly UsageRecord[]): readonly UsageRow[] {
 	const rows = new Map<string, UsageRow>();
 	for (const record of records) {
@@ -42,7 +42,7 @@ export interface Agreement {
 	readonly agreed   : number ;
 }
 
-/** AI 사전 판정과 사람 판정이 둘 다 있는 유형에서 판정이 같은 비율. 검토자(모델)별. */
+/** Share of matching verdicts among types that have both an AI pre-verdict and a human verdict. Per reviewer (model). */
 export function agreementOf(suggestionLines: readonly string[], verdictLines: readonly string[]): readonly Agreement[] {
 	const suggestions = latestSuggestions(suggestionLines)                    ;
 	const verdicts    = latestVerdicts(verdictLines)                          ;
@@ -67,17 +67,17 @@ function read(path: string): readonly UsageRecord[] {
 
 function renderRows(rows: readonly UsageRow[]): readonly string[] {
 	return [
-		"| 모델 | 출처 | 이벤트 | 횟수 | 글자 | 토큰 | 회당 토큰 |",
+		"| Model | Source | Event | Calls | Characters | Tokens | Tokens per call |",
 		"|---|---|---|---|---|---|---|",
-		...rows.map(row => `| ${row.model} | ${row.source} | ${row.event} | ${row.count} | ${row.chars} | ${row.tokens}${row.estimated ? " (추정)" : ""} | ${Math.round(row.tokens / row.count)} |`),
+		...rows.map(row => `| ${row.model} | ${row.source} | ${row.event} | ${row.count} | ${row.chars} | ${row.tokens}${row.estimated ? " (estimated)" : ""} | ${Math.round(row.tokens / row.count)} |`),
 	];
 }
 
 function renderAgreement(agreements: readonly Agreement[], suggestions: number, verdicts: number): readonly string[] {
-	if (agreements.length === 0) return [`사람 판정 ${verdicts}건, AI 제안 ${suggestions}건: 둘 다 있는 유형이 없어 아직 계산할 수 없다.`];
+	if (agreements.length === 0) return [`${verdicts} human verdict(s), ${suggestions} AI suggestion(s): no type has both yet, so this cannot be computed.`];
 
 	return [
-		"| 검토자(모델) | 비교한 유형 | 일치 | 일치율 |",
+		"| Reviewer (model) | Types compared | Agreed | Agreement rate |",
 		"|---|---|---|---|",
 		...agreements.map(row => `| ${row.reviewer} | ${row.judged} | ${row.agreed} | ${(row.agreed / row.judged * 100).toFixed(0)}% |`),
 	];
@@ -98,29 +98,29 @@ function main(): void {
 	}
 
 	const doc = [
-		"# AI 사용량과 정확도 — 배포하면 얼마나 쓸까",
+		"# AI usage and accuracy — how much would a release use?",
 		"",
-		`자동 생성: \`bun scripts/usage-report.ts --doc\` · 기록 ${records.length}건`,
+		`Generated: \`bun scripts/usage-report.ts --doc\` · ${records.length} record(s)`,
 		"",
-		"## 측정 방식",
+		"## Method",
 		"",
-		"- **훅 주입분:** 에이전트(호스트 모델)의 입력으로 들어가는 글. 토크나이저 없이 추정한다(ASCII 4글자당 1, 그 밖 1글자당 1). 모델은 호스트가 알려주지 않으면 `host`.",
-		"- **외부 AI(Codex):** 도구가 보고한 토큰과 모델·추론 강도. 캐시된 입력은 빼고 세는 것으로 보인다(짧은 요청이 유난히 적게 나옴).",
-		"- **Claude 세션 자체**(설계·구현 대화)는 여기 없다. Claude Code의 `/cost`로 확인한다.",
+		"- **Hook injections:** text that enters the agent's (host model's) input. Estimated without a tokenizer (1 per 4 ASCII characters, 1 per other character). The model is `host` when the host does not say.",
+		"- **External AI (Codex):** tokens, model and reasoning effort reported by the tool. Cached input appears to be excluded (short requests come out unusually low).",
+		"- **The Claude session itself** (design and implementation conversation) is not here. Check it with Claude Code's `/cost`.",
 		"",
-		"## 사용량",
+		"## Usage",
 		"",
 		...usage,
 		"",
-		"## 정확도 (AI 사전 판정 vs 사람 판정)",
+		"## Accuracy (AI pre-verdict vs human verdict)",
 		"",
 		...agreement,
 		"",
-		"## 배포 시 추정 방법",
+		"## Estimating a release",
 		"",
-		"- 사용자 한 명의 하루 토큰 ≈ 세션 수 × 세션 시작 회당 + 새 파일 수 × 새 파일 안내 회당 + 편집 수 × (새 알람이 생긴 편집 비율) × 쓴 뒤 알람 회당.",
-		"- 새 알람 비율은 실제 사용 기록이 쌓여야 정해진다(흉내 측정만 있음).",
-		"- 외부 AI(사전 판정·교차 검토)는 개발 과정의 비용이며, 사용자 쪽 기본 흐름에는 들어가지 않는다.",
+		"- Daily tokens per user ≈ sessions × per session start + new files × per new-file guidance + edits × (share of edits with new alarms) × per post-write alarm.",
+		"- The new-alarm share is set only once real usage records accumulate (only simulated measurements exist).",
+		"- External AI (pre-verdicts, cross-review) is a development cost and is not part of the default user flow.",
 		"",
 	].join("\n");
 	writeFileSync(join(ROOT, "docs", "research", "ai-cost.md"), doc);

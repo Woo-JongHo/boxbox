@@ -1,8 +1,8 @@
 /**
- * 예문과 결정 레코드 (M1.8 S5b, docs/reviews/2026-09-30-codex-learning-db-review.md). 패턴 DB의 근거이자 테스트다.
- * DB는 코드를 저장하고, 자연어는 조회 키가 아니다. 예문의 `asserts`는 그 예문이 검증하는 알람만 "있음/없음"으로 적어,
- * 한도 실측이나 새 알람 추가로 상관없는 예문이 깨지지 않게 한다. 결정 레코드는 규칙 문장을 복사하지 않고 문서 절을
- * 가리키며, 그 절의 해시가 바뀌면 다시 승인해야 한다. `taste`는 기록만 하고 테스트·GUIDE·REVIEW에 쓰지 않는다.
+ * Example and decision records (M1.8 S5b, docs/reviews/2026-09-30-codex-learning-db-review.md). They are the evidence and the tests of the pattern DB.
+ * The DB stores code; natural language is never a lookup key. An example's `asserts` lists only the alarms that example verifies as present/absent,
+ * so unrelated examples do not break when limits are measured or new alarms are added. A decision record never copies the rule text; it points at a document
+ * section, and a change in that section's hash requires re-approval. `taste` is only recorded and never used by tests, GUIDE or REVIEW.
  */
 import      { createHash              } from "node:crypto"      ;
 import      { isPattern, type Pattern } from "./grammar-ids.ts" ;
@@ -60,10 +60,10 @@ const LAYERS   : readonly string[] = ["charter", "grammar", "surface", "conventi
 
 const sha256 = (text: string): string => `sha256:${createHash("sha256").update(text).digest("hex")}`;
 
-/** 예문 내용 해시: 전과 후를 NUL로 이어 해시한다. 같은 예문의 중복을 알아보는 데 쓴다(자동 병합은 하지 않음). */
+/** Example content hash: before and after joined with NUL. Used to recognize duplicate examples (never merged automatically). */
 export const contentHashOf = (before: string, after: string): string => sha256(`${before}\u0000${after}`);
 
-/** 문서 절의 해시: `# …`/`## …` 제목에서 같은 수준 이상의 다음 제목 전까지. 제목이 없으면 오류다. */
+/** Document section hash: from a `# …`/`## …` heading up to the next heading of the same or higher level. A missing heading is an error. */
 export function sectionHash(document: string, heading: string): string {
 	const lines = document.split("\n")                                                                               ;
 	const start = lines.findIndex(line => /^#+ /u.test(line) && line.replace(/^#+ /u, "").trim() === heading.trim()) ;
@@ -102,7 +102,7 @@ export function validateDecision(value: unknown, where: string): Decision {
 	return decision;
 }
 
-/** JSONL을 읽어 검증한다. 빈 줄은 건너뛰고 중복 id는 오류다. */
+/** Reads and validates JSONL. Blank lines are skipped; a duplicate id is an error. */
 export function parseRecords<T extends { readonly id: string }>(text: string, where: string, validate: (value: unknown, where: string) => T): readonly T[] {
 	const records: T[] = []                ;
 	const ids          = new Set<string>() ;
@@ -120,8 +120,8 @@ export function parseRecords<T extends { readonly id: string }>(text: string, wh
 }
 
 /**
- * GUIDE에 넣을 예문을 고른다(결정적): 승인된 `after-better`만, 언어와 체제가 같고 문형이 하나 이상 겹치는 것.
- * 겹치는 문형 수가 많은 순 → 승인일이 최근인 순 → id 순으로 정렬하고 `limit`개까지.
+ * Picks the examples to put in GUIDE (deterministic): only approved `after-better` examples with the same language and regime and at least one shared pattern.
+ * Sorted by most shared patterns → most recent approval date → id, up to `limit`.
  */
 export function selectGuideExamples(examples: readonly Example[], want: { readonly language: string; readonly regime: Example["regime"]; readonly patterns: readonly string[] }, limit = 3): readonly Example[] {
 	const overlap = (example: Example): number => example.patterns.filter(pattern => want.patterns.includes(pattern)).length;

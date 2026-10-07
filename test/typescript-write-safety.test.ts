@@ -39,8 +39,8 @@ afterEach(() => {
 	for (const value of workspaces.splice(0)) rmSync(value, { recursive: true, force: true });
 });
 
-describe("원자적 파일 교체 helper", () => {
-	test("성공할 때 mode를 보존하고 임시 파일을 정리한다", async () => {
+describe("atomic file replacement helper", () => {
+	test("on success keeps the mode and cleans up temporary files", async () => {
 		const target = targetWith();
 		chmodSync(target, 0o640);
 
@@ -51,7 +51,7 @@ describe("원자적 파일 교체 helper", () => {
 		expect(leftovers(target)             ).toEqual([]         ) ;
 	});
 
-	test("동기 진입점도 같은 commit과 정리 계약을 쓴다", () => {
+	test("the synchronous entry point uses the same commit and cleanup contract", () => {
 		const target = targetWith();
 
 		const changed = updateFileAtomicallySync(target, ({ working }) => { writeFileSync(working, "sync\n"); });
@@ -61,7 +61,7 @@ describe("원자적 파일 교체 helper", () => {
 		expect(leftovers(target)           ).toEqual([]      ) ;
 	});
 
-	test("외부 편집을 발견하면 그 편집을 유지하고 commit을 거절한다", async () => {
+	test("when an external edit is found, keeps that edit and refuses the commit", async () => {
 		const target = targetWith();
 
 		await expect(updateFileAtomically(target, async ({ working }) => {
@@ -73,7 +73,7 @@ describe("원자적 파일 교체 helper", () => {
 		expect(leftovers(target)           ).toEqual([])         ;
 	});
 
-	test("rename 실패에서 원본과 임시 파일 정리를 보존한다", async () => {
+	test("on rename failure keeps the original and cleans up temporary files", async () => {
 		const target = targetWith();
 
 		await expect(updateFileAtomically(target, async ({ working }) => { writeFileSync(working, "staged\n"); }, {
@@ -84,7 +84,7 @@ describe("원자적 파일 교체 helper", () => {
 		expect(leftovers(target)           ).toEqual([])         ;
 	});
 
-	test("symbolic link와 hard link 대상은 보수적으로 거절한다", async () => {
+	test("refuses symbolic and hard link targets conservatively", async () => {
 		const directory = workspace()                    ;
 		const source    = join(directory, "source.ts")   ;
 		const symbolic  = join(directory, "symbolic.ts") ;
@@ -99,13 +99,13 @@ describe("원자적 파일 교체 helper", () => {
 	});
 });
 
-describe("TS 다중 pass 작업본", () => {
+describe("TS multi-pass working copy", () => {
 	for (const [name, operation] of [
-		["later pass 예외", async (working: string) => runStagedPasses(working, { apply: async (_path, pass) => { writeFileSync(working, `pass-${pass}\n`); if (pass === 2) throw new Error("later pass failure"); return true; }, verify: async () => false })],
+		["later pass exception", async (working: string) => runStagedPasses(working, { apply: async (_path, pass) => { writeFileSync(working, `pass-${pass}\n`); if (pass === 2) throw new Error("later pass failure"); return true; }, verify: async () => false })],
 		["parser throw", async (working: string) => writeDiagnosedOutput(working, "original\n", "staged\n", async text => { if (text === "staged\n") throw new Error("parser throw"); return []; })],
 		["diagnostic mismatch", async (working: string) => writeDiagnosedOutput(working, "original\n", "staged\n", async text => text === "original\n" ? [] : ["1:1005"])],
 		["non-convergence", async (working: string) => runStagedPasses(working, { apply: async () => { writeFileSync(working, `${readFileSync(working, "utf8")}x`); return true; }, verify: async () => false }, 3)],
-	] as const) test(`${name} 때 최초 원본을 바꾸지 않는다`, async () => {
+	] as const) test(`on ${name}, the original is never changed`, async () => {
 		const target = targetWith();
 
 		await expect(updateFileAtomically(target, async ({ working }) => { await operation(working); })).rejects.toThrow();
@@ -114,7 +114,7 @@ describe("TS 다중 pass 작업본", () => {
 		expect(leftovers(target)           ).toEqual([])         ;
 	});
 
-	test("실제 CLI 성공 뒤 재실행해도 byte-identical이다", () => {
+	test("a rerun after a real CLI success is byte-identical", () => {
 		const target = targetWith([
 			"const short = make(1);",
 			"const muchLonger = make(22);",

@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-/** 관측 JSONL을 사람 검토용 후보와 실제 엔진 전후 예문으로 결정적으로 변환한다. */
+/** Deterministically turns observation JSONL into candidates for human review and real engine before/after examples. */
 import      { createHash      } from "node:crypto"        ;
 import      { spawnSync       } from "node:child_process" ;
 import      {
@@ -215,19 +215,19 @@ export function reviewMarkdown(candidates: readonly { readonly id: string; reado
 		const lines = (value ?? "").split("\n");
 		return { text: lines.slice(0, 100).join("\n"), truncated: lines.length > 100 };
 	};
-	const parts = ["# 코퍼스 후보 검토", "", "사람 승인 전 후보 자료다. 전체 구조화 원문은 `examples.jsonl`에 있다.", ""];
+	const parts = ["# Corpus candidate review", "", "Candidate material before human approval. The full structured source is in `examples.jsonl`.", ""];
 	for (const candidate of candidates) {
-		parts.push(`## ${candidate.frequency}회 · \`${candidate.lookupKey}\``, "");
+		parts.push(`## ${candidate.frequency}× · \`${candidate.lookupKey}\``, "");
 		for (const example of examples.filter(value => value.candidateId === candidate.id)) {
 			const repository = example.source.repository.replace(/\.git$/u, "")                                                                                                                                                                ;
 			const github     = repository.startsWith("https://github.com/") ? repository : /^[^/\s]+\/[^/\s]+$/u.test(repository) ? `https://github.com/${repository}` : undefined                                                             ;
 			const permalink  = github === undefined ? `${repository} @ ${example.source.commit} · ${example.file}#L${example.startLine}` : `${github}/blob/${example.source.commit}/${example.file}#L${example.startLine}-L${example.endLine}` ;
-			parts.push(`- 출처: [${example.source.id}](${permalink}) · license ${example.source.license}`, `- 검증: ${example.status} · parser ${example.parseStatus} · fixed point ${example.verified ? "pass" : "not-run"} · original unchanged ${example.originalUnchanged}`);
-			if (example.reason !== undefined) parts.push(`- 실패 원인: ${example.reason}`);
+			parts.push(`- Source: [${example.source.id}](${permalink}) · license ${example.source.license}`, `- Verification: ${example.status} · parser ${example.parseStatus} · fixed point ${example.verified ? "pass" : "not-run"} · original unchanged ${example.originalUnchanged}`);
+			if (example.reason !== undefined) parts.push(`- Failure cause: ${example.reason}`);
 			if (example.before !== undefined) {
 				const before = excerpt(example.before) ;
 				const after  = excerpt(example.after ) ;
-				parts.push("", "변경 전", "", "```", before.text, "```", ...(before.truncated ? ["100줄에서 잘림 — 전체 내용은 `examples.jsonl` 참조."] : []), "", "변경 후", "", "```", after.text, "```", ...(after.truncated ? ["100줄에서 잘림 — 전체 내용은 `examples.jsonl` 참조."] : []));
+				parts.push("", "Before", "", "```", before.text, "```", ...(before.truncated ? ["Truncated at 100 lines — see `examples.jsonl` for the full content."] : []), "", "After", "", "```", after.text, "```", ...(after.truncated ? ["Truncated at 100 lines — see `examples.jsonl` for the full content."] : []));
 			}
 			parts.push("");
 		}
@@ -269,7 +269,7 @@ export function generateCandidates(options: CandidateOptions = {}): { readonly c
 	const selectedObservations = rows.filter(row => selected.has(row.lookupKey)).length                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ;
 	const reasons              = examples.flatMap(example => example.reason === undefined ? [] : [example.reason])                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ;
 	const summary              = { schemaVersion: 1, observations: rows.length, candidates: candidates.length, selectedKeys: selected.size, frequencyCoverage: { observations: selectedObservations, totalObservations: rows.length }, examples: examples.length, machineVerification: { passed: verified, failed: examples.length - verified }, parseNotRunCount: examples.filter(example => example.parseStatus === "not-run").length, reasonCounts: Object.fromEntries([...new Set(reasons)].sort().map(reason => [reason, reasons.filter(value => value === reason).length])), humanApprovals: 0, verified, failed: examples.filter(value => value.status === "failed").length, unavailable: examples.filter(value => value.status === "unavailable").length, states: Object.fromEntries([...new Set(rows.map(row => row.state))].sort().map(state => [state, rows.filter(row => row.state === state).length])) } ;
-	const markdown             = ["# 코퍼스 후보 요약", "", `관측 ${summary.observations}개 · 정확 키 ${summary.candidates}개 · 대표 검증 ${verified}/${examples.length}개`, "", "| 빈도 | 언어 | 검증 | lookup key |", "|---:|---|---:|---|", ...candidates.slice(0, 30).map(candidate => `| ${candidate.frequency} | ${candidate.language} | ${examples.filter(example => example.lookupKey === candidate.lookupKey && example.verified).length}/${examples.filter(example => example.lookupKey === candidate.lookupKey).length} | \`${candidate.lookupKey}\` |`), "", `미검토 키: ${Math.max(0, candidates.length - selected.size)}개`, ""] .join("\n")                                                                                                                                                                                                                                                            ;
+	const markdown             = ["# Corpus candidate summary", "", `${summary.observations} observations · ${summary.candidates} exact keys · ${verified}/${examples.length} representatives verified`, "", "| Frequency | Language | Verified | lookup key |", "|---:|---|---:|---|", ...candidates.slice(0, 30).map(candidate => `| ${candidate.frequency} | ${candidate.language} | ${examples.filter(example => example.lookupKey === candidate.lookupKey && example.verified).length}/${examples.filter(example => example.lookupKey === candidate.lookupKey).length} | \`${candidate.lookupKey}\` |`), "", `Unreviewed keys: ${Math.max(0, candidates.length - selected.size)}`, ""] .join("\n")                                                                                                                                                                                                               ;
 	atomicSnapshot(outputDir, { "candidates.jsonl": candidates.map(jsonLine).join("\n") + (candidates.length ? "\n" : ""), "examples.jsonl": examples.map(jsonLine).join("\n") + (examples.length ? "\n" : ""), "summary.json": JSON.stringify(summary, null, 2) + "\n", "SUMMARY.md": markdown, "REVIEW.md": reviewMarkdown(candidates, examples) });
 	return { candidates: candidates.length, examples: examples.length, verified };
 }

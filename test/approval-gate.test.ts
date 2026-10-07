@@ -21,7 +21,7 @@ function workspace(): string {
 	const root = mkdtempSync(join(import.meta.dir, "approval-gate-"));
 	workspaces.push(root);
 	mkdirSync(join(root, "docs"));
-	writeFileSync(join(root, "docs", "rules.md"), "# 규칙\n\n## 표 정렬\n승인된 문장\n");
+	writeFileSync(join(root, "docs", "rules.md"), "# Rules\n\n## Table alignment\nApproved text\n");
 	return root;
 }
 
@@ -42,9 +42,9 @@ function example(id: string, verdict: Example["verdict"], partial: Partial<Examp
 }
 
 function decision(root: string, partial: Partial<Decision> = {}): Decision {
-	const document = "# 규칙\n\n## 표 정렬\n승인된 문장\n";
+	const document = "# Rules\n\n## Table alignment\nApproved text\n";
 	return {
-		schemaVersion: 1, id: "ts-rule", kind: "rule", layer: "convention", ref: "docs/rules.md#표 정렬", docHash: sectionHash(document, "표 정렬"),
+		schemaVersion: 1, id: "ts-rule", kind: "rule", layer: "convention", ref: "docs/rules.md#Table alignment", docHash: sectionHash(document, "Table alignment"),
 		examples: ["ts-rule-positive", "ts-rule-counter"], approvedBy: "human", date: "2026-10-04", ...partial,
 	};
 }
@@ -65,8 +65,8 @@ afterEach(() => {
 	for (const root of workspaces.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe("승인 쓰기 gate", () => {
-	test("정확한 키와 완전한 사람 승인 증명만 쓰기를 허용하고 GUIDE에는 after-better만 넣는다", () => {
+describe("approval write gate", () => {
+	test("only an exact key with complete human approval proof allows writing, and GUIDE gets only after-better", () => {
 		const root = workspace();
 		const data = registry(root, { examples: new Map([
 			["ts-rule-positive", example("ts-rule-positive", "after-better")],
@@ -89,7 +89,7 @@ describe("승인 쓰기 gate", () => {
 		expect(result.text    ).not.toContain("unlinked-unverified"                                                                           ) ;
 	});
 
-	test("detected descriptor를 현재 exact key로 바꾸고 원래 파일 경로를 보존한다", () => {
+	test("turns a detected descriptor into the current exact key and keeps the original file path", () => {
 		const root = workspace();
 		const [evaluated] = evaluateDetected(registry(root), [{ language: "typescript", context: "SourceFile", kind: "declaration-equals", axes: ["equals=12", "semicolon=40"], file: "src/original.ts" }], documentResolver(root));
 
@@ -98,7 +98,7 @@ describe("승인 쓰기 gate", () => {
 	});
 
 	for (const [status, expected] of [["candidate", "unknown"], ["rejected", "rejected"]] as const) {
-		test(`${status} convention은 쓰기를 거절한다`, () => {
+		test(`a ${status} convention refuses writing`, () => {
 			const root   = workspace()                                                                                                                     ;
 			const result = evaluateApproval(registry(root, { conventions: [convention({ status })] }), { key: KEY, file: "a.ts" }, documentResolver(root)) ;
 			expect(result.status  ).toBe(expected) ;
@@ -106,7 +106,7 @@ describe("승인 쓰기 gate", () => {
 		});
 	}
 
-	test("unknown 키와 같은 우선순위의 중복 convention은 각각 unknown/conflict다", () => {
+	test("an unknown key and duplicate conventions of equal priority are unknown/conflict respectively", () => {
 		const root = workspace()                                                                  ;
 		const data = registry(root, { conventions: [convention(), convention({ id: "other" })] }) ;
 
@@ -114,7 +114,7 @@ describe("승인 쓰기 gate", () => {
 		expect(evaluateApproval(data, { key: KEY, file: "a.ts" }, documentResolver(root)).status).toBe("conflict") ;
 	});
 
-	test("project → user → preset 순으로 가장 높은 층을 고른다", () => {
+	test("picks the highest layer in project → user → preset order", () => {
 		const root    = workspace()                                                          ;
 		const preset  = convention({ id: "preset", layer: "preset", status: "rejected" })    ;
 		const user    = convention({ id: "user", layer: "user", status: "rejected" })        ;
@@ -125,7 +125,7 @@ describe("승인 쓰기 gate", () => {
 		expect(result.layer       ).toBe("project") ;
 	});
 
-	test("결정 누락·낡은 문서 hash·잘못된 버전·사람 승인 누락을 모두 막는다", () => {
+	test("blocks a missing decision, a stale document hash, a wrong version and a missing human approval", () => {
 		const root     = workspace()            ;
 		const resolver = documentResolver(root) ;
 
@@ -135,7 +135,7 @@ describe("승인 쓰기 gate", () => {
 		expect(evaluateApproval(registry(root, { conventions: [convention({ approvedBy: "" })] }), { key: KEY, file: "a.ts" }, resolver).reasons                                  ).toContain("human approval receipt is missing"  ) ;
 	});
 
-	test("positive·counterexample·양쪽 링크·내용 hash·규칙 관련성이 하나라도 없으면 막는다", () => {
+	test("blocks when any of positive, counterexample, both links, content hash or rule relevance is missing", () => {
 		const root      = workspace()                                                                  ;
 		const resolver  = documentResolver(root)                                                       ;
 		const noCounter = new Map([["ts-rule-positive", example("ts-rule-positive", "after-better")]]) ;
@@ -150,25 +150,25 @@ describe("승인 쓰기 gate", () => {
 		expect(evaluateApproval(registry(root, { decisions: new Map([["ts-rule", decision(root, { examples: ["ts-rule-positive"] })]]) }), { key: KEY, file: "a.ts" }, resolver).reasons                 ).toContain("example link differs between convention and decision: ts-rule-counter") ;
 	});
 
-	test("문서 ref의 root 탈출을 거절한다", () => {
-		const root   = workspace()                                                                                                                                                                   ;
-		const result = evaluateApproval(registry(root, { decisions: new Map([["ts-rule", decision(root, { ref: "../outside.md#표 정렬" })]]) }), { key: KEY, file: "a.ts" }, documentResolver(root)) ;
+	test("refuses a document ref that escapes the root", () => {
+		const root   = workspace()                                                                                                                                                                           ;
+		const result = evaluateApproval(registry(root, { decisions: new Map([["ts-rule", decision(root, { ref: "../outside.md#Table alignment" })]]) }), { key: KEY, file: "a.ts" }, documentResolver(root)) ;
 		expect(result.writable  ).toBe(false)                    ;
 		expect(result.reasons[0]).toContain("document is invalid") ;
 	});
 
-	test("같은 상대 ref를 convention 층에 맞는 문서 root에서 해석한다", () => {
+	test("resolves the same relative ref in the document root matching the convention layer", () => {
 		const base    = workspace()           ;
 		const project = join(base, "project") ;
 		const user    = join(base, "user")    ;
 		mkdirSync(join(project, "docs"), { recursive: true });
 		mkdirSync(join(user, "docs"), { recursive: true });
-		writeFileSync(join(project, "docs", "rules.md"), "# 규칙\n\n## 표 정렬\nproject 문장\n");
-		writeFileSync(join(user, "docs", "rules.md"), "# 규칙\n\n## 표 정렬\nuser 문장\n");
-		const userDocument = "# 규칙\n\n## 표 정렬\nuser 문장\n";
+		writeFileSync(join(project, "docs", "rules.md"), "# Rules\n\n## Table alignment\nproject text\n");
+		writeFileSync(join(user, "docs", "rules.md"), "# Rules\n\n## Table alignment\nuser text\n");
+		const userDocument = "# Rules\n\n## Table alignment\nuser text\n";
 		const data = registry(base, {
 			conventions: [convention({ layer: "user" })],
-			decisions: new Map([["ts-rule", decision(base, { docHash: sectionHash(userDocument, "표 정렬") })]]),
+			decisions: new Map([["ts-rule", decision(base, { docHash: sectionHash(userDocument, "Table alignment") })]]),
 		});
 
 		const result = evaluateApproval(data, { key: KEY, file: "a.ts" }, documentResolver({ project, user }));
@@ -177,7 +177,7 @@ describe("승인 쓰기 gate", () => {
 });
 
 describe("registry loader", () => {
-	test("명시한 root와 층에서 JSONL을 읽고 malformed와 중복 proof를 거절한다", () => {
+	test("reads JSONL from the given roots and layers and refuses malformed and duplicate proofs", () => {
 		const root = workspace();
 		writeFileSync(join(root, "conventions.jsonl"), `${JSON.stringify(convention({ layer: "preset" }))}\n`);
 		writeFileSync(join(root, "examples.jsonl"), `${JSON.stringify(example("ts-rule-positive", "after-better"))}\n${JSON.stringify(example("ts-rule-counter", "bad"))}\n`);
@@ -193,7 +193,7 @@ describe("registry loader", () => {
 		expect(() => loadApprovalRegistry([{ root, layer: "user" }, { root, layer: "preset" }])).toThrow("duplicate proof example");
 	});
 
-	test("registry override의 root 탈출과 symbolic/non-regular 파일을 거절한다", () => {
+	test("refuses registry override root escapes and symbolic/non-regular files", () => {
 		const base     = workspace()                 ;
 		const registry = join(base, "registry")      ;
 		const outside  = join(base, "outside.jsonl") ;

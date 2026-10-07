@@ -236,7 +236,7 @@ export interface StagedPasses {
 	readonly verify : (working: string) => Promise<boolean>               ;
 }
 
-/** 작업본만 바꾸며 pass를 반복하고, 안정 상태를 별도 확인한다. */
+/** Repeats passes changing only the working copy, then separately confirms a stable state. */
 export async function runStagedPasses(working: string, passes: StagedPasses, maximum = MAX_PASSES): Promise<number> {
 	for (let pass = 1; pass <= maximum; pass += 1) {
 		if (!await passes.apply(working, pass)) return pass;
@@ -247,7 +247,7 @@ export async function runStagedPasses(working: string, passes: StagedPasses, max
 
 export type StagedDiagnostics = (text: string) => Promise<readonly string[]>;
 
-/** 작업본을 쓴 뒤 fresh 진단이 달라지거나 parser가 실패하면 예외를 내고 commit을 막는다. */
+/** After writing the working copy, throws and blocks the commit if fresh diagnostics differ or the parser fails. */
 export async function writeDiagnosedOutput(working: string, beforeText: string, output: string, diagnostics: StagedDiagnostics, displayPath = working): Promise<void> {
 	const before = await diagnostics(beforeText);
 	writeFileSync(working, output);
@@ -268,7 +268,7 @@ async function writeGroups(root: string, workingRelative: string, displayRelativ
 	// Vertical rows may insert line breaks; every other edit is whitespace-only between tokens on one line.
 	const preserved = groups.some(group => group.vertical > 0) ? preservesTokensWithBreaks(text, output) : preservesTokens(text, output);
 	if (!preserved) throw new Error(`combined alignment edits change more than whitespace; nothing written: ${displayRelative}`);
-	// 작업본의 원래 경로 효과(JSX 확장자·프로젝트 설정)를 유지한 채 fresh server로 전후를 비교한다.
+	// Compares before and after with a fresh server while keeping the working copy's original path effects (JSX extension, project settings).
 	const absolute = `${root}/${workingRelative}`;
 	await writeDiagnosedOutput(absolute, text, output, value => syntacticDiagnostics(root, absolute, value), displayRelative);
 	return true;

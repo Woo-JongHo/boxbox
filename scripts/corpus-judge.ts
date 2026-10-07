@@ -89,7 +89,7 @@ export function latestVerdicts(logLines: readonly string[]): ReadonlyMap<string,
 	return latest;
 }
 
-/** AI 사전 판정(M1.8 S3.5 ③): 제안일 뿐이며 판정 기록(verdicts.jsonl)이 아니다. */
+/** AI pre-verdict (M1.8 S3.5 ③): only a suggestion, not a verdict record (verdicts.jsonl). */
 export interface Suggestion {
 	readonly schemaVersion : number            ;
 	readonly signature     : string            ;
@@ -102,7 +102,7 @@ export interface Suggestion {
 	readonly model?        : string            ;
 }
 
-/** 제안 대기열을 읽는다. 같은 시그니처는 마지막 제안이 이긴다. */
+/** Reads the suggestion queue. The last suggestion wins for the same signature. */
 export function latestSuggestions(logLines: readonly string[]): ReadonlyMap<string, Suggestion> {
 	const latest = new Map<string, Suggestion>();
 	for (const line of logLines) {
@@ -206,5 +206,5 @@ function main(): void {
 	}
 }
 
-// import만으로는 아무 일도 하지 않는다 (예전에는 import 시 자료를 다시 내보냈다).
+// Importing alone does nothing (it used to re-export the material on import).
 if (import.meta.main) main();

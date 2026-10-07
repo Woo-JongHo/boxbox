@@ -54,7 +54,7 @@ function sameIdentity(left: FileIdentity, right: FileIdentity): boolean {
 function prepareUpdate(target: string): PreparedUpdate {
 	const directory = dirname(target)                  ;
 	const nonce     = `${process.pid}.${randomUUID()}` ;
-	// 원래 basename을 끝에 그대로 두어 .d.ts/.d.mts/.tsx 같은 TypeScript 파일 의미를 보존한다.
+	// Keep the original basename at the end to preserve TypeScript file meaning such as .d.ts/.d.mts/.tsx.
 	const working = join(directory, `.xxx-stage.${nonce}.${basename(target)}`) ;
 	const lock    = join(directory, `.${basename(target)}.xxx-write.lock`    ) ;
 
@@ -104,8 +104,8 @@ function cleanupUpdate(prepared: PreparedUpdate): void {
 }
 
 /**
- * 대상과 같은 디렉터리·확장자의 작업본에서 변경을 끝낸 뒤 한 번만 교체한다.
- * 잠금은 이 helper를 쓰는 writer끼리만 협력하며, commit 직전 identity와 bytes를 다시 확인한다.
+ * Finishes the change in a working copy with the same directory and extension as the target, then replaces it exactly once.
+ * The lock only coordinates writers that use this helper, and identity and bytes are rechecked right before commit.
  */
 export async function updateFileAtomically(target: string, update: (file: StagedFile) => Promise<void>, operations: SafeFileOperations = {}): Promise<boolean> {
 	const prepared = prepareUpdate(target);
@@ -115,7 +115,7 @@ export async function updateFileAtomically(target: string, update: (file: Staged
 	} finally { cleanupUpdate(prepared); }
 }
 
-/** 동기 parser를 쓰는 line engine을 위한 같은 안전 계약의 동기 진입점. */
+/** Synchronous entry point with the same safety contract, for line engines that use synchronous parsers. */
 export function updateFileAtomicallySync(target: string, update: (file: StagedFile) => void, operations: SafeFileOperations = {}): boolean {
 	const prepared = prepareUpdate(target);
 	try {

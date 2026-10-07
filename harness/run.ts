@@ -1,11 +1,11 @@
 /**
- * 배포 추적 하네스 오케스트레이터.
+ * Release tracking harness orchestrator.
  *
- * 실행 전 git 지문·호스트·전제(npm 캐시)를 확정해 기록하고(실행마다 매니페스트, eval-protocol 원칙),
- * 스테이지를 순차 실행해 결과를 runs.jsonl 1행으로 남긴다. 스테이지 하나가 실패해도 나머지는
- * 계속 실행해 전부 기록한다. latest.json은 모든 요청 스테이지의 결과가 모였을 때만 갱신한다.
+ * Pins and records the git fingerprint, host and preconditions (npm cache) before running (a manifest per run, eval-protocol principle),
+ * runs the stages in sequence and stores the result as one line in runs.jsonl. If one stage fails, the rest still
+ * run and everything is recorded. latest.json is updated only when results for all requested stages are in.
  *
- * 사용법: `bun run harness [--stages a,b] [--skip a,b] [--with-eval] [--note "…"] [--dry-run] [--json]`
+ * Usage: `bun run harness [--stages a,b] [--skip a,b] [--with-eval] [--note "…"] [--dry-run] [--json]`
  */
 
 import      { spawnSync               } from "node:child_process" ;
@@ -32,7 +32,7 @@ const evidenceDir    = resolve(import.meta.dir, "evidence") ;
 const bun            = process.execPath                     ;
 const TYPESCRIPT_PIN = "7.0.2"                              ;
 
-/** 전체 스테이지와 기본 실행 순서. eval은 유료 모델 호출이라 --with-eval일 때만 요청에 들어간다. */
+/** All stages in default run order. eval calls a paid model, so it is requested only with --with-eval. */
 const ALL_STAGES = ["self-align", "check", "pack", "artifact-journey", "corpus-gate", "eval"] as const;
 
 const SELF_ALIGN_ROOTS = ["skills/xxx/scripts", "scripts", "test", "harness"]                                          ;
@@ -88,7 +88,7 @@ function hostFingerprint(): RunRecord["host"] {
 	};
 }
 
-/** artifact 격리 설치 테스트의 전제(`npm install --offline`)가 채워져 있는지 npm 캐시 색인으로 판별한다. */
+/** Determines from the npm cache index whether the precondition of the isolated artifact install tests (`npm install --offline`) is met. */
 function npmCacheHas(fragment: string): boolean {
 	const cache = resolve(process.env.HOME ?? ".", ".npm/_cacache/index-v5") ;
 	if (!existsSync(cache)) return false                                     ;
@@ -131,7 +131,7 @@ function countOf(output: string, pattern: RegExp): number | null {
 	return match === null ? null : Number(match[1]!) ;
 }
 
-// ─── 스테이지 ────────────────────────────────────────────────────────────────
+// ─── stages ──────────────────────────────────────────────────────────────────
 
 interface StageOutcome {
 	readonly ok         : boolean                                             ;
@@ -160,7 +160,7 @@ function runSelfAlign(): StageOutcome {
 				ok       : false,
 				exitCode : result.status,
 				metrics  : { files: files.length, changed: changed ?? -1, errors: errors ?? -1, misaligned, misalignedFiles, compressed },
-				error    : `정렬 검사 요약을 파싱하지 못했다: ${path}`,
+				error    : `could not parse the alignment check summary: ${path}`,
 			}                                                                                        ;
 		}
 		if (count > 0) misalignedFiles += 1                                                      ;
@@ -181,7 +181,7 @@ function runCheck(): StageOutcome {
 	const fail   = countOf(result.output, /(\d+) fail/)                      ;
 	const ran    = result.output.match(/Ran (\d+) tests across (\d+) files/) ;
 	if (pass === null || skip === null || fail === null) {
-		return { ok: false, exitCode: result.status, metrics: {}, error: "check 출력에서 pass/skip/fail을 파싱하지 못했다" } ;
+		return { ok: false, exitCode: result.status, metrics: {}, error: "could not parse pass/skip/fail from the check output" } ;
 	}
 	return {
 		ok       : result.status === 0 && fail === 0,
@@ -192,7 +192,7 @@ function runCheck(): StageOutcome {
 
 function packedArtifact(directory: string, version: string): RunArtifact {
 	const packed = spawn("npm", ["pack", resolve(root, directory), "--pack-destination", resolve(root, "dist"), "--json"], 300_000) ;
-	if (packed.status !== 0) throw new Error(`npm pack 실패(${directory}): ${packed.output.slice(-500)}`) ;
+	if (packed.status !== 0) throw new Error(`npm pack failed (${directory}): ${packed.output.slice(-500)}`) ;
 	const parsed  = JSON.parse(packed.output.slice(packed.output.indexOf("["))) as { readonly filename: string; readonly files: readonly unknown[] }[] ;
 	const entry   = parsed[0]!                                                                                                                         ;
 	const tarball = resolve(root, "dist", entry.filename)                                                                                              ;
@@ -209,9 +209,9 @@ function packedArtifact(directory: string, version: string): RunArtifact {
 
 function runPack(): StageOutcome {
 	const buildCli = spawn(bun, ["run", "build:cli"], 300_000)           ;
-	if (buildCli.status !== 0) return { ok: false, exitCode: buildCli.status, metrics: {}, error: `build:cli 실패\n${buildCli.output.slice(-1_000)}` } ;
+	if (buildCli.status !== 0) return { ok: false, exitCode: buildCli.status, metrics: {}, error: `build:cli failed\n${buildCli.output.slice(-1_000)}` } ;
 	const buildNode = spawn(bun, ["run", "build:node-artifact"], 300_000) ;
-	if (buildNode.status !== 0) return { ok: false, exitCode: buildNode.status, metrics: {}, error: `build:node-artifact 실패\n${buildNode.output.slice(-1_000)}` } ;
+	if (buildNode.status !== 0) return { ok: false, exitCode: buildNode.status, metrics: {}, error: `build:node-artifact failed\n${buildNode.output.slice(-1_000)}` } ;
 	const manifest = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8")) as { readonly version: string } ;
 	const artifacts = [
 		packedArtifact("dist/cli", manifest.version),
@@ -226,7 +226,7 @@ function runArtifactJourney(): StageOutcome {
 	const pass   = countOf(result.output, /(\d+) pass/)                                                                              ;
 	const fail   = countOf(result.output, /(\d+) fail/)                                                                              ;
 	if (pass === null || fail === null) {
-		return { ok: false, exitCode: result.status, metrics: {}, error: "artifact 테스트 출력에서 pass/fail을 파싱하지 못했다" } ;
+		return { ok: false, exitCode: result.status, metrics: {}, error: "could not parse pass/fail from the artifact test output" } ;
 	}
 	return { ok: fail === 0 && result.status === 0, exitCode: result.status, metrics: { pass, fail } } ;
 }
@@ -236,7 +236,7 @@ function runCorpusGate(): StageOutcome {
 	const checked  = countOf(result.output, /checked=(\d+)/)                       ;
 	const failures = countOf(result.output, /failures=(\d+)/)                      ;
 	if (checked === null || failures === null) {
-		return { ok: false, exitCode: result.status, metrics: {}, error: "corpus gate 출력에서 checked/failures를 파싱하지 못했다" } ;
+		return { ok: false, exitCode: result.status, metrics: {}, error: "could not parse checked/failures from the corpus gate output" } ;
 	}
 	return { ok: failures === 0 && result.status === 0, exitCode: result.status, metrics: { checked, failures } } ;
 }
@@ -263,7 +263,7 @@ interface StageExecution {
 
 function executeStage(id: string): StageExecution {
 	const started = Date.now()                                                     ;
-	process.stderr.write(`harness: ${id} 실행 중…\n`)                              ;
+	process.stderr.write(`harness: running ${id}…\n`)                              ;
 	try {
 		const outcome = STAGE_RUNNERS[id]!()                        ;
 		const seconds = ((Date.now() - started) / 1_000).toFixed(1) ;
@@ -286,7 +286,7 @@ function skippedStage(id: string, reason: string): RunStage {
 	return { id, ok: true, skipped: true, exitCode: null, durationMs: 0, metrics: { reason } } ;
 }
 
-// ─── 진입점 ──────────────────────────────────────────────────────────────────
+// ─── entry point ─────────────────────────────────────────────────────────────
 
 function main(): void {
 	const args      = process.argv.slice(2)                                                                                                         ;
@@ -298,10 +298,10 @@ function main(): void {
 	const asJson    = hasFlag(args, "--json")                                                                                                       ;
 	const known     = stagesArg === undefined ? [...ALL_STAGES] : stagesArg.split(",").map(value => value.trim()).filter(value => value.length > 0) ;
 	const unknown   = known.filter(id => !(ALL_STAGES as readonly string[]).includes(id))                                                           ;
-	if (unknown.length > 0) throw new Error(`알 수 없는 스테이지: ${unknown.join(", ")} (사용 가능: ${ALL_STAGES.join(", ")})`) ;
+	if (unknown.length > 0) throw new Error(`unknown stage(s): ${unknown.join(", ")} (available: ${ALL_STAGES.join(", ")})`) ;
 	const skip            = new Set((skipArg ?? "").split(",").map(value => value.trim()).filter(value => value.length > 0)) ;
 	const requestedStages = known.filter(id => !skip.has(id))                                                                ;
-	if (requestedStages.length === 0) throw new Error("요청한 스테이지가 없다") ;
+	if (requestedStages.length === 0) throw new Error("no stages requested") ;
 
 	const git           = gitFingerprint()        ;
 	const host          = hostFingerprint()       ;
@@ -319,8 +319,8 @@ function main(): void {
 
 	for (const id of requestedStages) {
 		if (id === "eval" && !withEval) {
-			stages.push(skippedStage(id, "유료 모델 호출 — --with-eval로만 실행")) ;
-			limitations.push("eval 미실행(유료 모델 호출, opt-in)")               ;
+			stages.push(skippedStage(id, "paid model call — runs only with --with-eval")) ;
+			limitations.push("eval not run (paid model call, opt-in)")               ;
 			continue                                                               ;
 		}
 		const execution = executeStage(id)                                        ;
@@ -330,7 +330,7 @@ function main(): void {
 
 	const npmCache = preconditions.npmCache                                   ;
 	if (!npmCache.typescript || !npmCache.typescriptNative) {
-		limitations.push(`npm 캐시에 artifact 설치 전제가 없다(typescript=${npmCache.typescript}, native=${npmCache.typescriptNative}) — 워밍: npm cache add typescript@${TYPESCRIPT_PIN}`) ;
+		limitations.push(`the npm cache lacks the artifact install precondition (typescript=${npmCache.typescript}, native=${npmCache.typescriptNative}) — warm it with: npm cache add typescript@${TYPESCRIPT_PIN}`) ;
 	}
 
 	const completion = completionOf(requestedStages, stages)                  ;

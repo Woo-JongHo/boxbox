@@ -19,7 +19,7 @@ const latest          = (path: string) => JSON.parse(readFileSync(join(path, ".x
 
 afterEach(() => { for (const path of roots.splice(0)) rmSync(path, { recursive: true, force: true }); });
 
-test("검사 성공과 변경 없음, 인자 비저장을 구분한다", async () => {
+test("distinguishes a successful check, no changes and not storing arguments", async () => {
 	const path   = root()                    ;
 	const secret = "SECRET_COMMAND_ARGUMENT" ;
 	expect(await guardedRun(["--root", path, "--json", "--", "python3", "-c", "open('one.py','w').write('x=1\\n')", secret], preflight, inspect, "test"))    .toBe     (0       ) ;
@@ -28,13 +28,13 @@ test("검사 성공과 변경 없음, 인자 비저장을 구분한다", async (
 	expect(latest(path).checked[0].file                                                                                                                 )    .toBe     ("one.py") ;
 });
 
-test("preflight 실패는 실행 전에 종료되고 기록된다", async () => {
+test("a preflight failure ends before running and is recorded", async () => {
 	const path = root();
 	expect(await guardedRun(["--root", path, "--", "python3", "-c", "raise Exception()"], () => ({ runtimeUsable: false }), inspect, "test")).toBe(2);
 	expect(latest(path)).toMatchObject({ state: "TOOL_ERROR", errorCode: "PREFLIGHT_FAILED", childExitCode: null });
 });
 
-test("child 실패, 미지원, 무변경은 PASS가 아니다", async () => {
+test("child failure, unsupported and unchanged are not PASS", async () => {
 	for (const [script, state, code] of [["raise SystemExit(7)", "CHILD_FAILED", 2], ["open('one.js','w').write('x=1')", "UNSUPPORTED", 2], ["pass", "NO_CHANGES", 0]] as const) {
 		const path = root();
 		expect(await guardedRun(["--root", path, "--", "python3", "-c", script], preflight, inspect, "test")).toBe(code);
@@ -42,14 +42,14 @@ test("child 실패, 미지원, 무변경은 PASS가 아니다", async () => {
 	}
 });
 
-test("검사 오류와 실행 불가능은 종료 기록을 남긴다", async () => {
+test("check errors and non-runnable commands leave an end record", async () => {
 	const path = root();
 	expect(await guardedRun(["--root", path, "--", "xxx-missing-executable"], preflight, inspect, "test")).toBe(2);
 	expect(latest(path)).toMatchObject({ state: "TOOL_ERROR", errorCode: "CHILD_START_ERROR" });
 	expect(latest(path).finishedAt).toBeTruthy();
 });
 
-test("변경한 심볼릭 코드파일은 검사 승인하지 않는다", async () => {
+test("a changed symbolic code file is not approved by the check", async () => {
 	const path    = root() ;
 	const outside = root() ;
 	writeFileSync(join(outside, "target.py"), "x=1");
@@ -58,7 +58,7 @@ test("변경한 심볼릭 코드파일은 검사 승인하지 않는다", async 
 	expect(latest(path).state).toBe("TOOL_ERROR");
 });
 
-test("status는 실행 밖 변경을 STALE로 표시한다", async () => {
+test("status marks changes made outside a run as STALE", async () => {
 	const path = root();
 	await guardedRun(["--root", path, "--", "python3", "-c", "pass"], preflight, inspect, "test");
 	writeFileSync(join(path, "outside.py"), "x=1\n");
@@ -72,7 +72,7 @@ test("status는 실행 밖 변경을 STALE로 표시한다", async () => {
 });
 
 
-test("검사 실패와 검사 예외를 구분하고 child 결과를 보존한다", async () => {
+test("distinguishes check failures from check exceptions and preserves the child result", async () => {
 	for (const failure of [false, true]) {
 		const path = root();
 		const checker = async (project: string, file: string) => {

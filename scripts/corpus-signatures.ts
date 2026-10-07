@@ -87,14 +87,14 @@ interface SignatureType {
 	readonly examples  : readonly TableSpot[]             ;
 }
 
-/** 센서스 리포트의 모양. schemaVersion과 signatureVersion이 맞지 않는 예전 리포트는 읽지 않고 다시 만든다. */
+/** Shape of the census report. Old reports whose schemaVersion and signatureVersion do not match are not read but rebuilt. */
 interface CensusReport<T> {
 	readonly schemaVersion?    : number       ;
 	readonly signatureVersion? : number       ;
 	readonly types             : readonly T[] ;
 }
 
-/** 센서스 리포트를 읽는다. 예전 리포트(결과 상태가 키에 섞인 것)는 짝지어 쓰지 않고 오류로 알린다. */
+/** Reads the census report. An old report (with result states mixed into the key) is never paired; it is reported as an error. */
 export function readCensusReport<T>(path: string = join(CACHE, "signatures.json")): CensusReport<T> {
 	if (!existsSync(path)) throw new Error(`no census report: ${path} — run scripts/corpus-signatures.ts first`);
 
@@ -197,7 +197,7 @@ export function observationOf(row: CensusRow, source: CorpusSource): CorpusObser
 	return { ...value, id: sha256(JSON.stringify(value)) };
 }
 
-/** 완성된 스냅샷만 보이도록 같은 디렉터리의 임시 파일을 교체한다. */
+/** Replaces a temporary file in the same directory so only completed snapshots are visible. */
 function replaceFile(path: string, text: string): void {
 	const temporary = `${path}.${process.pid}.${crypto.randomUUID()}.tmp`;
 	writeFileSync(temporary, text);
