@@ -17,15 +17,15 @@ function project(): string {
 	return root;
 }
 
-/** data를 주면 플러그인처럼 --root 없이 cwd 입력과 CLAUDE_PLUGIN_DATA로 부른다. */
+/** With data, calls it like a plugin: no --root, a cwd input and CLAUDE_PLUGIN_DATA. */
 function hook(root: string, mode: "session" | "post" | "stop", input: Record<string, unknown>, data?: string): Record<string, unknown> {
-	const args = data ? [CLI, "hook", mode] : [CLI, "hook", mode, "--root", root];
-	const run  = spawnSync(process.execPath, args, { input: JSON.stringify(data ? { ...input, cwd: root } : input), encoding: "utf8", env: { ...process.env, CLAUDE_PLUGIN_DATA: data ?? "" } });
+	const args = data ? [CLI, "hook", mode] : [CLI, "hook", mode, "--root", root]                                                                                                                ;
+	const run  = spawnSync(process.execPath, args, { input: JSON.stringify(data ? { ...input, cwd: root } : input), encoding: "utf8", env: { ...process.env, CLAUDE_PLUGIN_DATA: data ?? "" } }) ;
 	expect(run.status).toBe(0);
 	return JSON.parse(run.stdout);
 }
 
-test("지원하지 않는 파일 변경은 이후 PostToolUse·Stop을 막지 않는다", () => {
+test("changes to unsupported files do not block later PostToolUse or Stop", () => {
 	const root = project();
 	hook(root, "session", { session_id: "one" });
 	writeFileSync(join(root, "one.js"), "x=1\n");
@@ -34,7 +34,7 @@ test("지원하지 않는 파일 변경은 이후 PostToolUse·Stop을 막지 �
 	expect(hook(root, "stop", { session_id: "one" }).decision                    ).toBeUndefined();
 }, 60_000);
 
-test("Stop은 stop_hook_active면 정렬 실패가 남아도 다시 막지 않는다", () => {
+test("Stop does not block again with stop_hook_active even when an alignment failure remains", () => {
 	const root = project();
 	hook(root, "session", { session_id: "two" });
 	writeFileSync(join(root, "sample.py"), "a = 1\nlonger = 22\nmid = 333\n");
@@ -45,18 +45,18 @@ test("Stop은 stop_hook_active면 정렬 실패가 남아도 다시 막지 않�
 	expect(hook(root, "stop", { session_id: "two" }).decision                         ).toBeUndefined() ;
 }, 60_000);
 
-test("플러그인 훅은 cwd 입력을 쓰고 기록을 프로젝트가 아닌 플러그인 데이터 폴더에 남긴다", () => {
+test("plugin hooks use the cwd input and write records to the plugin data folder, not the project", () => {
 	const root = project() ;
 	const data = project() ;
 	hook(root, "session", { session_id: "three" }, data);
 	writeFileSync(join(root, "sample.py"), "a = 1\nlonger = 22\nmid = 333\n");
 
-	expect(hook(root, "post", { session_id: "three", tool_name: "apply_patch" }, data).decision ).toBe("block") ;
-	expect(existsSync(join(root, ".xxx"))                                                       ).toBe(false)   ;
-	expect(readdirSync(join(data, "hooks")).length                                              ).toBe(1)       ;
+	expect(hook(root, "post", { session_id: "three", tool_name: "apply_patch" }, data).decision).toBe("block") ;
+	expect(existsSync(join(root, ".xxx"))                                                      ).toBe(false  ) ;
+	expect(readdirSync(join(data, "hooks")).length                                             ).toBe(1      ) ;
 }, 60_000);
 
-test("훅 자체 오류는 작업을 막지 않고 알리기만 한다", () => {
+test("hook errors never block work; they are only reported", () => {
 	const root   = project()                                     ;
 	const output = hook(root, "post", { session_id: "missing" }) ;
 

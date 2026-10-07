@@ -45,8 +45,8 @@ afterEach(() => {
 	for (const value of workspaces.splice(0)) rmSync(value, { recursive: true, force: true });
 });
 
-describe("Node 전용 로컬 패키지 산출물", () => {
-	test("격리 설치한 tarball이 Bun과 저장소 없이 TypeScript/Python을 수정하고 재검사한다", () => {
+describe("Node-only local package artifact", () => {
+	test("the isolated installed tarball fixes and rechecks TypeScript/Python without Bun or the repository", () => {
 		const temporary = workspace()                ;
 		const project   = join(temporary, "project") ;
 		const packs     = join(temporary, "packs")   ;

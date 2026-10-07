@@ -44,8 +44,8 @@ afterEach(() => {
 	for (const value of workspaces.splice(0)) rmSync(value, { recursive: true, force: true });
 });
 
-describe("공개 CLI 로컬 패키지 산출물", () => {
-	test("격리 설치한 xxx bin이 빈 preset을 보존하고 synthetic 프로젝트 승인만 안전하게 적용한다", () => {
+describe("public CLI local package artifact", () => {
+	test("the isolated installed xxx bin keeps the empty preset and applies only synthetic project approvals safely", () => {
 		const temporary = workspace()                    ;
 		const project   = join(temporary, "project")     ;
 		const packs     = join(temporary, "public-pack") ;
@@ -160,16 +160,16 @@ describe("공개 CLI 로컬 패키지 산출물", () => {
 		const counter   = `${rule}-counter`                                                                                ;
 		const before    = "const a = make(1);\nconst muchLonger = make(22);\nconst mid = make(333);"                       ;
 		const after     = "const a          = make(1  ) ;\nconst muchLonger = make(22 ) ;\nconst mid        = make(333) ;" ;
-		const document  = "# 테스트 규칙\n\n## 표 정렬\nartifact test에서만 승인한 synthetic 규칙\n"                       ;
+		const document  = "# Test rules\n\n## Table alignment\nsynthetic rule approved only in the artifact test\n"        ;
 		const formatter = join(project, "formatter.mjs")                                                                   ;
-		writeFileSync(formatter, "// artifact test의 명시적 no-op formatter\n");
+		writeFileSync(formatter, "// explicit no-op formatter for the artifact test\n");
 		writeFileSync(join(project, ".xxx/config.json"), `${JSON.stringify({ schemaVersion: 2, formatters: { typescript: { command: runtimeNode, args: [formatter, "{file}"], timeoutMs: 2_000 } } }, null, 2)}\n`);
 		mkdirSync(join(project, ".xxx/docs"));
 		writeFileSync(join(project, ".xxx/docs/rules.md"), document);
 		const convention      = { schemaVersion: 1, id: rule, key: "v1|typescript|SourceFile|declaration-equals|equals>call-open-paren>call-close-paren>semicolon", pattern: "DEFINE", status: "approved", scope: "**", examples: [positive, counter], versions: APPROVAL_VERSIONS, approvedBy: "synthetic-artifact-test", date: "2026-10-04" }                                                                                                                                                ;
 		const positiveExample = { schemaVersion: 1, id: positive, status: "approved", versions: APPROVAL_VERSIONS, language: "typescript", regime: "table", patterns: ["DEFINE"], rules: [rule], before, after, contentHash: contentHashOf(before, after), verdict: "after-better", asserts: { after: {} }, source: { kind: "synthetic", license: "test" }, approvedBy: "synthetic-artifact-test", date: "2026-10-04" }                                                                        ;
 		const counterExample  = { schemaVersion: 1, id: counter, status: "approved", versions: APPROVAL_VERSIONS, language: "typescript", regime: "table", patterns: ["DEFINE"], rules: [rule], before: "const one = make(1);", after: "const one = make(1);", contentHash: contentHashOf("const one = make(1);", "const one = make(1);"), verdict: "bad", asserts: { after: {} }, source: { kind: "synthetic", license: "test" }, approvedBy: "synthetic-artifact-test", date: "2026-10-04" } ;
-		const decision        = { schemaVersion: 1, id: rule, kind: "rule", layer: "convention", ref: ".xxx/docs/rules.md#표 정렬", docHash: sectionHash(document, "표 정렬"), examples: [positive, counter], approvedBy: "synthetic-artifact-test", date: "2026-10-04" }                                                                                                                                                                                                                      ;
+		const decision        = { schemaVersion: 1, id: rule, kind: "rule", layer: "convention", ref: ".xxx/docs/rules.md#Table alignment", docHash: sectionHash(document, "Table alignment"), examples: [positive, counter], approvedBy: "synthetic-artifact-test", date: "2026-10-04" }                                                                                                                                                                                                      ;
 		writeFileSync(join(project, ".xxx/conventions.jsonl"), `${JSON.stringify(convention)}\n`);
 		writeFileSync(join(project, ".xxx/examples.jsonl"), `${JSON.stringify(positiveExample)}\n${JSON.stringify(counterExample)}\n`);
 		writeFileSync(join(project, ".xxx/decisions.jsonl"), `${JSON.stringify(decision)}\n`);

@@ -16,7 +16,7 @@ function workspace(): string {
 	workspaces.push(root);
 	mkdirSync(join(root, "src"));
 	mkdirSync(join(root, "docs"));
-	writeFileSync(join(root, "docs/rules.md"), "# 규칙\n\n## 표 정렬\n테스트에서만 승인한 규칙\n");
+	writeFileSync(join(root, "docs/rules.md"), "# Rules\n\n## Table alignment\nRule approved only in tests\n");
 	return root;
 }
 
@@ -38,7 +38,7 @@ function registry(root: string, language: "typescript" | "python", key: string, 
 	return {
 		conventions : [{ schemaVersion: 1, id: rule, key, pattern: "DEFINE", status, scope: "src/**", examples: [positive.id, counter.id], versions: APPROVAL_VERSIONS, approvedBy: "synthetic-test-approver", date: "2026-10-04", layer: "project" }],
 		examples    : new Map([[positive.id, positive], [counter.id, counter]]),
-		decisions   : new Map([[rule, { schemaVersion: 1, id: rule, kind: "rule", layer: "convention", ref: "docs/rules.md#표 정렬", docHash: sectionHash(document, "표 정렬"), examples: [positive.id, counter.id], approvedBy: "synthetic-test-approver", date: "2026-10-04" }]]),
+		decisions   : new Map([[rule, { schemaVersion: 1, id: rule, kind: "rule", layer: "convention", ref: "docs/rules.md#Table alignment", docHash: sectionHash(document, "Table alignment"), examples: [positive.id, counter.id], approvedBy: "synthetic-test-approver", date: "2026-10-04" }]]),
 	};
 }
 
@@ -70,7 +70,7 @@ for (const scenario of [
 		source: "a=1\nlonger=22\nmid=333\n",
 		formatterBody: `import { readFileSync, writeFileSync } from "node:fs"; const p=process.argv[2]; writeFileSync(p,readFileSync(p,"utf8").replaceAll("=", " = "));`,
 	},
-]) test(`실제 ${scenario.name} 파이프라인이 승인된 작업본만 쓰고 재실행에도 고정된다`, async () => {
+]) test(`the real ${scenario.name} pipeline writes only the approved working copy and stays fixed on rerun`, async () => {
 	const root   = workspace()                      ;
 	const target = join(root, "src", scenario.file) ;
 	writeFileSync(target, scenario.source);
@@ -92,10 +92,10 @@ for (const scenario of [
 	expect(leftovers(root)                    ).toEqual([]   ) ;
 }, 60_000);
 
-test("root 경로에 symlink가 끼어도 TypeScript 파이프라인이 같은 결과를 쓴다", async () => {
-	const root   = workspace()                                                              ;
+test("the TypeScript pipeline writes the same result even with a symlink in the root path", async () => {
+	const root   = workspace()                                                                     ;
 	const linked = join(import.meta.dir, `xxx-format-link-${Math.random().toString(16).slice(2)}`) ;
-	const target = join(root, "src/sample.ts")                                              ;
+	const target = join(root, "src/sample.ts")                                                     ;
 	symlinkSync(root, linked);
 	workspaces.push(linked);
 	writeFileSync(target, "const a=fn(1);\nconst longer=fn(22);\nconst mid=fn(333);\n");
@@ -109,7 +109,7 @@ test("root 경로에 symlink가 끼어도 TypeScript 파이프라인이 같은 �
 	expect(leftovers(root) ).toEqual([]  ) ;
 }, 60_000);
 
-describe("포맷 파이프라인 실패 폐쇄", () => {
+describe("format pipeline fails closed", () => {
 	function pythonCase(root: string, body: string, status: "approved" | "rejected" = "approved", timeoutMs = 2_000) {
 		const target = join(root, "src/sample.py");
 		writeFileSync(target, "a=1\nlonger=22\nmid=333\n");
@@ -117,7 +117,7 @@ describe("포맷 파이프라인 실패 폐쇄", () => {
 		return { target, options: { root, file: "src/sample.py", language: "python" as const, formatter: { ...configured, timeoutMs }, registry: registry(root, "python", PY_KEY, status), resolveDocument: documentResolver(root) } };
 	}
 
-	test("dry-run은 전체 검증 결과와 제한된 출력을 돌려주되 원본을 쓰지 않는다", async () => {
+	test("dry-run returns the full verification result and bounded output without writing the original", async () => {
 		const root = workspace()                                                                                                                                                                                ;
 		const body = `import { readFileSync, writeFileSync } from "node:fs"; const p=process.argv[2]; process.stdout.write("x".repeat(70000)); writeFileSync(p,readFileSync(p,"utf8").replaceAll("=", " = "));` ;
 		const { target, options } = pythonCase(root, body);
@@ -131,9 +131,9 @@ describe("포맷 파이프라인 실패 폐쇄", () => {
 	});
 
 	for (const [name, body, expected] of [
-		["formatter 비정상 종료", `process.exit(7);`, "exit code 7"],
-		["parser 실패", `import { writeFileSync } from "node:fs"; writeFileSync(process.argv[2], "def broken(:\\n");`, "does not parse"],
-	] as const) test(`${name}이면 원본과 임시 파일을 보존한다`, async () => {
+		["formatter abnormal exit", `process.exit(7);`, "exit code 7"],
+		["parser failure", `import { writeFileSync } from "node:fs"; writeFileSync(process.argv[2], "def broken(:\\n");`, "does not parse"],
+	] as const) test(`on ${name}, the original and temporary files are preserved`, async () => {
 		const root = workspace();
 		const { target, options } = pythonCase(root, body);
 		const before = readFileSync(target);
@@ -142,7 +142,7 @@ describe("포맷 파이프라인 실패 폐쇄", () => {
 		expect(leftovers(root)).toEqual([]);
 	});
 
-	test("timeout이면 자식 process group까지 끝내고 원본을 쓰지 않는다", async () => {
+	test("on timeout, the child process group is ended and the original is not written", async () => {
 		const root = workspace()                                                                                                                                         ;
 		const body = `import { spawn } from "node:child_process"; spawn(process.execPath,["-e","setInterval(()=>{},1000)"],{stdio:"ignore"}); setInterval(()=>{},1000);` ;
 		const { target, options } = pythonCase(root, body, "approved", 100);
@@ -152,7 +152,7 @@ describe("포맷 파이프라인 실패 폐쇄", () => {
 		expect(leftovers(root)).toEqual([]);
 	});
 
-	test("실행 파일 부재와 승인 거절은 각각 쓰기 전에 닫힌다", async () => {
+	test("a missing executable and an approval refusal each close before writing", async () => {
 		const root    = workspace()                          ;
 		const missing = pythonCase(root, `process.exit(0);`) ;
 		await expect(runFormatPipeline({ ...missing.options, formatter: { command: "xxx-no-such-formatter", args: ["{file}"], timeoutMs: 100 } })).rejects.toThrow("executable not found");
@@ -161,7 +161,7 @@ describe("포맷 파이프라인 실패 폐쇄", () => {
 		expect(leftovers(root)).toEqual([]);
 	});
 
-	test("부모 directory symlink root 탈출과 잘못된 timeout을 직접 API에서도 거절한다", async () => {
+	test("the direct API also refuses parent-directory symlink root escapes and invalid timeouts", async () => {
 		const root    = workspace() ;
 		const outside = workspace() ;
 		writeFileSync(join(outside, "sample.py"), "a=1\nlonger=22\nmid=333\n");
@@ -175,7 +175,7 @@ describe("포맷 파이프라인 실패 폐쇄", () => {
 		expect(leftovers(root)).toEqual([]);
 	});
 
-	test("승인 규칙이 비었거나 두 번째 전체 실행이 달라지면 쓰지 않는다", async () => {
+	test("does not write when the approval rules are empty or the second full run differs", async () => {
 		const root  = workspace()                          ;
 		const empty = pythonCase(root, `process.exit(0);`) ;
 		await expect(runFormatPipeline({ ...empty.options, registry: { conventions: [], examples: new Map(), decisions: new Map() } })).rejects.toThrow("approval denied");
@@ -186,7 +186,7 @@ describe("포맷 파이프라인 실패 폐쇄", () => {
 		expect(readFileSync(changing.target).equals(before)).toBe(true);
 	});
 
-	test("외부 편집과 provenance 변경은 commit 직전에 감지한다", async () => {
+	test("external edits and provenance changes are detected right before commit", async () => {
 		const root     = workspace()                          ;
 		const external = pythonCase(root, `process.exit(0);`) ;
 		await expect(runFormatPipeline({ ...external.options, beforeCommit: () => writeFileSync(external.target, "external=True\n") })).rejects.toThrow("target changed before commit");

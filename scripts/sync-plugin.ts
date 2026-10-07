@@ -2,8 +2,8 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs"   ;
 import { resolve                                 } from "node:path" ;
 
 /**
- * 배포 플러그인 폴더(plugin/)를 단일 소스에 맞춘다: 규칙 문서는 skills/xxx/references에서 복사하고,
- * 매니페스트·marketplace·shim·문서의 버전은 package.json 하나에서 찍는다. --check는 쓰지 않고 drift만 보고한다.
+ * Keeps the release plugin folder (plugin/) in line with the single source: rule documents are copied from skills/xxx/references,
+ * and the version in manifests, marketplaces, the shim and docs is stamped from package.json alone. --check writes nothing and only reports drift.
  */
 
 const ROOT       = resolve(import.meta.dir, "..")                                                                                     ;
@@ -22,7 +22,7 @@ function withVersion(path: string, version: string): string {
 	return JSON.stringify(document, null, "\t") + "\n";
 }
 
-/** 경로별 기대 내용. 모든 대상은 이미 존재해야 하며 새 파일을 만들지 않는다. */
+/** Expected content per path. Every target must already exist; no new files are created. */
 export function expectedPluginFiles(): ReadonlyMap<string, string> {
 	const version  = String((JSON.parse(read("package.json")) as { version: unknown }).version) ;
 	const expected = new Map<string, string>()                                                  ;

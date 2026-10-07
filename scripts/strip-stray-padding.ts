@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 /**
- * 표 밖 정렬 공백 정리 (M1.8, 알람 A12). TypeScript 파일에서 A12 대상 줄의 끝 `;` 앞 공백을 지운 뒤 정렬기와 import 정리를
- * 다시 돌린다. 그러면 `;` 열은 엔진이 표로 인식한 곳에만 다시 생긴다. 파일마다 토큰·주석이 바이트 단위로 같은지
- * (preservesTokens) 확인하고, 다르면 그 파일은 되돌린다.
+ * Out-of-table padding cleanup (M1.8, alarm A12). In TypeScript files, removes the spaces before the trailing `;` on A12 target lines, then reruns
+ * the aligner and import normalization, so `;` columns reappear only where the engine recognizes a table. For each file it checks that tokens and comments
+ * are byte-identical (preservesTokens), and reverts that file if not.
  *
- * 사용법: bun scripts/strip-stray-padding.ts [--write] <파일>...
+ * Usage: bun scripts/strip-stray-padding.ts [--write] <file>...
  */
 import      { spawnSync                   } from "node:child_process"                 ;
 import      { readFileSync, writeFileSync } from "node:fs"                            ;
@@ -14,7 +14,7 @@ import      { straySemicolonPadding       } from "@/common/report.ts"           
 
 const ROOT = join(import.meta.dir, "..");
 
-/** A12 대상 줄의 끝 `;` 앞 공백을 지운다. 판단은 원래 본문 기준으로 한 번에 한다(straySemicolonPadding). */
+/** Removes the spaces before the trailing `;` on A12 target lines. The decision is made once against the original body (straySemicolonPadding). */
 export function stripSemicolonPadding(text: string): string {
 	const lines = text.split("\n");
 

@@ -24,9 +24,9 @@ export function indentDepth(indent: string): number {
 }
 
 /**
- * 패턴 DB 조회 키 (M1.8 S5a, docs/reviews/2026-09-30-codex-lookup-review.md). 진단용 시그니처와 달리 깊이를 빼서
- * 같은 모양의 표가 들여쓰기와 상관없이 한 패턴으로 묶인다. 버전이 앞에 붙으므로 형식이 바뀌면 옛 키는 조회되지 않는다
- * (명시적 마이그레이션만). 비어 있는 context(라인 엔진)는 `-`로 적는다.
+ * Pattern DB lookup key (M1.8 S5a, docs/reviews/2026-09-30-codex-lookup-review.md). Unlike the diagnostic signature it drops depth,
+ * so tables of the same shape group into one pattern regardless of indentation. The version is prefixed, so old keys are not looked up after a format change
+ * (explicit migration only). An empty context (line engine) is written as `-`.
  */
 export const LOOKUP_KEY_VERSION = 1;
 

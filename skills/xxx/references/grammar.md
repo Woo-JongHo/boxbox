@@ -1,141 +1,141 @@
-# XXX 문법
+# XXX Grammar
 
-상태: 확정 (M1.8 S2) · 날짜: 2026-09-30 · 1차 범위: TypeScript, Python (Java는 보류, 표의 Java 열은 참고용)
-검토: Codex 교차 검토 반영 (`docs/reviews/2026-09-30-codex-grammar-review.md`)
+Status: confirmed (M1.8 S2) · Date: 2026-09-30 · First scope: TypeScript, Python (Java is on hold; the Java column in the tables is for reference)
+Review: Codex cross-review applied (`docs/reviews/2026-09-30-codex-grammar-review.md`)
 
-이 문서는 규범 5층의 **1층**이다. 헌장(`charter.md`) 아래에 있고, 표현형(2층)·약속(3층)·예문집(4층)이 쓰는 **모든 ID를 여기서 정의한다.** 아래 층은 이 문서에 없는 ID를 만들 수 없다. 이 문서는 특정 언어의 문법이 아니라 **역할**을 정의한다. 각 언어에서 그 역할이 어떤 기호와 어순으로 나타나는지는 2층이 정한다.
+This document is **layer 1** of the five normative layers. It sits below the charter (`charter.md`) and **defines every ID** used by surface forms (layer 2), conventions (layer 3) and the example book (layer 4). Lower layers cannot create IDs that are not in this document. This document defines **roles**, not the grammar of a particular language. Layer 2 decides which symbols and word order express each role in each language.
 
-ID는 영어 대문자로 쓰고 번역하지 않는다.
+IDs are written in English capitals and are never translated.
 
-## 0. 적용 범위와 전제
+## 0. Scope and premises
 
-- 이 문법은 **정렬 대상이 되는 문장**과 **GUIDE가 권하는 문장 모양**을 위한 것이다. 코드의 모든 문장을 분류한다고 주장하지 않는다. 문형에 맞지 않는 문장은 분류하지 않고 그대로 둔다.
-- **분류는 파서가 먼저 한다.** 문형은 파서(AST, 마스킹된 토큰)가 확인한 구조에 붙이는 이름이다. "코드는 언어다"라는 비유가 파서와 의미 분석보다 앞서 분류를 결정해서는 안 된다. 기호 모양이 같아도 스코프, 제어 흐름, 부수효과는 다를 수 있다.
-- 확인할 수 없으면 `UNCERTAIN`이다(헌장 불변식 3).
+- This grammar is for **sentences that become alignment targets** and for **the sentence shapes GUIDE recommends**. It does not claim to classify every sentence in code. Sentences that fit no pattern are left unclassified and untouched.
+- **The parser classifies first.** A pattern is a name attached to a structure the parser (AST, masked tokens) has confirmed. The "code is language" metaphor must never decide classification ahead of the parser and semantic analysis. Even with the same symbol shape, scope, control flow and side effects can differ.
+- If it cannot be confirmed, it is `UNCERTAIN` (charter invariant 3).
 
-## 1. 네 단위
+## 1. Four units
 
-| ID | 단위 | 코드에서 | 검사하는 것 | 자동화 |
+| ID | Unit | In code | What is checked | Automation |
 |---|---|---|---|---|
-| `WORD` | 단어 | 이름(식별자) | 역할이 드러나는가, 이름과 동작이 맞는가 | GUIDE |
-| `SENTENCE` | 문장 | 한 줄의 선언·호출·조건·종료 | 문형(3절)에 맞는가 | SUGGEST |
-| `PARAGRAPH` | 문단 | 빈 줄로 나뉜 문장 묶음 | 목적(4절)이 하나인가 | SUGGEST |
-| `TEXT` | 글 | 파일, 함수 본문 | 문단 순서가 장르(5절)에 맞는가 | GUIDE |
+| `WORD` | word | a name (identifier) | whether the role shows, whether the name matches the behavior | GUIDE |
+| `SENTENCE` | sentence | one line's declaration, call, condition or exit | whether it fits a pattern (section 3) | SUGGEST |
+| `PARAGRAPH` | paragraph | a group of sentences separated by blank lines | whether it has one purpose (section 4) | SUGGEST |
+| `TEXT` | text | a file, a function body | whether the paragraph order fits the genre (section 5) | GUIDE |
 
-**속성이 다르면 문단을 나눈다.** 문장의 속성은 문형(3절)과, 정의라면 **선언 종류**다. 속성이 바뀌는 곳에 빈 줄을 둔다. 예: 값 정의(`const`) 묶음 → 확인(`WHEN`+`EXIT`) → 결과(`EXIT`), 테스트의 준비(`const`) 묶음 → 단언(`expect`) 묶음.
+**When the property differs, split the paragraph.** A sentence's property is its pattern (section 3) and, for a definition, its **declaration kind**. Put a blank line where the property changes. Examples: a group of value definitions (`const`) → a check (`WHEN`+`EXIT`) → a result (`EXIT`); in tests, a group of setup (`const`) → a group of assertions (`expect`).
 
-- **선언 종류**는 언어별로 확실히 판별되는 것만 쓴다. 첫 기준은 **컴파일 후 지워지는 선언**(TypeScript의 `type`, `interface`, `import type`, `declare`)과 **실행 때 남는 선언**(`const`/`let`/`var`, `function`, `class`, `enum`)의 구분이다. `class`와 `enum`은 타입이기도 하지만 실행 때 남으므로 뒤쪽이다. 지워지는 선언은 실행되는 선언 사이에 하나씩 끼우지 않고 따로 묶는다.
-- **관찰 정보:** 공개 여부(`export`)와 재할당 여부(`const`/`let`)는 문단을 나누는 필수 기준이 아니다. 필수로 하면 문단이 지나치게 쪼개지고, `const`는 값의 불변이 아니라 재할당 금지일 뿐이며, Python에는 대응하는 표지가 없다. 리포트에 정보로 보이고, 나눌지는 약속(3층)이 정한다.
-- **원래 순서를 지킨다.** 엔진은 문장 순서를 바꾸지 않는다. 기본 원칙은 **원래의 실행·평가 순서 유지**이고, 의존 관계(선언 전 사용 금지, TDZ)는 그 이유 중 하나다. 순서를 옮겨도 되는지는 언어마다 다르다: JavaScript 함수 선언은 끌어올려지고 지워지는 타입은 실행 순서가 없지만, Python의 `def`는 기본값과 데코레이터를 정의 시점에 평가하고 모듈 수준 `import`는 부작용이 있을 수 있다. 그래서 속성별로 묶는 일은 **이미 연속된 문장 안에서** 빈 줄을 넣는 것까지이고, 순서를 옮기는 제안은 사람이 판단한다.
-- **빈 줄 삽입도 제안이다.** 공백만 바꾸는 일이지만 문단 경계가 바뀌면 다음 정렬의 대상이 달라진다. 자동으로 넣으려면 구문 경계 확인, 동작 보존, 고정된 분할 기준, 재실행 불변, 분할과 정렬이 번갈아 바뀌지 않음이 먼저 검증돼야 한다. 문자열이나 이어지는 식 안의 줄바꿈은 대상이 아니다.
+- **Declaration kind** uses only what can be determined reliably per language. The first criterion separates **declarations erased after compilation** (TypeScript `type`, `interface`, `import type`, `declare`) from **declarations that remain at run time** (`const`/`let`/`var`, `function`, `class`, `enum`). `class` and `enum` are also types but remain at run time, so they belong to the latter. Erased declarations are grouped separately instead of being slotted one by one between executed declarations.
+- **Observational information:** visibility (`export`) and reassignability (`const`/`let`) are not mandatory criteria for splitting paragraphs. Making them mandatory over-fragments paragraphs; `const` only forbids reassignment rather than making a value immutable; and Python has no matching marker. They are shown as information in reports, and conventions (layer 3) decide whether to split.
+- **Keep the original order.** The engine never reorders sentences. The basic principle is **preserving the original execution and evaluation order**, and dependencies (no use before declaration, TDZ) are one reason for it. Whether moving is safe differs by language: JavaScript function declarations are hoisted and erased types have no execution order, but Python's `def` evaluates defaults and decorators at definition time and module-level `import` can have side effects. So grouping by property goes only as far as inserting blank lines **within sentences that are already consecutive**, and proposals to move sentences are left to humans.
+- **Inserting a blank line is also a suggestion.** It changes only whitespace, but changing a paragraph boundary changes what the next alignment targets. Inserting automatically first requires verifying syntactic boundaries, behavior preservation, a fixed split criterion, invariance on rerun, and that splitting and aligning do not keep flipping each other. Line breaks inside strings or continued expressions are not targets.
 
-**예외 — 정의 직후의 확인:** 바로 위에서 정의한 이름을 검사하는 guard(`const found = …;` 다음의 `if (!found) throw …;`)는 정의와 같은 문단에 붙여 둔다. "찾고, 없으면 거부"가 한 목적이기 때문이다(`ALGORITHM` 장르의 추출 → 거부 사다리도 이 모양이다). guard가 다른 이름을 검사하면 예외가 아니다.
+**Exception — a check right after a definition:** a guard that checks a name defined just above (`if (!found) throw …;` after `const found = …;`) stays in the same paragraph as the definition, because "find it, and refuse if missing" is one purpose (the extract → refuse ladder of the `ALGORITHM` genre has this shape too). If the guard checks a different name, it is not an exception.
 
-**문단과 표는 다르다.** 문단은 빈 줄로 나뉜 묶음이고, 한 문단 안에 여러 역할의 문장이 있을 수 있다. **표**는 한 문단 안에서 **같은 문형의 문장이 3행 이상 이어진 것**이다. 정렬(FIX, 공백만)은 표 안에서만 일어난다. 표는 빈 줄이나 주석을 넘지 않고, 표끼리 폭을 나누지 않는다.
+**Paragraphs and tables differ.** A paragraph is a group separated by blank lines, and one paragraph may hold sentences with several roles. A **table** is **three or more consecutive sentences of the same pattern** within one paragraph. Alignment (FIX, whitespace only) happens only inside a table. A table never crosses a blank line or a comment, and tables never share widths.
 
-## 2. 역할과 표지
+## 2. Roles and markers
 
-문장은 **역할**로 이루어지고, 역할은 **표지**(기호)로 드러난다. 표지는 한국어의 조사와 같다. 어순이 달라도 표지가 역할을 알려준다. 정렬은 같은 문형의 표지를 세로로 맞추는 일이다.
+Sentences are made of **roles**, and roles show through **markers** (symbols). Markers work like grammatical particles: even when word order differs, the marker tells the role. Alignment lines up the markers of the same pattern vertically.
 
-**역할은 문형 안에서만 정의된다.** 같은 `:`라도 `MAP`에서는 `KEY` 뒤의 표지이고, `DESCRIBE`에서는 `NAME` 뒤의 표지다. 역할의 경계가 흐려 보이는 짝(`NAME`/`TARGET`/`KEY`, `VALUE`/`RESULT`, `ITEM`/`ARGS`)은 문형이 정해진 뒤에 3절의 역할 목록으로만 가른다.
+**Roles are defined only within a pattern.** The same `:` is the marker after `KEY` in `MAP` and the marker after `NAME` in `DESCRIBE`. Pairs whose role boundaries look blurry (`NAME`/`TARGET`/`KEY`, `VALUE`/`RESULT`, `ITEM`/`ARGS`) are told apart only by the role lists in section 3, after the pattern is decided.
 
-| ID | 역할 | 쓰이는 문형 |
+| ID | Role | Used in patterns |
 |---|---|---|
-| `NAME` | 새로 생기는 이름 | `DEFINE`, `DESCRIBE` |
-| `TYPE` | 형 | `DEFINE`, `DESCRIBE` |
-| `VALUE` | 이름·대상·키에 주는 값 | `DEFINE`, `DESCRIBE`, `MAP`, `CHANGE` |
-| `KEY` | 대응의 왼쪽 | `MAP` |
-| `ITEM` | 나열의 한 칸 | `LIST`, `IMPORT` |
-| `SOURCE` | 가져오는 곳 | `IMPORT` |
-| `TARGET` | 이미 있는 것 (호출을 받는 쪽, 바뀌는 쪽) | `DO`, `CHANGE` |
-| `ACTION` | 호출되는 함수·메서드 | `DO` |
-| `ARGS` | 호출에 넘기는 값들 | `DO` |
-| `CONDITION` | 조건, `case`의 일치 패턴 | `WHEN` |
-| `RESULT` | 흐름을 끝내며 넘기는 것 (반환값, 던지는 예외) | `EXIT` |
+| `NAME` | a newly created name | `DEFINE`, `DESCRIBE` |
+| `TYPE` | a type | `DEFINE`, `DESCRIBE` |
+| `VALUE` | the value given to a name, target or key | `DEFINE`, `DESCRIBE`, `MAP`, `CHANGE` |
+| `KEY` | the left side of a mapping | `MAP` |
+| `ITEM` | one cell of a list | `LIST`, `IMPORT` |
+| `SOURCE` | where something is imported from | `IMPORT` |
+| `TARGET` | something that already exists (the receiver of a call, the thing that changes) | `DO`, `CHANGE` |
+| `ACTION` | the function or method called | `DO` |
+| `ARGS` | the values passed to a call | `DO` |
+| `CONDITION` | a condition, the match pattern of a `case` | `WHEN` |
+| `RESULT` | what is handed over when ending the flow (return value, thrown exception) | `EXIT` |
 
-`case`의 일치 패턴은 일반 조건식과 다르지만(값 비교, 구조 분해), 이 문법에서는 `CONDITION`으로 묶는다. 둘을 가를 필요가 생기면 이 문서를 바꿔 새 역할을 만든다.
+The match pattern of a `case` differs from a general condition (value comparison, destructuring), but this grammar groups both under `CONDITION`. If they ever need to be told apart, this document changes to create a new role.
 
-## 3. 문형 (닫힌 집합, 9개)
+## 3. Patterns (closed set, 9)
 
-| ID | 뜻 | 역할 (순서는 논리 순서) | TypeScript | Python | Java |
+| ID | Meaning | Roles (in logical order) | TypeScript | Python | Java |
 |---|---|---|---|---|---|
-| `IMPORT` | 가져온다 | ITEM · SOURCE | `import { a } from "m";` | `from m import a` | `import m.a;` |
-| `DEFINE` | 정의한다 | NAME · [TYPE] · VALUE | `const a = 1;` | (모호, 규칙 2) | `int a = 1;` |
-| `DESCRIBE` | 기술한다 | NAME · TYPE · [VALUE] | `a: string;` | `a: str` | `private int a;` |
-| `MAP` | 대응시킨다 | KEY · VALUE | `a: handler,` | `"a": 1,` | — |
-| `LIST` | 나열한다 | ITEM… | `[1, 2],` | `(1, 2),` | `{1, 2},` · `RED,` |
-| `DO` | 동작한다 | TARGET · ACTION · ARGS | `log.info(a);` | — | — |
-| `CHANGE` | 바꾼다 | TARGET · VALUE | `a = 1;` | `self.a = 1` | — |
-| `WHEN` | 조건이면 | CONDITION · (안쪽 문장) | `case A: …` | — | — |
-| `EXIT` | 끝낸다 | [RESULT] | `return a;` · `throw e;` | `return a` | `return a;` |
+| `IMPORT` | imports | ITEM · SOURCE | `import { a } from "m";` | `from m import a` | `import m.a;` |
+| `DEFINE` | defines | NAME · [TYPE] · VALUE | `const a = 1;` | (ambiguous, rule 2) | `int a = 1;` |
+| `DESCRIBE` | describes | NAME · TYPE · [VALUE] | `a: string;` | `a: str` | `private int a;` |
+| `MAP` | maps | KEY · VALUE | `a: handler,` | `"a": 1,` | — |
+| `LIST` | lists | ITEM… | `[1, 2],` | `(1, 2),` | `{1, 2},` · `RED,` |
+| `DO` | acts | TARGET · ACTION · ARGS | `log.info(a);` | — | — |
+| `CHANGE` | changes | TARGET · VALUE | `a = 1;` | `self.a = 1` | — |
+| `WHEN` | if the condition holds | CONDITION · (inner sentence) | `case A: …` | — | — |
+| `EXIT` | ends | [RESULT] | `return a;` · `throw e;` | `return a` | `return a;` |
 
-- `—`는 그 언어의 엔진이 아직 이 문형의 표를 만들지 않는다는 뜻이다(2층의 일). 문형이 그 언어에 없다는 뜻이 아니다.
-- `EXIT`는 `return`, `throw`, `break`, `continue`를 묶는다. 조건이 없는 `return value`는 `WHEN`이 아니라 `EXIT`다. guard(`if (x) return;`)는 **`WHEN` 안에 `EXIT`가 든 문장**이다.
-- `WHEN`의 안쪽 문장은 다른 문형(`EXIT`, `DO`, `CHANGE` …)이다. `WHEN`은 조건과 안쪽 문장의 짝을 이름 붙일 뿐이다.
+- `—` means that language's engine does not build tables of this pattern yet (layer 2's job). It does not mean the pattern is absent from the language.
+- `EXIT` covers `return`, `throw`, `break` and `continue`. An unconditional `return value` is `EXIT`, not `WHEN`. A guard (`if (x) return;`) is **a sentence with `EXIT` inside `WHEN`**.
+- The inner sentence of `WHEN` is another pattern (`EXIT`, `DO`, `CHANGE` …). `WHEN` only names the pairing of a condition and its inner sentence.
 
-### 판정 규칙 (애매한 경우)
+### Decision rules (ambiguous cases)
 
-1. **값이 붙은 열거는 `MAP`, 이름만 있으면 `LIST`.** `enum { A = 1 }`, `RED(1, 2)`은 MAP이고, `RED,`는 LIST다.
-2. **선언 표지가 있으면 `DEFINE`, 대상이 이미 있는 것이 확실하면 `CHANGE`, 둘 다 아니면 모호다.**
-   - 선언 표지: TypeScript의 `const`/`let`/`var`, Java의 타입 선언.
-   - 확실한 `CHANGE`: 속성·원소가 대상인 대입(`a.b =`, `a[i] =`), TypeScript·Java의 선언 없는 대입.
-   - Python의 `a = v`는 선언과 대입의 문법이 같다. 모듈 수준인지(들여쓰기로는 알 수 없다: 모듈의 `if` 안도 들여쓴다), `global`/`nonlocal`인지, 처음 묶는 이름인지를 파서로 확인하기 전에는 **모호**다.
-3. **모호한 행은 확실한 행과 한 표로 묶지 않는다.** 확실한 `DEFINE` 행과 모호한 행이 이어져 있으면 표를 나눈다. 모호한 행끼리의 표를 고쳐도 되는지는 판정(4층)으로 정한다. 판정이 나기 전에는 지금의 동작을 유지하되 결과에 모호를 표시한다.
-4. **컨테이너가 형을 가른다.** 클래스 본문의 `a: T = v`는 `DESCRIBE`(기본값 있는 필드)이고, 함수 안의 `a: T = v`는 `DEFINE`이다. 컨테이너를 모르는 엔진(지금의 Python 라인 엔진)에서는 모호다.
-5. **새 문형은 이 문서를 바꿔야만 생긴다.** 근거(코퍼스 표 수)와 사람의 승인이 필요하다. 약속이나 예문이 문형을 만들 수 없다.
+1. **An enumeration with values is `MAP`; names only is `LIST`.** `enum { A = 1 }` and `RED(1, 2)` are MAP, and `RED,` is LIST.
+2. **With a declaration marker it is `DEFINE`; if the target certainly exists already it is `CHANGE`; otherwise it is ambiguous.**
+   - Declaration markers: TypeScript `const`/`let`/`var`, Java type declarations.
+   - Certain `CHANGE`: assignment to a property or element (`a.b =`, `a[i] =`), assignment without declaration in TypeScript and Java.
+   - Python's `a = v` shares syntax between declaration and assignment. Until the parser confirms whether it is module level (indentation cannot tell: the inside of a module-level `if` is indented too), whether it is `global`/`nonlocal`, and whether the name is bound for the first time, it is **ambiguous**.
+3. **Ambiguous rows are never grouped into one table with certain rows.** When a certain `DEFINE` row and an ambiguous row are adjacent, the table is split. Whether a table of ambiguous rows may be fixed is decided by verdict (layer 4). Until a verdict exists, the current behavior is kept and the result is marked ambiguous.
+4. **The container decides the pattern.** `a: T = v` in a class body is `DESCRIBE` (a field with a default), and `a: T = v` inside a function is `DEFINE`. In an engine that does not know the container (the current Python line engine), it is ambiguous.
+5. **A new pattern exists only by changing this document.** It needs evidence (corpus table counts) and human approval. Conventions and examples cannot create patterns.
 
-## 4. 문단 목적
+## 4. Paragraph purposes
 
-`PARAGRAPH`가 무엇을 위한 묶음인지를 나타낸다. 함수 본문(글)의 순서를 검사할 때 쓴다. **등급은 SUGGEST와 GUIDE뿐이며 자동 수정은 없다.**
+States what a `PARAGRAPH` groups sentences for. Used when checking the order of a function body (text). **The levels are only SUGGEST and GUIDE; there is no automatic fix.**
 
-| ID | 하는 일 | 주로 쓰는 문형 |
+| ID | What it does | Patterns mainly used |
 |---|---|---|
-| `CHECK` | 안 되는 경우를 먼저 돌려보낸다 | `WHEN` + `EXIT` |
-| `PREPARE` | 필요한 것을 모은다 | `DEFINE` |
-| `DECIDE` | 부수효과 없이 결정한다 | `DEFINE`, `WHEN` |
-| `ACT` | 바깥 세계를 바꾼다 | `DO`, `CHANGE` |
-| `RESULT` | 돌려준다 | `EXIT` |
+| `CHECK` | sends back the failing cases first | `WHEN` + `EXIT` |
+| `PREPARE` | gathers what is needed | `DEFINE` |
+| `DECIDE` | decides without side effects | `DEFINE`, `WHEN` |
+| `ACT` | changes the outside world | `DO`, `CHANGE` |
+| `RESULT` | returns | `EXIT` |
 
-**동사는 힌트일 뿐이다.** 조회 동사(`find`, `get`)는 준비, 행위 동사(`save`, `send`)는 실행일 가능성이 높지만, `load`나 `create`처럼 이름만으로 부수효과를 알 수 없는 경우가 많다. 제어 흐름과 산출물로 확인할 수 없으면 목적은 `UNCERTAIN`이다. 동사 사전은 프로젝트마다 다르므로 약속(3층)과 예문집(4층)에 둔다.
+**Verbs are only hints.** Lookup verbs (`find`, `get`) likely mean preparation and action verbs (`save`, `send`) likely mean acting, but often, as with `load` or `create`, the name alone cannot reveal side effects. If control flow and outputs cannot confirm it, the purpose is `UNCERTAIN`. Verb dictionaries differ by project, so they live in conventions (layer 3) and the example book (layer 4).
 
-반복문의 형태(거르기, 찾기, 모으기, 내보내기)는 문법 ID가 아니라 약속(3층)의 어휘다. 여러 문장에 걸친 목적이라 한 줄의 문형이 아니기 때문이다.
+Loop shapes (filter, find, collect, emit) are convention (layer 3) vocabulary, not grammar IDs, because their purpose spans several sentences rather than one line's pattern.
 
-## 5. 장르
+## 5. Genres
 
-글(`TEXT`)의 순서 규칙은 장르마다 다르다. 장르는 설정의 범위(`scopes`)로 정한다.
+Order rules for a text (`TEXT`) differ by genre. Genres are set by config scopes (`scopes`).
 
-| ID | 글 순서 | 예 |
+| ID | Text order | Examples |
 |---|---|---|
-| `BUSINESS` | CHECK → PREPARE → DECIDE → ACT → RESULT | 서비스, 핸들러 |
-| `ALGORITHM` | 순서 규칙 없음. "추출 → 거부" 사다리를 정상으로 본다 | 파서, 정렬 엔진 |
-| `TEST` | Arrange → Act → Assert | 테스트 |
-| `CONFIG` | `MAP`, `LIST` 위주, 순서 규칙 없음 | 설정, 등록 표 |
+| `BUSINESS` | CHECK → PREPARE → DECIDE → ACT → RESULT | services, handlers |
+| `ALGORITHM` | no order rule; an "extract → refuse" ladder is considered normal | parsers, alignment engines |
+| `TEST` | Arrange → Act → Assert | tests |
+| `CONFIG` | mostly `MAP` and `LIST`, no order rule | config, registration tables |
 
-장르를 정하지 않은 범위에는 순서 규칙을 적용하지 않는다.
+Scopes without a genre get no order rule.
 
-## 6. 근거 (2026-09-30 측정)
+## 6. Evidence (measured 2026-09-30)
 
-고정 코퍼스와 스트레스 말뭉치에서 **3행 이상 표**를 모두 세어 문형에 대응시켰다. 이 수치는 표가 된 문장에 대한 것이며, 모든 문장이 9개 문형으로 설명된다는 증거는 아니다(0절).
+Every **table of three or more rows** in the pinned corpus and the stress corpus was counted and mapped to a pattern. These numbers concern sentences that became tables; they are not evidence that every sentence is explained by the nine patterns (section 0).
 
-| 문형 | TypeScript (7,214) | Python (879) | Java (162) |
+| Pattern | TypeScript (7,214) | Python (879) | Java (162) |
 |---|---|---|---|
 | `DEFINE` | 3,367 | — | 154 |
-| `DEFINE` 또는 `CHANGE` (모호) | — | 301 | — |
-| `DESCRIBE` | 871 | 128 (컨테이너 모호 26 포함) | 2 |
+| `DEFINE` or `CHANGE` (ambiguous) | — | 301 | — |
+| `DESCRIBE` | 871 | 128 (including 26 container-ambiguous) | 2 |
 | `MAP` | 2,259 | 339 | — |
 | `LIST` | — | 111 | 6 |
 | `DO` | 602 | — | — |
 | `CHANGE` | 83 | — | — |
 | `WHEN` | 32 | — | — |
 
-- 대응되지 않은 표는 0개다.
-- TypeScript·Python: `corpus/manifest.json`의 고정 코퍼스(vscode, prisma, trpc, zod, requests, fastapi, pydantic, django), 소스당 최대 400파일.
-- Java: 1차 범위에서 빠졌다(2026-09-30). 표의 수치는 스트레스 말뭉치의 OpenJDK 파일 5개뿐이고, 가장 긴 파일만 고른 것이라 치우쳐 있으며, GPL이라 검사용으로만 쓴다. **허용 라이선스 Java 코퍼스를 고정하기 전까지(M1.8 S2.5) Java 분포는 근거로 쓰지 않는다.**
-- `IMPORT`는 별도 단계(`00_normalize-imports.ts`)가 다루므로 집계에 들어가지 않는다. `EXIT`는 3행 이상 표를 이루는 일이 드물어 집계에 없고, GUIDE와 문단 검사에서 쓰인다.
-- TypeScript 표의 51.5%는 함수 본문 안에 있다. 문형은 선언부만이 아니라 비즈니스 로직 안에서도 쓰인다.
+- No table was left unmapped.
+- TypeScript and Python: the pinned corpus in `corpus/manifest.json` (vscode, prisma, trpc, zod, requests, fastapi, pydantic, django), at most 400 files per source.
+- Java: dropped from the first scope (2026-09-30). The table's numbers come only from five OpenJDK files in the stress corpus, chosen as the longest files and therefore biased, and are GPL so used for checking only. **Java distributions are not used as evidence until a permissively licensed Java corpus is pinned (M1.8 S2.5).**
+- `IMPORT` is handled by a separate step (`00_normalize-imports.ts`), so it is not counted. `EXIT` rarely forms tables of three or more rows, so it is not counted; it is used in GUIDE and paragraph checks.
+- 51.5% of TypeScript tables are inside function bodies. Patterns are used not only in declarations but also inside business logic.
 
-## 7. 열린 질문
+## 7. Open questions
 
-- Python의 `DEFINE`/`CHANGE` 구분에 스코프 분석(공식 `ast` 모듈)을 도입할지.
-- 값 모양(값·계산, 호출·생성, `await`, 객체·배열, `as`)의 분류 우선순위 (`await f() as T`처럼 겹칠 때).
-- `case`의 일치 패턴을 `CONDITION`에서 분리할지.
+- Whether to introduce scope analysis (the official `ast` module) to separate Python `DEFINE`/`CHANGE`.
+- Classification priority of value shapes (value/computation, call/construction, `await`, object/array, `as`) when they overlap, as in `await f() as T`.
+- Whether to separate the match pattern of a `case` from `CONDITION`.

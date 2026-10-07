@@ -1,72 +1,72 @@
-# XXX 헌장
+# XXX Charter
 
-상태: 확정 (M1.8 S1) · 날짜: 2026-09-30
+Status: confirmed (M1.8 S1) · Date: 2026-09-30
 
-이 문서는 규범 5층의 **0층**이다. 문법(1층), 표현형(2층), 약속(3층), 예문집(4층)은 모두 이 문서 아래에 있고, 이 문서와 충돌하면 이 문서가 이긴다. 메인테이너만 바꿀 수 있다.
+This document is **layer 0** of the five normative layers. Grammar (layer 1), surface forms (layer 2), conventions (layer 3) and the example book (layer 4) all sit below it, and when they conflict with this document, this document wins. Only maintainers may change it.
 
-## 핵심 (생성 원천)
+## Core (generating source)
 
-아래 세 줄은 `SKILL.md` 맨 위와 사용자 레포 `AGENTS.md`의 표시 구간에 그대로 복사된다. 문구를 바꾸면 복사본도 함께 바뀌어야 한다(M1.8 S7에서 테스트로 고정).
+The three lines below are copied verbatim to the top of `SKILL.md` and into the marked section of a user repository's `AGENTS.md`. When the wording changes, the copies must change with it (pinned by a test in M1.8 S7).
 
 <!-- xxx:core:begin -->
-1. 같은 역할의 코드는 같은 문형으로 쓴다. 코드는 언어다.
-2. 단순화가 먼저, 정렬은 그다음이다. 줄일 수 있는 차이를 공백으로 덮지 않는다.
-3. 자동 수정은 공백만, 확실할 때만 한다. 나머지는 제안한다.
+1. Write same-role code in the same pattern. Code is language.
+2. Simplify first, align second. Never cover a reducible difference with whitespace.
+3. Fix automatically only whitespace, and only when certain. Suggest everything else.
 <!-- xxx:core:end -->
 
-## 1. 원칙 — 가독성
+## 1. Principle — readability
 
-읽는 사람이 흐름을 위에서 아래로 따라가고, 같은 역할의 코드를 세로로 비교할 수 있게 만든다. 이 제품의 모든 규칙은 이 한 문장을 위해 존재한다.
+Let the reader follow the flow from top to bottom and compare same-role code vertically. Every rule in this product exists for this one sentence.
 
-## 2. 가치관 — 코드는 언어다
+## 2. Values — code is language
 
-- 코드는 **단어**(이름), **문장**(한 줄의 선언·호출·조건), **문단**(같은 목적의 문장 묶음), **글**(파일)로 이루어진다.
-- 같은 역할의 문장은 **같은 문형**으로 쓴다. 통일이란 모든 줄을 가장 긴 줄에 맞추는 것이 아니라, 같은 역할에 **같은 최소 구성**을 주는 것이다.
-- `=`, `:`, `from`, `(` 같은 기호는 문장 안에서 역할을 표시하는 **조사**다. 정렬은 같은 문형의 조사를 세로로 맞춰, 읽는 사람이 역할을 열 단위로 훑게 하는 일이다.
-- 같은 문법이 **쓰게 유도하는 일**(GUIDE)과 **검사하는 일**(REVIEW)에 똑같이 쓰인다. 둘이 다른 기준을 보면 안 된다.
-- 이 비유의 한계도 안다. 코드를 이해할 때 주로 쓰이는 것은 언어 능력이 아니라 추론 능력이다. 그래서 문형은 영어 어순이 아니라 **역할**로 정의하고, 목표는 읽는 사람의 추론 부담을 줄이는 것이다.
+- Code is made of **words** (names), **sentences** (one line's declaration, call or condition), **paragraphs** (groups of sentences with one purpose) and **texts** (files).
+- Write same-role sentences in **the same pattern**. Uniformity does not mean fitting every line to the longest one; it means giving the same role **the same minimal composition**.
+- Symbols such as `=`, `:`, `from` and `(` are **particles** that mark roles inside a sentence. Alignment lines up the particles of the same pattern vertically so the reader can scan roles column by column.
+- The same grammar serves both **guiding what gets written** (GUIDE) and **checking it** (REVIEW). The two must never look at different standards.
+- We also know the limits of this metaphor. Understanding code relies mainly on reasoning, not on language ability. So patterns are defined by **role**, not by English word order, and the goal is to reduce the reader's reasoning load.
 
-## 3. 정체성 — 결정적인 프로그램
+## 3. Identity — a deterministic program
 
-- xxx는 **결정적인 프로그램**이고, 에이전트 플러그인은 그 프로그램을 부르는 통로다. 규칙은 에이전트의 판단이 아니라 프로그램과 사람의 승인으로 정해진다.
-- 그래서 프로그램이 갖춰야 할 것을 갖춘다: 버전, 설정 스키마, 종료 코드, 에이전트 없이도 도는 CLI(CI, 훅, 에디터).
-- 사용자는 **약속**(3층)과 **예문**(4층)을 자기 입맛대로 바꿀 수 있다. **불변식**(5절)은 누구도 바꿀 수 없다. 사용자가 직접 쓰는 파일은 설정 하나이고, 나머지는 도구가 쓰고 사람이 승인한다.
+- xxx is a **deterministic program**, and the agent plugin is a channel that calls it. Rules are set by the program and by human approval, not by an agent's judgment.
+- So it has what a program needs: a version, a config schema, exit codes, and a CLI that runs without an agent (CI, hooks, editors).
+- Users can change **conventions** (layer 3) and **examples** (layer 4) to their taste. **Invariants** (section 5) can be changed by no one. Users write only one file themselves, the config; everything else is written by tools and approved by people.
 
-## 4. 순서 — 단순화 먼저, 정렬은 그다음, 검증은 항상
+## 4. Order — simplify first, align second, verify always
 
 *Simplify first. Align second. Verify always. — Follow the structure. Don't force it.*
 
-- 정렬은 목적이 아니다. 예외 요소 때문에 길어진 구조는 먼저 없애거나, 안으로 묶거나, 정규화한다.
-- 줄일 수 없는 실제 정보만 셀 데이터로 받아들여 최소 폭으로 정렬한다.
-- 줄일 수 있는 차이를 공백 정렬로 덮거나, 공백이 의미 단위를 떼어 놓게 만들면 실패다.
+- Alignment is not the goal. A structure lengthened by an exceptional element is first removed, wrapped inward or normalized.
+- Only real, irreducible information is accepted as cell data and aligned at minimum width.
+- Covering a reducible difference with whitespace alignment, or letting whitespace pull semantic units apart, is a failure.
 
-## 5. 불변식 — 바꿀 수 없고, 설정할 수 없다
+## 5. Invariants — unchangeable and not configurable
 
-설정으로 이 목록을 끄려는 시도는 조용히 무시되지 않고 스키마 오류가 된다. "강제 위치"가 비어 있는 항목은 아직 문서로만 존재하는 약속이며, 코드로 옮기는 것이 로드맵의 일이다.
+An attempt to turn off any item in this list through configuration is not silently ignored; it is a schema error. An item with an empty "enforced at" exists only as a documented promise, and moving it into code is roadmap work.
 
-| # | 불변식 | 강제 위치 |
+| # | Invariant | Enforced at |
 |---|---|---|
-| 1 | **공백만 바꾼다.** 자동 수정은 공백·탭·줄바꿈만 건드린다. 공백이 아닌 토큰, 문자열, 주석은 바이트 단위로 같아야 한다 | `common/preservation.ts`, `typescript/token-preservation.ts`, `test/mutation.test.ts` |
-| 2 | **출력은 다시 파싱된다.** 수정 결과는 그 언어의 공식 파서로 다시 읽어 진단이 같아야 쓴다 | `common/parse-check.ts`, `typescript/06_align-tables.ts` |
-| 3 | **확실하지 않으면 손대지 않는다.** 손실 없이 나눌 수 없으면 `REFUSE`, 분류가 애매하면 `UNCERTAIN`. 놓친 수정이 틀린 수정보다 낫다 | `REFUSE`: 엔진 전반 · `UNCERTAIN`: 미구현 |
-| 4 | **자동 수정은 3행 이상에만.** 2행 쌍은 제안만 한다. 예외는 사용자가 승인한 `=` 선언 표와 import뿐이다 | `common/table-engine.ts`, `typescript/grid-kinds.ts` `minRows` |
-| 5 | **멱등이다.** 두 번 돌려도 결과가 같다 | 언어별 정렬 테스트(`test/lang-harness.ts`) |
-| 6 | **상대 배치만 저장한다.** 폭은 항상 그 표가 필요로 하는 최소이고, 표끼리 폭을 나누지 않는다 | `common/table-engine.ts` |
-| 7 | **결정적이다.** 같은 입력과 설정이면 같은 결과다. 검사·수정 경로에 LLM도 유사도 검색도 없다. LLM은 안내문을 읽거나 판정 대기열을 미리 분류할 때만 쓴다 | 설계 규칙 (재현 테스트 없음) |
-| 8 | **사람만 승인한다.** 증거는 스스로 규칙이 되지 않는다. 에이전트는 조사하고 제안만 한다 | 읽기 전용 에이전트: `test/plugin-contract.test.ts` · 승인 흐름: 미구현 |
-| 9 | **층 우선순위:** 안전 > 프로젝트 > 사용자 > Preset > Base. 무엇도 안전을 덮어쓰지 못한다 | 미구현 (M1.8 S3–S5) |
-| 10 | **단일 원천, 얇은 어댑터.** 엔진·문법·약속은 한 곳에 있고, 호스트는 설치 위치와 매니페스트만 다르다. 결과 JSON과 패턴 키는 버전이 붙은 공개 계약이다 | `common/result-json.ts`, `common/signature.ts` |
-| 11 | **포매터 다음에 마지막으로 실행한다.** 파일의 정본은 `xxx(formatter(file))`이고, 다시 돌려도 바뀌지 않아야 한다 | 미구현 (M2) · Go는 기본 꺼짐: `go/06_align-tables.ts` |
+| 1 | **Only whitespace changes.** Automatic fixes touch only spaces, tabs and line breaks. Non-whitespace tokens, strings and comments must be byte-identical | `common/preservation.ts`, `typescript/token-preservation.ts`, `test/mutation.test.ts` |
+| 2 | **Output is re-parsed.** A fix is written only when the language's official parser rereads it with the same diagnostics | `common/parse-check.ts`, `typescript/06_align-tables.ts` |
+| 3 | **When uncertain, do not touch.** `REFUSE` when it cannot be split losslessly, `UNCERTAIN` when classification is ambiguous. A missed fix is better than a wrong fix | `REFUSE`: across the engine · `UNCERTAIN`: not implemented |
+| 4 | **Automatic fixes only for 3+ rows.** Two-row pairs are only suggested. The only exceptions are user-approved `=` declaration tables and imports | `common/table-engine.ts`, `typescript/grid-kinds.ts` `minRows` |
+| 5 | **Idempotent.** Running twice gives the same result | per-language alignment tests (`test/lang-harness.ts`) |
+| 6 | **Only relative placement is stored.** Width is always the minimum that table needs, and tables never share widths | `common/table-engine.ts` |
+| 7 | **Deterministic.** The same input and config give the same result. There is no LLM and no similarity search on the check/fix path. An LLM is used only to read guidance or to pre-sort the review queue | design rule (no reproduction test) |
+| 8 | **Only humans approve.** Evidence never becomes a rule by itself. Agents only investigate and propose | read-only agents: `test/plugin-contract.test.ts` · approval flow: not implemented |
+| 9 | **Layer priority:** safety > project > user > preset > base. Nothing overrides safety | not implemented (M1.8 S3–S5) |
+| 10 | **Single source, thin adapters.** The engine, grammar and conventions live in one place; hosts differ only in install location and manifest. The result JSON and pattern keys are versioned public contracts | `common/result-json.ts`, `common/signature.ts` |
+| 11 | **Runs last, after the formatter.** The canonical form of a file is `xxx(formatter(file))`, and rerunning must not change it | not implemented (M2) · Go is off by default: `go/06_align-tables.ts` |
 
-## 6. 이 문서가 하지 않는 것
+## 6. What this document does not do
 
-- 구체적인 문형, 역할, 규칙을 정하지 않는다 → 문법(`grammar.md`), 약속(`presets/`, `.xxx/rules/`).
-- 도구를 부르는 순서를 적지 않는다 → `SKILL.md`.
-- 제품 구조와 로드맵을 적지 않는다 → `docs/design.md`.
+- It does not define concrete patterns, roles or rules → grammar (`grammar.md`), conventions (`presets/`, `.xxx/rules/`).
+- It does not list the order in which tools are called → `SKILL.md`.
+- It does not describe the product structure or roadmap → `docs/design.md`.
 
-## 7. 바꾸는 법
+## 7. How to change it
 
-1. 바꾸려는 이유와 근거를 `docs/plan.md`에 먼저 적는다.
-2. 메인테이너가 승인한다.
-3. 불변식을 바꾸면 그것을 강제하는 코드와 테스트를 같은 변경에서 바꾼다.
-4. 핵심 세 줄을 바꾸면 복사본(`SKILL.md`, 사용자 `AGENTS.md` 표시 구간)도 같은 변경에서 바꾼다.
+1. First write the reason and evidence for the change in `docs/plan.md`.
+2. A maintainer approves it.
+3. When an invariant changes, change the code and tests that enforce it in the same change.
+4. When the three core lines change, change the copies (`SKILL.md`, the marked section of the user's `AGENTS.md`) in the same change.

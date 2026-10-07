@@ -1,7 +1,7 @@
 /**
- * 표현형 (2층, M1.8 S3): 엔진이 찾은 표(kind 또는 축 순서)를 문법의 문형(1층)에 대응시킨다.
- * 대응 데이터는 `skills/xxx/base/<language>.json`에 있고, 이 모듈은 그것을 읽고 검증하고 찾기만 한다.
- * 엔진의 정렬 동작은 바꾸지 않는다 — 문형은 표에 붙는 이름이다.
+ * Surface forms (layer 2, M1.8 S3): map the tables the engine finds (kind or axis order) to grammar patterns (layer 1).
+ * The mapping data lives in `skills/xxx/base/<language>.json`; this module only reads, validates and looks it up.
+ * It never changes the engine's alignment behavior — a pattern is a name attached to a table.
  */
 import      { readFileSync            } from "node:fs"          ;
 import      { fileURLToPath           } from "node:url"         ;
@@ -9,13 +9,13 @@ import      { isPattern, type Pattern } from "./grammar-ids.ts" ;
 
 export const SURFACE_SCHEMA_VERSION = 1;
 
-/** 한 표현형: TypeScript는 kind로, 라인 엔진 언어는 축 순서의 앞부분으로 찾는다. */
+/** One surface form: TypeScript is matched by kind, line-engine languages by the leading part of the axis order. */
 export interface SurfaceForm {
 	readonly kind?       : string            ;
 	readonly hasAxis?    : string            ;
 	readonly axesPrefix? : readonly string[] ;
 	readonly pattern     : Pattern           ;
-	/** 엔진이 가를 수 없는 다른 문형. 있으면 이 표의 문형은 모호하다. */
+	/** Other patterns the engine cannot distinguish. If present, this table's pattern is ambiguous. */
 	readonly alternatives? : readonly Pattern[]    ;
 	readonly note?         : string                ;
 }
@@ -31,7 +31,7 @@ export interface PatternMatch {
 	readonly alternatives : readonly Pattern[] ;
 }
 
-/** 데이터 한 벌을 검증한다. 문법에 없는 ID, 찾는 방법이 없거나 둘 다 있는 형태는 오류다. */
+/** Validates one data set. An ID missing from the grammar, or a form with no matcher or with both, is an error. */
 export function validateSurface(value: unknown, language: string): SurfaceData {
 	const data = value as SurfaceData;
 	if (data?.schemaVersion !== SURFACE_SCHEMA_VERSION) throw new Error(`surface ${language}: schemaVersion must be ${SURFACE_SCHEMA_VERSION}`);
@@ -52,7 +52,7 @@ export function validateSurface(value: unknown, language: string): SurfaceData {
 
 const loaded = new Map<string, SurfaceData>();
 
-/** `skills/xxx/base/<language>.json`을 읽는다. 데이터가 없는 언어는 undefined. */
+/** Reads `skills/xxx/base/<language>.json`. undefined for a language without data. */
 export function surfaceOf(language: string): SurfaceData | undefined {
 	const cached = loaded.get(language)                                                   ;
 	if (cached) return cached                                                             ;
@@ -67,10 +67,10 @@ export function surfaceOf(language: string): SurfaceData | undefined {
 	return data                                                                           ;
 }
 
-/** 축 id에서 열 위치(`=17`)를 뗀다. */
+/** Strips the column position (`=17`) from an axis id. */
 const bareAxis = (axis: string): string => axis.split("=")[0]!;
 
-/** 표 하나의 문형. 첫 번째로 맞는 형태가 이긴다. 맞는 형태가 없으면 undefined(알람 A8의 대상). */
+/** The pattern of one table. The first matching form wins. undefined if none matches (target of alarm A8). */
 export function patternOf(language: string, table: { readonly kind?: string; readonly axes: readonly string[] }): PatternMatch | undefined {
 	const data = surfaceOf(language)                                                                                    ;
 	if (!data) return undefined                                                                                         ;

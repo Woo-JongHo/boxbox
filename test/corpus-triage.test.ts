@@ -6,14 +6,14 @@ const SIG_A = "typescript|Block|declaration-equals|equals>semicolon|d1" ;
 const SIG_B = "python||table|key>colon>value>comma|d2"                  ;
 const RANKS = new Map([[1, SIG_A], [2, SIG_B]])                         ;
 
-describe("코퍼스 AI 사전 판정", () => {
-	test("판정 줄만 골라 검증하고, 모르는 순위·판정·플래그는 버린다", () => {
+describe("corpus AI pre-verdicts", () => {
+	test("picks and validates only verdict lines and drops unknown ranks, verdicts and flags", () => {
 		const output = [
-			"여기는 설명 문장이다",
-			'{"rank": 1, "verdict": "correct", "reason": "같은 역할", "flags": ["pushed-apart", "prettier"]}',
-			'{"rank": 2, "verdict": "approve", "reason": "모르는 판정"}',
-			'{"rank": 9, "verdict": "taste", "reason": "모르는 순위"}',
-			'{"rank": 2, "verdict": "taste", "reason": "취향", "flags": "too-wide"}',
+			"this is an explanatory sentence",
+			'{"rank": 1, "verdict": "correct", "reason": "same role", "flags": ["pushed-apart", "prettier"]}',
+			'{"rank": 2, "verdict": "approve", "reason": "unknown verdict"}',
+			'{"rank": 9, "verdict": "taste", "reason": "unknown rank"}',
+			'{"rank": 2, "verdict": "taste", "reason": "taste", "flags": "too-wide"}',
 			"{not json",
 		].join("\n");
 
@@ -25,7 +25,7 @@ describe("코퍼스 AI 사전 판정", () => {
 		expect(parsed[0]?.reviewer                                            ).toBe   ("codex-test"                  ) ;
 	});
 
-	test("요약에는 AI 제안이 판정과 따로 보이고, 같은 시그니처는 마지막 제안이 이긴다", () => {
+	test("the summary shows AI suggestions separately from verdicts, and the last suggestion wins for the same signature", () => {
 		const queue = [
 			JSON.stringify({ schemaVersion: 1, signature: SIG_A, rank: 1, verdict: "unsure" , reason: "", flags: [], reviewer: "codex", date: "2026-09-30" }),
 			JSON.stringify({ schemaVersion: 1, signature: SIG_A, rank: 1, verdict: "correct", reason: "", flags: [], reviewer: "codex", date: "2026-09-30" }),

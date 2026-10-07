@@ -28,7 +28,7 @@ export interface PipelineProcessResult {
 	readonly exitCode : number | null ;
 	readonly signal   : string | null ;
 	readonly timedOut : boolean       ;
-	/** 진단 보고서용으로 보존한 제한된 출력이다. 잘림 자체는 formatter 실패가 아니다. */
+	/** Bounded output kept for the diagnostic report. Truncation itself is not a formatter failure. */
 	readonly stdout    : string  ;
 	readonly stderr    : string  ;
 	readonly truncated : boolean ;
@@ -57,9 +57,9 @@ export interface FormatPipelineOptions {
 	readonly formatter       : FormatterConfig  ;
 	readonly registry        : ApprovalRegistry ;
 	readonly resolveDocument : DocumentResolver ;
-	/** 같은 작업본 검증을 수행하되 원본 교체 전에 작업본을 되돌린다. */
+	/** Runs the same working-copy verification but restores the working copy before replacing the original. */
 	readonly dryRun?         : boolean           ;
-	/** 설정·승인 파일을 다시 읽어 만든 지문. 시작과 commit 직전 값이 달라지면 쓸 수 없다. */
+	/** Fingerprint built by rereading the config and approval files. If it differs between start and just before commit, nothing is written. */
 	readonly provenance?       : () => string       ;
 	readonly beforeCommit?     : () => void         ;
 }
@@ -90,7 +90,7 @@ function executableOf(command: string, root: string): ExecutableIdentity {
 			if (!status.isFile() || (status.mode & constants.S_IXUSR) === 0) continue;
 			const fingerprint = createHash("sha256").update(JSON.stringify([physical, status.dev, status.ino, status.mode, status.size, status.mtimeMs, status.ctimeMs])).digest("hex");
 			return { path: physical, fingerprint };
-		} catch { /* 다음 PATH 후보를 검사한다. */ }
+		} catch { /* Check the next PATH candidate. */ }
 	}
 	throw new Error(`formatter executable not found: ${command}`);
 }
@@ -114,7 +114,7 @@ async function runFormatter(executable: string, config: FormatterConfig, file: s
 		let timedOut            = false                                                                                                   ;
 		const terminate = (signal: NodeJS.Signals): void => {
 			if (child.pid === undefined) return;
-			try { process.kill(-child.pid, signal); } catch { /* 이미 끝난 프로세스다. */ }
+			try { process.kill(-child.pid, signal); } catch { /* The process has already exited. */ }
 		};
 		const timeout = setTimeout(() => {
 			timedOut = true;
@@ -203,9 +203,9 @@ async function cycle(options: FormatPipelineOptions, working: string, display: s
 	};
 }
 
-/** formatter와 XXX를 작업본에 두 번 적용해 고정점을 증명한 뒤 원본을 한 번만 교체한다. */
+/** Applies the formatter and XXX twice to the working copy to prove a fixed point, then replaces the original exactly once. */
 export async function runFormatPipeline(given: FormatPipelineOptions): Promise<FormatPipelineResult> {
-	// 작업본 경로는 실제 경로로 풀리므로 root도 한 번 풀어 이후 모든 단계가 같은 기준을 쓴다.
+	// The working-copy path resolves to its real path, so resolve the root once too and use the same base in every step.
 	const options = { ...given, root: realpathSync(resolve(given.root)) };
 	if (options.formatter.args.filter(argument => argument === "{file}").length !== 1) throw new Error("formatter args must contain exactly one {file}");
 	if (!Number.isInteger(options.formatter.timeoutMs) || options.formatter.timeoutMs < 1 || options.formatter.timeoutMs > 60_000) throw new Error("formatter timeoutMs must be an integer from 1 to 60000");

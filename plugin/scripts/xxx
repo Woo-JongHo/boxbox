@@ -1,4 +1,4 @@
 #!/bin/sh
-# 엔진 CLI(npm 패키지)를 정확한 버전으로 실행한다. TS 엔진의 typescript@7 네이티브 바이너리는
-# 플러그인 폴더에 넣을 수 없으므로 플러그인은 이 shim만 들고 다닌다. 버전은 scripts/sync-plugin.ts가 맞춘다.
+# Runs the engine CLI (npm package) at an exact version. The TS engine's typescript@7 native binary cannot
+# live in a plugin folder, so the plugin carries only this shim. scripts/sync-plugin.ts keeps the version in sync.
 exec npx --yes "xxx@0.2.0" "$@"

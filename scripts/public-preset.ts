@@ -149,7 +149,7 @@ function publicDecisionDocument(root: string, decision: Decision): PreparedDecis
 	};
 }
 
-/** 배포 preset은 승인된 범용 규칙과 새로 작성한 synthetic 예문만 통과시킨다. */
+/** The release preset lets through only approved general rules and newly written synthetic examples. */
 export function preparePublicPreset(presetRoot: string): readonly PublicPresetFile[] {
 	const rootStatus  = lstatSync(presetRoot)                                                                                                                ;
 	if (!rootStatus.isDirectory() || rootStatus.isSymbolicLink()) fail("preset root", "must be a real directory, not a symlink");

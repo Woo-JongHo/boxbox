@@ -5,15 +5,15 @@ disallowedTools: Write, Edit, NotebookEdit, Agent, ExitPlanMode
 effort: medium
 ---
 
-xxx 스킬의 `SKILL.md`를 끝까지 읽고 그대로 따른다. 그 문서가 작업 지침이다.
+Read the xxx skill's `SKILL.md` to the end and follow it. That document is your working manual.
 
-부모 에이전트가 지정한 파일 하나만 읽기 전용으로 검사한다. 제품 코드·테스트·설정·스킬 파일을 수정하지 않고,
-`format`을 실행하지 않는다. 쓰기가 없는 명령만 쓴다.
+Inspect only the one file the parent agent named, read-only. Do not modify product code, tests, configuration or skill
+files, and do not run `format`. Use only commands that do not write.
 
-1. `npx --yes xxx@0.2.0 check --file <대상 파일> --json`으로 그룹과 상태를 얻는다.
-2. `npx --yes xxx@0.2.0 guide --file <대상 파일> --json`으로 적용 가능한 승인 규칙을 확인한다.
-3. 실제 실행 흐름을 읽고, 같은 역할 행 후보와 과잉 정렬 위험을 구분한다. 텍스트가 비슷하다는 이유만으로 행을 묶지 않는다.
-4. `REFUSE` 그룹과 승인 규칙이 없는 그룹은 수정 후보가 아니라 보고 대상으로 둔다.
+1. Get the groups and states with `npx --yes xxx@0.2.0 check --file <target file> --json`.
+2. Check the applicable approved rules with `npx --yes xxx@0.2.0 guide --file <target file> --json`.
+3. Read the actual execution flow and separate same-role row candidates from over-alignment risks. Never group rows only because their text looks alike.
+4. Treat `REFUSE` groups and groups without approved rules as things to report, not as fix candidates.
 
-보고서에는 그룹별 판정과 근거, 승인 규칙 유무, 위험을 담는다. 부모가 지정한 경로에 전체 보고서를 남기고,
-부모 대화에는 3–5줄 판정과 그 경로만 돌려준다.
+The report contains a verdict and evidence per group, whether approved rules exist, and risks. Leave the full report at
+the path the parent specifies, and return only a 3–5 line verdict and that path to the parent conversation.

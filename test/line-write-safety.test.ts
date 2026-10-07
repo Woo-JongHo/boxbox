@@ -49,8 +49,8 @@ afterEach(() => {
 	for (const value of workspaces.splice(0)) rmSync(value, { recursive: true, force: true });
 });
 
-describe("라인 엔진 CLI의 안전한 파일 교체", () => {
-	test("읽기 모드는 원본을 바꾸지 않고 쓰기 모드는 mode와 정리 계약을 지킨다", () => {
+describe("safe file replacement in the line-engine CLI", () => {
+	test("read mode never changes the original, and write mode keeps the mode and cleanup contract", () => {
 		const target = join(workspace(), "sample.py");
 		writeFileSync(target, FIXTURE);
 		chmodSync(target, 0o640);
@@ -66,7 +66,7 @@ describe("라인 엔진 CLI의 안전한 파일 교체", () => {
 		expect(leftovers(target)             )    .toEqual([]     ) ;
 	}, 60_000);
 
-	test("--groups --write는 탐색 전용으로 원본을 바꾸지 않는다", () => {
+	test("--groups --write is exploration-only and never changes the original", () => {
 		const target = join(workspace(), "groups.py");
 		writeFileSync(target, FIXTURE);
 
@@ -76,7 +76,7 @@ describe("라인 엔진 CLI의 안전한 파일 교체", () => {
 		expect(readFileSync(target, "utf8")).toBe     (FIXTURE        ) ;
 	});
 
-	test("symbolic link와 hard link 대상은 원본 bytes를 보존하며 거절한다", () => {
+	test("refuses symbolic and hard link targets while preserving the original bytes", () => {
 		const directory = workspace()                    ;
 		const source    = join(directory, "source.py")   ;
 		const symbolic  = join(directory, "symbolic.py") ;
@@ -93,7 +93,7 @@ describe("라인 엔진 CLI의 안전한 파일 교체", () => {
 		expect(leftovers(source)).toEqual([]);
 	});
 
-	test("parser 실행 중 외부 편집이 생기면 외부 bytes를 보존하고 commit을 거절한다", () => {
+	test("an external edit during the parser run keeps the external bytes and refuses the commit", () => {
 		const directory = workspace()                    ;
 		const target    = join(directory, "external.py") ;
 		const tools     = join(directory, "tools")       ;

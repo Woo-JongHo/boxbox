@@ -26,15 +26,15 @@ function record(partial: Partial<LoadedConvention> & Pick<LoadedConvention, "id"
 	return { schemaVersion: 1, key: KEY, pattern: "DEFINE", status: "approved", scope: "**", versions: { grammar: 1 }, approvedBy: "user", date: "2026-09-30", layer: "preset", ...partial };
 }
 
-describe("조회 키", () => {
-	test("깊이를 빼고 버전을 붙이며, 빈 context는 `-`로 적는다", () => {
+describe("lookup key", () => {
+	test("drops depth, prefixes the version and writes an empty context as `-`", () => {
 		expect(KEY).toBe("v1|typescript|Block|declaration-equals|equals>semicolon");
 		expect(lookupKeyOf("python", "", "table", ["name", "equal=4", "value"])).toBe("v1|python|-|table|name>equal>value");
 	});
 });
 
-describe("패턴 레코드", () => {
-	test("틀린 레코드와 같은 층의 중복 id는 오류다", () => {
+describe("pattern records", () => {
+	test("a malformed record and a duplicate id within one layer are errors", () => {
 		expect(() => validateConvention({ ...record({ id: "a" }), pattern: "ASSIGN" }, "t")).toThrow("unknown pattern") ;
 		expect(() => validateConvention({ ...record({ id: "a" }), status: "maybe"   }, "t")).toThrow("status"         ) ;
 		expect(() => validateConvention({ ...record({ id: "a" }), key: "no-version" }, "t")).toThrow("key must"       ) ;
@@ -44,7 +44,7 @@ describe("패턴 레코드", () => {
 		expect(() => parseConventions(`${line}\n\n${line}\n`, "preset", "t")).toThrow("duplicate id dup");
 	});
 
-	test("glob: `**`는 여러 단계, `*`는 한 단계 안", () => {
+	test("glob: `**` spans several segments, `*` stays within one", () => {
 		expect(globToRegExp("**").test("src/a/b.ts")         ).toBe(true ) ;
 		expect(globToRegExp("src/**").test("src/a/b.ts")     ).toBe(true ) ;
 		expect(globToRegExp("src/*.ts").test("src/a/b.ts")   ).toBe(false) ;
@@ -52,27 +52,27 @@ describe("패턴 레코드", () => {
 	});
 });
 
-describe("조회", () => {
-	test("프로젝트 층이 preset을 이긴다", () => {
+describe("lookup", () => {
+	test("the project layer wins over the preset", () => {
 		const db = indexConventions([record({ id: "p", status: "approved" }), record({ id: "q", status: "rejected", layer: "project" })]);
 
 		expect(lookup(db, KEY, "src/a.ts")).toEqual({ status: "rejected", id: "q", layer: "project" });
 	});
 
-	test("같은 층에서는 가장 구체적인 범위가 이긴다", () => {
+	test("within one layer the most specific scope wins", () => {
 		const db = indexConventions([record({ id: "all", status: "approved" }), record({ id: "legacy", status: "rejected", scope: "legacy/**" })]);
 
 		expect(lookup(db, KEY, "legacy/old.ts").id).toBe("legacy") ;
 		expect(lookup(db, KEY, "src/new.ts"   ).id).toBe("all"   ) ;
 	});
 
-	test("같은 층·같은 구체성에서 상태가 다르면 충돌이다 (파일 순서로 정하지 않음)", () => {
+	test("different statuses at the same layer and specificity are a conflict (file order never decides)", () => {
 		const db = indexConventions([record({ id: "b", status: "approved" }), record({ id: "a", status: "rejected" })]);
 
 		expect(lookup(db, KEY, "src/a.ts")).toEqual({ status: "conflict", id: "a,b", layer: "preset" });
 	});
 
-	test("후보는 승인이 아니고, 다른 버전의 키와 없는 키는 미지정이다", () => {
+	test("a candidate is not an approval, and keys of another version or missing keys are unknown", () => {
 		const db = indexConventions([record({ id: "c", status: "candidate" }), record({ id: "old", key: KEY.replace(/^v1/u, "v0") })]);
 
 		expect(lookup(db, KEY, "a.ts").status  ).toBe   ("unknown"            ) ;
@@ -81,8 +81,8 @@ describe("조회", () => {
 	});
 });
 
-describe("리포트와 CLI", () => {
-	test("리포트는 표마다 조회 결과를 붙이고, 2행 쌍은 조회하지 않는다", () => {
+describe("report and CLI", () => {
+	test("the report attaches a lookup result per table and does not look up two-row pairs", () => {
 		const db     = indexConventions([record({ id: "r1" })]) ;
 		const report = buildReport({ db, text: "", result: {
 			file: "src/a.ts", language: "typescript", mode: "check", summary: { groups: 2, misaligned: 0, edits: 0, refused: 0, suggested: 1 }, parse: { status: "not-run", tool: "typescript" },
@@ -96,7 +96,7 @@ describe("리포트와 CLI", () => {
 		expect(report.conventions?.lookups.length).toBe   (1                                                    ) ;
 	});
 
-	test("CLI는 작업 폴더의 .xxx/conventions.jsonl을 읽어 조회한다", () => {
+	test("the CLI reads .xxx/conventions.jsonl in the working folder for lookup", () => {
 		const project = mkdtempSync(join(tmpdir(), "xxx-conv-"))                                                                                                                                                               ;
 		const approve = { schemaVersion: 1, id: "py-define", key: "v1|python|-|table|name>equal>value", pattern: "DEFINE", status: "approved", scope: "**", versions: { grammar: 1 }, approvedBy: "user", date: "2026-09-30" } ;
 		mkdirSync(join(project, ".xxx"));

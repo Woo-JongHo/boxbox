@@ -1,6 +1,6 @@
 /**
- * 문법 ID 레지스트리 (1층, `references/grammar.md`). 아래 층(표현형·약속·예문집)은 여기 있는 ID만 쓴다.
- * `test/surface.test.ts`가 이 목록과 grammar.md의 표가 같은지 확인하므로, 한쪽만 바꾸면 테스트가 실패한다.
+ * Grammar ID registry (layer 1, `references/grammar.md`). Lower layers (surface forms, conventions, examples) use only the IDs listed here.
+ * `test/surface.test.ts` checks that this list matches the table in grammar.md, so changing only one side fails the test.
  */
 export const UNITS              = ["WORD", "SENTENCE", "PARAGRAPH", "TEXT"] as const                                                             ;
 export const ROLES              = ["NAME", "TYPE", "VALUE", "KEY", "ITEM", "SOURCE", "TARGET", "ACTION", "ARGS", "CONDITION", "RESULT"] as const ;

@@ -31,15 +31,15 @@ afterEach(() => {
 	for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-describe("코드 모양 관측", () => {
-	test("파일 순서와 반복 실행에 관계없이 같은 JSONL을 만든다", async () => {
+describe("code shape observation", () => {
+	test("produces the same JSONL regardless of file order and repeated runs", async () => {
 		const root   = fixture({ "a.ts": "function a() { const x = 1; return x; }\n", "b.ts": "function b() { run(); }\n" }) ;
 		const first  = await observeShapes({ root, files: ["b.ts", "a.ts"], writeCache: false })                             ;
 		const second = await observeShapes({ root, files: ["a.ts", "b.ts"], writeCache: false })                             ;
 		expect(first.jsonl).toBe(second.jsonl);
 	});
 
-	test("실제 파서 버전과 설정 지문이 스냅샷 무효화 입력에 포함된다", async () => {
+	test("the real parser version and config fingerprint are part of the snapshot invalidation input", async () => {
 		const root  = fixture({ "a.ts": "function a() {}\n" })                                                                    ;
 		const left  = await observeShapes({ root, files: ["a.ts"], fingerprints: { config: "sha256:left" }, writeCache: false })  ;
 		const right = await observeShapes({ root, files: ["a.ts"], fingerprints: { config: "sha256:right" }, writeCache: false }) ;
@@ -48,21 +48,21 @@ describe("코드 모양 관측", () => {
 		expect(left.jsonl                     ).not.toBe     (right.jsonl      ) ;
 	});
 
-	test("대입은 CHANGE이고 비교와 제어 흐름은 unknown이며 debugger는 notApplicable이다", async () => {
+	test("assignment is CHANGE, comparison and control flow are unknown, and debugger is notApplicable", async () => {
 		const root   = fixture({ "a.ts": "function sample(x: number) { x = 1; x === 1; if (x) run(); debugger; }\n" }) ;
 		const result = await observeShapes({ root, files: ["a.ts"], writeCache: false })                               ;
 		expect(result.units[0]!.segments.map(segment => segment.classification)).toEqual(["CHANGE", "unknown", "notApplicable"]);
 		expect(result.units[0]!.segments[1]!.count).toBe(2);
 	});
 
-	test("누락 파일과 JavaScript 파일은 다른 파일 수집을 중단하지 않는다", async () => {
+	test("missing files and JavaScript files do not stop collecting other files", async () => {
 		const root   = fixture({ "a.ts": "function kept() {}\n", "b.js": "function unsupported() {}\n" })      ;
 		const result = await observeShapes({ root, files: ["a.ts", "missing.ts", "b.js"], writeCache: false }) ;
 		expect(result.header.completion).toMatchObject({ complete: false, requested: 3, succeeded: 1, failed: 2 });
 		expect(result.files.map(file => file.status)).toEqual(["ok", "failed", "failed"]);
 	});
 
-	test("동명·중첩·같은 줄의 함수를 범위와 부모로 구별한다", async () => {
+	test("distinguishes same-named, nested and same-line functions by range and parent", async () => {
 		const root   = fixture({ "a.ts": "function same(){ function same(){ return 1; } return 2; } function same(){ return 3; }\n" }) ;
 		const result = await observeShapes({ root, files: ["a.ts"], writeCache: false })                                               ;
 		expect(result.units                                                       ).toHaveLength(3                  ) ;
@@ -71,7 +71,7 @@ describe("코드 모양 관측", () => {
 		expect(new Set(result.units.map(unit => `${unit.start}:${unit.end}`)).size).toBe        (3                  ) ;
 	});
 
-	test("깨진 파일은 partial로 보고하고 마지막 완료 캐시를 보존한다", async () => {
+	test("reports a broken file as partial and keeps the last completed cache", async () => {
 		const root     = fixture({ "a.ts": "function ok() { return 1; }\n" }) ;
 		const complete = await observeShapes({ root, files: ["a.ts"] })       ;
 		const cache    = join(root, ".xxx/cache/shape.jsonl")                 ;
@@ -84,7 +84,7 @@ describe("코드 모양 관측", () => {
 		expect(readFileSync(cache, "utf8")       ).toBe(complete.jsonl) ;
 	});
 
-	test("완료본은 현재와 직전 하나만 보존하고 같은 실행은 회전시키지 않는다", async () => {
+	test("keeps only the current and previous completed snapshot and does not rotate for the same run", async () => {
 		const root  = fixture({ "a.ts": "function first() {}\n" })   ;
 		const first = await observeShapes({ root, files: ["a.ts"] }) ;
 		await observeShapes({ root, files: ["a.ts"] });
@@ -95,7 +95,7 @@ describe("코드 모양 관측", () => {
 		expect(existsSync(join(root, ".xxx/cache/shape.lock"))).toBe(false);
 	});
 
-	test("화살표와 본문 없는 선언은 단위로 만들지 않고 미지원으로 센다", async () => {
+	test("arrows and bodiless declarations do not become units and are counted as unsupported", async () => {
 		const root   = fixture({ "a.ts": "declare function external(): void;\nconst arrow = () => 1;\nfunction kept() {}\n" }) ;
 		const result = await observeShapes({ root, files: ["a.ts"], writeCache: false })                                       ;
 		expect(result.units.map(unit => unit.displayName)).toEqual(["kept"]) ;
@@ -103,7 +103,7 @@ describe("코드 모양 관측", () => {
 		expect(result.files[0]!.unsupportedNoBody        ).toBe   (1       ) ;
 	});
 
-	test("소스와 승인 DB는 읽기만 하고 루트 밖 경로와 캐시 심볼릭 링크를 거절한다", async () => {
+	test("only reads the source and approval DB and refuses paths outside the root and cache symbolic links", async () => {
 		const root           = fixture({ "a.ts": "function kept() {}\n", ".xxx/conventions.jsonl": "convention\n", ".xxx/examples.jsonl": "example\n", ".xxx/decisions.jsonl": "decision\n" }) ;
 		const sourceBefore   = readFileSync(join(root, "a.ts"), "utf8")                                                                                                                        ;
 		const approvedBefore = ["conventions.jsonl", "examples.jsonl", "decisions.jsonl"].map(name => readFileSync(join(root, ".xxx", name), "utf8"))                                          ;

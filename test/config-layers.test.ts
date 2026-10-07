@@ -36,8 +36,8 @@ function writeConfig(path: string, value: unknown): void {
 const prettier = { command: "prettier", args: ["--write", "{file}"] }                       ;
 const black    = { command: "python3", args: ["-m", "black", "{file}"], timeoutMs: 15_000 } ;
 
-describe("config 계층", () => {
-	test("Base → Preset → User → Project 순서로 배열을 교체하고 언어별 formatter를 교체한다", () => {
+describe("config layers", () => {
+	test("replaces arrays and per-language formatters in Base → Preset → User → Project order", () => {
 		const root     = workspace()                          ;
 		const userRoot = workspace()                          ;
 		const user     = join(userRoot, "xxx", "config.json") ;
@@ -54,7 +54,7 @@ describe("config 계층", () => {
 		expect(resolved.sources.map(source => source.layer)       ).toEqual(["base", "preset", "user", "project"]) ;
 	});
 
-	test("schema 1은 메모리에서만 이행하고 원본을 바꾸지 않는다", () => {
+	test("schema 1 migrates only in memory and never changes the original", () => {
 		const root = workspace()                       ;
 		const path = join(root, ".xxx", "config.json") ;
 		writeConfig(path, { schemaVersion: 1, languages: ["python"] });
@@ -67,7 +67,7 @@ describe("config 계층", () => {
 		expect(readFileSync(path, "utf8")                                           ).toBe   (before    ) ;
 	});
 
-	test("schema 2 init은 상위 계층 값을 가리지 않는 최소 파일을 만든다", () => {
+	test("schema 2 init writes a minimal file that does not shadow upper-layer values", () => {
 		const root   = workspace()                   ;
 		const result = initializeProjectConfig(root) ;
 		expect(result.created).toBe(true);
@@ -76,14 +76,14 @@ describe("config 계층", () => {
 		expect(resolved.effective.languages).toEqual(["python"]);
 	});
 
-	test("알 수 없는 필드, safety override, 미래 schema를 fail-closed로 거절한다", () => {
+	test("refuses unknown fields, safety overrides and future schemas fail-closed", () => {
 		expect(() => validateProjectConfig({ schemaVersion: 2, safety: { tokenPreservation: false } }, "config")).toThrow("unsupported config option: safety"  ) ;
 		expect(() => validateProjectConfig({ schemaVersion: 2, surprise: true }, "config")                      ).toThrow("unsupported config option: surprise") ;
 		expect(() => validateProjectConfig({ schemaVersion: 3 }, "config")                                      ).toThrow("unsupported schemaVersion 3"        ) ;
 		expect(() => validateProjectConfig({ schemaVersion: 2, preset: "custom" }, "config")                    ).toThrow("preset must be recommended"         ) ;
 	});
 
-	test("formatter command 계약과 timeout 경계를 엄격히 검증한다", () => {
+	test("strictly validates the formatter command contract and timeout bounds", () => {
 		const config = (formatter: unknown): unknown => ({ schemaVersion: 2, formatters: { python: formatter } });
 		expect(() => validateProjectConfig(config({ command: "black", args: [] }), "config")                                ).toThrow("exactly one {file}"              ) ;
 		expect(() => validateProjectConfig(config({ command: "black", args: ["{file}", "{file}"] }), "config")              ).toThrow("exactly one {file}"              ) ;
@@ -94,12 +94,12 @@ describe("config 계층", () => {
 		expect(validateProjectConfig(config({ command: "black", args: ["{file}"] }), "config").formatters?.python?.timeoutMs).toBe   (30_000                            ) ;
 	});
 
-	test("빈 languages와 지원하지 않는 formatter 언어를 거절한다", () => {
+	test("refuses empty languages and unsupported formatter languages", () => {
 		expect(() => validateProjectConfig({ schemaVersion: 2, languages: [] }, "config")                                  ).toThrow("non-empty array");
 		expect(() => validateProjectConfig({ schemaVersion: 2, formatters: { rust: prettier } }, "config")                 ).toThrow("unsupported config option: rust");
 	});
 
-	test("누락 계층은 기본값을 유지하고 fingerprint는 결정적이며 raw 변경을 감지한다", () => {
+	test("missing layers keep defaults, the fingerprint is deterministic and detects raw changes", () => {
 		const root   = workspace()                                   ;
 		const user   = join(root, "missing", "config.json")          ;
 		const first  = resolveConfig(root, { userConfigPath: user }) ;
@@ -115,7 +115,7 @@ describe("config 계층", () => {
 		expect(compact.fingerprint).not.toBe(spaced.fingerprint);
 	});
 
-	test("프로젝트와 사용자 config 심볼릭 링크를 거절한다", () => {
+	test("refuses project and user config symbolic links", () => {
 		const root    = workspace() ;
 		const outside = workspace() ;
 		writeConfig(join(outside, "config.json"), { schemaVersion: 2 });

@@ -10,7 +10,7 @@ import      { KIND_AXES                                          } from "@/types
 const ROOT    = join(import.meta.dir, "..")                                          ;
 const GRAMMAR = readFileSync(join(ROOT, "skills/xxx/references/grammar.md"), "utf8") ;
 
-/** grammar.md의 `## <n>.` 절에서 표 첫 칸의 `ID`들을 순서대로 읽는다. */
+/** Reads the `ID`s in the first column of the tables in grammar.md's `## <n>.` sections, in order. */
 function idsInSection(number: number): readonly string[] {
 	const start = GRAMMAR.indexOf(`\n## ${number}. `)             ;
 	const end   = GRAMMAR.indexOf("\n## ", start + 1)             ;
@@ -18,8 +18,8 @@ function idsInSection(number: number): readonly string[] {
 	return [...body.matchAll(/^\| `([A-Z]+)` \|/gmu)].map(match => match[1]!);
 }
 
-describe("문법 ID 레지스트리", () => {
-	test("grammar.md의 표와 grammar-ids.ts의 목록이 같다", () => {
+describe("grammar ID registry", () => {
+	test("the tables in grammar.md match the list in grammar-ids.ts", () => {
 		expect(idsInSection(1)).toEqual([...UNITS             ]) ;
 		expect(idsInSection(2)).toEqual([...ROLES             ]) ;
 		expect(idsInSection(3)).toEqual([...PATTERNS          ]) ;
@@ -28,30 +28,30 @@ describe("문법 ID 레지스트리", () => {
 	});
 });
 
-describe("표현형 — TypeScript", () => {
-	test("엔진의 모든 kind가 문형에 대응된다", () => {
+describe("surface forms — TypeScript", () => {
+	test("every engine kind maps to a pattern", () => {
 		for (const kind of Object.keys(KIND_AXES)) {
 			expect(patternOf("typescript", { kind, axes: [] }), kind).toBeDefined();
 		}
 	});
 
-	test("값이 붙은 enum은 MAP, 이름만 있으면 LIST", () => {
+	test("an enum with values is MAP, names only is LIST", () => {
 		expect(patternOf("typescript", { kind: "enum-member", axes: ["equals=12", "comma=20"] })?.pattern).toBe("MAP" ) ;
 		expect(patternOf("typescript", { kind: "enum-member", axes: ["comma=9"              ] })?.pattern).toBe("LIST") ;
 	});
 
-	test("선언과 대입은 서로 다른 문형이고 모호하지 않다", () => {
+	test("declaration and assignment are different patterns and not ambiguous", () => {
 		expect(patternOf("typescript", { kind: "declaration-equals", axes: [] })).toEqual({ pattern: "DEFINE", alternatives: [] }) ;
 		expect(patternOf("typescript", { kind: "assignments"       , axes: [] })).toEqual({ pattern: "CHANGE", alternatives: [] }) ;
 	});
 
-	test("모르는 kind는 대응되지 않는다 (알람 A8의 대상)", () => {
+	test("an unknown kind is not mapped (target of alarm A8)", () => {
 		expect(patternOf("typescript", { kind: "not-a-kind", axes: [] })).toBeUndefined();
 	});
 });
 
-describe("표현형 — Python", () => {
-	test("fixture의 모든 표가 문형에 대응된다", () => {
+describe("surface forms — Python", () => {
+	test("every table in the fixture maps to a pattern", () => {
 		const dirs = [join(ROOT, "skills/xxx/fixtures/python"), join(ROOT, "skills/xxx/fixtures/python/corpus")] ;
 		let tables = 0                                                                                           ;
 		for (const dir of dirs) {
@@ -66,7 +66,7 @@ describe("표현형 — Python", () => {
 		expect(tables).toBeGreaterThan(0);
 	});
 
-	test("선언과 대입이 같은 문법인 `a = v`는 모호로 표시된다", () => {
+	test("`a = v`, where declaration and assignment share syntax, is marked ambiguous", () => {
 		expect(patternOf("python", { axes: ["name", "equal=6", "value"         ] })         ).toEqual({ pattern: "DEFINE"  , alternatives: ["CHANGE"] }) ;
 		expect(patternOf("python", { axes: ["name", "colon", "type", "equal", "value"] })   ).toEqual({ pattern: "DESCRIBE", alternatives: ["DEFINE"] }) ;
 		expect(patternOf("python", { axes: ["name", "colon", "type"            ] })         ).toEqual({ pattern: "DESCRIBE", alternatives: [        ] }) ;
@@ -75,14 +75,14 @@ describe("표현형 — Python", () => {
 	});
 });
 
-describe("표현형 데이터 검증", () => {
-	test("배포되는 데이터 파일은 모두 유효하다", () => {
+describe("surface-form data validation", () => {
+	test("every shipped data file is valid", () => {
 		expect(surfaceOf("typescript")?.forms.length).toBeGreaterThan(0) ;
 		expect(surfaceOf("python"    )?.forms.length).toBeGreaterThan(0) ;
 		expect(surfaceOf("cobol"     )               ).toBeUndefined()   ;
 	});
 
-	test("문법에 없는 ID, 찾는 방법이 없거나 둘인 형태, 다른 언어 이름은 거부된다", () => {
+	test("refuses IDs missing from the grammar, forms with no matcher or two, and other language names", () => {
 		const base = { schemaVersion: 1, language: "python" };
 
 		expect(() => validateSurface({ ...base, forms: [{ kind: "x", pattern: "ASSIGN" }] }, "python")                     ).toThrow("unknown pattern"    ) ;

@@ -1,14 +1,14 @@
 #!/usr/bin/env bun
 /**
- * 검사 리포트 CLI (M1.8 S3.5). 파일 하나에 해당 언어의 정렬기를 돌리고, 안전 검사 S1–S4와 알람 A1–A9를 출력한다.
- * --write를 주면 정렬을 쓴 뒤 한 번 더 검사해 멱등(S3)까지 확인한다. 1차 범위는 TypeScript와 Python이다.
- * --baseline <파일>을 주면 편집 전 기준본을 같은 방식으로 검사해, 알람을 새 알람·기존 알람·사라진 알람으로 나눈다
- * (docs/authoring-flow.md 3절). 새 파일이면 --baseline none. 없는 기준본 경로는 오타로 보고 오류로 끝낸다.
- * CLI 출력의 오류 메시지는 영어다(AGENTS.md 언어 정책).
+ * Check report CLI (M1.8 S3.5). Runs the language's aligner on one file and prints safety checks S1–S4 and alarms A1–A9.
+ * With --write, it writes the alignment and checks once more to confirm idempotence (S3). The first scope is TypeScript and Python.
+ * With --baseline <file>, it checks the pre-edit baseline the same way and splits alarms into new, existing and resolved
+ * (docs/authoring-flow.md section 3). For a new file use --baseline none. A missing baseline path is treated as a typo and ends with an error.
+ * CLI error messages are in English (AGENTS.md language policy).
  *
- * 사용법:
- *   bun <SKILL>/scripts/report.ts --file <대상 파일> [--baseline <기준본|none>] [--write] [--json]
- * 종료 코드: 안전 검사가 하나라도 미통과면 1, 아니면 0 (알람은 실패가 아니다).
+ * Usage:
+ *   bun <SKILL>/scripts/report.ts --file <target file> [--baseline <baseline|none>] [--write] [--json]
+ * Exit code: 1 if any safety check fails, otherwise 0 (alarms are not failures).
  */
 import      { spawnSync                                } from "node:child_process"      ;
 import      { existsSync, readFileSync                 } from "node:fs"                 ;
@@ -29,7 +29,7 @@ function languageOf(file: string): string {
 	return found[1];
 }
 
-/** 정렬기를 --json으로 돌려 파일 결과 하나를 받는다. 정렬기는 대기 편집이 있으면 1로 끝나므로 종료 코드는 보지 않는다. */
+/** Runs the aligner with --json to get one file result. The aligner exits 1 when edits are pending, so the exit code is ignored. */
 function runAligner(language: string, file: string, write: boolean): FileResult {
 	const script = fileURLToPath(new URL(`./${language}/06_align-tables.ts`, import.meta.url)) ;
 	const args   = [script, "--file", file, "--json", ...(write ? ["--write"] : [])]           ;
@@ -48,7 +48,7 @@ function runAligner(language: string, file: string, write: boolean): FileResult 
 	return result;
 }
 
-/** --baseline이 있으면 기준본의 알람과 짝지은 비교를 붙인다. `none`은 새 파일(기준본 알람 없음)이다. */
+/** With --baseline, attaches the comparison paired with the baseline's alarms. `none` means a new file (no baseline alarms). */
 function baselineOf(args: readonly string[], language: string, current: ReturnType<typeof buildReport>): ReturnType<typeof buildReport> {
 	const at = args.indexOf("--baseline");
 	if (at < 0) return current;

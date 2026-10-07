@@ -55,7 +55,7 @@ export function runAlignCli(aligner: LineProfiler, args: readonly string[], over
 				source = initial.toString("utf8");
 				result = alignSource(source, aligner, { minRows: Number.isFinite(minRows) ? minRows : 3, apply: true });
 				if (result.misaligned === 0) return;
-				// 작업본 검증이 끝나도 helper가 최초 identity와 bytes를 commit 직전에 다시 확인한다.
+				// Even after the working copy is verified, the helper rechecks the original identity and bytes right before commit.
 				const parse = compareParse(aligner.language, source, result.output);
 				parsed = { status: parse.status, tool: parse.tool };
 				parseReport = `  parse=${parse.status} tool=${parse.tool}${parse.delta.map(line => `\n    ${line}`).join("")}`;

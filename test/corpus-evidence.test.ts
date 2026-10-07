@@ -24,8 +24,8 @@ const row: CensusRow = {
 	sourceHash : `sha256:${"a".repeat(64)}`,
 };
 
-describe("코퍼스 원시 증거", () => {
-	test("조회 키와 진단 시그니처, 출처와 전체 파일 해시를 손실 없이 보존한다", () => {
+describe("raw corpus evidence", () => {
+	test("preserves the lookup key, diagnostic signature, provenance and whole-file hash losslessly", () => {
 		const observation = observationOf(row, source);
 		expect(observation).toMatchObject({
 			schemaVersion : 1,
@@ -39,7 +39,7 @@ describe("코퍼스 원시 증거", () => {
 		});
 	});
 
-	test("ID는 시간 없이 안정적이며 위치나 출처가 바뀌면 달라진다", () => {
+	test("IDs are stable without time and change when the location or provenance changes", () => {
 		const first  = observationOf(row       , source       ) ;
 		const repeat = observationOf({ ...row }, { ...source }) ;
 		const moved  = observationOf(

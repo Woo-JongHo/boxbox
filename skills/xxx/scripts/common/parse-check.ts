@@ -1,7 +1,7 @@
 /**
- * 라인 엔진 출력의 재파싱 검사다. 원본과 정렬 결과의 진단이 같아야 하며, 정렬이 옮길 수 있는 열 번호와
- * 소스 인용은 비교에서 제외한다. compareParse는 검증 불능을 오류로 닫고, parserAvailable만 로컬 테스트의
- * 선택적 probe 역할을 유지한다.
+ * Re-parse check for line-engine output. Diagnostics of the original and the aligned result must match; column numbers and source quotes,
+ * which alignment can shift, are excluded from the comparison. compareParse closes unverifiable cases as errors; only parserAvailable keeps
+ * its role as an optional probe for local tests.
  */
 import      { spawnSync       } from "node:child_process" ;
 import      {
@@ -22,7 +22,7 @@ export interface ParseComparison {
 }
 
 export interface ParseCheckOptions {
-	/** 테스트에서 fault를 빠르게 재현하기 위한 실행 제한. 제품 기본값과 상한은 60초다. */
+	/** Execution limit for reproducing faults quickly in tests. The product default and maximum is 60 seconds. */
 	readonly timeoutMs?: number;
 }
 
@@ -52,7 +52,7 @@ const DEFAULT_TIMEOUT_MS = 60_000    ;
 const MAX_OUTPUT_BYTES   = 1_048_576 ;
 
 function hasTool(tool: string, timeoutMs = 5_000): boolean {
-	// 캐시하지 않는다. PATH나 실행 파일이 바뀐 뒤 오래된 true가 쓰기 gate를 통과시키면 안 된다.
+	// Not cached. A stale true after PATH or the executable changed must never pass the write gate.
 	const run = spawnSync(tool, ["--version"], { encoding: "utf8", maxBuffer: MAX_OUTPUT_BYTES, timeout: Math.min(timeoutMs, 5_000) });
 	return run.error === undefined && run.signal === null && run.status !== null;
 }

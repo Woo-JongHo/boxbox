@@ -13,13 +13,13 @@ import      {
 import      { extname, isAbsolute, join, resolve } from "node:path"          ;
 import type { FileResult                         } from "./result-json.ts"   ;
 
-const excluded  = new Set([".git", ".xxx", "node_modules", ".venv", "venv", "__pycache__", "dist", "build"])                                                         ;
+const excluded         = new Set([".git", ".xxx", "node_modules", ".venv", "venv", "__pycache__", "dist", "build"])                                                         ;
 export const supported = new Set([".ts", ".tsx", ".mts", ".cts", ".py"])                                                                                                    ;
-const code      = new Set([...supported, ".js", ".jsx", ".mjs", ".cjs", ".java", ".go", ".rs", ".c", ".h", ".cpp", ".hpp", ".swift", ".kt", ".yaml", ".yml", ".sh"]) ;
+const code             = new Set([...supported, ".js", ".jsx", ".mjs", ".cjs", ".java", ".go", ".rs", ".c", ".h", ".cpp", ".hpp", ".swift", ".kt", ".yaml", ".yml", ".sh"]) ;
 
 export type Snapshot   = Record<string, string>                              ;
 export type Inspection = (root: string, file: string) => Promise<FileResult> ;
-type Preflight  = (root: string) => { runtimeUsable: boolean }        ;
+type Preflight         = (root: string) => { runtimeUsable: boolean }        ;
 
 function options(args: readonly string[], run: boolean) {
 	const separator = args.indexOf("--")                              ;
@@ -131,7 +131,7 @@ export async function guardedRun(args: readonly string[], preflight: Preflight, 
 		exitCode = record.state === "PASS" || record.state === "NO_CHANGES" ? 0 : record.state === "FAIL" ? 1 : 2;
 	} catch (error) {
 		record.state = "TOOL_ERROR";
-		// 외부 오류 문구에는 인자·코드가 섞일 수 있으므로 허용한 코드만 저장한다.
+		// External error text can contain arguments or code, so only allowed codes are stored.
 		const message = error instanceof Error ? error.message : "";
 		record.errorCode = ["PREFLIGHT_FAILED", "CHILD_START_ERROR", "SOURCE_CHANGED_DURING_CHECK", "CHANGED_SYMLINK"].includes(message) ? message : "GUARD_ERROR";
 	} finally {

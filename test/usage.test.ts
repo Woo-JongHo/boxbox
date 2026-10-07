@@ -2,14 +2,14 @@ import      { describe, expect, test                  } from "bun:test"         
 import      { codexModel, codexTokens, estimateTokens } from "@/common/usage.ts"          ;
 import      { agreementOf, usageRows                  } from "../scripts/usage-report.ts" ;
 
-describe("AI 사용량", () => {
-	test("추정 토큰: ASCII 4글자당 1, 한글 1글자당 1", () => {
+describe("AI usage", () => {
+	test("estimated tokens: 1 per 4 ASCII characters, 1 per CJK character", () => {
 		expect(estimateTokens("abcdefgh")).toBe(2) ;
-		expect(estimateTokens("가나다"  )).toBe(3) ;
-		expect(estimateTokens("ab가"    )).toBe(2) ;
+		expect(estimateTokens("가나다"  )).toBe(3) ; // cjk-test-data
+		expect(estimateTokens("ab가"    )).toBe(2) ; // cjk-test-data
 	});
 
-	test("Codex가 남긴 토큰 수와 모델·추론 강도를 읽는다", () => {
+	test("reads the token count, model and reasoning effort Codex leaves", () => {
 		const stderr = "workdir: /x\nmodel: gpt-6-sol\nprovider: openai\nreasoning effort: medium\n…\ntokens used\n27,877\n";
 
 		expect(codexTokens(stderr)          ).toBe(27877)                                     ;
@@ -18,7 +18,7 @@ describe("AI 사용량", () => {
 		expect(codexModel("no header")      ).toEqual({})                                     ;
 	});
 
-	test("모델·출처·이벤트별로 합치고, 추정이 섞이면 표시한다", () => {
+	test("sums by model, source and event, and marks rows that include estimates", () => {
 		const rows = usageRows([
 			{ date : "d" , source : "hook"  , event : "PostToolUse" , chars : 100 , tokens : 60 , estimated : true  , model : "host"      },
 			{ date : "d" , source : "hook"  , event : "PostToolUse" , chars : 50  , tokens : 40 , estimated : true  , model : "host"      },
@@ -28,7 +28,7 @@ describe("AI 사용량", () => {
 		expect(rows.map(row => [row.model, row.event, row.count, row.tokens, row.estimated])).toEqual([["gpt-6-sol", "review", 1, 99, false], ["host", "PostToolUse", 2, 100, true]]);
 	});
 
-	test("정확도: AI 제안과 사람 판정이 둘 다 있는 유형만 비교한다", () => {
+	test("accuracy: compares only types that have both an AI suggestion and a human verdict", () => {
 		const suggestion = (signature: string, verdict: string) => JSON.stringify({ schemaVersion: 1, signature, rank: 1, verdict, reason: "", flags: [], reviewer: "codex", date: "d", model: "gpt-6-sol" }) ;
 		const verdict    = (signature: string, value: string)   => JSON.stringify({ schemaVersion: 1, signature, verdict: value, judge: "user", date: "d", note: "" })                                        ;
 

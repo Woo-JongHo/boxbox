@@ -11,7 +11,7 @@ const parseJson               = (path: string): Record<string, unknown> => JSON.
 const LANGUAGE_DISCOVERY_TEXT = "TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, and Kotlin"                  ;
 
 describe("plugin distribution contract", () => {
-	test("package, Claude·Codex 매니페스트와 두 marketplace가 이름·버전을 공유한다", () => {
+	test("package, Claude and Codex manifests and both marketplaces share name and version", () => {
 		const packageJson = parseJson("package.json")                                                                     ;
 		const claude      = parseJson("plugin/.claude-plugin/plugin.json")                                                ;
 		const codex       = parseJson("plugin/.codex-plugin/plugin.json")                                                 ;
@@ -29,8 +29,8 @@ describe("plugin distribution contract", () => {
 		expect(codexEntry.source).toEqual({ source: "local", path: "./plugin" }) ;
 	});
 
-	test("플러그인 구성 요소가 플러그인 폴더 안에 있다", () => {
-		// agents는 기본 위치로 탐색시킨다: 매니페스트에 agents 배열을 두면 Claude Code 2.1.286이 inspector를 인식하지 않았다.
+	test("plugin components live inside the plugin folder", () => {
+		// Agents are discovered from the default location: with an agents array in the manifest, Claude Code 2.1.286 did not detect the inspector.
 		expect(parseJson("plugin/.claude-plugin/plugin.json").agents).toBeUndefined();
 		for (const path of ["agents/readability-inspector.md", "skills/xxx/SKILL.md", "hooks/hooks.json", "scripts/xxx", "README.md"]) expect(existsSync(resolve(ROOT, "plugin", path))).toBe(true);
 		expect(statSync(resolve(ROOT, "plugin/scripts/xxx")).mode & 0o111   ).not.toBe(0   ) ;
@@ -39,7 +39,7 @@ describe("plugin distribution contract", () => {
 		expect(existsSync(resolve(ROOT, "codex/readability-inspector.toml")))    .toBe(true) ;
 	});
 
-	test("개발 스킬은 전체 언어를, 배포 플러그인은 첫 공개 범위만 소개한다", () => {
+	test("the development skill lists every language; the shipped plugin introduces only the first public scope", () => {
 		for (const description of [String(parseJson("package.json").description), read("skills/xxx/SKILL.md").split("---", 3)[1] ?? ""]) {
 			expect(description).toContain(LANGUAGE_DISCOVERY_TEXT);
 		}
@@ -52,11 +52,11 @@ describe("plugin distribution contract", () => {
 		for (const description of published) expect(description).toContain("TypeScript and Python");
 	});
 
-	test("플러그인 폴더가 단일 소스와 어긋나지 않는다", () => {
+	test("the plugin folder does not drift from the single source", () => {
 		expect(pluginDrift()).toEqual([]);
 	});
 
-	test("훅은 플러그인 안 shim만 부르고 shim은 정확한 엔진 버전을 고정한다", () => {
+	test("hooks call only the shim inside the plugin, and the shim pins the exact engine version", () => {
 		const hooks    = JSON.parse(read("plugin/hooks/hooks.json")) as { hooks: Record<string, Array<{ hooks: Array<{ command: string }> }>> } ;
 		const commands = Object.values(hooks.hooks).flat().flatMap(entry => entry.hooks.map(hook => hook.command))                              ;
 		expect(commands.length).toBe(3);
@@ -64,7 +64,7 @@ describe("plugin distribution contract", () => {
 		expect(read("plugin/scripts/xxx")).toContain(`exec npx --yes "xxx@${String(parseJson("package.json").version)}" "$@"`);
 	});
 
-	test("플러그인 폴더가 디렉터리 제출 한도를 지킨다", () => {
+	test("the plugin folder stays within the directory submission limits", () => {
 		const files = readdirSync(resolve(ROOT, "plugin"), { recursive: true, withFileTypes: true }).filter(entry => !entry.isDirectory());
 		expect(files.length).toBeLessThanOrEqual(512);
 		for (const entry of files) {

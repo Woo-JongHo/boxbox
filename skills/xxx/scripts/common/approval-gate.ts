@@ -97,7 +97,7 @@ function readOptional(root: string, name: string | undefined, fallback: string):
 	return { text: readFileSync(physical, "utf8"), where: physical };
 }
 
-/** 명시한 registry root만 읽는다. package URL이나 암묵적 preset 위치를 사용하지 않는다. */
+/** Reads only the explicitly given registry roots. Never uses a package URL or an implicit preset location. */
 export function loadApprovalRegistry(sources: readonly RegistrySource[]): ApprovalRegistry {
 	const conventions: LoadedConvention[] = []                          ;
 	const examples                        = new Map<string, Example>()  ;
@@ -120,7 +120,7 @@ export function loadApprovalRegistry(sources: readonly RegistrySource[]): Approv
 	return { conventions, examples, decisions };
 }
 
-/** ref의 실제 문서가 해당 convention 층의 허용 root 안에 있을 때만 절 본문을 돌려준다. */
+/** Returns the section body only when the ref's real document lies inside the allowed root for that convention layer. */
 export function documentResolver(roots: DocumentRoots): DocumentResolver {
 	return (ref, layer) => {
 		const root = typeof roots === "string" ? roots : layer ? roots[layer] : undefined;
@@ -207,19 +207,19 @@ function verifyProof(registry: ApprovalRegistry, convention: LoadedConvention, r
 	return { reasons, guide };
 }
 
-/** exact key 조회와 승인 증명을 함께 검사한다. writable은 모든 증명이 검증된 approved에서만 true다. */
+/** Checks the exact-key lookup and the approval proof together. writable is true only for an approved entry whose proofs all verify. */
 export function evaluateApproval(registry: ApprovalRegistry, query: ApprovalQuery, resolveDocument: DocumentResolver): ApprovalResult {
 	const found = resolveConvention(registry, query);
 	if (found.status !== "approved" || !found.convention) {
-		return { status: found.status, writable: false, conventionId: found.convention?.id, layer: found.convention?.layer, reasons: found.reasons, guide: [], text: `승인 거부: ${found.reasons.join("; ")}` };
+		return { status: found.status, writable: false, conventionId: found.convention?.id, layer: found.convention?.layer, reasons: found.reasons, guide: [], text: `Approval denied: ${found.reasons.join("; ")}` };
 	}
 
 	const proof = verifyProof(registry, found.convention, resolveDocument);
-	if (proof.reasons.length > 0) return { status: "unknown", writable: false, conventionId: found.convention.id, layer: found.convention.layer, reasons: proof.reasons, guide: [], text: `승인 거부: ${proof.reasons.join("; ")}` };
-	return { status: "approved", writable: true, conventionId: found.convention.id, layer: found.convention.layer, reasons: [], guide: proof.guide, text: `승인됨: ${found.convention.id}\n${proof.guide.map(example => `[${example.id}]\n${example.after}`).join("\n")}` };
+	if (proof.reasons.length > 0) return { status: "unknown", writable: false, conventionId: found.convention.id, layer: found.convention.layer, reasons: proof.reasons, guide: [], text: `Approval denied: ${proof.reasons.join("; ")}` };
+	return { status: "approved", writable: true, conventionId: found.convention.id, layer: found.convention.layer, reasons: [], guide: proof.guide, text: `Approved: ${found.convention.id}\n${proof.guide.map(example => `[${example.id}]\n${example.after}`).join("\n")}` };
 }
 
-/** 엔진이 검출한 표 설명을 현재 exact lookup key로 바꿔 입력 순서대로 평가한다. */
+/** Turns the engine's table descriptions into current exact lookup keys and evaluates them in input order. */
 export function evaluateDetected(registry: ApprovalRegistry, detected: readonly DetectedApproval[], resolveDocument: DocumentResolver): readonly EvaluatedApproval[] {
 	return detected.map(group => {
 		const query = { key: lookupKeyOf(group.language, group.context, group.kind, group.axes), file: group.file };

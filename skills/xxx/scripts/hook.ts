@@ -1,14 +1,14 @@
 #!/usr/bin/env bun
 /**
- * Claude Code 훅 진입점 (M1.8 S3.6, docs/authoring-flow.md). 첫 범위는 읽기 전용이다.
+ * Claude Code hook entry point (M1.8 S3.6, docs/authoring-flow.md). The first scope is read-only.
  *
- *   hook.ts session : 세션 시작 때 헌장 핵심 3줄을 한 번 주입한다.
- *   hook.ts pre     : 쓰기 직전 기준본을 `.xxx/cache/baseline/<tool_use_id>`에 저장한다. 새 파일이면 언어별로
- *                     세션당 한 번 짧은 안내를 주입한다.
- *   hook.ts post    : 쓴 뒤 리포트를 기준본과 비교해, 새 알람이 있을 때만 알린다. 파일은 고치지 않는다.
+ *   hook.ts session : injects the charter's three core lines once at session start.
+ *   hook.ts pre     : saves the baseline to `.xxx/cache/baseline/<tool_use_id>` right before a write. For a new file it injects short
+ *                     guidance once per language per session.
+ *   hook.ts post    : compares the post-write report with the baseline and reports only when there are new alarms. Never fixes the file.
  *
- * 입력은 stdin의 호스트 JSON이다. XXX_HOOKS=off이면 아무것도 하지 않는다. 훅이 실패해도 편집을 막지 않는다(종료 코드 0).
- * 지연은 `.xxx/cache/hook-timing.jsonl`에 남긴다(S3.6 확인 기준).
+ * Input is the host JSON on stdin. With XXX_HOOKS=off it does nothing. A failing hook never blocks the edit (exit code 0).
+ * Latency is recorded in `.xxx/cache/hook-timing.jsonl` (S3.6 acceptance criterion).
  */
 import      { spawnSync                   } from "node:child_process" ;
 import      {
@@ -37,10 +37,10 @@ import      { appendUsage, estimateTokens } from "./common/usage.ts"  ;
 const CHARTER = fileURLToPath(new URL("../references/charter.md", import.meta.url)) ;
 const REPORT  = fileURLToPath(new URL("./report.ts", import.meta.url)             ) ;
 
-/** 쓰기가 일어나지 않아 짝(post)을 잃은 기준본은 이 시간이 지나면 지운다. */
+/** Baselines that lost their pair (post) because no write happened are deleted after this long. */
 const STALE_MS = 60 * 60 * 1000;
 
-/** 프로젝트의 캐시 폴더. 스스로 git에서 빠지도록 `*` 한 줄짜리 .gitignore를 두고, 오래된 기준본을 치운다. */
+/** The project's cache folder. It keeps a one-line `*` .gitignore so it stays out of git, and cleans up old baselines. */
 function cacheDir(project: string): string {
 	const dir = join(project, ".xxx", "cache");
 	mkdirSync(join(dir, "baseline"), { recursive: true });
@@ -53,7 +53,7 @@ function cacheDir(project: string): string {
 	return dir;
 }
 
-/** 에이전트에게 글을 주입하고, 그 양을 `.xxx/cache/usage.jsonl`에 남긴다(추정 토큰). */
+/** Injects text into the agent and records its size in `.xxx/cache/usage.jsonl` (estimated tokens). */
 function emit(event: string, context: string, project?: string, file?: string): void {
 	console.log(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: context } }));
 	if (!project) return;
@@ -123,6 +123,6 @@ function main(): void {
 try {
 	if (import.meta.main) main();
 } catch (error) {
-	// 훅은 편집을 막지 않는다. 원인만 stderr에 남긴다.
+	// The hook never blocks the edit. Only the cause goes to stderr.
 	console.error(`xxx hook: ${error instanceof Error ? error.message : String(error)}`);
 }

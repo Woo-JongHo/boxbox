@@ -8,7 +8,7 @@ function rootOf(args: readonly string[]): string {
 	return args[1]!;
 }
 
-/** 플러그인 훅은 호스트의 데이터 폴더(Claude·Codex 모두 설정)에 기록해 사용자 프로젝트에 파일을 남기지 않는다. */
+/** Plugin hooks write to the host's data folder (set by both Claude and Codex) so no files are left in the user's project. */
 function stateDirectory(root: string, id: string): string {
 	const data = process.env.CLAUDE_PLUGIN_DATA || process.env.PLUGIN_DATA;
 	if (!data) return join(root, ".xxx/hooks", id);
@@ -18,29 +18,29 @@ function stateDirectory(root: string, id: string): string {
 export async function lifecycleHook(args: readonly string[], inspect: Inspection): Promise<number> {
 	const mode = args[0];
 	if (!["session", "post", "stop"].includes(mode ?? "")) throw new Error("Expected session|post|stop");
-	const given = args.length > 1 ? rootOf(args.slice(1)) : undefined;
-	const event = mode === "session" ? "SessionStart" : mode === "post" ? "PostToolUse" : "Stop";
+	const given = args.length > 1 ? rootOf(args.slice(1)) : undefined                            ;
+	const event = mode === "session" ? "SessionStart" : mode === "post" ? "PostToolUse" : "Stop" ;
 	try {
 		const input = JSON.parse(readFileSync(0, "utf8"));
 		if (!input.session_id) throw new Error("Missing session_id");
-		// 플러그인 훅은 --root 없이 불리므로 호스트가 넘긴 작업 폴더를 쓴다.
+		// Plugin hooks are called without --root, so use the working folder the host passes in.
 		const root = given ?? input.cwd;
 		if (typeof root !== "string" || !isAbsolute(root)) throw new Error("Missing absolute cwd");
-		const id = createHash("sha256").update(String(input.session_id)).digest("hex");
-		const directory = stateDirectory(root, id);
+		const id        = createHash("sha256").update(String(input.session_id)).digest("hex") ;
+		const directory = stateDirectory(root, id)                                            ;
 		mkdirSync(directory, { recursive: true });
 		const baseline = join(directory, "baseline.json");
 		if (mode === "session") {
 			if (!existsSync(baseline)) writeFileSync(baseline, JSON.stringify(snapshot(root)), { flag: "wx" });
-			console.log(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: "[xxx] 코드 변경 후 검사하고 완료 시 세션 변경 전체를 다시 검사합니다. 결과는 .xxx/hooks에 기록됩니다." } }));
+			console.log(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: "[xxx] Changed code is checked after each edit, and all session changes are checked again on completion. Results are recorded in .xxx/hooks." } }));
 			return 0;
 		}
 		if (!existsSync(baseline)) throw new Error("Missing SessionStart baseline; start a session in this project");
-		const before = JSON.parse(readFileSync(baseline, "utf8"));
-		const after = snapshot(root);
-		const files = changed(before, after);
-		const checked = [];
-		const unsupported = [];
+		const before      = JSON.parse(readFileSync(baseline, "utf8")) ;
+		const after       = snapshot(root)                             ;
+		const files       = changed(before, after)                     ;
+		const checked     = []                                         ;
+		const unsupported = []                                         ;
 		for (const file of files) {
 			if (!after[file]) continue;
 			if (after[file]?.startsWith("symlink:") || before[file]?.startsWith("symlink:")) throw new Error("Changed symlink");
@@ -48,21 +48,21 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 			checked.push({ file, result: await inspect(root, file) });
 		}
 		if (changed(after, snapshot(root)).length) throw new Error("Source changed during check");
-		const failed = checked.some(item => item.result.summary.misaligned || item.result.summary.refused);
-		const state = failed ? "FAIL" : unsupported.length ? "UNSUPPORTED" : checked.length ? "PASS" : "NO_CHANGES";
-		const record = { event, state, files, checked, unsupported, tool: input.tool_name ?? null, at: new Date().toISOString(), automaticFixPerformed: false };
-		const receipt = join(directory, `${Date.now()}-${randomUUID()}.json`);
+		const failed  = checked.some(item => item.result.summary.misaligned || item.result.summary.refused)                                                      ;
+		const state   = failed ? "FAIL" : unsupported.length ? "UNSUPPORTED" : checked.length ? "PASS" : "NO_CHANGES"                                            ;
+		const record  = { event, state, files, checked, unsupported, tool: input.tool_name ?? null, at: new Date().toISOString(), automaticFixPerformed: false } ;
+		const receipt = join(directory, `${Date.now()}-${randomUUID()}.json`)                                                                                    ;
 		writeFileSync(receipt, JSON.stringify(record, null, 2), { flag: "wx" });
 		const reason = `[xxx] ${event}: ${state}. ${receipt}`;
-		// 지원 안 하는 파일은 알리기만 한다. Stop은 세션당 한 번만 막는다: Claude의 stop_hook_active가
-		// 없는 Codex에서도 무한 계속을 끊기 위해서다.
-		const stopMarker = join(directory, "stop-blocked");
-		const blocked    = failed && !(mode === "stop" && (input.stop_hook_active === true || existsSync(stopMarker)));
+		// Unsupported files are only reported. Stop blocks at most once per session: this breaks endless continuation
+		// even on Codex, which has no Claude-style stop_hook_active.
+		const stopMarker = join(directory, "stop-blocked")                                                             ;
+		const blocked    = failed && !(mode === "stop" && (input.stop_hook_active === true || existsSync(stopMarker))) ;
 		if (blocked && mode === "stop") writeFileSync(stopMarker, "");
 		console.log(JSON.stringify(mode === "stop" ? (blocked ? { decision: "block", reason } : { systemMessage: reason }) : { ...(blocked ? { decision: "block", reason } : {}), hookSpecificOutput: { hookEventName: event, additionalContext: reason } }));
 	} catch (error) {
 		const reason = `[xxx] hook error: ${error instanceof Error ? error.message : String(error)}`;
-		// 훅 자체 오류(기준선 없음 등)로 에이전트를 가두지 않는다. 읽기 전용 검사이므로 알리기만 한다.
+		// Hook errors (such as a missing baseline) never trap the agent. The check is read-only, so it only reports.
 		console.log(JSON.stringify(mode === "stop" ? { systemMessage: reason } : { hookSpecificOutput: { hookEventName: event, additionalContext: reason } }));
 	}
 	return 0;
@@ -70,18 +70,18 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 
 export function installHooks(args: readonly string[]): number {
 	if (args[0] !== "install" || !["codex", "claude"].includes(args[1] ?? "")) throw new Error("Expected hooks install codex|claude --root <absolute-path>");
-	const root = rootOf(args.slice(2));
-	const host = args[1];
-	const folder = join(root, host === "codex" ? ".codex" : ".claude");
-	const path = join(folder, host === "codex" ? "hooks.json" : "settings.json");
-	const document = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : {};
-	const quote = (value: string) => "'" + value.replaceAll("'", "'\\''") + "'";
-	const entry = process.argv[1]!;
-	const prefix = `${quote(process.execPath)} ${quote(entry)}`;
+	const root     = rootOf(args.slice(2))                                           ;
+	const host     = args[1]                                                         ;
+	const folder   = join(root, host === "codex" ? ".codex" : ".claude")             ;
+	const path     = join(folder, host === "codex" ? "hooks.json" : "settings.json") ;
+	const document = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : {}  ;
+	const quote    = (value: string) => "'" + value.replaceAll("'", "'\\''") + "'"   ;
+	const entry    = process.argv[1]!                                                ;
+	const prefix   = `${quote(process.execPath)} ${quote(entry)}`                    ;
 	document.hooks ??= {};
 	for (const [event, mode] of [["SessionStart", "session"], ["PostToolUse", "post"], ["Stop", "stop"]]) {
-		const list = document.hooks[event!] ?? [];
-		const command = `${prefix} hook ${mode} --root ${quote(root)}`;
+		const list    = document.hooks[event!] ?? []                   ;
+		const command = `${prefix} hook ${mode} --root ${quote(root)}` ;
 		if (!list.some((item: any) => item.hooks?.some((hook: any) => hook.command === command))) list.push({ ...(event === "PostToolUse" ? { matcher: ".*" } : {}), hooks: [{ type: "command", command, timeout: 120 }] });
 		document.hooks[event!] = list;
 	}

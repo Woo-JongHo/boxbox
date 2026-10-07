@@ -20,10 +20,10 @@ export function random(seed: number): () => number {
 	};
 }
 
-const pick       = <T>(next: () => number, values: readonly T[]): T => values[Math.floor(next() * values.length)]! ;
-const GAPS       = [" ", "  ", "   ", "\t", " \t", "\t "] as const                                                 ;
-const PROTECTED  = [":", "=", ";", ",", "//", "#", "가", "漢", "😀", " ", "  ", "=>", "{}", "()", "[]"] as const    ;
-const COMMENTARY = ["note: a = b;", "x : y , z", "가나다 = 1", "😀 {}", "k: v; // nested", "a  =  b"] as const      ;
+const pick      = <T>(next: () => number, values: readonly T[]): T => values[Math.floor(next() * values.length)]! ;
+const GAPS      = [" ", "  ", "   ", "\t", " \t", "\t "] as const                                                 ;
+const PROTECTED = [":", "=", ";", ",", "//", "#", "가", "漢", "😀", " ", "  ", "=>", "{}", "()", "[]"] as const    ; // cjk-test-data
+const COMMENTARY = ["note: a = b;", "x : y , z", "가나다 = 1", "😀 {}", "k: v; // nested", "a  =  b"] as const      ; // cjk-test-data
 
 export interface MutatorSyntax {
 	readonly syntax  : CodeSyntax ;

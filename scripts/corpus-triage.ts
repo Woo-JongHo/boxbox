@@ -1,14 +1,14 @@
 #!/usr/bin/env bun
 /**
- * 코퍼스 AI 사전 판정 (M1.8 S3.5 ③, design §6 L3). 상위 유형의 대표 사례(전·후)를 AI에게 보여주고
- * 판정 후보와 근거를 받아 제안 대기열(~/.cache/xxx/corpus/review-queue.jsonl)에 쓴다.
- * **제안일 뿐이다.** 판정 기록(corpus/verdicts.jsonl)은 사람이 `corpus-judge.ts --verdict`로만 쓴다(헌장 불변식 8).
+ * Corpus AI pre-verdict (M1.8 S3.5 ③, design §6 L3). Shows the AI representative cases (before/after) of the top types
+ * and writes the proposed verdicts and reasons to the suggestion queue (~/.cache/xxx/corpus/review-queue.jsonl).
+ * **It is only a suggestion.** The verdict record (corpus/verdicts.jsonl) is written only by a human via `corpus-judge.ts --verdict` (charter invariant 8).
  *
- * 외부 AI로 보내는 코드는 corpus/manifest.json의 공개 소스뿐이다. local.json의 비공개 소스는 보내지 않는다.
+ * Only public sources in corpus/manifest.json are sent to the external AI. Private sources in local.json are never sent.
  *
- * 사용법:
+ * Usage:
  *   bun scripts/corpus-triage.ts [--limit 20] [--dry-run]
- *   --dry-run: AI를 부르지 않고 프롬프트 파일만 만든다.
+ *   --dry-run: writes only the prompt files without calling the AI.
  */
 import      { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs"                ;
 import      { tmpdir                                               } from "node:os"                ;
@@ -51,7 +51,7 @@ Answer with one JSON object per line and nothing else:
 {"rank": <number>, "verdict": "<verdict>", "reason": "<one or two sentences in Korean>", "flags": [<flags>]}
 `;
 
-/** 유형 하나의 프롬프트 조각. 공개 소스의 대표 사례만 넣는다. 보낼 사례가 없으면 undefined. */
+/** Prompt fragment for one type. Only representative cases from public sources are included. undefined if there is nothing to send. */
 function typeBlock(type: CensusType, rank: number, publicSources: ReadonlySet<string>): string | undefined {
 	const dir = join(OUT, type.language, typeSlug(type.signature, rank));
 	if (!existsSync(join(dir, "context.txt"))) return undefined;
@@ -70,7 +70,7 @@ function typeBlock(type: CensusType, rank: number, publicSources: ReadonlySet<st
 	return parts.length > 1 ? parts.join("\n") : undefined;
 }
 
-/** AI 출력에서 판정 줄만 골라 검증한다. 형식이 틀리거나 모르는 순위·판정·플래그는 버린다. */
+/** Picks and validates only verdict lines from the AI output. Malformed lines and unknown ranks, verdicts or flags are dropped. */
 export function parseSuggestions(output: string, ranks: ReadonlyMap<number, string>, reviewer: string, date: string): readonly Suggestion[] {
 	const suggestions: Suggestion[] = [];
 	for (const line of output.split("\n")) {
