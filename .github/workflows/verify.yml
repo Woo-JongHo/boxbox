@@ -45,4 +45,4 @@ jobs:
       # Every language parser must be present in CI: a missing parser fails instead of skipping.
       - run: bun run check
         env:
-          XXX_REQUIRE_PARSERS: "1"
+          BOXBOX_REQUIRE_PARSERS: "1"

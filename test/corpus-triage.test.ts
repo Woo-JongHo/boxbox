@@ -1,6 +1,6 @@
-import      { describe, expect, test           } from "bun:test"                    ;
-import      { latestSuggestions, renderSummary } from "../scripts/corpus-judge.ts"  ;
-import      { parseSuggestions                 } from "../scripts/corpus-triage.ts" ;
+import      { describe, expect, test           } from "bun:test"                              ;
+import      { latestSuggestions, renderSummary } from "../development/tools/corpus-judge.ts"  ;
+import      { parseSuggestions                 } from "../development/tools/corpus-triage.ts" ;
 
 const SIG_A = "typescript|Block|declaration-equals|equals>semicolon|d1" ;
 const SIG_B = "python||table|key>colon>value>comma|d2"                  ;

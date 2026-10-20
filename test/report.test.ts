@@ -126,8 +126,8 @@ describe("check report — output", () => {
 	});
 
 	test("CLI: checking the Python fixture in check mode passes the safety checks with exit code 0", () => {
-		const run    = spawnSync(process.execPath, [join(ROOT, "skills/xxx/scripts/report.ts"), "--file", "skills/xxx/fixtures/python/tables.py", "--json"], { cwd: ROOT, encoding: "utf8" }) ;
-		const report = JSON.parse(run.stdout) as ReturnType<typeof buildReport>                                                                                                               ;
+		const run    = spawnSync(process.execPath, [join(ROOT, "product/engine/report.ts"), "--file", "test/fixtures/python/tables.py", "--json"], { cwd: ROOT, encoding: "utf8" }) ;
+		const report = JSON.parse(run.stdout) as ReturnType<typeof buildReport>                                                                                                     ;
 
 		expect(run.status                          ).toBe     (0   ) ;
 		expect(report.ok                           ).toBe     (true) ;
@@ -169,18 +169,18 @@ describe("check report — baseline comparison", () => {
 	});
 
 	test("CLI: with --baseline only alarms introduced by the edit are new, and with --baseline none all are new", () => {
-		const dir     = mkdtempSync(join(tmpdir(), "xxx-report-"))                               ;
-		const fixture = readFileSync(join(ROOT, "skills/xxx/fixtures/python/tables.py"), "utf8") ;
+		const dir     = mkdtempSync(join(tmpdir(), "boxbox-report-"))                      ;
+		const fixture = readFileSync(join(ROOT, "test/fixtures/python/tables.py"), "utf8") ;
 		writeFileSync(join(dir, "base.py"), fixture);
 		writeFileSync(join(dir, "cur.py" ), fixture.replace('    "port": 8080,', `    "port": 8080,\n    "description": "${"x".repeat(120)}",`)) ;
-		const run     = (...extra: readonly string[]) => JSON.parse(spawnSync(process.execPath, [join(ROOT, "skills/xxx/scripts/report.ts"), "--file", "cur.py", "--json", ...extra], { cwd: dir, encoding: "utf8" }).stdout) as ReturnType<typeof buildReport> ;
-		const edited  = run("--baseline", "base.py")                                                                                                                                                                                                            ;
-		const created = run("--baseline", "none"   )                                                                                                                                                                                                            ;
+		const run     = (...extra: readonly string[]) => JSON.parse(spawnSync(process.execPath, [join(ROOT, "product/engine/report.ts"), "--file", "cur.py", "--json", ...extra], { cwd: dir, encoding: "utf8" }).stdout) as ReturnType<typeof buildReport> ;
+		const edited  = run("--baseline", "base.py")                                                                                                                                                                                                        ;
+		const created = run("--baseline", "none"   )                                                                                                                                                                                                        ;
 
 		expect(edited.comparison?.newAlarms.map(alarm => alarm.id).sort()).toEqual(["A1", "A3"]            ) ;
 		expect(edited.comparison?.existingAlarms.length                  ).toBe   (edited.alarms.length - 2) ;
 		expect(created.comparison?.newAlarms.length                      ).toBe   (created.alarms.length   ) ;
-		const missing = spawnSync(process.execPath, [join(ROOT, "skills/xxx/scripts/report.ts"), "--file", "cur.py", "--baseline", "nope.py"], { cwd: dir, encoding: "utf8" });
+		const missing = spawnSync(process.execPath, [join(ROOT, "product/engine/report.ts"), "--file", "cur.py", "--baseline", "nope.py"], { cwd: dir, encoding: "utf8" });
 
 		expect(missing.status).not.toBe(0);
 		expect(missing.stderr).toContain("baseline not found");

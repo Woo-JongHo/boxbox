@@ -6,7 +6,7 @@ import      { JAVASCRIPT_ALIGNER, JAVASCRIPT_SYNTAX } from "@/javascript/profile
 
 defineLanguageSuite({
 	aligner     : JAVASCRIPT_ALIGNER,
-	fixturesDir : new URL("../skills/xxx/fixtures/javascript/", import.meta.url).pathname,
+	fixturesDir : new URL("../test/fixtures/javascript/", import.meta.url).pathname,
 	tableFile   : "tables.js",
 	alignedFile : "tables.aligned.js",
 	trickyFile  : "tricky.js",

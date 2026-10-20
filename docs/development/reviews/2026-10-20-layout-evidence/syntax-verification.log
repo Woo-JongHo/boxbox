@@ -1,0 +1,27 @@
+{
+  "typescript": {
+    "examples": 785,
+    "expectedSyntaxRejections": 8,
+    "parseFailures": [],
+    "cataloguedNonDocumentationNodes": 148,
+    "observedNonDocumentationNodes": 139,
+    "missingNonDocumentationNodes": [
+      "SyntheticExpression",
+      "MissingDeclaration",
+      "SyntaxList",
+      "JSTypeAliasDeclaration",
+      "JSImportDeclaration",
+      "NotEmittedStatement",
+      "PartiallyEmittedExpression",
+      "SyntheticReferenceExpression",
+      "NotEmittedTypeElement"
+    ]
+  },
+  "python": {
+    "examples": 722,
+    "expectedSyntaxRejections": 8,
+    "concreteKinds": 113,
+    "observedConcreteKinds": 113,
+    "missingConcreteKinds": []
+  }
+}

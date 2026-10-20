@@ -5,7 +5,7 @@ import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
 	aligner     : C_ALIGNER,
-	fixturesDir : new URL("../skills/xxx/fixtures/c/", import.meta.url).pathname,
+	fixturesDir : new URL("../test/fixtures/c/", import.meta.url).pathname,
 	tableFile   : "tables.c",
 	alignedFile : "tables.aligned.c",
 	trickyFile  : "tricky.c",

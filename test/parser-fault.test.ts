@@ -11,16 +11,16 @@ import      { tmpdir                                      } from "node:os"      
 import      { join, resolve                               } from "node:path"               ;
 import      { parserAvailable                             } from "@/common/parse-check.ts" ;
 
-const ROOT   = resolve(import.meta.dir, "..")                                           ;
-const BUN    = process.execPath                                                         ;
-const SCRIPT = join(ROOT, "skills/xxx/scripts/python/06_align-tables.ts")               ;
-const MODULE = join(ROOT, "skills/xxx/scripts/common/parse-check.ts")                   ;
-const SOURCE = readFileSync(join(ROOT, "skills/xxx/fixtures/python/tables.py"), "utf8") ;
+const ROOT   = resolve(import.meta.dir, "..")                                     ;
+const BUN    = process.execPath                                                   ;
+const SCRIPT = join(ROOT, "product/engine/python/06_align-tables.ts")             ;
+const MODULE = join(ROOT, "product/engine/common/parse-check.ts")                 ;
+const SOURCE = readFileSync(join(ROOT, "test/fixtures/python/tables.py"), "utf8") ;
 
 let scratch = "";
 
 beforeAll(() => {
-	scratch = mkdtempSync(join(tmpdir(), "xxx-parser-fault-"));
+	scratch = mkdtempSync(join(tmpdir(), "boxbox-parser-fault-"));
 });
 
 afterAll(() => {
@@ -40,7 +40,7 @@ function runCompare(mode: string, timeoutMs = 60_000, language = "python", tool 
 	const path    = fakePath(mode, tool)                                                                                                                                                                                                                                                          ;
 	const program = `import { compareParse } from ${JSON.stringify(MODULE)};\ntry { compareParse(${JSON.stringify(language)}, "a = 1\\n", "a  = 1\\n", { timeoutMs: ${timeoutMs} }); } catch (error) { console.error(error instanceof Error ? error.message : String(error)); process.exit(7); }` ;
 	return Bun.spawnSync([BUN, "-e", program], {
-		env    : { ...process.env, FAKE_MODE: mode, PATH: path, XXX_REQUIRE_PARSERS: "0" },
+		env    : { ...process.env, FAKE_MODE: mode, PATH: path, BOXBOX_REQUIRE_PARSERS: "0" },
 		stderr : "pipe",
 		stdout : "pipe",
 	});
@@ -49,7 +49,7 @@ function runCompare(mode: string, timeoutMs = 60_000, language = "python", tool 
 function runCli(path: string, target: string): ReturnType<typeof Bun.spawnSync> {
 	return Bun.spawnSync([BUN, SCRIPT, "--file", target, "--write"], {
 		cwd    : ROOT,
-		env    : { ...process.env, FAKE_MODE: "failure", PATH: path, XXX_REQUIRE_PARSERS: "0" },
+		env    : { ...process.env, FAKE_MODE: "failure", PATH: path, BOXBOX_REQUIRE_PARSERS: "0" },
 		stderr : "pipe",
 		stdout : "pipe",
 	});
@@ -78,7 +78,7 @@ describe("parser faults close before writing", () => {
 		expect(run.stderr?.toString()).toContain("unrecognized status");
 	});
 
-	test("XXX_REQUIRE_PARSERS=0 cannot bypass writing without a parser", () => {
+	test("BOXBOX_REQUIRE_PARSERS=0 cannot bypass writing without a parser", () => {
 		const target = join(scratch, "missing.py") ;
 		const empty  = join(scratch, "empty-path") ;
 		mkdirSync(empty);

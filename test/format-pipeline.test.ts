@@ -12,7 +12,7 @@ import      { runFormatPipeline                                } from "@/common/
 const workspaces: string[] = [];
 
 function workspace(): string {
-	const root = mkdtempSync(join(import.meta.dir, "xxx-format-pipeline-"));
+	const root = mkdtempSync(join(import.meta.dir, "boxbox-format-pipeline-"));
 	workspaces.push(root);
 	mkdirSync(join(root, "src"));
 	mkdirSync(join(root, "docs"));
@@ -49,7 +49,7 @@ function formatter(root: string, body: string): { readonly command: string; read
 }
 
 function leftovers(root: string): readonly string[] {
-	return readdirSync(join(root, "src")).filter(name => name.includes("xxx-stage") || name.includes("xxx-write.lock"));
+	return readdirSync(join(root, "src")).filter(name => name.includes("boxbox-stage") || name.includes("boxbox-write.lock"));
 }
 
 afterEach(() => {
@@ -84,7 +84,7 @@ for (const scenario of [
 	const second = await runFormatPipeline(options) ;
 
 	expect(first.formatterChanged             ).toBe   (true ) ;
-	expect(first.xxxChanged                   ).toBe   (true ) ;
+	expect(first.boxboxChanged                ).toBe   (true ) ;
 	expect(first.fixedPoint                   ).toBe   (true ) ;
 	expect(first.safety.parserChecked         ).toBe   (true ) ;
 	expect(second.written                     ).toBe   (false) ;
@@ -93,9 +93,9 @@ for (const scenario of [
 }, 60_000);
 
 test("the TypeScript pipeline writes the same result even with a symlink in the root path", async () => {
-	const root   = workspace()                                                                     ;
-	const linked = join(import.meta.dir, `xxx-format-link-${Math.random().toString(16).slice(2)}`) ;
-	const target = join(root, "src/sample.ts")                                                     ;
+	const root   = workspace()                                                                        ;
+	const linked = join(import.meta.dir, `boxbox-format-link-${Math.random().toString(16).slice(2)}`) ;
+	const target = join(root, "src/sample.ts")                                                        ;
 	symlinkSync(root, linked);
 	workspaces.push(linked);
 	writeFileSync(target, "const a=fn(1);\nconst longer=fn(22);\nconst mid=fn(333);\n");
@@ -155,7 +155,7 @@ describe("format pipeline fails closed", () => {
 	test("a missing executable and an approval refusal each close before writing", async () => {
 		const root    = workspace()                          ;
 		const missing = pythonCase(root, `process.exit(0);`) ;
-		await expect(runFormatPipeline({ ...missing.options, formatter: { command: "xxx-no-such-formatter", args: ["{file}"], timeoutMs: 100 } })).rejects.toThrow("executable not found");
+		await expect(runFormatPipeline({ ...missing.options, formatter: { command: "boxbox-no-such-formatter", args: ["{file}"], timeoutMs: 100 } })).rejects.toThrow("executable not found");
 		const denied = pythonCase(root, `process.exit(0);`, "rejected");
 		await expect(runFormatPipeline(denied.options)).rejects.toThrow("approval denied");
 		expect(leftovers(root)).toEqual([]);

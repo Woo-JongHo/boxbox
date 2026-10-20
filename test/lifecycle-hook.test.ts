@@ -1,18 +1,18 @@
-import { afterEach, expect, test                 } from "bun:test"           ;
-import { existsSync, mkdtempSync, readdirSync     } from "node:fs"            ;
-import { rmSync, writeFileSync                    } from "node:fs"            ;
-import { join                                     } from "node:path"          ;
-import { spawnSync                                } from "node:child_process" ;
+import      { afterEach, expect, test              } from "bun:test"           ;
+import      { existsSync, mkdtempSync, readdirSync } from "node:fs"            ;
+import      { rmSync, writeFileSync                } from "node:fs"            ;
+import      { join                                 } from "node:path"          ;
+import      { spawnSync                            } from "node:child_process" ;
 
-const CLI                   = join(import.meta.dir, "../packaging/cli/entry.ts") ;
-const workspaces : string[] = []                                                 ;
+const CLI                   = join(import.meta.dir, "../product/packages/cli/entry.ts") ;
+const workspaces : string[] = []                                                        ;
 
 afterEach(() => {
 	for (const root of workspaces.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
 function project(): string {
-	const root = mkdtempSync(join(import.meta.dir, "xxx-lifecycle-hook-"));
+	const root = mkdtempSync(join(import.meta.dir, "boxbox-lifecycle-hook-"));
 	workspaces.push(root);
 	return root;
 }
@@ -52,7 +52,7 @@ test("plugin hooks use the cwd input and write records to the plugin data folder
 	writeFileSync(join(root, "sample.py"), "a = 1\nlonger = 22\nmid = 333\n");
 
 	expect(hook(root, "post", { session_id: "three", tool_name: "apply_patch" }, data).decision).toBe("block") ;
-	expect(existsSync(join(root, ".xxx"))                                                      ).toBe(false  ) ;
+	expect(existsSync(join(root, ".boxbox"))                                                   ).toBe(false  ) ;
 	expect(readdirSync(join(data, "hooks")).length                                             ).toBe(1      ) ;
 }, 60_000);
 

@@ -3,7 +3,9 @@ node_modules/
 stress/
 .video_agent/
 TEST_COMPLETED/
-corpus/local.json
+development/corpus/local.json
 eval/
-.xxx/cache/
+.boxbox/cache/
 dist/
+.boxbox/runs/
+.boxbox/hooks/
