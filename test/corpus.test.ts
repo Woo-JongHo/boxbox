@@ -1,7 +1,7 @@
-import      { describe, expect, test   } from "bun:test"                   ;
-import      { existsSync, readFileSync } from "node:fs"                    ;
-import      { resolve                  } from "node:path"                  ;
-import      { mergeSources             } from "../scripts/corpus-fetch.ts" ;
+import      { describe, expect, test   } from "bun:test"                             ;
+import      { existsSync, readFileSync } from "node:fs"                              ;
+import      { resolve                  } from "node:path"                            ;
+import      { mergeSources             } from "../development/tools/corpus-fetch.ts" ;
 
 const ROOT = resolve(import.meta.dir, "..");
 
@@ -15,7 +15,7 @@ interface CorpusSource {
 }
 
 const readSources = (name: string): readonly CorpusSource[] => {
-	const path = resolve(ROOT, "corpus", name)                        ;
+	const path = resolve(ROOT, "development", "corpus", name)                        ;
 	if (!existsSync(path)) return []                                  ;
 	const manifest = JSON.parse(readFileSync(path, "utf8")) as { readonly schemaVersion: unknown; readonly sources: readonly CorpusSource[] };
 	expect(manifest.schemaVersion).toBe(1)                            ;

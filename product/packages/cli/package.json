@@ -1,0 +1,24 @@
+{
+	"name": "boxbox",
+	"version": "@BOXBOX_VERSION@",
+	"private": true,
+	"description": "Development candidate for the BoxBox TypeScript and Python command-line engine",
+	"type": "module",
+	"engines": {
+		"node": ">=22.22.3"
+	},
+	"files": [
+		"dist/cli.js",
+		"rules/presets/recommended/conventions.jsonl",
+		"rules/presets/recommended/examples.jsonl",
+		"rules/presets/recommended/decisions.jsonl",
+		"rules/presets/recommended/docs/public",
+		"README.md"
+	],
+	"bin": {
+		"boxbox": "dist/cli.js"
+	},
+	"dependencies": {
+		"typescript": "7.0.2"
+	}
+}

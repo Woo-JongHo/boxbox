@@ -3,9 +3,9 @@ import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs" 
 import      { join, relative, resolve                          } from "node:path"                          ;
 import      { preservesTokens                                  } from "@/typescript/token-preservation.ts" ;
 
-const root                 = resolve(import.meta.dir, "..")                                    ;
-const script               = resolve(root, "skills/xxx/scripts/typescript/06_align-tables.ts") ;
-const workspaces: string[] = []                                                                ;
+const root                 = resolve(import.meta.dir, "..")                                ;
+const script               = resolve(root, "product/engine/typescript/06_align-tables.ts") ;
+const workspaces: string[] = []                                                            ;
 
 /** Every test here spawns the aligner, which starts a TypeScript 7 server — a busy machine can push one invocation past Bun's 5 s default. */
 const CLI_TIMEOUT = 60_000                                                              ;
@@ -71,9 +71,9 @@ describe("typescript object row alignment", () => {
 
 describe("typescript whitespace-only guarantee", () => {
 	slowTest("the fixture aligns with an identical token stream and no refused table", () => {
-		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-"))                   ;
-		const target    = join(workspace, "table-kinds.ts")                                         ;
-		const before    = readFileSync(resolve(root, "skills/xxx/fixtures/table-kinds.ts"), "utf8") ;
+		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-"))             ;
+		const target    = join(workspace, "table-kinds.ts")                                   ;
+		const before    = readFileSync(resolve(root, "test/fixtures/table-kinds.ts"), "utf8") ;
 		workspaces.push(workspace);
 		writeFileSync(target, before);
 

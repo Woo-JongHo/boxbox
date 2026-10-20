@@ -21,7 +21,7 @@ const root                  = resolve(import.meta.dir, "..") ;
 const workspaces : string[] = []                             ;
 
 function workspace(): string {
-	const value = mkdtempSync(join(import.meta.dir, "xxx-node-artifact-"));
+	const value = mkdtempSync(join(import.meta.dir, "boxbox-node-artifact-"));
 	workspaces.push(value);
 	return value;
 }
@@ -68,7 +68,7 @@ describe("Node-only local package artifact", () => {
 		const install = run("npm", ["install", "--offline", "--ignore-scripts", "--no-audit", "--no-fund", tarball], { cwd: project }) ;
 		expectSuccess(install);
 
-		const installed = join(project, "node_modules/xxx")                                                                                                                                         ;
+		const installed = join(project, "node_modules/boxbox")                                                                                                                                      ;
 		const runner    = join(installed, "dist/internal-runner.js")                                                                                                                                ;
 		const manifest  = JSON.parse(readFileSync(join(installed, "package.json"), "utf8")) as { readonly private: boolean; readonly dependencies: Record<string, string>; readonly bin?: unknown } ;
 		expect(manifest.private).toBe(true);

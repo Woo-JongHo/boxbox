@@ -1,11 +1,11 @@
-import      { describe, expect, test } from "bun:test"                      ;
+import      { describe, expect, test } from "bun:test"                                ;
 import      {
               measuresOf           ,
               patternNameOf        ,
               patternSharesOf      ,
               unseenShare          ,
               verdictOf            ,
-                                     } from "../scripts/corpus-measures.ts" ;
+                                     } from "../development/tools/corpus-measures.ts" ;
 
 const TS  = "typescript|Block|declaration-equals|equals>semicolon|d1"      ;
 const TS2 = "typescript|SourceFile|declaration-equals|equals>semicolon|d0" ;

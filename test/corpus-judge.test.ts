@@ -1,5 +1,5 @@
-import      { describe, expect, test                  } from "bun:test"                   ;
-import      { latestVerdicts, renderSummary, typeSlug } from "../scripts/corpus-judge.ts" ;
+import      { describe, expect, test                  } from "bun:test"                             ;
+import      { latestVerdicts, renderSummary, typeSlug } from "../development/tools/corpus-judge.ts" ;
 
 const SIG_A = "typescript|Block|declaration-equals|equals>semicolon|d1" ;
 const SIG_B = "python||table|key>colon>value>comma|d2"                  ;

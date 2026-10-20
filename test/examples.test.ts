@@ -1,4 +1,4 @@
-import      { describe, expect, test                  } from "bun:test"                     ;
+import      { describe, expect, test                  } from "bun:test"                               ;
 import      {
               contentHashOf                         ,
               sectionHash                           ,
@@ -6,8 +6,8 @@ import      {
               validateDecision                      ,
               validateExample                       ,
               type Example                          ,
-                                                      } from "@/common/examples.ts"         ;
-import      { checkDecision, checkExample, loadPreset } from "../scripts/examples-check.ts" ;
+                                                      } from "@/common/examples.ts"                   ;
+import      { checkDecision, checkExample, loadPreset } from "../development/tools/examples-check.ts" ;
 
 function example(partial: Partial<Example> & Pick<Example, "id" | "before" | "after">): Example {
 	return {
@@ -74,7 +74,7 @@ describe("decision records", () => {
 	});
 
 	test("reports that re-approval is needed when the referenced section changes", () => {
-		const decision = validateDecision({ schemaVersion: 1, id: "d", kind: "rule", layer: "grammar", ref: "skills/xxx/references/grammar.md#1. Four units", docHash: "sha256:stale", examples: [], approvedBy: "user", date: "2026-09-30" }, "t");
+		const decision = validateDecision({ schemaVersion: 1, id: "d", kind: "rule", layer: "grammar", ref: "product/rules/references/grammar.md#1. Four units", docHash: "sha256:stale", examples: [], approvedBy: "user", date: "2026-09-30" }, "t");
 
 		expect(checkDecision(decision)[0]).toContain("re-approve");
 	});

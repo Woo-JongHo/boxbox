@@ -74,9 +74,9 @@ describe("code shape observation", () => {
 	test("reports a broken file as partial and keeps the last completed cache", async () => {
 		const root     = fixture({ "a.ts": "function ok() { return 1; }\n" }) ;
 		const complete = await observeShapes({ root, files: ["a.ts"] })       ;
-		const cache    = join(root, ".xxx/cache/shape.jsonl")                 ;
+		const cache    = join(root, ".boxbox/cache/shape.jsonl")              ;
 		expect(readFileSync(cache, "utf8")).toBe(complete.jsonl);
-		expect(readFileSync(join(root, ".xxx/cache/.gitignore"), "utf8")).toBe("*\n");
+		expect(readFileSync(join(root, ".boxbox/cache/.gitignore"), "utf8")).toBe("*\n");
 		writeFileSync(join(root, "a.ts"), "function broken( {\n");
 		const partial = await observeShapes({ root, files: ["a.ts"] });
 		expect(partial.header.completion.complete).toBe(false         ) ;
@@ -88,11 +88,11 @@ describe("code shape observation", () => {
 		const root  = fixture({ "a.ts": "function first() {}\n" })   ;
 		const first = await observeShapes({ root, files: ["a.ts"] }) ;
 		await observeShapes({ root, files: ["a.ts"] });
-		expect(existsSync(join(root, ".xxx/cache/shape.previous.jsonl"))).toBe(false);
+		expect(existsSync(join(root, ".boxbox/cache/shape.previous.jsonl"))).toBe(false);
 		writeFileSync(join(root, "a.ts"), "function second() {}\n");
 		await observeShapes({ root, files: ["a.ts"] });
-		expect(readFileSync(join(root, ".xxx/cache/shape.previous.jsonl"), "utf8")).toBe(first.jsonl);
-		expect(existsSync(join(root, ".xxx/cache/shape.lock"))).toBe(false);
+		expect(readFileSync(join(root, ".boxbox/cache/shape.previous.jsonl"), "utf8")).toBe(first.jsonl);
+		expect(existsSync(join(root, ".boxbox/cache/shape.lock"))).toBe(false);
 	});
 
 	test("arrows and bodiless declarations do not become units and are counted as unsupported", async () => {
@@ -104,14 +104,14 @@ describe("code shape observation", () => {
 	});
 
 	test("only reads the source and approval DB and refuses paths outside the root and cache symbolic links", async () => {
-		const root           = fixture({ "a.ts": "function kept() {}\n", ".xxx/conventions.jsonl": "convention\n", ".xxx/examples.jsonl": "example\n", ".xxx/decisions.jsonl": "decision\n" }) ;
-		const sourceBefore   = readFileSync(join(root, "a.ts"), "utf8")                                                                                                                        ;
-		const approvedBefore = ["conventions.jsonl", "examples.jsonl", "decisions.jsonl"].map(name => readFileSync(join(root, ".xxx", name), "utf8"))                                          ;
+		const root           = fixture({ "a.ts": "function kept() {}\n", ".boxbox/conventions.jsonl": "convention\n", ".boxbox/examples.jsonl": "example\n", ".boxbox/decisions.jsonl": "decision\n" }) ;
+		const sourceBefore   = readFileSync(join(root, "a.ts"), "utf8")                                                                                                                                 ;
+		const approvedBefore = ["conventions.jsonl", "examples.jsonl", "decisions.jsonl"].map(name => readFileSync(join(root, ".boxbox", name), "utf8"))                                                ;
 		await expect(observeShapes({ root, files: ["../outside.ts"], writeCache: false })).rejects.toThrow("inside the repository");
-		symlinkSync(realpathSync(root), join(root, ".xxx/cache"));
+		symlinkSync(realpathSync(root), join(root, ".boxbox/cache"));
 		await expect(observeShapes({ root, files: ["a.ts"] })).rejects.toThrow("not a real directory");
-		expect(readFileSync(join(root, "a.ts"), "utf8")                                                                              ).toBe   (sourceBefore  ) ;
-		expect(["conventions.jsonl", "examples.jsonl", "decisions.jsonl"].map(name => readFileSync(join(root, ".xxx", name), "utf8"))).toEqual(approvedBefore) ;
-		expect(existsSync(join(root, ".xxx/cache/shape.jsonl"))                                                                      ).toBe   (false         ) ;
+		expect(readFileSync(join(root, "a.ts"), "utf8")                                                                                 ).toBe   (sourceBefore  ) ;
+		expect(["conventions.jsonl", "examples.jsonl", "decisions.jsonl"].map(name => readFileSync(join(root, ".boxbox", name), "utf8"))).toEqual(approvedBefore) ;
+		expect(existsSync(join(root, ".boxbox/cache/shape.jsonl"))                                                                      ).toBe   (false         ) ;
 	});
 });

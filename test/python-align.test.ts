@@ -6,7 +6,7 @@ import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
 	aligner     : PYTHON_ALIGNER,
-	fixturesDir : new URL("../skills/xxx/fixtures/python/", import.meta.url).pathname,
+	fixturesDir : new URL("../test/fixtures/python/", import.meta.url).pathname,
 	tableFile   : "tables.py",
 	alignedFile : "tables.aligned.py",
 	trickyFile  : "tricky.py",

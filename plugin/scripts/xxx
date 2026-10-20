@@ -1,4 +1,0 @@
-#!/bin/sh
-# Runs the engine CLI (npm package) at an exact version. The TS engine's typescript@7 native binary cannot
-# live in a plugin folder, so the plugin carries only this shim. scripts/sync-plugin.ts keeps the version in sync.
-exec npx --yes "xxx@0.2.0" "$@"

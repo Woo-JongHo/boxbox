@@ -1,0 +1,6286 @@
+{
+	"schemaVersion": 1,
+	"purpose": "research-inventory-not-approved-rules",
+	"scope": [
+		"typescript",
+		"python"
+	],
+	"coverageMeaning": "Parser inventory entries collected; semantic roles, variants, examples and alignment decisions remain separate review work.",
+	"typescript": {
+		"version": "7.0.2",
+		"source": "typescript/unstable/ast.SyntaxKind in the installed exact-version package",
+		"kinds": [
+			{
+				"id": "typescript.syntax.Unknown",
+				"name": "Unknown",
+				"value": 0,
+				"category": "token-or-trivia",
+				"aliases": [
+					"FirstToken"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.EndOfFile",
+				"name": "EndOfFile",
+				"value": 1,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SingleLineCommentTrivia",
+				"name": "SingleLineCommentTrivia",
+				"value": 2,
+				"category": "token-or-trivia",
+				"aliases": [
+					"FirstTriviaToken"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.MultiLineCommentTrivia",
+				"name": "MultiLineCommentTrivia",
+				"value": 3,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NewLineTrivia",
+				"name": "NewLineTrivia",
+				"value": 4,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.WhitespaceTrivia",
+				"name": "WhitespaceTrivia",
+				"value": 5,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ConflictMarkerTrivia",
+				"name": "ConflictMarkerTrivia",
+				"value": 6,
+				"category": "token-or-trivia",
+				"aliases": [
+					"LastTriviaToken"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NonTextFileMarkerTrivia",
+				"name": "NonTextFileMarkerTrivia",
+				"value": 7,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NumericLiteral",
+				"name": "NumericLiteral",
+				"value": 8,
+				"category": "token-or-trivia",
+				"aliases": [
+					"FirstLiteralToken"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.BigIntLiteral",
+				"name": "BigIntLiteral",
+				"value": 9,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.StringLiteral",
+				"name": "StringLiteral",
+				"value": 10,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JsxText",
+				"name": "JsxText",
+				"value": 11,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JsxTextAllWhiteSpaces",
+				"name": "JsxTextAllWhiteSpaces",
+				"value": 12,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.RegularExpressionLiteral",
+				"name": "RegularExpressionLiteral",
+				"value": 13,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NoSubstitutionTemplateLiteral",
+				"name": "NoSubstitutionTemplateLiteral",
+				"value": 14,
+				"category": "token-or-trivia",
+				"aliases": [
+					"LastLiteralToken",
+					"FirstTemplateToken"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TemplateHead",
+				"name": "TemplateHead",
+				"value": 15,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TemplateMiddle",
+				"name": "TemplateMiddle",
+				"value": 16,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TemplateTail",
+				"name": "TemplateTail",
+				"value": 17,
+				"category": "token-or-trivia",
+				"aliases": [
+					"LastTemplateToken"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.OpenBraceToken",
+				"name": "OpenBraceToken",
+				"value": 18,
+				"category": "token-or-trivia",
+				"aliases": [
+					"FirstPunctuation"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.CloseBraceToken",
+				"name": "CloseBraceToken",
+				"value": 19,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.OpenParenToken",
+				"name": "OpenParenToken",
+				"value": 20,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.CloseParenToken",
+				"name": "CloseParenToken",
+				"value": 21,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.OpenBracketToken",
+				"name": "OpenBracketToken",
+				"value": 22,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.CloseBracketToken",
+				"name": "CloseBracketToken",
+				"value": 23,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.DotToken",
+				"name": "DotToken",
+				"value": 24,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.DotDotDotToken",
+				"name": "DotDotDotToken",
+				"value": 25,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SemicolonToken",
+				"name": "SemicolonToken",
+				"value": 26,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.CommaToken",
+				"name": "CommaToken",
+				"value": 27,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.QuestionDotToken",
+				"name": "QuestionDotToken",
+				"value": 28,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.LessThanToken",
+				"name": "LessThanToken",
+				"value": 29,
+				"category": "token-or-trivia",
+				"aliases": [
+					"FirstBinaryOperator"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.LessThanSlashToken",
+				"name": "LessThanSlashToken",
+				"value": 30,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.GreaterThanToken",
+				"name": "GreaterThanToken",
+				"value": 31,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.LessThanEqualsToken",
+				"name": "LessThanEqualsToken",
+				"value": 32,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.GreaterThanEqualsToken",
+				"name": "GreaterThanEqualsToken",
+				"value": 33,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.EqualsEqualsToken",
+				"name": "EqualsEqualsToken",
+				"value": 34,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ExclamationEqualsToken",
+				"name": "ExclamationEqualsToken",
+				"value": 35,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.EqualsEqualsEqualsToken",
+				"name": "EqualsEqualsEqualsToken",
+				"value": 36,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ExclamationEqualsEqualsToken",
+				"name": "ExclamationEqualsEqualsToken",
+				"value": 37,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.EqualsGreaterThanToken",
+				"name": "EqualsGreaterThanToken",
+				"value": 38,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.PlusToken",
+				"name": "PlusToken",
+				"value": 39,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.MinusToken",
+				"name": "MinusToken",
+				"value": 40,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AsteriskToken",
+				"name": "AsteriskToken",
+				"value": 41,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AsteriskAsteriskToken",
+				"name": "AsteriskAsteriskToken",
+				"value": 42,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SlashToken",
+				"name": "SlashToken",
+				"value": 43,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.PercentToken",
+				"name": "PercentToken",
+				"value": 44,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.PlusPlusToken",
+				"name": "PlusPlusToken",
+				"value": 45,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.MinusMinusToken",
+				"name": "MinusMinusToken",
+				"value": 46,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.LessThanLessThanToken",
+				"name": "LessThanLessThanToken",
+				"value": 47,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.GreaterThanGreaterThanToken",
+				"name": "GreaterThanGreaterThanToken",
+				"value": 48,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.GreaterThanGreaterThanGreaterThanToken",
+				"name": "GreaterThanGreaterThanGreaterThanToken",
+				"value": 49,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AmpersandToken",
+				"name": "AmpersandToken",
+				"value": 50,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.BarToken",
+				"name": "BarToken",
+				"value": 51,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.CaretToken",
+				"name": "CaretToken",
+				"value": 52,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ExclamationToken",
+				"name": "ExclamationToken",
+				"value": 53,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TildeToken",
+				"name": "TildeToken",
+				"value": 54,
+				"category": "token-or-trivia",
+				"aliases": [
+					"LastUnaryOperator"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AmpersandAmpersandToken",
+				"name": "AmpersandAmpersandToken",
+				"value": 55,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.BarBarToken",
+				"name": "BarBarToken",
+				"value": 56,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.QuestionToken",
+				"name": "QuestionToken",
+				"value": 57,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ColonToken",
+				"name": "ColonToken",
+				"value": 58,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AtToken",
+				"name": "AtToken",
+				"value": 59,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.QuestionQuestionToken",
+				"name": "QuestionQuestionToken",
+				"value": 60,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.BacktickToken",
+				"name": "BacktickToken",
+				"value": 61,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.HashToken",
+				"name": "HashToken",
+				"value": 62,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.EqualsToken",
+				"name": "EqualsToken",
+				"value": 63,
+				"category": "token-or-trivia",
+				"aliases": [
+					"FirstAssignment"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.PlusEqualsToken",
+				"name": "PlusEqualsToken",
+				"value": 64,
+				"category": "token-or-trivia",
+				"aliases": [
+					"FirstCompoundAssignment"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.MinusEqualsToken",
+				"name": "MinusEqualsToken",
+				"value": 65,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AsteriskEqualsToken",
+				"name": "AsteriskEqualsToken",
+				"value": 66,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AsteriskAsteriskEqualsToken",
+				"name": "AsteriskAsteriskEqualsToken",
+				"value": 67,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SlashEqualsToken",
+				"name": "SlashEqualsToken",
+				"value": 68,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.PercentEqualsToken",
+				"name": "PercentEqualsToken",
+				"value": 69,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.LessThanLessThanEqualsToken",
+				"name": "LessThanLessThanEqualsToken",
+				"value": 70,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.GreaterThanGreaterThanEqualsToken",
+				"name": "GreaterThanGreaterThanEqualsToken",
+				"value": 71,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.GreaterThanGreaterThanGreaterThanEqualsToken",
+				"name": "GreaterThanGreaterThanGreaterThanEqualsToken",
+				"value": 72,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AmpersandEqualsToken",
+				"name": "AmpersandEqualsToken",
+				"value": 73,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.BarEqualsToken",
+				"name": "BarEqualsToken",
+				"value": 74,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.BarBarEqualsToken",
+				"name": "BarBarEqualsToken",
+				"value": 75,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AmpersandAmpersandEqualsToken",
+				"name": "AmpersandAmpersandEqualsToken",
+				"value": 76,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.QuestionQuestionEqualsToken",
+				"name": "QuestionQuestionEqualsToken",
+				"value": 77,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.CaretEqualsToken",
+				"name": "CaretEqualsToken",
+				"value": 78,
+				"category": "token-or-trivia",
+				"aliases": [
+					"LastAssignment",
+					"LastCompoundAssignment",
+					"LastPunctuation",
+					"LastBinaryOperator"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.Identifier",
+				"name": "Identifier",
+				"value": 79,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.PrivateIdentifier",
+				"name": "PrivateIdentifier",
+				"value": 80,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocCommentTextToken",
+				"name": "JSDocCommentTextToken",
+				"value": 81,
+				"category": "token-or-trivia",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.BreakKeyword",
+				"name": "BreakKeyword",
+				"value": 82,
+				"category": "keyword",
+				"aliases": [
+					"FirstReservedWord",
+					"FirstKeyword"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.CaseKeyword",
+				"name": "CaseKeyword",
+				"value": 83,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.CatchKeyword",
+				"name": "CatchKeyword",
+				"value": 84,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ClassKeyword",
+				"name": "ClassKeyword",
+				"value": 85,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ConstKeyword",
+				"name": "ConstKeyword",
+				"value": 86,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ContinueKeyword",
+				"name": "ContinueKeyword",
+				"value": 87,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.DebuggerKeyword",
+				"name": "DebuggerKeyword",
+				"value": 88,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.DefaultKeyword",
+				"name": "DefaultKeyword",
+				"value": 89,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.DeleteKeyword",
+				"name": "DeleteKeyword",
+				"value": 90,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.DoKeyword",
+				"name": "DoKeyword",
+				"value": 91,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ElseKeyword",
+				"name": "ElseKeyword",
+				"value": 92,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.EnumKeyword",
+				"name": "EnumKeyword",
+				"value": 93,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ExportKeyword",
+				"name": "ExportKeyword",
+				"value": 94,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ExtendsKeyword",
+				"name": "ExtendsKeyword",
+				"value": 95,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.FalseKeyword",
+				"name": "FalseKeyword",
+				"value": 96,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.FinallyKeyword",
+				"name": "FinallyKeyword",
+				"value": 97,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ForKeyword",
+				"name": "ForKeyword",
+				"value": 98,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.FunctionKeyword",
+				"name": "FunctionKeyword",
+				"value": 99,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.IfKeyword",
+				"name": "IfKeyword",
+				"value": 100,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ImportKeyword",
+				"name": "ImportKeyword",
+				"value": 101,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.InKeyword",
+				"name": "InKeyword",
+				"value": 102,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.InstanceOfKeyword",
+				"name": "InstanceOfKeyword",
+				"value": 103,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NewKeyword",
+				"name": "NewKeyword",
+				"value": 104,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NullKeyword",
+				"name": "NullKeyword",
+				"value": 105,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ReturnKeyword",
+				"name": "ReturnKeyword",
+				"value": 106,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SuperKeyword",
+				"name": "SuperKeyword",
+				"value": 107,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SwitchKeyword",
+				"name": "SwitchKeyword",
+				"value": 108,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ThisKeyword",
+				"name": "ThisKeyword",
+				"value": 109,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ThrowKeyword",
+				"name": "ThrowKeyword",
+				"value": 110,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TrueKeyword",
+				"name": "TrueKeyword",
+				"value": 111,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TryKeyword",
+				"name": "TryKeyword",
+				"value": 112,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TypeOfKeyword",
+				"name": "TypeOfKeyword",
+				"value": 113,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.VarKeyword",
+				"name": "VarKeyword",
+				"value": 114,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.VoidKeyword",
+				"name": "VoidKeyword",
+				"value": 115,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.WhileKeyword",
+				"name": "WhileKeyword",
+				"value": 116,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.WithKeyword",
+				"name": "WithKeyword",
+				"value": 117,
+				"category": "keyword",
+				"aliases": [
+					"LastReservedWord"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ImplementsKeyword",
+				"name": "ImplementsKeyword",
+				"value": 118,
+				"category": "keyword",
+				"aliases": [
+					"FirstFutureReservedWord"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.InterfaceKeyword",
+				"name": "InterfaceKeyword",
+				"value": 119,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.LetKeyword",
+				"name": "LetKeyword",
+				"value": 120,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.PackageKeyword",
+				"name": "PackageKeyword",
+				"value": 121,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.PrivateKeyword",
+				"name": "PrivateKeyword",
+				"value": 122,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ProtectedKeyword",
+				"name": "ProtectedKeyword",
+				"value": 123,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.PublicKeyword",
+				"name": "PublicKeyword",
+				"value": 124,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.StaticKeyword",
+				"name": "StaticKeyword",
+				"value": 125,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.YieldKeyword",
+				"name": "YieldKeyword",
+				"value": 126,
+				"category": "keyword",
+				"aliases": [
+					"LastFutureReservedWord"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AbstractKeyword",
+				"name": "AbstractKeyword",
+				"value": 127,
+				"category": "keyword",
+				"aliases": [
+					"FirstContextualKeyword"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AccessorKeyword",
+				"name": "AccessorKeyword",
+				"value": 128,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AsKeyword",
+				"name": "AsKeyword",
+				"value": 129,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AssertsKeyword",
+				"name": "AssertsKeyword",
+				"value": 130,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AssertKeyword",
+				"name": "AssertKeyword",
+				"value": 131,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AnyKeyword",
+				"name": "AnyKeyword",
+				"value": 132,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AsyncKeyword",
+				"name": "AsyncKeyword",
+				"value": 133,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AwaitKeyword",
+				"name": "AwaitKeyword",
+				"value": 134,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.BooleanKeyword",
+				"name": "BooleanKeyword",
+				"value": 135,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ConstructorKeyword",
+				"name": "ConstructorKeyword",
+				"value": 136,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.DeclareKeyword",
+				"name": "DeclareKeyword",
+				"value": 137,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.GetKeyword",
+				"name": "GetKeyword",
+				"value": 138,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ImmediateKeyword",
+				"name": "ImmediateKeyword",
+				"value": 139,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.InferKeyword",
+				"name": "InferKeyword",
+				"value": 140,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.IntrinsicKeyword",
+				"name": "IntrinsicKeyword",
+				"value": 141,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.IsKeyword",
+				"name": "IsKeyword",
+				"value": 142,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.KeyOfKeyword",
+				"name": "KeyOfKeyword",
+				"value": 143,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ModuleKeyword",
+				"name": "ModuleKeyword",
+				"value": 144,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NamespaceKeyword",
+				"name": "NamespaceKeyword",
+				"value": 145,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NeverKeyword",
+				"name": "NeverKeyword",
+				"value": 146,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.OutKeyword",
+				"name": "OutKeyword",
+				"value": 147,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ReadonlyKeyword",
+				"name": "ReadonlyKeyword",
+				"value": 148,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.RequireKeyword",
+				"name": "RequireKeyword",
+				"value": 149,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NumberKeyword",
+				"name": "NumberKeyword",
+				"value": 150,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ObjectKeyword",
+				"name": "ObjectKeyword",
+				"value": 151,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SatisfiesKeyword",
+				"name": "SatisfiesKeyword",
+				"value": 152,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SetKeyword",
+				"name": "SetKeyword",
+				"value": 153,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.StringKeyword",
+				"name": "StringKeyword",
+				"value": 154,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SymbolKeyword",
+				"name": "SymbolKeyword",
+				"value": 155,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TypeKeyword",
+				"name": "TypeKeyword",
+				"value": 156,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.UndefinedKeyword",
+				"name": "UndefinedKeyword",
+				"value": 157,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.UniqueKeyword",
+				"name": "UniqueKeyword",
+				"value": 158,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.UnknownKeyword",
+				"name": "UnknownKeyword",
+				"value": 159,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.UsingKeyword",
+				"name": "UsingKeyword",
+				"value": 160,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.FromKeyword",
+				"name": "FromKeyword",
+				"value": 161,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.GlobalKeyword",
+				"name": "GlobalKeyword",
+				"value": 162,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.BigIntKeyword",
+				"name": "BigIntKeyword",
+				"value": 163,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.OverrideKeyword",
+				"name": "OverrideKeyword",
+				"value": 164,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.OfKeyword",
+				"name": "OfKeyword",
+				"value": 165,
+				"category": "keyword",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.DeferKeyword",
+				"name": "DeferKeyword",
+				"value": 166,
+				"category": "keyword",
+				"aliases": [
+					"LastKeyword",
+					"LastToken",
+					"LastContextualKeyword"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.QualifiedName",
+				"name": "QualifiedName",
+				"value": 167,
+				"category": "node",
+				"aliases": [
+					"FirstNode"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ComputedPropertyName",
+				"name": "ComputedPropertyName",
+				"value": 168,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TypeParameter",
+				"name": "TypeParameter",
+				"value": 169,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.Parameter",
+				"name": "Parameter",
+				"value": 170,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.Decorator",
+				"name": "Decorator",
+				"value": 171,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.PropertySignature",
+				"name": "PropertySignature",
+				"value": 172,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.PropertyDeclaration",
+				"name": "PropertyDeclaration",
+				"value": 173,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.MethodSignature",
+				"name": "MethodSignature",
+				"value": 174,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.MethodDeclaration",
+				"name": "MethodDeclaration",
+				"value": 175,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ClassStaticBlockDeclaration",
+				"name": "ClassStaticBlockDeclaration",
+				"value": 176,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.Constructor",
+				"name": "Constructor",
+				"value": 177,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.GetAccessor",
+				"name": "GetAccessor",
+				"value": 178,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SetAccessor",
+				"name": "SetAccessor",
+				"value": 179,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.CallSignature",
+				"name": "CallSignature",
+				"value": 180,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ConstructSignature",
+				"name": "ConstructSignature",
+				"value": 181,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.IndexSignature",
+				"name": "IndexSignature",
+				"value": 182,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TypePredicate",
+				"name": "TypePredicate",
+				"value": 183,
+				"category": "node",
+				"aliases": [
+					"FirstTypeNode"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TypeReference",
+				"name": "TypeReference",
+				"value": 184,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.FunctionType",
+				"name": "FunctionType",
+				"value": 185,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ConstructorType",
+				"name": "ConstructorType",
+				"value": 186,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TypeQuery",
+				"name": "TypeQuery",
+				"value": 187,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TypeLiteral",
+				"name": "TypeLiteral",
+				"value": 188,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ArrayType",
+				"name": "ArrayType",
+				"value": 189,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TupleType",
+				"name": "TupleType",
+				"value": 190,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.OptionalType",
+				"name": "OptionalType",
+				"value": 191,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.RestType",
+				"name": "RestType",
+				"value": 192,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.UnionType",
+				"name": "UnionType",
+				"value": 193,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.IntersectionType",
+				"name": "IntersectionType",
+				"value": 194,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ConditionalType",
+				"name": "ConditionalType",
+				"value": 195,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.InferType",
+				"name": "InferType",
+				"value": 196,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ParenthesizedType",
+				"name": "ParenthesizedType",
+				"value": 197,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ThisType",
+				"name": "ThisType",
+				"value": 198,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TypeOperator",
+				"name": "TypeOperator",
+				"value": 199,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.IndexedAccessType",
+				"name": "IndexedAccessType",
+				"value": 200,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.MappedType",
+				"name": "MappedType",
+				"value": 201,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.LiteralType",
+				"name": "LiteralType",
+				"value": 202,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NamedTupleMember",
+				"name": "NamedTupleMember",
+				"value": 203,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TemplateLiteralType",
+				"name": "TemplateLiteralType",
+				"value": 204,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TemplateLiteralTypeSpan",
+				"name": "TemplateLiteralTypeSpan",
+				"value": 205,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ImportType",
+				"name": "ImportType",
+				"value": 206,
+				"category": "node",
+				"aliases": [
+					"LastTypeNode"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ObjectBindingPattern",
+				"name": "ObjectBindingPattern",
+				"value": 207,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ArrayBindingPattern",
+				"name": "ArrayBindingPattern",
+				"value": 208,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.BindingElement",
+				"name": "BindingElement",
+				"value": 209,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ArrayLiteralExpression",
+				"name": "ArrayLiteralExpression",
+				"value": 210,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ObjectLiteralExpression",
+				"name": "ObjectLiteralExpression",
+				"value": 211,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.PropertyAccessExpression",
+				"name": "PropertyAccessExpression",
+				"value": 212,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ElementAccessExpression",
+				"name": "ElementAccessExpression",
+				"value": 213,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.CallExpression",
+				"name": "CallExpression",
+				"value": 214,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NewExpression",
+				"name": "NewExpression",
+				"value": 215,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TaggedTemplateExpression",
+				"name": "TaggedTemplateExpression",
+				"value": 216,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TypeAssertionExpression",
+				"name": "TypeAssertionExpression",
+				"value": 217,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ParenthesizedExpression",
+				"name": "ParenthesizedExpression",
+				"value": 218,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.FunctionExpression",
+				"name": "FunctionExpression",
+				"value": 219,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ArrowFunction",
+				"name": "ArrowFunction",
+				"value": 220,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.DeleteExpression",
+				"name": "DeleteExpression",
+				"value": 221,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TypeOfExpression",
+				"name": "TypeOfExpression",
+				"value": 222,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.VoidExpression",
+				"name": "VoidExpression",
+				"value": 223,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AwaitExpression",
+				"name": "AwaitExpression",
+				"value": 224,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.PrefixUnaryExpression",
+				"name": "PrefixUnaryExpression",
+				"value": 225,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.PostfixUnaryExpression",
+				"name": "PostfixUnaryExpression",
+				"value": 226,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.BinaryExpression",
+				"name": "BinaryExpression",
+				"value": 227,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ConditionalExpression",
+				"name": "ConditionalExpression",
+				"value": 228,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TemplateExpression",
+				"name": "TemplateExpression",
+				"value": 229,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.YieldExpression",
+				"name": "YieldExpression",
+				"value": 230,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SpreadElement",
+				"name": "SpreadElement",
+				"value": 231,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ClassExpression",
+				"name": "ClassExpression",
+				"value": 232,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.OmittedExpression",
+				"name": "OmittedExpression",
+				"value": 233,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ExpressionWithTypeArguments",
+				"name": "ExpressionWithTypeArguments",
+				"value": 234,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.AsExpression",
+				"name": "AsExpression",
+				"value": 235,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NonNullExpression",
+				"name": "NonNullExpression",
+				"value": 236,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.MetaProperty",
+				"name": "MetaProperty",
+				"value": 237,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SyntheticExpression",
+				"name": "SyntheticExpression",
+				"value": 238,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SatisfiesExpression",
+				"name": "SatisfiesExpression",
+				"value": 239,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TemplateSpan",
+				"name": "TemplateSpan",
+				"value": 240,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SemicolonClassElement",
+				"name": "SemicolonClassElement",
+				"value": 241,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.Block",
+				"name": "Block",
+				"value": 242,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.EmptyStatement",
+				"name": "EmptyStatement",
+				"value": 243,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.VariableStatement",
+				"name": "VariableStatement",
+				"value": 244,
+				"category": "node",
+				"aliases": [
+					"FirstStatement"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ExpressionStatement",
+				"name": "ExpressionStatement",
+				"value": 245,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.IfStatement",
+				"name": "IfStatement",
+				"value": 246,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.DoStatement",
+				"name": "DoStatement",
+				"value": 247,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.WhileStatement",
+				"name": "WhileStatement",
+				"value": 248,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ForStatement",
+				"name": "ForStatement",
+				"value": 249,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ForInStatement",
+				"name": "ForInStatement",
+				"value": 250,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ForOfStatement",
+				"name": "ForOfStatement",
+				"value": 251,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ContinueStatement",
+				"name": "ContinueStatement",
+				"value": 252,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.BreakStatement",
+				"name": "BreakStatement",
+				"value": 253,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ReturnStatement",
+				"name": "ReturnStatement",
+				"value": 254,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.WithStatement",
+				"name": "WithStatement",
+				"value": 255,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SwitchStatement",
+				"name": "SwitchStatement",
+				"value": 256,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.LabeledStatement",
+				"name": "LabeledStatement",
+				"value": 257,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ThrowStatement",
+				"name": "ThrowStatement",
+				"value": 258,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TryStatement",
+				"name": "TryStatement",
+				"value": 259,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.DebuggerStatement",
+				"name": "DebuggerStatement",
+				"value": 260,
+				"category": "node",
+				"aliases": [
+					"LastStatement"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.VariableDeclaration",
+				"name": "VariableDeclaration",
+				"value": 261,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.VariableDeclarationList",
+				"name": "VariableDeclarationList",
+				"value": 262,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.FunctionDeclaration",
+				"name": "FunctionDeclaration",
+				"value": 263,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ClassDeclaration",
+				"name": "ClassDeclaration",
+				"value": 264,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.InterfaceDeclaration",
+				"name": "InterfaceDeclaration",
+				"value": 265,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.TypeAliasDeclaration",
+				"name": "TypeAliasDeclaration",
+				"value": 266,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.EnumDeclaration",
+				"name": "EnumDeclaration",
+				"value": 267,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ModuleDeclaration",
+				"name": "ModuleDeclaration",
+				"value": 268,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ModuleBlock",
+				"name": "ModuleBlock",
+				"value": 269,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.CaseBlock",
+				"name": "CaseBlock",
+				"value": 270,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NamespaceExportDeclaration",
+				"name": "NamespaceExportDeclaration",
+				"value": 271,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ImportEqualsDeclaration",
+				"name": "ImportEqualsDeclaration",
+				"value": 272,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ImportDeclaration",
+				"name": "ImportDeclaration",
+				"value": 273,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ImportClause",
+				"name": "ImportClause",
+				"value": 274,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NamespaceImport",
+				"name": "NamespaceImport",
+				"value": 275,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NamedImports",
+				"name": "NamedImports",
+				"value": 276,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ImportSpecifier",
+				"name": "ImportSpecifier",
+				"value": 277,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ExportAssignment",
+				"name": "ExportAssignment",
+				"value": 278,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ExportDeclaration",
+				"name": "ExportDeclaration",
+				"value": 279,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NamedExports",
+				"name": "NamedExports",
+				"value": 280,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NamespaceExport",
+				"name": "NamespaceExport",
+				"value": 281,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ExportSpecifier",
+				"name": "ExportSpecifier",
+				"value": 282,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.MissingDeclaration",
+				"name": "MissingDeclaration",
+				"value": 283,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ExternalModuleReference",
+				"name": "ExternalModuleReference",
+				"value": 284,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JsxElement",
+				"name": "JsxElement",
+				"value": 285,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JsxSelfClosingElement",
+				"name": "JsxSelfClosingElement",
+				"value": 286,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JsxOpeningElement",
+				"name": "JsxOpeningElement",
+				"value": 287,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JsxClosingElement",
+				"name": "JsxClosingElement",
+				"value": 288,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JsxFragment",
+				"name": "JsxFragment",
+				"value": 289,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JsxOpeningFragment",
+				"name": "JsxOpeningFragment",
+				"value": 290,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JsxClosingFragment",
+				"name": "JsxClosingFragment",
+				"value": 291,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JsxAttribute",
+				"name": "JsxAttribute",
+				"value": 292,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JsxAttributes",
+				"name": "JsxAttributes",
+				"value": 293,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JsxSpreadAttribute",
+				"name": "JsxSpreadAttribute",
+				"value": 294,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JsxExpression",
+				"name": "JsxExpression",
+				"value": 295,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JsxNamespacedName",
+				"name": "JsxNamespacedName",
+				"value": 296,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.CaseClause",
+				"name": "CaseClause",
+				"value": 297,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.DefaultClause",
+				"name": "DefaultClause",
+				"value": 298,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.HeritageClause",
+				"name": "HeritageClause",
+				"value": 299,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.CatchClause",
+				"name": "CatchClause",
+				"value": 300,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ImportAttributes",
+				"name": "ImportAttributes",
+				"value": 301,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ImportAttribute",
+				"name": "ImportAttribute",
+				"value": 302,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.PropertyAssignment",
+				"name": "PropertyAssignment",
+				"value": 303,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.ShorthandPropertyAssignment",
+				"name": "ShorthandPropertyAssignment",
+				"value": 304,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SpreadAssignment",
+				"name": "SpreadAssignment",
+				"value": 305,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.EnumMember",
+				"name": "EnumMember",
+				"value": 306,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SourceFile",
+				"name": "SourceFile",
+				"value": 307,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocTypeExpression",
+				"name": "JSDocTypeExpression",
+				"value": 308,
+				"category": "documentation-node",
+				"aliases": [
+					"FirstJSDocNode"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocNameReference",
+				"name": "JSDocNameReference",
+				"value": 309,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocAllType",
+				"name": "JSDocAllType",
+				"value": 310,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocNullableType",
+				"name": "JSDocNullableType",
+				"value": 311,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocNonNullableType",
+				"name": "JSDocNonNullableType",
+				"value": 312,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocOptionalType",
+				"name": "JSDocOptionalType",
+				"value": 313,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocVariadicType",
+				"name": "JSDocVariadicType",
+				"value": 314,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDoc",
+				"name": "JSDoc",
+				"value": 315,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocText",
+				"name": "JSDocText",
+				"value": 316,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocTypeLiteral",
+				"name": "JSDocTypeLiteral",
+				"value": 317,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocSignature",
+				"name": "JSDocSignature",
+				"value": 318,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocLink",
+				"name": "JSDocLink",
+				"value": 319,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocLinkCode",
+				"name": "JSDocLinkCode",
+				"value": 320,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocLinkPlain",
+				"name": "JSDocLinkPlain",
+				"value": 321,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocUnknownTag",
+				"name": "JSDocUnknownTag",
+				"value": 322,
+				"category": "documentation-node",
+				"aliases": [
+					"FirstJSDocTagNode"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocAugmentsTag",
+				"name": "JSDocAugmentsTag",
+				"value": 323,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocImplementsTag",
+				"name": "JSDocImplementsTag",
+				"value": 324,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocDeprecatedTag",
+				"name": "JSDocDeprecatedTag",
+				"value": 325,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocPublicTag",
+				"name": "JSDocPublicTag",
+				"value": 326,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocPrivateTag",
+				"name": "JSDocPrivateTag",
+				"value": 327,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocProtectedTag",
+				"name": "JSDocProtectedTag",
+				"value": 328,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocReadonlyTag",
+				"name": "JSDocReadonlyTag",
+				"value": 329,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocOverrideTag",
+				"name": "JSDocOverrideTag",
+				"value": 330,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocCallbackTag",
+				"name": "JSDocCallbackTag",
+				"value": 331,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocOverloadTag",
+				"name": "JSDocOverloadTag",
+				"value": 332,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocParameterTag",
+				"name": "JSDocParameterTag",
+				"value": 333,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocReturnTag",
+				"name": "JSDocReturnTag",
+				"value": 334,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocThisTag",
+				"name": "JSDocThisTag",
+				"value": 335,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocTypeTag",
+				"name": "JSDocTypeTag",
+				"value": 336,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocTemplateTag",
+				"name": "JSDocTemplateTag",
+				"value": 337,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocTypedefTag",
+				"name": "JSDocTypedefTag",
+				"value": 338,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocSeeTag",
+				"name": "JSDocSeeTag",
+				"value": 339,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocPropertyTag",
+				"name": "JSDocPropertyTag",
+				"value": 340,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocThrowsTag",
+				"name": "JSDocThrowsTag",
+				"value": 341,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocSatisfiesTag",
+				"name": "JSDocSatisfiesTag",
+				"value": 342,
+				"category": "documentation-node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSDocImportTag",
+				"name": "JSDocImportTag",
+				"value": 343,
+				"category": "documentation-node",
+				"aliases": [
+					"LastJSDocNode",
+					"LastJSDocTagNode"
+				],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SyntaxList",
+				"name": "SyntaxList",
+				"value": 344,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSTypeAliasDeclaration",
+				"name": "JSTypeAliasDeclaration",
+				"value": 345,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.JSImportDeclaration",
+				"name": "JSImportDeclaration",
+				"value": 346,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NotEmittedStatement",
+				"name": "NotEmittedStatement",
+				"value": 347,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.PartiallyEmittedExpression",
+				"name": "PartiallyEmittedExpression",
+				"value": 348,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.SyntheticReferenceExpression",
+				"name": "SyntheticReferenceExpression",
+				"value": 349,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "typescript.syntax.NotEmittedTypeElement",
+				"name": "NotEmittedTypeElement",
+				"value": 350,
+				"category": "node",
+				"aliases": [],
+				"alignmentDecision": "unreviewed"
+			}
+		],
+		"existingRowKinds": [
+			"declaration",
+			"type-alias",
+			"type-members",
+			"method-signature",
+			"interface-members",
+			"class-method",
+			"class-members",
+			"assignments",
+			"call-statements",
+			"guard-statements",
+			"enum-member",
+			"case-clause",
+			"object-rows",
+			"registration"
+		]
+	},
+	"python": {
+		"version": "3.14.2",
+		"source": "https://github.com/python/cpython/blob/v3.14.2/Grammar/python.gram",
+		"grammarSha256": "34f0f9b2e8a22760ca4e6e7e56857cb22f4c73e0853e5452b7e93e48ddb17361",
+		"nodes": [
+			{
+				"id": "python.ast.AST",
+				"name": "AST",
+				"category": "helper",
+				"abstract": true,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Add",
+				"name": "Add",
+				"category": "operator",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.And",
+				"name": "And",
+				"category": "boolop",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.AnnAssign",
+				"name": "AnnAssign",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"target",
+					"annotation",
+					"value",
+					"simple"
+				],
+				"fieldTypes": {
+					"target": "<class 'ast.expr'>",
+					"annotation": "<class 'ast.expr'>",
+					"value": "ast.expr | None",
+					"simple": "<class 'int'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Assert",
+				"name": "Assert",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"test",
+					"msg"
+				],
+				"fieldTypes": {
+					"test": "<class 'ast.expr'>",
+					"msg": "ast.expr | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Assign",
+				"name": "Assign",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"targets",
+					"value",
+					"type_comment"
+				],
+				"fieldTypes": {
+					"targets": "list[ast.expr]",
+					"value": "<class 'ast.expr'>",
+					"type_comment": "str | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.AsyncFor",
+				"name": "AsyncFor",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"target",
+					"iter",
+					"body",
+					"orelse",
+					"type_comment"
+				],
+				"fieldTypes": {
+					"target": "<class 'ast.expr'>",
+					"iter": "<class 'ast.expr'>",
+					"body": "list[ast.stmt]",
+					"orelse": "list[ast.stmt]",
+					"type_comment": "str | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.AsyncFunctionDef",
+				"name": "AsyncFunctionDef",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"name",
+					"args",
+					"body",
+					"decorator_list",
+					"returns",
+					"type_comment",
+					"type_params"
+				],
+				"fieldTypes": {
+					"name": "<class 'str'>",
+					"args": "<class 'ast.arguments'>",
+					"body": "list[ast.stmt]",
+					"decorator_list": "list[ast.expr]",
+					"returns": "ast.expr | None",
+					"type_comment": "str | None",
+					"type_params": "list[ast.type_param]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.AsyncWith",
+				"name": "AsyncWith",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"items",
+					"body",
+					"type_comment"
+				],
+				"fieldTypes": {
+					"items": "list[ast.withitem]",
+					"body": "list[ast.stmt]",
+					"type_comment": "str | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Attribute",
+				"name": "Attribute",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"value",
+					"attr",
+					"ctx"
+				],
+				"fieldTypes": {
+					"value": "<class 'ast.expr'>",
+					"attr": "<class 'str'>",
+					"ctx": "<class 'ast.expr_context'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.AugAssign",
+				"name": "AugAssign",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"target",
+					"op",
+					"value"
+				],
+				"fieldTypes": {
+					"target": "<class 'ast.expr'>",
+					"op": "<class 'ast.operator'>",
+					"value": "<class 'ast.expr'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.AugLoad",
+				"name": "AugLoad",
+				"category": "expr_context",
+				"abstract": false,
+				"deprecatedCompatibility": true,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.AugStore",
+				"name": "AugStore",
+				"category": "expr_context",
+				"abstract": false,
+				"deprecatedCompatibility": true,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Await",
+				"name": "Await",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"value"
+				],
+				"fieldTypes": {
+					"value": "<class 'ast.expr'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.BinOp",
+				"name": "BinOp",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"left",
+					"op",
+					"right"
+				],
+				"fieldTypes": {
+					"left": "<class 'ast.expr'>",
+					"op": "<class 'ast.operator'>",
+					"right": "<class 'ast.expr'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.BitAnd",
+				"name": "BitAnd",
+				"category": "operator",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.BitOr",
+				"name": "BitOr",
+				"category": "operator",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.BitXor",
+				"name": "BitXor",
+				"category": "operator",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.BoolOp",
+				"name": "BoolOp",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"op",
+					"values"
+				],
+				"fieldTypes": {
+					"op": "<class 'ast.boolop'>",
+					"values": "list[ast.expr]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Break",
+				"name": "Break",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Call",
+				"name": "Call",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"func",
+					"args",
+					"keywords"
+				],
+				"fieldTypes": {
+					"func": "<class 'ast.expr'>",
+					"args": "list[ast.expr]",
+					"keywords": "list[ast.keyword]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.ClassDef",
+				"name": "ClassDef",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"name",
+					"bases",
+					"keywords",
+					"body",
+					"decorator_list",
+					"type_params"
+				],
+				"fieldTypes": {
+					"name": "<class 'str'>",
+					"bases": "list[ast.expr]",
+					"keywords": "list[ast.keyword]",
+					"body": "list[ast.stmt]",
+					"decorator_list": "list[ast.expr]",
+					"type_params": "list[ast.type_param]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Compare",
+				"name": "Compare",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"left",
+					"ops",
+					"comparators"
+				],
+				"fieldTypes": {
+					"left": "<class 'ast.expr'>",
+					"ops": "list[ast.cmpop]",
+					"comparators": "list[ast.expr]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Constant",
+				"name": "Constant",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"value",
+					"kind"
+				],
+				"fieldTypes": {
+					"value": "<class 'object'>",
+					"kind": "str | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Continue",
+				"name": "Continue",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Del",
+				"name": "Del",
+				"category": "expr_context",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Delete",
+				"name": "Delete",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"targets"
+				],
+				"fieldTypes": {
+					"targets": "list[ast.expr]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Dict",
+				"name": "Dict",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"keys",
+					"values"
+				],
+				"fieldTypes": {
+					"keys": "list[ast.expr]",
+					"values": "list[ast.expr]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.DictComp",
+				"name": "DictComp",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"key",
+					"value",
+					"generators"
+				],
+				"fieldTypes": {
+					"key": "<class 'ast.expr'>",
+					"value": "<class 'ast.expr'>",
+					"generators": "list[ast.comprehension]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Div",
+				"name": "Div",
+				"category": "operator",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Eq",
+				"name": "Eq",
+				"category": "cmpop",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.ExceptHandler",
+				"name": "ExceptHandler",
+				"category": "excepthandler",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"type",
+					"name",
+					"body"
+				],
+				"fieldTypes": {
+					"type": "ast.expr | None",
+					"name": "str | None",
+					"body": "list[ast.stmt]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Expr",
+				"name": "Expr",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"value"
+				],
+				"fieldTypes": {
+					"value": "<class 'ast.expr'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Expression",
+				"name": "Expression",
+				"category": "mod",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"body"
+				],
+				"fieldTypes": {
+					"body": "<class 'ast.expr'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.ExtSlice",
+				"name": "ExtSlice",
+				"category": "helper",
+				"abstract": false,
+				"deprecatedCompatibility": true,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.FloorDiv",
+				"name": "FloorDiv",
+				"category": "operator",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.For",
+				"name": "For",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"target",
+					"iter",
+					"body",
+					"orelse",
+					"type_comment"
+				],
+				"fieldTypes": {
+					"target": "<class 'ast.expr'>",
+					"iter": "<class 'ast.expr'>",
+					"body": "list[ast.stmt]",
+					"orelse": "list[ast.stmt]",
+					"type_comment": "str | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.FormattedValue",
+				"name": "FormattedValue",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"value",
+					"conversion",
+					"format_spec"
+				],
+				"fieldTypes": {
+					"value": "<class 'ast.expr'>",
+					"conversion": "<class 'int'>",
+					"format_spec": "ast.expr | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.FunctionDef",
+				"name": "FunctionDef",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"name",
+					"args",
+					"body",
+					"decorator_list",
+					"returns",
+					"type_comment",
+					"type_params"
+				],
+				"fieldTypes": {
+					"name": "<class 'str'>",
+					"args": "<class 'ast.arguments'>",
+					"body": "list[ast.stmt]",
+					"decorator_list": "list[ast.expr]",
+					"returns": "ast.expr | None",
+					"type_comment": "str | None",
+					"type_params": "list[ast.type_param]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.FunctionType",
+				"name": "FunctionType",
+				"category": "mod",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"argtypes",
+					"returns"
+				],
+				"fieldTypes": {
+					"argtypes": "list[ast.expr]",
+					"returns": "<class 'ast.expr'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.GeneratorExp",
+				"name": "GeneratorExp",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"elt",
+					"generators"
+				],
+				"fieldTypes": {
+					"elt": "<class 'ast.expr'>",
+					"generators": "list[ast.comprehension]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Global",
+				"name": "Global",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"names"
+				],
+				"fieldTypes": {
+					"names": "list[str]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Gt",
+				"name": "Gt",
+				"category": "cmpop",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.GtE",
+				"name": "GtE",
+				"category": "cmpop",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.If",
+				"name": "If",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"test",
+					"body",
+					"orelse"
+				],
+				"fieldTypes": {
+					"test": "<class 'ast.expr'>",
+					"body": "list[ast.stmt]",
+					"orelse": "list[ast.stmt]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.IfExp",
+				"name": "IfExp",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"test",
+					"body",
+					"orelse"
+				],
+				"fieldTypes": {
+					"test": "<class 'ast.expr'>",
+					"body": "<class 'ast.expr'>",
+					"orelse": "<class 'ast.expr'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Import",
+				"name": "Import",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"names"
+				],
+				"fieldTypes": {
+					"names": "list[ast.alias]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.ImportFrom",
+				"name": "ImportFrom",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"module",
+					"names",
+					"level"
+				],
+				"fieldTypes": {
+					"module": "str | None",
+					"names": "list[ast.alias]",
+					"level": "int | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.In",
+				"name": "In",
+				"category": "cmpop",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Index",
+				"name": "Index",
+				"category": "helper",
+				"abstract": false,
+				"deprecatedCompatibility": true,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Interactive",
+				"name": "Interactive",
+				"category": "mod",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"body"
+				],
+				"fieldTypes": {
+					"body": "list[ast.stmt]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Interpolation",
+				"name": "Interpolation",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"value",
+					"str",
+					"conversion",
+					"format_spec"
+				],
+				"fieldTypes": {
+					"value": "<class 'ast.expr'>",
+					"str": "<class 'object'>",
+					"conversion": "<class 'int'>",
+					"format_spec": "ast.expr | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Invert",
+				"name": "Invert",
+				"category": "unaryop",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Is",
+				"name": "Is",
+				"category": "cmpop",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.IsNot",
+				"name": "IsNot",
+				"category": "cmpop",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.JoinedStr",
+				"name": "JoinedStr",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"values"
+				],
+				"fieldTypes": {
+					"values": "list[ast.expr]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.LShift",
+				"name": "LShift",
+				"category": "operator",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Lambda",
+				"name": "Lambda",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"args",
+					"body"
+				],
+				"fieldTypes": {
+					"args": "<class 'ast.arguments'>",
+					"body": "<class 'ast.expr'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.List",
+				"name": "List",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"elts",
+					"ctx"
+				],
+				"fieldTypes": {
+					"elts": "list[ast.expr]",
+					"ctx": "<class 'ast.expr_context'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.ListComp",
+				"name": "ListComp",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"elt",
+					"generators"
+				],
+				"fieldTypes": {
+					"elt": "<class 'ast.expr'>",
+					"generators": "list[ast.comprehension]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Load",
+				"name": "Load",
+				"category": "expr_context",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Lt",
+				"name": "Lt",
+				"category": "cmpop",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.LtE",
+				"name": "LtE",
+				"category": "cmpop",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.MatMult",
+				"name": "MatMult",
+				"category": "operator",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Match",
+				"name": "Match",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"subject",
+					"cases"
+				],
+				"fieldTypes": {
+					"subject": "<class 'ast.expr'>",
+					"cases": "list[ast.match_case]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.MatchAs",
+				"name": "MatchAs",
+				"category": "pattern",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"pattern",
+					"name"
+				],
+				"fieldTypes": {
+					"pattern": "ast.pattern | None",
+					"name": "str | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.MatchClass",
+				"name": "MatchClass",
+				"category": "pattern",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"cls",
+					"patterns",
+					"kwd_attrs",
+					"kwd_patterns"
+				],
+				"fieldTypes": {
+					"cls": "<class 'ast.expr'>",
+					"patterns": "list[ast.pattern]",
+					"kwd_attrs": "list[str]",
+					"kwd_patterns": "list[ast.pattern]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.MatchMapping",
+				"name": "MatchMapping",
+				"category": "pattern",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"keys",
+					"patterns",
+					"rest"
+				],
+				"fieldTypes": {
+					"keys": "list[ast.expr]",
+					"patterns": "list[ast.pattern]",
+					"rest": "str | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.MatchOr",
+				"name": "MatchOr",
+				"category": "pattern",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"patterns"
+				],
+				"fieldTypes": {
+					"patterns": "list[ast.pattern]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.MatchSequence",
+				"name": "MatchSequence",
+				"category": "pattern",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"patterns"
+				],
+				"fieldTypes": {
+					"patterns": "list[ast.pattern]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.MatchSingleton",
+				"name": "MatchSingleton",
+				"category": "pattern",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"value"
+				],
+				"fieldTypes": {
+					"value": "<class 'object'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.MatchStar",
+				"name": "MatchStar",
+				"category": "pattern",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"name"
+				],
+				"fieldTypes": {
+					"name": "str | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.MatchValue",
+				"name": "MatchValue",
+				"category": "pattern",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"value"
+				],
+				"fieldTypes": {
+					"value": "<class 'ast.expr'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Mod",
+				"name": "Mod",
+				"category": "operator",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Module",
+				"name": "Module",
+				"category": "mod",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"body",
+					"type_ignores"
+				],
+				"fieldTypes": {
+					"body": "list[ast.stmt]",
+					"type_ignores": "list[ast.type_ignore]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Mult",
+				"name": "Mult",
+				"category": "operator",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Name",
+				"name": "Name",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"id",
+					"ctx"
+				],
+				"fieldTypes": {
+					"id": "<class 'str'>",
+					"ctx": "<class 'ast.expr_context'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.NamedExpr",
+				"name": "NamedExpr",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"target",
+					"value"
+				],
+				"fieldTypes": {
+					"target": "<class 'ast.expr'>",
+					"value": "<class 'ast.expr'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Nonlocal",
+				"name": "Nonlocal",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"names"
+				],
+				"fieldTypes": {
+					"names": "list[str]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Not",
+				"name": "Not",
+				"category": "unaryop",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.NotEq",
+				"name": "NotEq",
+				"category": "cmpop",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.NotIn",
+				"name": "NotIn",
+				"category": "cmpop",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Or",
+				"name": "Or",
+				"category": "boolop",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Param",
+				"name": "Param",
+				"category": "expr_context",
+				"abstract": false,
+				"deprecatedCompatibility": true,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.ParamSpec",
+				"name": "ParamSpec",
+				"category": "type_param",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"name",
+					"default_value"
+				],
+				"fieldTypes": {
+					"name": "<class 'str'>",
+					"default_value": "ast.expr | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Pass",
+				"name": "Pass",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Pow",
+				"name": "Pow",
+				"category": "operator",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.RShift",
+				"name": "RShift",
+				"category": "operator",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Raise",
+				"name": "Raise",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"exc",
+					"cause"
+				],
+				"fieldTypes": {
+					"exc": "ast.expr | None",
+					"cause": "ast.expr | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Return",
+				"name": "Return",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"value"
+				],
+				"fieldTypes": {
+					"value": "ast.expr | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Set",
+				"name": "Set",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"elts"
+				],
+				"fieldTypes": {
+					"elts": "list[ast.expr]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.SetComp",
+				"name": "SetComp",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"elt",
+					"generators"
+				],
+				"fieldTypes": {
+					"elt": "<class 'ast.expr'>",
+					"generators": "list[ast.comprehension]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Slice",
+				"name": "Slice",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"lower",
+					"upper",
+					"step"
+				],
+				"fieldTypes": {
+					"lower": "ast.expr | None",
+					"upper": "ast.expr | None",
+					"step": "ast.expr | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Starred",
+				"name": "Starred",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"value",
+					"ctx"
+				],
+				"fieldTypes": {
+					"value": "<class 'ast.expr'>",
+					"ctx": "<class 'ast.expr_context'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Store",
+				"name": "Store",
+				"category": "expr_context",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Sub",
+				"name": "Sub",
+				"category": "operator",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Subscript",
+				"name": "Subscript",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"value",
+					"slice",
+					"ctx"
+				],
+				"fieldTypes": {
+					"value": "<class 'ast.expr'>",
+					"slice": "<class 'ast.expr'>",
+					"ctx": "<class 'ast.expr_context'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Suite",
+				"name": "Suite",
+				"category": "mod",
+				"abstract": false,
+				"deprecatedCompatibility": true,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.TemplateStr",
+				"name": "TemplateStr",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"values"
+				],
+				"fieldTypes": {
+					"values": "list[ast.expr]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Try",
+				"name": "Try",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"body",
+					"handlers",
+					"orelse",
+					"finalbody"
+				],
+				"fieldTypes": {
+					"body": "list[ast.stmt]",
+					"handlers": "list[ast.excepthandler]",
+					"orelse": "list[ast.stmt]",
+					"finalbody": "list[ast.stmt]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.TryStar",
+				"name": "TryStar",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"body",
+					"handlers",
+					"orelse",
+					"finalbody"
+				],
+				"fieldTypes": {
+					"body": "list[ast.stmt]",
+					"handlers": "list[ast.excepthandler]",
+					"orelse": "list[ast.stmt]",
+					"finalbody": "list[ast.stmt]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Tuple",
+				"name": "Tuple",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"elts",
+					"ctx"
+				],
+				"fieldTypes": {
+					"elts": "list[ast.expr]",
+					"ctx": "<class 'ast.expr_context'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.TypeAlias",
+				"name": "TypeAlias",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"name",
+					"type_params",
+					"value"
+				],
+				"fieldTypes": {
+					"name": "<class 'ast.expr'>",
+					"type_params": "list[ast.type_param]",
+					"value": "<class 'ast.expr'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.TypeIgnore",
+				"name": "TypeIgnore",
+				"category": "type_ignore",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"lineno",
+					"tag"
+				],
+				"fieldTypes": {
+					"lineno": "<class 'int'>",
+					"tag": "<class 'str'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.TypeVar",
+				"name": "TypeVar",
+				"category": "type_param",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"name",
+					"bound",
+					"default_value"
+				],
+				"fieldTypes": {
+					"name": "<class 'str'>",
+					"bound": "ast.expr | None",
+					"default_value": "ast.expr | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.TypeVarTuple",
+				"name": "TypeVarTuple",
+				"category": "type_param",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"name",
+					"default_value"
+				],
+				"fieldTypes": {
+					"name": "<class 'str'>",
+					"default_value": "ast.expr | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.UAdd",
+				"name": "UAdd",
+				"category": "unaryop",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.USub",
+				"name": "USub",
+				"category": "unaryop",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.UnaryOp",
+				"name": "UnaryOp",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"op",
+					"operand"
+				],
+				"fieldTypes": {
+					"op": "<class 'ast.unaryop'>",
+					"operand": "<class 'ast.expr'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.While",
+				"name": "While",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"test",
+					"body",
+					"orelse"
+				],
+				"fieldTypes": {
+					"test": "<class 'ast.expr'>",
+					"body": "list[ast.stmt]",
+					"orelse": "list[ast.stmt]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.With",
+				"name": "With",
+				"category": "stmt",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"items",
+					"body",
+					"type_comment"
+				],
+				"fieldTypes": {
+					"items": "list[ast.withitem]",
+					"body": "list[ast.stmt]",
+					"type_comment": "str | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.Yield",
+				"name": "Yield",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"value"
+				],
+				"fieldTypes": {
+					"value": "ast.expr | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.YieldFrom",
+				"name": "YieldFrom",
+				"category": "expr",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"value"
+				],
+				"fieldTypes": {
+					"value": "<class 'ast.expr'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.alias",
+				"name": "alias",
+				"category": "helper",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"name",
+					"asname"
+				],
+				"fieldTypes": {
+					"name": "<class 'str'>",
+					"asname": "str | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.arg",
+				"name": "arg",
+				"category": "helper",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"arg",
+					"annotation",
+					"type_comment"
+				],
+				"fieldTypes": {
+					"arg": "<class 'str'>",
+					"annotation": "ast.expr | None",
+					"type_comment": "str | None"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.arguments",
+				"name": "arguments",
+				"category": "helper",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"posonlyargs",
+					"args",
+					"vararg",
+					"kwonlyargs",
+					"kw_defaults",
+					"kwarg",
+					"defaults"
+				],
+				"fieldTypes": {
+					"posonlyargs": "list[ast.arg]",
+					"args": "list[ast.arg]",
+					"vararg": "ast.arg | None",
+					"kwonlyargs": "list[ast.arg]",
+					"kw_defaults": "list[ast.expr]",
+					"kwarg": "ast.arg | None",
+					"defaults": "list[ast.expr]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.boolop",
+				"name": "boolop",
+				"category": "boolop",
+				"abstract": true,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.cmpop",
+				"name": "cmpop",
+				"category": "cmpop",
+				"abstract": true,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.comprehension",
+				"name": "comprehension",
+				"category": "helper",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"target",
+					"iter",
+					"ifs",
+					"is_async"
+				],
+				"fieldTypes": {
+					"target": "<class 'ast.expr'>",
+					"iter": "<class 'ast.expr'>",
+					"ifs": "list[ast.expr]",
+					"is_async": "<class 'int'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.excepthandler",
+				"name": "excepthandler",
+				"category": "excepthandler",
+				"abstract": true,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.expr",
+				"name": "expr",
+				"category": "expr",
+				"abstract": true,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.expr_context",
+				"name": "expr_context",
+				"category": "expr_context",
+				"abstract": true,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.keyword",
+				"name": "keyword",
+				"category": "helper",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"arg",
+					"value"
+				],
+				"fieldTypes": {
+					"arg": "str | None",
+					"value": "<class 'ast.expr'>"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.match_case",
+				"name": "match_case",
+				"category": "helper",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"pattern",
+					"guard",
+					"body"
+				],
+				"fieldTypes": {
+					"pattern": "<class 'ast.pattern'>",
+					"guard": "ast.expr | None",
+					"body": "list[ast.stmt]"
+				},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.mod",
+				"name": "mod",
+				"category": "mod",
+				"abstract": true,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.operator",
+				"name": "operator",
+				"category": "operator",
+				"abstract": true,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.pattern",
+				"name": "pattern",
+				"category": "pattern",
+				"abstract": true,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.slice",
+				"name": "slice",
+				"category": "helper",
+				"abstract": false,
+				"deprecatedCompatibility": true,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.stmt",
+				"name": "stmt",
+				"category": "stmt",
+				"abstract": true,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.type_ignore",
+				"name": "type_ignore",
+				"category": "type_ignore",
+				"abstract": true,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.type_param",
+				"name": "type_param",
+				"category": "type_param",
+				"abstract": true,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.unaryop",
+				"name": "unaryop",
+				"category": "unaryop",
+				"abstract": true,
+				"deprecatedCompatibility": false,
+				"fields": [],
+				"fieldTypes": {},
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.ast.withitem",
+				"name": "withitem",
+				"category": "helper",
+				"abstract": false,
+				"deprecatedCompatibility": false,
+				"fields": [
+					"context_expr",
+					"optional_vars"
+				],
+				"fieldTypes": {
+					"context_expr": "<class 'ast.expr'>",
+					"optional_vars": "ast.expr | None"
+				},
+				"alignmentDecision": "unreviewed"
+			}
+		],
+		"productions": [
+			{
+				"id": "python.grammar.file",
+				"name": "file",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.interactive",
+				"name": "interactive",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.eval",
+				"name": "eval",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.func_type",
+				"name": "func_type",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.statements",
+				"name": "statements",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.statement",
+				"name": "statement",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.single_compound_stmt",
+				"name": "single_compound_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.statement_newline",
+				"name": "statement_newline",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.simple_stmts",
+				"name": "simple_stmts",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.compound_stmt",
+				"name": "compound_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.assignment",
+				"name": "assignment",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.annotated_rhs",
+				"name": "annotated_rhs",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.augassign",
+				"name": "augassign",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.return_stmt",
+				"name": "return_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.raise_stmt",
+				"name": "raise_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.pass_stmt",
+				"name": "pass_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.break_stmt",
+				"name": "break_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.continue_stmt",
+				"name": "continue_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.global_stmt",
+				"name": "global_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.nonlocal_stmt",
+				"name": "nonlocal_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.del_stmt",
+				"name": "del_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.yield_stmt",
+				"name": "yield_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.assert_stmt",
+				"name": "assert_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.import_stmt",
+				"name": "import_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.import_name",
+				"name": "import_name",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.import_from",
+				"name": "import_from",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.import_from_targets",
+				"name": "import_from_targets",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.import_from_as_names",
+				"name": "import_from_as_names",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.import_from_as_name",
+				"name": "import_from_as_name",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.dotted_as_names",
+				"name": "dotted_as_names",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.dotted_as_name",
+				"name": "dotted_as_name",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.dotted_name",
+				"name": "dotted_name",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.decorators",
+				"name": "decorators",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.class_def",
+				"name": "class_def",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.class_def_raw",
+				"name": "class_def_raw",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.function_def",
+				"name": "function_def",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.function_def_raw",
+				"name": "function_def_raw",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.params",
+				"name": "params",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.parameters",
+				"name": "parameters",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.slash_no_default",
+				"name": "slash_no_default",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.slash_with_default",
+				"name": "slash_with_default",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.star_etc",
+				"name": "star_etc",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.kwds",
+				"name": "kwds",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.param_no_default",
+				"name": "param_no_default",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.param_no_default_star_annotation",
+				"name": "param_no_default_star_annotation",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.param_with_default",
+				"name": "param_with_default",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.param_maybe_default",
+				"name": "param_maybe_default",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.param",
+				"name": "param",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.param_star_annotation",
+				"name": "param_star_annotation",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.annotation",
+				"name": "annotation",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.star_annotation",
+				"name": "star_annotation",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.default",
+				"name": "default",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.if_stmt",
+				"name": "if_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.elif_stmt",
+				"name": "elif_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.else_block",
+				"name": "else_block",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.while_stmt",
+				"name": "while_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.for_stmt",
+				"name": "for_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.with_stmt",
+				"name": "with_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.with_item",
+				"name": "with_item",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.try_stmt",
+				"name": "try_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.except_block",
+				"name": "except_block",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.except_star_block",
+				"name": "except_star_block",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.finally_block",
+				"name": "finally_block",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.match_stmt",
+				"name": "match_stmt",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.subject_expr",
+				"name": "subject_expr",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.case_block",
+				"name": "case_block",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.guard",
+				"name": "guard",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.patterns",
+				"name": "patterns",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.pattern",
+				"name": "pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.as_pattern",
+				"name": "as_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.or_pattern",
+				"name": "or_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.literal_pattern",
+				"name": "literal_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.literal_expr",
+				"name": "literal_expr",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.complex_number",
+				"name": "complex_number",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.signed_number",
+				"name": "signed_number",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.signed_real_number",
+				"name": "signed_real_number",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.real_number",
+				"name": "real_number",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.imaginary_number",
+				"name": "imaginary_number",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.capture_pattern",
+				"name": "capture_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.pattern_capture_target",
+				"name": "pattern_capture_target",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.wildcard_pattern",
+				"name": "wildcard_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.value_pattern",
+				"name": "value_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.attr",
+				"name": "attr",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.name_or_attr",
+				"name": "name_or_attr",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.group_pattern",
+				"name": "group_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.sequence_pattern",
+				"name": "sequence_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.open_sequence_pattern",
+				"name": "open_sequence_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.maybe_sequence_pattern",
+				"name": "maybe_sequence_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.maybe_star_pattern",
+				"name": "maybe_star_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.mapping_pattern",
+				"name": "mapping_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.items_pattern",
+				"name": "items_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.key_value_pattern",
+				"name": "key_value_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.double_star_pattern",
+				"name": "double_star_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.class_pattern",
+				"name": "class_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.positional_patterns",
+				"name": "positional_patterns",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.keyword_patterns",
+				"name": "keyword_patterns",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.keyword_pattern",
+				"name": "keyword_pattern",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.type_alias",
+				"name": "type_alias",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.type_params",
+				"name": "type_params",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.type_param_seq",
+				"name": "type_param_seq",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.type_param_bound",
+				"name": "type_param_bound",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.type_param_default",
+				"name": "type_param_default",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.type_param_starred_default",
+				"name": "type_param_starred_default",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.expressions",
+				"name": "expressions",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.yield_expr",
+				"name": "yield_expr",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.star_expressions",
+				"name": "star_expressions",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.star_named_expressions",
+				"name": "star_named_expressions",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.star_named_expression",
+				"name": "star_named_expression",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.assignment_expression",
+				"name": "assignment_expression",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.named_expression",
+				"name": "named_expression",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.comparison",
+				"name": "comparison",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.compare_op_bitwise_or_pair",
+				"name": "compare_op_bitwise_or_pair",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.eq_bitwise_or",
+				"name": "eq_bitwise_or",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.noteq_bitwise_or",
+				"name": "noteq_bitwise_or",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.lte_bitwise_or",
+				"name": "lte_bitwise_or",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.lt_bitwise_or",
+				"name": "lt_bitwise_or",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.gte_bitwise_or",
+				"name": "gte_bitwise_or",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.gt_bitwise_or",
+				"name": "gt_bitwise_or",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.notin_bitwise_or",
+				"name": "notin_bitwise_or",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.in_bitwise_or",
+				"name": "in_bitwise_or",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.isnot_bitwise_or",
+				"name": "isnot_bitwise_or",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.is_bitwise_or",
+				"name": "is_bitwise_or",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.bitwise_or",
+				"name": "bitwise_or",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.bitwise_xor",
+				"name": "bitwise_xor",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.bitwise_and",
+				"name": "bitwise_and",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.shift_expr",
+				"name": "shift_expr",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.sum",
+				"name": "sum",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.term",
+				"name": "term",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.power",
+				"name": "power",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.primary",
+				"name": "primary",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.slices",
+				"name": "slices",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.slice",
+				"name": "slice",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.atom",
+				"name": "atom",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.group",
+				"name": "group",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.lambdef",
+				"name": "lambdef",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.lambda_params",
+				"name": "lambda_params",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.lambda_parameters",
+				"name": "lambda_parameters",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.lambda_slash_no_default",
+				"name": "lambda_slash_no_default",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.lambda_slash_with_default",
+				"name": "lambda_slash_with_default",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.lambda_star_etc",
+				"name": "lambda_star_etc",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.lambda_kwds",
+				"name": "lambda_kwds",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.lambda_param_no_default",
+				"name": "lambda_param_no_default",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.lambda_param_with_default",
+				"name": "lambda_param_with_default",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.lambda_param_maybe_default",
+				"name": "lambda_param_maybe_default",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.lambda_param",
+				"name": "lambda_param",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.fstring_middle",
+				"name": "fstring_middle",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.fstring_replacement_field",
+				"name": "fstring_replacement_field",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.fstring_conversion",
+				"name": "fstring_conversion",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.fstring_full_format_spec",
+				"name": "fstring_full_format_spec",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.fstring_format_spec",
+				"name": "fstring_format_spec",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.fstring",
+				"name": "fstring",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.tstring_format_spec_replacement_field",
+				"name": "tstring_format_spec_replacement_field",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.tstring_format_spec",
+				"name": "tstring_format_spec",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.tstring_full_format_spec",
+				"name": "tstring_full_format_spec",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.tstring_replacement_field",
+				"name": "tstring_replacement_field",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.tstring_middle",
+				"name": "tstring_middle",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.string",
+				"name": "string",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.list",
+				"name": "list",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.tuple",
+				"name": "tuple",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.set",
+				"name": "set",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.dict",
+				"name": "dict",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.double_starred_kvpairs",
+				"name": "double_starred_kvpairs",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.double_starred_kvpair",
+				"name": "double_starred_kvpair",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.kvpair",
+				"name": "kvpair",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.for_if_clauses",
+				"name": "for_if_clauses",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.for_if_clause",
+				"name": "for_if_clause",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.listcomp",
+				"name": "listcomp",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.setcomp",
+				"name": "setcomp",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.genexp",
+				"name": "genexp",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.dictcomp",
+				"name": "dictcomp",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.args",
+				"name": "args",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.kwargs",
+				"name": "kwargs",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.starred_expression",
+				"name": "starred_expression",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.kwarg_or_starred",
+				"name": "kwarg_or_starred",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.kwarg_or_double_starred",
+				"name": "kwarg_or_double_starred",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.star_targets",
+				"name": "star_targets",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.star_targets_list_seq",
+				"name": "star_targets_list_seq",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.star_targets_tuple_seq",
+				"name": "star_targets_tuple_seq",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.star_atom",
+				"name": "star_atom",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.single_target",
+				"name": "single_target",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.single_subscript_attribute_target",
+				"name": "single_subscript_attribute_target",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.t_primary",
+				"name": "t_primary",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.t_lookahead",
+				"name": "t_lookahead",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.del_targets",
+				"name": "del_targets",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.del_t_atom",
+				"name": "del_t_atom",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.type_expressions",
+				"name": "type_expressions",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.func_type_comment",
+				"name": "func_type_comment",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_arguments",
+				"name": "invalid_arguments",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_kwarg",
+				"name": "invalid_kwarg",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.expression_without_invalid",
+				"name": "expression_without_invalid",
+				"category": "syntax-production",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_legacy_expression",
+				"name": "invalid_legacy_expression",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_type_param",
+				"name": "invalid_type_param",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_expression",
+				"name": "invalid_expression",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_named_expression",
+				"name": "invalid_named_expression",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_assignment",
+				"name": "invalid_assignment",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_ann_assign_target",
+				"name": "invalid_ann_assign_target",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_del_stmt",
+				"name": "invalid_del_stmt",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_block",
+				"name": "invalid_block",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_comprehension",
+				"name": "invalid_comprehension",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_dict_comprehension",
+				"name": "invalid_dict_comprehension",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_parameters",
+				"name": "invalid_parameters",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_default",
+				"name": "invalid_default",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_star_etc",
+				"name": "invalid_star_etc",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_kwds",
+				"name": "invalid_kwds",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_parameters_helper",
+				"name": "invalid_parameters_helper",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_lambda_parameters",
+				"name": "invalid_lambda_parameters",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_lambda_parameters_helper",
+				"name": "invalid_lambda_parameters_helper",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_lambda_star_etc",
+				"name": "invalid_lambda_star_etc",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_lambda_kwds",
+				"name": "invalid_lambda_kwds",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_double_type_comments",
+				"name": "invalid_double_type_comments",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_with_item",
+				"name": "invalid_with_item",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_for_if_clause",
+				"name": "invalid_for_if_clause",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_for_target",
+				"name": "invalid_for_target",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_group",
+				"name": "invalid_group",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_import",
+				"name": "invalid_import",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_dotted_as_name",
+				"name": "invalid_dotted_as_name",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_import_from_as_name",
+				"name": "invalid_import_from_as_name",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_import_from_targets",
+				"name": "invalid_import_from_targets",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_with_stmt",
+				"name": "invalid_with_stmt",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_with_stmt_indent",
+				"name": "invalid_with_stmt_indent",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_try_stmt",
+				"name": "invalid_try_stmt",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_except_stmt",
+				"name": "invalid_except_stmt",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_except_star_stmt",
+				"name": "invalid_except_star_stmt",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_finally_stmt",
+				"name": "invalid_finally_stmt",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_except_stmt_indent",
+				"name": "invalid_except_stmt_indent",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_except_star_stmt_indent",
+				"name": "invalid_except_star_stmt_indent",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_match_stmt",
+				"name": "invalid_match_stmt",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_case_block",
+				"name": "invalid_case_block",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_as_pattern",
+				"name": "invalid_as_pattern",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_class_pattern",
+				"name": "invalid_class_pattern",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_class_argument_pattern",
+				"name": "invalid_class_argument_pattern",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_if_stmt",
+				"name": "invalid_if_stmt",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_elif_stmt",
+				"name": "invalid_elif_stmt",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_else_stmt",
+				"name": "invalid_else_stmt",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_while_stmt",
+				"name": "invalid_while_stmt",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_for_stmt",
+				"name": "invalid_for_stmt",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_def_raw",
+				"name": "invalid_def_raw",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_class_def_raw",
+				"name": "invalid_class_def_raw",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_double_starred_kvpairs",
+				"name": "invalid_double_starred_kvpairs",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_kvpair",
+				"name": "invalid_kvpair",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_starred_expression_unpacking",
+				"name": "invalid_starred_expression_unpacking",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_starred_expression",
+				"name": "invalid_starred_expression",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_fstring_replacement_field",
+				"name": "invalid_fstring_replacement_field",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_fstring_conversion_character",
+				"name": "invalid_fstring_conversion_character",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_tstring_replacement_field",
+				"name": "invalid_tstring_replacement_field",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_tstring_conversion_character",
+				"name": "invalid_tstring_conversion_character",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_string_tstring_concat",
+				"name": "invalid_string_tstring_concat",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_arithmetic",
+				"name": "invalid_arithmetic",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_factor",
+				"name": "invalid_factor",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			},
+			{
+				"id": "python.grammar.invalid_type_params",
+				"name": "invalid_type_params",
+				"category": "error-recovery",
+				"alignmentDecision": "unreviewed"
+			}
+		]
+	}
+}

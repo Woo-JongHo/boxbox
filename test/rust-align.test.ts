@@ -6,7 +6,7 @@ import      { RUST_ALIGNER        } from "@/rust/profile.ts"        ;
 
 defineLanguageSuite({
 	aligner     : RUST_ALIGNER,
-	fixturesDir : new URL("../skills/xxx/fixtures/rust/", import.meta.url).pathname,
+	fixturesDir : new URL("../test/fixtures/rust/", import.meta.url).pathname,
 	tableFile   : "tables.rs",
 	alignedFile : "tables.aligned.rs",
 	trickyFile  : "tricky.rs",

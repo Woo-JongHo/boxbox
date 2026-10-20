@@ -1,10 +1,16 @@
-import      { afterEach, describe, expect, test                           } from "bun:test"                        ;
-import      { createHash                                                  } from "node:crypto"                     ;
-import      { spawnSync                                                   } from "node:child_process"              ;
-import      { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs"                         ;
-import      { join                                                        } from "node:path"                       ;
-import      { tmpdir                                                      } from "node:os"                         ;
-import      { generateCandidates, selectRepresentatives                   } from "../scripts/corpus-candidates.ts" ;
+import      { afterEach, describe, expect, test         } from "bun:test"                                  ;
+import      { createHash                                } from "node:crypto"                               ;
+import      { spawnSync                                 } from "node:child_process"                        ;
+import      {
+              mkdtempSync                             ,
+              mkdirSync                               ,
+              readFileSync                            ,
+              rmSync                                  ,
+              writeFileSync                           ,
+                                                        } from "node:fs"                                   ;
+import      { join                                      } from "node:path"                                 ;
+import      { tmpdir                                    } from "node:os"                                   ;
+import      { generateCandidates, selectRepresentatives } from "../development/tools/corpus-candidates.ts" ;
 
 const workspaces: string[] = []                                                                          ;
 const sha                  = (value: string): string => createHash("sha256").update(value).digest("hex") ;
@@ -13,7 +19,7 @@ const tagged               = (value: string): string => `sha256:${sha(value)}`  
 afterEach(() => { for (const workspace of workspaces.splice(0)) rmSync(workspace, { recursive: true, force: true }); });
 
 function fixture(): { root: string; input: string; output: string; commit: string; source: string; sourceTs: string; aligned: string } {
-	const root     = mkdtempSync(join(tmpdir(), "xxx-candidates-test-"))                         ;
+	const root     = mkdtempSync(join(tmpdir(), "boxbox-candidates-test-"))                      ;
 	const input    = join(root, "input")                                                         ;
 	const repo     = join(input, "sample")                                                       ;
 	const output   = join(root, "output")                                                        ;

@@ -15,9 +15,9 @@ import      { APPROVAL_VERSIONS                 } from "@/common/approval-gate.t
 import      { contentHashOf, sectionHash        } from "@/common/examples.ts"      ;
 import      { lookupKeyOf                       } from "@/common/signature.ts"     ;
 
-const repository           = resolve(import.meta.dir, "..")                   ;
-const cli                  = resolve(repository, "skills/xxx/scripts/cli.ts") ;
-const workspaces: string[] = []                                               ;
+const repository           = resolve(import.meta.dir, "..")               ;
+const cli                  = resolve(repository, "product/engine/cli.ts") ;
+const workspaces: string[] = []                                           ;
 
 interface Invocation {
 	readonly status : number ;
@@ -36,10 +36,10 @@ function workspace(): string {
 }
 
 function invoke(root: string, args: readonly string[], environment: Record<string, string> = {}): Invocation {
-	const source = `import { runCli } from ${JSON.stringify(cli)}; process.exitCode = await runCli(JSON.parse(process.env.XXX_TEST_ARGS!), process.cwd());`;
+	const source = `import { runCli } from ${JSON.stringify(cli)}; process.exitCode = await runCli(JSON.parse(process.env.BOXBOX_TEST_ARGS!), process.cwd());`;
 	const result = Bun.spawnSync([process.execPath, "-e", source], {
 		cwd    : root,
-		env    : { ...process.env, ...environment, XXX_TEST_ARGS: JSON.stringify(args) },
+		env    : { ...process.env, ...environment, BOXBOX_TEST_ARGS: JSON.stringify(args) },
 		stdout : "pipe",
 		stderr : "pipe",
 	});
@@ -53,7 +53,7 @@ function pythonFixture(root: string): string {
 }
 
 function approvedPythonProject(root: string): void {
-	const directory = join(root     , ".xxx"         ) ;
+	const directory = join(root     , ".boxbox"      ) ;
 	const docs      = join(directory, "docs"         ) ;
 	const formatter = join(root     , "formatter.mjs") ;
 	mkdirSync(docs, { recursive: true });
@@ -78,7 +78,7 @@ function approvedPythonProject(root: string): void {
 		versions: APPROVAL_VERSIONS, approvedBy: "test-approver", date: "2026-10-04",
 	};
 	const decision = {
-		schemaVersion: 1, id: "test-python-table", kind: "rule", layer: "convention", ref: ".xxx/docs/rules.md#Python table", docHash: sectionHash(document, "Python table"),
+		schemaVersion: 1, id: "test-python-table", kind: "rule", layer: "convention", ref: ".boxbox/docs/rules.md#Python table", docHash: sectionHash(document, "Python table"),
 		examples: ["test-positive", "test-counter"], approvedBy: "test-approver", date: "2026-10-04",
 	};
 	writeFileSync(join(docs, "rules.md"), document);
@@ -92,33 +92,33 @@ describe("public CLI", () => {
 		const root    = workspace()                 ;
 		const help    = invoke(root, ["--help"])    ; 
 		const version = invoke(root, ["--version"]) ;
-		expect(help.status          ).toBe     (0            ) ;
-		expect(help.stdout          ).toContain("Usage: xxx" ) ;
-		expect(help.stdout          ).toContain("exactly one") ;
-		expect(version.status       ).toBe     (0            ) ;
-		expect(version.stdout.trim()).toBe     ("0.2.0"      ) ;
+		expect(help.status          ).toBe     (0               ) ;
+		expect(help.stdout          ).toContain("Usage: boxbox" ) ;
+		expect(help.stdout          ).toContain("exactly one"   ) ;
+		expect(version.status       ).toBe     (0               ) ;
+		expect(version.stdout.trim()).toBe     ("0.2.0"         ) ;
 	});
 
 	test("init preserves existing user files and never overwrites the config when rerun", () => {
 		const root = workspace();
-		mkdirSync(join(root, ".xxx"));
-		writeFileSync(join(root, ".xxx", "notes.txt"), "mine\n");
-		const first      = invoke(root, ["init", "--json"])  ;
-		const configPath = join(root, ".xxx", "config.json") ;
-		const initial    = readFileSync(configPath, "utf8")  ;
-		const second     = invoke(root, ["init", "--json"])  ;
-		expect(first.status                                         ).toBe(0         ) ;
-		expect(second.status                                        ).toBe(0         ) ;
-		expect(JSON.parse(first.stdout).created                     ).toBe(true      ) ;
-		expect(JSON.parse(second.stdout).created                    ).toBe(false     ) ;
-		expect(readFileSync(configPath, "utf8")                     ).toBe(initial   ) ;
-		expect(readFileSync(join(root, ".xxx", "notes.txt"), "utf8")).toBe("mine\n"  ) ;
+		mkdirSync(join(root, ".boxbox"));
+		writeFileSync(join(root, ".boxbox", "notes.txt"), "mine\n");
+		const first      = invoke(root, ["init", "--json"])     ;
+		const configPath = join(root, ".boxbox", "config.json") ;
+		const initial    = readFileSync(configPath, "utf8")     ;
+		const second     = invoke(root, ["init", "--json"])     ;
+		expect(first.status                                            ).toBe(0         ) ;
+		expect(second.status                                           ).toBe(0         ) ;
+		expect(JSON.parse(first.stdout).created                        ).toBe(true      ) ;
+		expect(JSON.parse(second.stdout).created                       ).toBe(false     ) ;
+		expect(readFileSync(configPath, "utf8")                        ).toBe(initial   ) ;
+		expect(readFileSync(join(root, ".boxbox", "notes.txt"), "utf8")).toBe("mine\n"  ) ;
 	});
 
 	test("a corrupt or unknown config fails explicitly and is preserved", () => {
 		const root = workspace();
-		mkdirSync(join(root, ".xxx"));
-		const config = join(root, ".xxx", "config.json");
+		mkdirSync(join(root, ".boxbox"));
+		const config = join(root, ".boxbox", "config.json");
 		writeFileSync(config, "{broken\n");
 		const malformed = invoke(root, ["init", "--json"]);
 		expect(malformed.status                          ).toBe     (2               ) ;
@@ -140,7 +140,7 @@ describe("public CLI", () => {
 		expect(value.results[0].language          ).toBe           ("python") ;
 		expect(value.results[0].summary.misaligned).toBeGreaterThan(0       ) ;
 		expect(readFileSync(path, "utf8")         ).toBe           (before  ) ;
-		expect(existsSync(join(root, ".xxx"))     ).toBe           (false   ) ;
+		expect(existsSync(join(root, ".boxbox"))  ).toBe           (false   ) ;
 	});
 
 	test("format refuses to write and dry-run does not change the file either", () => {
@@ -192,8 +192,8 @@ describe("public CLI", () => {
 		const empty = invoke(root, ["guide", "--file", "table.py", "--json"]);
 		expect(empty.status).toBe(1);
 		expect(JSON.parse(empty.stdout).guides).toEqual([]);
-		mkdirSync(join(root, ".xxx"));
-		writeFileSync(join(root, ".xxx", "conventions.jsonl"), `${JSON.stringify({ schemaVersion: 1, id: "candidate-secret", key: lookupKeyOf("python", undefined, "table", ["name", "equal", "value"]), pattern: "DEFINE", status: "candidate", scope: "**", versions: APPROVAL_VERSIONS, approvedBy: "", date: "" })}\n`);
+		mkdirSync(join(root, ".boxbox"));
+		writeFileSync(join(root, ".boxbox", "conventions.jsonl"), `${JSON.stringify({ schemaVersion: 1, id: "candidate-secret", key: lookupKeyOf("python", undefined, "table", ["name", "equal", "value"]), pattern: "DEFINE", status: "candidate", scope: "**", versions: APPROVAL_VERSIONS, approvedBy: "", date: "" })}\n`);
 		const candidate = invoke(root, ["guide", "--file", "table.py", "--json"]);
 		expect(candidate.status                   )    .toBe     (1                 ) ;
 		expect(candidate.stdout                   ).not.toContain("candidate-secret") ;
@@ -205,8 +205,8 @@ describe("public CLI", () => {
 			const root = workspace()         ;
 			const path = pythonFixture(root) ;
 			approvedPythonProject(root);
-			const conventionPath = join(root, ".xxx", "conventions.jsonl")                                     ;
-			const decisionPath   = join(root, ".xxx", "decisions.jsonl")                                       ;
+			const conventionPath = join(root, ".boxbox", "conventions.jsonl")                                  ;
+			const decisionPath   = join(root, ".boxbox", "decisions.jsonl")                                    ;
 			const convention     = JSON.parse(readFileSync(conventionPath, "utf8")) as Record<string, unknown> ;
 			if (scenario === "unknown") convention.key = "v1|python|-|other|name>equal>value";
 			if (scenario === "rejected") convention.status = "rejected";
@@ -271,12 +271,12 @@ describe("public CLI", () => {
 		const escaped = invoke(root, ["check", "--file", "../outside.py", "--json"]);
 		expect(escaped.status).toBe(2);
 		expect(JSON.parse(escaped.stdout).error.code).toBe("PATH_ESCAPE");
-		mkdirSync(join(outside, "real-xxx"));
-		symlinkSync(join(outside, "real-xxx"), join(root, ".xxx"));
+		mkdirSync(join(outside, "real-boxbox"));
+		symlinkSync(join(outside, "real-boxbox"), join(root, ".boxbox"));
 		const linked = invoke(root, ["init", "--json"]);
-		expect(linked.status                                 ).toBe     (2        ) ;
-		expect(JSON.parse(linked.stdout).error.message       ).toContain("symlink") ;
-		expect(lstatSync(join(root, ".xxx")).isSymbolicLink()).toBe     (true     ) ;
+		expect(linked.status                                    ).toBe     (2        ) ;
+		expect(JSON.parse(linked.stdout).error.message          ).toContain("symlink") ;
+		expect(lstatSync(join(root, ".boxbox")).isSymbolicLink()).toBe     (true     ) ;
 	});
 
 	test("refuses parent-directory symbolic link escapes and languages disabled in the config", () => {
@@ -287,8 +287,8 @@ describe("public CLI", () => {
 		const escaped = invoke(root, ["check", "--file", "linked/outside.py", "--json"]);
 		expect(escaped.status).toBe(2);
 		expect(JSON.parse(escaped.stdout).error.code).toBe("PATH_ESCAPE");
-		mkdirSync(join(root, ".xxx"));
-		writeFileSync(join(root, ".xxx", "config.json"), JSON.stringify({ schemaVersion: 1, languages: ["typescript"] }));
+		mkdirSync(join(root, ".boxbox"));
+		writeFileSync(join(root, ".boxbox", "config.json"), JSON.stringify({ schemaVersion: 1, languages: ["typescript"] }));
 		writeFileSync(join(root, "local.py"), "a = 1\n");
 		const disabled = invoke(root, ["check", "--file", "local.py", "--json"]);
 		expect(disabled.status).toBe(2);

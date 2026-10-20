@@ -21,15 +21,15 @@ const ROOT            = resolve(import.meta.dir, "..") ;
 const homes: string[] = []                             ;
 
 function temporaryHome(): string {
-	const home = mkdtempSync(join(tmpdir(), "xxx-install-"));
+	const home = mkdtempSync(join(tmpdir(), "boxbox-install-"));
 	homes.push(home);
 	return home;
 }
 
 function install(home: string, ...args: string[]): ReturnType<typeof Bun.spawnSync> {
-	return Bun.spawnSync(["bash", "install.sh", ...args, "--skip-deps"], {
+	return Bun.spawnSync(["bash", "development/install.sh", ...args, "--skip-deps"], {
 		cwd : ROOT,
-		env : { ...process.env, XXX_INSTALL_HOME: home },
+		env : { ...process.env, BOXBOX_INSTALL_HOME: home },
 	});
 }
 
@@ -43,13 +43,13 @@ describe("install.sh lifecycle", () => {
 		for (let run = 0; run < 2; run += 1) expect(install(home, "claude", "zcode", "codex").exitCode).toBe(0);
 
 		const skillLinks = [
-			join(home, ".claude/skills/xxx"),
-			join(home, ".agents/skills/xxx"),
-			join(home, ".codex/skills/xxx"),
+			join(home, ".claude/skills/boxbox"),
+			join(home, ".agents/skills/boxbox"),
+			join(home, ".codex/skills/boxbox"),
 		];
 		for (const link of skillLinks) {
 			expect(lstatSync(link).isSymbolicLink()).toBe(true);
-			expect(realpathSync(link)).toBe(realpathSync(resolve(ROOT, "skills/xxx")));
+			expect(realpathSync(link)).toBe(realpathSync(resolve(ROOT, "development/skills/boxbox")));
 		}
 		expect(lstatSync(join(home, ".claude/agents/readability-inspector.md")).isSymbolicLink()).toBe(true);
 		expect(lstatSync(join(home, ".codex/agents/readability-inspector.toml")).isSymbolicLink()).toBe(true);
@@ -58,17 +58,23 @@ describe("install.sh lifecycle", () => {
 	test("copy install creates an independent copy and uninstall removes only installed targets", () => {
 		const home = temporaryHome();
 		expect(install(home, "codex", "--copy").exitCode).toBe(0);
-		const skill = join(home, ".codex/skills/xxx");
-		expect(lstatSync(skill).isDirectory()).toBe(true);
-		expect(readFileSync(join(skill, "SKILL.md"), "utf8")).toContain("name: xxx");
+		const skill = join(home, ".codex/skills/boxbox");
+		expect(lstatSync(skill).isDirectory()                   ).toBe     (true          ) ;
+		expect(readFileSync(join(skill, "SKILL.md"), "utf8")    ).toContain("name: boxbox") ;
+		expect(lstatSync(join(skill, "engine")).isSymbolicLink()).toBe     (false         ) ;
+		expect(lstatSync(join(skill, "rules")).isSymbolicLink() ).toBe     (false         ) ;
+		expect(existsSync(join(skill, "fixtures"))              ).toBe     (false         ) ;
+		const runtime = Bun.spawnSync(["bun", "-e", 'const { surfaceOf } = await import(process.argv[1]); console.log(surfaceOf("python").language);', join(skill, "engine/common/surface.ts")], { cwd: home });
+		expect(runtime.exitCode).toBe(0);
+		expect(runtime.stdout.toString().trim()).toBe("python");
 
 		expect(install(home, "codex", "--uninstall").exitCode).toBe(0);
 		expect(existsSync(skill)).toBe(false);
 	});
 
 	test("never overwrites a regular file owned by the user", () => {
-		const home   = temporaryHome()                 ;
-		const target = join(home, ".codex/skills/xxx") ;
+		const home   = temporaryHome()                    ;
+		const target = join(home, ".codex/skills/boxbox") ;
 		mkdirSync(target, { recursive: true });
 		writeFileSync(join(target, "owner.txt"), "keep\n");
 

@@ -1,4 +1,4 @@
-import      { afterEach, describe, expect, test } from "bun:test"                    ;
+import      { afterEach, describe, expect, test } from "bun:test"                              ;
 import      {
               mkdirSync                       ,
               mkdtempSync                     ,
@@ -6,13 +6,13 @@ import      {
               rmSync                          ,
               symlinkSync                     ,
               writeFileSync                   ,
-                                                } from "node:fs"                     ;
-import      { tmpdir                            } from "node:os"                     ;
-import      { join                              } from "node:path"                   ;
+                                                } from "node:fs"                               ;
+import      { tmpdir                            } from "node:os"                               ;
+import      { join                              } from "node:path"                             ;
 
-import      { APPROVAL_VERSIONS                 } from "@/common/approval-gate.ts"   ;
-import      { contentHashOf, sectionHash        } from "@/common/examples.ts"        ;
-import      { preparePublicPreset               } from "../scripts/public-preset.ts" ;
+import      { APPROVAL_VERSIONS                 } from "@/common/approval-gate.ts"             ;
+import      { contentHashOf, sectionHash        } from "@/common/examples.ts"                  ;
+import      { preparePublicPreset               } from "../development/tools/public-preset.ts" ;
 
 const roots: string[] = [];
 
@@ -23,7 +23,7 @@ interface Fixture {
 }
 
 function fixture(): Fixture {
-	const root = mkdtempSync(join(tmpdir(), "xxx-public-preset-"));
+	const root = mkdtempSync(join(tmpdir(), "boxbox-public-preset-"));
 	roots.push(root);
 	mkdirSync(join(root, "docs", "public"), { recursive: true });
 	const rule          = "synthetic-rule"                                   ;
