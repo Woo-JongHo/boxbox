@@ -88,8 +88,8 @@ npm.cmd exec --yes --package 'C:\path\to\boxbox-plugin-<version>.tgz' -- boxbox 
 Omit `--hud` on Windows, where the terminal HUD is unsupported, or when updating only the plugin. Claude's owned
 status-line state is stored in the stable HUD data directory and can be updated in place; another status line is refused.
 
-Use your installed OpenAI Codex CLI (`codex.cmd` is the standard Windows npm entry). The removal-and-reinstall procedure was verified for 0.2.0 → 0.2.1 with native Windows Codex 0.157.1;
-0.2.1 → 0.2.2 still needs direct measurement. The installer does not migrate marketplace sources automatically.
+Use your installed OpenAI Codex CLI (`codex.cmd` is the standard Windows npm entry). Marketplace replacement is a
+manual, non-atomic removal/reinstall operation. The installer does not migrate Codex marketplace sources automatically.
 
 The payload is copied out of npm's temporary cache into permanent, separate host directories before registration:
 
@@ -100,7 +100,20 @@ Each selected host installs the included private `boxbox` engine tarball with `-
 The nested engine never comes from the npm registry. Pinned `typescript@7.0.2` and its native platform dependencies still
 need internet access or a primed npm cache. Installed plugins survive npm cache cleanup or deletion of the original
 installer tarball. Rerunning the same version repairs shipped files and runtime while preserving other data in that folder.
-If repair fails, the previous version directory is restored so its generated skill, hooks and runtime keep working.
+If repair fails before host registration starts, the previous directory is restored. Once registration may have
+changed, a failure retains the new directory, its `.boxbox-install-state.json` phase receipt and any previous backup;
+the error prints their exact paths. This prevents a host registration from pointing at a deleted directory. Inspect
+the host plugin and marketplace lists before recovery. Rerunning the exact installer deliberately retries a valid
+receipt belonging to that same root/version/host; its replacement backup is removed only after verified success. Foreign,
+malformed or symlink receipts are refused without replacement. Do not delete retained directories while a host still
+references them; after removing the exact registration, restore the printed backup or reinstall. This is partial-state
+retention, not an automatic rollback of host settings. Successful retries do not delete backups retained by earlier runs.
+
+For an installer-owned local Claude marketplace, installation checks the exact user-scope plugin identity and
+refreshes stale recorded versions with `claude plugin update boxbox@boxbox-plugins --scope user`. Completion requires
+the intended marketplace root, version, cached manifest and engine paths to agree. A foreign/shared marketplace or
+ambiguous plugin scope is refused. Older installer archives do not gain these checks: use the documented exact plugin
+and marketplace removal commands below before reinstalling an older archive for rollback. Restart Claude after a change.
 
 Restart each selected host. In Codex, select the BoxBox `boxbox` skill in the picker; in Claude Code, select the installed
 BoxBox skill from its skill list. Name one TypeScript or Python file and request a read-only check first. Review the
