@@ -1,0 +1,55 @@
+LINUX_WSL_WORKSPACE /home/woo/boxbox-ci-smoke-linux-yis1l9gu
+OFFICIAL_DOWNLOAD https://nodejs.org/dist/v22.22.3/SHASUMS256.txt
+OFFICIAL_DOWNLOAD https://nodejs.org/dist/v22.22.3/node-v22.22.3-linux-x64.tar.xz
+OFFICIAL_NODE_DIGEST_VERIFIED 2e5d13569282d016861fae7c8f935e741693c269101a5bebcf761a5376d1f99f
+LINUX_WSL_PREFLIGHT {"platform": "linux", "uname": "Linux DESKTOP-WOO 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux", "node": "v22.22.3", "npm": "10.9.8", "python3": "Python 3.12.3", "nodeFromPath": "/home/woo/boxbox-ci-smoke-linux-yis1l9gu/toolchain/node-v22.22.3-linux-x64/bin/node", "npmFromPath": "/home/woo/boxbox-ci-smoke-linux-yis1l9gu/toolchain/node-v22.22.3-linux-x64/bin/npm", "npmEntry": "/home/woo/boxbox-ci-smoke-linux-yis1l9gu/toolchain/node-v22.22.3-linux-x64/lib/node_modules/npm/bin/npm-cli.js", "nodeChildFromPath": "/home/woo/boxbox-ci-smoke-linux-yis1l9gu/toolchain/node-v22.22.3-linux-x64/bin/node"}
+{
+	"schemaVersion": 1,
+	"ok": true,
+	"sha256": "6fc35d7c92f6eeb1b442d6d21901ed6f27c06e9654f412750b4530b638b89b8f",
+	"version": "0.2.1",
+	"platform": "linux",
+	"arch": "x64",
+	"node": "22.22.3",
+	"checks": [
+		{
+			"command": "doctor",
+			"ok": true,
+			"python": "Python 3.12.3"
+		},
+		{
+			"file": "LF-calls.ts",
+			"previewPreserved": true,
+			"approvedOutput": true,
+			"recheck": true,
+			"idempotent": true
+		},
+		{
+			"file": "CRLF-calls.ts",
+			"previewPreserved": true,
+			"approvedOutput": true,
+			"recheck": true,
+			"idempotent": true
+		},
+		{
+			"file": "LF-assignments.py",
+			"previewPreserved": true,
+			"approvedOutput": true,
+			"recheck": true,
+			"idempotent": true
+		},
+		{
+			"file": "CRLF-assignments.py",
+			"previewPreserved": true,
+			"approvedOutput": true,
+			"recheck": true,
+			"idempotent": true
+		}
+	],
+	"limitations": [
+		"Host checks and plugin registration were skipped (--engine-only).",
+		"Native host hook-event delivery was not exercised."
+	]
+}
+LINUX_WSL_RECEIPT {"schemaVersion": 1, "workspace": "/home/woo/boxbox-ci-smoke-linux-yis1l9gu", "source": "/mnt/c/Users/woo/Downloads/BoxBox/ci-smoke-20261021T031802Z", "startedAt": "2026-10-21T03:32:58.985552+00:00", "kernel": "6.6.87.2-microsoft-standard-WSL2", "machine": "x86_64", "scope": "Linux WSL engine-only; not a GitHub-hosted runner", "inputDigests": {"release-smoke.mjs": "2093988c272116b9dd3b615e524210baaf4ebf352d7a57264f4f96f4efe9f2d0", "SHA256SUMS": "f828e9aa306a2f4de6540aed7d9f27bfc7fb622ff74471a16ab6b2fe8bbca6f5", "boxbox-plugin-0.2.1.tgz": "6fc35d7c92f6eeb1b442d6d21901ed6f27c06e9654f412750b4530b638b89b8f", "candidate.json": "6cb185e980f95ef132a35f50ba18d8dd8308d370fd936738ffea41a8dda63540"}, "nodeDistribution": {"archive": "node-v22.22.3-linux-x64.tar.xz", "source": "https://nodejs.org/dist/v22.22.3/node-v22.22.3-linux-x64.tar.xz", "checksumsSource": "https://nodejs.org/dist/v22.22.3/SHASUMS256.txt", "sha256": "2e5d13569282d016861fae7c8f935e741693c269101a5bebcf761a5376d1f99f", "verifiedBeforeExtraction": true, "checksumsSha256": "b99296390cb403042da79c14d81e681076a9ac03af062d13f840dadc4ec751b3"}, "preflight": {"platform": "linux", "uname": "Linux DESKTOP-WOO 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux", "node": "v22.22.3", "npm": "10.9.8", "python3": "Python 3.12.3", "nodeFromPath": "/home/woo/boxbox-ci-smoke-linux-yis1l9gu/toolchain/node-v22.22.3-linux-x64/bin/node", "npmFromPath": "/home/woo/boxbox-ci-smoke-linux-yis1l9gu/toolchain/node-v22.22.3-linux-x64/bin/npm", "npmEntry": "/home/woo/boxbox-ci-smoke-linux-yis1l9gu/toolchain/node-v22.22.3-linux-x64/lib/node_modules/npm/bin/npm-cli.js", "nodeChildFromPath": "/home/woo/boxbox-ci-smoke-linux-yis1l9gu/toolchain/node-v22.22.3-linux-x64/bin/node"}, "harnessExitCode": 0, "scriptUnchanged": true, "archiveUnchanged": true, "reportFile": "/home/woo/boxbox-ci-smoke-linux-yis1l9gu/candidate/smoke-Linux.json", "exitCode": 0}
+LINUX_WSL_SSH_EXIT=0
