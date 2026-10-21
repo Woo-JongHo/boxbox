@@ -78,9 +78,10 @@ test("HUD reports malformed receipts and actual latest outcomes without turning 
 
 test("HUD reads a receipt from the real hook writer and marks inaccessible receipt roots incomplete", () => {
 	const { root, list, doctor } = installed();
-	const data  = join(root, "plugin-data")                                                ;
-	const entry = resolve(import.meta.dir, "../product/packages/cli/entry.ts")             ;
-	const run   = (_tool: unknown, args: string[]) => args[0] === "plugin" ? list : doctor ;
+	const data           = join(root, "plugin-data")                                                ;
+	const entry          = resolve(import.meta.dir, "../product/packages/cli/entry.ts")             ;
+	const run            = (_tool: unknown, args: string[]) => args[0] === "plugin" ? list : doctor ;
+	let receiptDirectory = ""                                                                       ;
 	for (const mode of ["session", "post"]) {
 		const child = spawnSync(process.execPath, [entry, "hook", mode], {
 			cwd: root, input: JSON.stringify({ cwd: root, session_id: "hud-writer", tool_name: "apply_patch" }),
@@ -88,6 +89,7 @@ test("HUD reads a receipt from the real hook writer and marks inaccessible recei
 		});
 
 		expect(child.status).toBe(0);
+		if (mode === "session") receiptDirectory = JSON.parse(child.stdout).hookSpecificOutput.additionalContext.match(/Results are recorded in (.*)\.$/u)[1];
 	}
 	const recorded = collectHud({ root, pluginData: data, run });
 
@@ -97,6 +99,24 @@ test("HUD reads a receipt from the real hook writer and marks inaccessible recei
 	expect(recorded.hooks.hostAcceptance).toBe("unverified" ) ;
 
 	const projectKey = createHash("sha256").update(root).digest("hex").slice(0, 16);
+
+	expect(collectHud({ root, pluginData: receiptDirectory, run }).hooks.latest.state).toBe("NO_CHANGES");
+	expect(collectHud({ root, pluginData: receiptDirectory.replace(projectKey, "0".repeat(16)), run }).hooks.state).toBe("location-mismatch");
+
+	const previousClaude = process.env.CLAUDE_PLUGIN_DATA ;
+	const previousCodex  = process.env.PLUGIN_DATA        ;
+	try {
+		process.env.CLAUDE_PLUGIN_DATA = data;
+		process.env.PLUGIN_DATA = join(root, "other-plugin-data");
+
+		expect(collectHud({ root, run }).hooks.latest.state).toBe("NO_CHANGES");
+	} finally {
+		if (previousClaude === undefined) delete process.env.CLAUDE_PLUGIN_DATA;
+		else process.env.CLAUDE_PLUGIN_DATA = previousClaude;
+		if (previousCodex === undefined) delete process.env.PLUGIN_DATA;
+		else process.env.PLUGIN_DATA = previousCodex;
+	}
+
 	rmSync(join(data, "hooks", projectKey), { recursive: true });
 	writeFileSync(join(data, "hooks", projectKey), "not a directory");
 

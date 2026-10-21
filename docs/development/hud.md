@@ -20,8 +20,9 @@ plugin's engine `doctor`. It does not execute the development engine or format p
 formatter configuration describe configuration only; actual file safety remains a `format --dry-run` decision.
 
 Hook receipts are available only when their real data directory is known. The optional
-`--plugin-data <absolute-directory>` argument takes the directory reported by BoxBox's session hook; `PLUGIN_DATA`
-and `CLAUDE_PLUGIN_DATA` are also accepted. Without a directory the panel shows `location-unknown`. Invalid receipts
+`--plugin-data <absolute-directory>` argument accepts either the data root or the session receipt directory reported
+by BoxBox's session hook. A session path for another project reports `location-mismatch`. `CLAUDE_PLUGIN_DATA` takes
+precedence over `PLUGIN_DATA`, matching the engine's hook writer. Without a directory the panel shows `location-unknown`. Invalid receipts
 produce `incomplete`. Receipt records remain distinct from native host acceptance, which this HUD does not measure.
 
 This is a development tool and project skill, excluded from both release artifacts. No host trust settings are changed.
