@@ -32,7 +32,7 @@
       "status": "done"
     },
     {
-      "description": "Rebuild and repeat disposable native Codex and Claude HUD acceptance.",
+      "description": "Complete authenticated Claude interactive HUD acceptance; rebuilt entrypoints, native Codex HUD and installed Claude status-line transitions have passed within their recorded scopes.",
       "status": "in-progress"
     }
   ],
@@ -47,15 +47,14 @@
       "result": "Focused suites passed 24 tests with 159 assertions and no failures; syntax and diff checks passed."
     },
     {
-      "name": "Rebuilt current-candidate native HUD acceptance",
+      "name": "Remaining authenticated Claude interactive HUD acceptance",
       "status": "pending",
-      "scope": "Exact rebuilt local candidate in disposable macOS Codex and Claude profiles.",
+      "scope": "Actual Claude interactive UI in an authenticated disposable profile; installed status-line execution alone does not prove this surface.",
       "evidence": [
-        "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-final-report.md",
-        "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-current-candidate/codex-hud-pane.txt",
-        "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-current-candidate/claude-status-initial.txt"
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/claude-isolated-auth-probe.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/independent-review.md"
       ],
-      "result": "Rebuilt exact local archive c18a7da...fb84 installed both hosts, created the Codex launcher and Claude statusLine, and rendered both installed status entry points. Actual Codex PTY/tmux rendering and cleanup passed. Authenticated ready/error/recovery and Claude native UI remain pending: isolated profiles reached login flows. Windows packaged CLI installation and check/align/check passed separately; no native hook acceptance is claimed."
+      "result": "The rebuilt 2b43 candidate statusLine command passed ready/error/recovery, but the isolated Claude CLI auth probe returned loggedIn=false. No authenticated Claude interactive screen was run. This remaining native UI requirement keeps the issue verifying; it is distinct from issue 011 native hook-event delivery."
     },
     {
       "name": "GLM source audit and rebuilt artifact regression",
@@ -66,7 +65,18 @@
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-closure-result.md",
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-final-report.md"
       ],
-      "result": "GLM found no mandatory source defects. The original silent entry failure did not recur on the rebuilt archive; native session authentication remains an external prerequisite."
+      "result": "GLM found no mandatory source defects. The original silent entry failure did not recur on the rebuilt archive. The later bounded native results are recorded separately below; authenticated Claude UI remains an external prerequisite."
+    },
+    {
+      "name": "Rebuilt 2b43 Codex HUD and Claude status-line closure",
+      "status": "passed",
+      "scope": "Exact local 2b43d24eabfdde00ae8019b204aabd2cc8d04f1604a8ffd540ec3170606649f0 archive on macOS; authenticated Codex upper prompt and qualified companion, installed Claude status-line command ready/error/recovery, isolated cleanup. Not Claude interactive UI or Windows HUD.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/author-report.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/independent-review.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/cleanup-closure.md"
+      ],
+      "result": "Both installed entrypoints rendered. Native Codex reached the authenticated normal prompt with the BoxBox companion. Claude status-line execution returned ready, not-ready for invalid config, then ready while retaining host-unverified qualifiers. Independent review closed the disposable trust-cleanup finding. These passes narrow the remaining action but do not resolve authenticated Claude interactive acceptance."
     }
   ],
   "related": [
@@ -135,6 +145,17 @@
       "evidence": [
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-final-report.md",
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-closure-result.md"
+      ]
+    },
+    {
+      "sequence": 5,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Reconciled the later independently reviewed 2b43 evidence: authenticated Codex HUD and installed Claude status-line transitions passed, including cleanup closure. Preserve the original failures and keep this issue verifying for the unexecuted authenticated Claude interactive UI; no scope was dropped.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/independent-review.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/claude-isolated-auth-probe.md"
       ]
     }
   ]

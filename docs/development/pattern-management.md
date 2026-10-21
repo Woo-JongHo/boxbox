@@ -77,8 +77,10 @@ Native authoring exposed a difference between shared outer roles and identical i
 call and arithmetic can all be assignment rows while their right-hand expressions differ. The
 [outer-projection implementation plan](proposals/2026-10-22-python-assignment-envelope.md) keeps those expressions
 opaque and introduces a separate `name > equal > assignment-value` candidate identity. Existing detailed tables keep
-exclusive ownership of their rows; the fallback cannot cross them. This bounded implementation passed current source tests; independent final audit and installed verification are
-still in progress. It is not a new approved rule or coverage for every expression. Its regression and evidence are tracked in
+exclusive ownership of their rows; the fallback cannot cross them. This bounded implementation passed source tests,
+independent review, the scoped GLM audit, and local/native Windows installed verification on the `2b43d24…` candidate.
+The later source-`35b6178` CI candidate also passed its three-OS engine smoke; native-host evidence remains separately scoped.
+It is not a new approved rule or coverage for every expression. Its regression and evidence are tracked in
 [issue 015](issue-library/records/BBX-20261022-015-python-assignment-envelope.json). The 45 advisory catalog cases keep
 their existing design-only labels.
 
