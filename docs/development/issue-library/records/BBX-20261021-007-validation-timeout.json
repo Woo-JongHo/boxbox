@@ -163,6 +163,16 @@
       "evidence": [
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/ts-timeout-diagnosis/diagnostic-report.md"
       ]
+    },
+    {
+      "sequence": 9,
+      "date": "2026-10-22",
+      "event": "diagnosed",
+      "status": "pending",
+      "summary": "An isolated checkout with API-stage and CLI-exit breadcrumbs completed 160 p12 full-file runs, with no sustained 60-second hang. Five 30-second observations showed late active children and then completed. Synchronous trace I/O may alter timing; the original CI cause remains unknown and production source/deadlines are unchanged.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/ts-stage-diagnostic/report.md"
+      ]
     }
   ]
 }

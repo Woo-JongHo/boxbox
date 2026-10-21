@@ -71,6 +71,17 @@ case and one whitespace/comment separation case. Long-row behavior remains a sep
 combination. Every case carries related fixture/test evidence and a `design-only` verification label: these snippets are not
 claimed to have been executed merely because their broader family has engine tests.
 
+### Current bounded follow-up: Python calculation assignments
+
+Native authoring exposed a difference between shared outer roles and identical inner shapes: arithmetic, a positional
+call and arithmetic can all be assignment rows while their right-hand expressions differ. The
+[outer-projection implementation plan](proposals/2026-10-22-python-assignment-envelope.md) keeps those expressions
+opaque and introduces a separate `name > equal > assignment-value` candidate identity. Existing detailed tables keep
+exclusive ownership of their rows; the fallback cannot cross them. This bounded implementation passed current source tests; independent final audit and installed verification are
+still in progress. It is not a new approved rule or coverage for every expression. Its regression and evidence are tracked in
+[issue 015](issue-library/records/BBX-20261022-015-python-assignment-envelope.json). The 45 advisory catalog cases keep
+their existing design-only labels.
+
 ### Policy and evidence ownership
 
 - Engine code: syntax interpretation, safe source ranges, bounded operations, column calculation and safety checks.

@@ -1,0 +1,3 @@
+const short      = make(1  ) ;
+const muchLonger = make(22 ) ;
+const middle     = make(333) ;

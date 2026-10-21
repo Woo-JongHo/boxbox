@@ -1,16 +1,17 @@
 # BoxBox — Design
 
-**Reading note (2026-10-21):** This draft includes historical implementation notes and proposed commands. Use the [maintainer index](README.md), [current inspection process](inspection-process.md) and [storage contract](storage.md) for current behavior. In particular, public `check` does not run the formatter/parse/fixed-point pipeline; raw parser equivalence is not zero-error validation; the approved TypeScript rule has a two-row exception. The old implementation table below is historical, not the current capability map.
+**Reading note (2026-10-22):** This draft includes historical implementation notes and proposed commands. Use the [maintainer index](README.md), [current inspection process](inspection-process.md) and [storage contract](storage.md) for current behavior. Public `check` now validates the input's syntax; it does not run the formatter or the pre/post-write equivalence and fixed-point pipeline. Raw parser equivalence is not zero-error validation, and the approved TypeScript rule has a two-row exception. The original implementation-status assertions below, including "not implemented yet" and the section 10 table, describe the historical design snapshot rather than the current capability map.
 
 Status: Draft
 Date: 2026-09-28
 Product name: **BoxBox** (confirmed by the user on 2026-10-16); display name: `BoxBox`; environment prefix: `BOXBOX`
 
 **Release target expansion (2026-10-21 user decision):** include JSON and YAML alongside TypeScript and Python,
-covering source code and structured configuration/documents used in AI workflows. Current public execution remains
-TypeScript/Python only. See [FORMAT1 in the plan](plan.md#planned-scope-expansion--format1-json-and-yaml) for the
-proposed safety boundary and acceptance work. Specific JSON/YAML conventions, parser choices and embedded Markdown
-support are not approved or implemented by this decision.
+covering source code and structured configuration/documents used in AI workflows. The current 0.2.4 source candidate
+implements checks for TypeScript, Python, strict JSON and YAML 1.2, plus guarded JSON/YAML alignment adapters.
+The shipped preset still authorizes only the two existing TypeScript/Python rules; proposed JSON/YAML rules and
+their example licenses await separate human decisions. See [FORMAT1 in the plan](plan.md#planned-scope-expansion--format1-json-and-yaml)
+for the safety boundary and remaining acceptance work. Embedded Markdown support is not implemented by this expansion.
 
 **Pattern management clarification (2026-10-21):** the user authorized a completion loop covering diverse pattern
 families, not only return guards. [Pattern management](pattern-management.md) owns the current target decision
@@ -41,7 +42,9 @@ The existing axis registry and authoring contract support this direction. Ordina
 and selects guidance from detected approved groups. The AUTHOR1 0.2.4 source candidate adds `guide --authoring`
 to retrieve approved guidance before an existing, empty or not-yet-created file is authored. The same rule identities
 and approval proofs feed guidance and checks; example availability is not proof that an arbitrary proposed file is safe to write.
-Integration verification and independent review remain in progress.
+Local integration checks and scoped independent source reviews passed for the prior candidate. Native direct
+authoring later preserved behavior but exposed missing Python common-column coverage; that implementation and
+current-candidate CI remain open in [READINESS1](plan.md#completion-loop--readiness1-2026-10-21).
 
 Structural authoring guidance must distinguish enforceable layout conditions from judgments about
 function purpose, grouping and simplification. Absence of detected tables is not proof that an authoring request was

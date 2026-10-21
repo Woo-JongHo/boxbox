@@ -1,0 +1,12 @@
+Host: Claude Code 2.1.286, ordinary native ChatGPT authentication.
+Candidate: exact --plugin-dir /tmp/boxbox-native-fixed.Shl97G/home/data/boxbox/claude/0.2.4/plugin.
+Status settings: temporary --settings file containing only the exact candidate statusLine command.
+Settings sources: project only; no live user/local settings source loaded.
+Workspace: generated empty Git repository /private/tmp/boxbox-native-fixed.Shl97G/project.
+Normal workspace trust UI was accepted for this exact disposable directory under existing authorization.
+READY observed in actual PTY: BoxBox 0.2.4 | engine ready | approved 2; session receipt unknown (not-observed) | file not run | host unverified.
+ERROR observed in actual PTY after parent shell created only .boxbox/config.json containing malformed JSON: BoxBox 0.2.4 | engine not-ready | approved ?; session receipt unknown (not-observed) | file not run | host unverified.
+RECOVERY observed in a fresh actual PTY after parent shell removed only that config file: BoxBox 0.2.4 | engine ready | approved 2; session receipt unknown (not-observed) | file not run | host unverified.
+A read-only no-tools model prompt encountered the account session usage limit; HUD status still refreshed to not-ready. No file tool was used.
+The exact temporary project entry /private/tmp/boxbox-native-fixed.Shl97G/project was removed from ~/.claude.json with a compare-before-replace write. No other project entry was removed or restored.
+Hook trust was not granted or bypassed. Receipt/host acceptance remains unverified as displayed.

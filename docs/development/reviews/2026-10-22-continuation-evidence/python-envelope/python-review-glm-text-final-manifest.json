@@ -1,0 +1,19 @@
+{
+  "model": "zai/glm-5.3",
+  "mode": "text",
+  "thinking": "low",
+  "request": {
+    "path": "/tmp/boxbox-readiness/python-review-glm-text-final-request.md",
+    "bytes": 22282,
+    "sha256": "7d69268b7f2fa05a37a97978363784790794bbacf5983236afcb26ee663c9e9d"
+  },
+  "runtimeHashes": {
+    "product/engine/common/table-engine.ts": "b7dc0ad9750cbcfb8af3a7de8cc89360040644d9ffa0334e420e93663f11b1cb",
+    "product/engine/python/assignment-envelope.ts": "38e212df561fb035fdcb5e33142ff149d28ea2b21d0a59177d5c7e4e89c56653",
+    "product/engine/python/profile.ts": "4a76139ca42aeb38e2abef0a03a6a30ab7ef886c571bdbb68a5985f699e4493b"
+  },
+  "reportedEvidence": {
+    "focused": "39 pass, 0 fail; tsc pass",
+    "full": "648 pass, 5 existing skips, 0 fail, 3396 assertions"
+  }
+}

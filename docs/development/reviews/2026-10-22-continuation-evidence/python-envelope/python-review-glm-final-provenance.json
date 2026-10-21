@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "mandatoryFindings": 0,
+  "model": {
+    "provider": "zai",
+    "id": "glm-5.3",
+    "thinking": "low",
+    "mode": "text",
+    "tools": false,
+    "rules": false,
+    "mcp": false,
+    "lsp": false,
+    "sessionPersistence": false
+  },
+  "transport": {
+    "exitCode": 0,
+    "stderrBytes": 0,
+    "outputBytes": 5368
+  },
+  "scope": "static runtime source audit: complete table-engine.ts and assignment-envelope.ts, profile registration excerpts; test/registry/detailed-profile bodies unavailable to reviewer",
+  "commit": "1152779",
+  "runtimeHashes": {
+    "product/engine/common/table-engine.ts": "b7dc0ad9750cbcfb8af3a7de8cc89360040644d9ffa0334e420e93663f11b1cb",
+    "product/engine/python/assignment-envelope.ts": "38e212df561fb035fdcb5e33142ff149d28ea2b21d0a59177d5c7e4e89c56653",
+    "product/engine/python/profile.ts": "4a76139ca42aeb38e2abef0a03a6a30ab7ef886c571bdbb68a5985f699e4493b"
+  },
+  "reportedFinalChecks": {
+    "full": "648 pass, 5 existing parser skips, 0 fail, 3396 assertions, 71 files; tsc and shell pass",
+    "focused": "39 pass, 0 fail; tsc pass",
+    "nativeArtifactSha256": "2b43d24eabfdde00ae8019b204aabd2cc8d04f1604a8ffd540ec3170606649f0"
+  },
+  "artifacts": [
+    {
+      "path": "/tmp/boxbox-readiness/python-review-glm-text-final.txt",
+      "bytes": 5368,
+      "sha256": "d9a73a840e85494ac7a0682732111477cfa1cb4f616a7a6e5a2bde1ae1f3c67d"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/python-review-glm-text-final-request.md",
+      "bytes": 22282,
+      "sha256": "7d69268b7f2fa05a37a97978363784790794bbacf5983236afcb26ee663c9e9d"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/python-review-glm-text-final-manifest.json",
+      "bytes": 771,
+      "sha256": "1dbc7f3bc68af81500420b5ec6798d80aa6117031fa43dd63102240f1b6790f2"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/python-envelope-full-check-final.log",
+      "bytes": 77703,
+      "sha256": "c5982e366d9d965fdfc12c0a29cc29e6dd6ff1b7f20ba754bb48c206e9e85be9"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/python-envelope-layout-closure.md",
+      "bytes": 1687,
+      "sha256": "9d76e62d3d7609b41b79ec0f01cefb39a1a721d8614b4e664748ec54bf8391dc"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/python-envelope-layout-frozen-hashes.json",
+      "bytes": 645,
+      "sha256": "c55f4357bfc6ea0ce452aec3bb2fc4837acd65610e49121a4834ee3a06747f74"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/python-native-artifact-report.md",
+      "bytes": 7761,
+      "sha256": "c5080c7b87d739c7f472e7d731145e00f036ea03b66a504f279e54293bc47f61"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/python-native-cleanup-closure.md",
+      "bytes": 1882,
+      "sha256": "65f30abfea9633fd83823047d21549ccfe3a0cdb8ad2591f9bdb9df1148393cb"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/python-independent-review.md",
+      "bytes": 5443,
+      "sha256": "1c8121b96cbce8eff04612cea2626774f0d670a5d8a564b61e3fea58bc55e18d"
+    }
+  ],
+  "priorTransports": "See python-review-glm-transport-final.md/json; two JSON-mode attempts were INCOMPLETE and are not source findings."
+}

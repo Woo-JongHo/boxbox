@@ -1,0 +1,10 @@
+{
+  "temporaryAuthAbsent": true,
+  "ownedReceiptNamespaceAbsent": true,
+  "ownedSourceRolloutsAbsent": true,
+  "canonicalProjectTrustOccurrences": 0,
+  "candidateConfigMode": "0o600",
+  "ownedExternalProcessCount": 0,
+  "privateRawRetainedForIndependentClosure": true,
+  "daemonStopExitCode": 0
+}

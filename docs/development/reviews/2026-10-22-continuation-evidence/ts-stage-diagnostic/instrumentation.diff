@@ -1,0 +1,105 @@
+diff --git a/product/engine/typescript/06_align-tables.ts b/product/engine/typescript/06_align-tables.ts
+index 2fdcc7c..97aa745 100644
+--- a/product/engine/typescript/06_align-tables.ts
++++ b/product/engine/typescript/06_align-tables.ts
+@@ -1,11 +1,22 @@
+ #!/usr/bin/env bun
+ import { errorMessage, runTypeScriptAlign } from "@/typescript/align.ts";
++import { appendFileSync } from "node:fs";
+ 
+ export * from "@/typescript/align.ts";
+ 
++function diagnosticStage(stage: string): void {
++	const directory = process.env.BOXBOX_DIAG_TRACE_DIR;
++	if (!directory) return;
++	appendFileSync(`${directory}/${process.pid}.log`, `${Date.now()} pid=${process.pid} ${stage}\n`);
++}
++
+ if (import.meta.main) try {
+-	process.exit(await runTypeScriptAlign(process.argv.slice(2)));
++	diagnosticStage("cli:start");
++	const exitCode = await runTypeScriptAlign(process.argv.slice(2));
++	diagnosticStage(`cli:result exit=${exitCode}`);
++	process.exit(exitCode);
+ } catch (error) {
++	diagnosticStage(`cli:error error=${errorMessage(error)}`);
+ 	console.error(errorMessage(error));
+ 	process.exit(1);
+ }
+diff --git a/product/engine/typescript/load-source-file.ts b/product/engine/typescript/load-source-file.ts
+index aa8fbe6..39e68e8 100644
+--- a/product/engine/typescript/load-source-file.ts
++++ b/product/engine/typescript/load-source-file.ts
+@@ -1,4 +1,4 @@
+-import      { existsSync, realpathSync, statSync } from "node:fs"                   ;
++import      { appendFileSync, existsSync, realpathSync, statSync } from "node:fs"                   ;
+ import      { relative, resolve                  } from "node:path"                 ;
+ 
+ import      { API                                } from "typescript/unstable/async" ;
+@@ -9,6 +9,12 @@ export interface LoadedSource {
+ 	readonly relative : string;
+ }
+ 
++function diagnosticStage(stage: string): void {
++	const directory = process.env.BOXBOX_DIAG_TRACE_DIR;
++	if (!directory) return;
++	appendFileSync(`${directory}/${process.pid}.log`, `${Date.now()} pid=${process.pid} ${stage}\n`);
++}
++
+ export function repositoryFile(root: string, value: string): { absolute: string; relative: string } {
+ 	const absolute = resolve(root, value)                           ;
+ 	const path     = relative(root, absolute).replaceAll("\\", "/") ;
+@@ -22,18 +28,28 @@ export function repositoryFile(root: string, value: string): { absolute: string;
+ 
+ export async function loadSourceFile(root: string, value: string): Promise<LoadedSource> {
+ 	const target = repositoryFile(root, value) ;
++	diagnosticStage(`load:api:create:start file=${target.relative}`);
+ 	const api    = new API({ cwd: root })      ;
++	diagnosticStage(`load:api:create:done file=${target.relative}`);
+ 	// The returned AST is plain client data, so the server closes right away — one unclosed server per call
+ 	// leaks gigabytes across a test run or a corpus scan.
+ 	try {
++		diagnosticStage(`load:snapshot:start file=${target.relative}`);
+ 		const state   = await api.updateSnapshot({ openFiles: [target.absolute] }) ;
++		diagnosticStage(`load:snapshot:done file=${target.relative}`);
++		diagnosticStage(`load:project:start file=${target.relative}`);
+ 		const project = await state.getDefaultProjectForFile(target.absolute)      ;
++		diagnosticStage(`load:project:done file=${target.relative}`);
+ 		if (!project) throw new Error(`cannot find a TypeScript project: ${target.relative}`)     ;
++		diagnosticStage(`load:source:start file=${target.relative}`);
+ 		const source = await project.program.getSourceFile(target.absolute)                       ;
++		diagnosticStage(`load:source:done file=${target.relative}`);
+ 		if (!source) throw new Error(`cannot read the TypeScript source AST: ${target.relative}`) ;
+ 		return { source, relative: target.relative }                                              ;
+ 	} finally {
++		diagnosticStage(`load:close:start file=${target.relative}`);
+ 		await api.close();
++		diagnosticStage(`load:close:done file=${target.relative}`);
+ 	}
+ }
+ 
+@@ -42,14 +58,24 @@ export async function loadSourceFile(root: string, value: string): Promise<Loade
+  * server. Columns are left out because alignment moves columns but never lines.
+  */
+ export async function syntacticDiagnostics(root: string, absolute: string, text: string): Promise<readonly string[]> {
++	diagnosticStage(`diagnostics:api:create:start file=${absolute}`);
+ 	const api = new API({ cwd: root });
++	diagnosticStage(`diagnostics:api:create:done file=${absolute}`);
+ 	try {
++		diagnosticStage(`diagnostics:snapshot:start file=${absolute}`);
+ 		const state   = await api.updateSnapshot({ openFiles: [absolute] }) ;
++		diagnosticStage(`diagnostics:snapshot:done file=${absolute}`);
++		diagnosticStage(`diagnostics:project:start file=${absolute}`);
+ 		const project = await state.getDefaultProjectForFile(absolute)      ;
++		diagnosticStage(`diagnostics:project:done file=${absolute}`);
+ 		if (!project) throw new Error(`cannot find a TypeScript project: ${absolute}`);
++		diagnosticStage(`diagnostics:get:start file=${absolute}`);
+ 		const found = await project.program.getSyntacticDiagnostics(absolute);
++		diagnosticStage(`diagnostics:get:done file=${absolute}`);
+ 		return found.map(diagnostic => `${text.slice(0, diagnostic.pos).split("\n").length}:${diagnostic.code}`).sort();
+ 	} finally {
++		diagnosticStage(`diagnostics:close:start file=${absolute}`);
+ 		await api.close();
++		diagnosticStage(`diagnostics:close:done file=${absolute}`);
+ 	}
+ }

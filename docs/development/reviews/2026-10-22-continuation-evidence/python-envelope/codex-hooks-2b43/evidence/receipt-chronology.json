@@ -1,0 +1,46 @@
+{
+  "fail": [
+    {
+      "at": "2026-10-21T16:26:18.803Z",
+      "event": "PostToolUse",
+      "state": "FAIL",
+      "checkedCount": 1,
+      "fileCount": 1,
+      "automaticFixPerformed": false
+    },
+    {
+      "at": "2026-10-21T16:26:22.426Z",
+      "event": "Stop",
+      "state": "FAIL",
+      "checkedCount": 1,
+      "fileCount": 1,
+      "automaticFixPerformed": false
+    },
+    {
+      "at": "2026-10-21T16:26:24.935Z",
+      "event": "Stop",
+      "state": "FAIL",
+      "checkedCount": 1,
+      "fileCount": 1,
+      "automaticFixPerformed": false
+    }
+  ],
+  "recovery": [
+    {
+      "at": "2026-10-21T16:26:32.986Z",
+      "event": "PostToolUse",
+      "state": "PASS",
+      "checkedCount": 1,
+      "fileCount": 1,
+      "automaticFixPerformed": false
+    },
+    {
+      "at": "2026-10-21T16:26:35.837Z",
+      "event": "Stop",
+      "state": "PASS",
+      "checkedCount": 1,
+      "fileCount": 1,
+      "automaticFixPerformed": false
+    }
+  ]
+}
