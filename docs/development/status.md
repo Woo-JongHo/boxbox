@@ -23,7 +23,7 @@ The user selected issue forms → PR verification → candidate generation, and 
 artifacts only; registry publication stays pending. The exact tested 0.2.1 installer is now installed and enabled in
 the local Codex, and its installed engine reports runtime/configuration ready with two approved conventions.
 The development HUD/project skill shows an on-request conversation panel and keeps host acceptance unverified.
-Final full check: 490 pass / 5 existing parser skips / 0 fail; TypeScript/shell, plugin guard, actionlint and exact-archive macOS/native Windows smoke passed. A fresh read-only Codex session invoked the HUD successfully. Final Opus follow-up passed after F1/F2/F3 corrections. The user chose to bring the current development structure into a GitHub PR while preserving the ten main-only changes (including MIT LICENSE/presets); a separate integration branch is in progress. No GitHub push/default-branch merge has happened yet. See [CI operation](cicd.md), [HUD usage](hud.md), [evidence](reviews/2026-10-21-delivery-hud.md), and the active task in [plan.md](plan.md).
+Final full check: 490 pass / 5 existing parser skips / 0 fail; TypeScript/shell, plugin guard, actionlint and exact-archive macOS/native Windows smoke passed. A fresh read-only Codex session invoked the HUD successfully. Final Opus follow-up passed after F1/F2/F3 corrections. The user chose to bring the current development structure into a GitHub PR while preserving the ten main-only changes (including MIT LICENSE/presets); a separate integration branch is in progress. PR #2 is pushed; its first real hosted run failed on Rust parser handling and an absent optional fixture directory. Version 0.2.2 corrects those failures; re-verification is underway. The default-branch merge and manual candidate dispatch remain pending. See [CI operation](cicd.md), [HUD usage](hud.md), [evidence](reviews/2026-10-21-delivery-hud.md), and the active task in [plan.md](plan.md).
 
 ## First-use formatting — 2026-10-21
 
@@ -94,7 +94,7 @@ When citing these numbers as evidence, state the network and cache preconditions
 
 Latest `bun run pack:cli` (2026-10-16): `boxbox@0.2.0` tarball **40,629 B compressed / 163,240 B unpacked, 6 files**.
 It carries only the CLI bundle, README, manifest and three empty preset JSONL files, and the public artifact test ran the real
-Node isolated install journey. The public preset still has 0 rows.
+Node isolated install journey. That historical 0.2.0 package had no approved preset rows; the current 0.2.1 candidate has the two approved rules described above.
 
 ## Next resume point
 

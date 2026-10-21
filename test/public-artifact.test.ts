@@ -106,7 +106,7 @@ describe("public CLI local package artifact", () => {
 		expect(help.stdout).toContain("Usage: boxbox");
 		const version = run(executable, ["--version"], { cwd: project, env: runtimeEnv });
 		expectStatus(version, 0);
-		expect(version.stdout.trim()).toBe("0.2.1");
+		expect(version.stdout.trim()).toBe("0.2.2");
 
 		const init = run(executable, ["init", "--json"], { cwd: project, env: runtimeEnv });
 		expectStatus(init, 0);

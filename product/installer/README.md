@@ -36,21 +36,21 @@ npx.cmd boxbox-plugin --codex --claude
 To test a local candidate before publication, use the absolute installer tarball path instead of the registry:
 
 ```powershell
-npm.cmd exec --yes --package 'C:\path\to\boxbox-plugin-0.2.1.tgz' -- boxbox
+npm.cmd exec --yes --package 'C:\path\to\boxbox-plugin-<version>.tgz' -- boxbox
 ```
 
-## Updating the local Codex candidate from 0.2.0
+## Updating a local Codex candidate from an earlier version
 
 Codex rejects the same marketplace name at a different versioned installation path. For this local candidate update,
 replace the old BoxBox marketplace registration once, then run the new installer:
 
 ```powershell
 codex.cmd plugin marketplace remove boxbox-plugins
-npm.cmd exec --yes --package 'C:\path\to\boxbox-plugin-0.2.1.tgz' -- boxbox --codex
+npm.cmd exec --yes --package 'C:\path\to\boxbox-plugin-<version>.tgz' -- boxbox --codex
 ```
 
-Use your installed OpenAI Codex CLI (`codex.cmd` is the standard Windows npm entry). This explicit 0.2.0 → 0.2.1
-procedure was verified with native Windows Codex 0.157.1. The installer does not migrate marketplace sources automatically.
+Use your installed OpenAI Codex CLI (`codex.cmd` is the standard Windows npm entry). The removal-and-reinstall procedure was verified for 0.2.0 → 0.2.1 with native Windows Codex 0.157.1;
+0.2.1 → 0.2.2 still needs direct measurement. The installer does not migrate marketplace sources automatically.
 
 The payload is copied out of npm's temporary cache into permanent, separate host directories before registration:
 

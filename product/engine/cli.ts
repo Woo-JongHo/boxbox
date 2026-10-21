@@ -23,7 +23,7 @@ import      { runTypeScriptAlign                                       } from ".
 
 import      { guardedRun, guardStatus                                  } from "./common/guarded-run.ts"       ;
 
-export const CLI_VERSION = "0.2.1";
+export const CLI_VERSION = "0.2.2";
 
 const HELP = `Usage: boxbox <command> [options]
 

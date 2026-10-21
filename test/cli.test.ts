@@ -96,7 +96,7 @@ describe("public CLI", () => {
 		expect(help.stdout          ).toContain("Usage: boxbox" ) ;
 		expect(help.stdout          ).toContain("exactly one"   ) ;
 		expect(version.status       ).toBe     (0               ) ;
-		expect(version.stdout.trim()).toBe     ("0.2.1"         ) ;
+		expect(version.stdout.trim()).toBe     ("0.2.2"         ) ;
 	});
 
 	test("init preserves existing user files and never overwrites the config when rerun", () => {

@@ -58,7 +58,7 @@ product/                         canonical product sources
   rules/
     base/                        language surface-form data
     references/                  charter, grammar, readability contract and TS templates
-    presets/recommended/         public approved-rule DB (currently empty)
+    presets/recommended/         public approved-rule DB (2 conventions, 4 examples, 2 decisions)
   plugin/                        hand-authored plugin templates; edit here
   installer/                     npm installer, permanent launcher and host installation
   packages/cli/                  public CLI package entry and metadata
