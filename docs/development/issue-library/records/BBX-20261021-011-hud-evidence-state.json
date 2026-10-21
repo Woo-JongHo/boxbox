@@ -35,7 +35,7 @@
     },
     {
       "description": "Install the exact frozen current candidate in disposable profiles and capture native Codex and Claude HUD acceptance without borrowing the historical 0.2.3 result.",
-      "status": "pending"
+      "status": "in-progress"
     }
   ],
   "verification": [
@@ -54,8 +54,23 @@
       "name": "Frozen current-candidate native HUD acceptance",
       "status": "pending",
       "scope": "Exact frozen candidate in disposable macOS Codex and Claude terminal profiles, including ready, not-ready, recovery, session scope and cleanup behavior.",
-      "evidence": [],
-      "result": "Not run. Historical 0.2.3 captures do not verify the current candidate, and no live profile change is authorized in this preparation pass."
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-final-report.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-current-candidate/codex-hud-pane.txt",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-current-candidate/claude-status-initial.txt"
+      ],
+      "result": "Rebuilt exact local archive c18a7da...fb84 installed both hosts, created the Codex launcher and Claude statusLine, and rendered both installed status entry points. Actual Codex PTY/tmux rendering and cleanup passed. Authenticated ready/error/recovery and Claude native UI remain pending: isolated profiles reached login flows. Windows packaged CLI installation and check/align/check passed separately; no native hook acceptance is claimed."
+    },
+    {
+      "name": "GLM source audit and rebuilt artifact regression",
+      "status": "passed",
+      "scope": "HUD runtime sources, direct-entry guards and isolated installed status commands; not authenticated host event acceptance.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-final-result.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-closure-result.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-final-report.md"
+      ],
+      "result": "GLM found no mandatory source defects. The original silent entry failure did not recur on the rebuilt archive; native session authentication remains an external prerequisite."
     }
   ],
   "related": [
@@ -119,6 +134,17 @@
       "evidence": [
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-remediation-tests-final.log",
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-review-closure.md"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Verified the rebuilt local archive entry points, qualified status and real Codex PTY rendering/cleanup. Native authenticated Codex/Claude transitions remain pending after disposable profiles reached login; the issue remains verifying.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-final-report.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-closure-result.md"
       ]
     }
   ]

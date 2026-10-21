@@ -1,0 +1,1 @@
+PASS: before misaligned=1; after misaligned=0; values 1,22,333 and declaration order short,muchLonger,middle preserved.

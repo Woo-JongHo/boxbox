@@ -20,9 +20,9 @@ For a structured entry point and maintenance recipes, start with the [maintainer
 > output under `.boxbox/cache/`; runtime selection and approval continue to use canonical records. All 169
 > engine-internal module specifiers now use the engine-root `@/` alias. Copied-skill TypeScript/JSON/YAML execution,
 > isolated Node bundle resolution, public and installer artifacts, Windows-safe path containment and the final
-> repository check passed with 629 passes, five pre-existing parser-toolchain skips and zero failures. Three
-> pre-existing non-whitespace alignment refusals in the Kotlin, Rust and Swift profiles remain unchanged. The final
-> READINESS1 independent audit is still pending.
+> repository check passed with 632 passes, five pre-existing parser-toolchain skips and zero failures. Three
+> pre-existing non-whitespace alignment refusals in the Kotlin, Rust and Swift profiles remain unchanged. GLM final
+> source audit and supplementary closure passed; authenticated native host acceptance remains pending.
 
 This document describes the code that runs today, not the target design. The target state and roadmap follow
 [`design.md`](design.md), and the work order and completion verdicts follow [`plan.md`](plan.md).

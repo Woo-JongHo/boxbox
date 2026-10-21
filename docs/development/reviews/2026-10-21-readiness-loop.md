@@ -104,3 +104,23 @@ The public hygiene scan found no secret signature or development data in runtime
 bytecode finding is excluded by `.gitignore`. Raw audit output is retained. Release metadata licensing remains a
 [separate prepared decision](../proposals/2026-10-21-release-license.md), alongside the two proposed structured rules
 and four new synthetic example licenses. No pending decision has been treated as approval.
+
+## Native local candidate delivery and remaining authentication gate
+
+[The complete report](2026-10-21-readiness-loop-evidence/native-final-report.md) binds the `c18a7da...fb84` local archive
+to isolated macOS installation, both installed HUD command outputs, actual Codex PTY/tmux rendering and cleanup,
+and native Windows installation plus check/preview/align/recheck through SSH `chacada`. Windows assertions preserved
+values and declaration order. This is local artifact evidence, not a claim about a future CI-produced archive.
+
+Both isolated host profiles reached provider login flows. Copying the existing Codex auth file did not authenticate
+the disposable profile, and the copy was removed. Claude's disposable config also requested login. Authenticated
+ready/error/recovery transitions, real host Write/Refactor evaluation and hook-output acceptance therefore remain
+unverified. No persistent host trust was granted or live profile upgraded. Records 011 and 013 retain this gate.
+
+[Native evidence hygiene](2026-10-21-readiness-loop-evidence/native-evidence-hygiene.md) found no credential or OAuth
+login-code disclosure in the retained captures. Windows `install.txt` is intentional raw UTF-16 machine output.
+The original scenario metadata lists intended hook requirements; it is not an observed hook PASS.
+
+Source commit `57231c13094e57dd69b2e18f4b7eb54ffd5e4d5c` was pushed to `feat/matrix-first-readiness`;
+[PR #5](https://github.com/Woo-JongHo/rowgrid/pull/5) preserves `main` and queues the existing verification workflow.
+The subsequent documentation commit adds native evidence; same-archive release-candidate CI remains to run.

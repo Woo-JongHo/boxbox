@@ -1,0 +1,6 @@
+/tmp/boxbox-native-fixed.Shl97G/claude/settings.json:3:    "boxbox-plugins": {
+/tmp/boxbox-native-fixed.Shl97G/claude/settings.json:6:        "path": "/private/tmp/boxbox-native-fixed.Shl97G/home/data/boxbox/claude/0.2.4"
+/tmp/boxbox-native-fixed.Shl97G/claude/settings.json:11:    "boxbox@boxbox-plugins": true
+/tmp/boxbox-native-fixed.Shl97G/claude/settings.json:13:  "statusLine": {
+/tmp/boxbox-native-fixed.Shl97G/claude/settings.json:15:    "command": "'/opt/homebrew/Cellar/node@22/22.22.3/bin/node' '/tmp/boxbox-native-fixed.Shl97G/home/data/boxbox/claude/0.2.4/plugin/scripts/hud/status.mjs' --plugin-root '/tmp/boxbox-native-fixed.Shl97G/home/data/boxbox/claude/0.2.4/plugin' --host claude --claude-statusline"
+/tmp/boxbox-native-fixed.Shl97G/home/.local/bin/boxbox-codex:3:exec '/opt/homebrew/Cellar/node@22/22.22.3/bin/node' '/tmp/boxbox-native-fixed.Shl97G/home/data/boxbox/codex/0.2.4/plugin/scripts/hud/codex.mjs' --plugin-root '/tmp/boxbox-native-fixed.Shl97G/home/data/boxbox/codex/0.2.4/plugin' -- "$@"
