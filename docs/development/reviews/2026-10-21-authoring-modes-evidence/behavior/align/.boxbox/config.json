@@ -1,0 +1,1 @@
+{"schemaVersion": 2, "formatters": {"python": {"command": "python3", "args": ["formatter.py", "{file}"], "timeoutMs": 5000}}}

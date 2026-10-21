@@ -1,0 +1,134 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261021-007",
+  "title": "Alignment child process exceeded its deadline during concurrent validation",
+  "category": "ci-release",
+  "tags": [
+    "verification",
+    "timeout",
+    "concurrency",
+    "alignment-only",
+    "child-process"
+  ],
+  "status": "deferred",
+  "symptom": "The final repository suite reported 570 passed, 5 skipped and 1 failed. alignment-only.test.ts:178 received a null child exitCode under a fixed 20-second deadline while packaging and installation checks also ran.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "The child process exceeded the configured 20-second execution deadline; the unchanged test subsequently passed in a targeted retry. Concurrent load is a hypothesis for the slowdown, not an established root cause."
+  },
+  "requestedOutcome": "Establish whether the unchanged test and complete suite pass when expensive validation runs are serialized, preserving both the original failure and the retry evidence.",
+  "decisions": [
+    "Retain the original timeout and full-suite failure as an observed result.",
+    "Run the unchanged targeted suite and then the full suite with expensive validation serialized.",
+    "Keep the deadline and implementation unchanged while investigating; a retry does not erase the failed attempt."
+  ],
+  "actions": [
+    {
+      "description": "Capture the failing full-suite output and run the unchanged targeted test suite.",
+      "status": "done"
+    },
+    {
+      "description": "Finish serialized full-suite validation and record its result.",
+      "status": "done"
+    },
+    {
+      "description": "Investigate the underlying deadline cause if it recurs during serialized validation; concurrent load remains an unconfirmed hypothesis.",
+      "status": "pending"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Final repository check",
+      "status": "passed",
+      "scope": "All current repository suites, TypeScript type checking and installer shell syntax",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log"
+      ],
+      "result": "bun run check exited 0: 571 pass, 5 existing unavailable Rust/Kotlin parser skips, 0 fail, 2799 assertions. Skipped parsers were not verified."
+    },
+    {
+      "name": "Unchanged targeted retry",
+      "status": "passed",
+      "scope": "The alignment-only suite, including the 20-second-deadline subprocess case",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/alignment-retry.log"
+      ],
+      "result": "35 tests passed in 3.32 seconds; the formerly timed-out case took about 1.45 seconds. No timeout budget or product code was changed for this retry."
+    }
+  ],
+  "related": [
+    {
+      "kind": "test",
+      "path": "test/alignment-only.test.ts",
+      "note": "Child-process timeout and expected exitCode assertion."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/issue-library/evidence/parallel-suite-timeout.log",
+      "note": "Original full-suite failure."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/issue-library/evidence/alignment-timeout-retry.log",
+      "note": "Unchanged targeted retry."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-21",
+      "event": "verification-failed",
+      "status": "failed",
+      "summary": "The concurrently run full suite failed at the child-process deadline: 570 passed, 5 skipped, 1 failed.",
+      "evidence": [
+        "docs/development/issue-library/evidence/parallel-suite-timeout.log"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-21",
+      "event": "diagnosed",
+      "summary": "The deadline expiration is observed; concurrent load remains a hypothesis. No deadline or product-code change was made.",
+      "evidence": [
+        "docs/development/issue-library/evidence/parallel-suite-timeout.log"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-21",
+      "event": "diagnosed",
+      "status": "passed",
+      "summary": "The unchanged targeted retry passed 35 tests; this is narrower than the complete suite.",
+      "evidence": [
+        "docs/development/issue-library/evidence/alignment-timeout-retry.log"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-21",
+      "event": "decision",
+      "summary": "Serialize the final full-suite run and wait for its result before resolving this verification incident.",
+      "evidence": []
+    },
+    {
+      "sequence": 5,
+      "date": "2026-10-21",
+      "event": "decision",
+      "summary": "Previous current-verification entries are preserved in the linked snapshot. The current list below records the final checked state; earlier failures remain searchable in history.",
+      "evidence": [
+        "docs/development/issue-library/evidence/records-before-final-closure.json"
+      ]
+    },
+    {
+      "sequence": 6,
+      "date": "2026-10-21",
+      "event": "deferred",
+      "summary": "The unchanged targeted retry and serialized full suite passed. Root cause beyond the observed child deadline is not confirmed; investigation is deferred pending recurrence. This does not claim a product fix or prove load caused the timeout.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/alignment-retry.log",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log"
+      ]
+    }
+  ]
+}

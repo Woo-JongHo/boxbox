@@ -1,0 +1,13 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/pattern-catalog.test.ts:
+(pass) all nine families expose comparable, different-role, unsupported, nested and separation cases [2.80ms]
+(pass) catalog rejects malformed records, missing coverage and accidental approval fields [2.67ms]
+(pass) SQLite supports cross-family case queries and deterministic rebuild without altering source authority [31.58ms]
+(pass) invalid source cannot replace a valid index and unmanaged databases are preserved [10.73ms]
+(pass) evidence references must exist inside the repository [5.34ms]
+
+ 5 pass
+ 0 fail
+ 39 expect() calls
+Ran 5 tests across 1 file. [186.00ms]

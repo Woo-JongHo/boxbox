@@ -1,0 +1,13 @@
+{
+  "memberDotAndExactGuardRowsBothHosts": true,
+  "legacyApprovedTypeScriptWriteBothHosts": true,
+  "matrixKindsDetectedBothHosts": true,
+  "unapprovedAlignRefusedUnchangedBothHosts": true,
+  "root": "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz",
+  "archive": "/Users/jonghoPro/woo/00_project/98_BoxBox/dist/installer/boxbox-plugin-0.2.4.tgz",
+  "sha256": "32eeff70322ab9ae0fccf669904ff4346a972c37f3a3eaa26bc8e391dccd486c",
+  "bothNativeRegistrations": true,
+  "bothInstalledLaunchersGuidePreviewApplyCheck": true,
+  "liveProfilesModified": false,
+  "nativeModelExecution": false
+}

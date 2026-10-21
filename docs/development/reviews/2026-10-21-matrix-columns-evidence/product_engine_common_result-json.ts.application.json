@@ -1,0 +1,13 @@
+{
+  "groups": [
+    {
+      "kind": "interface-members",
+      "startLine": 11,
+      "endLine": 14,
+      "edits": 4
+    }
+  ],
+  "tokensPreserved": true,
+  "beforeDiagnostics": [],
+  "afterDiagnostics": []
+}

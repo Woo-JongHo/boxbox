@@ -6,12 +6,12 @@
  * type cell (function pointers), function-like macros, bundles with `{}()[]=>` left in the interior (nesting,
  * assignment, lambdas) — are refused with null. The engine's lossless check is the second safeguard.
  */
-import type { CodeSyntax     } from "../common/code-text.ts"    ;
+import type { CodeSyntax     } from "@/common/code-text.ts"    ;
 import type {
               LineProfiler ,
               RowProfile   ,
               Slot         ,
-                             } from "../common/table-engine.ts" ;
+                             } from "@/common/table-engine.ts" ;
 
 const SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],
@@ -153,17 +153,17 @@ function profileFieldInit(code: string, masked: string): RowProfile | null {
  *  row's last slot, so per engine rules it is not padded. Two or more cells, scalars only. */
 function profileBundle(code: string, masked: string): RowProfile | null {
 	const openAt = masked.indexOf("{");
-	if (openAt < 0 || masked.slice(0, openAt).trim() !== "") return null;
+	if (openAt < 0 || masked.slice(0, openAt).trim() !== "")   return null;
 	const closeAt = masked.lastIndexOf("}");
-	if (closeAt <= openAt) return null;
+	if (closeAt <= openAt)                                     return null;
 	const trailer = code.slice(closeAt + 1);
-	if (!/^[,;]?$/u.test(trailer)) return null;
+	if (!/^[,;]?$/u.test(trailer))                             return null;
 	if (BUNDLE_UNSAFE.test(masked.slice(openAt + 1, closeAt))) return null;
 	const stops: number[] = [];
 	for (let comma = masked.indexOf(",", openAt + 1); comma >= 0 && comma < closeAt; comma = masked.indexOf(",", comma + 1)) {
 		stops.push(comma);
 	}
-	if (stops.length === 0) return null;
+	if (stops.length === 0)                                    return null;
 	const edges         = [openAt + 1, ...stops.map(comma => comma + 1)] ;
 	const slots: Slot[] = [slot("open", "{", "")]                        ;
 	for (let position = 0; position < edges.length; position += 1) {

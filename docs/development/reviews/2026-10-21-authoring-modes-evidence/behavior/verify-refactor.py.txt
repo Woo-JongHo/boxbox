@@ -1,0 +1,14 @@
+from pathlib import Path
+import ast, itertools, json
+root = Path(__file__).parent
+functions = []
+for part in ("refactor", "refactor-proposal"):
+    source = (root / part / "settings.py").read_text()
+    ast.parse(source)
+    namespace = {}
+    exec(compile(source, str(root / part / "settings.py"), "exec"), namespace)
+    functions.append(namespace["classify"])
+cases = list(itertools.product([False, True], [-10, 0, 1, 2, 3, 4, 99, float("nan"), float("inf"), -float("inf")], [-10, -1, 0, 1, 99, float("nan"), float("inf"), -float("inf")]))
+for args in cases:
+    assert functions[0](*args) == functions[1](*args), args
+print(json.dumps({"syntax": "passed", "equivalenceCases": len(cases), "result": "passed", "scope": "boolean enabled; integer, NaN and infinite attempts/quota"}))

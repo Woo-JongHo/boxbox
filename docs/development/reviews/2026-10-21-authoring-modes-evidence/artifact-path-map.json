@@ -1,0 +1,12 @@
+{
+  "behavior/verify-refactor.py": "behavior/verify-refactor.py.txt",
+  "behavior/run.py": "behavior/run.py.txt",
+  "behavior/cli.ts": "behavior/cli.ts.txt",
+  "behavior/finish.py": "behavior/finish.py.txt",
+  "behavior/write/settings.py": "behavior/write/settings.py.txt",
+  "behavior/write/verify.py": "behavior/write/verify.py.txt",
+  "behavior/refactor-proposal/settings.py": "behavior/refactor-proposal/settings.py.txt",
+  "behavior/align/formatter.py": "behavior/align/formatter.py.txt",
+  "behavior/align/settings.py": "behavior/align/settings.py.txt",
+  "behavior/refactor/settings.py": "behavior/refactor/settings.py.txt"
+}

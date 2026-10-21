@@ -1,0 +1,14 @@
+{
+  "cwd": "/tmp/boxbox-mode-behavior-m7RwTv/write",
+  "command": [
+    "bun",
+    "/tmp/boxbox-mode-behavior-m7RwTv/cli.ts",
+    "check",
+    "--file",
+    "settings.py",
+    "--json"
+  ],
+  "code": 0,
+  "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"results\":[{\"file\":\"settings.py\",\"language\":\"python\",\"mode\":\"check\",\"summary\":{\"groups\":1,\"misaligned\":0,\"edits\":0,\"refused\":0,\"suggested\":0},\"groups\":[{\"kind\":\"table\",\"startLine\":1,\"endLine\":3,\"rows\":3,\"axes\":[\"name\",\"equal\",\"value\"],\"state\":\"PASS\",\"edits\":0,\"depth\":0}],\"parse\":{\"status\":\"not-run\",\"tool\":\"\"}}],\"formatReadiness\":{\"mode\":\"standalone\",\"approvalEligible\":true,\"verification\":\"not-run\",\"reasons\":[],\"next\":\"format --dry-run verifies parser, preservation and fixed point before writing\"}}\n",
+  "stderr": ""
+}

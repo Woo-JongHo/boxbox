@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
-import      { runAlignCli    } from "../common/align-cli.ts" ;
-import      { KOTLIN_ALIGNER } from "./profile.ts"           ;
+import      { runAlignCli    } from "@/common/align-cli.ts" ;
+import      { KOTLIN_ALIGNER } from "@/kotlin/profile.ts"   ;
 
 const result = runAlignCli(KOTLIN_ALIGNER, process.argv.slice(2));
 console.log(result.report);

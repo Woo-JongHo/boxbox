@@ -1,0 +1,14 @@
+{
+  "cwd": "/tmp/boxbox-mode-behavior-m7RwTv/align",
+  "command": [
+    "bun",
+    "/tmp/boxbox-mode-behavior-m7RwTv/cli.ts",
+    "guide",
+    "--file",
+    "settings.py",
+    "--json"
+  ],
+  "code": 0,
+  "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"guide\",\"ok\":true,\"file\":\"settings.py\",\"language\":\"python\",\"conventions\":[\"py-simple-assignments\"],\"guides\":[{\"id\":\"py-simple-assignments-positive\",\"before\":\"if enabled:\\n  alpha = 1\\n  much_longer = 22\\n  mid = 333\\n\",\"after\":\"if enabled:\\n  alpha       = 1\\n  much_longer = 22\\n  mid         = 333\\n\"}]}\n",
+  "stderr": ""
+}

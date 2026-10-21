@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
-import { errorMessage, runTypeScriptAlign } from "./align.ts";
+import { errorMessage, runTypeScriptAlign } from "@/typescript/align.ts";
 
-export * from "./align.ts";
+export * from "@/typescript/align.ts";
 
 if (import.meta.main) try {
 	process.exit(await runTypeScriptAlign(process.argv.slice(2)));

@@ -1,0 +1,51 @@
+--- grid-kinds.before
++++ product/engine/typescript/grid-kinds.ts
+@@ -150,12 +150,17 @@
+ /** The call inside a call statement's subject, as `preservesTokens(a, b)` in `expect(preservesTokens(a, b)).toBe(false);`. */
+ function subjectCall(node: Node): Node | undefined {
+ 	if (!isExpressionStatement(node)) return undefined;
++
+ 	const expression = unwrapExpression(node.expression);
+ 	if (!isCallExpression(expression) || !isPropertyAccessExpression(expression.expression)) return undefined;
++
+ 	let subject: Node = expression.expression.expression;
++
+ 	while (isPropertyAccessExpression(subject)) subject = subject.expression;
+ 	if (!isCallExpression(subject) || subject.arguments.length !== 1) return undefined;
++
+ 	const argument = subject.arguments[0]!;
++
+ 	return isCallExpression(argument) && argument.arguments.length > 0 ? argument : undefined;
+ }
+ 
+@@ -166,23 +171,30 @@
+  */
+ function callLayer(source: SourceFile, call: Node): readonly RowBoundary[] | undefined {
+ 	if ((call as unknown as { readonly typeArguments?: unknown }).typeArguments) return undefined;
++
+ 	const callee = (call as unknown as { readonly expression: Node }).expression ;
+ 	const open   = tokenAfter(source, callee.getEnd(), "(")                      ;
+ 	const items  = callArguments(call)                                           ;
+ 	if (open === undefined || items.length === 0) return undefined;
++
+ 	const boundaries: RowBoundary[] = [{ axis: "call-open-paren", from: open, at: open, insert: true, layer: "call" }];
++
+ 	for (let index = 0; index + 1 < items.length; index += 1) {
+ 		const end   = items[index]!.getEnd()             ;
+ 		const comma = tokenAfter(source, end, ",")       ;
+ 		const next  = items[index + 1]!.getStart(source) ;
+ 		if (comma === undefined || !spacesOnly(source, comma + 1, next)) return undefined;
++
+ 		boundaries.push({ axis: `call-comma${index + 1}`, from: end, at: comma, insert: true, layer: "call" });
+ 		boundaries.push({ axis: `call-arg${index + 2}`, from: comma + 1, at: next, layer: "call" });
+ 	}
++
+ 	const last  = items.at(-1)!.getEnd()        ;
+ 	const close = tokenAfter(source, last, ")") ;
+ 	if (close === undefined || close !== call.getEnd() - 1) return undefined;
++
+ 	boundaries.push({ axis: "call-close-paren", from: last, at: close, insert: true, layer: "call" });
++
+ 	return boundaries;
+ }
+ 

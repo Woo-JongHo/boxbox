@@ -26,6 +26,11 @@ export interface ParseCheckOptions {
 	readonly timeoutMs?: number;
 }
 
+export interface SyntaxDiagnostics {
+	readonly tool        : string            ;
+	readonly diagnostics : readonly string[] ;
+}
+
 interface Toolchain {
 	readonly tool      : string                                            ;
 	readonly extension : string                                            ;
@@ -86,6 +91,16 @@ function diagnostics(toolchain: Toolchain, source: string, timeoutMs: number): r
 	} finally {
 		rmSync(work, { recursive: true, force: true });
 	}
+}
+
+/** Parses one input unconditionally. Unlike compareParse's identical-input fast path, this establishes syntax validity. */
+export function syntaxDiagnostics(language: string, source: string, options: ParseCheckOptions = {}): SyntaxDiagnostics {
+	const toolchain = TOOLCHAINS[language];
+	if (!toolchain) throw new Error(`no parser registered for language: ${language}`);
+	const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+	if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > DEFAULT_TIMEOUT_MS) throw new Error(`invalid parser timeout: ${timeoutMs}`);
+	if (!hasTool(toolchain.tool, timeoutMs)) throw new Error(`parser unavailable: ${toolchain.tool}`);
+	return { tool: toolchain.tool, diagnostics: diagnostics(toolchain, source, timeoutMs) };
 }
 
 /** Parses `before` and `after` with the language's toolchain and compares their diagnostics. */

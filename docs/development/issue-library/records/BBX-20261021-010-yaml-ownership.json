@@ -1,0 +1,120 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261021-010",
+  "title": "Nested YAML flow pairs can overwrite the owning row candidate",
+  "category": "syntax-boundary",
+  "tags": [
+    "yaml",
+    "flow-map",
+    "ast-ownership",
+    "preservation",
+    "readiness1"
+  ],
+  "status": "resolved",
+  "symptom": "Read-only review traced a tagged or anchored nested flow map into a scalar row candidate, allowing standalone format to omit original syntax.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "Source inspection confirmed same-line nested pair overwrite and incomplete gap validation. The old adapter had no preserved snapshot, so the pre-fix example was traced rather than executed."
+  },
+  "requestedOutcome": "Refuse ambiguous AST ownership and preserve every non-whitespace byte under standalone format as well as Align; validate unresolved aliases and raw UTF-8.",
+  "decisions": [
+    "Require exact candidate reconstruction from the original line and AST key range.",
+    "Verify horizontal-only edits independently of candidate parsing in all structured writes."
+  ],
+  "actions": [
+    {
+      "description": "Reproduce the review input, add regression tests and fix AST/range and byte-preservation checks.",
+      "status": "done"
+    },
+    {
+      "description": "Run independent closure before current candidate packaging.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Structured write preservation closure",
+      "status": "passed",
+      "scope": "JSON/YAML adapter and guarded public pipeline",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/structured-closure.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/structured-blocker-fix-report.md"
+      ],
+      "result": "Sonnet source closure passed B1-B4; current regressions passed. Subsequent flow-map exclusion and formatter-preflight refinements await final integrated audit."
+    },
+    {
+      "name": "Final candidate integration",
+      "status": "passed",
+      "scope": "Latest flow-map exclusion, raw-byte formatter preflight and installed candidate",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-post-native-fix.log",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-final-result.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-closure-result.md"
+      ],
+      "result": "Current runtime sources passed the 632-test repository check (five existing missing-parser skips, zero failures) and the supplied-snapshot GLM-5.3 audit. The test-only upgrade addition passed a separate six-test run and GLM closure. No public rule or publication approval is implied."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "product/engine/structured/index.ts",
+      "note": "Candidate ownership and preservation."
+    },
+    {
+      "kind": "test",
+      "path": "test/structured-align.test.ts",
+      "note": "Regression suite."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/r2-r3-review-initial.md",
+      "note": "Independent initial finding."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-21",
+      "event": "reported",
+      "summary": "Independent Sonnet review traced YAML data loss and requested exact reconstruction, horizontal gap, alias and byte validation.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/r2-r3-review-initial.md"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-21",
+      "event": "verification-failed",
+      "status": "failed",
+      "summary": "Scope B was BLOCKED; policy-only scope A passed. No release was approved.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/r2-r3-review-initial.md"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-21",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Independent closure passed mandatory adapter/pipeline fixes. Exact pre-fix execution was unavailable; newer regression evidence and later refinements remain separately labeled.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/structured-closure.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/structured-blocker-fix-report.md"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Closed the bounded implementation with the post-native-fix 632-pass repository check, scoped GLM final audit and supplementary hash/test review. Prior failures and pre-closure verification lists are retained; native host acceptance, rule approvals and publication are separate.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/records-before-readiness-closure.json",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-post-native-fix.log",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-final-result.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-closure-result.md"
+      ]
+    }
+  ]
+}

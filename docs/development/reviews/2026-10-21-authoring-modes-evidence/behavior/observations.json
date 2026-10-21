@@ -1,0 +1,13 @@
+{
+  "alignTargetUnchanged": true,
+  "alignSentinelAbsent": true,
+  "refactorTargetUnchanged": true,
+  "hashes": {
+    "write/settings.py": "9d78eb6b49bb19208d569691b5994a474ad79afa51c7d93a57b27e077dcca838",
+    "align/settings.py": "b64f10a7ebfec64d2c93f7c3d98ab1f9ba92c068bc919ca9989f3febbeecdb88",
+    "refactor/settings.py": "ace900657317f74b13a63ecb90e41d4e298ead3c9e31e1c62d1776536598e78e",
+    "refactor-proposal/settings.py": "1ad0d465ea52a5a087611d6cace138ad53487e5e34321ef6e2a7f12e4cfabb36"
+  },
+  "refactorCases": 160,
+  "refactorUnverified": "Custom input types and exception traces, performance, native host integration"
+}

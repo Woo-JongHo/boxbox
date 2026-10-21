@@ -13,12 +13,12 @@
  * lines (starting with @); control-flow or declaration keyword rows; method signatures with parentheses
  * (except form 4's argument list); rows with an empty value or more than one `;` outside strings.
  */
-import type { CodeSyntax     } from "../common/code-text.ts"    ;
+import type { CodeSyntax     } from "@/common/code-text.ts"    ;
 import type {
               LineProfiler ,
               RowProfile   ,
               Slot         ,
-                             } from "../common/table-engine.ts" ;
+                             } from "@/common/table-engine.ts" ;
 
 export const JAVA_SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],
@@ -64,8 +64,8 @@ function tailSlots(code: string, masked: string, match: RegExpExecArray, restGro
 	let valueEnd      = semicolonAt       ;
 	while (valueStart < valueEnd && /\s/.test(masked.charAt(valueStart))) valueStart += 1;
 	while (valueEnd > valueStart && /\s/.test(masked.charAt(valueEnd - 1))) valueEnd -= 1;
-	if (valueStart === valueEnd) return null;
-	if (masked.slice(valueStart, valueEnd).includes(";")) return null;
+	if (valueStart === valueEnd)                                   return null;
+	if (masked.slice(valueStart, valueEnd).includes(";"))          return null;
 	const value     : Slot = { axis: "value",     text: code.slice(valueStart, valueEnd), gapBefore: code.slice(tailStart, valueStart) } ;
 	const semicolon : Slot = { axis: "semicolon", text: ";", gapBefore: code.slice(valueEnd, semicolonAt) }                              ;
 	return [value, semicolon];
@@ -81,10 +81,10 @@ function tailSlots(code: string, masked: string, match: RegExpExecArray, restGro
 function bundleProfile(code: string, masked: string): RowProfile | null {
 	const match   = GROUP.exec(masked) ;
 	const indices = match?.indices     ;
-	if (!match || !indices) return null;
+	if (!match || !indices)                                        return null;
 	const interior = indices[2] ;
 	const trailer  = indices[3] ;
-	if (!interior || !trailer) return null;
+	if (!interior || !trailer)                                     return null;
 	if (GROUP_UNSAFE.test(masked.slice(interior[0], interior[1]))) return null;
 
 	// Cut cell ranges by mask coordinates. Commas inside string cells are spaces in the mask, so they are not boundaries.
@@ -102,7 +102,7 @@ function bundleProfile(code: string, masked: string): RowProfile | null {
 	const cells: Array<{ text: string; gap: string; commaGap: string; end: number }> = [];
 	for (const bound of bounds) {
 		const raw  = code.slice(bound.start, bound.end) ;
-		const text = raw.trim()                         ;
+		const text = raw .trim ()                       ;
 		if (text === "") return null; // empty cell from consecutive commas or after a trailing comma
 		const cellStart = bound.start + raw.indexOf(text);
 		if (text.startsWith('"')) {

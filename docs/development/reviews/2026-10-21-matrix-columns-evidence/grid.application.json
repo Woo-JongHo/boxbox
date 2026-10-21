@@ -1,0 +1,109 @@
+{
+  "groups": [
+    {
+      "kind": "return-guards",
+      "startLine": 133,
+      "endLine": 136,
+      "edits": 2
+    },
+    {
+      "kind": "return-guards",
+      "startLine": 152,
+      "endLine": 160,
+      "edits": 2
+    },
+    {
+      "kind": "return-guards",
+      "startLine": 173,
+      "endLine": 194,
+      "edits": 2
+    },
+    {
+      "kind": "return-guards",
+      "startLine": 303,
+      "endLine": 307,
+      "edits": 2
+    },
+    {
+      "kind": "declaration-call-envelope",
+      "startLine": 344,
+      "endLine": 345,
+      "edits": 2
+    },
+    {
+      "kind": "return-guards",
+      "startLine": 320,
+      "endLine": 325,
+      "edits": 3
+    },
+    {
+      "kind": "return-guards",
+      "startLine": 354,
+      "endLine": 360,
+      "edits": 3
+    },
+    {
+      "kind": "declaration-call-envelope",
+      "startLine": 392,
+      "endLine": 393,
+      "edits": 2
+    },
+    {
+      "kind": "return-guards",
+      "startLine": 390,
+      "endLine": 399,
+      "edits": 3
+    },
+    {
+      "kind": "return-guards",
+      "startLine": 449,
+      "endLine": 460,
+      "edits": 5
+    },
+    {
+      "kind": "return-guards",
+      "startLine": 468,
+      "endLine": 486,
+      "edits": 9
+    },
+    {
+      "kind": "return-guards",
+      "startLine": 520,
+      "endLine": 528,
+      "edits": 5
+    },
+    {
+      "kind": "return-guards",
+      "startLine": 531,
+      "endLine": 536,
+      "edits": 2
+    },
+    {
+      "kind": "return-guards",
+      "startLine": 548,
+      "endLine": 551,
+      "edits": 2
+    },
+    {
+      "kind": "return-guards",
+      "startLine": 584,
+      "endLine": 590,
+      "edits": 3
+    },
+    {
+      "kind": "return-guards",
+      "startLine": 625,
+      "endLine": 629,
+      "edits": 2
+    },
+    {
+      "kind": "declaration-call-envelope",
+      "startLine": 983,
+      "endLine": 984,
+      "edits": 3
+    }
+  ],
+  "tokensPreserved": true,
+  "beforeDiagnostics": [],
+  "afterDiagnostics": []
+}

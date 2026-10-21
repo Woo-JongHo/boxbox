@@ -1,0 +1,33 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/recommended-preset.test.ts:
+(pass) the approved recommended preset > ships exactly the two human-approved rules with matching dated, versioned proof records [1.80ms]
+(pass) the approved recommended preset > a prepared public package retains complete proofs and refuses changed approval documents [3.60ms]
+(pass) the approved recommended preset > both shipped approval proofs survive a CRLF document checkout [0.44ms]
+(pass) the approved recommended preset > approval lookup remains limited to the exact language, scope, container and axes [0.21ms]
+(pass) the approved recommended preset > the approved TypeScript example and two-row declaration exception use real safe writes and reach a token-preserving fixed point [1210.22ms]
+(pass) the approved recommended preset > using declarations never inherit the direct-call approval [202.69ms]
+(pass) the approved recommended preset > await using declarations never inherit the direct-call approval [203.79ms]
+(pass) the approved recommended preset > constructor initializers never inherit the direct-call approval [183.57ms]
+(pass) the approved recommended preset > awaited initializers never inherit the direct-call approval [197.53ms]
+(pass) the approved recommended preset > the approved Python example remains safe at its existing indentation [328.05ms]
+(pass) the approved recommended preset > the excluded single TypeScript row and two Python rows stay unchanged [72.89ms]
+(pass) the approved recommended preset > attribute assignment tables do not inherit the simple-name approval [0.49ms]
+(pass) the approved recommended preset > chained assignments do not inherit the single-name approval [284.14ms]
+(pass) the approved recommended preset > compound assignments and differing indentation never become approved Python tables [0.09ms]
+
+test/surface.test.ts:
+(pass) grammar ID registry > the tables in grammar.md match the list in grammar-ids.ts [0.14ms]
+(pass) surface forms — TypeScript > every engine kind maps to a pattern [0.35ms]
+(pass) surface forms — TypeScript > an enum with values is MAP, names only is LIST [0.03ms]
+(pass) surface forms — TypeScript > declaration and assignment are different patterns and not ambiguous [0.02ms]
+(pass) surface forms — TypeScript > an unknown kind is not mapped (target of alarm A8) [0.01ms]
+(pass) surface forms — Python > every table in the fixture maps to a pattern [6.65ms]
+(pass) surface forms — Python > `a = v`, where declaration and assignment share syntax, is marked ambiguous [0.07ms]
+(pass) surface-form data validation > every shipped data file is valid [0.05ms]
+(pass) surface-form data validation > refuses IDs missing from the grammar, forms with no matcher or two, and other language names [0.18ms]
+
+ 23 pass
+ 0 fail
+ 168 expect() calls
+Ran 23 tests across 2 files. [2.76s]

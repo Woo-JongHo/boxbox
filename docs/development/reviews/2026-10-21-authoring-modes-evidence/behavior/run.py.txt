@@ -1,0 +1,24 @@
+import pathlib, subprocess, json, os, hashlib
+root=pathlib.Path('/tmp/boxbox-mode-behavior-m7RwTv')
+for part in ['write', 'align', 'refactor', 'refactor-proposal']:
+ (root/part).mkdir(exist_ok=True)
+cli='/Users/jonghoPro/woo/00_project/98_BoxBox/product/engine/cli.ts'
+(root/'cli.ts').write_text('import {runCli} from '+json.dumps(cli)+'; process.exitCode=await runCli(process.argv.slice(2), process.cwd());\n')
+def invoke(part,label,args):
+ env={**os.environ,'XDG_CONFIG_HOME':str(root/part/'user-config')}
+ command=['bun',str(root/'cli.ts'),*args]
+ r=subprocess.run(command,cwd=root/part,env=env,capture_output=True,text=True)
+ evidence={'cwd':str(root/part),'command':command,'code':r.returncode,'stdout':r.stdout,'stderr':r.stderr}
+ (root/f'{part}-{label}.json').write_text(json.dumps(evidence,indent=2))
+ print(part,label,r.returncode,r.stdout)
+ return evidence
+invoke('write','authoring',['guide','--file','settings.py','--authoring','--json'])
+(root/'align/settings.py').write_text('retry = 3\ntimeout_seconds = 30\nbatch_size = 100\n')
+(root/'align/.boxbox').mkdir(exist_ok=True)
+(root/'align/formatter.py').write_text('from pathlib import Path\nPath("formatter-sentinel").write_text("executed")\n')
+(root/'align/.boxbox/config.json').write_text(json.dumps({'schemaVersion':2,'formatters':{'python':{'command':'python3','args':['formatter.py','{file}'],'timeoutMs':5000}}}))
+for label,args in [('check',['check','--file','settings.py','--json']),('guide',['guide','--file','settings.py','--json']),('preview',['align','--file','settings.py','--dry-run','--json'])]:
+ invoke('align',label,args)
+(root/'refactor/settings.py').write_text('def classify(enabled, attempts, quota):\n    if enabled:\n        if attempts < 3:\n            if quota > 0:\n                return "ready"\n            else:\n                return "quota"\n        else:\n            return "attempts"\n    else:\n        return "disabled"\n')
+invoke('refactor','authoring',['guide','--file','settings.py','--authoring','--json'])
+invoke('refactor','check',['check','--file','settings.py','--json'])

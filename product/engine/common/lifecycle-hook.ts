@@ -1,13 +1,13 @@
-import      { createHash, randomUUID       } from "node:crypto"      ;
+import      { createHash, randomUUID       } from "node:crypto"             ;
 import      {
               existsSync                 ,
               mkdirSync                  ,
               readFileSync               ,
               writeFileSync              ,
-                                           } from "node:fs"          ;
-import      { extname, isAbsolute, join    } from "node:path"        ;
-import      { snapshot, changed, supported } from "./guarded-run.ts" ;
-import type { Inspection                   } from "./guarded-run.ts" ;
+                                           } from "node:fs"                 ;
+import      { extname, isAbsolute, join, relative, resolve } from "node:path" ;
+import      { snapshot, changed, supported } from "@/common/guarded-run.ts" ;
+import type { Inspection                   } from "@/common/guarded-run.ts" ;
 
 function rootOf(args: readonly string[]): string {
 	if (args.length !== 2 || args[0] !== "--root" || !isAbsolute(args[1] ?? "")) throw new Error("Expected --root <absolute-path>");
@@ -15,10 +15,22 @@ function rootOf(args: readonly string[]): string {
 }
 
 /** Use host plugin data when provided; direct CLI hooks fall back to project-local receipts. */
-function stateDirectory(root: string, id: string): string {
+function projectReceiptNamespace(root: string): string {
 	const data = process.env.CLAUDE_PLUGIN_DATA || process.env.PLUGIN_DATA;
-	if (!data) return join(root, ".boxbox/hooks", id);
-	return join(data, "hooks", createHash("sha256").update(root).digest("hex").slice(0, 16), id);
+	if (!data) return join(root, ".boxbox/hooks");
+	return resolve(data, "hooks", createHash("sha256").update(root).digest("hex").slice(0, 16));
+}
+
+function stateDirectory(root: string, id: string): string {
+	return join(projectReceiptNamespace(root), id);
+}
+
+function snapshotExclusions(root: string): ReadonlySet<string> {
+	const projectRoot = resolve                (root                  ) ;
+	const namespace   = projectReceiptNamespace(projectRoot           ) ;
+	const path        = relative               (projectRoot, namespace) ;
+	if (path === "" || path === ".." || path.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`) || isAbsolute(path)) return new Set();
+	return new Set([namespace]);
 }
 
 export async function lifecycleHook(args: readonly string[], inspect: Inspection): Promise<number> {
@@ -30,20 +42,22 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 		const input = JSON.parse(readFileSync(0, "utf8"));
 		if (!input.session_id) throw new Error("Missing session_id");
 		// Plugin hooks are called without --root, so use the working folder the host passes in.
-		const root = given ?? input.cwd;
-		if (typeof root !== "string" || !isAbsolute(root)) throw new Error("Missing absolute cwd");
-		const id        = createHash("sha256").update(String(input.session_id)).digest("hex") ;
-		const directory = stateDirectory(root, id)                                            ;
+		const suppliedRoot = given ?? input.cwd;
+		if (typeof suppliedRoot !== "string" || !isAbsolute(suppliedRoot)) throw new Error("Missing absolute cwd");
+		const root       = resolve(suppliedRoot)                                               ;
+		const id         = createHash("sha256").update(String(input.session_id)).digest("hex") ;
+		const directory  = stateDirectory(root, id)                                            ;
+		const exclusions = snapshotExclusions(root)                                            ;
 		mkdirSync(directory, { recursive: true });
 		const baseline = join(directory, "baseline.json");
 		if (mode === "session") {
-			if (!existsSync(baseline)) writeFileSync(baseline, JSON.stringify(snapshot(root)), { flag: "wx" });
+			if (!existsSync(baseline)) writeFileSync(baseline, JSON.stringify(snapshot(root, "", {}, [], exclusions)), { flag: "wx" });
 			console.log(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: `[boxbox] Changed code is checked after each edit, and all session changes are checked again on completion. Results are recorded in ${directory}.` } }));
 			return 0;
 		}
 		if (!existsSync(baseline)) throw new Error("Missing SessionStart baseline; start a session in this project");
 		const before      = JSON.parse(readFileSync(baseline, "utf8")) ;
-		const after       = snapshot(root)                             ;
+		const after       = snapshot(root, "", {}, [], exclusions)     ;
 		const files       = changed(before, after)                     ;
 		const checked     = []                                         ;
 		const unsupported = []                                         ;
@@ -53,7 +67,7 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 			if (!supported.has(extname(file).toLowerCase())) { unsupported.push(file); continue; }
 			checked.push({ file, result: await inspect(root, file) });
 		}
-		if (changed(after, snapshot(root)).length) throw new Error("Source changed during check");
+		if (changed(after, snapshot(root, "", {}, [], exclusions)).length) throw new Error("Source changed during check");
 		const failed  = checked.some(item => item.result.summary.misaligned || item.result.summary.refused)                                                      ;
 		const state   = failed ? "FAIL" : unsupported.length ? "UNSUPPORTED" : checked.length ? "PASS" : "NO_CHANGES"                                            ;
 		const record  = { event, state, files, checked, unsupported, tool: input.tool_name ?? null, at: new Date().toISOString(), automaticFixPerformed: false } ;

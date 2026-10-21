@@ -1,0 +1,15 @@
+{
+  "model": "glm-5.3",
+  "provider": "zai",
+  "verdict": "PASS",
+  "tools": [
+    "read",
+    "search",
+    "find"
+  ],
+  "testsExecutedByReviewer": false,
+  "scope": "AUTHOR1 only; HUD excluded",
+  "userSelectedInsteadOf": "Opus",
+  "fullTranscript": "/tmp/boxbox-modes-glm.jsonl",
+  "transcriptSha256": "f73de627ee0527fd3a780fe0f2b7107bb25e2322c5e11f6ed8fc914fce19e781"
+}

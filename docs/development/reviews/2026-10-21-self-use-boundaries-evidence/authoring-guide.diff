@@ -1,0 +1,61 @@
+--- authoring-guide.before
++++ product/engine/common/authoring-guide.ts
+@@ -1,9 +1,9 @@
+-import { evaluateApproval } from "./approval-gate.ts";
+-import type { ApprovalRegistry, DocumentResolver } from "./approval-gate.ts";
+-import { globToRegExp } from "./conventions.ts";
+-import { sectionHash, sectionText } from "./examples.ts";
+-import { LOOKUP_KEY_VERSION } from "./signature.ts";
+-import type { PublicLanguage } from "./project-config.ts";
++import      { evaluateApproval                   } from "./approval-gate.ts"  ;
++import type { ApprovalRegistry, DocumentResolver } from "./approval-gate.ts"  ;
++import      { globToRegExp                       } from "./conventions.ts"    ;
++import      { sectionHash, sectionText           } from "./examples.ts"       ;
++import      { LOOKUP_KEY_VERSION                 } from "./signature.ts"      ;
++import type { PublicLanguage                     } from "./project-config.ts" ;
+ 
+ /** Pre-authoring examples are scoped advice, never proof about a file's contents or permission to write it. */
+ export function authoringGuide(
+@@ -31,8 +31,8 @@
+ 
+ 		const convention = registry.conventions.find(record => record.id === result.conventionId
+ 			&& record.layer === result.layer)!;
+-		const decision = registry.decisions.get(convention.id)!;
+-		const document = resolveDocument(decision.ref, convention.layer);
++		const decision = registry.decisions.get(convention.id)!          ;
++		const document = resolveDocument(decision.ref, convention.layer) ;
+ 		if (sectionHash(document.document, document.heading) !== decision.docHash) {
+ 			throw new Error("approval document changed while preparing guidance");
+ 		}
+@@ -41,20 +41,20 @@
+ 			.map(id => registry.examples.get(id)!)
+ 			.filter(example => example.verdict === "bad" || example.verdict === "before-better")
+ 			.map(example => ({
+-				id: example.id,
+-				before: example.before,
+-				after: example.after,
+-				verdict: example.verdict
++				id      : example.id,
++				before  : example.before,
++				after   : example.after,
++				verdict : example.verdict
+ 			}));
+ 
+ 		rules.push({
+-			id: convention.id,
+-			key,
+-			scope: convention.scope,
+-			layer: convention.layer,
+-			contract: sectionText(document.document, document.heading),
+-			examples: result.guide,
+-			counterexamples,
++			id              : convention.id,
++			key             : key,
++			scope           : convention.scope,
++			layer           : convention.layer,
++			contract        : sectionText(document.document, document.heading),
++			examples        : result.guide,
++			counterexamples : counterexamples,
+ 		});
+ 	}
+ 

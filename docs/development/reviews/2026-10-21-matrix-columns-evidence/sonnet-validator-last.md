@@ -1,0 +1,3 @@
+**PASS.** Both guards are in the snippet. The reverse check (`status=failed` requires `event=verification-failed`) sits next to the forward check, and the observed rejection message matches it. The canonical-ID loop now uses `require(...)` on a dict-with-string-ID check, and the observed run shows exit code 1 with a clean diagnostic instead of a KeyError.
+
+One minor, non-blocking gap: `entry["event"]` and `entry["evidence"]` are still direct indexing. This is safe only if the schema validation earlier in `main()` guarantees those keys, and the snippet doesn't show that. Also, `record["id"]` is read before `validate_record`, so it depends on the same schema guarantee.

@@ -1,0 +1,15 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/authoring-modes.test.ts:
+(pass) matrix authoring and alignment modes > new-file guidance includes only scoped proved rules with their exact contracts and counterexamples [160.82ms]
+(pass) matrix authoring and alignment modes > authoring guidance is read-only advice even for empty or invalid existing source [129.75ms]
+(pass) matrix authoring and alignment modes > authoring scope and project rejection override the shipped rule without falling back [309.42ms]
+(pass) matrix authoring and alignment modes > new-file guidance rejects unsafe paths, unsupported formats and disabled languages [295.18ms]
+(pass) matrix authoring and alignment modes > only authoring GUIDE accepts nonexistent files; mode and language errors stay explicit [290.38ms]
+(pass) matrix authoring and alignment modes > align previews and applies approved whitespace changes without executing a configured formatter [750.66ms]
+(pass) matrix authoring and alignment modes > align refuses a file without applicable groups rather than reporting completed authoring [107.49ms]
+
+ 7 pass
+ 0 fail
+ 113 expect() calls
+Ran 7 tests across 1 file. [2.24s]

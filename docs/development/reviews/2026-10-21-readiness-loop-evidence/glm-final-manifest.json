@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-21",
+  "purpose": "Immutable source binding for the READINESS1 GLM-5.3 final read-only audit",
+  "workspace": "/Users/jonghoPro/woo/00_project/98_BoxBox",
+  "gitHead": "07f568ccec77e70dd57da9aba63f8dc7ef7fcc5a",
+  "files": [
+    {
+      "path": "product/engine/common/runtime-record-validation.ts",
+      "sha256": "6d3f57389801cdb610de1524e927750b07b3b97a1df637a32891ac094ccd5f8b",
+      "bytes": 1376
+    },
+    {
+      "path": "product/engine/common/conventions.ts",
+      "sha256": "83ba3ec9ab548b7b5a27d34e72326c368bf19a88cd9511da98d5f8b2a896263a",
+      "bytes": 8670
+    },
+    {
+      "path": "product/engine/common/examples.ts",
+      "sha256": "37f05910f09980f3fbff3371768cc00d80ebb63a077bc75d478cda01396a09b2",
+      "bytes": 11478
+    },
+    {
+      "path": "product/engine/common/syntax-validation.ts",
+      "sha256": "672597959f51936c453958f813d3b18742e6275f2e31fd25d05a8cfcb7d8f531",
+      "bytes": 2442
+    },
+    {
+      "path": "product/engine/common/format-pipeline.ts",
+      "sha256": "6cd82576e8e8a8009ccf584260a8c9939648b375ce33c15f229ed566ef9630c5",
+      "bytes": 13196
+    },
+    {
+      "path": "product/engine/common/project-config.ts",
+      "sha256": "496fe6df040afaba1cb1d46a63a78a943c4e3223ab67a3e463cd0921d6db2076",
+      "bytes": 16674
+    },
+    {
+      "path": "product/engine/common/approval-gate.ts",
+      "sha256": "870510df5d73549504916a13887bf123f49f663edc91b0ff89108b8aa55d9d1b",
+      "bytes": 14047
+    },
+    {
+      "path": "product/engine/common/lifecycle-hook.ts",
+      "sha256": "9d9062491a883c5858497fc3c29de874cdd9ed2ed277a2da91551e42890fc6fc",
+      "bytes": 7823
+    },
+    {
+      "path": "product/engine/typescript/layout-policy.ts",
+      "sha256": "0caabe8b391240713ac64f342f0acca50e54b8edef61bb91cb4c8cb535b8447d",
+      "bytes": 6396
+    },
+    {
+      "path": "product/engine/typescript/grid-kinds.ts",
+      "sha256": "31037bd91e35dd8904ba38999da6ee24f38d3d51e9fbafb6c2d7126a1928ea3d",
+      "bytes": 62993
+    },
+    {
+      "path": "product/engine/structured/index.ts",
+      "sha256": "8476097478186f0bcdc2e8054903b950032678b831f8c062363a10d0c69b365f",
+      "bytes": 14169
+    },
+    {
+      "path": "product/engine/cli.ts",
+      "sha256": "e6cb0df12a253c5776938d24aa4539bc7ab4dfd3e49e4cd722fc4b9775693c27",
+      "bytes": 32138
+    },
+    {
+      "path": "development/tools/pattern-catalog.ts",
+      "sha256": "13fd53bd3d51786860de793977948a32cc4bb4fc6d1e7d422374ea88f3645420",
+      "bytes": 11079
+    },
+    {
+      "path": "product/rules/patterns/catalog.json",
+      "sha256": "da0111ff1ab2f1cb72efc6d5caf780ee592a05363d67897dea9877263a19ccb2",
+      "bytes": 41557
+    },
+    {
+      "path": "product/rules/base/typescript-layout.json",
+      "sha256": "1f8d647fe6c44ca988c738b174d171af21576b851f3f21a3c944c071b4266a3d",
+      "bytes": 2723
+    },
+    {
+      "path": "development/install.sh",
+      "sha256": "b51b8688ca5b1693d10d929e8f1332f81963beadca83e015510b824f8f1dd11d",
+      "bytes": 6536
+    },
+    {
+      "path": "development/skills/boxbox/tsconfig.json",
+      "sha256": "9c728924ae91de41603f281918296e7b593fe9da2d2cff256d38ba8f2d19f878",
+      "bytes": 325
+    },
+    {
+      "path": "development/tools/check-layout.ts",
+      "sha256": "858bd2cf9e1770dc18cef64662bd680a95704bb2f794c06e80022dd6f69159da",
+      "bytes": 4956
+    },
+    {
+      "path": "product/plugin/hooks/hooks.json",
+      "sha256": "3b878a9ec82dd1c91def3b908be3ba2d4ac0d64e24d104a3eb4c84114a6091f5",
+      "bytes": 688
+    },
+    {
+      "path": "product/hud/status.mjs",
+      "sha256": "61c7e070b6b035a930c83f0ae169c515c2bedfa2a82e08d6fde12d50e06a6d34",
+      "bytes": 13716
+    },
+    {
+      "path": "product/hud/setup.mjs",
+      "sha256": "e888c90357f6165d553fd5e095206a83f4b7bd442b563d7a9f4f3631f0ac927d",
+      "bytes": 5985
+    },
+    {
+      "path": "product/hud/codex.mjs",
+      "sha256": "86625a2b74288ac0851b6e3518d7e8727846522381e24d1030f0f57ec3685fc6",
+      "bytes": 10909
+    },
+    {
+      "path": "product/hud/record.mjs",
+      "sha256": "f76e7cfeddf2b2df5ee2ad39b8a008c069b07314fa2e0a6bc5c00687eb898247",
+      "bytes": 1565
+    },
+    {
+      "path": "test/runtime-record-validation.test.ts",
+      "sha256": "41fae2958d66fa3d4bc8497f655183a7d249a6beebc95e87aeb9af996ee981e1",
+      "bytes": 6002
+    },
+    {
+      "path": "test/typescript-layout-policy.test.ts",
+      "sha256": "fe942452461855f3e778ce2f3502c603220e523f6bd66ac4442202dc45cb08ea",
+      "bytes": 5562
+    },
+    {
+      "path": "test/pattern-catalog.test.ts",
+      "sha256": "9e474cd84f37782c1f600e7535fc4c0db94a1ba187312eab7dbf0d083b3ad1e3",
+      "bytes": 8938
+    },
+    {
+      "path": "test/syntax-validation.test.ts",
+      "sha256": "ce4f10cb1cf52974b616a3ae7c1290e8b82640c893a6579a0886db4553c9789f",
+      "bytes": 999
+    },
+    {
+      "path": "test/structured-align.test.ts",
+      "sha256": "128730a7074e44d9c1f00125d7821e8c53dbf672f66a55adc3bda5094e34d8a0",
+      "bytes": 8784
+    },
+    {
+      "path": "test/structured-pipeline.test.ts",
+      "sha256": "f97b92f7723caf9329b571d75e6b068bb446c99f751b85501389427643ae6a20",
+      "bytes": 7350
+    },
+    {
+      "path": "test/alias-portability.test.ts",
+      "sha256": "2be9762617abb836222ca7da4bdd1a7904a9449231aae048c7cf036ceb6a9d3a",
+      "bytes": 7419
+    },
+    {
+      "path": "test/lifecycle-hook.test.ts",
+      "sha256": "8e23a2c5bb30fa3a80e6558bf403eb47868846220e297453b20788c28ef5ed07",
+      "bytes": 5355
+    },
+    {
+      "path": "test/plugin-contract.test.ts",
+      "sha256": "291f8e5150b99ff4076548f1ffcde228a2b1c246c1aaf68954594b3f8087cd9b",
+      "bytes": 6013
+    },
+    {
+      "path": "test/product-hud.test.ts",
+      "sha256": "3005ee3fb29239f8955daae12ab6e0e0b5eeb502b8a57a146a0dcca07d92d530",
+      "bytes": 15076
+    },
+    {
+      "path": "test/hud-installation.test.ts",
+      "sha256": "ff91053630955893e417680110a30eca828d9a5af59f4c86674a1c487cb55e51",
+      "bytes": 7830
+    },
+    {
+      "path": "product/rules/presets/recommended/conventions.jsonl",
+      "sha256": "e9ed8c2fc41ebfced18658027786c4ae2c174a8710f9c64dc68f934304708a54",
+      "bytes": 838
+    },
+    {
+      "path": "product/rules/presets/recommended/examples.jsonl",
+      "sha256": "7e047d5b7311d2b55430c64864128716c2bbc32279e1d547b8f07dbb2baf9e16",
+      "bytes": 2598
+    },
+    {
+      "path": "test/codex-hud-launcher.test.ts",
+      "sha256": "3c5e48204edf3a14dfe3264510b58725afb7b1e5e305dad009629343667f438c",
+      "bytes": 10481
+    },
+    {
+      "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-entryguard-native-failure.md",
+      "sha256": "35f744d5513f2709737153deece5b39748c05e16ee024bcc9ed2c0a305fd0d7c",
+      "bytes": 789
+    },
+    {
+      "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-entryguard-remediation.md",
+      "sha256": "849f64604a69efb99200438aafb0cddd3c0495ebbe3e5c0948eb040481ae5873",
+      "bytes": 625
+    }
+  ],
+  "evidence": [
+    {
+      "path": "/tmp/boxbox-readiness/full-check-final.log",
+      "sha256": "0d17860b7bb0e32b53b818731643a725c01be85f3a29daa4e4a8991f878d816b",
+      "bytes": 75717,
+      "result": "pre-HUD-fix frozen baseline: 629 pass, 5 existing skips, 0 fail, 3264 assertions, 70 files"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/native-final-evidence/entryguard-focused-final.log",
+      "sha256": "21d73059c8edc0fe27c3cd42a09ebdae9f6ffec719c29963f70827adfbf35b68",
+      "bytes": 2603,
+      "result": "post-fix focused: 24 pass, 0 fail, 159 assertions"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/native-final-evidence/entryguard-align.log",
+      "sha256": "e7c4530b6e194b0160eb4df99eb3c0cd01386cb82beae507d60ec7d35e36305e",
+      "bytes": 5216,
+      "result": "post-fix BoxBox alignment evidence"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/full-check-post-native-fix.log",
+      "sha256AtPreparation": "f64b6d4c1ac04a319b6e32b17b42524dcddea590e293aeac922894244e439f30",
+      "bytesAtPreparation": 21049,
+      "result": "running; not frozen and not counted as pass"
+    }
+  ],
+  "sourceFreeze": "complete after HUD entry-guard canonical-realpath remediation; review findings may require a new manifest"
+}

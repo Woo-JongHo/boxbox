@@ -1,48 +1,48 @@
 /**
- * Registry of table row kinds. Each kind detects contiguous rows in a container (detect) and returns the
+ * Registry of table row kinds. Each kind detects rows in one container (detect) and returns the
  * alignable boundary (axis) positions for each row. The alignment engine (06_align-tables.ts) aligns axis
  * columns without knowing the kind. To add a case: 01 which kind is it → 02 which axis is missing → 03 register
  * the kind and axes in this file, add rows to test/fixtures/table-kinds.ts, and pin them with test/typescript-align.test.ts.
  */
 import      {
-              isArrayLiteralExpression       ,
-              isBlock                        ,
-              isAwaitExpression              ,
-              isCallExpression               ,
-              isCaseClause                   ,
-              isReturnStatement              ,
-              isClassDeclaration             ,
-              isEnumDeclaration              ,
-              isExpressionStatement          ,
-              isIfStatement                  ,
-              isEnumMember                   ,
-              isIdentifier                   ,
-              isInterfaceDeclaration         ,
-              isMethodDeclaration            ,
-              isMethodSignatureDeclaration   ,
-              isNewExpression                ,
-              isObjectLiteralExpression      ,
-              isPropertyAssignment           ,
-              isPropertyAccessExpression     ,
-              isPropertyDeclaration          ,
-              isPropertySignatureDeclaration ,
-              isSourceFile                   ,
-              isSwitchStatement              ,
-              isTypeAliasDeclaration         ,
-              isTypeLiteralNode              ,
-              isVariableStatement            ,
-              SyntaxKind                     ,
-              NodeFlags                      ,
-                                               } from "typescript/unstable/ast"         ;
-import type {
-              ObjectLiteralExpression        ,
-              Node                           ,
-              PropertyAssignment             ,
-              SourceFile                     ,
-                                               } from "typescript/unstable/ast"         ;
-import      { skipTrivia                       } from "typescript/unstable/ast/scanner" ;
+              isArrayLiteralExpression                                    ,
+              isBlock                                                     ,
+              isAwaitExpression                                           ,
+              isCallExpression                                            ,
+              isCaseClause                                                ,
+              isReturnStatement                                           ,
+              isClassDeclaration                                          ,
+              isEnumDeclaration                                           ,
+              isExpressionStatement                                       ,
+              isIfStatement                                               ,
+              isEnumMember                                                ,
+              isIdentifier                                                ,
+              isInterfaceDeclaration                                      ,
+              isMethodDeclaration                                         ,
+              isMethodSignatureDeclaration                                ,
+              isNewExpression                                             ,
+              isObjectLiteralExpression                                   ,
+              isPropertyAssignment                                        ,
+              isPropertyAccessExpression                                  ,
+              isPropertyDeclaration                                       ,
+              isPropertySignatureDeclaration                              ,
+              isSourceFile                                                ,
+              isSwitchStatement                                           ,
+              isTypeAliasDeclaration                                      ,
+              isTypeLiteralNode                                           ,
+              isVariableStatement                                         ,
+              SyntaxKind                                                  ,
+              NodeFlags                                                   ,
+                                                                            } from "typescript/unstable/ast"         ;
+import type { ObjectLiteralExpression, Node, PropertyAssignment, SourceFile } from "typescript/unstable/ast"         ;
+import      { skipTrivia                                                    } from "typescript/unstable/ast/scanner" ;
 
-import      { displayWidth                     } from "../common/display-width.js"      ;
+import      { displayWidth                                                  } from "@/common/display-width.ts"       ;
+import      {
+              minimumRowsOf                                               ,
+              TYPESCRIPT_LAYOUT_POLICY                                    ,
+              validateLayoutAxisNotes                                     ,
+                                                                            } from "@/typescript/layout-policy.ts"   ;
 
 export interface RowBoundary {
 	readonly axis : string ;
@@ -54,8 +54,8 @@ export interface RowBoundary {
 	readonly layer?  : LayerTag;
 }
 
-/** Which nested cell a boundary belongs to: the call layer, a subscript cell, or one named list slot (`list:<slot>`). */
-export type LayerTag = "call" | "subscript" | `list:${string}`;
+/** Which nested cell a boundary belongs to: the compatible call layer, an outer call envelope, a subscript, or a named list slot. */
+export type LayerTag = "call" | "call-envelope" | "subscript" | `list:${string}`;
 
 /** One literal list a list slot may align: the open bracket position, the item nodes, the close bracket position. */
 export interface ListCell {
@@ -130,9 +130,9 @@ function trailingComment(source: SourceFile, after: number): RowBoundary | undef
 
 /** A call or `new` expression with at least one argument, looking through `await`; undefined otherwise. */
 function callWithArguments(node: Node | undefined): Node | undefined {
-	if (node === undefined) return undefined;
+	if (node === undefined)                                               return undefined;
 	const current = isAwaitExpression(node) ? node.expression : node;
-	if (isCallExpression(current) && current.arguments.length > 0) return current;
+	if (isCallExpression(current) && current.arguments.length > 0)        return current;
 	if (isNewExpression(current) && (current.arguments?.length ?? 0) > 0) return current;
 	return undefined;
 }
@@ -149,13 +149,18 @@ function declarationCall(node: Node): Node | undefined {
 
 /** The call inside a call statement's subject, as `preservesTokens(a, b)` in `expect(preservesTokens(a, b)).toBe(false);`. */
 function subjectCall(node: Node): Node | undefined {
-	if (!isExpressionStatement(node)) return undefined;
+	if (!isExpressionStatement(node))                                                        return undefined;
+
 	const expression = unwrapExpression(node.expression);
 	if (!isCallExpression(expression) || !isPropertyAccessExpression(expression.expression)) return undefined;
+
 	let subject: Node = expression.expression.expression;
+
 	while (isPropertyAccessExpression(subject)) subject = subject.expression;
-	if (!isCallExpression(subject) || subject.arguments.length !== 1) return undefined;
+	if (!isCallExpression(subject) || subject.arguments.length !== 1)                        return undefined;
+
 	const argument = subject.arguments[0]!;
+
 	return isCallExpression(argument) && argument.arguments.length > 0 ? argument : undefined;
 }
 
@@ -166,23 +171,30 @@ function subjectCall(node: Node): Node | undefined {
  */
 function callLayer(source: SourceFile, call: Node): readonly RowBoundary[] | undefined {
 	if ((call as unknown as { readonly typeArguments?: unknown }).typeArguments) return undefined;
+
 	const callee = (call as unknown as { readonly expression: Node }).expression ;
 	const open   = tokenAfter(source, callee.getEnd(), "(")                      ;
 	const items  = callArguments(call)                                           ;
-	if (open === undefined || items.length === 0) return undefined;
+	if (open === undefined || items.length === 0)                                return undefined;
+
 	const boundaries: RowBoundary[] = [{ axis: "call-open-paren", from: open, at: open, insert: true, layer: "call" }];
+
 	for (let index = 0; index + 1 < items.length; index += 1) {
 		const end   = items[index]!.getEnd()             ;
 		const comma = tokenAfter(source, end, ",")       ;
 		const next  = items[index + 1]!.getStart(source) ;
 		if (comma === undefined || !spacesOnly(source, comma + 1, next)) return undefined;
+
 		boundaries.push({ axis: `call-comma${index + 1}`, from: end, at: comma, insert: true, layer: "call" });
 		boundaries.push({ axis: `call-arg${index + 2}`, from: comma + 1, at: next, layer: "call" });
 	}
+
 	const last  = items.at(-1)!.getEnd()        ;
 	const close = tokenAfter(source, last, ")") ;
-	if (close === undefined || close !== call.getEnd() - 1) return undefined;
+	if (close === undefined || close !== call.getEnd() - 1)                      return undefined;
+
 	boundaries.push({ axis: "call-close-paren", from: last, at: close, insert: true, layer: "call" });
+
 	return boundaries;
 }
 
@@ -288,9 +300,9 @@ function listAxisPrefix(tag: string): string {
 
 /** The subscript a declaration's value consists of, as `chars[index + 1]` in `const next = chars[index + 1] ;` — a leading `!` is fine. */
 function subscriptPartsOf(source: SourceFile, node: Node): { readonly object: string; readonly index: Node; readonly close: number } | undefined {
-	if (!isVariableStatement(node)) return undefined                                                     ;
-	const declared = node.declarationList.declarations[0]?.initializer                                   ;
-	if (declared === undefined) return undefined                                                         ;
+	if (!isVariableStatement(node))                              return undefined;
+	const declared = node.declarationList.declarations[0]?.initializer;
+	if (declared === undefined)                                  return undefined;
 	const unwrapped = syntaxKindName(declared) === "NonNullExpression" ? (declared as unknown as { readonly expression: Node }).expression : declared;
 	if (syntaxKindName(unwrapped) !== "ElementAccessExpression") return undefined;
 	const parts  = unwrapped as unknown as { readonly expression: Node; readonly argumentExpression: Node } ;
@@ -305,11 +317,11 @@ function callSignature(source: SourceFile, call: Node): string {
 }
 
 function detectDeclaration(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
-	if (!isVariableStatement(node)) return undefined;
+	if (!isVariableStatement(node))          return undefined;
 	const declarations = node.declarationList.declarations;
-	if (declarations.length !== 1) return undefined;
+	if (declarations.length !== 1)           return undefined;
 	const declaration = declarations[0]!;
-	if (!isIdentifier(declaration.name)) return undefined;
+	if (!isIdentifier(declaration.name))     return undefined;
 	if (!ownLineOf(source, node, LINE_REST)) return undefined;
 	const nameEnd                   = declaration.name.getEnd()        ;
 	const boundaries: RowBoundary[] = []                               ;
@@ -329,8 +341,8 @@ function detectDeclaration(source: SourceFile, node: Node): readonly RowBoundary
 			boundaries.push({ axis: "subscript-close", from: subscript.index.getEnd(), at: closeBracket, insert: true, layer: "subscript" });
 		}
 	}
-	const contentEnd = node.declarationList.getEnd()       ;
-	const semicolon  = tokenAfter(source, contentEnd, ";") ;
+	const contentEnd = node.declarationList.getEnd()                        ;
+	const semicolon  = tokenAfter                 (source, contentEnd, ";") ;
 	if (!semicolon) return undefined;
 	boundaries.push({ axis: "semicolon", from: contentEnd, at: semicolon });
 	const comment = trailingComment(source, semicolon + 1);
@@ -339,13 +351,13 @@ function detectDeclaration(source: SourceFile, node: Node): readonly RowBoundary
 }
 
 function detectTypeAlias(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
-	if (!isTypeAliasDeclaration(node)) return undefined;
+	if (!isTypeAliasDeclaration(node))       return undefined;
 	if (!ownLineOf(source, node, LINE_REST)) return undefined;
 	const anchor = node.typeParameters ? (node.typeParameters as unknown as { readonly end: number }).end : node.name.getEnd() ;
 	const equals = tokenAfter(source, anchor, "=")                                                                             ;
-	if (!equals) return undefined;
+	if (!equals)                             return undefined;
 	const semicolon = tokenAfter(source, node.type.getEnd(), ";");
-	if (!semicolon) return undefined;
+	if (!semicolon)                          return undefined;
 	const boundaries: RowBoundary[] = [
 		{ axis: "equals"   , from: anchor, at: equals },
 		{ axis: "semicolon", from: node.type.getEnd(), at: semicolon },
@@ -376,15 +388,15 @@ function detectMember(source: SourceFile, node: Node): readonly RowBoundary[] | 
 
 function detectMethod(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
 	if (!isMethodSignatureDeclaration(node) && !isMethodDeclaration(node)) return undefined;
-	if (!ownLineOf(source, node, LINE_REST)) return undefined;
-	const nameEnd = node.name.getEnd()               ;
-	const open    = tokenAfter(source, nameEnd, "(") ;
-	if (!open) return undefined;
+	if (!ownLineOf(source, node, LINE_REST))                               return undefined;
+	const nameEnd = node.name.getEnd()                     ;
+	const open    = tokenAfter      (source, nameEnd, "(") ;
+	if (!open)                                                             return undefined;
 	const parameters    = node.parameters                                        ;
 	const hasParameters = parameters.length > 0                                  ;
 	const closeAnchor   = hasParameters ? parameters.at(-1)!.getEnd() : open + 1 ;
 	const close         = tokenAfter(source, closeAnchor, ")")                   ;
-	if (!close) return undefined;
+	if (!close)                                                            return undefined;
 	const boundaries: RowBoundary[] = [{ axis: "open-paren", from: open, at: open, insert: true }];
 	// Empty parameter lists stay attached as () — the closing paren is not aligned to the table width; padding goes outside.
 	if (hasParameters) boundaries.push({ axis: "close-paren", from: close, at: close, insert: true });
@@ -434,18 +446,18 @@ function unwrapExpression(node: Node): Node {
 }
 
 function detectAssignments(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
-	if (!isExpressionStatement(node)) return undefined;
-	if (!ownLineOf(source, node, LINE_REST)) return undefined;
+	if (!isExpressionStatement(node))                                                                    return undefined;
+	if (!ownLineOf(source, node, LINE_REST))                                                             return undefined;
 	const expression = unwrapExpression(node.expression);
-	if (syntaxKindName(expression) !== "BinaryExpression") return undefined;
+	if (syntaxKindName(expression) !== "BinaryExpression")                                               return undefined;
 	const binary = expression as unknown as { operatorToken: Node; left: Node; right: Node };
 	if (source.text.slice(binary.operatorToken.getStart(source), binary.operatorToken.getEnd()) !== "=") return undefined;
 	const boundaries: RowBoundary[] = []                                            ;
 	const equals                    = tokenAfter(source, binary.left.getEnd(), "=") ;
-	if (equals === undefined) return undefined;
+	if (equals === undefined)                                                                            return undefined;
 	boundaries.push({ axis: "equals", from: binary.left.getEnd(), at: equals });
 	const semicolon = tokenAfter(source, binary.right.getEnd(), ";");
-	if (!semicolon) return undefined;
+	if (!semicolon)                                                                                      return undefined;
 	boundaries.push({ axis: "semicolon", from: binary.right.getEnd(), at: semicolon });
 	const comment = trailingComment(source, semicolon + 1);
 	if (comment) boundaries.push(comment);
@@ -453,25 +465,25 @@ function detectAssignments(source: SourceFile, node: Node): readonly RowBoundary
 }
 
 function detectCallStatement(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
-	if (!isExpressionStatement(node)) return undefined;
-	if (!ownLineOf(source, node, LINE_REST)) return undefined;
+	if (!isExpressionStatement(node))                                              return undefined;
+	if (!ownLineOf(source, node, LINE_REST))                                       return undefined;
 	const expression = unwrapExpression(node.expression);
-	if (!isCallExpression(expression)) return undefined;
+	if (!isCallExpression(expression))                                             return undefined;
 	const matcher = expression.expression;
 	if (!isPropertyAccessExpression(matcher) || expression.arguments.length !== 1) return undefined;
 	let subject: Node = matcher.expression;
 	while (isPropertyAccessExpression(subject)) subject = subject.expression;
-	if (!isCallExpression(subject) || subject.arguments.length !== 1) return undefined;
+	if (!isCallExpression(subject) || subject.arguments.length !== 1)              return undefined;
 	const subjectClose = subject.getEnd() - 1;
-	if (source.text[subjectClose] !== ")") return undefined;
+	if (source.text[subjectClose] !== ")")                                         return undefined;
 	const matcherDot = tokenAfter(source, matcher.expression.getEnd(), ".");
-	if (matcherDot === undefined) return undefined;
+	if (matcherDot === undefined)                                                  return undefined;
 	const matcherOpen = tokenAfter(source, matcher.getEnd(), "(");
-	if (matcherOpen === undefined) return undefined;
+	if (matcherOpen === undefined)                                                 return undefined;
 	const matcherClose = expression.getEnd() - 1;
-	if (source.text[matcherClose] !== ")") return undefined;
+	if (source.text[matcherClose] !== ")")                                         return undefined;
 	const semicolon = tokenAfter(source, expression.getEnd(), ";");
-	if (semicolon === undefined) return undefined;
+	if (semicolon === undefined)                                                   return undefined;
 	const boundaries: RowBoundary[] = [
 		{ axis : "subject-close-paren" , from : subject.arguments[0]!.getEnd() , at : subjectClose , insert : true },
 		{ axis : "matcher-dot"         , from : matcherDot                     , at : matcherDot   , insert : true },
@@ -487,29 +499,41 @@ function detectCallStatement(source: SourceFile, node: Node): readonly RowBounda
 	return boundaries;
 }
 
+/** A one-line, unbraced early return; only the space before `return` belongs to this axis. */
+function detectReturnGuard(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
+	if (!isIfStatement(node) || node.elseStatement !== undefined || !isReturnStatement(node.thenStatement)) return undefined;
+	if (!ownLineOf(source, node, LINE_REST))                                                                return undefined;
+
+	const close = tokenAfter                 (source, node.expression.getEnd(), ")") ;
+	const start = node.thenStatement.getStart(source                               ) ;
+	if (close === undefined || !spacesOnly(source, close + 1, start))                                       return undefined;
+
+	return [{ axis: "guard-return", from: close + 1, at: start }];
+}
+
 /**
  * A guard row: a one-line `if (…) { …; continue; }` whose block ends in `continue`, with no `else`. Aligned cells
  * are the condition's closing `)` (hugging the widest condition), the first statement's `;` (hugging the widest
  * first statement) and the `continue` column; the statements in between stay as written.
  */
 function detectGuard(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
-	if (!isIfStatement(node)) return undefined                        ;
-	if (node.elseStatement !== undefined) return undefined            ;
-	if (!ownLineOf(source, node, LINE_REST)) return undefined         ;
+	if (!isIfStatement(node))                      return undefined                        ;
+	if (node.elseStatement !== undefined)          return undefined            ;
+	if (!ownLineOf(source, node, LINE_REST))       return undefined         ;
 	const closeParen = tokenAfter(source, node.expression.getEnd(), ")");
-	if (closeParen === undefined) return undefined;
+	if (closeParen === undefined)                  return undefined;
 	const thenStatement = node.thenStatement                                    ;
 	if (syntaxKindName(thenStatement) !== "Block") return undefined             ;
 	const statements = (thenStatement as unknown as { readonly statements: readonly Node[] }).statements;
-	if (statements.length < 2) return undefined;
+	if (statements.length < 2)                     return undefined;
 	// A statement node includes its `;`, so the padding anchor is the first statement's expression.
 	const first          = statements[0]!                                       ;
 	if (syntaxKindName(first) !== "ExpressionStatement") return undefined       ;
 	const firstExpression = (first as unknown as { readonly expression: Node }).expression ;
 	const firstSemicolon  = tokenAfter(source, firstExpression.getEnd(), ";")              ;
-	if (firstSemicolon === undefined) return undefined                          ;
+	if (firstSemicolon === undefined)                    return undefined                          ;
 	const last = statements.at(-1)!                                             ;
-	if (syntaxKindName(last) !== "ContinueStatement") return undefined          ;
+	if (syntaxKindName(last) !== "ContinueStatement")    return undefined          ;
 	const boundaries: RowBoundary[] = [
 		{ axis : "guard-close-paren" , from : node.expression.getEnd() , at : closeParen            , insert : true },
 		{ axis : "guard-semi1"       , from : firstExpression.getEnd() , at : firstSemicolon        , insert : true },
@@ -521,10 +545,10 @@ function detectGuard(source: SourceFile, node: Node): readonly RowBoundary[] | u
 }
 
 function detectCaseClause(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
-	if (!isCaseClause(node)) return undefined;
+	if (!isCaseClause(node))                 return undefined;
 	if (!ownLineOf(source, node, LINE_REST)) return undefined;
 	const colon = tokenAfter(source, node.expression.getEnd(), ":");
-	if (!colon) return undefined;
+	if (!colon)                              return undefined;
 	// The label `:` is aligned as an insert axis (from==at) to preserve the `case "a":` convention.
 	const boundaries: RowBoundary[] = [{ axis: "case-colon", from: colon, at: colon, insert: true }] ;
 	const statements                = node.statements                                                ;
@@ -558,12 +582,12 @@ function objectLiteralOf(node: Node): ObjectLiteralExpression | undefined {
 
 function detectObjectRow(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
 	if (!isObjectLiteralExpression(node) && objectLiteralOf(node) === undefined) return undefined;
-	if (!ownLineOf(source, node, CLOSER_REST)) return undefined;
+	if (!ownLineOf(source, node, CLOSER_REST))                                   return undefined;
 	const obj        = objectLiteralOf(node)! ;
 	const properties = [...obj.properties]    ;
-	if (properties.length === 0 || !properties.every(isPropertyAssignment)) return undefined;
+	if (properties.length === 0 || !properties.every(isPropertyAssignment))      return undefined;
 	const openBrace = obj.getStart(source);
-	if (source.text[openBrace] !== "{") return undefined;
+	if (source.text[openBrace] !== "{")                                          return undefined;
 	const boundaries: RowBoundary[] = [{ axis: "open-brace", from: openBrace, at: openBrace, insert: true }] ;
 	let propertyAnchor              = openBrace + 1                                                          ;
 	for (let index = 0; index < properties.length; index += 1) {
@@ -598,11 +622,11 @@ function detectObjectRow(source: SourceFile, node: Node): readonly RowBoundary[]
 }
 
 function detectRegistrationRow(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
-	if (!isPropertyAssignment(node)) return undefined;
+	if (!isPropertyAssignment(node))          return undefined;
 	if (!ownLineOf(source, node, COMMA_REST)) return undefined;
 	const nameEnd = (node.postfixToken ?? node.name).getEnd() ;
 	const colon   = tokenAfter(source, nameEnd, ":")          ;
-	if (!colon) return undefined;
+	if (!colon)                               return undefined;
 	const boundaries: RowBoundary[] = [{ axis: "colon", from: nameEnd, at: colon }];
 	if (spacesOnly(source, colon + 1, node.initializer.getStart())) {
 		boundaries.push({ axis: "value", from: colon + 1, at: node.initializer.getStart() });
@@ -612,6 +636,7 @@ function detectRegistrationRow(source: SourceFile, node: Node): readonly RowBoun
 
 /** Keep resource declarations and awaited/constructor initializers outside direct-call approval keys. */
 function declarationGroupName(run: readonly DetectedRow[]): string {
+	if (run.some(row => row.boundaries.some(boundary => boundary.layer === "call-envelope"))) return "declaration-call-envelope";
 	if (!run.some(row => row.boundaries.some(boundary => boundary.axis === "equals"))) return "declaration";
 	const extended = run.some(row => {
 		if (!isVariableStatement(row.node)) return false;
@@ -629,11 +654,11 @@ function declarationGroupName(run: readonly DetectedRow[]): string {
 export const ROW_KINDS: readonly RowKind[] = [
 	{
 		name       : "declaration",
-		gap        : "blank",
+		gap        : TYPESCRIPT_LAYOUT_POLICY.rowKinds.declaration.gap,
 		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
 		detect     : detectDeclaration,
 		groupName  : declarationGroupName,
-		minRows    : run => run.every(row => row.boundaries.some(boundary => boundary.axis === "equals")) ? 2 : undefined,
+		minRows    : run => minimumRowsOf(TYPESCRIPT_LAYOUT_POLICY.rowKinds.declaration, run.map(row => row.boundaries.map(boundary => boundary.axis))),
 		layerCall  : node => kindLayerCall("declaration", node),
 	},
 	{
@@ -686,6 +711,12 @@ export const ROW_KINDS: readonly RowKind[] = [
 		layerCall  : node => kindLayerCall("call-statements", node),
 	},
 	{
+		name       : "return-guards",
+		gap        : "blank",
+		containers : node => isBlock(node) ? node.statements : undefined,
+		detect     : detectReturnGuard,
+	},
+	{
 		name       : "guard-statements",
 		gap        : "blank",
 		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
@@ -726,6 +757,7 @@ export const ROW_KINDS: readonly RowKind[] = [
 
 /** Human-readable description of which syntax boundary each axis name means. Fill it in when registering a new axis. */
 export const AXIS_NOTES: Readonly<Record<string, string>> = {
+	"call-member-dot"        : "final receiver/method dot of a supported member call; inner receiver dots remain inside the receiver cell",
 	"colon"                  : "`:` separating a name or identifier from its type or expression",
 	"equals"                 : "`=` of a declaration, alias or enum member",
 	"semicolon"              : "statement-terminating `;`",
@@ -762,40 +794,26 @@ export const AXIS_NOTES: Readonly<Record<string, string>> = {
 	"list-matcher-arg-el"    : "start column of the next item of a list inside a matcher argument",
 	"list-matcher-arg-close" : "closing `]` or `}` of a list inside a matcher argument, right after the widest last item",
 	"subscript-close"        : "`]` of a declaration's subscript value, right after the widest index",
+	"guard-return"           : "start column of an unbraced early return in the same block",
+	"call-envelope-open"     : "opening `(` of compatible direct-call declaration values with different signatures",
+	"call-envelope-close"    : "closing `)` of a nonempty direct-call value; its arguments remain one opaque cell",
 	"guard-close-paren"      : "`)` of a guard row's condition, right after the widest condition",
 	"guard-semi1"            : "first statement's `;` of a guard row, right after the widest first statement",
 	"guard-continue"         : "start column of the trailing `continue;` in a guard row",
 };
 
+validateLayoutAxisNotes(TYPESCRIPT_LAYOUT_POLICY, AXIS_NOTES);
+
 export function syntaxKindName(node: Node): string {
 	return SyntaxKind[node.kind] ?? `Kind${String(node.kind)}`;
 }
-
-const DECLARATION_EQUALS_AXES = { gap: ["colon", "equals", "call-arg{i}", "list-value-comma{i}", "list-value-el{i}", "list-arg{i}-comma{i}", "list-arg{i}-el{i}", "semicolon"], insert: ["call-open-paren", "call-comma{i}", "call-close-paren", "list-value-open", "list-value-close", "list-arg{i}-open", "list-arg{i}-close", "subscript-close", "comment"] };
 
 /**
  * Axis contract per kind — the single basis shared by authoring time (prompts, doc examples) and check time
  * (06_align-tables). gap axes keep at least one space; insert axes preserve existing conventions (`):`, `":`,
  * `//`) and only align the column. `{i}` marks per-property-position axes of object rows.
  */
-export const KIND_AXES: Readonly<Record<string, { readonly gap: readonly string[]; readonly insert: readonly string[] }>> = {
-	"declaration"                 : { gap: ["colon", "semicolon"], insert: ["comment"] },
-	"declaration-equals"          : DECLARATION_EQUALS_AXES,
-	"declaration-extended-equals" : DECLARATION_EQUALS_AXES,
-	"guard-statements"            : { gap: [], insert: ["guard-close-paren", "guard-semi1", "guard-continue"] },
-	"type-alias"                  : { gap: ["equals", "semicolon"], insert: ["comment"] },
-	"method-signature"            : { gap: [], insert: ["open-paren", "close-paren", "colon", "comment"] },
-	"class-method"                : { gap: [], insert: ["open-paren", "close-paren", "colon", "comment"] },
-	"interface-members"           : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
-	"type-members"                : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
-	"class-members"               : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
-	"enum-member"                 : { gap: ["equals", "comma"], insert: ["comment"] },
-	"case-clause"                 : { gap: [], insert: ["case-colon", "call-paren", "return-tail"] },
-	"assignments"                 : { gap: ["equals", "semicolon"], insert: ["comment"] },
-	"call-statements"             : { gap: ["call-arg{i}", "list-arg{i}-comma{i}", "list-arg{i}-el{i}", "list-matcher-arg{i}-comma{i}", "list-matcher-arg{i}-el{i}", "semicolon"], insert: ["call-open-paren", "call-comma{i}", "call-close-paren", "list-arg{i}-open", "list-arg{i}-close", "list-matcher-arg{i}-open", "list-matcher-arg{i}-close", "subject-close-paren", "matcher-dot", "matcher-open-paren", "matcher-close-paren", "comment"] },
-	"object-rows"                 : { gap: ["property{i}", "colon{i}", "value{i}", "comma{i}", "close-brace"], insert: ["open-brace", "tail"] },
-	"registration"                : { gap: ["colon", "value"], insert: [] },
-};
+export const KIND_AXES: Readonly<Record<string, { readonly gap: readonly string[]; readonly insert: readonly string[] }>> = TYPESCRIPT_LAYOUT_POLICY.kinds;
 
 export interface DetectedRow {
 	readonly node       : Node;
@@ -804,8 +822,9 @@ export interface DetectedRow {
 	readonly vertical?  : Node;
 }
 
-/** Groups only contiguous same-kind rows among container siblings. Blank lines, comments or other statements in between break the table. */
+/** Ordinary rows must be contiguous; return guards share a region of immediate block siblings without crossing section barriers. */
 export function runsOf(source: SourceFile, siblings: readonly Node[], kind: RowKind): readonly (readonly DetectedRow[])[] {
+	if (kind.name === "return-guards") return returnGuardRuns(source, siblings, kind);
 	const commaGap                    = kind.gap === "comma" ;
 	const runs      : DetectedRow[][] = []                   ;
 	let current     : DetectedRow[]   = []                   ;
@@ -822,7 +841,108 @@ export function runsOf(source: SourceFile, siblings: readonly Node[], kind: RowK
 		previousEnd = sibling.getEnd();
 	}
 	if (current.length > 0) runs.push(current);
-	return runs.filter(run => run.length > 0).map(run => withLayers(source, kind, run));
+	return runs.filter(run => run.length > 0).map(run => withCallEnvelope(source, kind, withLayers(source, kind, run)));
+}
+
+/** Terminal statements and unrelated declaration/control-flow forms end a guard region. */
+function guardRegionBarrier(node: Node): boolean {
+	return [
+		"IfStatement",
+		"ReturnStatement",
+		"ThrowStatement",
+		"BreakStatement",
+		"ContinueStatement",
+		"FunctionDeclaration",
+		"ClassDeclaration",
+	].includes(syntaxKindName(node));
+}
+
+/** Inspect immediate siblings only: ordinary statements bridge guards, while comments and explicit section barriers split them. */
+function returnGuardRuns(source: SourceFile, siblings: readonly Node[], kind: RowKind): readonly (readonly DetectedRow[])[] {
+	const runs      : DetectedRow[][] = [] ;
+	let current     : DetectedRow[]   = [] ;
+	let previousEnd : number | undefined   ;
+
+	for (const sibling of siblings) {
+		const boundaries = kind.detect(source, sibling)                                                              ;
+		const gap        = previousEnd === undefined ? "" : source.text.slice(previousEnd, sibling.getStart(source)) ;
+		const barrier    = boundaries === undefined && guardRegionBarrier(sibling)                                   ;
+		if (!/^[ \t\r\n]*$/u.test(gap) || barrier) {
+			if (current.length > 0) runs.push(current);
+			current = [];
+		}
+		if (boundaries !== undefined) current.push({ node: sibling, boundaries });
+		previousEnd = sibling.getEnd();
+	}
+	if (current.length > 0) runs.push(current);
+
+	return runs;
+}
+
+/** Identifier/property callees only: optional chains, computed access and call-produced receivers stay opaque. */
+function simpleCallee(node: Node): boolean {
+	if (isIdentifier(node)) return true;
+	if (!isPropertyAccessExpression(node) || node.questionDotToken !== undefined) return false;
+
+	return simpleCallee(node.expression);
+}
+
+/** A direct call may carry one trailing non-null assertion; await/new/type arguments are separate contracts. */
+function envelopeCall(node: Node): Node | undefined {
+	if (!isVariableStatement(node) || (node.declarationList.flags & NodeFlags.Using) !== 0) return undefined;
+
+	const value = node.declarationList.declarations[0]?.initializer;
+	const call = value !== undefined && syntaxKindName(value) === "NonNullExpression"
+		? (value as unknown as { readonly expression: Node }).expression : value;
+	if (call === undefined || !isCallExpression(call) || call.questionDotToken !== undefined || call.typeArguments !== undefined) return undefined;
+
+	return simpleCallee(call.expression) ? call : undefined;
+}
+
+/** The outer call is one cell; commas and nested expressions inside that cell are deliberately not edited. */
+function envelopeBoundaries(source: SourceFile, call: Node): readonly RowBoundary[] | undefined {
+	const callee = (call as unknown as { readonly expression: Node }).expression ;
+	const open   = tokenAfter(source, callee.getEnd(), "(")                      ;
+	const items  = callArguments(call)                                           ;
+	if (open === undefined) return undefined;
+
+	const end   = items.at(-1)?.getEnd() ?? open + 1 ;
+	const close = tokenAfter(source, end, ")")       ;
+	if (close === undefined || close !== call.getEnd() - 1) return undefined;
+
+	const boundaries: RowBoundary[] = [];
+	if (isPropertyAccessExpression(callee)) {
+		const receiverEnd = callee.expression.getEnd()                         ;
+		const dot         = tokenAfter              (source, receiverEnd, ".") ;
+		if (dot === undefined || !spacesOnly(source, dot + 1, callee.name.getStart(source))) return undefined;
+		boundaries.push({ axis: "call-member-dot", from: receiverEnd, at: dot, insert: true, layer: "call-envelope" });
+	}
+	boundaries.push({ axis: "call-envelope-open", from: callee.getEnd(), at: open, insert: true, layer: "call-envelope" });
+	// Empty calls retain (), including their zero inner width.
+	if (items.length === 0 && close !== open + 1) return undefined;
+	if (items.length > 0) boundaries.push({ axis: "call-envelope-close", from: end, at: close, insert: true, layer: "call-envelope" });
+
+	return boundaries;
+}
+
+/** Existing direct same-call argument layers keep their key; empty calls and non-null wrappers use the new envelope contract. */
+function withCallEnvelope(source: SourceFile, kind: RowKind, run: readonly DetectedRow[]): readonly DetectedRow[] {
+	if (kind.name !== "declaration" || run.length < 2)                          return run;
+
+	const calls = run.map(row => envelopeCall(row.node));
+	if (calls.some(call => call === undefined))                                 return run;
+
+	const legacyCalls = run.map(row => declarationCall(row.node))                ;
+	const signatures  = new Set(calls.map(call => callSignature(source, call!))) ;
+	if (signatures.size === 1 && legacyCalls.every(call => call !== undefined)) return run;
+
+	const envelopes = calls.map(call => envelopeBoundaries(source, call!));
+	if (envelopes.some(boundaries => boundaries === undefined))                 return run;
+
+	return run.map((row, index) => ({
+		node: row.node,
+		boundaries: [...row.boundaries.filter(boundary => boundary.layer === undefined), ...envelopes[index]!],
+	}));
 }
 
 /** An argument cell this much wider than the second widest in its column is an outlier (import rule B); the layer is not applied. */
@@ -849,7 +969,7 @@ function withLayers(source: SourceFile, kind: RowKind, run: readonly DetectedRow
 		else if (kind.name === "declaration") rows = withVerticalOutliers(run, keep, calls as readonly Node[], widths);
 	}
 	if (tags.has("subscript") && kind.name === "declaration") {
-		const parts    = run.map(row => subscriptPartsOf(source, row.node))                                     ;
+		const parts    = run.map  (row => subscriptPartsOf(source, row.node)                                  ) ;
 		const complete = run.every(row => row.boundaries.some(boundary => boundary.axis === "subscript-close")) ;
 		if (complete && parts.every(part => part !== undefined) && new Set(parts.map(part => part!.object)).size === 1
 			&& !hasOutlierWidths(itemWidths(source, parts.map(part => [part!.index])))) keep.add("subscript");

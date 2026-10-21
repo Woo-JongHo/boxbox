@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
-import      { readFileSync, writeFileSync } from "node:fs"                    ;
-import      { relative                    } from "node:path"                  ;
+import      { readFileSync, writeFileSync } from "node:fs"                          ;
+import      { relative                    } from "node:path"                        ;
 
-import      { displayWidth                } from "../common/display-width.ts" ;
-import      { repositoryFile              } from "./load-source-file.ts"      ;
+import      { displayWidth                } from "@/common/display-width.ts"        ;
+import      { repositoryFile              } from "@/typescript/load-source-file.ts" ;
 
 interface ImportRow {
 	readonly text  : string ;
@@ -113,16 +113,16 @@ function splitNamedImport(row: string, file: string): readonly string[] {
 	if (/^import\s+type\b/u.test(row)) return [row];
 	if (hasComment(row) && /\btype\s+[A-Za-z_$]/u.test(row)) throw new Error(`imports with comments are not fixed automatically: ${file}`);
 	const match = /^import\s+([^"']*?)\s+from\s+(["'][^"']+["']);?$/su.exec(row);
-	if (!match) return [row];
+	if (!match)                                                               return [row];
 	const clause = match[1] ?? ""          ;
 	const open   = clause.indexOf("{")     ;
 	const close  = clause.lastIndexOf("}") ;
-	if (open < 0 || close < open) return [row];
+	if (open < 0 || close < open)                                             return [row];
 	const before  = clause.slice(0, open).replace(/,\s*$/u, "").trim()                                  ;
 	const entries = clause.slice(open + 1, close).split(",").map(value => value.trim()).filter(Boolean) ;
 	if (entries.some(value => /^type\s+as\s+[A-Za-z_$][\w$]*$/u.test(value))) return [row];
 	const types = entries.filter(value => /^type\s+/u.test(value));
-	if (types.length === 0) return [row];
+	if (types.length === 0)                                                   return [row];
 	if (hasComment(row)) throw new Error(`mixed imports with comments are not fixed automatically: ${file}`);
 	const values           = entries.filter(value => !/^type\s+/u.test(value)) ;
 	const module           = match[2]                                          ;
@@ -262,10 +262,10 @@ function normalizeOnce(source: string, file: string): string {
 		if (styles.size > 1) throw new Error(`mixed terminator styles in the same import section: ${file}`);
 	}
 	for (const row of rows) if (/\s(?:with|assert)\s*\{/u.test(row.text) && /\btype\s+[A-Za-z_$]/u.test(row.text)) throw new Error(`mixed imports with attributes are not fixed automatically: ${file}`);
-	const split  = rows.map(row => splitNamedImport(row.text, file).map(text => ({ text, section: row.section }))) ;
-	const flat   = split.flat()                                                                                    ;
-	const parsed = flat.map(row => tableImport(row.text, file))                                                    ;
-	const output = flat.map((row, index) => typeof parsed[index] === "string" ? parsed[index] : row.text)          ;
+	const split  = rows .map (row => splitNamedImport(row.text, file).map(text => ({ text, section: row.section }))) ;
+	const flat   = split.flat()                                                                                      ;
+	const parsed = flat .map (row => tableImport(row.text, file)                                                   ) ;
+	const output = flat .map ((row, index) => typeof parsed[index] === "string" ? parsed[index] : row.text         ) ;
 	for (const section of new Set(flat.map(row => row.section))) {
 		const members = flat.flatMap((row, index) => row.section === section && typeof parsed[index] !== "string" ? [index] : []);
 		if (members.length === 0) continue;
@@ -303,7 +303,7 @@ let errors    = 0                                ;
 for (const absolute of targets) {
 	try {
 		const before = readFileSync(absolute, "utf8") ;
-		const after  = normalize(before, absolute)    ;
+		const after  = normalize   (before, absolute) ;
 		if (after === before) continue;
 		changed += 1;
 		console.log(`${write ? "fixed" : "invalid"} ${relative(root, absolute)}`);

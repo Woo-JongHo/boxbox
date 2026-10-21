@@ -1,0 +1,9 @@
+{
+  "command": [
+    "python3",
+    "/tmp/boxbox-mode-behavior-m7RwTv/verify-refactor.py"
+  ],
+  "code": 0,
+  "stdout": "{\"syntax\": \"passed\", \"equivalenceCases\": 160, \"result\": \"passed\", \"scope\": \"boolean enabled; integer, NaN and infinite attempts/quota\"}\n",
+  "stderr": ""
+}

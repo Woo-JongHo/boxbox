@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
-import      { runAlignCli   } from "../common/align-cli.ts" ;
-import      { SWIFT_ALIGNER } from "./profile.ts"           ;
+import      { runAlignCli   } from "@/common/align-cli.ts" ;
+import      { SWIFT_ALIGNER } from "@/swift/profile.ts"    ;
 
 const result = runAlignCli(SWIFT_ALIGNER, process.argv.slice(2));
 console.log(result.report);

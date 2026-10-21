@@ -2,18 +2,19 @@
 
 Working rules and a structure map for any coding agent (Claude Code, Codex, ZCode, Pi, ...) editing this repository. `CLAUDE.md` imports this file, so keep it as the single source.
 
-## Language policy — English everywhere (2026-10-07 decision)
+## Language policy — English by default; localized root READMEs
 
-The whole repository is written in English: Markdown docs (`docs/`, `SKILL.md`, `references/`), code comments and JSDoc,
+The repository is written in English by default: Markdown docs (`docs/`, `SKILL.md`, `references/`), code comments and JSDoc,
 test names and assertion messages, plan files, CLI and report output, manifests, and git artifacts (commit messages,
 PR titles and bodies, branch names). This replaces the 2026-09-30 policy of Korean during development and translation
 before release (M1.8 S8, done on 2026-10-07).
 
 - Conversation with the user stays in Korean.
+- **Root README translations (2026-10-21 user decision):** `README.md` is the English reference; `README.ko.md` and `README.zh-CN.md` are Korean and Simplified Chinese translations. Their language-switch links may use native labels. When changing root README content, update all three together, preserving command/code blocks, link targets, support limits and release status. This exception applies only to the root README set.
 - **CJK test data** (strings for display-width and preservation checks in `test/fixtures/`)
   is not translated. Mark such lines outside `test/fixtures/` with a trailing `// cjk-test-data` comment.
 - Recorded evidence (`development/harness/evidence/`, `docs/development/reviews/*-evidence/`) is machine output kept as recorded and is not rewritten.
-- Keep new repository prose in English; preserve CJK fixture data and recorded evidence.
+- Outside the localized root README set, keep new repository prose in English; preserve CJK fixture data and recorded evidence.
 
 `test/plugin-contract.test.ts` pins the discovery text `TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, and Kotlin`. Change it together with the manifests and the `SKILL.md` frontmatter.
 
@@ -37,7 +38,7 @@ The `author` field in the manifests is attribution and stays. Historical executi
 
 The core value is conservatism: a row whose structure cannot be decomposed losslessly is never rewritten, and every aligner is tested for content preservation, idempotence and a minimum row count.
 
-**Current plan:** read `docs/development/plan.md` first. Work only on the task marked `▶ active`, verify it with the commands listed there, show the results to the user, and wait for confirmation before starting the next task.
+**Current plan:** read `docs/development/plan.md` first. Work on the task marked `▶ active` and verify it with the commands listed there. The 2026-10-21 user authorization permits autonomous continuation through READINESS1 phases and independent subtasks; report evidence and request only decisions not already authorized.
 
 **Product direction:** read `docs/development/design.md` before any structural work. It defines the target product `boxbox`: LEARN / GUIDE / REVIEW modes, the non-negotiable invariants, the Base → Preset → User → Project layering, the `.boxbox/` customization space, the learning-data funnel and the P0–P4 roadmap. The project is currently in the learn-and-harden phase.
 
@@ -45,6 +46,7 @@ Supported languages:
 
 - **TypeScript** — AST + LSP tooling (TypeScript 7), table-kind registry in `grid-kinds.ts`.
 - **Python, Java, Go, Rust, JavaScript, C, C++, Swift, Kotlin** — a shared line engine plus a small per-language profile (string/comment masking + row slot rules).
+- **JSON and YAML** — strict document validation and bounded scalar-mapping candidates in `product/engine/structured`; source ranges, unsupported reasons and horizontal-only preservation feed the same public approval/write pipeline. Public preset approval is separate from adapter support.
 
 ## Structure map
 
@@ -54,8 +56,10 @@ product/                         canonical product sources
     common/                      preservation, parsers, safe writes, config, approvals, hooks
     typescript/                  TypeScript 7 AST/LSP pipeline and kind registry
     <lang>/                      shared line-engine profiles and thin runners
+    structured/                  JSON/YAML parser-backed scalar mapping adapter
     rule-data.ts                 rule paths shared by source and bundled engines
   rules/
+    patterns/                    advisory nine-family catalog; never approval authority
     base/                        language surface-form data
     references/                  charter, grammar, readability contract and TS templates
     presets/recommended/         public approved-rule DB (2 conventions, 4 examples, 2 decisions)
@@ -87,9 +91,9 @@ dist/                            generated engine packages and npm installer; gi
 - **Single source.** Edit product code in `product/engine`, rules in `product/rules`, and plugin templates in `product/plugin`. `bun run sync:plugin` regenerates the complete `plugin/` payload. The marketplaces keep their `./plugin` discovery path. See [layout.md](docs/development/layout.md) for the dependency and generation contracts.
 - **There are two release artifacts.** The engine CLI package (`development/tools/build-cli-artifact.ts` → `product/packages/cli` → `dist/boxbox-<version>.tgz`) and the thin agent plugin (`plugin/`: `SKILL.md`, read-only inspector, manifests, hook adapter) share one set of engine and rule data. The public CLI bundle does not include the raw write runners or auxiliary writers (`docs/development/release-contract.md`).
 - **Host adapters are thin.** Only discovery location and manifest differ per host (see `docs/development/agent-portability.md`).
-- **Roles.** The read-only inspector investigates one product file; the main agent authors and verifies exactly one product file at a time and waits for user feedback before moving on.
+- **Roles.** The read-only inspector investigates one product file; the main agent authors and verifies product changes within the authorized plan. READINESS1 permits continued work without per-file feedback; parallel workers must have disjoint ownership.
 - **Adding a language:** create `product/engine/<lang>/profile.ts` exporting a `LineProfiler`, add `01_group-regions.ts` / `06_align-tables.ts` wrappers, add `test/fixtures/<lang>/{tables,tables.aligned,tricky}.*`, add `test/<lang>-align.test.ts` using `lang-harness.ts`, then update the language list in manifests, `SKILL.md` and `plugin-contract.test.ts`.
-- **Adding a TypeScript table kind:** register it in `grid-kinds.ts` (kind + axes + note), add fixtures, and cover it in `typescript-align.test.ts`.
+- **Adding a TypeScript table kind:** register its detector in `grid-kinds.ts`, its descriptive axes in `rules/base/typescript-layout.json` and implemented-kind validation in `layout-policy.ts`; add fixtures and tests. Only declaration grouping gap/minimum-row policy is currently data-executed; row boundary extraction stays code-owned.
 
 ## Commands
 
@@ -111,7 +115,7 @@ bun run development/tools/stress-corpus.ts   # optional; clones OSS repos into /
 - Code in this repo is itself held to the skill's rules: aligned import/declaration tables, tabs for indentation. Run the relevant `06_align-tables.ts` on files you change.
 - **When the property differs, split with a blank line** (`product/rules/references/grammar.md` section 1 paragraph rule). The property is the pattern (`DEFINE`, `WHEN`, `EXIT`, `DO` …) and, for a definition, the declaration kind (`type`/`interface` erased after compilation versus declarations that remain at run time). Examples: a `const` group and an `expect` group; a definition, a check (`if … throw`) and a result (`return`). Build alignment tables only within one property, and never hand-align columns across lines with different properties. Exception: a guard that checks a name defined just above stays attached to the definition. `export` and `const`/`let` are not mandatory criteria (grouping them is nice but not enforced). **Apply retroactively only to files you touch** (do not change untouched files).
 - **Keep statements in their original execution order.** Do not reorder declarations to look nicer (for example, sorting by argument count can use a `const` before its declaration and break). Group only by inserting blank lines within already consecutive statements.
-- **`test/` and `development/tools/` import the engine with `@/`** (`tsconfig.json` `paths`: `@/*` = `product/engine/*`). Inside shipped engine code (`product/engine/**`), use relative paths: `development/install.sh --copy` copies only the skill folder and does not take `tsconfig.json`. To be revisited with engine bundling (M1.8 S6).
+- **`product/engine/`, `test/` and `development/tools/` import engine modules with `@/`** (`tsconfig.json` `paths`: `@/*` = `product/engine/*`). The copied development skill carries its own resolver (`@/*` = `./engine/*`) and pinned dependencies; public Node bundles resolve aliases at build time. Keep the engine-external layout JSON import and runtime `new URL(..., import.meta.url)` paths relative: they locate files, not engine module aliases. `check:layout` rejects unintended relative engine module imports and invalid alias targets.
 - `package.json` owns the release version. Product manifest templates use `@BOXBOX_VERSION@`; `bun run sync:plugin` and package builders stamp generated output without modifying product templates. Change the version in `package.json`, regenerate and build (`test/plugin-contract.test.ts` catches output drift). Validate the release plugin with `claude plugin validate --strict ./plugin` and `claude plugin validate --strict .`.
 - Agent definitions must stay read-only: `development/agents/readability-inspector.md` and `product/plugin/agents/readability-inspector.md` declare frontmatter `disallowedTools: Write, Edit, …`, and `development/codex/readability-inspector.toml` declares `sandbox_mode = "read-only"`. Current tests only check that these files exist, so the read-only property itself is not test-enforced — keep it by hand when editing the definitions.
 - `stress/` contains third-party code and must not be committed.

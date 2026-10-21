@@ -1,0 +1,37 @@
+{
+  "files": [
+    "README.md",
+    "README.ko.md",
+    "README.zh-CN.md"
+  ],
+  "codeBlocks": 4,
+  "linksPerFile": 20,
+  "headingLevels": [
+    1,
+    2,
+    2,
+    3,
+    3,
+    3,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "checks": [
+    "exact code-block equality",
+    "exact link-target sequence equality",
+    "same heading hierarchy",
+    "local link existence",
+    "placeholder scan",
+    "git diff whitespace"
+  ],
+  "issues": [],
+  "sha256": {
+    "README.md": "70f7577d922679d8ab006c4092a264698e2207d72702ac6c8e08777237701b58",
+    "README.ko.md": "5de014d7d495e44e33713a0f7da3c0c5b532edacbd0dc422ca1633fba32c4cd9",
+    "README.zh-CN.md": "721b1b071ff8cba5a9f1ea98424307041b4e220312abc40c767eb5b3c7c881a8"
+  }
+}

@@ -1,11 +1,11 @@
-import { ruleData } from "../rule-data.ts";
+import { ruleData } from "@/rule-data.ts";
 /**
  * Surface forms (layer 2, M1.8 S3): map the tables the engine finds (kind or axis order) to grammar patterns (layer 1).
  * The mapping data lives in `product/rules/base/<language>.json`; this module only reads, validates and looks it up.
  * It never changes the engine's alignment behavior — a pattern is a name attached to a table.
  */
-import      { readFileSync            } from "node:fs"          ;
-import      { isPattern, type Pattern } from "./grammar-ids.ts" ;
+import      { readFileSync            } from "node:fs"                 ;
+import      { isPattern, type Pattern } from "@/common/grammar-ids.ts" ;
 
 export const SURFACE_SCHEMA_VERSION = 1;
 

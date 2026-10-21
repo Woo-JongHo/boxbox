@@ -6,12 +6,12 @@
  * Arrow functions (=>), unclosed parentheses, rows with a remaining opening brace, control flow and uncertain rows are not table rows.
  * Bundle rows are rejected when structural symbols remain inside (nesting, assignment, calls), or when they have one cell or an empty cell.
  */
-import type { CodeSyntax     } from "../common/code-text.ts"    ;
+import type { CodeSyntax     } from "@/common/code-text.ts"    ;
 import type {
               LineProfiler ,
               RowProfile   ,
               Slot         ,
-                             } from "../common/table-engine.ts" ;
+                             } from "@/common/table-engine.ts" ;
 
 export const JAVASCRIPT_SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],
@@ -82,8 +82,8 @@ function constProfile(code: string, masked: string, match: RegExpExecArray): Row
 
 function fieldProfile(code: string, masked: string, match: RegExpExecArray): RowProfile | null {
 	const indices = match.indices;
-	if (!indices) return null;
-	if (RESERVED.has(sliceAt(masked, indices, 2))) return null;
+	if (!indices)                                      return null;
+	if (RESERVED.has(sliceAt(masked, indices, 2)))     return null;
 	const value = sliceAt(masked, indices, 5);
 	if (value.includes(";") || DECLARATOR.test(value)) return null;
 	const slots: Slot[] = [
@@ -97,8 +97,8 @@ function fieldProfile(code: string, masked: string, match: RegExpExecArray): Row
 
 function objectProfile(code: string, masked: string, match: RegExpExecArray): RowProfile | null {
 	const indices = match.indices;
-	if (!indices) return null;
-	if (RESERVED.has(sliceAt(masked, indices, 2))) return null;
+	if (!indices)                                      return null;
+	if (RESERVED.has(sliceAt(masked, indices, 2)))     return null;
 	const value = sliceAt(masked, indices, 5);
 	if (value.includes(";") || DECLARATOR.test(value)) return null;
 	const slots: Slot[] = [
@@ -125,10 +125,10 @@ function isScalarCell(masked: string, start: number, text: string): boolean {
  */
 function bundleProfile(code: string, masked: string, match: RegExpExecArray): RowProfile | null {
 	const indices = match.indices        ;
-	if (!indices) return null            ;
+	if (!indices)                                                 return null            ;
 	const interior = indices[2] ;
 	const trailer  = indices[3] ;
-	if (!interior || !trailer) return null;
+	if (!interior || !trailer)                                    return null;
 	if (BUNDLE_JUNK.test(masked.slice(interior[0], interior[1]))) return null;
 
 	// Cut cell ranges by mask coordinates. Commas inside string cells are spaces in the mask, so they are not boundaries.
@@ -146,7 +146,7 @@ function bundleProfile(code: string, masked: string, match: RegExpExecArray): Ro
 	const cells: Array<{ text: string; gap: string; commaGap: string; end: number }> = [];
 	for (const bound of bounds) {
 		const raw  = code.slice(bound.start, bound.end) ;
-		const text = raw.trim()                         ;
+		const text = raw .trim ()                       ;
 		if (text === "") return null; // empty cell from consecutive commas or before the closing bracket
 		const cellStart = bound.start + raw.indexOf(text)           ;
 		if (!isScalarCell(masked, cellStart, text)) return null     ;
@@ -168,13 +168,13 @@ function bundleProfile(code: string, masked: string, match: RegExpExecArray): Ro
 function profileLine(code: string, masked: string): RowProfile | null {
 	if (masked.includes("=>") || !balanced(masked)) return null;
 	const assignment = CONST_ROW.exec(masked);
-	if (assignment) return constProfile(code, masked, assignment);
+	if (assignment)                                 return constProfile(code, masked, assignment);
 	const field = FIELD_ROW.exec(masked);
-	if (field) return fieldProfile(code, masked, field);
+	if (field)                                      return fieldProfile(code, masked, field);
 	const object = OBJECT_ROW.exec(masked);
-	if (object) return objectProfile(code, masked, object);
+	if (object)                                     return objectProfile(code, masked, object);
 	const bundle = BUNDLE_ROW.exec(masked);
-	if (bundle) return bundleProfile(code, masked, bundle);
+	if (bundle)                                     return bundleProfile(code, masked, bundle);
 	return null;
 };
 

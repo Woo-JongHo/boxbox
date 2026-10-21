@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { ruleData } from "./rule-data.ts";
+import { ruleData } from "@/rule-data.ts";
 /**
  * Claude Code hook entry point (M1.8 S3.6, docs/development/authoring-flow.md). The first scope is read-only.
  *
@@ -31,12 +31,12 @@ import      {
               postMessage               ,
               sessionGuide              ,
               type HookInput            ,
-                                          } from "./common/hook.ts"   ;
-import type { Report                      } from "./common/report.ts" ;
-import      { appendUsage, estimateTokens } from "./common/usage.ts"  ;
+                                          } from "@/common/hook.ts"   ;
+import type { Report                      } from "@/common/report.ts" ;
+import      { appendUsage, estimateTokens } from "@/common/usage.ts"  ;
 
-const CHARTER = ruleData("references/charter.md")                                   ;
-const REPORT  = fileURLToPath(new URL("./report.ts", import.meta.url)             ) ;
+const CHARTER = ruleData     ("references/charter.md"                ) ;
+const REPORT  = fileURLToPath(new URL("./report.ts", import.meta.url)) ;
 
 /** Baselines that lost their pair (post) because no write happened are deleted after this long. */
 const STALE_MS = 60 * 60 * 1000;
@@ -113,12 +113,12 @@ function main(): void {
 	if (process.env["BOXBOX_HOOKS"] === "off") return;
 
 	const mode = process.argv[2];
-	if (mode === "session") return session();
+	if (mode === "session")                    return session();
 
 	const input   = JSON.parse(readFileSync(0, "utf8") || "{}") as HookInput        ;
 	const project = process.env["CLAUDE_PROJECT_DIR"] ?? input.cwd ?? process.cwd() ;
-	if (mode === "pre" ) return pre(input, project);
-	if (mode === "post") return post(input, project);
+	if (mode === "pre" )                       return pre(input, project);
+	if (mode === "post")                       return post(input, project);
 }
 
 try {

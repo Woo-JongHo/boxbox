@@ -1,0 +1,81 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/examples.test.ts:
+(pass) example records > a mismatched content hash, or missing asserts on a non-taste example, is an error [2.01ms]
+(pass) example checks — meaning per verdict > after-better: before has A12, after does not, and after is a fixed point [671.20ms]
+(pass) example checks — meaning per verdict > fixedPoint: an after with a table still pending alignment fails [304.89ms]
+(pass) example checks — meaning per verdict > bad: fails when the engine's fix of before equals the forbidden after [634.57ms]
+(pass) example checks — meaning per verdict > taste and unapproved examples are not checked [0.06ms]
+(pass) decision records > a section hash changes only when that section changes [0.21ms]
+(pass) decision records > reports that re-approval is needed when the referenced section changes [0.46ms]
+(pass) picking GUIDE examples > only approved after-better, by shared pattern count → recency → id, up to 3 [3.94ms]
+(pass) approval section hashes are identical across LF and CRLF checkouts [0.07ms]
+(pass) preset DB > every shipped example passes per its verdict, and each decision's document hash matches the current document [362.10ms]
+
+test/config-layers.test.ts:
+(pass) config layers > replaces arrays and per-language formatters in Base → Preset → User → Project order [1.52ms]
+(pass) config layers > schema 1 migrates only in memory and never changes the original [0.53ms]
+(pass) config layers > schema 2 init writes a minimal file that does not shadow upper-layer values [0.50ms]
+(pass) config layers > refuses unknown fields, safety overrides and future schemas fail-closed [0.06ms]
+(pass) config layers > strictly validates the formatter command contract and timeout bounds [0.13ms]
+(pass) config layers > refuses empty languages and unsupported formatter languages [0.04ms]
+(pass) config layers > missing layers keep defaults, the fingerprint is deterministic and detects raw changes [0.58ms]
+(pass) config layers > refuses project and user config symbolic links [0.74ms]
+
+test/approval-gate.test.ts:
+(pass) approval write gate > only an exact key with complete human approval proof allows writing, and GUIDE gets only after-better [0.91ms]
+(pass) approval write gate > turns a detected descriptor into the current exact key and keeps the original file path [0.60ms]
+(pass) approval write gate > a candidate convention refuses writing [0.34ms]
+(pass) approval write gate > a rejected convention refuses writing [0.29ms]
+(pass) approval write gate > an unknown key and duplicate conventions of equal priority are unknown/conflict respectively [0.38ms]
+(pass) approval write gate > picks the highest layer in project → user → preset order [0.34ms]
+(pass) approval write gate > blocks a missing decision, a stale document hash, a wrong version and a missing human approval [0.64ms]
+(pass) approval write gate > blocks when any of positive, counterexample, both links, content hash or rule relevance is missing [0.92ms]
+(pass) approval write gate > refuses a document ref that escapes the root [0.50ms]
+(pass) approval write gate > resolves the same relative ref in the document root matching the convention layer [1.05ms]
+(pass) registry loader > reads JSONL from the given roots and layers and refuses malformed and duplicate proofs [1.78ms]
+(pass) registry loader > refuses registry override root escapes and symbolic/non-regular files [0.78ms]
+
+test/conventions.test.ts:
+(pass) lookup key > drops depth, prefixes the version and writes an empty context as `-` [0.01ms]
+(pass) pattern records > a malformed record and a duplicate id within one layer are errors [0.09ms]
+(pass) pattern records > glob: `**` spans several segments, `*` stays within one [0.04ms]
+(pass) lookup > the project layer wins over the preset [0.11ms]
+(pass) lookup > within one layer the most specific scope wins [0.04ms]
+(pass) lookup > different statuses at the same layer and specificity are a conflict (file order never decides) [0.03ms]
+(pass) lookup > a candidate is not an approval, and keys of another version or missing keys are unknown [0.03ms]
+(pass) report and CLI > the report attaches a lookup result per table and does not look up two-row pairs [0.70ms]
+(pass) report and CLI > the CLI reads .boxbox/conventions.jsonl in the working folder for lookup [41.81ms]
+
+test/harness.test.ts:
+(pass) parseBunTestOutput > parses pass, skip, fail and the Ran summary [0.10ms]
+(pass) parseBunTestOutput > returns null without a summary [0.01ms]
+(pass) validateRunRecord > accepts a record that satisfies the minimal contract [0.16ms]
+(pass) validateRunRecord > refuses schemaVersion, runId and stage entry violations [1.20ms]
+(pass) store > after append, records read back oldest first [0.52ms]
+(pass) store > latest is updated only by complete runs and reads back [0.49ms]
+(pass) store > completion counting distinguishes ran, failed and skipped [0.04ms]
+(pass) parseRelTable > reads REL0–REL12 from docs/development/plan.md in order [0.73ms]
+(pass) parseRelTable > evidence joining never changes the human verdict [0.06ms]
+
+test/shape-observation.test.ts:
+(pass) code shape observation > produces the same JSONL regardless of file order and repeated runs [136.55ms]
+(pass) code shape observation > the real parser version and config fingerprint are part of the snapshot invalidation input [66.71ms]
+(pass) code shape observation > assignment is CHANGE, comparison and control flow are unknown, and debugger is notApplicable [35.24ms]
+(pass) code shape observation > missing files and JavaScript files do not stop collecting other files [38.06ms]
+(pass) code shape observation > distinguishes same-named, nested and same-line functions by range and parent [39.72ms]
+(pass) code shape observation > reports a broken file as partial and keeps the last completed cache [69.17ms]
+(pass) code shape observation > keeps only the current and previous completed snapshot and does not rotate for the same run [101.61ms]
+(pass) code shape observation > arrows and bodiless declarations do not become units and are counted as unsupported [33.79ms]
+(pass) code shape observation > only reads the source and approval DB and refuses paths outside the root and cache symbolic links [1.50ms]
+
+test/lifecycle-hook.test.ts:
+(pass) changes to unsupported files do not block later PostToolUse or Stop [136.31ms]
+(pass) Stop does not block again with stop_hook_active even when an alignment failure remains [235.66ms]
+(pass) plugin hooks use the cwd input and write records to the plugin data folder, not the project [93.22ms]
+(pass) hook errors never block work; they are only reported [37.78ms]
+
+ 61 pass
+ 0 fail
+ 175 expect() calls
+Ran 61 tests across 7 files. [3.16s]

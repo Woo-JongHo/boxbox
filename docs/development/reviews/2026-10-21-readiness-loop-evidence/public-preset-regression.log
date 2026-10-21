@@ -1,0 +1,17 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/public-preset.test.ts:
+(pass) public preset release policy > approved synthetic rules are prepared together with the public documents they reference [5.84ms]
+(pass) public preset release policy > extracts only the referenced approved section and never ships other sections of the same source document [1.95ms]
+(pass) public preset release policy > refuses arbitrary unregistered fields inside asserts [2.05ms]
+(pass) public preset release policy > drops an earlier private value of a duplicate JSON key from the normalized release JSONL [1.51ms]
+(pass) public preset release policy > example.rules must be an array of short rule IDs [1.25ms]
+(pass) public preset release policy > also refuses arbitrary fields inside versions [1.16ms]
+(pass) public preset release policy > refuses source paths and unauthorized license values regardless of the approved synthetic label [1.94ms]
+(pass) public preset release policy > refuses a parent symlink on the docs/public path even when it points inside the preset [1.74ms]
+(pass) public preset release policy > refuses paths that normalize outside docs/public [1.27ms]
+
+ 9 pass
+ 0 fail
+ 15 expect() calls
+Ran 9 tests across 1 file. [69.00ms]

@@ -1,4 +1,4 @@
-import { ruleData } from "../rule-data.ts";
+import { ruleData } from "@/rule-data.ts";
 /**
  * Pattern DB (M1.8 S5a): reads and looks up the pattern records the checker queries for each table. Lookup is only an exact lookup-key match plus a scope (glob);
  * similarity is never used (charter invariant 7). Layers win in the order project → user → preset. The existing report loader
@@ -6,10 +6,16 @@ import { ruleData } from "../rule-data.ts";
  * Within one layer, scopes with the same key and the same specificity that state different statuses are a conflict (file order never decides).
  * `rejected` means "do not fix automatically"; it never disturbs code that is already aligned. At this stage the result is only reported.
  */
-import      { existsSync, readFileSync } from "node:fs"          ;
-import      { join                     } from "node:path"        ;
-import      { isPattern, type Pattern  } from "./grammar-ids.ts" ;
-import      { LOOKUP_KEY_VERSION       } from "./signature.ts"   ;
+import      { existsSync, readFileSync } from "node:fs"                               ;
+import      { join                     } from "node:path"                             ;
+import      { isPattern, type Pattern  } from "@/common/grammar-ids.ts"               ;
+import      {
+              runtimeNumberRecord    ,
+              runtimeRecord          ,
+              runtimeString          ,
+              runtimeStringArray     ,
+                                       } from "@/common/runtime-record-validation.ts" ;
+import      { LOOKUP_KEY_VERSION       } from "@/common/signature.ts"                 ;
 
 export const CONVENTION_SCHEMA_VERSION = 1;
 
@@ -46,16 +52,20 @@ const STATUSES: readonly string[] = ["approved", "rejected", "candidate"];
 
 /** Validates one record. A malformed record is an error, never silently skipped. */
 export function validateConvention(value: unknown, where: string): Convention {
-	const record = value as Convention;
-	if (record?.schemaVersion !== CONVENTION_SCHEMA_VERSION) throw new Error(`${where}: schemaVersion must be ${CONVENTION_SCHEMA_VERSION}`);
-	if (typeof record.id !== "string" || record.id === "") throw new Error(`${where}: id is required`);
+	const record = runtimeRecord(value, where);
+	if (record.schemaVersion !== CONVENTION_SCHEMA_VERSION) throw new Error(`${where}: schemaVersion must be ${CONVENTION_SCHEMA_VERSION}`);
+	runtimeString(record.id, `${where}.id`);
 	if (typeof record.key !== "string" || !/^v\d+\|[^|]+\|[^|]+\|[^|]+\|/u.test(record.key)) throw new Error(`${where}: key must look like v<n>|language|context|kind|axes`);
 	if (!isPattern(record.pattern)) throw new Error(`${where}: unknown pattern ${String(record.pattern)}`);
-	if (!STATUSES.includes(record.status)) throw new Error(`${where}: status must be approved, rejected or candidate`);
-	if (typeof record.scope !== "string" || record.scope === "") throw new Error(`${where}: scope is required (use "**" for everything)`);
-	if (typeof record.approvedBy !== "string" || typeof record.date !== "string") throw new Error(`${where}: approvedBy and date are required`);
+	if (!STATUSES.includes(record.status as string)) throw new Error(`${where}: status must be approved, rejected or candidate`);
+	runtimeString      (record.scope     , `${where}.scope`                  ) ;
+	runtimeNumberRecord(record.versions  , `${where}.versions`               ) ;
+	runtimeString      (record.approvedBy, `${where}.approvedBy`, true        ) ;
+	runtimeString      (record.date      , `${where}.date`, true              ) ;
+	if (record.examples !== undefined) runtimeStringArray (record.examples, `${where}.examples`) ;
+	if (record.evidence !== undefined) runtimeNumberRecord(record.evidence, `${where}.evidence`) ;
 
-	return record;
+	return record as unknown as Convention;
 }
 
 /** Reads a JSONL body. Blank lines are skipped; a duplicate id within the same layer is an error. */
@@ -66,7 +76,10 @@ export function parseConventions(text: string, layer: ConventionLayer, where: st
 	for (const [index, line] of text.split("\n").entries()) {
 		if (line.trim() === "") continue;
 
-		const record = validateConvention(JSON.parse(line), `${where}:${index + 1}`);
+		let value: unknown;
+		try { value = JSON.parse(line); }
+		catch (error) { throw new Error(`${where}:${index + 1}: malformed JSON: ${error instanceof Error ? error.message : String(error)}`); }
+		const record = validateConvention(value, `${where}:${index + 1}`);
 		if (ids.has(record.id)) throw new Error(`${where}:${index + 1}: duplicate id ${record.id}`);
 
 		ids.add(record.id);

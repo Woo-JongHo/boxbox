@@ -1,0 +1,35 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/pattern-catalog.test.ts:
+(pass) all nine families expose comparable, different-role, unsupported, nested and separation cases [14.85ms]
+(pass) catalog rejects malformed records, missing coverage and accidental approval fields [6.80ms]
+(pass) SQLite supports cross-family case queries and deterministic rebuild without altering source authority [26.75ms]
+(pass) invalid source cannot replace a valid index and unmanaged databases are preserved [7.96ms]
+(pass) evidence references must exist inside the repository [4.75ms]
+
+test/runtime-record-validation.test.ts:
+(pass) runtime record roots > all validators reject null, arrays and primitives as records [0.19ms]
+(pass) convention runtime shape > requires every declared field and validates optional nested values [1.77ms]
+(pass) convention runtime shape > keeps generic local fields and permits an empty candidate approval receipt [0.02ms]
+(pass) example runtime shape > requires every declared field [0.15ms]
+(pass) example runtime shape > validates nested versions, source and assertions [0.07ms]
+(pass) example runtime shape > permits local licenses, unknown fields and empty candidate approval strings [0.02ms]
+(pass) decision and JSONL runtime shape > requires decision references and receipt fields with valid types [0.33ms]
+(pass) decision and JSONL runtime shape > reports malformed JSON and duplicate ids with the source line [0.54ms]
+
+test/alias-portability.test.ts:
+(pass) a copied development skill resolves engine aliases and its TypeScript runtime in isolation [1004.62ms]
+(pass) copy installation refuses to claim isolation when TypeScript is absent [18.52ms]
+(pass) copy installation does not populate a skipped user-owned skill directory [6.61ms]
+
+test/layout.test.ts:
+(pass) a version bump stamps generated manifests without modifying product templates [24.99ms]
+(pass) dangling output links never create external files or directories [22.16ms]
+(pass) product dependencies allow mapped engine aliases and reject escapes [32.91ms]
+(pass) engine aliases reject missing targets, escapes and symbolic paths [1.66ms]
+(pass) the entire marketplace plugin regenerates from product sources and detects manual changes [30.00ms]
+
+ 21 pass
+ 0 fail
+ 153 expect() calls
+Ran 21 tests across 4 files. [1395.00ms]

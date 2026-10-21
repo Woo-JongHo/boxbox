@@ -1,13 +1,16 @@
 # Implementation contract for the first public release
 
 2026-10-04 · baseline for continuous development. It does not mean a completed release or an approved public channel.
-The user-chosen scope is core TypeScript and Python features + the engine CLI and the agent plugin.
+The user expanded the first public target on 2026-10-21 to TypeScript, Python, JSON and YAML + the engine CLI and
+the agent plugin. The implementation baseline below remains TypeScript/Python; JSON/YAML are not implemented or
+verified yet. [FORMAT1](plan.md#planned-scope-expansion--format1-json-and-yaml) records the proposed scope and gates.
 
 ## Scope and support evidence
 
 | Item | Implementation baseline | Real support verdict |
 |---|---|---|
 | Languages | TypeScript, Python | developed on existing fixtures and local runs; public artifact verification is separate |
+| Additional release targets | JSON, YAML | user-requested scope; adapters, approved rules and installed verification remain unimplemented |
 | Runtime | pack experiments with Node 22 or later as the candidate | currently local Node 22.22.3; Bun stays a development and build tool |
 | OS | macOS and Linux as the first verification targets | macOS artifact evidence and native Windows 0.2.1 explicit TypeScript/Python CLI acceptance (2026-10-21). The Linux CI setup is not evidence of artifact acceptance |
 | Hosts | Windows Codex local test first (user direction 2026-10-16); Claude adapter compatibility retained | the `plugin/` folder installs in isolated Claude Code 2.1.286 and Codex 0.160.1 homes (2026-10-07); real host acceptance with the published engine is unconfirmed |

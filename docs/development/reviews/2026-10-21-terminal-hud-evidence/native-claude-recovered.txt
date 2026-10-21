@@ -1,0 +1,32 @@
+ ▐▛███▛█   Claude Code v2.1.286
+▝▜██████▀  Opus 5.5 with xhigh effort · Claude Pro
+ ▝▝   ▝▝   /private/tmp/boxbox-hud-20261021/native-project
+
+
+❯ /clear
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯ 
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  BoxBox 0.2.3 | engine ready | approved 2
+  session: unknown (session-mismatch)
+  ⏵⏵ auto mode on (shift+tab to cycle) · ← for agents
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

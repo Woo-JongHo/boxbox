@@ -1,0 +1,11 @@
+Scope: matrix return/call/type changes before the member-dot follow-up.
+Command: bun run check
+Source log: /tmp/boxbox-matrix-main/check.log
+SHA-256: 063e9d595e938f42851e482da44db155450acb590af85687ee7964f21c9fad07
+Recorded result (verbatim tail):
+
+ 565 pass
+ 5 skip
+ 0 fail
+ 2760 expect() calls
+Ran 570 tests across 63 files. [139.16s]

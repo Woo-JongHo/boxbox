@@ -1,0 +1,72 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261021-013",
+  "title": "HUD entry guards skipped direct execution through a macOS path alias",
+  "category": "host-integration",
+  "tags": ["hud", "macos", "symlink", "entrypoint", "native-acceptance"],
+  "status": "verifying",
+  "symptom": "The exact local 0.2.4 candidate installed both plugins and exited successfully with --hud, but created neither the Codex launcher nor Claude statusLine; installed status.mjs exited 0 with empty output.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "macOS canonicalized /tmp to /private/tmp for the imported module while process.argv[1] retained /tmp, so literal path guards silently skipped direct-entry main bodies."
+  },
+  "requestedOutcome": "Accept canonical path aliases without import-time side effects, rebuild the candidate and repeat native Codex and Claude acceptance on its exact bytes.",
+  "decisions": [
+    "Canonicalize both sides of each direct-entry comparison and retain the missing-argv guard.",
+    "Preserve the failed archive evidence and require a new digest before native rerun."
+  ],
+  "actions": [
+    {"description": "Canonicalize three HUD entry guards and add alias/import regressions.", "status": "done"},
+    {"description": "Run focused HUD tests and syntax checks.", "status": "done"},
+    {"description": "Rebuild and repeat disposable native Codex and Claude HUD acceptance.", "status": "pending"}
+  ],
+  "verification": [
+    {
+      "name": "Canonical entrypoint regressions",
+      "status": "passed",
+      "scope": "Current HUD source through symlinked paths and import-only status evaluation.",
+      "evidence": ["docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-entryguard-remediation.md"],
+      "result": "Focused suites passed 24 tests with 159 assertions and no failures; syntax and diff checks passed."
+    },
+    {
+      "name": "Rebuilt current-candidate native HUD acceptance",
+      "status": "pending",
+      "scope": "Exact rebuilt local candidate in disposable macOS Codex and Claude profiles.",
+      "evidence": [],
+      "result": "Not run; the original archive contains the defect and is failed evidence only."
+    }
+  ],
+  "related": [
+    {"kind": "code", "path": "product/hud/status.mjs", "note": "Status direct-entry guard."},
+    {"kind": "code", "path": "product/hud/setup.mjs", "note": "Installer-invoked setup guard."},
+    {"kind": "code", "path": "product/hud/codex.mjs", "note": "Codex launcher guard."},
+    {"kind": "test", "path": "test/product-hud.test.ts", "note": "Alias execution and inert import regression."},
+    {"kind": "evidence", "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-entryguard-native-failure.md", "note": "Original local-candidate failure."}
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-21",
+      "event": "verification-failed",
+      "status": "failed",
+      "summary": "The local frozen candidate exited successfully but skipped all HUD direct-entry bodies under the /tmp alias.",
+      "evidence": ["docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-entryguard-native-failure.md"]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-21",
+      "event": "implemented",
+      "summary": "All three guards now compare canonical paths and focused alias regressions cover direct invocation and import-only behavior.",
+      "evidence": ["docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-entryguard-remediation.md"]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-21",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Focused source regressions passed; rebuilt native candidate verification remains pending.",
+      "evidence": ["docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-entryguard-remediation.md"]
+    }
+  ]
+}

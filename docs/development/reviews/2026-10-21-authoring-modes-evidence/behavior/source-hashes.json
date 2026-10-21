@@ -1,0 +1,11 @@
+{
+  "recordedAt": "2026-10-21T21:12:16.590657+09:00",
+  "note": "End-of-run source hashes; source is a shared active working tree, not an immutable release artifact.",
+  "files": {
+    "product/plugin/skills/boxbox/SKILL.md": "de60237a4a7c2c94b4e21a1969cd0a71e6fb13b9b5898143a55c7073b1b10e73",
+    "product/engine/cli.ts": "36309d496fb05186d54f46b6799eab2460934e45fcf1656474f541fcce4b1a12",
+    "product/engine/common/authoring-guide.ts": "f3abb867720bbc58036c202254efdbb14ad84535e46d28ff36fb68c01a550781",
+    "product/engine/common/alignment-only.ts": "06ca778e9e208ec6ebd66ea8bb562f648c333c82282079e8e87987ef41d28166",
+    "product/engine/common/format-pipeline.ts": "21a5753a5b34b52ba3a91cf1b945c5972621d2b4a45c10052243419ba1b01f72"
+  }
+}

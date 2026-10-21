@@ -6,12 +6,12 @@
  * with a remaining opening brace, control flow, return, bit fields, arrays, function-like macros, backslash line
  * continuation, bundle rows with nesting, assignment or calls inside — are refused with null, breaking the section.
  */
-import type { CodeSyntax     } from "../common/code-text.ts"    ;
+import type { CodeSyntax     } from "@/common/code-text.ts"    ;
 import type {
               LineProfiler ,
               RowProfile   ,
               Slot         ,
-                             } from "../common/table-engine.ts" ;
+                             } from "@/common/table-engine.ts" ;
 
 /** The mask preserves line/column geometry, so mask coordinates slice `code` directly. */
 const sliceAt = (code: string, indices: RegExpIndicesArray, group: number): string => {
@@ -83,16 +83,16 @@ function macroProfile(code: string, masked: string): RowProfile | null {
 function fieldProfile(code: string, masked: string): RowProfile | null {
 	const match   = FIELD.exec(masked) ;
 	const indices = match?.indices     ;
-	if (!match || !indices) return null;
-	const type   = sliceAt(code, indices, 2) ;
-	const tokens = type.split(/[ \t]+/u)     ;
+	if (!match || !indices)                            return null;
+	const type   = sliceAt   (code, indices, 2) ;
+	const tokens = type.split(/[ \t]+/u       ) ;
 	if (tokens.some(token => !TYPE_TOKEN.test(token))) return null;
-	if (CONTROL_KEYWORDS.has(tokens[0] ?? "")) return null;
+	if (CONTROL_KEYWORDS.has(tokens[0] ?? ""))         return null;
 	const stars     = indices[4] ;
 	const nameRange = indices[5] ;
-	if (!nameRange) return null;
+	if (!nameRange)                                    return null;
 	const name = code.slice((stars ?? nameRange)[0], nameRange[1]);
-	if (C_KEYWORDS.has(name.replace(/^\*+/u, ""))) return null;
+	if (C_KEYWORDS.has(name.replace(/^\*+/u, "")))     return null;
 	return {
 		indent : sliceAt(code, indices, 1),
 		slots  : [
@@ -109,14 +109,14 @@ function assignProfile(code: string, masked: string): RowProfile | null {
 	const designated = enumMatch === null                               ;
 	const match      = designated ? DESIGNATED.exec(masked) : enumMatch ;
 	const indices    = match?.indices                                   ;
-	if (!match || !indices) return null;
+	if (!match || !indices)                                            return null;
 	const equalEnd   = indices[4]?.[1] ;
 	const valueRange = indices[6]      ;
-	if (equalEnd === undefined || !valueRange) return null;
-	if (masked[equalEnd] === "=") return null;
+	if (equalEnd === undefined || !valueRange)                         return null;
+	if (masked[equalEnd] === "=")                                      return null;
 	if (VALUE_UNSAFE.test(masked.slice(valueRange[0], valueRange[1]))) return null;
 	const name = sliceAt(code, indices, 2);
-	if (!designated && C_KEYWORDS.has(name)) return null;
+	if (!designated && C_KEYWORDS.has(name))                           return null;
 	return {
 		indent : sliceAt(code, indices, 1),
 		slots  : [
@@ -137,10 +137,10 @@ function assignProfile(code: string, masked: string): RowProfile | null {
 function groupProfile(code: string, masked: string): RowProfile | null {
 	const match   = GROUP.exec(masked) ;
 	const indices = match?.indices     ;
-	if (!match || !indices) return null;
+	if (!match || !indices)                                        return null;
 	const interior = indices[2] ;
 	const trailer  = indices[3] ;
-	if (!interior || !trailer) return null;
+	if (!interior || !trailer)                                     return null;
 	if (GROUP_UNSAFE.test(masked.slice(interior[0], interior[1]))) return null;
 
 	// Cut cell ranges by mask coordinates. Commas inside string cells are spaces in the mask, so they are not boundaries.
@@ -158,7 +158,7 @@ function groupProfile(code: string, masked: string): RowProfile | null {
 	const cells: Array<{ text: string; gap: string; commaGap: string; end: number }> = [];
 	for (const bound of bounds) {
 		const raw  = code.slice(bound.start, bound.end) ;
-		const text = raw.trim()                         ;
+		const text = raw .trim ()                       ;
 		if (text === "") return null; // empty cell from consecutive commas or after a trailing comma
 		const cellStart = bound.start + raw.indexOf(text);
 		if (text.startsWith('"') || text.startsWith("'")) {

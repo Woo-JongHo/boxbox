@@ -1,0 +1,10 @@
+{
+  "nativeNode": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node",
+  "exitCode": 0,
+  "refreshCount": 2,
+  "paneRows": 4,
+  "paneColumns": 80,
+  "maxFrameLines": 2,
+  "trailingNewlines": false,
+  "modelCalls": 0
+}

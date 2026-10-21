@@ -1,9 +1,9 @@
-import      { spawn                                         } from "node:child_process"  ;
-import      { createHash                                    } from "node:crypto"         ;
-import      { constants, realpathSync, statSync             } from "node:fs"             ;
-import      { delimiter, extname, isAbsolute, join, resolve } from "node:path"           ;
+import      { spawn                                         } from "node:child_process"         ;
+import      { createHash                                    } from "node:crypto"                ;
+import      { constants, realpathSync, statSync             } from "node:fs"                    ;
+import      { delimiter, extname, isAbsolute, join, resolve } from "node:path"                  ;
 
-import type { FormatterConfig                               } from "./project-config.ts" ;
+import type { FormatterConfig                               } from "@/common/project-config.ts" ;
 
 const OUTPUT_LIMIT = 64 * 1024;
 
@@ -22,8 +22,8 @@ export interface ExecutableIdentity {
 }
 
 function identityOf(file: string): readonly unknown[] {
-	const physical = realpathSync(file) ;
-	const status   = statSync(physical) ;
+	const physical = realpathSync(file    ) ;
+	const status   = statSync    (physical) ;
 	if (!status.isFile() || (process.platform !== "win32" && (status.mode & constants.S_IXUSR) === 0)) throw new Error("not an executable file");
 
 	return [physical, status.dev, status.ino, status.mode, status.size, status.mtimeMs, status.ctimeMs];

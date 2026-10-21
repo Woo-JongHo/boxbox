@@ -1,0 +1,23 @@
+--- a/settings.py
++++ b/settings.py
+@@ -1,11 +1,11 @@
+ def classify(enabled, attempts, quota):
+-    if enabled:
+-        if attempts < 3:
+-            if quota > 0:
+-                return "ready"
+-            else:
+-                return "quota"
+-        else:
+-            return "attempts"
+-    else:
++    if not enabled:
+         return "disabled"
++
++    if not attempts < 3:
++        return "attempts"
++
++    if not quota > 0:
++        return "quota"
++
++    return "ready"

@@ -1,0 +1,16 @@
+{
+  "codex": {
+    "version": "0.2.3",
+    "hudSourceMatches": true,
+    "launcherSourceMatches": true,
+    "engineVersion": "0.2.3"
+  },
+  "claude": {
+    "version": "0.2.3",
+    "hudSourceMatches": true,
+    "launcherSourceMatches": true,
+    "engineVersion": "0.2.3"
+  },
+  "codexSessionExit": 0,
+  "ownedTmuxServersRemaining": []
+}

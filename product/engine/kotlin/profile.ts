@@ -14,7 +14,7 @@
  * or starts with =; rows with trailing whitespace. Refusal is safe; misrecognition is dangerous. The syntax mask
  * handles nested block comments and multi-line raw strings; string templates are blanked as part of the string.
  */
-import type { CodeSyntax, LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
+import type { CodeSyntax, LineProfiler, RowProfile, Slot } from "@/common/table-engine.ts";
 
 export const KOTLIN_SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],
