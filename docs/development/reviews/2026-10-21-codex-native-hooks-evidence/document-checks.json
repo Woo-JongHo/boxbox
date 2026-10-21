@@ -1,0 +1,8 @@
+{
+  "pass": true,
+  "addedProseEnglish": true,
+  "newReportsHaveNoPlaceholders": true,
+  "reportLocalLinksResolve": true,
+  "sourcePluginTestsUnchanged": true,
+  "evidenceWhitespace": "recorded output intentionally preserved"
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Associate the native exec event with the permission turn_context provenance without extracting session_meta.",
+  "threadId": "01a15cd4-2127-7e22-9f92-99b80a57fbf7",
+  "turnId": "01a15cd4-217c-7bb1-b820-84e65129669d",
+  "nativeExecSource": {
+    "path": "/tmp/boxbox-native-windows-20261021/evidence/edit.jsonl",
+    "sha256": "ffd4febf55ea1469dfafbef75f626352a8936fef15713eccf96e1e5a31bd4a0a",
+    "bytes": 1156,
+    "sourceLineOrdinal1Based": 1,
+    "event": {
+      "type": "thread.started",
+      "thread_id": "01a15cd4-2127-7e22-9f92-99b80a57fbf7"
+    }
+  },
+  "permissionProvenance": {
+    "path": "/tmp/boxbox-native-windows-20261021/evidence/edit-permission-provenance.json",
+    "sha256": "a33c1e4ced7454d4b7469fdc79650f1476ba0cb9755695dc78f76f48c902b64d",
+    "bytes": 1756,
+    "originalRolloutSha256": "2be70b1de343ea3002120d2ea52cc423f7e21ff85d432f603b0b894caf146100",
+    "originalRolloutBytes": 82291,
+    "turnContextSourceLineOrdinal1Based": 8,
+    "turnContextRecordOrdinal": 7
+  },
+  "additionalHostOrModelSessionStarted": false,
+  "previousEvidenceOverwritten": false
+}

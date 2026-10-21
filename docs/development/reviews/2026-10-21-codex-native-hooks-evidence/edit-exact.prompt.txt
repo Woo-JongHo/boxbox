@@ -1,0 +1,13 @@
+Controlled host integration test. Apply this exact single Update File patch once with the native apply_patch tool:
+
+*** Begin Patch
+*** Update File: sample.py
+@@
+-a      = 1
++a = 1
+ longer = 22
+-mid    = 333
++mid = 333
+*** End Patch
+
+The intentionally misaligned fixture must stay exactly as patched. Do not repair it, do not run the engine or invoke hooks manually, and do not use shell tools. If edit feedback arrives after the tool has written, do not retry. If Stop continues the turn, do not edit or invoke tools again; finish the report. Report which actual hook messages you received and quote their receipt paths verbatim if available. Report failures accurately.

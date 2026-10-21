@@ -1,0 +1,1 @@
+{"session_receipt_directory":null,"edit_hook_receipt_path":null,"stop_hook_receipt_path":null,"hook_asked_to_continue":false}

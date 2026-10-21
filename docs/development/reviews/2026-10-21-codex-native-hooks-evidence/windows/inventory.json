@@ -1,0 +1,28 @@
+{
+  "platform": "win32",
+  "node": "v24.12.0",
+  "nodePath": "C:\\Program Files\\nodejs\\node.exe",
+  "base": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z",
+  "globalHome": "C:\\Users\\woo\\.codex",
+  "globalEntry": "C:\\Users\\woo\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js",
+  "globalVersion": {
+    "exitCode": 0,
+    "stdout": "codex-cli 0.157.1\n",
+    "stderr": ""
+  },
+  "hookTrustFlagPresent": true,
+  "appServerSupported": true,
+  "globalConfigHash": "0d29e520750479a93b6108671d5e9a7e88cf4655be63e98bdba8e17439d24990",
+  "globalAuthFileExists": true,
+  "npmEntry": "C:\\Program Files\\node_modules\\npm\\bin\\npm-cli.js",
+  "python": {
+    "exitCode": 0,
+    "stdout": "Python 3.14.0\r\n",
+    "stderr": ""
+  },
+  "where": {
+    "exitCode": 0,
+    "stdout": "C:\\Users\\woo\\AppData\\Roaming\\npm\\codex\r\nC:\\Users\\woo\\AppData\\Roaming\\npm\\codex.cmd\r\n",
+    "stderr": ""
+  }
+}

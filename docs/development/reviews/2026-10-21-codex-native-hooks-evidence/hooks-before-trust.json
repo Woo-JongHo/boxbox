@@ -1,0 +1,68 @@
+{
+  "data": [
+    {
+      "cwd": "/tmp/boxbox-native-hooks-20261021/project",
+      "hooks": [
+        {
+          "key": "boxbox@boxbox-plugins:hooks/hooks.json:post_tool_use:0:0",
+          "eventName": "postToolUse",
+          "handlerType": "command",
+          "command": "'/opt/homebrew/Cellar/node@22/22.22.3/bin/node' \"/private/tmp/boxbox-native-hooks-20261021/codex-home/plugins/cache/boxbox-plugins/boxbox/0.2.2/scripts/boxbox.mjs\" hook post",
+          "async": false,
+          "matcher": "Write|Edit|MultiEdit|apply_patch",
+          "timeoutSec": 120,
+          "statusMessage": null,
+          "additionalContextLimit": null,
+          "sourcePath": "/private/tmp/boxbox-native-hooks-20261021/codex-home/plugins/cache/boxbox-plugins/boxbox/0.2.2/hooks/hooks.json",
+          "source": "plugin",
+          "pluginId": "boxbox@boxbox-plugins",
+          "displayOrder": 0,
+          "enabled": true,
+          "isManaged": false,
+          "currentHash": "sha256:b02a4407e5ae9c9398ac011770e2998d9305747b9daed3888701cd8543cb01c1",
+          "trustStatus": "untrusted"
+        },
+        {
+          "key": "boxbox@boxbox-plugins:hooks/hooks.json:session_start:0:0",
+          "eventName": "sessionStart",
+          "handlerType": "command",
+          "command": "'/opt/homebrew/Cellar/node@22/22.22.3/bin/node' \"/private/tmp/boxbox-native-hooks-20261021/codex-home/plugins/cache/boxbox-plugins/boxbox/0.2.2/scripts/boxbox.mjs\" hook session",
+          "async": false,
+          "matcher": null,
+          "timeoutSec": 120,
+          "statusMessage": null,
+          "additionalContextLimit": null,
+          "sourcePath": "/private/tmp/boxbox-native-hooks-20261021/codex-home/plugins/cache/boxbox-plugins/boxbox/0.2.2/hooks/hooks.json",
+          "source": "plugin",
+          "pluginId": "boxbox@boxbox-plugins",
+          "displayOrder": 1,
+          "enabled": true,
+          "isManaged": false,
+          "currentHash": "sha256:a5a0a85a3bcd2639467b2ae90ae333162597282d273c329e760dd86d66203ac9",
+          "trustStatus": "untrusted"
+        },
+        {
+          "key": "boxbox@boxbox-plugins:hooks/hooks.json:stop:0:0",
+          "eventName": "stop",
+          "handlerType": "command",
+          "command": "'/opt/homebrew/Cellar/node@22/22.22.3/bin/node' \"/private/tmp/boxbox-native-hooks-20261021/codex-home/plugins/cache/boxbox-plugins/boxbox/0.2.2/scripts/boxbox.mjs\" hook stop",
+          "async": false,
+          "matcher": null,
+          "timeoutSec": 120,
+          "statusMessage": null,
+          "additionalContextLimit": null,
+          "sourcePath": "/private/tmp/boxbox-native-hooks-20261021/codex-home/plugins/cache/boxbox-plugins/boxbox/0.2.2/hooks/hooks.json",
+          "source": "plugin",
+          "pluginId": "boxbox@boxbox-plugins",
+          "displayOrder": 2,
+          "enabled": true,
+          "isManaged": false,
+          "currentHash": "sha256:60003765678224f9383d52ed4c86ee185069f49dcd31f214b9c3ddba2d332715",
+          "trustStatus": "untrusted"
+        }
+      ],
+      "warnings": [],
+      "errors": []
+    }
+  ]
+}

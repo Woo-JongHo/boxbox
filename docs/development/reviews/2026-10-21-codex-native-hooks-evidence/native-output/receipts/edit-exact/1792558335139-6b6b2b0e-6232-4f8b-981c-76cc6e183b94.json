@@ -1,0 +1,48 @@
+{
+  "event": "Stop",
+  "state": "FAIL",
+  "files": [
+    "sample.py"
+  ],
+  "checked": [
+    {
+      "file": "sample.py",
+      "result": {
+        "file": "sample.py",
+        "language": "python",
+        "mode": "check",
+        "summary": {
+          "groups": 1,
+          "misaligned": 1,
+          "edits": 2,
+          "refused": 0,
+          "suggested": 0
+        },
+        "groups": [
+          {
+            "kind": "table",
+            "startLine": 1,
+            "endLine": 3,
+            "rows": 3,
+            "axes": [
+              "name",
+              "equal",
+              "value"
+            ],
+            "state": "FIXABLE",
+            "edits": 2,
+            "depth": 0
+          }
+        ],
+        "parse": {
+          "status": "not-run",
+          "tool": ""
+        }
+      }
+    }
+  ],
+  "unsupported": [],
+  "tool": null,
+  "at": "2026-10-21T04:52:15.138Z",
+  "automaticFixPerformed": false
+}
