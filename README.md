@@ -47,7 +47,7 @@ Supported patterns include declarations, assignments, imports, object rows and s
 
 The alignment stage changes whitespace only. It checks preservation and compares parser diagnostics before replacing a file. Uncertain decomposition, unavailable parsers and unsafe file conditions can cause it to refuse a write.
 
-The public `format` command additionally requires an explicit project formatter and complete human-approval evidence. It runs the project formatter, verifies parsing, checks rule approvals and applies alignment. The entire cycle runs twice to verify a fixed point, then replaces the target once. Changes made by the external formatter are separate from the alignment stage's whitespace-only guarantee.
+The public `format` command requires complete human-approval evidence. It runs a project formatter first when one is configured, then verifies parsing, checks rule approvals and applies alignment. Without a configured formatter, it aligns approved patterns directly. The entire cycle runs twice to verify a fixed point, then replaces the target once. Changes made by the external formatter are separate from the alignment stage's whitespace-only guarantee.
 
 ## Install the plugin
 
@@ -60,10 +60,10 @@ To try a locally built installer:
 ```sh
 bun install
 bun run pack:installer
-npx --yes 'file:/absolute/path/to/dist/installer/boxbox-plugin-0.2.0.tgz' --codex
+npm exec --yes --package '/absolute/path/to/dist/installer/boxbox-plugin-<version>.tgz' -- boxbox --codex
 ```
 
-This local artifact journey requires the checkout for building. The installed plugin uses its permanent Node engine.
+Replace `<version>` with the version in `package.json`, or use the exact archive path printed by `pack:installer`. This local artifact journey requires the checkout for building. The installed plugin uses its permanent Node engine.
 The public installer needs Node.js 22.22.3 or later and npm; Python formatting additionally needs `python3`.
 
 ## Develop BoxBox
@@ -97,11 +97,11 @@ The ten development engines do not imply equal release support. Write checks req
 
 Project configuration lives in `.boxbox/`. Configuration is resolved through Base → Preset → User → Project layers; safety invariants remain mandatory.
 
-Public preset conventions, examples and decisions are currently empty. Research candidates are kept separately and are not automatically approved. See the [readability contract](product/rules/references/readability-contract.md) for the current rules and the [plugin skill](product/plugin/skills/boxbox/SKILL.md) for the agent workflow.
+The recommended preset contains two approved conventions, four synthetic examples and two decisions: TypeScript top-level call declarations (2+ rows) and Python simple assignments (3+ rows). Research candidates are kept separately and are not automatically approved. See the [readability contract](product/rules/references/readability-contract.md) for the current rules and the [plugin skill](product/plugin/skills/boxbox/SKILL.md) for the agent workflow.
 
 ## Development status
 
-This is a development project, not a completed public release. Local CLI artifacts and skill adapters are implemented; public distribution, real release-host journeys and license selection remain open. The standard `plugin/` shim requires an explicit local engine. For the Windows Codex trial, use the [npm installer](docs/user/codex-windows-test.md), which installs its included engine into a permanent local directory. The selected npm installer name is `boxbox-plugin`; publication remains pending.
+This is a development project, not a completed public release. Local CLI artifacts and skill adapters are implemented; public distribution, native host-event acceptance and release-package licensing metadata remain open. The standard `plugin/` shim requires an explicit local engine. For the Windows Codex trial, use the [npm installer](docs/user/codex-windows-test.md), which installs its included engine into a permanent local directory. The selected npm installer name is `boxbox-plugin`; publication remains pending.
 
 For verified behavior and remaining work, read [release readiness](docs/development/status.md), the [release contract](docs/development/release-contract.md) and the [plan](docs/development/plan.md). Historical naming and migration details are in the [naming record](docs/development/reviews/2026-10-16-boxbox-rename.md).
 
@@ -112,6 +112,6 @@ bun install
 bun run check
 ```
 
-`check` runs identity and dependency checks, test suites, TypeScript type checking and development installer shell syntax checks. Follow [AGENTS.md](AGENTS.md) for contribution and authoring rules. A release license has not yet been selected.
+`check` runs identity and dependency checks, test suites, TypeScript type checking and development installer shell syntax checks. Follow [AGENTS.md](AGENTS.md) for contribution and authoring rules. The existing [MIT LICENSE](LICENSE) is retained from GitHub main. Installer candidates still carry UNLICENSED preview metadata; publication and release-package metadata remain separate decisions. The four synthetic preset examples are separately marked CC0-1.0.
 
 Product naming is managed from [`product.json`](product.json); see the [rename procedure and code-length boundaries](docs/development/product-identity.md).

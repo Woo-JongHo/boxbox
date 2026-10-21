@@ -27,7 +27,7 @@ Native host event delivery and the final OS/host support matrix remain unconfirm
 - `init`: creates a versioned project config without overwriting existing user files.
 - `doctor`: reports the availability of the runtime, parsers, config, approval data and release files. It never reports something unimplemented as healthy.
 
-CLI arguments, exit codes and error JSON are pinned by implementation and tests in REL4. The product version 0.2.1 is development metadata,
+CLI arguments, exit codes and error JSON are pinned by implementation and tests in REL4. The product version 0.2.2 is development metadata,
 and the release version is undecided. Changes to the Result/config schemas must come with a version change and a migration policy.
 
 ## Write surface inventory
@@ -48,7 +48,7 @@ boundary, this table alone is not a claim that bypasses are blocked.
 
 ## Human decisions and freeze points
 
-The product name `boxbox` / `BoxBox` was confirmed on 2026-10-16. The public installer candidate is `boxbox-plugin`, selected under the user's authorization to choose an available npm name. Private engine artifacts retain the core ID `boxbox`. The license, publication permissions and public channel still need decisions before REL11; the local implementation remains `private: true`. Local builds, packs and isolated install experiments are
+The product name `boxbox` / `BoxBox` was confirmed on 2026-10-16. The public installer candidate is `boxbox-plugin`, selected under the user's authorization to choose an available npm name. Private engine artifacts retain the core ID `boxbox`. The existing GitHub MIT LICENSE is retained at the repository root. Installer preview metadata remains UNLICENSED; release-package licensing metadata, publication permissions and public channel still need decisions before REL11; the local implementation remains `private: true`. Local builds, packs and isolated install experiments are
 included in the continuous-progress direction, but that is not approval to run commit/tag/push/publish automatically.
 
 Observation data and AI suggestions are never automatically promoted into human-approved conventions or decisions.

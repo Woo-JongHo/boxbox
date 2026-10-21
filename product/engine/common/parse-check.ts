@@ -43,7 +43,7 @@ const TOOLCHAINS: Readonly<Record<string, Toolchain>> = {
 	c          : { tool: "clang",   extension: ".c",    command: file => ["clang", "-fsyntax-only", "-w", file],                                keep: /error:/u },
 	cpp        : { tool: "clang++", extension: ".cpp",  command: file => ["clang++", "-std=c++20", "-fsyntax-only", "-w", file],               keep: /error:/u },
 	java       : { tool: "javac",   extension: ".java", command: (file, work) => ["javac", "-proc:none", "-Xlint:none", "-d", work, file],     keep: /error:/u },
-	rust       : { tool: "rustfmt", extension: ".rs",   command: file => ["rustfmt", "--edition", "2021", "--check", file],                    keep: /^error/u },
+	rust       : { tool: "rustfmt", extension: ".rs",   command: file => ["rustfmt", "--edition", "2021", "--emit", "stdout", file],           keep: /^error/u },
 	swift      : { tool: "swiftc",  extension: ".swift", command: file => ["swiftc", "-parse", file],                                           keep: /error:/u },
 	kotlin     : { tool: "kotlinc", extension: ".kt",   command: (file, work) => ["kotlinc", file, "-d", work],                                keep: /error:/u },
 };
@@ -65,24 +65,21 @@ function diagnostics(toolchain: Toolchain, source: string, timeoutMs: number): r
 		const [command, ...args] = toolchain.command(file, work);
 		const run    = spawnSync(command!, args, { encoding: "utf8", maxBuffer: MAX_OUTPUT_BYTES, timeout: timeoutMs }) ;
 		const output = `${run.stdout ?? ""}\n${run.stderr ?? ""}`                                                       ;
-		const parsed = output
+
+		// rustfmt emits formatted source on stdout; only stderr contains its diagnostics.
+		const diagnosticOutput = toolchain.tool === "rustfmt" ? run.stderr ?? "" : output;
+		const parsed = diagnosticOutput
 			.split("\n")
 			.filter(line => toolchain.keep.test(line))
 			.map(line => line.replace(/\S*boxbox-parse-[^/\s]*\/Input\.\w+/gu, "<file>").replace(/(:\d+):\d+/gu, "$1").trim());
 		if (run.error !== undefined) throw new Error(`parser execution failed (${toolchain.tool}): ${run.error.message}`);
 		if (run.signal !== null) throw new Error(`parser terminated by signal (${toolchain.tool}): ${run.signal}`);
 		if (run.status === null) throw new Error(`parser exited without a status: ${toolchain.tool}`);
-		const rustfmtDiff = toolchain.tool === "rustfmt"
-			&& run.status === 1
-			&& `${run.stderr ?? ""}`.trim() === ""
-			&& /Diff in \S*boxbox-parse-[^/\s]*\/Input\.rs at line \d+:/u.test(output)
-			&& /^-/mu.test(output)
-			&& /^\+/mu.test(output);
 		const diagnosticExit = parsed.length > 0 && (
 			(toolchain.tool === "gofmt" && run.status === 2)
 			|| (["node", "clang", "clang++", "javac", "rustfmt", "swiftc", "kotlinc"].includes(toolchain.tool) && run.status === 1)
 		);
-		if (run.status !== 0 && !diagnosticExit && !rustfmtDiff) {
+		if (run.status !== 0 && !diagnosticExit) {
 			throw new Error(`parser exited with unrecognized status (${toolchain.tool}): ${run.status}`);
 		}
 		return parsed;

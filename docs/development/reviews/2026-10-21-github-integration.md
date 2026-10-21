@@ -16,7 +16,7 @@ Preserved content and intent:
 - Adapt CONTRIBUTING, CHANGELOG and rule-proposal intake to BoxBox names, current paths, optional formatter behavior
   and the current supported host/Node contract. The new bug form supersedes the old bug-report template.
 - Keep the 2026-10-21 approved preset rather than restoring older hashes/license metadata into the active database.
-  Both GitHub parent commits and the original incoming patch preserve the prior records.
+  The merge parents and the original incoming patch preserve the prior records.
 - Port `39d3592`'s deterministic parser-probe timeout fixture into the current test path. A synchronous five-second
   spin survives until the configured 50ms probe deadline; the former interval followed by process.exit was racy.
 - Preserve the existing Ubuntu/macOS full-check coverage. Linux installs Swift 6.0; macOS checks its runner Swift.
@@ -25,7 +25,25 @@ Preserved content and intent:
   rules, docs and plugin outputs remain out of active paths.
 
 The three-way rename merge produced a nested marker in the TypeScript aligner even after stage-2 selection. It was
-caught immediately by layout/type checks, restored from the canonical development HEAD, and checked again. No product
-engine file is intentionally changed by this integration. The only test behavior change is the incoming timeout fix.
+caught immediately by layout/type checks, restored from the canonical development HEAD, and checked again. That restored baseline had no intentional product change. The first real Actions run then exposed the Rust parser-probe defect described below; its fix is an explicit additional engine change.
 
-Focused checks, the full suite, cross-provider review and actual PR Actions results are recorded below when available.
+Local integrated checks: 490 pass / 5 existing parser skips / 0 fail, 2299 assertions; TypeScript/shell and actionlint passed. Focused checks: 19 pass / 62 assertions. Integration Sonnet 5.5 passed with documentation corrections, now applied. The initial final Opus integration audit required two README corrections (local archive version and optional formatter), now applied; its conditional candidates-directory concern was verified against the tracked directory. [PR #2](https://github.com/Woo-JongHo/rowgrid/pull/2) triggered the [first real Actions verification](https://github.com/Woo-JongHo/rowgrid/actions/runs/39539836883), which failed and is not counted as a pass.
+
+
+## Real CI failures and 0.2.2 correction
+
+Both hosted OSes exposed the old Rust parser check's dependence on a human-readable rustfmt diff. Rustfmt 1.99.1
+returned 1 for formatting differences that the legacy recognizer did not accept. The probe now uses the documented
+non-writing `--emit stdout` mode, discards formatted source, and reads Rust diagnostics from stderr only. Missing
+tools, signals, timeouts and unexplained nonzero exits still fail closed. An added regression ensures stdout that
+begins with `error_macro!()` cannot disguise an unexplained failure. Existing real Rust tests must pass in hosted CI.
+
+Ubuntu also exposed an absent optional `test/fixtures/python/corpus` directory. The fixture test already recursively
+traverses `test/fixtures/python`; removing its redundant second traversal preserves coverage of any corpus children
+and requires the actual fixture parent. The execution-timeout fake gets a 2-second test deadline to avoid confusing
+slow startup with the separately tested 50ms version-probe timeout.
+
+Version 0.2.2 distinguishes the changed engine bundle from the previously tested 0.2.1 archive. The candidate installer
+examples now use the actual version placeholder. The exact 0.2.0-to-0.2.1 Windows migration evidence stays historical.
+The failed diagnostic Rust installation was cleaned up, including only its exact temporary source lines in shell
+profiles; no usable global Rust toolchain was installed.

@@ -12,7 +12,7 @@ reached its first public release yet, so everything below is unreleased.
   `format`, `run`, `status`, and `db init/status` for TypeScript and Python.
 - Thin agent plugins for Claude Code and Codex: session hooks that check
   changed files read-only, a read-only inspector agent, and a skill that
-  drives the engine through an permanent local Node launcher.
+  drives the engine through a permanent local Node launcher.
 - The first two approved alignment rules, shipped in the recommended preset:
   top-level single-call variable declaration tables (two or more rows) in TypeScript and
   simple assignment tables (three or more rows at one indentation level)

@@ -6,7 +6,7 @@ push a tag, or install plugins into a contributor's active host.
 ```text
 Issue with reproduction or acceptance criteria
   → implementation branch and linked pull request
-  → verify / plugin-contract
+  → verify / plugin-contract (Ubuntu and macOS)
   → maintainer review and merge
   → manual release-candidate run on the selected source ref
   → the same verification workflow
@@ -89,22 +89,19 @@ is uploaded as a separate smoke artifact.
 
 This matrix measures the installed engine journey on Linux, macOS, and native Windows. It does not claim that the full
 development test suite runs on Windows. `--engine-only` skips host registration and actual Codex/Claude hook events;
-host discovery, native hook-event delivery, UI/HUD acceptance, and the 0.2.0 marketplace-source migration require
+host discovery, native hook-event delivery, UI/HUD acceptance, and earlier-version marketplace-source migration require
 separate real-host evidence. A green candidate is not a public release readiness decision.
 
 ## GitHub installation and later publication
 
-At inspection time on 2026-10-21, the local `origin` points to the self-hosted repository and GitHub
-`Woo-JongHo/rowgrid` is private with `main` as its default branch. Pushing to the self-hosted origin does not install
-GitHub workflows. These files must be pushed or mirrored to the intended GitHub repository and merged into its default
-branch before GitHub can show the forms and run the pipeline. The integration PR preserves GitHub main ancestry, its MIT LICENSE, and contribution/rule-proposal intake while migrating active code into the current layout. Adding these files does not itself publish a release.
+The local `origin` points to the self-hosted repository; the separate `github` remote points to the private repository with `main` as default branch. The integration branch is pushed as PR #2. Its first hosted run failed on the Rust parse probe and an absent optional Python corpus directory; 0.2.2 corrects those paths, with hosted re-verification pending. Issue forms and manual workflow dispatch become available when this PR is merged into the default branch. The integration PR preserves GitHub main ancestry, its MIT LICENSE, and contribution/rule-proposal intake while migrating active code into the current layout. Adding these files does not itself publish a release.
 
-After the first real GitHub run, configure the actual `verify / plugin-contract` check as required in the repository's
+The first real PR run exposes `plugin-contract (ubuntu-latest)` and `plugin-contract (macos-latest)` as its check names. Configure those exact checks as required in the repository's
 branch protection/ruleset, require the intended review policy, and disable direct pushes if desired. Check the exact
 status name in the first run before making it required; a guessed required name can block every merge. These are
 GitHub repository settings, separate from the checked-in workflow.
 
-Publishing remains separate because the repository/product license, package ownership, public channel, and explicit
+Publishing remains separate because release-package license metadata, package ownership, public channel, and explicit
 publication authorization are unresolved. A later publishing job should use a protected environment and consume the
 same tested archive after verifying its recorded digest, without rebuilding. No npm token or publishing secret is
 needed for the current candidate pipeline.

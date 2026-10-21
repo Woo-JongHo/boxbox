@@ -52,8 +52,8 @@ describe("surface forms — TypeScript", () => {
 
 describe("surface forms — Python", () => {
 	test("every table in the fixture maps to a pattern", () => {
-		const dirs = [join(ROOT, "test/fixtures/python"), join(ROOT, "test/fixtures/python/corpus")] ;
-		let tables = 0                                                                               ;
+		const dirs = [join(ROOT, "test/fixtures/python")] ;
+		let tables = 0                                    ;
 		for (const dir of dirs) {
 			for (const file of readdirSync(dir, { recursive: true }).map(String).filter(name => name.endsWith(".py"))) {
 				const result = alignSource(readFileSync(join(dir, file), "utf8"), PYTHON_ALIGNER, { minRows: 3, apply: false });

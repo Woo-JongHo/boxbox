@@ -32,6 +32,8 @@ The runtime is Bun for development; the shipped engine runs on Node 22.22.3+.
 TypeScript code in this repository follows the project's own rules — run the
 relevant aligner on files you change.
 
+The issue/PR/candidate workflow is documented in [CI operation](docs/development/cicd.md).
+
 ## Proposing a rule
 
 1. Open an issue with the table kind, the languages, real-world frequency
@@ -53,4 +55,4 @@ that is a safety bug — please say so loudly in the title.
 By contributing you agree that your contributions are licensed under the
 MIT License.
 
-The issue/PR/candidate workflow is documented in [CI operation](docs/development/cicd.md). The four bundled synthetic examples have their separately recorded CC0-1.0 license. The existing MIT LICENSE is retained from GitHub main; installer candidates still use UNLICENSED preview metadata, and this candidate pipeline does not authorize publication.
+The four bundled synthetic examples have their separately recorded CC0-1.0 license. The existing MIT LICENSE is retained from GitHub main; installer candidates still use UNLICENSED preview metadata, and this candidate pipeline does not authorize publication.

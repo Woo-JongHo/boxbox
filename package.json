@@ -1,6 +1,6 @@
 {
 	"name": "boxbox",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"private": true,
 	"description": "Multi-agent skill plugin that checks tabular readability in TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, and Kotlin",
 	"scripts": {
