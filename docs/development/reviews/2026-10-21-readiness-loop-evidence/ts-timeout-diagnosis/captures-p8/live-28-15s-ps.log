@@ -1,0 +1,3 @@
+ 5074  2025  5074       00:15 Ss   bun test test/typescript-matrix-boundaries.test.ts --timeout 60000
+ 6101  5074  5074       00:01 S    bun /Users/jonghoPro/woo/00_project/98_BoxBox/product/engine/typescript/06_align-tables.ts --file sample.ts --write --json
+ 6124  6101  5074       00:00 R    (tsc)

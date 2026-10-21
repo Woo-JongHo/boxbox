@@ -13,7 +13,13 @@ licenses await human decisions. Native testing found a macOS symlink-path HUD en
 full run and 24 focused HUD tests. One later test-only upgrade regression passed separately. GLM source audit passed
 with no mandatory findings; the supplemental test binding check also passed. The rebuilt local archive also passed native Windows installation and check/align/check through `chacada`.
 Codex PTY HUD rendering/cleanup passed; authenticated Codex/Claude transitions remain pending because isolated
-profiles reached provider login screens. PR [#5](https://github.com/Woo-JongHo/rowgrid/pull/5) is open; current-candidate CI is queued. These facts supersede historical snapshots below.
+profiles reached provider login screens. PR [#5](https://github.com/Woo-JongHo/rowgrid/pull/5) is open. At source/evidence
+commit `3811e34`, candidate CI Linux passed all 638 tests; macOS passed 637 and timed out one alignment child at
+60 seconds. [Issue 007](issue-library/records/BBX-20261021-007-validation-timeout.json) is reopened for diagnosis;
+an unchanged retry cannot establish a fix. Same-archive candidate packaging and three-OS smoke remain gated by
+verification. The separate PR run ended with macOS runner-acquisition failure before tests started; Linux passed.
+Local stress did not establish the candidate timeout cause, and no speculative runtime fix was made. These facts
+supersede historical snapshots below.
 
 
 ## Active work — AUTHOR1 matrix-first workflows

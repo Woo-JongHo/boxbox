@@ -1,0 +1,1572 @@
+﻿2026-10-21T15:05:26.9770130Z Current runner version: '2.338.0'
+2026-10-21T15:05:26.9784210Z ##[group]Runner Image Provisioner
+2026-10-21T15:05:26.9784720Z Hosted Compute Agent
+2026-10-21T15:05:26.9785120Z Version: 20261012.601
+2026-10-21T15:05:26.9785500Z Commit: f3dc54e1fb89da6852db922499a0233137369e1d
+2026-10-21T15:05:26.9786150Z Build Date: 2026-10-12T17:48:21Z
+2026-10-21T15:05:26.9786680Z Worker ID: {e1fb364e-2440-489f-b479-f479602100b2}
+2026-10-21T15:05:26.9787110Z Region: westus
+2026-10-21T15:05:26.9787480Z Cloud: MacCloud
+2026-10-21T15:05:26.9787840Z ##[endgroup]
+2026-10-21T15:05:26.9788670Z ##[group]Operating System
+2026-10-21T15:05:26.9789030Z macOS
+2026-10-21T15:05:26.9789390Z 26.6.2
+2026-10-21T15:05:26.9789800Z 25G83
+2026-10-21T15:05:26.9790200Z ##[endgroup]
+2026-10-21T15:05:26.9790620Z ##[group]Runner Image
+2026-10-21T15:05:26.9791120Z Image: macos-26-arm64
+2026-10-21T15:05:26.9791560Z Version: 20261013.0424.1
+2026-10-21T15:05:26.9792420Z Included Software: https://github.com/actions/runner-images/blob/macos-26-arm64/20261013.0424/images/macos/macos-26-arm64-Readme.md
+2026-10-21T15:05:26.9793400Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-26-arm64%2F20261013.0424
+2026-10-21T15:05:26.9794110Z ##[endgroup]
+2026-10-21T15:05:26.9794860Z ##[group]GITHUB_TOKEN Permissions
+2026-10-21T15:05:26.9795800Z Contents: read
+2026-10-21T15:05:26.9796130Z Metadata: read
+2026-10-21T15:05:26.9831980Z ##[endgroup]
+2026-10-21T15:05:26.9833270Z Secret source: Actions
+2026-10-21T15:05:26.9833760Z Cache mode: write
+2026-10-21T15:05:26.9834140Z Prepare workflow directory
+2026-10-21T15:05:27.0027150Z Prepare all required actions
+2026-10-21T15:05:27.0058350Z Getting action download info
+2026-10-21T15:05:27.2528940Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-21T15:05:27.3884500Z Download action repository 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)
+2026-10-21T15:05:28.2382590Z Download action repository 'oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6' (SHA:0c5077e51419868618aeaa5fe8019c62421857d6)
+2026-10-21T15:05:28.8943180Z Download action repository 'actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff' (SHA:40f1582b2485089dde7abd97c1529aa768e1baff)
+2026-10-21T15:05:30.8360910Z Download action repository 'actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3' (SHA:cf277c60eb25467037889841efdb72551f06f6c3)
+2026-10-21T15:05:31.7206810Z Download action repository 'dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec' (SHA:b725eda525362e7cf34af9a7243cac1e3f01a7ec)
+2026-10-21T15:05:32.1096860Z Download action repository 'swift-actions/setup-swift@7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a' (SHA:7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a)
+2026-10-21T15:05:32.7356910Z Uses: Woo-JongHo/rowgrid/.github/workflows/verify.yml@refs/heads/feat/matrix-first-readiness (3811e3498f64679a1ade31de3e5703d4a65ee5b8)
+2026-10-21T15:05:32.7359530Z Complete job name: verify / plugin-contract (macos-latest)
+2026-10-21T15:05:32.7730590Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+2026-10-21T15:05:32.7730950Z with:
+2026-10-21T15:05:32.7731090Z   persist-credentials: false
+2026-10-21T15:05:32.7731260Z   repository: Woo-JongHo/rowgrid
+2026-10-21T15:05:32.7733090Z   token: ***
+2026-10-21T15:05:32.7733210Z   ssh-strict: true
+2026-10-21T15:05:32.7733340Z   ssh-user: git
+2026-10-21T15:05:32.7733460Z   clean: true
+2026-10-21T15:05:32.7733610Z   sparse-checkout-cone-mode: true
+2026-10-21T15:05:32.7733770Z   fetch-depth: 1
+2026-10-21T15:05:32.7733900Z   fetch-tags: false
+2026-10-21T15:05:32.7734030Z   show-progress: true
+2026-10-21T15:05:32.7734160Z   lfs: false
+2026-10-21T15:05:32.7734280Z   submodules: false
+2026-10-21T15:05:32.7734420Z   set-safe-directory: true
+2026-10-21T15:05:32.7734580Z   allow-unsafe-pr-checkout: false
+2026-10-21T15:05:32.7734830Z ##[endgroup]
+2026-10-21T15:05:32.8978260Z Syncing repository: Woo-JongHo/rowgrid
+2026-10-21T15:05:32.8979550Z ##[group]Getting Git version info
+2026-10-21T15:05:32.8979840Z Working directory is '/Users/runner/work/rowgrid/rowgrid'
+2026-10-21T15:05:32.8980330Z [command]/opt/homebrew/bin/git version
+2026-10-21T15:05:32.9152720Z git version 2.56.0
+2026-10-21T15:05:32.9163650Z ##[endgroup]
+2026-10-21T15:05:32.9169690Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/418c3ed8-248c-4461-ad40-88b47aa8355e/.gitconfig'
+2026-10-21T15:05:32.9176880Z Temporarily overriding HOME='/Users/runner/work/_temp/418c3ed8-248c-4461-ad40-88b47aa8355e' before making global git config changes
+2026-10-21T15:05:32.9177460Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-21T15:05:32.9180390Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/rowgrid/rowgrid
+2026-10-21T15:05:32.9256730Z Deleting the contents of '/Users/runner/work/rowgrid/rowgrid'
+2026-10-21T15:05:32.9260130Z ##[group]Initializing the repository
+2026-10-21T15:05:32.9263950Z [command]/opt/homebrew/bin/git init /Users/runner/work/rowgrid/rowgrid
+2026-10-21T15:05:32.9416280Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-21T15:05:32.9416810Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-21T15:05:32.9417200Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-21T15:05:32.9417480Z hint: call:
+2026-10-21T15:05:32.9417620Z hint:
+2026-10-21T15:05:32.9417850Z hint: 	git config --global init.defaultBranch <name>
+2026-10-21T15:05:32.9418110Z hint:
+2026-10-21T15:05:32.9418370Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-21T15:05:32.9418830Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-21T15:05:32.9419130Z hint:
+2026-10-21T15:05:32.9419260Z hint: 	git branch -m <name>
+2026-10-21T15:05:32.9419430Z hint:
+2026-10-21T15:05:32.9419720Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-21T15:05:32.9422660Z Initialized empty Git repository in /Users/runner/work/rowgrid/rowgrid/.git/
+2026-10-21T15:05:32.9439750Z [command]/opt/homebrew/bin/git remote add origin https://github.com/Woo-JongHo/rowgrid
+2026-10-21T15:05:32.9488330Z ##[endgroup]
+2026-10-21T15:05:32.9488610Z ##[group]Disabling automatic garbage collection
+2026-10-21T15:05:32.9490570Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+2026-10-21T15:05:32.9539880Z ##[endgroup]
+2026-10-21T15:05:32.9540120Z ##[group]Setting up auth
+2026-10-21T15:05:32.9545050Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-21T15:05:32.9593430Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-21T15:05:33.0262180Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-21T15:05:33.0310280Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-21T15:05:33.0927960Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-21T15:05:33.0980540Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-21T15:05:33.1642910Z [command]/opt/homebrew/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-21T15:05:33.1697020Z ##[endgroup]
+2026-10-21T15:05:33.1697320Z ##[group]Fetching the repository
+2026-10-21T15:05:33.1702160Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +3811e3498f64679a1ade31de3e5703d4a65ee5b8:refs/remotes/origin/feat/matrix-first-readiness
+2026-10-21T15:05:34.2596280Z From https://github.com/Woo-JongHo/rowgrid
+2026-10-21T15:05:34.2596720Z  * [new ref]         3811e3498f64679a1ade31de3e5703d4a65ee5b8 -> origin/feat/matrix-first-readiness
+2026-10-21T15:05:34.2600500Z ##[endgroup]
+2026-10-21T15:05:34.2600830Z ##[group]Determining the checkout info
+2026-10-21T15:05:34.2601970Z ##[endgroup]
+2026-10-21T15:05:34.2605620Z [command]/opt/homebrew/bin/git sparse-checkout disable
+2026-10-21T15:05:34.2668270Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-21T15:05:34.2716130Z ##[group]Checking out the ref
+2026-10-21T15:05:34.2719190Z [command]/opt/homebrew/bin/git checkout --progress --force -B feat/matrix-first-readiness refs/remotes/origin/feat/matrix-first-readiness
+2026-10-21T15:05:34.3808020Z Switched to a new branch 'feat/matrix-first-readiness'
+2026-10-21T15:05:34.3811690Z branch 'feat/matrix-first-readiness' set up to track 'origin/feat/matrix-first-readiness'.
+2026-10-21T15:05:34.3817530Z ##[endgroup]
+2026-10-21T15:05:34.3888780Z [command]/opt/homebrew/bin/git log -1 --format=%H
+2026-10-21T15:05:34.3941400Z 3811e3498f64679a1ade31de3e5703d4a65ee5b8
+2026-10-21T15:05:34.3948350Z ##[group]Removing auth
+2026-10-21T15:05:34.3951840Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-21T15:05:34.4013510Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-21T15:05:34.4654610Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-21T15:05:34.4697640Z http.https://github.com/.extraheader
+2026-10-21T15:05:34.4703060Z [command]/opt/homebrew/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-21T15:05:34.4754510Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-21T15:05:34.5378710Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-21T15:05:34.5425390Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-21T15:05:34.6101710Z ##[endgroup]
+2026-10-21T15:05:34.6248360Z ##[group]Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+2026-10-21T15:05:34.6248740Z with:
+2026-10-21T15:05:34.6248920Z   node-version: 22.22.3
+2026-10-21T15:05:34.6249130Z   package-manager-cache: false
+2026-10-21T15:05:34.6249350Z   check-latest: false
+2026-10-21T15:05:34.6251490Z   token: ***
+2026-10-21T15:05:34.6251670Z ##[endgroup]
+2026-10-21T15:05:34.7332170Z Attempting to download 22.22.3...
+2026-10-21T15:05:35.9508090Z Acquiring 22.22.3 - arm64 from https://github.com/actions/node-versions/releases/download/22.22.3-25838401827/node-22.22.3-darwin-arm64.tar.gz
+2026-10-21T15:05:36.4893390Z Extracting ...
+2026-10-21T15:05:36.4987840Z [command]/usr/bin/tar xz --strip 1 -C /Users/runner/work/_temp/7bf60fe0-73b2-44da-9c20-9c0f9cb2f8c4 -f /Users/runner/work/_temp/b52a110a-3906-434f-8ff1-678e035591bc
+2026-10-21T15:05:37.2366090Z Adding to the cache ...
+2026-10-21T15:05:38.6706630Z ##[group]Environment details
+2026-10-21T15:05:38.8152990Z node: v22.22.3
+2026-10-21T15:05:38.8153200Z npm: 10.9.8
+2026-10-21T15:05:38.8153360Z yarn: 1.22.22
+2026-10-21T15:05:38.8153670Z ##[endgroup]
+2026-10-21T15:05:38.8254570Z ##[group]Run oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+2026-10-21T15:05:38.8254820Z with:
+2026-10-21T15:05:38.8254950Z   bun-version: 1.4.0
+2026-10-21T15:05:38.8255080Z   no-cache: false
+2026-10-21T15:05:38.8256610Z   token: ***
+2026-10-21T15:05:38.8256710Z ##[endgroup]
+2026-10-21T15:05:39.0639780Z Cache hit for: bun-PusaWVipIjxvf+9O5e1DpINdopE=
+2026-10-21T15:05:39.8671820Z Received 23987454 of 23987454 (100.0%), 33.9 MBs/sec
+2026-10-21T15:05:39.8681470Z Cache Size: ~23 MB (23987454 B)
+2026-10-21T15:05:39.8756520Z [command]/opt/homebrew/bin/gtar -xf /Users/runner/work/_temp/a991c94c-6886-4506-9446-7eddc4dbd35d/cache.tzst -P -C /Users/runner/work/rowgrid/rowgrid --delay-directory-restore --use-compress-program unzstd
+2026-10-21T15:05:39.9705580Z Cache restored successfully
+2026-10-21T15:05:39.9717000Z [command]/Users/runner/.bun/bin/bun --revision
+2026-10-21T15:05:39.9808570Z 1.4.0+34cbb9a40
+2026-10-21T15:05:39.9812730Z Using a cached version of Bun: 1.4.0+34cbb9a40
+2026-10-21T15:05:39.9890570Z ##[group]Run actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+2026-10-21T15:05:39.9890850Z with:
+2026-10-21T15:05:39.9890970Z   go-version: stable
+2026-10-21T15:05:39.9891100Z   check-latest: false
+2026-10-21T15:05:39.9892720Z   token: ***
+2026-10-21T15:05:39.9892830Z   cache: true
+2026-10-21T15:05:39.9892950Z ##[endgroup]
+2026-10-21T15:05:40.0914320Z Setup go version spec stable
+2026-10-21T15:05:40.0993350Z (node:1285) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-21T15:05:40.0994200Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-21T15:05:41.0952520Z stable version resolved as 1.27.3
+2026-10-21T15:05:41.0964030Z Attempting to download 1.27.3...
+2026-10-21T15:05:41.0964840Z matching 1.27.3...
+2026-10-21T15:05:41.1000080Z Acquiring 1.27.3 from https://github.com/actions/go-versions/releases/download/1.27.3-39437817176/go-1.27.3-darwin-arm64.tar.gz
+2026-10-21T15:05:41.7132670Z Extracting Go...
+2026-10-21T15:05:41.7222720Z [command]/usr/bin/tar xz -C /Users/runner/work/_temp/25b00738-c46a-4800-b018-9874af7408bf -f /Users/runner/work/_temp/75bc1183-0012-4abf-b019-797eb8d32ab1
+2026-10-21T15:05:43.4536580Z Successfully extracted go to /Users/runner/work/_temp/25b00738-c46a-4800-b018-9874af7408bf
+2026-10-21T15:05:43.4537280Z Adding to the cache ...
+2026-10-21T15:05:47.8120220Z Successfully cached go to /Users/runner/hostedtoolcache/go/1.27.3/arm64
+2026-10-21T15:05:47.8121890Z Added go to the path
+2026-10-21T15:05:47.8123410Z Successfully set up Go version stable
+2026-10-21T15:05:47.8516790Z [command]/Users/runner/hostedtoolcache/go/1.27.3/arm64/bin/go env GOMODCACHE
+2026-10-21T15:05:47.8522760Z [command]/Users/runner/hostedtoolcache/go/1.27.3/arm64/bin/go env GOCACHE
+2026-10-21T15:05:47.8577210Z /Users/runner/go/pkg/mod
+2026-10-21T15:05:47.8578390Z /Users/runner/Library/Caches/go-build
+2026-10-21T15:05:47.8598970Z ##[warning]Restore cache failed: Dependencies file is not found in /Users/runner/work/rowgrid/rowgrid. Supported file pattern: go.sum
+2026-10-21T15:05:47.8607330Z go version go1.27.3 darwin/arm64
+2026-10-21T15:05:47.8607460Z 
+2026-10-21T15:05:47.8653350Z ##[group]go env
+2026-10-21T15:05:48.8371690Z AR='ar'
+2026-10-21T15:05:48.8371930Z CC='clang'
+2026-10-21T15:05:48.8372140Z CGO_CFLAGS='-O2 -g'
+2026-10-21T15:05:48.8372430Z CGO_CPPFLAGS=''
+2026-10-21T15:05:48.8372610Z CGO_CXXFLAGS='-O2 -g'
+2026-10-21T15:05:48.8372770Z CGO_ENABLED='1'
+2026-10-21T15:05:48.8373010Z CGO_FFLAGS='-O2 -g'
+2026-10-21T15:05:48.8373220Z CGO_LDFLAGS='-O2 -g'
+2026-10-21T15:05:48.8373380Z CXX='clang++'
+2026-10-21T15:05:48.8373560Z GCCGO='gccgo'
+2026-10-21T15:05:48.8373770Z GO111MODULE=''
+2026-10-21T15:05:48.8373940Z GOARCH='arm64'
+2026-10-21T15:05:48.8374080Z GOARM64='v8.0'
+2026-10-21T15:05:48.8374210Z GOAUTH='netrc'
+2026-10-21T15:05:48.8374370Z GOBIN='/Users/runner/go/bin'
+2026-10-21T15:05:48.8374670Z GOCACHE='/Users/runner/Library/Caches/go-build'
+2026-10-21T15:05:48.8374900Z GOCACHEPROG=''
+2026-10-21T15:05:48.8375100Z GODEBUG=''
+2026-10-21T15:05:48.8375370Z GOENV='/Users/runner/Library/Application Support/go/env'
+2026-10-21T15:05:48.8375620Z GOEXE=''
+2026-10-21T15:05:48.8375770Z GOEXPERIMENT=''
+2026-10-21T15:05:48.8375920Z GOFIPS140='off'
+2026-10-21T15:05:48.8376070Z GOFLAGS=''
+2026-10-21T15:05:48.8383610Z GOGCCFLAGS='-fPIC -arch arm64 -pthread -fno-caret-diagnostics -Qunused-arguments -fmessage-length=0 -ffile-prefix-map=/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/go-build144534923=/tmp/go-build -gno-record-gcc-switches -fno-common'
+2026-10-21T15:05:48.8384780Z GOHOSTARCH='arm64'
+2026-10-21T15:05:48.8384930Z GOHOSTOS='darwin'
+2026-10-21T15:05:48.8385070Z GOINSECURE=''
+2026-10-21T15:05:48.8385230Z GOMOD='/dev/null'
+2026-10-21T15:05:48.8385430Z GOMODCACHE='/Users/runner/go/pkg/mod'
+2026-10-21T15:05:48.8385620Z GONOPROXY=''
+2026-10-21T15:05:48.8385750Z GONOSUMDB=''
+2026-10-21T15:05:48.8385870Z GOOS='darwin'
+2026-10-21T15:05:48.8386020Z GOPACKAGESDRIVER=''
+2026-10-21T15:05:48.8386640Z GOPATH='/Users/runner/go'
+2026-10-21T15:05:48.8386820Z GOPRIVATE=''
+2026-10-21T15:05:48.8387050Z GOPROXY='https://proxy.golang.org,direct'
+2026-10-21T15:05:48.8387370Z GOROOT='/Users/runner/hostedtoolcache/go/1.27.3/arm64'
+2026-10-21T15:05:48.8387630Z GOSUMDB='sum.golang.org'
+2026-10-21T15:05:48.8387800Z GOTELEMETRY='local'
+2026-10-21T15:05:48.8388140Z GOTELEMETRYDIR='/Users/runner/Library/Application Support/go/telemetry'
+2026-10-21T15:05:48.8388410Z GOTMPDIR=''
+2026-10-21T15:05:48.8388560Z GOTOOLCHAIN='auto'
+2026-10-21T15:05:48.8388920Z GOTOOLDIR='/Users/runner/hostedtoolcache/go/1.27.3/arm64/pkg/tool/darwin_arm64'
+2026-10-21T15:05:48.8389210Z GOVCS=''
+2026-10-21T15:05:48.8389350Z GOVERSION='go1.27.3'
+2026-10-21T15:05:48.8389490Z GOWORK=''
+2026-10-21T15:05:48.8389640Z PKG_CONFIG='pkg-config'
+2026-10-21T15:05:48.8389740Z 
+2026-10-21T15:05:48.8389970Z ##[endgroup]
+2026-10-21T15:05:48.8480640Z ##[group]Run actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+2026-10-21T15:05:48.8480930Z with:
+2026-10-21T15:05:48.8481060Z   distribution: temurin
+2026-10-21T15:05:48.8481240Z   java-version: 21
+2026-10-21T15:05:48.8481380Z   java-package: jdk
+2026-10-21T15:05:48.8481510Z   check-latest: false
+2026-10-21T15:05:48.8481660Z   server-id: github
+2026-10-21T15:05:48.8481800Z   server-username: GITHUB_ACTOR
+2026-10-21T15:05:48.8482030Z   server-password: GITHUB_TOKEN
+2026-10-21T15:05:48.8482240Z   overwrite-settings: true
+2026-10-21T15:05:48.8482390Z   job-status: success
+2026-10-21T15:05:48.8484030Z   token: ***
+2026-10-21T15:05:48.8484170Z ##[endgroup]
+2026-10-21T15:05:48.9677580Z ##[warning]setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
+2026-10-21T15:05:48.9678930Z ##[group]Installed distributions
+2026-10-21T15:05:48.9720730Z Resolved Java 21.0.12+101.0 from tool-cache
+2026-10-21T15:05:48.9721140Z Setting Java 21.0.12+101.0 as the default
+2026-10-21T15:05:48.9729230Z (node:1331) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-21T15:05:48.9729930Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-21T15:05:48.9730610Z Creating toolchains.xml for JDK version 21 from temurin
+2026-10-21T15:05:48.9768720Z Writing to /Users/runner/.m2/toolchains.xml
+2026-10-21T15:05:48.9769720Z 
+2026-10-21T15:05:48.9770240Z Java configuration:
+2026-10-21T15:05:48.9770520Z   Distribution: temurin
+2026-10-21T15:05:48.9770770Z   Version: 21.0.12+101.0
+2026-10-21T15:05:48.9771360Z   Path: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:48.9771650Z 
+2026-10-21T15:05:48.9771900Z ##[endgroup]
+2026-10-21T15:05:48.9777450Z Creating settings.xml with server-id: github
+2026-10-21T15:05:48.9788180Z Writing to /Users/runner/.m2/settings.xml
+2026-10-21T15:05:48.9939850Z ##[group]Run dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
+2026-10-21T15:05:48.9940130Z with:
+2026-10-21T15:05:48.9940240Z   components: rustfmt
+2026-10-21T15:05:48.9940380Z   toolchain: stable
+2026-10-21T15:05:48.9940520Z env:
+2026-10-21T15:05:48.9940800Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:48.9941310Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:48.9941650Z ##[endgroup]
+2026-10-21T15:05:48.9992100Z ##[start-action display=Parse toolchain version;id=__dtolnay_rust-toolchain.parse]
+2026-10-21T15:05:49.0023990Z ##[group]Run if [[ -z $toolchain ]]; then
+2026-10-21T15:05:49.0024240Z [36;1mif [[ -z $toolchain ]]; then[0m
+2026-10-21T15:05:49.0024600Z [36;1m  # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070[0m
+2026-10-21T15:05:49.0025000Z [36;1m  echo "'toolchain' is a required input" >&2[0m
+2026-10-21T15:05:49.0025190Z [36;1m  exit 1[0m
+2026-10-21T15:05:49.0025420Z [36;1melif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then[0m
+2026-10-21T15:05:49.0025700Z [36;1m  if [[ macOS == macOS ]]; then[0m
+2026-10-21T15:05:49.0026060Z [36;1m    echo "toolchain=1.$((($(date -v-$(sed 's/stable \([0-9]*\) \(.\).*/\1\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-10-21T15:05:49.0026420Z [36;1m  else[0m
+2026-10-21T15:05:49.0026730Z [36;1m    echo "toolchain=1.$((($(date --date "${toolchain#stable }" +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-10-21T15:05:49.0027060Z [36;1m  fi[0m
+2026-10-21T15:05:49.0027270Z [36;1melif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then[0m
+2026-10-21T15:05:49.0027670Z [36;1m  echo "toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))" >> $GITHUB_OUTPUT[0m
+2026-10-21T15:05:49.0028050Z [36;1melif [[ $toolchain =~ ^1\.[0-9]+$ ]]; then[0m
+2026-10-21T15:05:49.0028440Z [36;1m  echo "toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))" >> $GITHUB_OUTPUT[0m
+2026-10-21T15:05:49.0028870Z [36;1melse[0m
+2026-10-21T15:05:49.0029000Z [36;1m  delimiter=EOF[0m
+2026-10-21T15:05:49.0029220Z [36;1m  while [[ $toolchain == *$delimiter* ]]; do delimiter+=_; done[0m
+2026-10-21T15:05:49.0029600Z [36;1m  printf 'toolchain<<%s\n%s\n%s\n' "$delimiter" "$toolchain" "$delimiter" >> $GITHUB_OUTPUT[0m
+2026-10-21T15:05:49.0029930Z [36;1mfi[0m
+2026-10-21T15:05:49.0069760Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-21T15:05:49.0070020Z env:
+2026-10-21T15:05:49.0070320Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:49.0070880Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:49.0071370Z   toolchain: stable
+2026-10-21T15:05:49.0071570Z ##[endgroup]
+2026-10-21T15:05:49.0465690Z ##[end-action id=__dtolnay_rust-toolchain.parse;outcome=success;conclusion=success;duration_ms=47]
+2026-10-21T15:05:49.0468590Z ##[start-action display=Set $CARGO_HOME;id=__dtolnay_rust-toolchain.__run]
+2026-10-21T15:05:49.0652280Z ##[group]Run echo CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV
+2026-10-21T15:05:49.0652650Z [36;1mecho CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV[0m
+2026-10-21T15:05:49.0684570Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-21T15:05:49.0684840Z env:
+2026-10-21T15:05:49.0685160Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:49.0685750Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:49.0686180Z ##[endgroup]
+2026-10-21T15:05:49.1034540Z ##[end-action id=__dtolnay_rust-toolchain.__run;outcome=success;conclusion=success;duration_ms=56]
+2026-10-21T15:05:49.1036700Z ##[start-action display=Install rustup if needed;id=__dtolnay_rust-toolchain.__run_2]
+2026-10-21T15:05:49.1053720Z ##[group]Run if ! command -v rustup &>/dev/null; then
+2026-10-21T15:05:49.1054000Z [36;1mif ! command -v rustup &>/dev/null; then[0m
+2026-10-21T15:05:49.1054550Z [36;1m  curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://sh.rustup.rs | sh -s -- --default-toolchain none -y[0m
+2026-10-21T15:05:49.1055110Z [36;1m  echo "$CARGO_HOME/bin" >> $GITHUB_PATH[0m
+2026-10-21T15:05:49.1055290Z [36;1mfi[0m
+2026-10-21T15:05:49.1084400Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-21T15:05:49.1084830Z env:
+2026-10-21T15:05:49.1085100Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:49.1085600Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:49.1085960Z   CARGO_HOME: /Users/runner/.cargo
+2026-10-21T15:05:49.1086140Z ##[endgroup]
+2026-10-21T15:05:49.1334860Z ##[end-action id=__dtolnay_rust-toolchain.__run_2;outcome=success;conclusion=success;duration_ms=29]
+2026-10-21T15:05:49.1336480Z ##[start-action display=Install rustup if needed on windows;id=__dtolnay_rust-toolchain.__run_3]
+2026-10-21T15:05:49.1340720Z ##[end-action id=__dtolnay_rust-toolchain.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-21T15:05:49.1347880Z ##[start-action display=rustup toolchain install stable;id=__dtolnay_rust-toolchain.__run_4]
+2026-10-21T15:05:49.1359960Z ##[group]Run set -f  # split targets and components on commas and whitespace, without glob expansion
+2026-10-21T15:05:49.1360490Z [36;1mset -f  # split targets and components on commas and whitespace, without glob expansion[0m
+2026-10-21T15:05:49.1360800Z [36;1mflags=()[0m
+2026-10-21T15:05:49.1360990Z [36;1mfor t in ${targets//,/ }; do flags+=(--target "$t"); done[0m
+2026-10-21T15:05:49.1361340Z [36;1mfor c in ${components//,/ }; do flags+=(--component "$c"); done[0m
+2026-10-21T15:05:49.1361730Z [36;1mif [[ $toolchain == nightly && -n $components ]]; then flags+=(--allow-downgrade); fi[0m
+2026-10-21T15:05:49.1362150Z [36;1mlog=$(mktemp)[0m
+2026-10-21T15:05:49.1362340Z [36;1mtrap 'rm -f "$log"' EXIT[0m
+2026-10-21T15:05:49.1362520Z [36;1mfor attempt in 1 2 3 4 5; do[0m
+2026-10-21T15:05:49.1362920Z [36;1m  if rustup toolchain install "$toolchain" "${flags[@]}" --profile minimal --no-self-update --force-non-host 2>&1 | tee "$log"; then[0m
+2026-10-21T15:05:49.1363320Z [36;1m    break[0m
+2026-10-21T15:05:49.1363440Z [36;1m  else[0m
+2026-10-21T15:05:49.1363570Z [36;1m    status=$?[0m
+2026-10-21T15:05:49.1363720Z [36;1m  fi[0m
+2026-10-21T15:05:49.1363930Z [36;1m  if [[ $attempt == 5 ]] || ! grep -Fq 'checksum failed for ' "$log" \[0m
+2026-10-21T15:05:49.1364330Z [36;1m      || ! grep -Fq 'this is likely due to an ongoing update of the official release server' "$log"; then[0m
+2026-10-21T15:05:49.1364850Z [36;1m    exit "$status"[0m
+2026-10-21T15:05:49.1365010Z [36;1m  fi[0m
+2026-10-21T15:05:49.1365250Z [36;1m  echo "Retrying rustup toolchain install in 30 seconds (retry $attempt of 4)" >&2[0m
+2026-10-21T15:05:49.1365530Z [36;1m  sleep 30[0m
+2026-10-21T15:05:49.1365660Z [36;1mdone[0m
+2026-10-21T15:05:49.1390870Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-21T15:05:49.1391070Z env:
+2026-10-21T15:05:49.1396150Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:49.1396640Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:49.1397000Z   CARGO_HOME: /Users/runner/.cargo
+2026-10-21T15:05:49.1397150Z   toolchain: stable
+2026-10-21T15:05:49.1397270Z   targets: 
+2026-10-21T15:05:49.1397390Z   components: rustfmt
+2026-10-21T15:05:49.1397530Z   RUSTUP_PERMIT_COPY_RENAME: 1
+2026-10-21T15:05:49.1397680Z ##[endgroup]
+2026-10-21T15:05:49.4093590Z info: syncing channel updates for stable-aarch64-apple-darwin
+2026-10-21T15:05:49.5132120Z info: latest update on 2026-10-15 for version 1.99.1 (58cf8f9c3 2026-10-13)
+2026-10-21T15:05:49.5225050Z info: removing previous version of component clippy
+2026-10-21T15:05:49.5241980Z info: removing previous version of component rustfmt
+2026-10-21T15:05:49.5254770Z info: removing previous version of component cargo
+2026-10-21T15:05:49.5305860Z info: removing previous version of component rust-std
+2026-10-21T15:05:49.5384900Z info: removing previous version of component rustc
+2026-10-21T15:05:49.5460430Z info: downloading 5 components
+2026-10-21T15:05:54.8064710Z 
+2026-10-21T15:05:54.8371390Z   stable-aarch64-apple-darwin updated - rustc 1.99.1 (58cf8f9c3 2026-10-13) (from rustc 1.99.0 (b940084d7 2026-09-28))
+2026-10-21T15:05:54.8371780Z 
+2026-10-21T15:05:54.8371990Z info: self-update is disabled for this build of rustup
+2026-10-21T15:05:54.8372490Z info: any updates to rustup will need to be fetched with your system package manager
+2026-10-21T15:05:54.8467060Z ##[end-action id=__dtolnay_rust-toolchain.__run_4;outcome=success;conclusion=success;duration_ms=5708]
+2026-10-21T15:05:54.8483960Z ##[start-action display=rustup default stable;id=__dtolnay_rust-toolchain.__run_5]
+2026-10-21T15:05:54.8681910Z ##[group]Run rustup default "$toolchain" --force-non-host
+2026-10-21T15:05:54.8682230Z [36;1mrustup default "$toolchain" --force-non-host[0m
+2026-10-21T15:05:54.8717240Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-21T15:05:54.8717470Z env:
+2026-10-21T15:05:54.8717770Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:54.8718290Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:54.8718640Z   CARGO_HOME: /Users/runner/.cargo
+2026-10-21T15:05:54.8718800Z   toolchain: stable
+2026-10-21T15:05:54.8718940Z ##[endgroup]
+2026-10-21T15:05:54.9256960Z info: using existing install for stable-aarch64-apple-darwin
+2026-10-21T15:05:54.9273110Z info: default toolchain set to stable-aarch64-apple-darwin
+2026-10-21T15:05:54.9273380Z 
+2026-10-21T15:05:54.9430100Z   stable-aarch64-apple-darwin unchanged - rustc 1.99.1 (58cf8f9c3 2026-10-13)
+2026-10-21T15:05:54.9430440Z 
+2026-10-21T15:05:54.9445090Z ##[end-action id=__dtolnay_rust-toolchain.__run_5;outcome=success;conclusion=success;duration_ms=95]
+2026-10-21T15:05:54.9456140Z ##[start-action display=Create cachekey;id=__dtolnay_rust-toolchain.rustc-version]
+2026-10-21T15:05:54.9476640Z ##[group]Run DATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')
+2026-10-21T15:05:54.9477490Z [36;1mDATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')[0m
+2026-10-21T15:05:54.9478100Z [36;1mHASH=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-hash: //p')[0m
+2026-10-21T15:05:54.9478490Z [36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT[0m
+2026-10-21T15:05:54.9516540Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-21T15:05:54.9516850Z env:
+2026-10-21T15:05:54.9517260Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:54.9517920Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:54.9518420Z   CARGO_HOME: /Users/runner/.cargo
+2026-10-21T15:05:54.9518660Z   toolchain: stable
+2026-10-21T15:05:54.9518840Z ##[endgroup]
+2026-10-21T15:05:55.0407320Z ##[end-action id=__dtolnay_rust-toolchain.rustc-version;outcome=success;conclusion=success;duration_ms=94]
+2026-10-21T15:05:55.0409740Z ##[start-action display=Disable incremental compilation;id=__dtolnay_rust-toolchain.__run_6]
+2026-10-21T15:05:55.0430720Z ##[group]Run if [ -z "${CARGO_INCREMENTAL+set}" ]; then
+2026-10-21T15:05:55.0431290Z [36;1mif [ -z "${CARGO_INCREMENTAL+set}" ]; then[0m
+2026-10-21T15:05:55.0431550Z [36;1m  echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV[0m
+2026-10-21T15:05:55.0431730Z [36;1mfi[0m
+2026-10-21T15:05:55.0468970Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-21T15:05:55.0469270Z env:
+2026-10-21T15:05:55.0469610Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:55.0470370Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:55.0470770Z   CARGO_HOME: /Users/runner/.cargo
+2026-10-21T15:05:55.0470930Z ##[endgroup]
+2026-10-21T15:05:55.0788420Z ##[end-action id=__dtolnay_rust-toolchain.__run_6;outcome=success;conclusion=success;duration_ms=37]
+2026-10-21T15:05:55.0790600Z ##[start-action display=Enable colors in Cargo output;id=__dtolnay_rust-toolchain.__run_7]
+2026-10-21T15:05:55.0813290Z ##[group]Run if [ -z "${CARGO_TERM_COLOR+set}" ]; then
+2026-10-21T15:05:55.0813640Z [36;1mif [ -z "${CARGO_TERM_COLOR+set}" ]; then[0m
+2026-10-21T15:05:55.0813980Z [36;1m  echo CARGO_TERM_COLOR=always >> $GITHUB_ENV[0m
+2026-10-21T15:05:55.0814230Z [36;1mfi[0m
+2026-10-21T15:05:55.0848510Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-21T15:05:55.0848730Z env:
+2026-10-21T15:05:55.0849040Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:55.0849670Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:55.0850120Z   CARGO_HOME: /Users/runner/.cargo
+2026-10-21T15:05:55.0850330Z   CARGO_INCREMENTAL: 0
+2026-10-21T15:05:55.0850540Z ##[endgroup]
+2026-10-21T15:05:55.1131640Z ##[end-action id=__dtolnay_rust-toolchain.__run_7;outcome=success;conclusion=success;duration_ms=34]
+2026-10-21T15:05:55.1134460Z ##[start-action display=Enable Cargo sparse registry;id=__dtolnay_rust-toolchain.__run_8]
+2026-10-21T15:05:55.1156310Z ##[group]Run # implemented in 1.66, stabilized in 1.68, made default in 1.70
+2026-10-21T15:05:55.1156840Z [36;1m# implemented in 1.66, stabilized in 1.68, made default in 1.70[0m
+2026-10-21T15:05:55.1157400Z [36;1mif [ -z "${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}" -o -f "/Users/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol ]; then[0m
+2026-10-21T15:05:55.1157990Z [36;1m  if rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[89]\.'; then[0m
+2026-10-21T15:05:55.1158480Z [36;1m    touch "/Users/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-10-21T15:05:55.1158990Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV[0m
+2026-10-21T15:05:55.1159410Z [36;1m  elif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[67]\.'; then[0m
+2026-10-21T15:05:55.1159830Z [36;1m    touch "/Users/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-10-21T15:05:55.1160340Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV[0m
+2026-10-21T15:05:55.1160660Z [36;1m  fi[0m
+2026-10-21T15:05:55.1160770Z [36;1mfi[0m
+2026-10-21T15:05:55.1196260Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-21T15:05:55.1196590Z env:
+2026-10-21T15:05:55.1196920Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:55.1197560Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:55.1198010Z   CARGO_HOME: /Users/runner/.cargo
+2026-10-21T15:05:55.1198230Z   CARGO_INCREMENTAL: 0
+2026-10-21T15:05:55.1198410Z   CARGO_TERM_COLOR: always
+2026-10-21T15:05:55.1198620Z   toolchain: stable
+2026-10-21T15:05:55.1198790Z ##[endgroup]
+2026-10-21T15:05:55.1968430Z ##[end-action id=__dtolnay_rust-toolchain.__run_8;outcome=success;conclusion=success;duration_ms=83]
+2026-10-21T15:05:55.1972130Z ##[start-action display=Work around spurious network errors in curl 8.0;id=__dtolnay_rust-toolchain.__run_9]
+2026-10-21T15:05:55.1994700Z ##[group]Run # https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation
+2026-10-21T15:05:55.1995260Z [36;1m# https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation[0m
+2026-10-21T15:05:55.1995720Z [36;1mif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.7[01]\.'; then[0m
+2026-10-21T15:05:55.1996080Z [36;1m  echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV[0m
+2026-10-21T15:05:55.1996310Z [36;1mfi[0m
+2026-10-21T15:05:55.2024320Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-21T15:05:55.2024530Z env:
+2026-10-21T15:05:55.2025250Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:55.2025880Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:55.2026270Z   CARGO_HOME: /Users/runner/.cargo
+2026-10-21T15:05:55.2026450Z   CARGO_INCREMENTAL: 0
+2026-10-21T15:05:55.2026600Z   CARGO_TERM_COLOR: always
+2026-10-21T15:05:55.2026750Z   toolchain: stable
+2026-10-21T15:05:55.2026890Z ##[endgroup]
+2026-10-21T15:05:55.2534850Z ##[end-action id=__dtolnay_rust-toolchain.__run_9;outcome=success;conclusion=success;duration_ms=56]
+2026-10-21T15:05:55.2538370Z ##[start-action display=rustc +stable --version --verbose;id=__dtolnay_rust-toolchain.__run_10]
+2026-10-21T15:05:55.2560710Z ##[group]Run rustc +"$toolchain" --version --verbose
+2026-10-21T15:05:55.2560990Z [36;1mrustc +"$toolchain" --version --verbose[0m
+2026-10-21T15:05:55.2589940Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-21T15:05:55.2590200Z env:
+2026-10-21T15:05:55.2590510Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:55.2591030Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:55.2591400Z   CARGO_HOME: /Users/runner/.cargo
+2026-10-21T15:05:55.2591570Z   CARGO_INCREMENTAL: 0
+2026-10-21T15:05:55.2591710Z   CARGO_TERM_COLOR: always
+2026-10-21T15:05:55.2591860Z   toolchain: stable
+2026-10-21T15:05:55.2592030Z ##[endgroup]
+2026-10-21T15:05:55.3077180Z rustc 1.99.1 (58cf8f9c3 2026-10-13)
+2026-10-21T15:05:55.3077580Z binary: rustc
+2026-10-21T15:05:55.3077890Z commit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67
+2026-10-21T15:05:55.3078160Z commit-date: 2026-10-13
+2026-10-21T15:05:55.3078490Z host: aarch64-apple-darwin
+2026-10-21T15:05:55.3078720Z release: 1.99.1
+2026-10-21T15:05:55.3079660Z LLVM version: 23.1.1
+2026-10-21T15:05:55.3091360Z ##[end-action id=__dtolnay_rust-toolchain.__run_10;outcome=success;conclusion=success;duration_ms=55]
+2026-10-21T15:05:55.3144960Z ##[group]Run swift --version
+2026-10-21T15:05:55.3145190Z [36;1mswift --version[0m
+2026-10-21T15:05:55.3173670Z shell: /bin/bash -e {0}
+2026-10-21T15:05:55.3173810Z env:
+2026-10-21T15:05:55.3174090Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:55.3174600Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:55.3174960Z   CARGO_HOME: /Users/runner/.cargo
+2026-10-21T15:05:55.3175120Z   CARGO_INCREMENTAL: 0
+2026-10-21T15:05:55.3175260Z   CARGO_TERM_COLOR: always
+2026-10-21T15:05:55.3175410Z ##[endgroup]
+2026-10-21T15:05:57.3311020Z Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)
+2026-10-21T15:05:57.3311450Z Target: arm64-apple-macosx26.0
+2026-10-21T15:05:57.3352530Z swift-driver version: 1.148.6 
+2026-10-21T15:05:57.3376670Z ##[group]Run curl --fail --silent --show-error --location -o /tmp/kotlin.zip https://github.com/JetBrains/kotlin/releases/download/v2.0.21/kotlin-compiler-2.0.21.zip
+2026-10-21T15:05:57.3377530Z [36;1mcurl --fail --silent --show-error --location -o /tmp/kotlin.zip https://github.com/JetBrains/kotlin/releases/download/v2.0.21/kotlin-compiler-2.0.21.zip[0m
+2026-10-21T15:05:57.3378030Z [36;1msudo unzip -q /tmp/kotlin.zip -d /opt[0m
+2026-10-21T15:05:57.3378250Z [36;1mecho "/opt/kotlinc/bin" >> "$GITHUB_PATH"[0m
+2026-10-21T15:05:57.3407190Z shell: /bin/bash -e {0}
+2026-10-21T15:05:57.3407350Z env:
+2026-10-21T15:05:57.3407650Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:57.3408150Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:57.3408520Z   CARGO_HOME: /Users/runner/.cargo
+2026-10-21T15:05:57.3408680Z   CARGO_INCREMENTAL: 0
+2026-10-21T15:05:57.3408880Z   CARGO_TERM_COLOR: always
+2026-10-21T15:05:57.3409260Z ##[endgroup]
+2026-10-21T15:05:58.7245630Z ##[group]Run bun install --frozen-lockfile
+2026-10-21T15:05:58.7245890Z [36;1mbun install --frozen-lockfile[0m
+2026-10-21T15:05:58.7275190Z shell: /bin/bash -e {0}
+2026-10-21T15:05:58.7275380Z env:
+2026-10-21T15:05:58.7275670Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:58.7276210Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:58.7276600Z   CARGO_HOME: /Users/runner/.cargo
+2026-10-21T15:05:58.7276780Z   CARGO_INCREMENTAL: 0
+2026-10-21T15:05:58.7276930Z   CARGO_TERM_COLOR: always
+2026-10-21T15:05:58.7277080Z ##[endgroup]
+2026-10-21T15:05:58.7598700Z bun install v1.4.0 (34cbb9a40)
+2026-10-21T15:05:58.9205210Z 
+2026-10-21T15:05:58.9205720Z + @types/bun@1.4.2
+2026-10-21T15:05:58.9206020Z + typescript@7.0.2
+2026-10-21T15:05:58.9206180Z + yaml@2.9.1
+2026-10-21T15:05:58.9206330Z 
+2026-10-21T15:05:58.9206690Z 7 packages installed [162.00ms]
+2026-10-21T15:05:58.9247810Z ##[group]Run bun run sync:plugin -- --check
+2026-10-21T15:05:58.9248490Z [36;1mbun run sync:plugin -- --check[0m
+2026-10-21T15:05:58.9277190Z shell: /bin/bash -e {0}
+2026-10-21T15:05:58.9277350Z env:
+2026-10-21T15:05:58.9277620Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:58.9278110Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:58.9278480Z   CARGO_HOME: /Users/runner/.cargo
+2026-10-21T15:05:58.9278640Z   CARGO_INCREMENTAL: 0
+2026-10-21T15:05:58.9278800Z   CARGO_TERM_COLOR: always
+2026-10-21T15:05:58.9285700Z ##[endgroup]
+2026-10-21T15:05:58.9599370Z $ bun development/tools/sync-plugin.ts --check
+2026-10-21T15:05:58.9792730Z ##[group]Run artifact_cache_seed="$(mktemp -d)"
+2026-10-21T15:05:58.9793010Z [36;1martifact_cache_seed="$(mktemp -d)"[0m
+2026-10-21T15:05:58.9793240Z [36;1mtrap 'rm -rf "$artifact_cache_seed"' EXIT[0m
+2026-10-21T15:05:58.9793650Z [36;1mnpm install --prefix "$artifact_cache_seed" --ignore-scripts --no-audit --no-fund typescript@7.0.2[0m
+2026-10-21T15:05:58.9819160Z shell: /bin/bash -e {0}
+2026-10-21T15:05:58.9819320Z env:
+2026-10-21T15:05:58.9819600Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:58.9820170Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:05:58.9820530Z   CARGO_HOME: /Users/runner/.cargo
+2026-10-21T15:05:58.9820710Z   CARGO_INCREMENTAL: 0
+2026-10-21T15:05:58.9820890Z   CARGO_TERM_COLOR: always
+2026-10-21T15:05:58.9821040Z ##[endgroup]
+2026-10-21T15:06:00.1729680Z 
+2026-10-21T15:06:00.1730160Z added 2 packages in 1s
+2026-10-21T15:06:00.2632970Z ##[group]Run bun run check
+2026-10-21T15:06:00.2633200Z [36;1mbun run check[0m
+2026-10-21T15:06:00.2662250Z shell: /bin/bash -e {0}
+2026-10-21T15:06:00.2662440Z env:
+2026-10-21T15:06:00.2662730Z   JAVA_HOME: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:06:00.2663250Z   JAVA_HOME_21_ARM64: /Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.12-101.0/arm64/Contents/Home
+2026-10-21T15:06:00.2663620Z   CARGO_HOME: /Users/runner/.cargo
+2026-10-21T15:06:00.2663790Z   CARGO_INCREMENTAL: 0
+2026-10-21T15:06:00.2663970Z   CARGO_TERM_COLOR: always
+2026-10-21T15:06:00.2664120Z   BOXBOX_REQUIRE_PARSERS: 1
+2026-10-21T15:06:00.2664260Z ##[endgroup]
+2026-10-21T15:06:00.3100020Z $ python3 docs/development/issue-library/validate.py && bun development/tools/pattern-catalog.ts check && bun development/tools/sync-product.ts --check && bun run check:layout && bun test --timeout 60000 && bunx tsc --noEmit && bash -n development/install.sh
+2026-10-21T15:06:00.4649530Z {
+2026-10-21T15:06:00.4649910Z   "status": "passed",
+2026-10-21T15:06:00.4650810Z   "method": "Dependency-free Python checker for the documented schema subset; unknown keywords are rejected. Not a full Draft 2020-12 validator.",
+2026-10-21T15:06:00.4651860Z   "records": 13,
+2026-10-21T15:06:00.4652040Z   "checkedValues": 1580,
+2026-10-21T15:06:00.4652300Z   "existingReferenceOccurrences": 258,
+2026-10-21T15:06:00.4652520Z   "checks": [
+2026-10-21T15:06:00.4652700Z     "schema subset",
+2026-10-21T15:06:00.4653000Z     "template fields and enum drift",
+2026-10-21T15:06:00.4653350Z     "unique IDs including canonical/draft collisions",
+2026-10-21T15:06:00.4653620Z     "filename agreement",
+2026-10-21T15:06:00.4653940Z     "history sequencing and machine-readable failures",
+2026-10-21T15:06:00.4654270Z     "existing repository references",
+2026-10-21T15:06:00.4654540Z     "observed-result evidence",
+2026-10-21T15:06:00.4654820Z     "resolved action/verification state",
+2026-10-21T15:06:00.4655270Z     "README index and links when validating the library"
+2026-10-21T15:06:00.4655550Z   ],
+2026-10-21T15:06:00.4655900Z   "excluded": "templates/issue.json is instructional and is not a factual record."
+2026-10-21T15:06:00.4656250Z }
+2026-10-21T15:06:00.4849020Z {"families":9,"authority":"advisory-only"}
+2026-10-21T15:06:00.5177080Z $ bun development/tools/check-layout.ts
+2026-10-21T15:06:00.5675700Z product dependencies: PASS
+2026-10-21T15:06:00.5733500Z bun test v1.4.0 (34cbb9a40)
+2026-10-21T15:06:00.5786740Z 
+2026-10-21T15:06:00.5796520Z ##[group]test/plugin-contract.test.ts:
+2026-10-21T15:06:00.5918970Z (pass) plugin distribution contract > package, Claude and Codex manifests and both marketplaces share name and version [0.26ms]
+2026-10-21T15:06:00.5919880Z (pass) plugin distribution contract > plugin components live inside the plugin folder [0.14ms]
+2026-10-21T15:06:00.5921730Z (pass) plugin distribution contract > the development skill lists every language; the shipped plugin introduces only the first public scope [0.17ms]
+2026-10-21T15:06:00.5932280Z (pass) plugin distribution contract > the plugin folder does not drift from the single source [1.01ms]
+2026-10-21T15:06:00.5933470Z (pass) plugin distribution contract > hooks call only the shim inside the plugin, and the shim requires an explicit local engine [0.17ms]
+2026-10-21T15:06:00.5935680Z (pass) plugin distribution contract > the plugin folder stays within the directory submission limits [0.20ms]
+2026-10-21T15:06:00.5936540Z (pass) plugin distribution contract > shipped docs never instruct running a nonexistent repository test [0.04ms]
+2026-10-21T15:06:00.5937320Z (pass) plugin distribution contract > every table-kind axis has a human-readable note [0.07ms]
+2026-10-21T15:06:00.5937640Z 
+2026-10-21T15:06:00.5937950Z ##[endgroup]
+2026-10-21T15:06:00.5938070Z 
+2026-10-21T15:06:00.5938290Z ##[group]test/corpus-signatures.test.ts:
+2026-10-21T15:06:00.5957860Z (pass) pattern signature > axis ids lose their column, fold digit runs and generalize callees [0.06ms]
+2026-10-21T15:06:00.5959180Z (pass) pattern signature > the identity key is language, context, kind, ordered axes and depth — never the result state [0.04ms]
+2026-10-21T15:06:00.5981800Z (pass) pattern signature > a table keeps its key before and after it is aligned [2.44ms]
+2026-10-21T15:06:00.5982820Z (pass) pattern signature > depth counts four columns per level and a tab as four columns [0.02ms]
+2026-10-21T15:06:00.5986220Z (pass) pattern signature > two python assignment tables of the same shape collapse into one type, depth apart [0.43ms]
+2026-10-21T15:06:00.5988060Z (pass) pattern signature > different callees and arities are different types even when the row text looks alike [0.18ms]
+2026-10-21T15:06:00.5988410Z 
+2026-10-21T15:06:00.5988640Z ##[endgroup]
+2026-10-21T15:06:00.5988720Z 
+2026-10-21T15:06:00.5988890Z ##[group]test/node-artifact.test.ts:
+2026-10-21T15:06:02.7436430Z (pass) Node-only local package artifact > the isolated installed tarball fixes and rechecks TypeScript/Python without Bun or the repository [2143.15ms]
+2026-10-21T15:06:02.7436890Z 
+2026-10-21T15:06:02.7437170Z ##[endgroup]
+2026-10-21T15:06:02.7437250Z 
+2026-10-21T15:06:02.7437430Z ##[group]test/parse-check.test.ts:
+2026-10-21T15:06:03.6941840Z (pass) compareParse > python: a parse-changing edit is detected and a whitespace edit is not [100.58ms]
+2026-10-21T15:06:03.7316250Z (pass) compareParse > go: a parse-changing edit is detected and a whitespace edit is not [37.45ms]
+2026-10-21T15:06:03.8571980Z (pass) compareParse > javascript: a parse-changing edit is detected and a whitespace edit is not [125.60ms]
+2026-10-21T15:06:03.9660510Z (pass) compareParse > c: a parse-changing edit is detected and a whitespace edit is not [108.80ms]
+2026-10-21T15:06:04.0599510Z (pass) compareParse > cpp: a parse-changing edit is detected and a whitespace edit is not [93.89ms]
+2026-10-21T15:06:05.1493720Z (pass) compareParse > java: a parse-changing edit is detected and a whitespace edit is not [1089.33ms]
+2026-10-21T15:06:05.3022500Z (pass) compareParse > rust: a parse-changing edit is detected and a whitespace edit is not [152.96ms]
+2026-10-21T15:06:05.3649050Z (pass) syntaxDiagnostics > parses one input even when no comparison edit exists [62.64ms]
+2026-10-21T15:06:05.4719900Z (pass) syntacticDiagnostics (TypeScript) > reports parse errors by line and code, and none for valid code [107.02ms]
+2026-10-21T15:06:05.4720300Z 
+2026-10-21T15:06:05.4720620Z ##[endgroup]
+2026-10-21T15:06:05.4720730Z 
+2026-10-21T15:06:05.4720960Z ##[group]test/authoring-modes.test.ts:
+2026-10-21T15:06:05.5919920Z (pass) matrix authoring and alignment modes > new-file guidance includes only scoped proved rules with their exact contracts and counterexamples [117.08ms]
+2026-10-21T15:06:05.7727300Z (pass) matrix authoring and alignment modes > authoring guidance is read-only advice even for empty or invalid existing source [180.73ms]
+2026-10-21T15:06:06.1153800Z (pass) matrix authoring and alignment modes > authoring scope and project rejection override the shipped rule without falling back [342.62ms]
+2026-10-21T15:06:06.4543780Z (pass) matrix authoring and alignment modes > new-file guidance rejects unsafe paths, unsupported formats and disabled languages [338.99ms]
+2026-10-21T15:06:06.7834340Z (pass) matrix authoring and alignment modes > only authoring GUIDE accepts nonexistent files; mode and language errors stay explicit [329.02ms]
+2026-10-21T15:06:07.5099120Z (pass) matrix authoring and alignment modes > align previews and applies approved whitespace changes without executing a configured formatter [726.50ms]
+2026-10-21T15:06:07.6253690Z (pass) matrix authoring and alignment modes > align refuses a file without applicable groups rather than reporting completed authoring [115.47ms]
+2026-10-21T15:06:07.6254220Z 
+2026-10-21T15:06:07.6254520Z ##[endgroup]
+2026-10-21T15:06:07.6254620Z 
+2026-10-21T15:06:07.6254830Z ##[group]test/structured-align.test.ts:
+2026-10-21T15:06:07.6393280Z (pass) structured alignment > aligns json fixtures exactly and idempotently [0.92ms]
+2026-10-21T15:06:07.6466470Z (pass) structured alignment > aligns yaml fixtures exactly and idempotently [7.33ms]
+2026-10-21T15:06:07.6467850Z (pass) structured alignment > preserves JSON escapes, colons in strings, duplicate keys, CRLF, and nested ownership [0.16ms]
+2026-10-21T15:06:07.6515410Z (pass) structured alignment > comments and unsupported YAML constructs break groups without changing their bytes [4.10ms]
+2026-10-21T15:06:07.6519860Z (pass) structured alignment > uses YAML scalar ranges and preserves quoted punctuation and comments [1.10ms]
+2026-10-21T15:06:07.6522720Z (pass) structured alignment > rejects duplicate YAML keys and non-1.2 directives while preserving JSON duplicates [0.26ms]
+2026-10-21T15:06:07.6558610Z (pass) structured alignment > refuses ambiguous tagged, anchored, and multiline YAML flow maps without rewriting [2.57ms]
+2026-10-21T15:06:07.6559460Z (pass) structured alignment > rejects unresolved YAML aliases as syntax errors [0.20ms]
+2026-10-21T15:06:07.6560170Z (pass) structured alignment > accepts existing and cyclic aliases without expanding their graphs [0.57ms]
+2026-10-21T15:06:07.6560780Z (pass) structured alignment > invalid documents are refused and stay byte-identical [0.20ms]
+2026-10-21T15:06:07.6562220Z (pass) structured alignment > preservation rejects content, indentation, and unverified whitespace changes [0.37ms]
+2026-10-21T15:06:07.6562670Z 
+2026-10-21T15:06:07.6562990Z ##[endgroup]
+2026-10-21T15:06:07.6563170Z 
+2026-10-21T15:06:07.6563430Z ##[group]test/preservation.test.ts:
+2026-10-21T15:06:07.6572930Z (pass) changedLines > accepts whitespace added or removed between tokens [0.13ms]
+2026-10-21T15:06:07.6573550Z (pass) changedLines > flags whitespace that joins or splits tokens [0.04ms]
+2026-10-21T15:06:07.6574400Z (pass) changedLines > flags any change inside strings and comments [0.11ms]
+2026-10-21T15:06:07.6575190Z (pass) changedLines > whitespace at the end of a line comment may go; at the end of a continuing string it may not [0.05ms]
+2026-10-21T15:06:07.6575980Z (pass) changedLines > flags indentation changes and line count changes [0.04ms]
+2026-10-21T15:06:07.6577740Z (pass) engine refusal > a table whose alignment would change a string is refused, not applied [0.24ms]
+2026-10-21T15:06:07.6586050Z (pass) preservesTokens (TypeScript scanner) > accepts whitespace between tokens [0.81ms]
+2026-10-21T15:06:07.6592950Z (pass) preservesTokens (TypeScript scanner) > flags changes inside templates, regular expressions and comments, and joined tokens [0.66ms]
+2026-10-21T15:06:07.6593520Z 
+2026-10-21T15:06:07.6593870Z ##[endgroup]
+2026-10-21T15:06:07.6594090Z 
+2026-10-21T15:06:07.6594370Z ##[group]test/go-align.test.ts:
+2026-10-21T15:06:07.6726320Z (pass) go: alignment changes only whitespace between tokens and refuses nothing [4.82ms]
+2026-10-21T15:06:07.6886290Z (pass) go: the aligned table and trap files parse like their sources [16.00ms]
+2026-10-21T15:06:07.6904850Z (pass) go: alignment is idempotent — running twice gives the same result [1.85ms]
+2026-10-21T15:06:07.6915100Z (pass) go: matches the golden aligned file [1.07ms]
+2026-10-21T15:06:07.6919020Z (pass) go: the already aligned golden has 0 changes [0.40ms]
+2026-10-21T15:06:07.6921830Z (pass) go: the string/comment trap file has 0 changes [0.27ms]
+2026-10-21T15:06:07.6933150Z (pass) go: 2-row groups are not aligned [1.11ms]
+2026-10-21T15:06:07.6934570Z (pass) go: a struct field type column is not padded when it is the row's last cell [0.15ms]
+2026-10-21T15:06:07.6936440Z (pass) go: the tag column aligns to the longest tag value including backticks [0.16ms]
+2026-10-21T15:06:07.6937280Z (pass) go: map rows attach the colon with zero gap and do not read string key contents as structure [0.09ms]
+2026-10-21T15:06:07.6938300Z (pass) go: bundle rows align inner cell columns and the closing brace shares the cell width [0.10ms]
+2026-10-21T15:06:07.6939100Z (pass) go: the profile refuses bundle rows with keys, nesting, calls, a single cell or func [0.08ms]
+2026-10-21T15:06:07.6940360Z (pass) go: the profile refuses declaration, control-flow, opening-bracket and := rows [0.06ms]
+2026-10-21T15:06:07.7506250Z (pass) go: the CLI only reports by default and writes only with --enable-go [56.46ms]
+2026-10-21T15:06:07.7506680Z 
+2026-10-21T15:06:07.7507030Z ##[endgroup]
+2026-10-21T15:06:07.7507150Z 
+2026-10-21T15:06:07.7507360Z ##[group]test/examples.test.ts:
+2026-10-21T15:06:07.7524570Z (pass) example records > a mismatched content hash, or missing asserts on a non-taste example, is an error [0.54ms]
+2026-10-21T15:06:08.1263590Z (pass) example checks — meaning per verdict > after-better: before has A12, after does not, and after is a fixed point [373.82ms]
+2026-10-21T15:06:08.3143810Z (pass) example checks — meaning per verdict > fixedPoint: an after with a table still pending alignment fails [188.01ms]
+2026-10-21T15:06:08.7164550Z (pass) example checks — meaning per verdict > bad: fails when the engine's fix of before equals the forbidden after [402.05ms]
+2026-10-21T15:06:08.7165340Z (pass) example checks — meaning per verdict > taste and unapproved examples are not checked [0.10ms]
+2026-10-21T15:06:08.7166520Z (pass) decision records > a section hash changes only when that section changes [0.23ms]
+2026-10-21T15:06:08.7169370Z (pass) decision records > reports that re-approval is needed when the referenced section changes [0.23ms]
+2026-10-21T15:06:08.7174250Z (pass) picking GUIDE examples > only approved after-better, by shared pattern count → recency → id, up to 3 [0.47ms]
+2026-10-21T15:06:08.7174890Z (pass) approval section hashes are identical across LF and CRLF checkouts [0.06ms]
+2026-10-21T15:06:09.0079610Z (pass) preset DB > every shipped example passes per its verdict, and each decision's document hash matches the current document [290.38ms]
+2026-10-21T15:06:09.0080030Z 
+2026-10-21T15:06:09.0080300Z ##[endgroup]
+2026-10-21T15:06:09.0080390Z 
+2026-10-21T15:06:09.0080570Z ##[group]test/formatter-process.test.ts:
+2026-10-21T15:06:09.0104390Z (pass) formatter process execution > resolves the actual runtime through PATH and explicit paths [0.43ms]
+2026-10-21T15:06:09.0107900Z (pass) formatter process execution > detects replacement of a resolved formatter [0.38ms]
+2026-10-21T15:06:09.0208530Z (pass) formatter process execution > passes spaces and shell metacharacters as literal arguments [10.03ms]
+2026-10-21T15:06:09.0323120Z (pass) formatter process execution > bounds each output stream and retains nonzero exit status [11.42ms]
+2026-10-21T15:06:11.1535410Z (pass) formatter process execution > a timeout kills descendants before a delayed write can reach the working file [2120.76ms]
+2026-10-21T15:06:11.1569860Z (pass) formatter process execution > spawn errors reject rather than reporting formatter success [3.56ms]
+2026-10-21T15:06:11.1571830Z 
+2026-10-21T15:06:11.1572960Z ##[endgroup]
+2026-10-21T15:06:11.1573450Z 
+2026-10-21T15:06:11.1576860Z ##[group]test/guarded-run.test.ts:
+2026-10-21T15:06:11.2100900Z {"schemaVersion":1,"tool":"boxbox","command":"run","runId":"8c9e8dc1-f065-42fd-a3f6-319e2e890ee4","root":"/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/boxbox-guard-5tmReX","engineVersion":"test","runtime":{"node":"26.3.0","bunVersion":"1.4.0"},"startedAt":"2026-10-21T15:06:11.165Z","finishedAt":"2026-10-21T15:06:11.208Z","state":"PASS","childExitCode":0,"preflight":"PASS","validation":"PASS","errorCode":null,"before":{},"after":{"one.py":"98752ee28d5484bdc2814fb70adb6a0b2fb31f6a9b8ee7ae81fd2fc9cf300b3b"},"afterSnapshotComplete":true,"ignoredSymlinks":[],"changed":["one.py"],"checked":[{"file":"one.py","result":{"file":"one.py","language":"python","mode":"check","summary":{"groups":0,"misaligned":0,"edits":0,"refused":0,"suggested":0},"groups":[],"parse":{"status":"not-run","tool":"test"}}}],"unsupported":[],"deleted":[],"excludedDirectories":[".git",".boxbox","node_modules",".venv","venv","__pycache__","dist","build"],"symlinkDirectoriesFollowed":false,"nativeHookVerified":false,"automaticFixPerformed":false}
+2026-10-21T15:06:11.2105430Z (pass) distinguishes a successful check, no changes and not storing arguments [47.39ms]
+2026-10-21T15:06:11.2110340Z boxbox run: TOOL_ERROR; run=a708220b-d6d8-460f-ba77-f3d46fb6a885; checked=0; changed=0
+2026-10-21T15:06:11.2111550Z receipt: /var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/boxbox-guard-e9u0Fu/.boxbox/runs/a708220b-d6d8-460f-ba77-f3d46fb6a885.json
+2026-10-21T15:06:11.2112490Z (pass) a preflight failure ends before running and is recorded [1.18ms]
+2026-10-21T15:06:11.2414190Z {"schemaVersion":1,"tool":"boxbox","command":"run","runId":"52472f8e-e929-4e9c-8ebe-b467a895e962","root":"/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/boxbox-guard-sGBh3S","engineVersion":"test","runtime":{"node":"26.3.0","bunVersion":"1.4.0"},"startedAt":"2026-10-21T15:06:11.211Z","finishedAt":"2026-10-21T15:06:11.240Z","state":"PASS","childExitCode":0,"preflight":"PASS","validation":"PASS","errorCode":null,"before":{},"after":{"c.yml":"b701870861d6ff0565b7078ee799ae7362323298a814d7af4d2dce6cb8d8b674","a.json":"44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a","b.yaml":"b701870861d6ff0565b7078ee799ae7362323298a814d7af4d2dce6cb8d8b674"},"afterSnapshotComplete":true,"ignoredSymlinks":[],"changed":["a.json","b.yaml","c.yml"],"checked":[{"file":"a.json","result":{"file":"a.json","language":"json","mode":"check","summary":{"groups":0,"misaligned":0,"edits":0,"refused":0,"suggested":0},"groups":[],"parse":{"status":"not-run","tool":"test"}}},{"file":"b.yaml","result":{"file":"b.yaml","language":"yaml","mode":"check","summary":{"groups":0,"misaligned":0,"edits":0,"refused":0,"suggested":0},"groups":[],"parse":{"status":"not-run","tool":"test"}}},{"file":"c.yml","result":{"file":"c.yml","language":"yaml","mode":"check","summary":{"groups":0,"misaligned":0,"edits":0,"refused":0,"suggested":0},"groups":[],"parse":{"status":"not-run","tool":"test"}}}],"unsupported":[],"deleted":[],"excludedDirectories":[".git",".boxbox","node_modules",".venv","venv","__pycache__","dist","build"],"symlinkDirectoriesFollowed":false,"nativeHookVerified":false,"automaticFixPerformed":false}
+2026-10-21T15:06:11.2419680Z (pass) structured document changes reach inspection and are retained in run evidence [29.84ms]
+2026-10-21T15:06:11.2620210Z boxbox run: CHILD_FAILED; run=66104592-be1f-498d-bd2b-dcee4dadec00; checked=0; changed=0
+2026-10-21T15:06:11.2621160Z receipt: /var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/boxbox-guard-F2ZpHr/.boxbox/runs/66104592-be1f-498d-bd2b-dcee4dadec00.json
+2026-10-21T15:06:11.2801490Z boxbox run: UNSUPPORTED; run=2cf5e5be-df61-4309-8a83-396292ec15a6; checked=0; changed=1
+2026-10-21T15:06:11.2802280Z receipt: /var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/boxbox-guard-zz5TYc/.boxbox/runs/2cf5e5be-df61-4309-8a83-396292ec15a6.json
+2026-10-21T15:06:11.3003840Z boxbox run: NO_CHANGES; run=6d46ac74-f98d-40f2-9575-f0ca071560a8; checked=0; changed=0
+2026-10-21T15:06:11.3004800Z receipt: /var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/boxbox-guard-ccI5tK/.boxbox/runs/6d46ac74-f98d-40f2-9575-f0ca071560a8.json
+2026-10-21T15:06:11.3010220Z (pass) child failure, unsupported and unchanged are not PASS [59.98ms]
+2026-10-21T15:06:11.3021580Z boxbox run: TOOL_ERROR; run=2d25d065-8e57-436c-a128-bdd7b6267bcf; checked=0; changed=0
+2026-10-21T15:06:11.3022560Z receipt: /var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/boxbox-guard-TlZPX5/.boxbox/runs/2d25d065-8e57-436c-a128-bdd7b6267bcf.json
+2026-10-21T15:06:11.3024010Z (pass) check errors and non-runnable commands leave an end record [1.39ms]
+2026-10-21T15:06:11.3227870Z boxbox run: TOOL_ERROR; run=efc06911-90db-480f-b9ea-9a94856a4d9c; checked=0; changed=1
+2026-10-21T15:06:11.3228880Z receipt: /var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/boxbox-guard-iXexiX/.boxbox/runs/efc06911-90db-480f-b9ea-9a94856a4d9c.json
+2026-10-21T15:06:11.3230740Z (pass) a changed symbolic code file is not approved by the check [20.69ms]
+2026-10-21T15:06:11.3435090Z boxbox run: NO_CHANGES; run=0ac69dc9-7020-4126-aa3a-7dfb896446d7; checked=0; changed=0
+2026-10-21T15:06:11.3436460Z receipt: /var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/boxbox-guard-j8a5jl/.boxbox/runs/0ac69dc9-7020-4126-aa3a-7dfb896446d7.json
+2026-10-21T15:06:11.3478670Z (pass) status marks changes made outside a run as STALE [24.75ms]
+2026-10-21T15:06:11.3482770Z (pass) status reads only bounded headers before loading the latest run [0.40ms]
+2026-10-21T15:06:11.3727380Z (pass) snapshot streams source files larger than the former size cap [24.39ms]
+2026-10-21T15:06:11.3731280Z (pass) macOS status lock canonicalizes aliases and ignores TMPDIR [0.42ms]
+2026-10-21T15:06:11.3794840Z (pass) direct status rejects a concurrent status process [6.36ms]
+2026-10-21T15:06:11.4882960Z lockf: /private/tmp/boxbox-locks-501/999df65261c884298c2849e36a1b2cea/status.advisory.lock: already locked
+2026-10-21T15:06:13.4455970Z (pass) macOS status uses the operating system advisory lock [2065.92ms]
+2026-10-21T15:06:13.6086240Z (pass) macOS production status enters the uncontended lockf child [163.08ms]
+2026-10-21T15:06:13.6186360Z (pass) status lock does not steal a fresh partial owner and recovers an old malformed owner [5.39ms]
+2026-10-21T15:06:13.6287640Z (pass) status rejects a symbolic .boxbox directory before reading receipts [0.33ms]
+2026-10-21T15:06:13.6492070Z {"schemaVersion":1,"tool":"boxbox","command":"run","runId":"54d128f2-40aa-4e99-91c0-718f7ae53f4e","root":"/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/boxbox-guard-1u479D","engineVersion":"test","runtime":{"node":"26.3.0","bunVersion":"1.4.0"},"startedAt":"2026-10-21T15:06:13.614Z","finishedAt":"2026-10-21T15:06:13.644Z","state":"FAIL","childExitCode":0,"preflight":"PASS","validation":"FAIL","errorCode":null,"before":{},"after":{"bad.py":"1f206b11c23e28cc250ded7fc0098d3823a8467a54340f1ac4e535cb8544493f"},"afterSnapshotComplete":true,"ignoredSymlinks":[],"changed":["bad.py"],"checked":[{"file":"bad.py","result":{"file":"bad.py","language":"python","mode":"check","summary":{"groups":0,"misaligned":1,"edits":0,"refused":0,"suggested":0},"groups":[],"parse":{"status":"not-run","tool":"test"}}}],"unsupported":[],"deleted":[],"excludedDirectories":[".git",".boxbox","node_modules",".venv","venv","__pycache__","dist","build"],"symlinkDirectoriesFollowed":false,"nativeHookVerified":false,"automaticFixPerformed":false}
+2026-10-21T15:06:13.6790170Z (pass) distinguishes check failures from check exceptions and preserves the child result [60.21ms]
+2026-10-21T15:06:13.6794070Z {"schemaVersion":1,"tool":"boxbox","command":"run","runId":"6a5f8668-e9f3-442f-a598-832f4222ca97","root":"/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/boxbox-guard-Drip2D","engineVersion":"test","runtime":{"node":"26.3.0","bunVersion":"1.4.0"},"startedAt":"2026-10-21T15:06:13.644Z","finishedAt":"2026-10-21T15:06:13.673Z","state":"TOOL_ERROR","childExitCode":0,"preflight":"PASS","validation":"NOT_RUN","errorCode":"GUARD_ERROR","before":{},"after":{"bad.py":"1f206b11c23e28cc250ded7fc0098d3823a8467a54340f1ac4e535cb8544493f"},"afterSnapshotComplete":true,"ignoredSymlinks":[],"changed":["bad.py"],"checked":[],"unsupported":[],"deleted":[],"excludedDirectories":[".git",".boxbox","node_modules",".venv","venv","__pycache__","dist","build"],"symlinkDirectoriesFollowed":false,"nativeHookVerified":false,"automaticFixPerformed":false}
+2026-10-21T15:06:13.6826050Z 
+2026-10-21T15:06:13.6826660Z ##[endgroup]
+2026-10-21T15:06:13.6826800Z 
+2026-10-21T15:06:13.6829430Z ##[group]test/install-lifecycle.test.ts:
+2026-10-21T15:06:13.8074550Z (pass) install.sh lifecycle > links the same skill source into Claude, ZCode and Codex and survives a rerun [132.29ms]
+2026-10-21T15:06:14.1915560Z (pass) install.sh lifecycle > copy install creates an independent copy and uninstall removes only installed targets [384.06ms]
+2026-10-21T15:06:14.2016170Z (pass) install.sh lifecycle > never overwrites a regular file owned by the user [10.16ms]
+2026-10-21T15:06:14.2016460Z 
+2026-10-21T15:06:14.2016730Z ##[endgroup]
+2026-10-21T15:06:14.2016810Z 
+2026-10-21T15:06:14.2016980Z ##[group]test/corpus-triage.test.ts:
+2026-10-21T15:06:14.2049200Z (pass) corpus AI pre-verdicts > picks and validates only verdict lines and drops unknown ranks, verdicts and flags [0.17ms]
+2026-10-21T15:06:14.2050550Z (pass) corpus AI pre-verdicts > the summary shows AI suggestions separately from verdicts, and the last suggestion wins for the same signature [0.12ms]
+2026-10-21T15:06:14.2050970Z 
+2026-10-21T15:06:14.2051190Z ##[endgroup]
+2026-10-21T15:06:14.2051280Z 
+2026-10-21T15:06:14.2051480Z ##[group]test/cpp-align.test.ts:
+2026-10-21T15:06:14.2313240Z (pass) cpp: alignment changes only whitespace between tokens and refuses nothing [2.05ms]
+2026-10-21T15:06:15.4334830Z (pass) cpp: the aligned table and trap files parse like their sources [1202.08ms]
+2026-10-21T15:06:15.4347350Z (pass) cpp: alignment is idempotent — running twice gives the same result [1.25ms]
+2026-10-21T15:06:15.4366300Z (pass) cpp: matches the golden aligned file [0.87ms]
+2026-10-21T15:06:15.4366930Z (pass) cpp: the already aligned golden has 0 changes [0.36ms]
+2026-10-21T15:06:15.4367450Z (pass) cpp: the string/comment trap file has 0 changes [0.06ms]
+2026-10-21T15:06:15.4367920Z (pass) cpp: 2-row groups are not aligned [0.73ms]
+2026-10-21T15:06:15.4368750Z (pass) cpp profile specific properties > preserves the std::vector<int> type cell and aligns the name column at minimum width [0.19ms]
+2026-10-21T15:06:15.4369720Z (pass) cpp profile specific properties > lines with an open R"( raw string and their contents are not tables [0.06ms]
+2026-10-21T15:06:15.4371830Z (pass) cpp profile specific properties > refuses parentheses in type cells (function pointers) and function-like macros, accepts object-like macros [0.05ms]
+2026-10-21T15:06:15.4372750Z (pass) cpp profile specific properties > does not read = ; inside strings as structure and keeps them in the value cell [0.09ms]
+2026-10-21T15:06:15.4373480Z (pass) cpp profile specific properties > aligns bundle-row inner cell columns at minimum width [0.09ms]
+2026-10-21T15:06:15.4374270Z (pass) cpp profile specific properties > refuses bundle rows with nesting, assignment or indexing, and single or empty cells [0.07ms]
+2026-10-21T15:06:15.4394630Z (pass) cpp profile specific properties > the 2-row groups in tables.cpp are a field-table pair and a bundle-row pair [2.17ms]
+2026-10-21T15:06:15.4395030Z 
+2026-10-21T15:06:15.4395280Z ##[endgroup]
+2026-10-21T15:06:15.4395360Z 
+2026-10-21T15:06:15.4395550Z ##[group]test/recommended-preset.test.ts:
+2026-10-21T15:06:15.4429200Z (pass) the approved recommended preset > ships exactly the two human-approved rules with matching dated, versioned proof records [0.87ms]
+2026-10-21T15:06:15.4463180Z (pass) the approved recommended preset > a prepared public package retains complete proofs and refuses changed approval documents [3.35ms]
+2026-10-21T15:06:15.4466780Z (pass) the approved recommended preset > both shipped approval proofs survive a CRLF document checkout [0.43ms]
+2026-10-21T15:06:15.4469030Z (pass) the approved recommended preset > approval lookup remains limited to the exact language, scope, container and axes [0.22ms]
+2026-10-21T15:06:16.7982040Z (pass) the approved recommended preset > the approved TypeScript example and two-row declaration exception use real safe writes and reach a token-preserving fixed point [1351.15ms]
+2026-10-21T15:06:16.9941950Z (pass) the approved recommended preset > using declarations never inherit the direct-call approval [196.00ms]
+2026-10-21T15:06:17.2112390Z (pass) the approved recommended preset > await using declarations never inherit the direct-call approval [215.72ms]
+2026-10-21T15:06:17.4383430Z (pass) the approved recommended preset > constructor initializers never inherit the direct-call approval [227.62ms]
+2026-10-21T15:06:17.6473270Z (pass) the approved recommended preset > awaited initializers never inherit the direct-call approval [209.77ms]
+2026-10-21T15:06:17.9983970Z (pass) the approved recommended preset > the approved Python example remains safe at its existing indentation [351.02ms]
+2026-10-21T15:06:18.0736940Z (pass) the approved recommended preset > the excluded single TypeScript row and two Python rows stay unchanged [75.28ms]
+2026-10-21T15:06:18.0743640Z (pass) the approved recommended preset > attribute assignment tables do not inherit the simple-name approval [0.44ms]
+2026-10-21T15:06:18.4017600Z (pass) the approved recommended preset > chained assignments do not inherit the single-name approval [327.64ms]
+2026-10-21T15:06:18.4018690Z (pass) the approved recommended preset > compound assignments and differing indentation never become approved Python tables [0.11ms]
+2026-10-21T15:06:18.4019190Z 
+2026-10-21T15:06:18.4019510Z ##[endgroup]
+2026-10-21T15:06:18.4019620Z 
+2026-10-21T15:06:18.4019820Z ##[group]test/corpus-evidence.test.ts:
+2026-10-21T15:06:18.4058510Z (pass) raw corpus evidence > preserves the lookup key, diagnostic signature, provenance and whole-file hash losslessly [3.55ms]
+2026-10-21T15:06:18.4059390Z (pass) raw corpus evidence > IDs are stable without time and change when the location or provenance changes [0.09ms]
+2026-10-21T15:06:18.4059730Z 
+2026-10-21T15:06:18.4060000Z ##[endgroup]
+2026-10-21T15:06:18.4060080Z 
+2026-10-21T15:06:18.4060290Z ##[group]test/strip-stray-padding.test.ts:
+2026-10-21T15:06:18.4069410Z (pass) out-of-table padding (A12) > a statement line with spaces only before the trailing `;` and no other alignment spaces is a target [0.17ms]
+2026-10-21T15:06:18.4070530Z (pass) out-of-table padding (A12) > lines that form a `;` column with a neighbor, or are aligned by hand into several columns, are left alone [0.04ms]
+2026-10-21T15:06:18.4071630Z (pass) out-of-table padding (A12) > comments and import lines are not targets [0.01ms]
+2026-10-21T15:06:18.4072410Z (pass) out-of-table padding (A12) > cleanup changes only target lines, judged against the original body [0.05ms]
+2026-10-21T15:06:18.4072770Z 
+2026-10-21T15:06:18.4073020Z ##[endgroup]
+2026-10-21T15:06:18.4073110Z 
+2026-10-21T15:06:18.4073300Z ##[group]test/typescript-layout-policy.test.ts:
+2026-10-21T15:06:18.4077530Z (pass) TypeScript layout policy data > retains the complete visible kind contract and normalized axis notes [0.09ms]
+2026-10-21T15:06:18.4078440Z (pass) TypeScript layout policy data > keeps the declaration row-floor behavior and fallback [0.07ms]
+2026-10-21T15:06:18.4087500Z (pass) TypeScript layout policy data > rejects incompatible schemas, unknown fields, operations, axes and classifications [0.79ms]
+2026-10-21T15:06:18.4209780Z (pass) TypeScript layout policy data > loads from an isolated development-skill copy through the same relative rules path [12.26ms]
+2026-10-21T15:06:18.4255120Z 
+2026-10-21T15:06:18.4255790Z ##[endgroup]
+2026-10-21T15:06:18.4256080Z 
+2026-10-21T15:06:18.4256360Z ##[group]test/corpus-judge.test.ts:
+2026-10-21T15:06:18.4257030Z (pass) corpus judging > type slugs are rank-padded, sanitized and unique per signature [0.13ms]
+2026-10-21T15:06:18.4261570Z (pass) corpus judging > the last verdict record for a signature wins and blank lines are skipped [0.09ms]
+2026-10-21T15:06:18.4262400Z (pass) corpus judging > the summary marks approved, judged and unjudged types by rank [0.18ms]
+2026-10-21T15:06:18.4262770Z 
+2026-10-21T15:06:18.4263080Z ##[endgroup]
+2026-10-21T15:06:18.4263250Z 
+2026-10-21T15:06:18.4263530Z ##[group]test/config-layers.test.ts:
+2026-10-21T15:06:18.4264350Z (pass) config layers > replaces arrays and per-language formatters in Base → Preset → User → Project order [1.13ms]
+2026-10-21T15:06:18.4265130Z (pass) config layers > schema 1 migrates only in memory and never changes the original [0.48ms]
+2026-10-21T15:06:18.4266290Z (pass) config layers > schema 2 init writes a minimal file that does not shadow upper-layer values [0.45ms]
+2026-10-21T15:06:18.4267350Z (pass) config layers > refuses unknown fields, safety overrides and future schemas fail-closed [0.12ms]
+2026-10-21T15:06:18.4268230Z (pass) config layers > strictly validates the formatter command contract and timeout bounds [0.13ms]
+2026-10-21T15:06:18.4268940Z (pass) config layers > refuses empty languages and unsupported formatter languages [0.03ms]
+2026-10-21T15:06:18.4270000Z (pass) config layers > missing layers keep defaults, the fingerprint is deterministic and detects raw changes [0.53ms]
+2026-10-21T15:06:18.4271140Z (pass) config layers > refuses project and user config symbolic links [0.59ms]
+2026-10-21T15:06:18.4271630Z 
+2026-10-21T15:06:18.4272170Z ##[endgroup]
+2026-10-21T15:06:18.4272280Z 
+2026-10-21T15:06:18.4272530Z ##[group]test/typescript-write-safety.test.ts:
+2026-10-21T15:06:18.4275670Z (pass) atomic file replacement helper > on success keeps the mode and cleans up temporary files [0.74ms]
+2026-10-21T15:06:18.4284270Z (pass) atomic file replacement helper > the synchronous entry point uses the same commit and cleanup contract [0.82ms]
+2026-10-21T15:06:18.4293290Z (pass) atomic file replacement helper > when an external edit is found, keeps that edit and refuses the commit [0.88ms]
+2026-10-21T15:06:18.4299400Z (pass) atomic file replacement helper > on rename failure keeps the original and cleans up temporary files [0.64ms]
+2026-10-21T15:06:18.4306800Z (pass) atomic file replacement helper > refuses symbolic and hard link targets conservatively [0.70ms]
+2026-10-21T15:06:18.4313330Z (pass) TS multi-pass working copy > on later pass exception, the original is never changed [0.66ms]
+2026-10-21T15:06:18.4318890Z (pass) TS multi-pass working copy > on parser throw, the original is never changed [0.58ms]
+2026-10-21T15:06:18.4325170Z (pass) TS multi-pass working copy > on diagnostic mismatch, the original is never changed [0.61ms]
+2026-10-21T15:06:18.4331710Z (pass) TS multi-pass working copy > on non-convergence, the original is never changed [0.64ms]
+2026-10-21T15:06:19.0729850Z (pass) TS multi-pass working copy > a rerun after a real CLI success is byte-identical [639.71ms]
+2026-10-21T15:06:19.0742960Z 
+2026-10-21T15:06:19.0744050Z ##[endgroup]
+2026-10-21T15:06:19.0744310Z 
+2026-10-21T15:06:19.0744630Z ##[group]test/hud.test.ts:
+2026-10-21T15:06:19.0758560Z (pass) HUD never runs a checkout engine when the host plugin is absent or its discovery fails [0.53ms]
+2026-10-21T15:06:19.0765860Z (pass) HUD keeps disabled host state, runtime readiness and unobserved hook delivery separate [0.65ms]
+2026-10-21T15:06:19.0777830Z (pass) HUD reports malformed receipts and actual latest outcomes without turning receipts into host acceptance [1.23ms]
+2026-10-21T15:06:19.1813470Z (pass) HUD reads a receipt from the real hook writer and marks inaccessible receipt roots incomplete [103.38ms]
+2026-10-21T15:06:19.1827070Z 
+2026-10-21T15:06:19.1827840Z ##[endgroup]
+2026-10-21T15:06:19.1827960Z 
+2026-10-21T15:06:19.1828140Z ##[group]test/engine.test.ts:
+2026-10-21T15:06:19.1828590Z (pass) maskSource > preserves geometry and masks only string contents [0.06ms]
+2026-10-21T15:06:19.1830030Z (pass) maskSource > marks lines inside block comments with opensInBlock [0.06ms]
+2026-10-21T15:06:19.1830770Z (pass) maskSource > quotes inside comments do not open strings [0.14ms]
+2026-10-21T15:06:19.1836600Z (pass) maskSource > does not mistake the Rust lifetime 'a for a string [0.10ms]
+2026-10-21T15:06:19.1837220Z (pass) maskSource > masks the whole C++ raw string R"( )" [0.04ms]
+2026-10-21T15:06:19.1838000Z (pass) alignSource > aligns columns at the minimum width of the actual longest cell [0.43ms]
+2026-10-21T15:06:19.1839160Z (pass) alignSource > blank lines and comments break sections — a later section never shares an earlier section's width [0.18ms]
+2026-10-21T15:06:19.1846670Z (pass) alignSource > a 2-row run is reported as a pair and not aligned [0.13ms]
+2026-10-21T15:06:19.1847330Z (pass) alignSource > minRows below 3 is raised to 3: a 2-row run stays unaligned even when asked [0.11ms]
+2026-10-21T15:06:19.1848020Z (pass) alignSource > alignment preserves content and is idempotent [0.16ms]
+2026-10-21T15:06:19.1848560Z (pass) alignSource > separators inside strings are not mistaken for tables [0.07ms]
+2026-10-21T15:06:19.1849760Z (pass) alignSource > trailing comments align into one column within a table [0.08ms]
+2026-10-21T15:06:19.1850480Z (pass) alignSource > refuses profile rows that fail lossless decomposition [0.06ms]
+2026-10-21T15:06:19.1851030Z (pass) alignSource > apply=false only reports and returns the original [0.05ms]
+2026-10-21T15:06:19.1851350Z 
+2026-10-21T15:06:19.1852080Z ##[endgroup]
+2026-10-21T15:06:19.1852200Z 
+2026-10-21T15:06:19.1852550Z ##[group]test/javascript-align.test.ts:
+2026-10-21T15:06:19.2215180Z (pass) javascript: alignment changes only whitespace between tokens and refuses nothing [1.57ms]
+2026-10-21T15:06:19.3196360Z (pass) javascript: the aligned table and trap files parse like their sources [98.11ms]
+2026-10-21T15:06:19.3227820Z (pass) javascript: alignment is idempotent — running twice gives the same result [0.92ms]
+2026-10-21T15:06:19.3252450Z (pass) javascript: matches the golden aligned file [0.46ms]
+2026-10-21T15:06:19.3263870Z (pass) javascript: the already aligned golden has 0 changes [0.23ms]
+2026-10-21T15:06:19.3273250Z (pass) javascript: the string/comment trap file has 0 changes [0.11ms]
+2026-10-21T15:06:19.3324820Z (pass) javascript: 2-row groups are not aligned [0.48ms]
+2026-10-21T15:06:19.3344850Z (pass) javascript profile specific properties > object-literal rows and const assignment rows keep separate tables and widths even when adjacent [0.17ms]
+2026-10-21T15:06:19.3363090Z (pass) javascript profile specific properties > does not mistake : = ; inside strings for structure and keeps the value cell intact [0.05ms]
+2026-10-21T15:06:19.3375430Z (pass) javascript profile specific properties > arrow functions, comparisons, control flow, multiple declarations and uncertain rows are not table rows [0.05ms]
+2026-10-21T15:06:19.3387240Z (pass) javascript profile specific properties > cuts template literals and quoted keys as single cells [0.07ms]
+2026-10-21T15:06:19.3392090Z (pass) javascript profile specific properties > bundle rows attach the first cell to the opening bracket and align cell and closing-bracket columns at minimum width [0.10ms]
+2026-10-21T15:06:19.3397740Z (pass) javascript profile specific properties > bundle rows with nesting, assignment or calls, and single-cell or empty-cell rows are not table rows [0.04ms]
+2026-10-21T15:06:19.3418240Z 
+2026-10-21T15:06:19.3418760Z ##[endgroup]
+2026-10-21T15:06:19.3418960Z 
+2026-10-21T15:06:19.3419450Z ##[group]test/syntax-validation.test.ts:
+2026-10-21T15:06:19.3419940Z (pass) TypeScript parser failures are errors rather than invalid syntax [0.61ms]
+2026-10-21T15:06:19.3420190Z 
+2026-10-21T15:06:19.3420340Z ##[endgroup]
+2026-10-21T15:06:19.3420420Z 
+2026-10-21T15:06:19.3420580Z ##[group]test/mutation.test.ts:
+2026-10-21T15:06:22.0539240Z (pass) mutation invariants > python: 1000 variants keep whitespace-only output and idempotence [900.59ms]
+2026-10-21T15:06:22.1097630Z (pass) mutation invariants > python: sampled variants parse like their aligned output [55.86ms]
+2026-10-21T15:06:23.0326760Z (pass) mutation invariants > java: 1000 variants keep whitespace-only output and idempotence [922.86ms]
+2026-10-21T15:06:23.5802350Z (pass) mutation invariants > java: sampled variants parse like their aligned output [547.54ms]
+2026-10-21T15:06:24.9026610Z (pass) mutation invariants > go: 1000 variants keep whitespace-only output and idempotence [1322.40ms]
+2026-10-21T15:06:24.9633030Z (pass) mutation invariants > go: sampled variants parse like their aligned output [60.63ms]
+2026-10-21T15:06:26.2836470Z (pass) mutation invariants > rust: 1000 variants keep whitespace-only output and idempotence [1320.28ms]
+2026-10-21T15:06:26.4244750Z (pass) mutation invariants > rust: sampled variants parse like their aligned output [140.75ms]
+2026-10-21T15:06:27.3154810Z (pass) mutation invariants > javascript: 1000 variants keep whitespace-only output and idempotence [891.09ms]
+2026-10-21T15:06:27.4069840Z (pass) mutation invariants > javascript: sampled variants parse like their aligned output [91.51ms]
+2026-10-21T15:06:28.6203610Z (pass) mutation invariants > c: 1000 variants keep whitespace-only output and idempotence [1213.34ms]
+2026-10-21T15:06:28.7058990Z (pass) mutation invariants > c: sampled variants parse like their aligned output [85.39ms]
+2026-10-21T15:06:29.9102200Z (pass) mutation invariants > cpp: 1000 variants keep whitespace-only output and idempotence [1204.38ms]
+2026-10-21T15:06:30.0161040Z (pass) mutation invariants > cpp: sampled variants parse like their aligned output [105.85ms]
+2026-10-21T15:06:30.4947730Z (pass) mutation invariants > swift: 1000 variants keep whitespace-only output and idempotence [478.71ms]
+2026-10-21T15:06:31.1271180Z (pass) mutation invariants > swift: sampled variants parse like their aligned output [632.32ms]
+2026-10-21T15:06:31.5605340Z (pass) mutation invariants > kotlin: 1000 variants keep whitespace-only output and idempotence [433.37ms]
+2026-10-21T15:06:37.4526330Z (pass) mutation invariants > kotlin: sampled variants parse like their aligned output [5892.14ms]
+2026-10-21T15:06:43.1841700Z (pass) mutation invariants (TypeScript aligner) > 5 variants keep the token stream, refuse nothing, parse alike and are idempotent [5731.48ms]
+2026-10-21T15:06:43.1941330Z 
+2026-10-21T15:06:43.2042850Z ##[endgroup]
+2026-10-21T15:06:43.2142550Z 
+2026-10-21T15:06:43.2234090Z ##[group]test/pattern-catalog.test.ts:
+2026-10-21T15:06:43.2234930Z (pass) all nine families expose comparable, different-role, unsupported, nested and separation cases [11.68ms]
+2026-10-21T15:06:43.2235770Z (pass) catalog rejects malformed records, missing coverage and accidental approval fields [3.62ms]
+2026-10-21T15:06:43.2429820Z (pass) SQLite supports cross-family case queries and deterministic rebuild without altering source authority [27.06ms]
+2026-10-21T15:06:43.2665020Z (pass) invalid source cannot replace a valid index and unmanaged databases are preserved [23.51ms]
+2026-10-21T15:06:43.2791800Z (pass) evidence references must exist inside the repository [12.74ms]
+2026-10-21T15:06:43.2978870Z (pass) catalog rejects hidden authority, duplicate dimensions and missing case fields [18.71ms]
+2026-10-21T15:06:43.3322600Z (pass) wrong owners, non-databases and output symlinks survive index rebuild attempts [34.32ms]
+2026-10-21T15:06:43.3451510Z (pass) absolute, missing, backslash and symbolic evidence paths are rejected [12.90ms]
+2026-10-21T15:06:43.3451800Z 
+2026-10-21T15:06:43.3452070Z ##[endgroup]
+2026-10-21T15:06:43.3452180Z 
+2026-10-21T15:06:43.3452350Z ##[group]test/swift-align.test.ts:
+2026-10-21T15:06:43.5878900Z (pass) swift: alignment changes only whitespace between tokens and refuses nothing [1.12ms]
+2026-10-21T15:06:44.1068280Z (pass) swift: the aligned table and trap files parse like their sources [518.90ms]
+2026-10-21T15:06:44.1072230Z (pass) swift: alignment is idempotent — running twice gives the same result [0.52ms]
+2026-10-21T15:06:44.1074310Z (pass) swift: matches the golden aligned file [0.25ms]
+2026-10-21T15:06:44.1075420Z (pass) swift: the already aligned golden has 0 changes [0.10ms]
+2026-10-21T15:06:44.1075930Z (pass) swift: the string/comment trap file has 0 changes [0.05ms]
+2026-10-21T15:06:44.1078660Z (pass) swift: 2-row groups are not aligned [0.27ms]
+2026-10-21T15:06:44.1081180Z (pass) swift profile specific properties > let rows with and without types form separate tables and align keyword, name, type and value [0.14ms]
+2026-10-21T15:06:44.1082300Z (pass) swift profile specific properties > nested block comments hide look-alike rows even across inner opens [0.08ms]
+2026-10-21T15:06:44.1083310Z (pass) swift profile specific properties > raw strings and interpolation are masked, so their punctuation is invisible [0.06ms]
+2026-10-21T15:06:44.1084130Z (pass) swift profile specific properties > declaration and control-flow rows are refused [0.06ms]
+2026-10-21T15:06:44.1084530Z 
+2026-10-21T15:06:44.1084860Z ##[endgroup]
+2026-10-21T15:06:44.1084950Z 
+2026-10-21T15:06:44.1085130Z ##[group]test/kotlin-align.test.ts:
+2026-10-21T15:06:45.9591360Z (pass) kotlin: alignment changes only whitespace between tokens and refuses nothing [0.39ms]
+2026-10-21T15:06:51.3162440Z (pass) kotlin: the aligned table and trap files parse like their sources [5356.96ms]
+2026-10-21T15:06:51.3166150Z (pass) kotlin: alignment is idempotent — running twice gives the same result [0.50ms]
+2026-10-21T15:06:51.3167730Z (pass) kotlin: matches the golden aligned file [0.26ms]
+2026-10-21T15:06:51.3169200Z (pass) kotlin: the already aligned golden has 0 changes [0.08ms]
+2026-10-21T15:06:51.3169660Z (pass) kotlin: the string/comment trap file has 0 changes [0.05ms]
+2026-10-21T15:06:51.3171240Z (pass) kotlin: 2-row groups are not aligned [0.19ms]
+2026-10-21T15:06:51.3173610Z (pass) kotlin profile specific properties > val rows with and without types form separate tables and align keyword, name, type and value [0.18ms]
+2026-10-21T15:06:51.3174640Z (pass) kotlin profile specific properties > nested block comments hide look-alike rows even across inner opens [0.09ms]
+2026-10-21T15:06:51.3175630Z (pass) kotlin profile specific properties > string templates are masked, so their dollar punctuation is invisible [0.06ms]
+2026-10-21T15:06:51.3176490Z (pass) kotlin profile specific properties > declaration and control-flow rows are refused [0.05ms]
+2026-10-21T15:06:51.3176860Z 
+2026-10-21T15:06:51.3177420Z ##[endgroup]
+2026-10-21T15:06:51.3177530Z 
+2026-10-21T15:06:51.3177860Z ##[group]test/alignment-only.test.ts:
+2026-10-21T15:06:51.3202060Z (pass) typescript alignment permits code gaps while preserving strings and physical layout [1.03ms]
+2026-10-21T15:06:51.3202880Z (pass) typescript alignment refuses inserted newline [0.07ms]
+2026-10-21T15:06:51.3203830Z (pass) typescript alignment refuses CRLF normalization
+2026-10-21T15:06:51.3204410Z (pass) typescript alignment refuses removed final newline
+2026-10-21T15:06:51.3205040Z (pass) typescript alignment refuses BOM removal
+2026-10-21T15:06:51.3205510Z (pass) typescript alignment refuses indentation change
+2026-10-21T15:06:51.3205930Z (pass) typescript alignment refuses indentation after BOM
+2026-10-21T15:06:51.3206510Z (pass) typescript alignment refuses trailing whitespace removal
+2026-10-21T15:06:51.3207110Z (pass) typescript alignment refuses blank line whitespace [0.01ms]
+2026-10-21T15:06:51.3207710Z (pass) typescript alignment refuses string space change [0.02ms]
+2026-10-21T15:06:51.3208300Z (pass) typescript alignment refuses value change [0.01ms]
+2026-10-21T15:06:51.3208810Z (pass) typescript alignment refuses non-horizontal whitespace
+2026-10-21T15:06:51.3209520Z (pass) python alignment permits code gaps while preserving strings and physical layout [0.05ms]
+2026-10-21T15:06:51.3210040Z (pass) python alignment refuses inserted newline
+2026-10-21T15:06:51.3210380Z (pass) python alignment refuses CRLF normalization
+2026-10-21T15:06:51.3210810Z (pass) python alignment refuses removed final newline
+2026-10-21T15:06:51.3211160Z (pass) python alignment refuses BOM removal [0.01ms]
+2026-10-21T15:06:51.3211590Z (pass) python alignment refuses indentation change
+2026-10-21T15:06:51.3212060Z (pass) python alignment refuses indentation after BOM
+2026-10-21T15:06:51.3212520Z (pass) python alignment refuses trailing whitespace removal
+2026-10-21T15:06:51.3212920Z (pass) python alignment refuses blank line whitespace
+2026-10-21T15:06:51.3213310Z (pass) python alignment refuses string space change [0.02ms]
+2026-10-21T15:06:51.3213780Z (pass) python alignment refuses value change
+2026-10-21T15:06:51.3214210Z (pass) python alignment refuses non-horizontal whitespace
+2026-10-21T15:06:51.3214730Z (pass) typescript alignment preserves protected text: const x=1; // a b [0.06ms]
+2026-10-21T15:06:51.3215310Z (pass) typescript alignment preserves protected text: const x=/a b/; [0.10ms]
+2026-10-21T15:06:51.3215940Z (pass) typescript alignment preserves protected text: const x=`a b`; [0.04ms]
+2026-10-21T15:06:51.3216450Z (pass) python alignment preserves protected text: x=1 # a b [0.02ms]
+2026-10-21T15:06:51.3217050Z (pass) python alignment preserves protected text: x="""a b
+2026-10-21T15:06:51.3217340Z c d""" [0.02ms]
+2026-10-21T15:06:51.3217840Z (pass) alignment refuses invalid UTF-8 rather than hiding changed bytes [0.03ms]
+2026-10-21T15:06:52.2303640Z (pass) typescript Align previews, applies and reaches a fixed point through the real pipeline [909.26ms]
+2026-10-21T15:06:52.6600240Z (pass) python Align previews, applies and reaches a fixed point through the real pipeline [429.71ms]
+2026-10-21T15:06:52.6608010Z (pass) Align rejects a supplied formatter before it can produce side effects [0.79ms]
+2026-10-21T15:06:52.9104330Z (pass) Align retains approval, parser and commit-time configuration safeguards [249.62ms]
+2026-10-21T15:06:54.3256760Z (pass) real vertical candidates are refused by Align preview and apply, while legacy format retains its behavior [1415.18ms]
+2026-10-21T15:06:54.3257140Z 
+2026-10-21T15:06:54.3257750Z ##[endgroup]
+2026-10-21T15:06:54.3257860Z 
+2026-10-21T15:06:54.3258090Z ##[group]test/edge-inputs.test.ts:
+2026-10-21T15:06:54.3311900Z (pass) edge inputs > CRLF python files align and keep their line endings [2.42ms]
+2026-10-21T15:06:54.3312570Z (pass) edge inputs > CRLF dict rows are no longer refused by the trailing 
+2026-10-21T15:06:54.3312930Z  [0.13ms]
+2026-10-21T15:06:54.3313270Z (pass) edge inputs > a BOM is preserved and only the first line is excluded [0.06ms]
+2026-10-21T15:06:54.3574510Z (pass) edge inputs > a multi-thousand-line file aligns within the time budget [26.02ms]
+2026-10-21T15:06:54.3574890Z 
+2026-10-21T15:06:54.3575160Z ##[endgroup]
+2026-10-21T15:06:54.3575250Z 
+2026-10-21T15:06:54.3575420Z ##[group]test/approval-gate.test.ts:
+2026-10-21T15:06:54.3592590Z (pass) approval write gate > only an exact key with complete human approval proof allows writing, and GUIDE gets only after-better [0.68ms]
+2026-10-21T15:06:54.3596440Z (pass) approval write gate > turns a detected descriptor into the current exact key and keeps the original file path [0.39ms]
+2026-10-21T15:06:54.3599280Z (pass) approval write gate > a candidate convention refuses writing [0.31ms]
+2026-10-21T15:06:54.3610410Z (pass) approval write gate > a rejected convention refuses writing [1.05ms]
+2026-10-21T15:06:54.3614600Z (pass) approval write gate > an unknown key and duplicate conventions of equal priority are unknown/conflict respectively [0.42ms]
+2026-10-21T15:06:54.3617490Z (pass) approval write gate > picks the highest layer in project → user → preset order [0.30ms]
+2026-10-21T15:06:54.3623090Z (pass) approval write gate > blocks a missing decision, a stale document hash, a wrong version and a missing human approval [0.53ms]
+2026-10-21T15:06:54.3629270Z (pass) approval write gate > blocks when any of positive, counterexample, both links, content hash or rule relevance is missing [0.59ms]
+2026-10-21T15:06:54.3633580Z (pass) approval write gate > refuses a document ref that escapes the root [0.46ms]
+2026-10-21T15:06:54.3644830Z (pass) approval write gate > resolves the same relative ref in the document root matching the convention layer [1.09ms]
+2026-10-21T15:06:54.3663140Z (pass) registry loader > reads JSONL from the given roots and layers and refuses malformed and duplicate proofs [1.81ms]
+2026-10-21T15:06:54.3670740Z (pass) registry loader > refuses registry override root escapes and symbolic/non-regular files [0.77ms]
+2026-10-21T15:06:54.3671060Z 
+2026-10-21T15:06:54.3671280Z ##[endgroup]
+2026-10-21T15:06:54.3671360Z 
+2026-10-21T15:06:54.3671530Z ##[group]test/hud-installation.test.ts:
+2026-10-21T15:06:54.3731920Z (pass) Claude HUD opt-in preserves unrelated settings, repairs its own command and removes only its key [4.52ms]
+2026-10-21T15:06:54.3748310Z (pass) HUD setup refuses foreign settings, user changes, symlinks and unsupported platform without replacing them [1.61ms]
+2026-10-21T15:06:54.3902540Z (pass) Codex launcher keeps literal paths and argv, refuses foreign bins, and removes only its own launcher [15.36ms]
+2026-10-21T15:06:54.3933800Z (pass) HUD upgrade disables the old Codex launcher before enabling the new installation [3.16ms]
+2026-10-21T15:06:54.4424750Z (pass) installed hook launcher forwards exact input and protocol while recording a bounded project locator [49.02ms]
+2026-10-21T15:06:54.4573890Z (pass) HUD setup direct execution accepts a symlinked entry path [15.00ms]
+2026-10-21T15:06:54.4574250Z 
+2026-10-21T15:06:54.4574590Z ##[endgroup]
+2026-10-21T15:06:54.4574670Z 
+2026-10-21T15:06:54.4574840Z ##[group]test/java-align.test.ts:
+2026-10-21T15:06:54.7332690Z (pass) java: alignment changes only whitespace between tokens and refuses nothing [1.19ms]
+2026-10-21T15:06:55.6174250Z (pass) java: the aligned table and trap files parse like their sources [884.19ms]
+2026-10-21T15:06:55.6188100Z (pass) java: alignment is idempotent — running twice gives the same result [1.37ms]
+2026-10-21T15:06:55.6194220Z (pass) java: matches the golden aligned file [0.73ms]
+2026-10-21T15:06:55.6196820Z (pass) java: the already aligned golden has 0 changes [0.25ms]
+2026-10-21T15:06:55.6197450Z (pass) java: the string/comment trap file has 0 changes [0.06ms]
+2026-10-21T15:06:55.6204580Z (pass) java: 2-row groups are not aligned [0.71ms]
+2026-10-21T15:06:55.6208930Z (pass) java profile refusal rules > refuses brace, annotation, control-flow and method-signature rows with null [0.40ms]
+2026-10-21T15:06:55.6210180Z (pass) java profile refusal rules > decomposes the four forms into axis sequences and keeps enum argument lists as one cell including parentheses [0.09ms]
+2026-10-21T15:06:55.6211310Z (pass) java profile refusal rules > does not read = ; inside strings as structure and keeps them whole in the value cell [0.10ms]
+2026-10-21T15:06:55.6212420Z (pass) java profile refusal rules > separator axes are not column axes and canonical gaps follow Java conventions [0.07ms]
+2026-10-21T15:06:55.6213930Z (pass) java profile refusal rules > reassembling enum constants adds no space between the name and the parenthesis [0.05ms]
+2026-10-21T15:06:55.6214890Z (pass) java profile refusal rules > refuses as uncertain initializers with an empty value or more than one ; outside strings [0.03ms]
+2026-10-21T15:06:55.6216040Z (pass) java profile refusal rules > refuses bundle rows with nesting, assignment, calls, indexing or generics, and single or empty cells [0.13ms]
+2026-10-21T15:06:55.6217030Z (pass) java alignment properties > bundle rows align inner cell columns to each longest cell [0.12ms]
+2026-10-21T15:06:55.6218050Z (pass) java alignment properties > initialized fields of different shapes split into different tables by slot count [0.16ms]
+2026-10-21T15:06:55.6218440Z 
+2026-10-21T15:06:55.6218800Z ##[endgroup]
+2026-10-21T15:06:55.6218890Z 
+2026-10-21T15:06:55.6219130Z ##[group]test/product-hud.test.ts:
+2026-10-21T15:06:55.6313520Z (pass) collector uses only the explicitly installed engine and bounded doctor probe [2.76ms]
+2026-10-21T15:06:55.6340460Z (pass) missing manifests and malformed, oversized or symlinked runtime data fail closed [2.68ms]
+2026-10-21T15:06:55.6369950Z (pass) doctor errors and invalid payloads never become ready; a valid negative doctor is not-ready [2.92ms]
+2026-10-21T15:06:55.6394660Z (pass) session filtering never borrows a different session's PASS and project history is explicit [2.42ms]
+2026-10-21T15:06:55.6423410Z (pass) stale receipts are historical and invalid newer records cannot reveal a misleading PASS [2.91ms]
+2026-10-21T15:06:55.7267370Z (pass) receipt scanning rejects symlinks, invalid events and future dates while bounding long sessions [84.33ms]
+2026-10-21T15:06:55.7302650Z (pass) invalid project pointers cannot select another project or mismatching directory [3.55ms]
+2026-10-21T15:06:55.7329290Z (pass) receipt timestamps order checks and ambiguous ties never claim PASS [2.70ms]
+2026-10-21T15:06:55.7344200Z (pass) renderer strips terminal and directional controls and bounds every line [1.48ms]
+2026-10-21T15:06:55.8727290Z (pass) CLI supports real installed doctor, non-TTY watch once, and bounded Claude JSON input [138.25ms]
+2026-10-21T15:06:55.9271550Z (pass) CLI direct execution accepts a symlinked entry path while module imports stay inert [54.41ms]
+2026-10-21T15:06:55.9271970Z 
+2026-10-21T15:06:55.9272250Z ##[endgroup]
+2026-10-21T15:06:55.9272370Z 
+2026-10-21T15:06:55.9272600Z ##[group]test/conventions.test.ts:
+2026-10-21T15:06:55.9303910Z (pass) lookup key > drops depth, prefixes the version and writes an empty context as `-` [0.05ms]
+2026-10-21T15:06:55.9304970Z (pass) pattern records > a malformed record and a duplicate id within one layer are errors [0.23ms]
+2026-10-21T15:06:55.9306600Z (pass) pattern records > glob: `**` spans several segments, `*` stays within one [0.09ms]
+2026-10-21T15:06:55.9307310Z (pass) lookup > the project layer wins over the preset [0.17ms]
+2026-10-21T15:06:55.9307990Z (pass) lookup > within one layer the most specific scope wins [0.07ms]
+2026-10-21T15:06:55.9308780Z (pass) lookup > different statuses at the same layer and specificity are a conflict (file order never decides) [0.05ms]
+2026-10-21T15:06:55.9309510Z (pass) lookup > a candidate is not an approval, and keys of another version or missing keys are unknown [0.04ms]
+2026-10-21T15:06:55.9316760Z (pass) report and CLI > the report attaches a lookup result per table and does not look up two-row pairs [0.77ms]
+2026-10-21T15:06:55.9724250Z (pass) report and CLI > the CLI reads .boxbox/conventions.jsonl in the working folder for lookup [40.67ms]
+2026-10-21T15:06:55.9724690Z 
+2026-10-21T15:06:55.9724950Z ##[endgroup]
+2026-10-21T15:06:55.9725050Z 
+2026-10-21T15:06:55.9725350Z ##[group]test/hook.test.ts:
+2026-10-21T15:06:55.9741050Z (pass) hook — target decision > is a target only when a write tool writes a first-scope language file [0.11ms]
+2026-10-21T15:06:55.9741960Z (pass) hook — target decision > the session guidance uses the charter's three core lines verbatim [0.12ms]
+2026-10-21T15:06:55.9746040Z (pass) hook — text to report > reports nothing when the only alarms are ones the agent cannot fix (A5 ambiguous) [0.28ms]
+2026-10-21T15:06:55.9747120Z (pass) hook — text to report > reports only new alarms and states that existing alarms are not this edit's responsibility [0.14ms]
+2026-10-21T15:06:56.0647330Z (pass) hook — flow (simulating Claude Code input) > editing an existing file returns only the alarms that edit introduced, and the baseline is cleaned up [89.97ms]
+2026-10-21T15:06:56.1480390Z (pass) hook — flow (simulating Claude Code input) > a new file gets guidance once per language per session, and an edit without new alarms is silent [83.20ms]
+2026-10-21T15:06:56.1801110Z (pass) hook — flow (simulating Claude Code input) > with BOXBOX_HOOKS=off it does nothing, and invalid input never blocks the edit [32.08ms]
+2026-10-21T15:06:56.1802410Z (pass) hook — flow (simulating Claude Code input) > the plugin hooks.json connects three events to this hook script [0.24ms]
+2026-10-21T15:06:56.1802800Z 
+2026-10-21T15:06:56.1803180Z ##[endgroup]
+2026-10-21T15:06:56.1803290Z 
+2026-10-21T15:06:56.1803520Z ##[group]test/product-identity.test.ts:
+2026-10-21T15:06:56.1872330Z (pass) a naming preview changes nothing; applying it updates discovery, runtime references and directory identity together [5.68ms]
+2026-10-21T15:06:56.1907130Z (pass) an occupied rename destination is rejected before any content changes [3.54ms]
+2026-10-21T15:06:56.1939390Z (pass) invalid names and inconsistent generated identity are rejected before planning [3.12ms]
+2026-10-21T15:06:56.1939820Z 
+2026-10-21T15:06:56.1940090Z ##[endgroup]
+2026-10-21T15:06:56.1940180Z 
+2026-10-21T15:06:56.1940350Z ##[group]test/parser-fault.test.ts:
+2026-10-21T15:06:56.2404950Z (pass) parser faults close before writing > failure: reports an execution fault as an error [45.69ms]
+2026-10-21T15:06:56.2770710Z (pass) parser faults close before writing > failure-error: reports an execution fault as an error [36.54ms]
+2026-10-21T15:06:56.3150870Z (pass) parser faults close before writing > signal: reports an execution fault as an error [38.01ms]
+2026-10-21T15:06:58.3438200Z (pass) parser faults close before writing > timeout: reports an execution fault as an error [2028.73ms]
+2026-10-21T15:06:58.4103770Z (pass) parser faults close before writing > probe-timeout: reports an execution fault as an error [66.52ms]
+2026-10-21T15:06:58.4549810Z (pass) parser faults close before writing > output: reports an execution fault as an error [44.59ms]
+2026-10-21T15:06:58.4823530Z (pass) parser faults close before writing > vanish: reports an execution fault as an error [27.36ms]
+2026-10-21T15:06:58.5206680Z (pass) parser faults close before writing > refuses rustfmt status 1 without a recognized diagnostic [38.32ms]
+2026-10-21T15:06:58.5589660Z (pass) parser faults close before writing > formatted Rust source cannot disguise an unexplained parser failure [38.20ms]
+2026-10-21T15:06:58.5816900Z (pass) parser faults close before writing > BOXBOX_REQUIRE_PARSERS=0 cannot bypass writing without a parser [22.80ms]
+2026-10-21T15:06:58.6304390Z (pass) parser faults close before writing > when the parser exits abnormally, the real Python CLI preserves the original bytes [48.66ms]
+2026-10-21T15:06:58.7226830Z (pass) parser faults close before writing > the real Python parser lets successful output be written [92.30ms]
+2026-10-21T15:06:58.7275570Z 
+2026-10-21T15:06:58.7287570Z ##[endgroup]
+2026-10-21T15:06:58.7288460Z 
+2026-10-21T15:06:58.7288920Z ##[group]test/rust-align.test.ts:
+2026-10-21T15:06:58.7917560Z (pass) rust: alignment changes only whitespace between tokens and refuses nothing [3.50ms]
+2026-10-21T15:06:58.9104220Z (pass) rust: the aligned table and trap files parse like their sources [118.69ms]
+2026-10-21T15:06:58.9122640Z (pass) rust: alignment is idempotent — running twice gives the same result [1.50ms]
+2026-10-21T15:06:58.9127660Z (pass) rust: matches the golden aligned file [0.93ms]
+2026-10-21T15:06:58.9131100Z (pass) rust: the already aligned golden has 0 changes [0.35ms]
+2026-10-21T15:06:58.9132700Z (pass) rust: the string/comment trap file has 0 changes [0.09ms]
+2026-10-21T15:06:58.9143880Z (pass) rust: 2-row groups are not aligned [1.03ms]
+2026-10-21T15:06:58.9145510Z (pass) rust: aligns match arm pattern and action columns at minimum width [0.28ms]
+2026-10-21T15:06:58.9147120Z (pass) rust: preserves type cells containing lifetimes [0.18ms]
+2026-10-21T15:06:58.9147840Z (pass) rust: treats an enum variant's closed parenthesis pair as one cell [0.06ms]
+2026-10-21T15:06:58.9148920Z (pass) rust: let mut rows align on the keyword axis together with name and value columns [0.09ms]
+2026-10-21T15:06:58.9149750Z (pass) rust: the profile refuses declaration, attribute, opening-bracket and lifetime-label rows [0.04ms]
+2026-10-21T15:06:58.9152590Z (pass) rust: bundle rows align inner cell columns and the closing bracket shares the cell width [0.29ms]
+2026-10-21T15:06:58.9154890Z (pass) rust: the profile refuses nested or assigning bundle rows and path, lifetime or type-name cells [0.23ms]
+2026-10-21T15:06:58.9155540Z 
+2026-10-21T15:06:58.9155920Z ##[endgroup]
+2026-10-21T15:06:58.9156150Z 
+2026-10-21T15:06:58.9156420Z ##[group]test/runtime-record-validation.test.ts:
+2026-10-21T15:06:58.9168190Z (pass) runtime record roots > all validators reject null, arrays and primitives as records [0.14ms]
+2026-10-21T15:06:58.9170650Z (pass) convention runtime shape > requires every declared field and validates optional nested values [0.26ms]
+2026-10-21T15:06:58.9171640Z (pass) convention runtime shape > keeps generic local fields and permits an empty candidate approval receipt [0.02ms]
+2026-10-21T15:06:58.9172490Z (pass) example runtime shape > requires every declared field [0.18ms]
+2026-10-21T15:06:58.9173490Z (pass) example runtime shape > validates nested versions, source and assertions [0.08ms]
+2026-10-21T15:06:58.9180430Z (pass) example runtime shape > permits local licenses, unknown fields and empty candidate approval strings [0.02ms]
+2026-10-21T15:06:58.9181450Z (pass) decision and JSONL runtime shape > requires decision references and receipt fields with valid types [0.16ms]
+2026-10-21T15:06:58.9182280Z (pass) decision and JSONL runtime shape > reports malformed JSON and duplicate ids with the source line [0.11ms]
+2026-10-21T15:06:58.9182610Z 
+2026-10-21T15:06:58.9182790Z ##[endgroup]
+2026-10-21T15:06:58.9182870Z 
+2026-10-21T15:06:58.9183090Z ##[group]test/format-pipeline.test.ts:
+2026-10-21T15:07:00.2831840Z (pass) the real TypeScript pipeline writes only the approved working copy and stays fixed on rerun [1364.30ms]
+2026-10-21T15:07:00.8401740Z (pass) the real Python pipeline writes only the approved working copy and stays fixed on rerun [557.01ms]
+2026-10-21T15:07:17.8909040Z (pass) standalone typescript alignment previews and writes with the same approval and fixed-point safeguards [17050.62ms]
+2026-10-21T15:07:18.3142740Z (pass) standalone python alignment previews and writes with the same approval and fixed-point safeguards [423.48ms]
+2026-10-21T15:07:19.0487620Z (pass) the TypeScript pipeline writes the same result even with a symlink in the root path [732.38ms]
+2026-10-21T15:07:19.2570260Z (pass) format pipeline fails closed > dry-run returns the full verification result and bounded output without writing the original [210.31ms]
+2026-10-21T15:07:19.2638380Z (pass) format pipeline fails closed > on formatter abnormal exit, the original and temporary files are preserved [6.88ms]
+2026-10-21T15:07:19.3187180Z (pass) format pipeline fails closed > on parser failure, the original and temporary files are preserved [54.83ms]
+2026-10-21T15:07:19.4227790Z (pass) format pipeline fails closed > on timeout, the child process group is ended and the original is not written [104.02ms]
+2026-10-21T15:07:19.4813720Z (pass) format pipeline fails closed > a missing executable and an approval refusal each close before writing [58.57ms]
+2026-10-21T15:07:19.4825770Z (pass) format pipeline fails closed > the direct API also refuses parent-directory symlink root escapes and invalid timeouts [1.26ms]
+2026-10-21T15:07:19.6857020Z (pass) format pipeline fails closed > does not write when the approval rules are empty or the second full run differs [203.00ms]
+2026-10-21T15:07:19.9765340Z (pass) format pipeline fails closed > external edits and provenance changes are detected right before commit [290.84ms]
+2026-10-21T15:07:19.9765790Z 
+2026-10-21T15:07:19.9766150Z ##[endgroup]
+2026-10-21T15:07:19.9766230Z 
+2026-10-21T15:07:19.9766470Z ##[group]test/installer-artifact.test.ts:
+2026-10-21T15:07:20.6586510Z (pass) Windows native host discovery, permanent paths and PowerShell quotes support spaced and smart-quote paths [1.03ms]
+2026-10-21T15:07:20.8001480Z (pass) Windows Claude Node bridge runs from Bash with literal paths, spaced arguments and child exit status [141.43ms]
+2026-10-21T15:07:20.8284970Z (pass) npm installer name differs from private engine and both host payloads have an exact allowlist [28.30ms]
+2026-10-21T15:07:28.6811280Z (pass) real npx infers the boxbox bin from the public installer and installs both hosts independently of cache and origin [7852.67ms]
+2026-10-21T15:07:31.2214840Z (pass) explicit host flags install only selected adapters and engine-only does not register any host [2540.35ms]
+2026-10-21T15:07:31.5617480Z (pass) repair filesystem failures retain a recovery backup and report its path [340.26ms]
+2026-10-21T15:07:31.8892090Z (pass) help, invalid flags, missing hosts and invalid Codex home refuse without installing; child status propagates [327.46ms]
+2026-10-21T15:07:32.0479010Z 
+2026-10-21T15:07:32.0479750Z ##[endgroup]
+2026-10-21T15:07:32.0479860Z 
+2026-10-21T15:07:32.0480040Z ##[group]test/codex-hud-launcher.test.ts:
+2026-10-21T15:07:32.0518520Z (pass) launcher accepts only its own options before the Codex separator [0.15ms]
+2026-10-21T15:07:32.0526840Z (pass) project selection follows Codex cd syntax and refuses roots that cannot be observed [0.85ms]
+2026-10-21T15:07:32.0534870Z (pass) unsupported hosts and nested sessions fail before creating any tmux server [0.79ms]
+2026-10-21T15:07:32.0545810Z (pass) launcher preserves argv and permissions, dedicates its server, and returns the main pane exit status [1.08ms]
+2026-10-21T15:07:32.0553700Z (pass) failed pane setup cleans only the owned server and its temporary state [0.80ms]
+2026-10-21T15:07:32.0562700Z (pass) attachment failure cleans the owned server and path semicolons cannot become tmux commands [0.89ms]
+2026-10-21T15:07:32.1136030Z (pass) real pane runner passes hostile-looking arguments literally and records executable failure [57.25ms]
+2026-10-21T15:07:32.1294240Z (pass) direct launcher help accepts a symlinked entry path [15.83ms]
+2026-10-21T15:07:32.1294550Z 
+2026-10-21T15:07:32.1294870Z ##[endgroup]
+2026-10-21T15:07:32.1294980Z 
+2026-10-21T15:07:32.1295210Z ##[group]test/corpus-promote.test.ts:
+2026-10-21T15:07:32.1309650Z (pass) verdict promotion > scaffolds are minimized synthetic cases per language and kind [0.09ms]
+2026-10-21T15:07:32.2354420Z (pass) verdict promotion > the promotion gate passes a consistent fixture and flags a drifted golden [104.45ms]
+2026-10-21T15:07:32.2355380Z (pass) verdict promotion > fixtureDir pins the fixture to the signature hash under the language corpus tree [0.13ms]
+2026-10-21T15:07:32.2356050Z (pass) verdict promotion > the aligner is the promotion gate's only engine dependency [0.02ms]
+2026-10-21T15:07:32.2356310Z 
+2026-10-21T15:07:32.2356750Z ##[endgroup]
+2026-10-21T15:07:32.2356840Z 
+2026-10-21T15:07:32.2357010Z ##[group]test/result-json.test.ts:
+2026-10-21T15:07:32.3583390Z (pass) shared result JSON > TypeScript aligner emits a valid envelope [121.07ms]
+2026-10-21T15:07:32.3792260Z (pass) shared result JSON > python aligner emits a valid envelope [20.90ms]
+2026-10-21T15:07:32.3971850Z (pass) shared result JSON > java aligner emits a valid envelope [17.97ms]
+2026-10-21T15:07:32.4147960Z (pass) shared result JSON > go aligner emits a valid envelope [17.59ms]
+2026-10-21T15:07:32.4318100Z (pass) shared result JSON > rust aligner emits a valid envelope [17.01ms]
+2026-10-21T15:07:32.4478710Z (pass) shared result JSON > javascript aligner emits a valid envelope [16.05ms]
+2026-10-21T15:07:32.4648950Z (pass) shared result JSON > c aligner emits a valid envelope [17.03ms]
+2026-10-21T15:07:32.4815190Z (pass) shared result JSON > cpp aligner emits a valid envelope [16.61ms]
+2026-10-21T15:07:32.5540680Z (pass) shared result JSON > write mode reports the re-parse result [71.95ms]
+2026-10-21T15:07:32.5541040Z 
+2026-10-21T15:07:32.5541270Z ##[endgroup]
+2026-10-21T15:07:32.5541350Z 
+2026-10-21T15:07:32.5541530Z ##[group]test/alias-portability.test.ts:
+2026-10-21T15:07:33.0277620Z (pass) a copied development skill resolves engine aliases and its TypeScript runtime in isolation [473.40ms]
+2026-10-21T15:07:33.0642300Z (pass) copy installation leaves no partial target when pinned dependencies are absent [36.46ms]
+2026-10-21T15:07:33.1067500Z (pass) stale markers never authorize replacing or uninstalling a user-owned directory [42.51ms]
+2026-10-21T15:07:33.1243600Z (pass) foreign symlinks survive install and uninstall [17.60ms]
+2026-10-21T15:07:33.7330740Z (pass) a managed copy refreshes only while its directory identity matches [608.70ms]
+2026-10-21T15:07:34.4072550Z (pass) an edited managed file copy survives refresh and uninstall [674.15ms]
+2026-10-21T15:07:34.4073330Z 
+2026-10-21T15:07:34.4073840Z ##[endgroup]
+2026-10-21T15:07:34.4074190Z 
+2026-10-21T15:07:34.4074510Z ##[group]test/typescript-align.test.ts:
+2026-10-21T15:07:34.8455670Z (pass) typescript call statement alignment > aligns subject/matcher parentheses, dots and semicolons of consecutive call statements [437.13ms]
+2026-10-21T15:07:35.3181560Z (pass) typescript object row alignment > aligns braces, properties, colons, values and commas of object rows [472.57ms]
+2026-10-21T15:07:35.8694060Z (pass) typescript whitespace-only guarantee > the fixture aligns with an identical token stream and no refused table [551.05ms]
+2026-10-21T15:07:36.3501000Z (pass) typescript row floors > a 2-row = declaration table is aligned; a 2-row group of another kind is not [480.80ms]
+2026-10-21T15:07:36.8121630Z (pass) typescript call layer > aligns the commas and closing paren of the same call in declaration values [462.12ms]
+2026-10-21T15:07:37.2978270Z (pass) typescript call layer > aligns the call inside call-statement subjects [482.80ms]
+2026-10-21T15:07:38.2649890Z (pass) typescript call layer > shares the outer call envelope when the callee or the arity differs [969.88ms]
+2026-10-21T15:07:38.7502880Z (pass) typescript declaration vertical form > takes the outlier row vertical when one argument is 20 columns wider than the second widest [485.37ms]
+2026-10-21T15:07:39.2406250Z (pass) typescript declaration vertical form > keeps the call layer on the remaining rows when one row goes vertical [483.73ms]
+2026-10-21T15:07:39.7142460Z (pass) typescript declaration vertical form > takes every row vertical when each is the outlier of its own column [480.15ms]
+2026-10-21T15:07:40.8306540Z (pass) typescript declaration vertical form > keeps a single-argument call flat; a vertical row leaves the table on the next run [1116.42ms]
+2026-10-21T15:07:41.3067850Z (pass) typescript declaration vertical form > call statements keep one flat layer instead of going vertical [469.80ms]
+2026-10-21T15:07:41.8303770Z (pass) typescript hand-made samples > aligns the closing bracket of subscript declaration values [523.26ms]
+2026-10-21T15:07:42.8237890Z (pass) typescript hand-made samples > keeps subscript values flat when the objects differ or a row has none [999.96ms]
+2026-10-21T15:07:43.3366190Z (pass) typescript hand-made samples > aligns ragged guard rows onto the hand-made form [512.93ms]
+2026-10-21T15:07:43.4840370Z (pass) typescript hand-made samples > keeps the hand-aligned guard sample of 00_normalize-imports unchanged [147.39ms]
+2026-10-21T15:07:43.6116470Z (pass) typescript hand-made samples > blocks that do not end in continue and two-row groups stay as written [127.46ms]
+2026-10-21T15:07:44.1058500Z (pass) typescript list layer > aligns the elements, commas and closing bracket of the same literal list in a call [494.28ms]
+2026-10-21T15:07:44.6090310Z (pass) typescript list layer > aligns the literal list of a matcher argument [503.21ms]
+2026-10-21T15:07:45.1349780Z (pass) typescript list layer > aligns a declaration value that is itself a literal list [525.91ms]
+2026-10-21T15:07:45.6007690Z (pass) typescript list layer > keeps a list with identifiers compact and aligns only the row layer [465.75ms]
+2026-10-21T15:07:46.0943640Z (pass) typescript list layer > keeps the call layer but drops the list slot when the arity differs [485.71ms]
+2026-10-21T15:07:46.5854010Z (pass) typescript list layer > keeps only the outer envelope when the callee differs [498.94ms]
+2026-10-21T15:07:47.1305130Z (pass) typescript list layer > drops a list whose item is 20 columns wider than the second widest [544.98ms]
+2026-10-21T15:07:47.8067320Z (pass) typescript list layer > drops a list with a trailing comma or a multi-line form [676.29ms]
+2026-10-21T15:07:47.8068010Z 
+2026-10-21T15:07:47.8068590Z ##[endgroup]
+2026-10-21T15:07:47.8068890Z 
+2026-10-21T15:07:47.8069170Z ##[group]test/corpus-measures.test.ts:
+2026-10-21T15:07:47.8083080Z (pass) corpus measures > the last verdict per signature wins [1.03ms]
+2026-10-21T15:07:47.8084630Z (pass) corpus measures > judged share, table share and wrong-grouping rate come out per language [0.16ms]
+2026-10-21T15:07:47.8085500Z (pass) corpus measures > taste and unsure are judgments, not grouping misses [0.03ms]
+2026-10-21T15:07:47.8086370Z (pass) corpus measures > unseen share counts the signatures a new census has that the baseline lacks [0.06ms]
+2026-10-21T15:07:47.8088340Z (pass) corpus measures > census types map to patterns through the surface-form data, and ambiguous ones are written with their alternatives [0.19ms]
+2026-10-21T15:07:47.8089020Z 
+2026-10-21T15:07:47.8089420Z ##[endgroup]
+2026-10-21T15:07:47.8089610Z 
+2026-10-21T15:07:47.8089870Z ##[group]test/layout.test.ts:
+2026-10-21T15:07:47.8100180Z (pass) relative containment handles Windows separators and cross-drive paths [0.08ms]
+2026-10-21T15:07:47.8299850Z (pass) a version bump stamps generated manifests without modifying product templates [19.57ms]
+2026-10-21T15:07:47.8473120Z (pass) dangling output links never create external files or directories [17.58ms]
+2026-10-21T15:07:47.8870510Z (pass) product dependencies allow mapped engine aliases and reject escapes [39.73ms]
+2026-10-21T15:07:47.8886750Z (pass) engine aliases reject missing targets, escapes and symbolic paths [1.17ms]
+2026-10-21T15:07:47.9127710Z (pass) the entire marketplace plugin regenerates from product sources and detects manual changes [24.58ms]
+2026-10-21T15:07:47.9128130Z 
+2026-10-21T15:07:47.9128420Z ##[endgroup]
+2026-10-21T15:07:47.9128510Z 
+2026-10-21T15:07:47.9128700Z ##[group]test/public-preset.test.ts:
+2026-10-21T15:07:47.9190150Z (pass) public preset release policy > approved synthetic rules are prepared together with the public documents they reference [4.16ms]
+2026-10-21T15:07:47.9217490Z (pass) public preset release policy > extracts only the referenced approved section and never ships other sections of the same source document [2.78ms]
+2026-10-21T15:07:47.9248680Z (pass) public preset release policy > refuses arbitrary unregistered fields inside asserts [3.14ms]
+2026-10-21T15:07:47.9270030Z (pass) public preset release policy > drops an earlier private value of a duplicate JSON key from the normalized release JSONL [1.97ms]
+2026-10-21T15:07:47.9286230Z (pass) public preset release policy > example.rules must be an array of short rule IDs [1.45ms]
+2026-10-21T15:07:47.9298630Z (pass) public preset release policy > also refuses arbitrary fields inside versions [1.42ms]
+2026-10-21T15:07:47.9312960Z (pass) public preset release policy > refuses source paths and unauthorized license values regardless of the approved synthetic label [1.37ms]
+2026-10-21T15:07:47.9329090Z (pass) public preset release policy > refuses a parent symlink on the docs/public path even when it points inside the preset [1.75ms]
+2026-10-21T15:07:47.9340070Z (pass) public preset release policy > refuses paths that normalize outside docs/public [1.11ms]
+2026-10-21T15:07:47.9340660Z 
+2026-10-21T15:07:47.9340910Z ##[endgroup]
+2026-10-21T15:07:47.9341000Z 
+2026-10-21T15:07:47.9341170Z ##[group]test/c-align.test.ts:
+2026-10-21T15:07:47.9813020Z (pass) c: alignment changes only whitespace between tokens and refuses nothing [2.85ms]
+2026-10-21T15:07:48.0990670Z (pass) c: the aligned table and trap files parse like their sources [117.73ms]
+2026-10-21T15:07:48.1014350Z (pass) c: alignment is idempotent — running twice gives the same result [2.40ms]
+2026-10-21T15:07:48.1026820Z (pass) c: matches the golden aligned file [1.20ms]
+2026-10-21T15:07:48.1030220Z (pass) c: the already aligned golden has 0 changes [0.38ms]
+2026-10-21T15:07:48.1031000Z (pass) c: the string/comment trap file has 0 changes [0.12ms]
+2026-10-21T15:07:48.1038180Z (pass) c: 2-row groups are not aligned [0.67ms]
+2026-10-21T15:07:48.1039690Z (pass) C profiler specific properties > designated initializers align the dotfield column to the actual longest cell [0.13ms]
+2026-10-21T15:07:48.1040450Z (pass) C profiler specific properties > function-like macros NAME(args) are not table rows [0.05ms]
+2026-10-21T15:07:48.1041160Z (pass) C profiler specific properties > pointer stars attach to the name cell and type/name columns align [0.08ms]
+2026-10-21T15:07:48.1041930Z (pass) C profiler specific properties > macro tables align only the name column and never pad the replacement list [0.07ms]
+2026-10-21T15:07:48.1042640Z (pass) C profiler specific properties > bundle rows align inner cell columns to each longest cell [0.10ms]
+2026-10-21T15:07:48.1043680Z (pass) C profiler specific properties > refuses bundle rows with nesting, assignment or calls, and single-cell rows [0.10ms]
+2026-10-21T15:07:48.1044420Z (pass) C profiler specific properties > refuses return statements and backslash-continued macros [0.03ms]
+2026-10-21T15:07:48.1054160Z 
+2026-10-21T15:07:48.1062910Z ##[endgroup]
+2026-10-21T15:07:48.1063250Z 
+2026-10-21T15:07:48.1063990Z ##[group]test/harness.test.ts:
+2026-10-21T15:07:48.1101040Z (pass) parseBunTestOutput > parses pass, skip, fail and the Ran summary [0.14ms]
+2026-10-21T15:07:48.1101560Z (pass) parseBunTestOutput > returns null without a summary [0.02ms]
+2026-10-21T15:07:48.1103410Z (pass) validateRunRecord > accepts a record that satisfies the minimal contract [0.20ms]
+2026-10-21T15:07:48.1104690Z (pass) validateRunRecord > refuses schemaVersion, runId and stage entry violations [0.20ms]
+2026-10-21T15:07:48.1111350Z (pass) store > after append, records read back oldest first [0.64ms]
+2026-10-21T15:07:48.1117410Z (pass) store > latest is updated only by complete runs and reads back [0.57ms]
+2026-10-21T15:07:48.1118020Z (pass) store > completion counting distinguishes ran, failed and skipped [0.05ms]
+2026-10-21T15:07:48.1128890Z (pass) parseRelTable > reads REL0–REL12 from docs/development/plan.md in order [0.78ms]
+2026-10-21T15:07:48.1130340Z (pass) parseRelTable > evidence joining never changes the human verdict [0.17ms]
+2026-10-21T15:07:48.1130910Z 
+2026-10-21T15:07:48.1131370Z ##[endgroup]
+2026-10-21T15:07:48.1131560Z 
+2026-10-21T15:07:48.1131960Z ##[group]test/line-write-safety.test.ts:
+2026-10-21T15:07:48.2455660Z (pass) safe file replacement in the line-engine CLI > read mode never changes the original, and write mode keeps the mode and cleanup contract [131.93ms]
+2026-10-21T15:07:48.2749920Z (pass) safe file replacement in the line-engine CLI > --groups --write is exploration-only and never changes the original [29.38ms]
+2026-10-21T15:07:48.3190490Z (pass) safe file replacement in the line-engine CLI > refuses symbolic and hard link targets while preserving the original bytes [41.11ms]
+2026-10-21T15:07:48.3862490Z (pass) safe file replacement in the line-engine CLI > an external edit during the parser run keeps the external bytes and refuses the commit [70.10ms]
+2026-10-21T15:07:48.3862970Z 
+2026-10-21T15:07:48.3863340Z ##[endgroup]
+2026-10-21T15:07:48.3863450Z 
+2026-10-21T15:07:48.3863670Z ##[group]test/surface.test.ts:
+2026-10-21T15:07:48.3892270Z (pass) grammar ID registry > the tables in grammar.md match the list in grammar-ids.ts [0.19ms]
+2026-10-21T15:07:48.3893930Z (pass) surface forms — TypeScript > every engine kind maps to a pattern [0.12ms]
+2026-10-21T15:07:48.3895550Z (pass) surface forms — TypeScript > an enum with values is MAP, names only is LIST [0.04ms]
+2026-10-21T15:07:48.3896610Z (pass) surface forms — TypeScript > declaration and assignment are different patterns and not ambiguous [0.02ms]
+2026-10-21T15:07:48.3897320Z (pass) surface forms — TypeScript > an unknown kind is not mapped (target of alarm A8) [0.01ms]
+2026-10-21T15:07:48.3940520Z (pass) surface forms — Python > every table in the fixture maps to a pattern [4.63ms]
+2026-10-21T15:07:48.3941310Z (pass) surface forms — Python > `a = v`, where declaration and assignment share syntax, is marked ambiguous [0.09ms]
+2026-10-21T15:07:48.3941950Z (pass) surface-form data validation > every shipped data file is valid [0.09ms]
+2026-10-21T15:07:48.3943920Z (pass) surface-form data validation > refuses IDs missing from the grammar, forms with no matcher or two, and other language names [0.21ms]
+2026-10-21T15:07:48.3944510Z 
+2026-10-21T15:07:48.3944770Z ##[endgroup]
+2026-10-21T15:07:48.3944880Z 
+2026-10-21T15:07:48.3945110Z ##[group]test/structured-pipeline.test.ts:
+2026-10-21T15:07:48.4004240Z (pass) json previews, applies, preserves unsupported bytes, and reaches a fixed point [5.11ms]
+2026-10-21T15:07:48.4201660Z (pass) yaml previews, applies, preserves unsupported bytes, and reaches a fixed point [19.63ms]
+2026-10-21T15:07:48.4218220Z (pass) structured pipeline refuses missing approval without changing the source [1.74ms]
+2026-10-21T15:07:48.4248210Z (pass) invalid UTF-8 is refused before standalone or Align can replace the original bytes [2.96ms]
+2026-10-21T15:07:48.4259680Z (pass) invalid json refuses before approval and stays unchanged [1.20ms]
+2026-10-21T15:07:48.4274850Z (pass) invalid yaml refuses before approval and stays unchanged [1.49ms]
+2026-10-21T15:07:48.4275120Z 
+2026-10-21T15:07:48.4281710Z ##[endgroup]
+2026-10-21T15:07:48.4281910Z 
+2026-10-21T15:07:48.4282180Z ##[group]test/typescript-matrix-boundaries.test.ts:
+2026-10-21T15:07:48.7799120Z (pass) matrix syntax boundaries > shares the receiver-method dot as well as outer call parentheses [351.27ms]
+2026-10-21T15:07:49.2116260Z (pass) matrix syntax boundaries > matches the final method separator while preserving nested receivers and argument dots [431.74ms]
+2026-10-21T15:08:49.2430000Z killed 1 dangling process
+2026-10-21T15:08:49.2461130Z 20 | 
+2026-10-21T15:08:49.2461430Z 21 | 	workspaces.push(root);
+2026-10-21T15:08:49.2469860Z 22 | 	writeFileSync(file, before);
+2026-10-21T15:08:49.2470190Z 23 | 
+2026-10-21T15:08:49.2471210Z 24 | 	const first = Bun.spawnSync(["bun", script, "--file", "sample.ts", "--write", "--json"], { cwd: root });
+2026-10-21T15:08:49.2471650Z 25 | 	expect(first.exitCode).toBe(0);
+2026-10-21T15:08:49.2472080Z                              ^
+2026-10-21T15:08:49.2472400Z error: expect(received).toBe(expected)
+2026-10-21T15:08:49.2472550Z 
+2026-10-21T15:08:49.2472610Z Expected: 0
+2026-10-21T15:08:49.2472740Z Received: null
+2026-10-21T15:08:49.2472820Z 
+2026-10-21T15:08:49.2473290Z       at align (/Users/runner/work/rowgrid/rowgrid/test/typescript-matrix-boundaries.test.ts:25:25)
+2026-10-21T15:08:49.2474080Z       at <anonymous> (/Users/runner/work/rowgrid/rowgrid/test/typescript-matrix-boundaries.test.ts:67:18)
+2026-10-21T15:08:49.2474440Z 
+2026-10-21T15:08:49.2494210Z ##[error]Expected: 0
+Received: null
+
+      at align (/Users/runner/work/rowgrid/rowgrid/test/typescript-matrix-boundaries.test.ts:25:25)
+      at <anonymous> (/Users/runner/work/rowgrid/rowgrid/test/typescript-matrix-boundaries.test.ts:67:18)
+2026-10-21T15:08:49.2497090Z (fail) matrix syntax boundaries > keeps member-boundary comments outside the call-envelope contract [60034.08ms]
+2026-10-21T15:08:49.2497560Z   ^ this test timed out after 60000ms.
+2026-10-21T15:08:49.5851290Z (pass) matrix syntax boundaries > shares return columns across declarations and blank lines without moving statements [339.39ms]
+2026-10-21T15:08:49.7622800Z (pass) matrix syntax boundaries > comments, unsupported guards, terminal statements and nested declarations break guard regions [176.90ms]
+2026-10-21T15:08:50.1098360Z (pass) matrix syntax boundaries > subjectCall-shaped guards share return columns across while, statements and multiline declarations [347.77ms]
+2026-10-21T15:08:50.4320250Z (pass) matrix syntax boundaries > callLayer-shaped guards bridge a for block whose own guards have independent return columns [322.17ms]
+2026-10-21T15:08:50.7418800Z (pass) matrix syntax boundaries > does not pad commented condition boundaries or span nested guard scopes [309.83ms]
+2026-10-21T15:08:51.0670750Z (pass) matrix syntax boundaries > aligns different callable envelopes and preserves the trailing non-null assertion [325.17ms]
+2026-10-21T15:08:51.4044540Z (pass) matrix syntax boundaries > keeps heterogeneous arguments opaque, including different arities, literals and nested calls [337.37ms]
+2026-10-21T15:08:51.7362250Z (pass) matrix syntax boundaries > zero argument calls retain compact parentheses while sharing the opening column [331.72ms]
+2026-10-21T15:08:52.0865980Z (pass) matrix syntax boundaries > keeps await/new/optional/type-argument/computed calls outside the new envelope contract [350.39ms]
+2026-10-21T15:08:52.7353340Z (pass) matrix syntax boundaries > preserves the approved same-call key and output while new envelopes have distinct keys [648.72ms]
+2026-10-21T15:08:52.7353760Z 
+2026-10-21T15:08:52.7354180Z ##[endgroup]
+2026-10-21T15:08:52.7354300Z 
+2026-10-21T15:08:52.7354540Z ##[group]test/usage.test.ts:
+2026-10-21T15:08:52.7399790Z (pass) AI usage > estimated tokens: 1 per 4 ASCII characters, 1 per CJK character [0.09ms]
+2026-10-21T15:08:52.7401390Z (pass) AI usage > reads the token count, model and reasoning effort Codex leaves [0.20ms]
+2026-10-21T15:08:52.7402300Z (pass) AI usage > sums by model, source and event, and marks rows that include estimates [0.11ms]
+2026-10-21T15:08:52.7404010Z (pass) AI usage > accuracy: compares only types that have both an AI suggestion and a human verdict [0.14ms]
+2026-10-21T15:08:52.7404460Z 
+2026-10-21T15:08:52.7404710Z ##[endgroup]
+2026-10-21T15:08:52.7404800Z 
+2026-10-21T15:08:52.7405080Z ##[group]test/installer-platform.test.ts:
+2026-10-21T15:08:52.7412950Z (pass) Windows discovery skips an unrelated codex.exe shadow before the standard OpenAI npm entry [0.11ms]
+2026-10-21T15:08:52.7413790Z (pass) Windows discovery preserves a verified native Codex ahead of a later npm entry [0.04ms]
+2026-10-21T15:08:52.7414850Z (pass) Windows native candidates fail closed on errors, signals, nonzero status and ambiguous identities [0.15ms]
+2026-10-21T15:08:52.7678800Z (pass) Windows discovery can continue to a later verified native executable using real bounded process probes [26.24ms]
+2026-10-21T15:08:55.7842840Z (pass) real overflowing and timed-out identity probes continue to the known npm entry [3016.42ms]
+2026-10-21T15:08:55.7843610Z (pass) other native hosts retain discovery without the Codex identity probe [0.12ms]
+2026-10-21T15:08:55.7843860Z 
+2026-10-21T15:08:55.7844130Z ##[endgroup]
+2026-10-21T15:08:55.7844210Z 
+2026-10-21T15:08:55.7844390Z ##[group]test/corpus-candidates.test.ts:
+2026-10-21T15:08:55.7884680Z (pass) corpus candidate builder > representatives secure source diversity first and keep status priority within each pick [0.16ms]
+2026-10-21T15:08:56.0730210Z (pass) corpus candidate builder > safely copies the real pinned checkout, verifies before and after, and reruns identically [284.50ms]
+2026-10-21T15:08:56.2739660Z (pass) corpus candidate builder > a failed representative extraction is kept without a fake after and every key keeps its candidate [200.83ms]
+2026-10-21T15:08:56.6344020Z (pass) corpus candidate builder > TypeScript representatives also verify the native aligner's parser status and fixed point [360.46ms]
+2026-10-21T15:08:56.7297490Z (pass) corpus candidate builder > an unchanged representative states that the parser did not run, and a review document is written [95.39ms]
+2026-10-21T15:08:56.7780700Z (pass) corpus candidate builder > does not replace a valid existing cache when the observation linkage or source hash differs [48.25ms]
+2026-10-21T15:08:56.7781360Z 
+2026-10-21T15:08:56.7781670Z ##[endgroup]
+2026-10-21T15:08:56.7781760Z 
+2026-10-21T15:08:56.7781950Z ##[group]test/corpus.test.ts:
+2026-10-21T15:08:56.7796640Z (pass) pinned corpus > every manifest source is pinned by repository, 40-hex commit and a permissive license [0.26ms]
+2026-10-21T15:08:56.7797640Z (pass) pinned corpus > the four TypeScript and four Python candidates from the plan are pinned [0.07ms]
+2026-10-21T15:08:56.7798480Z (pass) pinned corpus > local-only sources are gitignored and, when present, validate like manifest sources [0.07ms]
+2026-10-21T15:08:56.7799270Z (pass) pinned corpus > the fetcher merges manifest and local sources and refuses a duplicate id [0.12ms]
+2026-10-21T15:08:56.7799600Z 
+2026-10-21T15:08:56.7799850Z ##[endgroup]
+2026-10-21T15:08:56.7799950Z 
+2026-10-21T15:08:56.7800130Z ##[group]test/python-align.test.ts:
+2026-10-21T15:08:56.8023650Z (pass) python: alignment changes only whitespace between tokens and refuses nothing [2.04ms]
+2026-10-21T15:08:56.8733920Z (pass) python: the aligned table and trap files parse like their sources [70.94ms]
+2026-10-21T15:08:56.8768510Z (pass) python: alignment is idempotent — running twice gives the same result [0.98ms]
+2026-10-21T15:08:56.8771620Z (pass) python: matches the golden aligned file [0.59ms]
+2026-10-21T15:08:56.8772050Z (pass) python: the already aligned golden has 0 changes [0.31ms]
+2026-10-21T15:08:56.8772600Z (pass) python: the string/comment trap file has 0 changes [0.06ms]
+2026-10-21T15:08:56.8773110Z (pass) python: 2-row groups are not aligned [0.58ms]
+2026-10-21T15:08:56.8773970Z (pass) python profile specific properties > dictionary rows decompose into key, colon, value, comma axes and align the colon column [0.16ms]
+2026-10-21T15:08:56.8774950Z (pass) python profile specific properties > annotated assignments align name and type columns and never pad the trailing value [0.08ms]
+2026-10-21T15:08:56.8776050Z (pass) python profile specific properties > tightly written assignments also form a table and are fixed to conventional gaps (none after colon, spaces around equal) [0.06ms]
+2026-10-21T15:08:56.9011030Z (pass) python profile specific properties > attribute assignments form a table without changing Python syntax or non-whitespace tokens [24.84ms]
+2026-10-21T15:08:56.9013080Z (pass) python profile specific properties > assigned calls decompose into the call cell and argument columns [0.31ms]
+2026-10-21T15:08:56.9015300Z (pass) python profile specific properties > a call wrapping one flat bundle aligns the bundle cells inside the call [0.11ms]
+2026-10-21T15:08:56.9018410Z (pass) python profile specific properties > calls with a different callee, a different arity, nesting or keyword arguments never share a table [0.15ms]
+2026-10-21T15:08:56.9020760Z (pass) python profile specific properties > the profile refuses control-flow, call and line-continuation rows so they never form tables [0.05ms]
+2026-10-21T15:08:56.9023100Z (pass) python profile specific properties > bundle rows align inner cell columns, and rows with different bracket pairs split tables [0.12ms]
+2026-10-21T15:08:56.9025310Z (pass) python profile specific properties > the profile refuses bundle rows with nesting, indexing, assignment, empty cells or f-strings [0.10ms]
+2026-10-21T15:08:56.9027280Z (pass) python profile specific properties > keeps == comparisons inside values and refuses values starting with == [0.11ms]
+2026-10-21T15:08:56.9027790Z 
+2026-10-21T15:08:56.9028120Z ##[endgroup]
+2026-10-21T15:08:56.9028230Z 
+2026-10-21T15:08:56.9028460Z ##[group]test/release-candidate.test.ts:
+2026-10-21T15:08:56.9939630Z (pass) candidate staging records the exact prebuilt bytes and commit without rebuilding [90.45ms]
+2026-10-21T15:08:57.0318930Z (pass) candidate staging refuses an archive for another package [37.95ms]
+2026-10-21T15:08:57.1069330Z (pass) smoke refuses altered archive bytes and a replaced metadata digest before installation [74.74ms]
+2026-10-21T15:08:57.1857510Z (pass) smoke requires a separate build digest and refuses an escaping archive filename [79.05ms]
+2026-10-21T15:08:57.1857840Z 
+2026-10-21T15:08:57.1858100Z ##[endgroup]
+2026-10-21T15:08:57.1858180Z 
+2026-10-21T15:08:57.1858360Z ##[group]test/plugin-hook.test.ts:
+2026-10-21T15:08:57.5539380Z (pass) hooks.json commands run the configured local CLI through the shim and leave no files in the project [367.57ms]
+2026-10-21T15:08:57.5583450Z (pass) the plugin refuses an unconfigured engine before invoking a runtime or registry [4.43ms]
+2026-10-21T15:08:57.5583770Z 
+2026-10-21T15:08:57.5584040Z ##[endgroup]
+2026-10-21T15:08:57.5584130Z 
+2026-10-21T15:08:57.5584320Z ##[group]test/report.test.ts:
+2026-10-21T15:08:57.5600500Z (pass) check report — safety checks > the same input yields the same report [0.36ms]
+2026-10-21T15:08:57.5601370Z (pass) check report — safety checks > changed re-parse diagnostics fail S2 and the result fails [0.06ms]
+2026-10-21T15:08:57.5602280Z (pass) check report — safety checks > rechecking after a write fails S3 when edits remain and passes otherwise [0.08ms]
+2026-10-21T15:08:57.5603330Z (pass) check report — safety checks > two-row auto-fix is allowed only for approved kinds (S4) [0.08ms]
+2026-10-21T15:08:57.5604350Z (pass) check report — safety checks > call envelope pairs meet the row floor while return guard pairs do not [0.06ms]
+2026-10-21T15:08:57.5605220Z (pass) check report — alarms > A1: once per line outside a table, once per group inside [0.12ms]
+2026-10-21T15:08:57.5606230Z (pass) check report — alarms > A2: between the soft and hard limits is an allowed-range alarm [0.07ms]
+2026-10-21T15:08:57.5607270Z (pass) check report — alarms > A3: points at the longest row when it is much wider than the second [0.06ms]
+2026-10-21T15:08:57.5611670Z (pass) check report — alarms > A4 cannot decompose, A6 two-row pair and A9 large change come from group state [0.53ms]
+2026-10-21T15:08:57.5622460Z (pass) check report — alarms > A5 ambiguous and A8 no mapping come from the surface-form data [0.19ms]
+2026-10-21T15:08:57.5623350Z (pass) check report — alarms > A7: when alignment spaces far exceed the content [0.06ms]
+2026-10-21T15:08:57.5623900Z (pass) check report — alarms > a clean table without alarms [0.05ms]
+2026-10-21T15:08:57.5624900Z (pass) check report — exact noncontiguous row membership > intervening long padded preparation lines stay outside guard width and padding calculations [0.13ms]
+2026-10-21T15:08:57.5626280Z (pass) check report — exact noncontiguous row membership > nested groups own their rows even when an outer guard region spans the whole nested block [0.11ms]
+2026-10-21T15:08:57.6544840Z (pass) check report — exact noncontiguous row membership > CLI emits exact outer and inner guard lines while ordinary groups keep the legacy schema [92.57ms]
+2026-10-21T15:08:57.6547470Z (pass) check report — output > the description column of the safety-check lines lines up in one column by display width [0.36ms]
+2026-10-21T15:08:57.7033830Z (pass) check report — output > CLI: checking the Python fixture in check mode passes the safety checks with exit code 0 [48.56ms]
+2026-10-21T15:08:57.7134150Z (pass) check report — baseline comparison > the same file gives all existing alarms and 0 new alarms [0.28ms]
+2026-10-21T15:08:57.7136480Z (pass) check report — baseline comparison > pairs the same alarm even when lines shift or only whitespace changes [0.07ms]
+2026-10-21T15:08:57.7138750Z (pass) check report — baseline comparison > one resolved and one introduced gives 1 new and 1 resolved alarm (closes the total-count loophole) [0.05ms]
+2026-10-21T15:08:57.7140910Z (pass) check report — baseline comparison > several identical alarms are paired only as many times as they exist [0.07ms]
+2026-10-21T15:08:57.8706610Z (pass) check report — baseline comparison > CLI: with --baseline only alarms introduced by the edit are new, and with --baseline none all are new [166.77ms]
+2026-10-21T15:08:57.8707490Z 
+2026-10-21T15:08:57.8707780Z ##[endgroup]
+2026-10-21T15:08:57.8707870Z 
+2026-10-21T15:08:57.8708050Z ##[group]test/normalize-imports.test.ts:
+2026-10-21T15:08:57.9517260Z (pass) import table cells > reserves the type head and shares { } from ; columns across the blocks of a section [78.05ms]
+2026-10-21T15:08:58.0238500Z (pass) import table cells > an import over 120 columns goes vertical inside the table [74.44ms]
+2026-10-21T15:08:58.1033680Z (pass) import table cells > an import whose names outgrow the next widest by 20 goes vertical [79.45ms]
+2026-10-21T15:08:58.1771920Z (pass) import table cells > when long names and a long module on different rows push the table past 120, the widest names go vertical [73.82ms]
+2026-10-21T15:08:58.3324590Z (pass) import table cells > imports without braces stay as written and a lone brace import stays compact [155.25ms]
+2026-10-21T15:08:58.4095110Z (pass) import table cells > already aligned rows are recognized and realigned, not skipped [77.07ms]
+2026-10-21T15:08:58.4823000Z (pass) import table cells > files without semicolons get no ; column [72.81ms]
+2026-10-21T15:08:58.4826840Z 
+2026-10-21T15:08:58.4827390Z ##[endgroup]
+2026-10-21T15:08:58.4827490Z 
+2026-10-21T15:08:58.4828820Z ##[group]test/shape-observation.test.ts:
+2026-10-21T15:08:58.6589080Z (pass) code shape observation > produces the same JSONL regardless of file order and repeated runs [173.35ms]
+2026-10-21T15:08:58.7393120Z (pass) code shape observation > the real parser version and config fingerprint are part of the snapshot invalidation input [80.36ms]
+2026-10-21T15:08:58.7804960Z (pass) code shape observation > assignment is CHANGE, comparison and control flow are unknown, and debugger is notApplicable [41.20ms]
+2026-10-21T15:08:58.8211100Z (pass) code shape observation > missing files and JavaScript files do not stop collecting other files [40.43ms]
+2026-10-21T15:08:58.8610960Z (pass) code shape observation > distinguishes same-named, nested and same-line functions by range and parent [39.89ms]
+2026-10-21T15:08:58.9439860Z (pass) code shape observation > reports a broken file as partial and keeps the last completed cache [83.06ms]
+2026-10-21T15:08:59.0734640Z (pass) code shape observation > keeps only the current and previous completed snapshot and does not rotate for the same run [129.43ms]
+2026-10-21T15:08:59.1110960Z (pass) code shape observation > arrows and bodiless declarations do not become units and are counted as unsupported [37.59ms]
+2026-10-21T15:08:59.1128970Z (pass) code shape observation > only reads the source and approval DB and refuses paths outside the root and cache symbolic links [1.86ms]
+2026-10-21T15:08:59.1129410Z 
+2026-10-21T15:08:59.1129720Z ##[endgroup]
+2026-10-21T15:08:59.1129840Z 
+2026-10-21T15:08:59.1130090Z ##[group]test/cli.test.ts:
+2026-10-21T15:08:59.2160580Z (pass) public CLI > help and version work through the real entry API [101.35ms]
+2026-10-21T15:08:59.3214280Z (pass) public CLI > init preserves existing user files and never overwrites the config when rerun [105.37ms]
+2026-10-21T15:08:59.4272540Z (pass) public CLI > a corrupt or unknown config fails explicitly and is preserved [105.86ms]
+2026-10-21T15:08:59.5199610Z (pass) public CLI > check inspects one Python file read-only without init and returns 1 when misaligned [92.69ms]
+2026-10-21T15:09:00.0770050Z (pass) public CLI > check validates syntax with no groups and preserves invalid TypeScript and Python byte-for-byte [556.37ms]
+2026-10-21T15:09:00.1858910Z (pass) public CLI > check reports missing and failed Python parsers as errors and never writes the target [109.52ms]
+2026-10-21T15:09:00.2655560Z (pass) public CLI > check displays effective project approval facts without claiming write verification [79.68ms]
+2026-10-21T15:09:00.4692700Z (pass) public CLI > check admits strict JSON and YAML syntax without inheriting existing approvals [203.64ms]
+2026-10-21T15:09:00.6228600Z (pass) public CLI > check keeps valid unsupported YAML distinct from invalid syntax and rejects structured language mismatches [153.56ms]
+2026-10-21T15:09:00.7427410Z (pass) public CLI > plain-text check retains JSON and YAML unsupported-layout reasons [119.88ms]
+2026-10-21T15:09:00.8501970Z (pass) public CLI > check rejects invalid UTF-8 JSON and YAML without changing their bytes [107.47ms]
+2026-10-21T15:09:01.1313880Z (pass) public CLI > guarded run and lifecycle post hook refuse invalid syntax with no layout groups [281.18ms]
+2026-10-21T15:09:01.6768500Z (pass) public CLI > a clean project previews and formats with the bundled approval and no formatter [545.45ms]
+2026-10-21T15:09:02.4176990Z (pass) public CLI > with a verified test approval and formatter, GUIDE, dry-run and the real format use the same pipeline [740.83ms]
+2026-10-21T15:09:03.3438290Z (pass) public CLI > standalone CLI alignment needs approval but no external formatter [926.11ms]
+2026-10-21T15:09:03.5251220Z (pass) public CLI > GUIDE uses the bundled preset but never exposes candidate overrides as guidance [181.31ms]
+2026-10-21T15:09:04.3862810Z (pass) public CLI > candidate, rejected, conflict and stale approvals refuse format and preserve the original [861.12ms]
+2026-10-21T15:09:04.4390400Z (pass) public CLI > doctor refuses a missing Python even when the bundled approval data is present [52.75ms]
+2026-10-21T15:09:04.8449280Z (pass) public CLI > doctor and guarded run do not require Python for a JSON-only project [405.88ms]
+2026-10-21T15:09:04.9066910Z (pass) public CLI > doctor separates runnable state, format configuration and overall release readiness [61.75ms]
+2026-10-21T15:09:05.0552280Z (pass) public CLI > usage errors still print exactly one JSON to stdout and refuse unknown languages and options [148.50ms]
+2026-10-21T15:09:05.1504770Z (pass) public CLI > refuses path escapes and symbolic links for init writes [95.23ms]
+2026-10-21T15:09:05.2459100Z (pass) public CLI > refuses parent-directory symbolic link escapes and languages disabled in the config [95.43ms]
+2026-10-21T15:09:05.5347160Z (pass) public CLI > fails when the explicit language differs from the extension and infers the language for TS files [288.47ms]
+2026-10-21T15:09:05.5347700Z 
+2026-10-21T15:09:05.5347970Z ##[endgroup]
+2026-10-21T15:09:05.5348230Z 
+2026-10-21T15:09:05.5348590Z ##[group]test/lifecycle-hook.test.ts:
+2026-10-21T15:09:05.6868890Z (pass) changes to unsupported files do not block later PostToolUse or Stop [142.88ms]
+2026-10-21T15:09:06.0780580Z (pass) Stop does not block again with stop_hook_active even when an alignment failure remains [391.14ms]
+2026-10-21T15:09:06.2120020Z (pass) plugin hooks use the cwd input and write records to the plugin data folder, not the project [133.88ms]
+2026-10-21T15:09:06.3998450Z (pass) project-local plugin data excludes only BoxBox's owned receipt namespace [187.76ms]
+2026-10-21T15:09:06.4489390Z (pass) hook errors never block work; they are only reported [49.17ms]
+2026-10-21T15:09:06.4489680Z 
+2026-10-21T15:09:06.4489960Z ##[endgroup]
+2026-10-21T15:09:06.4490050Z 
+2026-10-21T15:09:06.4490300Z ##[group]test/public-artifact.test.ts:
+2026-10-21T15:09:14.9837680Z (pass) public CLI local package artifact > the isolated installed boxbox bin ships approved standalone rules and safely honors project overrides [8533.33ms]
+2026-10-21T15:09:14.9838510Z 
+2026-10-21T15:09:14.9839160Z ##[endgroup]
+2026-10-21T15:09:14.9839280Z 
+2026-10-21T15:09:14.9839390Z 1 tests failed:
+2026-10-21T15:09:14.9840120Z (fail) matrix syntax boundaries > keeps member-boundary comments outside the call-envelope contract [60034.08ms]
+2026-10-21T15:09:14.9840740Z   ^ this test timed out after 60000ms.
+2026-10-21T15:09:14.9840950Z 
+2026-10-21T15:09:14.9841050Z  637 pass
+2026-10-21T15:09:14.9841190Z  1 fail
+2026-10-21T15:09:14.9841330Z  3291 expect() calls
+2026-10-21T15:09:14.9841640Z Ran 638 tests across 70 files. [194.41s]
+2026-10-21T15:09:14.9879700Z error: script "check" exited with code 1
+2026-10-21T15:09:14.9894530Z ##[error]Process completed with exit code 1.
+2026-10-21T15:09:14.9983620Z Post job cleanup.
+2026-10-21T15:09:15.1480340Z (node:6791) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-21T15:09:15.1482200Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-21T15:09:15.1585150Z Post job cleanup.
+2026-10-21T15:09:15.2856140Z [command]/opt/homebrew/bin/git version
+2026-10-21T15:09:15.2924730Z git version 2.56.0
+2026-10-21T15:09:15.2941490Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/036433d4-495a-4080-89fd-3f985dad3bba/.gitconfig'
+2026-10-21T15:09:15.2948890Z Temporarily overriding HOME='/Users/runner/work/_temp/036433d4-495a-4080-89fd-3f985dad3bba' before making global git config changes
+2026-10-21T15:09:15.2949730Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-21T15:09:15.2951950Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/rowgrid/rowgrid
+2026-10-21T15:09:15.3016690Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-21T15:09:15.3071950Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-21T15:09:15.3720810Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-21T15:09:15.3783640Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-21T15:09:15.4449790Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-21T15:09:15.4500610Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-21T15:09:15.5275800Z Cleaning up orphan processes
+2026-10-21T15:09:16.9452720Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff, actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

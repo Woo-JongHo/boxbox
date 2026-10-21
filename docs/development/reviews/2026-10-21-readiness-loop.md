@@ -123,4 +123,24 @@ The original scenario metadata lists intended hook requirements; it is not an ob
 
 Source commit `57231c13094e57dd69b2e18f4b7eb54ffd5e4d5c` was pushed to `feat/matrix-first-readiness`;
 [PR #5](https://github.com/Woo-JongHo/rowgrid/pull/5) preserves `main` and queues the existing verification workflow.
-The subsequent documentation commit adds native evidence; same-archive release-candidate CI remains to run.
+The subsequent documentation commit `3811e3498f64679a1ade31de3e5703d4a65ee5b8` adds native evidence.
+
+## Current-candidate CI recurrence — 2026-10-22 KST
+
+[Candidate run 39622560954](https://github.com/Woo-JongHo/rowgrid/actions/runs/39622560954) tested `3811e34`.
+Linux passed all 638 tests with no skips or failures. The first macOS attempt passed 637 and failed one:
+`matrix syntax boundaries > keeps member-boundary comments outside the call-envelope contract`. Its first
+alignment child did not complete within the 60-second test deadline; cleanup reported one dangling process and
+the assertion received a null exit code. [The raw job log](2026-10-21-readiness-loop-evidence/ci-macos-matrix-timeout.log)
+is retained. There is no observed alignment output mismatch, and the cause is not yet established.
+
+Issue 007 is reopened. An unchanged failed-job retry was requested to distinguish reproducibility from a proposed
+fix; it does not erase the failure. Packaging and same-archive smoke remain downstream of verification. Local
+repetition and child-process capture investigate the stall without raising the test deadline or changing runtime
+behavior speculatively. GitHub runner queue delays are recorded separately from this test failure.
+
+The [local diagnosis](2026-10-21-readiness-loop-evidence/ts-timeout-diagnosis/diagnostic-report.md) records 640 direct CLI runs, 200 filtered-test runs, one uncaptured 30-second stall among the first 40 full-file runs, and 200 subsequent captured full-file runs without failure. No runtime/test/deadline change was made. The uncaptured local stall cannot be asserted to share the CI failure's cause. Issue 007 remains investigating.
+
+The separate [PR verification run](https://github.com/Woo-JongHo/rowgrid/actions/runs/39622557718) completed with Linux success and macOS cancelled before any step ran. GitHub's [recorded annotation](2026-10-21-readiness-loop-evidence/ci-pr-runner-capacity.txt) reports that no hosted runner acquired the job and notes macOS arm64 capacity constraints. This infrastructure failure is distinct from the earlier executed candidate test timeout.
+
+The [native authentication handoff](2026-10-21-readiness-loop-evidence/native-auth-handoff.md) provides checked disposable-profile commands, candidate identity and the remaining HUD/hook acceptance scenarios. Its Guide/Align baseline explicitly does not claim genuine Write/Refactor behavior coverage. Temporary paths must be rechecked before use.

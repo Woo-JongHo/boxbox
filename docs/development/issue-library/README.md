@@ -30,8 +30,8 @@ capture the subsequent dot-boundary and workflow correction, including 38 passin
 TypeScript tests. Record 006 tracks the report defect found in the initial Sonnet review.
 Record 007 preserves an integrated-suite timeout and the unchanged targeted retry.
 Records 001–006 are resolved within their documented support scope after the final 571-pass,
-5-skip, zero-failure repository check and independent review. Record 007 is deferred: the
-unchanged retry and serialized suite passed, but the deadline's underlying cause is unconfirmed.
+5-skip, zero-failure repository check and independent review. Record 007 is investigating again: the earlier unchanged retry and serialized suite passed, but a later macOS CI
+run hit a 60-second child-process deadline. The underlying cause remains unconfirmed.
 Record 008 is resolved after source migration, isolated copy/bundle checks and final GLM review. Records 010 and 012
 are also resolved within their documented source scope after the post-native-fix integrated check and GLM closure.
 HUD native acceptance remains separate in records 011 and 013.
