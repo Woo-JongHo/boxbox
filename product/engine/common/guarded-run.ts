@@ -1,5 +1,5 @@
-import      { randomUUID, createHash             } from "node:crypto"        ;
-import      { spawn, spawnSync                   } from "node:child_process" ;
+import      { randomUUID, createHash             } from "node:crypto"              ;
+import      { spawn, spawnSync                   } from "node:child_process"       ;
 import      {
               existsSync                       ,
               closeSync                        ,
@@ -14,14 +14,14 @@ import      {
               renameSync                       ,
               statSync                         ,
               writeFileSync                    ,
-                                                 } from "node:fs"            ;
-import      { extname, isAbsolute, join, resolve } from "node:path"          ;
-import      { tmpdir                             } from "node:os"            ;
-import type { FileResult                         } from "./result-json.ts"   ;
-import      { acquireProcessLock                 } from "./process-lock.ts"  ;
+                                                 } from "node:fs"                  ;
+import      { extname, isAbsolute, join, resolve } from "node:path"                ;
+import      { tmpdir                             } from "node:os"                  ;
+import type { FileResult                         } from "@/common/result-json.ts"  ;
+import      { acquireProcessLock                 } from "@/common/process-lock.ts" ;
 
 const excluded         = new Set([".git", ".boxbox", "node_modules", ".venv", "venv", "__pycache__", "dist", "build"])                                                      ;
-export const supported = new Set([".ts", ".tsx", ".mts", ".cts", ".py"])                                                                                                    ;
+export const supported = new Set([".ts", ".tsx", ".mts", ".cts", ".py", ".json", ".yaml", ".yml"])                                                                          ;
 const code             = new Set([...supported, ".js", ".jsx", ".mjs", ".cjs", ".java", ".go", ".rs", ".c", ".h", ".cpp", ".hpp", ".swift", ".kt", ".yaml", ".yml", ".sh"]) ;
 
 export type Snapshot   = Record<string, string>                              ;
@@ -63,8 +63,8 @@ export function lockDirectory(root: string): string {
 }
 
 function hashFile(path: string): string {
-	const hash       = createHash("sha256")          ;
-	const descriptor = openSync(path, "r")           ;
+	const hash       = createHash        ("sha256" ) ;
+	const descriptor = openSync          (path, "r") ;
 	const buffer     = Buffer.allocUnsafe(64 * 1024) ;
 	try {
 		for (;;) {
@@ -139,10 +139,11 @@ function options(args: readonly string[], run: boolean) {
 	return { root: resolve(root), json, command };
 }
 
-export function snapshot(root: string, prefix = "", result: Snapshot = {}, ignored: string[] = []): Snapshot {
+export function snapshot(root: string, prefix = "", result: Snapshot = {}, ignored: string[] = [], excludedDirectories: ReadonlySet<string> = new Set()): Snapshot {
 	for (const entry of readdirSync(join(root, prefix), { withFileTypes: true })) {
-		const file = join(prefix, entry.name);
-		if (entry.isDirectory() && !excluded.has(entry.name)) snapshot(root, file, result, ignored);
+		const file     = join   (prefix, entry.name) ;
+		const absolute = resolve(root, file        ) ;
+		if (entry.isDirectory() && !excluded.has(entry.name) && !excludedDirectories.has(absolute)) snapshot(root, file, result, ignored, excludedDirectories);
 		else if (entry.isSymbolicLink() && !code.has(extname(entry.name).toLowerCase())) ignored.push(file);
 		else if (code.has(extname(entry.name).toLowerCase())) {
 			if (!entry.isFile() && !entry.isSymbolicLink()) throw new Error("Non-regular source file cannot be checked");
@@ -195,7 +196,7 @@ function emit(value: Record<string, unknown>, json: boolean): void {
 export async function guardedRun(args: readonly string[], preflight: Preflight, inspect: Inspection, engineVersion: string): Promise<number> {
 	const { root, json, command } = options(args, true);
 	const directory = runDirectory(root) ;
-	const id        = randomUUID()       ;
+	const id        = randomUUID  ()     ;
 	const record = {
 		schemaVersion: 1, tool: "boxbox", command: "run", runId: id, root, engineVersion,
 		runtime: { node: process.versions.node, bunVersion: process.versions.bun ?? null },

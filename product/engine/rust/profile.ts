@@ -16,12 +16,12 @@
  * UpperCamelCase convention. Bundle rows accept only `(…)`/`[…]` rows with two or more cells, and are refused when
  * nesting or assignment remains inside or a cell is a path, lifetime or type name.
  */
-import type { CodeSyntax     } from "../common/code-text.ts"    ;
+import type { CodeSyntax     } from "@/common/code-text.ts"    ;
 import type {
               LineProfiler ,
               RowProfile   ,
               Slot         ,
-                             } from "../common/table-engine.ts" ;
+                             } from "@/common/table-engine.ts" ;
 
 const RUST_SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],
@@ -160,9 +160,9 @@ const letPlainRow = (code: string, indices: RegExpIndicesArray): RowProfile | nu
 const variantRow = (code: string, indices: RegExpIndicesArray): RowProfile | null => {
 	const name = cellOf(code, indices, 2);
 	// Variant names are identified by the UpperCamelCase convention — lowercase may be a function call, so refuse.
-	if (!/^[A-Z]/u.test(name)) return null;
+	if (!/^[A-Z]/u.test(name))           return null;
 	const gaps = gapsOf(code, indices, [3, 5, 6, 8]);
-	if (gaps === null) return null;
+	if (gaps === null)                   return null;
 	const hasParen = indices[4] !== undefined ;
 	const hasValue = indices[7] !== undefined ;
 	const value    = cellOf(code, indices, 7) ;
@@ -203,14 +203,14 @@ const armRow = (code: string, indices: RegExpIndicesArray): RowProfile | null =>
 function bundleProfile(code: string, masked: string): RowProfile | null {
 	const match   = GROUP.exec(masked) ;
 	const indices = match?.indices     ;
-	if (!match || !indices) return null;
+	if (!match || !indices)                                          return null;
 	const interior   = indices[3] ;
 	const openRange  = indices[2] ;
 	const closeRange = indices[4] ;
-	if (!interior || !openRange || !closeRange) return null;
+	if (!interior || !openRange || !closeRange)                      return null;
 	const open = code.slice(openRange[0], openRange[1]);
 	if (CLOSE_OF[open] !== code.slice(closeRange[0], closeRange[1])) return null;
-	if (GROUP_UNSAFE.test(masked.slice(interior[0], interior[1]))) return null; // row with nesting, assignment or slice type remaining
+	if (GROUP_UNSAFE.test(masked.slice(interior[0], interior[1])))   return null; // row with nesting, assignment or slice type remaining
 
 	// Cut cell ranges by mask coordinates. Commas inside string/char cells are spaces in the mask, so they are not boundaries.
 	const bounds: Array<{ start: number; end: number }> = []          ;
@@ -227,7 +227,7 @@ function bundleProfile(code: string, masked: string): RowProfile | null {
 	const cells: Array<{ text: string; gap: string; commaGap: string; end: number }> = [];
 	for (const bound of bounds) {
 		const raw  = code.slice(bound.start, bound.end) ;
-		const text = raw.trim()                         ;
+		const text = raw .trim ()                       ;
 		if (text === "") return null; // empty cell from consecutive commas or after a trailing comma
 		const cellStart = bound.start + raw.indexOf(text);
 		if (text.startsWith('"') || text.startsWith("'")) {
@@ -282,27 +282,27 @@ export const RUST_ALIGNER: LineProfiler = {
 	profile(code: string, masked: string): RowProfile | null {
 		const tail = code.trimEnd();
 		if (tail === "" || /[[({]$/u.test(tail)) return null;
-		if (/^[ \t]*#/u.test(code)) return null;
+		if (/^[ \t]*#/u.test(code))              return null;
 		const head = masked.trimStart().match(/[A-Za-z_][A-Za-z0-9_]*/u)?.[0] ?? "";
-		if (RUST_HEAD_KEYWORDS.has(head)) return null;
+		if (RUST_HEAD_KEYWORDS.has(head))        return null;
 
 		const field = STRUCT_FIELD.exec(masked);
-		if (field?.indices) return fieldRow(code, field.indices);
+		if (field?.indices)                      return fieldRow(code, field.indices);
 
 		const letTyped = LET_TYPED.exec(masked);
-		if (letTyped?.indices) return letTypedRow(code, letTyped.indices);
+		if (letTyped?.indices)                   return letTypedRow(code, letTyped.indices);
 
 		const letPlain = LET_PLAIN.exec(masked);
-		if (letPlain?.indices) return letPlainRow(code, letPlain.indices);
+		if (letPlain?.indices)                   return letPlainRow(code, letPlain.indices);
 
 		const variant = ENUM_VARIANT.exec(masked);
-		if (variant?.indices) return variantRow(code, variant.indices);
+		if (variant?.indices)                    return variantRow(code, variant.indices);
 
 		const arm = MATCH_ARM.exec(masked);
-		if (arm?.indices) return armRow(code, arm.indices);
+		if (arm?.indices)                        return armRow(code, arm.indices);
 
 		const bundle = bundleProfile(code, masked);
-		if (bundle) return bundle;
+		if (bundle)                              return bundle;
 
 		return null;
 	},

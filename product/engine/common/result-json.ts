@@ -8,10 +8,12 @@ export const RESULT_SCHEMA_VERSION = 1;
 export type GroupState = "PASS" | "FIXABLE" | "SUGGEST" | "REFUSE";
 
 export interface ResultGroup {
-	readonly kind      : string            ;
-	readonly startLine : number            ;
-	readonly endLine   : number            ;
-	readonly rows      : number            ;
+	readonly kind      : string ;
+	readonly startLine : number ;
+	readonly endLine   : number ;
+	readonly rows      : number ;
+	/** Exact 1-based row lines for noncontiguous tables; absent means the inclusive start/end span. */
+	readonly rowLines? : readonly number[] ;
 	readonly axes      : readonly string[] ;
 	readonly state     : GroupState        ;
 	readonly edits     : number            ;
@@ -43,6 +45,8 @@ export interface FileResult {
 	readonly summary  : ResultSummary          ;
 	readonly groups   : readonly ResultGroup[] ;
 	readonly parse    : ResultParse            ;
+	/** Valid syntax outside automatic layout coverage; these rows remain unchanged. */
+	readonly unsupported?: readonly { readonly line: number; readonly reason: string }[];
 }
 
 export interface ResultEnvelope {

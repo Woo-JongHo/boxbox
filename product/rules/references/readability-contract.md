@@ -32,6 +32,38 @@ Therefore the longest code is not always the alignment basis. First decide wheth
 - **Sub-table**: an inner grid re-decomposed into name, separator and type when a repeated structure such as `:` appears again inside a cell.
 - **Alignment policy**: align contiguous repeated blocks of three or more comparable rows at minimum width. User-confirmed exceptions: `=` declaration tables and imports align from two rows. Other two-row groups are reported as pairs and never fixed automatically. Methods of a public Port split by JSDoc or different lifecycle responsibilities are not merged into one table. Preserve the `import`, `:`, `=>` and `case` axes of a reference file accepted by the user. The inner width of `( )` in a repeated function table is set by the actual longest argument, not by existing spaces; only short values are centered within that minimum width.
 
+## Column-sharing regions
+
+The matrix is defined by comparable syntax boundaries, not by whole-line length. A condition and a callee can have
+different widths while their corresponding `return` or call parentheses share a column. Scope the comparison first,
+then compute minimum widths from the cells in that region. A different expression is not automatically a different role.
+
+- **Early-return guards:** treat the start of `return` in `if (condition) return value;` as the `guard-return` gap axis.
+  In one immediate block, three or more supported guards can share that column across ordinary statements, including
+  declarations and loops, and blank lines. Preserve every statement in place. Only immediate sibling guards contribute
+  to the column width; a nested block owns its own widths. Comments between statements, unsupported guards (including
+  `else`), unconditional return/throw/break/continue and function/class declarations separate regions. A trailing
+  comment also separates that statement from the next guard region. The final
+  unconditional return is a different role.
+- **Different callees:** consecutive supported call-valued declarations can share their outer `(` and `)` columns even
+  when callee names or arities differ. The argument list is one cell in this outer table; compatible same-call rows can
+  additionally share inner argument columns. A trailing non-null assertion stays attached after `)`. Empty `()` stays
+  attached and unsupported wrappers keep their own shape. `declaration-call-envelope` has the declaration two-row floor.
+- **Member-call boundary:** split a supported property callee into `receiver | . | method`, then its call parentheses.
+  `call-member-dot` aligns the final receiver/method separator when at least two rows have that role. For example,
+  `Array.from` and `rows.filter` share the dot column as well as the parentheses. In `registry.rows.filter`, the receiver
+  is `registry.rows`; its inner dot remains inside that cell. A bare function has no member-dot cell. Decimal points,
+  string contents, optional chains and dots inside arguments are different syntax and are not matched to this axis.
+- **Exceptional type shapes:** in an authorized Refactor, keep ordinary interface properties in a compact table and
+  put nested object type members in their own paragraphs, below the ordinary fields when the type contract permits it.
+  Expand their nested properties into independent tables. Preserve names, readonly/optional modifiers and member types.
+  Runtime declarations and object initializers retain their evaluation order; separate a dependent exceptional expression
+  in place instead of moving it below its consumers. A new type alias needs a domain reason beyond shortening a column.
+
+The return-guard region is an explicit exception to contiguous-row grouping. Other kinds keep their existing grouping
+rules. These authoring choices and engine detection do not create public write approval: new group/axis lookup keys
+still require their own proof. Report checked columns and unsupported regions separately.
+
 ## Confirmed rules
 
 1. Modify only one product file at a time.
@@ -108,13 +140,18 @@ Code is written **from the moment of authoring** with the axis columns below alr
 
 - **Gap axis** — leave at least one space before the token. Within a table, pad with spaces up to the actual longest value to align the column.
 - **Insert axis** — preserve existing TypeScript conventions. Do not pry apart attached tokens (`)`, `):`, `":`); padding goes outside.
-- A table exists only for three or more contiguous same-role rows. Blank lines, comments and JSDoc break a table. Conditional-type `:`, `for` header `;`, empty statements and one-line execution blocks are not alignment targets.
+- A table normally needs three or more contiguous same-role rows, with the documented declaration/import pair exceptions.
+  The scoped return-guard exception is defined in [column-sharing regions](#column-sharing-regions). Other kinds still
+  stop at blank lines, comments and JSDoc. Conditional-type `:`, `for` header `;`, empty statements and unsupported one-line
+  execution blocks are not alignment targets.
 - Axis names use the checker registry identifiers verbatim: `colon` (`:` after a name), `equals` (`=`), `semicolon` (`;`), `comma` (`,`), `comment` (trailing `//`), `open-paren` (`(`), `close-paren` (`)`), `case-colon` (case label `:`), `call-paren` (first call `(` in a case row), `subject-close-paren` (call-statement subject `)`), `matcher-dot` (right-hand matcher `.`), `matcher-open-paren` / `matcher-close-paren` (matcher argument cell), `return-tail` (start of a bare `return;`), `value` (expression start), `open-brace` / `close-brace` (object row `{ }`).
 
 | Kind | Gap axes | Insert axes |
 |---|---|---|
 | declaration | `:` , `;` | `//` |
 | declaration-equals (declaration table with `=`) | `:` , `=` , `;` | `//` |
+| declaration-call-envelope | `colon`, `equals`, `semicolon` | `call-member-dot`, `call-envelope-open`, `call-envelope-close`, `comment` |
+| return-guards | `guard-return` | — |
 | type-alias | `=` , `;` | `//` |
 | method-signature · class-method | — | `(` , `)` , return `:` , `//` |
 | interface-members · class-members · type-members (`type X = { ... }`) | `:` , `=` , `;` | `//` |

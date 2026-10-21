@@ -1,0 +1,9 @@
+{
+  "command": [
+    "python3",
+    "verify.py"
+  ],
+  "code": 0,
+  "stdout": "PASS: syntax and requested numeric settings tuple\n",
+  "stderr": ""
+}

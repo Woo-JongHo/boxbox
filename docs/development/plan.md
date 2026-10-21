@@ -4,10 +4,105 @@ BoxBox's product direction is owned by [`design.md`](design.md), current impleme
 [`implementation.md`](implementation.md), the short resume screen by [`status.md`](status.md), and the work order and
 completion verdicts up to release by this document.
 
+## Completion loop — READINESS1 (2026-10-21)
+
+**▶ active.** The user authorized a documented plan followed by autonomous development, verification and repair
+loops covering the remaining requirements, including broad pattern management. This authorization supersedes
+per-file/per-task feedback waits for reversible work. Keep exactly one active parent task; independent subtasks
+inside its current phase may run in parallel with explicit file ownership. Existing evidence below remains historical.
+The product goal is consistent, explainable treatment of comparable structural roles across diverse situations,
+with explicit exceptions; matching punctuation alone does not establish equivalent roles.
+
+The preceding GLM critique is recorded in [pattern-management review](reviews/2026-10-21-pattern-management.md).
+Accepted concerns: bounded group candidates before policy selection; visible equivalence/key normalization;
+no duplicate policy authority; approval separate from per-write safety. Corrections: `gap: "blank"` is not universal,
+SQLite-to-JSON export contradicts a JSON-authoritative derived index, and a 5,000-rule threshold has no measurement.
+The review's AST-hash proposal cannot replace token preservation, syntax acceptance or horizontal-only Align checks.
+
+### Requirements and completion evidence
+
+| Phase | Work and responsible surface | Completion evidence | State |
+| --- | --- | --- | --- |
+| R0 | Reconcile requirements, broad pattern taxonomy, decision contracts and this execution order | Source-linked design, support/exception matrix, scoped independent critique | reviewed |
+| R1 | Runtime record validation, alias portability infrastructure and pattern catalog | Negative record cases, isolated copy resolution, dependency-escape checks, validated catalog covering nine families | reviewed |
+| R2 | Bounded data-driven policy experiment, consistent Check/Guide lookup and syntax reporting, authoring coverage | Existing approved rule remains byte-identical; unknown/conflicting policies refuse; layered lookup and syntax regressions; diverse positive/negative authoring cases | source verified; native authoring evaluation open |
+| R3 | JSON/YAML safe adapters and shared lifecycle; new convention proposals | Strict syntax, source-range edits, comments/scalars preserved, idempotence, installed preview/apply/refusal, reviewed before/after and counterexamples | verification |
+| R4 | Complete internal alias migration, native host/HUD and supported-platform validation | No unintended relative internal imports; self-contained copy/bundle execution; native output acceptance and accurate HUD state; recorded Windows limits | aliases tested; native HUD repair active |
+| R5 | Release integration, documentation and public payload hygiene | Full check, independent review/GLM closure, generated drift check, same-archive CI/OS journeys, EN/KO/zh-CN consistency, clean public payload, concrete publication prerequisites | local checks and GLM passed; GitHub candidate active |
+
+R1's independent catalog, validation and installer work may run concurrently; broad engine import rewriting waits
+until concurrent engine edits settle. R2/R3 share CLI/pipeline ownership and are integrated sequentially. Full build and
+installed-artifact suites run against a frozen candidate, not while other agents mutate packaging inputs.
+
+### Ownership, thresholds and evidence states
+
+| Subtask | Author and owned paths | Excluded paths |
+| --- | --- | --- |
+| Record validation | Codex validator worker: `common/conventions.ts`, `common/examples.ts`, a validation helper, focused record tests | CLI, format pipeline, installer, approved preset |
+| Alias infrastructure | Codex alias worker: `development/install.sh`, `development/tools/check-layout.ts`, development-skill tsconfig, focused layout/install tests | Engine import conversion, package metadata, live host profiles |
+| Pattern catalog and integration | Main Codex agent: pattern documents/catalog/module/tests, plan/status, later shared CLI/pipeline integration | Other workers' owned files until handoff |
+| Review | Sonnet/GLM: read-only supplied snapshots or scoped source | All production writes |
+
+Before an edit, each worker saves the target's existing bytes under `/tmp/boxbox-readiness/` and patches the current
+worktree; no stash/reset/checkout may discard user changes. The main agent retained the tracked pre-implementation
+diff there. New untracked source is preserved by per-file snapshots, not assumed to be in Git.
+
+R0 passes when all nine family rows in `pattern-management.md` have decision dimensions and the plan has no open
+mandatory review finding. R1's catalog must have nine families, each with comparable, different-role and declared
+unsupported examples; nested/separation scenarios are identified per family. Supported claims link to actual engine
+or test evidence; proposals remain labeled. R1 also requires negative record tests and isolated alias execution.
+
+Track implementation as `proposed`, `implemented`, `tested`, `reviewed` independently of rule authorization
+(`candidate`, `approved`, `rejected`). A reviewed implementation does not promote a candidate rule. Only human-approved
+rule data may authorize public automatic writes. Unsupported patterns can be reported but never advertised as fixed.
+After three repeated unsuccessful attempts at the same failure, record the evidence and reassess the cause or use
+an independent review rather than blindly retrying. Continue other authorized work; declare a blocker only when
+progress actually needs a named external prerequisite. Preserve the user's existing commit/push/SSH delivery scope;
+new destinations, public publication and persistent host trust require concrete authorization. Isolated temporary
+verification directories are part of the authorized local tests.
+
+### Design and authority decisions for the first implementation
+
+- Model imports, declarations, function signatures, calls/chains, branches/exits, object/type members, arrays,
+  operators and structured JSON/YAML documents using one decision vocabulary. Track coverage, unsupported cases,
+  examples, counterexamples and source/version provenance; a catalog entry is not an approval.
+- Language adapters expose bounded structural candidates and supported axes. Rule data selects only implemented,
+  tested policies. Parser interpretation, safe edits and preservation remain code-owned. No arbitrary executable
+  rule scripts, forced semantic equivalence or automatic statement reordering.
+- Keep approved JSON/JSONL as the single canonical approval authority during the migration. A useful SQLite
+  development index may be built from canonical records/corpus evidence with one-way reproducible import;
+  it cannot author approvals or overwrite their source. Runtime SQLite is not required unless measured runtime
+  needs justify it. This preserves a central rule knowledge model regardless of its physical storage format.
+- Write/Refactor may change structure within scope and need behavioral evidence. Align changes approved horizontal
+  whitespace only. Import aliases are Refactor changes. Blank lines are contextual policy, not a newly approved
+  universal delimiter. The single-word earlier message did not choose a global blank-line rule.
+- Existing two public conventions and four CC0 examples retain their exact approval/license scope. Prepare new
+  rules as reviewable proposals, then request human approval for each bounded group before shipping it as approved.
+  Continue independent work while required decisions are pending. Do not fabricate approvals or transfer old keys.
+- Preserve all existing working changes. Do not publish a registry package, change repository visibility or grant
+  persistent host trust merely because local tests pass. Prepare concrete artifacts and identify the actual final
+  authorization or external credential needed. Earlier authorized SSH delivery/commit/push scope is retained;
+  release publication remains distinct from development and candidate verification.
+
+### Loop and completion gate
+
+For each phase: inspect current behavior → write the smallest implementation → run meaningful targeted tests →
+record failures and corrections → independent read-only review → fix mandatory findings → advance automatically.
+Use Codex for authorship, Sonnet for independent checks where available and GLM for the requested final critique.
+Save complete reviews and command evidence under `docs/development/reviews/`; searchable issue records retain
+unresolved work. Do not classify advisory structural guidance as deterministic coverage.
+
+At the integration gate, run `bun run check`, generated-plugin validation, the local plugin guard and installed
+archive scenarios. Add relevant CI checks rather than relying solely on local success. Record skips and missing
+host evidence separately. Completion requires each requirement above to be implemented and verified, or explicitly
+identified as waiting for a concrete user/external prerequisite; prerequisites do not count as completed work.
+
 ## Current goal and plan status
 
 **User goal (2026-10-04): finish implementing this service to the point of a real release.** The first public scope is
-**core TypeScript and Python features + the engine CLI + a thin agent plugin**, as chosen by the user. The existing
+**TypeScript, Python, JSON and YAML + the engine CLI + a thin agent plugin**, following the user's scope expansion
+on 2026-10-21. The current source CLI accepts all four languages; JSON/YAML write rules are candidate proposals awaiting human
+approval. Current-source installed-artifact verification passed in the 629-test integration run; the later native HUD defect requires a new candidate. The existing
 10-language engine is kept, but equivalent product quality for Java, Go, Rust, JavaScript, C, C++, Swift and Kotlin is
 not a completion condition of the first release.
 
@@ -30,7 +125,7 @@ install → boxbox init → boxbox doctor → boxbox check → boxbox format →
 human-approved rules and the pre/post-write safety checks all pass. If any step is unclear, it only
 reports and does not write the file.
 
-This plan is an **authoring draft**. Only the choice of the first public scope was confirmed by the user on 2026-10-04. Work order,
+This plan is an **authoring draft**. The first public scope was confirmed on 2026-10-04 and expanded by the user on 2026-10-21. Work order,
 completion criteria and technical decisions are not considered confirmed until independent review, rebuttal, traceability checks and user acceptance.
 The combination of supported OSes and first supported hosts is settled in REL1. Claude Code and Codex are the initial host candidates,
 but this is not a confirmed support table yet. For the product name, license and public channel, REL1 records who decides and by when,
@@ -55,13 +150,12 @@ review. The requirement of full verification before release stays.
   `00_normalize-imports.ts`, `00_expand-interface-members.ts`, `07_wrap-conditions.ts` and `08_function-map.ts --write`
   do not share the same gate. M1's "every write" and 169 tests from 2026-09-28 are records of that time
   and do not mean a guarantee over the current full write surface.
-- The latest full machine verification record is `403 pass / 5 skip / 0 fail`, reconfirmed on 2026-10-06. Reruns that day
+- The historical full machine verification record was `403 pass / 5 skip / 0 fail`, reconfirmed on 2026-10-06; later delivery results are recorded below. Reruns that day
   hit the default 5-second test timeout in 1–3 tests per run (each passed alone), due to the load sensitivity of integration tests that start
   real toolchains (javac, tsc, formatter child processes), so the `test` and `check` scripts got `--timeout 60000`.
   The two isolated artifact install tests have a separate precondition: `npm install --offline` needs `typescript@7.0.2`
   in the npm cache. Skips and unmeasured real hosts are not counted as release passes.
-- The approval proof is connected to public format and GUIDE, but the preset DB is empty. It waits for the human
-  approval answer on two concrete candidates. The existing raw writers bypass the approval policy, so they are excluded from the public artifact.
+- The approval proof is connected to public format and GUIDE. The recommended preset now contains the two rules approved on 2026-10-21, four synthetic examples and two decisions (FIRSTUSE1 below). Other candidates remain unapproved. The existing raw writers bypass the approval policy, so they are excluded from the public artifact.
 - AI model evaluation is a research tool, not a product execution path. The full E1 model evaluation, SQLite and equal quality across 10 languages
   are explicitly on hold and are not automatically promoted to first-release blockers.
 
@@ -69,7 +163,7 @@ review. The requirement of full verification before release stays.
 
 Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked/on hold`.
 
-1. There is always exactly one `▶ active`. The current active task is CODEX1, resumed by the user on 2026-10-21: controlled native Codex evidence is audited, while Windows edit-dependent events remain blocked by native policy. DELIVERY1 issue/PR/candidate automation and installed BoxBox status are verified and accepted for continuation. FIRSTUSE1 implementation/delivery and LAYOUT1 audits are verified. Persistent trust, Claude event delivery, CODEX1 registry verification, DATA2 and PKG1 public release work remain open.
+1. READINESS1 above is the active parent task and owns the current phase. The following is the pre-loop status: DOC1 documentation/process/storage audit is complete. The current active task is AUTHOR1, authorized by the user on 2026-10-21; HUD2 is deferred pending independent review. CODEX1 remains open: controlled native Codex evidence is audited, while Windows edit-dependent events remain blocked by native policy. DELIVERY1 issue/PR/candidate automation and installed BoxBox status are verified and accepted for continuation. FIRSTUSE1 implementation/delivery and LAYOUT1 audits are verified. Persistent trust, Claude event delivery, CODEX1 registry verification, DATA2 and PKG1 public release work remain open.
 2. Each REL becomes a completion candidate only with prerequisites, current implementation, remaining work, acceptance criteria and verification evidence.
 3. **Existing** in verification means it is checked with a command that exists now; **new** means the verifier must first be
    implemented in that REL. A command name appearing in the plan is not evidence.
@@ -78,6 +172,132 @@ Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked/on hold`
    human rule approval or a public publish, are not considered approved.
 5. Implementation complete, plan accepted, final audit and public release are different states. Never say "released" before a tag, push, registry publish and a real
    external install check.
+
+## Active task — AUTHOR1 matrix-first workflows
+
+**Carried into READINESS1 — user authorized implementation of Write, Refactor and Align with shared Check and preview (2026-10-21).**
+
+User clarification (2026-10-21): the plugin should guide code generation into readable rows and columns, then
+verify the result, with correctness and performance preserved. See the [authoring direction](design.md#authoring-direction-clarified-on-2026-10-21).
+The 0.2.4 source candidate adds `guide --authoring` for existing, empty and not-yet-created files and a
+standalone `align` command for approved horizontal layout changes. Write and Refactor remain agent-owned workflows;
+the CLI does not generate code or certify their behavior/performance. Ordinary `guide` and the existing `format`
+pipeline remain available. Implementation checks and installed-artifact verification passed; Sonnet 5.5 passed after the initial session-limit blocker. The user selected GLM instead of Opus for final audit;
+GLM 5.3 passed its read-only final audit with no mandatory fixes. AUTHOR1's bounded implementation is verified;
+the task remains active for the broader evaluations below. This is not a publication verdict. See [the user workflow contract](../user/modes.md) and [recorded evidence](reviews/2026-10-21-authoring-modes.md).
+
+Verification commands: `bun run check`, `bun run sync:plugin`, the local plugin guard, and `bun run pack:installer`.
+The full check completed with 554 passes, 5 existing missing-parser skips and zero failures. Three independent source-skill
+scenarios and both isolated installed launchers passed within their recorded scope. Broader automatic skill activation
+and authoring-quality evaluations below remain unmeasured; they are not implied by CLI or packaging success.
+
+Acceptance work:
+
+- Provide applicable approved guidance for new/empty files without requiring an existing matching table.
+- Keep generation examples and checks tied to the same rule identities and approval proof.
+- Preserve line structure, indentation and non-layout content in standalone Align; execute no external formatter.
+  Refuse broader engine proposals without falling back to `format`, raw writers or agent structural edits.
+- Verify preview keeps the target unchanged, explicit mode routing, and continuation through user-authorized files
+  one at a time. Keep existing `guide`, `check` and `format` behavior compatible.
+- Separate mechanically enforceable layout from advisory structural decisions; missing/unsupported patterns must
+  not become evidence that the requested authoring style was achieved.
+- Evaluate real agent tasks: new-file generation, extending an existing table, an overlong function/call, and a
+  case that should remain structurally different. Check both correct skill activation and non-activation.
+- Verify behavior after structural changes and measure performance when the changed work requires it. Do not
+  treat an alignment check as a semantic or performance certificate.
+
+### Matrix column follow-up — user correction, 2026-10-21
+
+AUTHOR1 now includes the explicitly requested return-start columns across intervening processing in a block,
+outer call parentheses shared by different callees/arities, and a local Refactor of `Example` so nested object types
+form lower independent tables. Runtime evaluation order stays fixed. The guard grouping must cover the actual
+`subjectCall`, `subscriptPartsOf` and `callLayer` examples, including their intervening loops and preparation.
+New kinds use distinct lookup keys and do not inherit the existing recommended preset's write authority.
+Acceptance: exact output and scope-barrier tests, preservation, syntax checks, idempotence, installed Check,
+unchanged existing approved-key behavior, real-source application and independent Sonnet/GLM review.
+GLM replaces Opus for this session at the user's request.
+
+The follow-up also includes the final receiver/method dot, exact guard-row report membership and a searchable
+[issue library](issue-library/README.md). The [matrix review](reviews/2026-10-21-matrix-columns.md) records the
+failed intermediate checks and their corrections. These changes do not approve additional public preset keys.
+
+Broader long-row transformations and additional approved conventions remain separate decisions.
+The workflow authorization does not approve new preset rules, automatic structural rewrites or public publication.
+
+### Import alias follow-up — user requirement, 2026-10-21
+
+The user requested consistent configured-alias imports, including BoxBox's own code. The authoring skill now
+directs Write/Refactor to use configured aliases where resolution is verified and the project contract permits them;
+Align remains whitespace-only. READINESS1 migrated 169 internal specifiers across 57 engine files, shipped a
+copied-skill resolver, checked package boundaries and verified copied-source plus installed-bundle execution.
+`@/*` retains its engine-root meaning. One rules JSON static import and three runtime-relative URLs remain intentional;
+external packages and `node:` specifiers are unchanged. The [alias report](reviews/2026-10-21-readiness-loop-evidence/alias-final-report.md)
+records the exact inventory and three pre-existing development-language alignment refusals. Final GLM closure remains open.
+See [issue 008](issue-library/records/BBX-20261021-008-import-alias.json).
+
+Acceptance checklist retained from AUTHOR1 (implementation and local checks now passed; final audit pending):
+
+1. Inventory static, type-only and literal dynamic internal imports, resolver boundaries and public entry points.
+   Preserve external packages, `node:` specifiers, evaluation order and paths that cannot be proven equivalent.
+2. Make source aliases portable through both isolated development copy installation and bundled CLI/installer
+   execution. Update the product dependency checker, its tests and the repository convention together; keep checks
+   against product imports escaping into development. Retain the existing `@/*` meaning unless a migration requires
+   an explicit configuration change; do not replace it with machine-specific absolute paths.
+3. Migrate internal imports one authorized file at a time, retaining behavior. Verify type checking, relevant tests,
+   bundle inspection and isolated source-copy plus installed-archive execution without the root `tsconfig.json`.
+4. Record residual exceptions and independently review the final resolver/import changes. Do not claim completion
+   from visual import alignment or a source-only type check.
+
+## Planned scope expansion — FORMAT1 JSON and YAML
+
+The user requested JSON and YAML alongside TypeScript and Python for the first open-source plugin release,
+including configuration and structured documents used in AI workflows. This approves the target formats, not
+specific alignment conventions, examples or licenses. READINESS1 owns current implementation and verification.
+
+Current implementation: dedicated JSON/YAML adapters use strict parsing and source ranges through the shared
+Check/Guide/format/Align pipeline. Installed checks and refusal paths passed locally. Default write-rule approval and
+example licenses remain pending; same-archive multi-OS validation and final audit are still required.
+
+Bounded implementation and acceptance checklist:
+
+1. Define representative before/after cases and refusals for strict `.json` and `.yaml`/`.yml` files. Start with
+   adjacent sibling key/value rows; exact grouping, row floors and spacing await rule review. JSONC/JSON5,
+   Markdown frontmatter and fenced blocks are separate scope decisions, not implied support.
+2. Use format-aware parsing and source ranges to identify editable horizontal whitespace. Preserve tokens,
+   scalar spelling/content, key order, indentation, line breaks and comments. Protect YAML block scalars;
+   initially skip complex keys, anchors/aliases/tags and other unproven structures with explicit reasons.
+   Do not round-trip through a generic object serializer to implement alignment.
+3. Connect adapters to the shared inspection, approval, candidate verification and commit contracts. Update
+   CLI/config language dispatch, result consumers, hooks and guidance together; retain the same engine for both hosts.
+4. Verify syntax, preservation, idempotence, no-write preview, invalid/unsupported input handling and optional
+   formatter coexistence. Exercise the installed archive on macOS/Linux/Windows before advertising support.
+5. Review proposed conventions and examples before adding approved preset data. Update support claims and
+   localized READMEs only to match implemented and verified behavior.
+
+Syntax validity does not validate an application's schema: valid YAML does not prove a GitHub Actions workflow
+is accepted, and valid JSON does not prove a host configuration is supported. Application-schema checks are a
+separate capability. JSON uses strict `JSON.parse`; YAML uses pinned `yaml@2.9.1`, YAML 1.2 core, with duplicate keys and unresolved/forward aliases rejected. Flow collections, anchors/tags and multiline scalars remain unmodified unsupported layout.
+
+References: [JSON RFC 8259](https://www.rfc-editor.org/rfc/rfc8259),
+[YAML 1.2.2](https://yaml.org/spec/1.2.2/). This section distinguishes implemented scope from pending approval and cross-platform acceptance.
+
+## Deferred task — HUD2 visible terminal status
+
+**⏸ deferred pending independent review — user requested persistent BoxBox visibility in Codex and Claude (2026-10-21); AUTHOR1 is now active.**
+
+- Implement a shared installed-runtime collector, Claude official statusLine and an explicit Codex tmux companion launcher.
+- Keep host trust unchanged; label latest-project observations separately from current-session receipts.
+- Packaged installation, settings preservation, real Codex/Claude terminal rendering, state changes and cleanup have been measured. Sonnet and fixed Opus review attempts returned session limits; independent review remains an unexecuted acceptance blocker.
+- Terminal CLI is the working scope. Desktop and Windows HUD behavior are not assumed. Ordinary `codex` is unchanged.
+
+## Completed task — DOC1 maintainer documentation and consistency audit
+
+**✅ done — documentation, bounded probes/tests, Sonnet corrections and final Opus fix verification complete (2026-10-21).**
+
+- Scope: document current architecture/process/storage with a repeatable maintenance pattern; reproduce bounded gaps; propose implementation order and SQLite decision criteria; recheck the installed HUD.
+- Acceptance: current facts separated from proposed behavior, source-linked language/store matrices, actual focused tests and probes, relative-link checks and independent Sonnet/Opus review.
+- Runtime/parser/schema behavior is unchanged in this documentation pass. Syntax inspection, runtime record validation and all-language result coverage are proposed follow-ups, not completed fixes.
+- Entry: [maintainer documentation](README.md); [evidence and findings](reviews/2026-10-21-maintainer-docs.md). CODEX1 Windows native edit restrictions and publication boundaries remain open.
 
 ## Current implementation — DELIVERY1 GitHub candidates and Codex status
 
@@ -114,7 +334,7 @@ Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked/on hold`
 
 ## Current implementation — CODEX1 npm plugin installer
 
-**▶ active — isolated native evidence audited; Windows edit-dependent events blocked by host policy; registry publication remains a separate decision. Original user direction 2026-10-16: install Codex and Claude Code plugins through npm/npx; prioritize testing Windows Codex today. ZIP transfer was explicitly rejected.**
+**open (deferred during AUTHOR1) — isolated native evidence audited; Windows edit-dependent events blocked by host policy; registry publication remains a separate decision. Original user direction 2026-10-16: install Codex and Claude Code plugins through npm/npx; prioritize testing Windows Codex today. ZIP transfer was explicitly rejected.**
 
 - **Identity:** product `BoxBox`, core/plugin/skill `boxbox`, public installer candidate `boxbox-plugin`. `product.json` owns `displayName` and `npmName`. The user has no access to the occupied npm `boxbox` name and authorized an available alternative. `box-box` was rejected under npm's similarity policy; `boxbox-plugin` and `boxboxplugin` returned E404 on 2026-10-16. This is not reservation or final registry acceptance.
 - **Scope:** `npx boxbox-plugin` detects supported local CLIs and installs their thin plugins and included local engine into permanent user directories. `--codex` and `--claude` select hosts explicitly. Installation must survive removal of npm's temporary cache and must not require Bun or the author checkout.

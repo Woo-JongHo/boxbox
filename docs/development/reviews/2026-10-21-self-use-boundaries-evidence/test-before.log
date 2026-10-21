@@ -1,0 +1,42 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/authoring-modes.test.ts:
+(pass) matrix authoring and alignment modes > new-file guidance includes only scoped proved rules with their exact contracts and counterexamples [329.34ms]
+(pass) matrix authoring and alignment modes > authoring guidance is read-only advice even for empty or invalid existing source [141.70ms]
+(pass) matrix authoring and alignment modes > authoring scope and project rejection override the shipped rule without falling back [302.21ms]
+(pass) matrix authoring and alignment modes > new-file guidance rejects unsafe paths, unsupported formats and disabled languages [337.87ms]
+(pass) matrix authoring and alignment modes > only authoring GUIDE accepts nonexistent files; mode and language errors stay explicit [286.46ms]
+(pass) matrix authoring and alignment modes > align previews and applies approved whitespace changes without executing a configured formatter [736.21ms]
+(pass) matrix authoring and alignment modes > align refuses a file without applicable groups rather than reporting completed authoring [104.89ms]
+
+test/typescript-align.test.ts:
+(pass) typescript call statement alignment > aligns subject/matcher parentheses, dots and semicolons of consecutive call statements [563.08ms]
+(pass) typescript object row alignment > aligns braces, properties, colons, values and commas of object rows [507.18ms]
+(pass) typescript whitespace-only guarantee > the fixture aligns with an identical token stream and no refused table [465.39ms]
+(pass) typescript row floors > a 2-row = declaration table is aligned; a 2-row group of another kind is not [522.81ms]
+(pass) typescript call layer > aligns the commas and closing paren of the same call in declaration values [453.26ms]
+(pass) typescript call layer > aligns the call inside call-statement subjects [480.16ms]
+(pass) typescript call layer > keeps one layer when the callee or the arity differs [856.61ms]
+(pass) typescript declaration vertical form > takes the outlier row vertical when one argument is 20 columns wider than the second widest [411.19ms]
+(pass) typescript declaration vertical form > keeps the call layer on the remaining rows when one row goes vertical [443.41ms]
+(pass) typescript declaration vertical form > takes every row vertical when each is the outlier of its own column [720.31ms]
+(pass) typescript declaration vertical form > keeps a single-argument call flat; a vertical row leaves the table on the next run [1017.11ms]
+(pass) typescript declaration vertical form > call statements keep one flat layer instead of going vertical [434.37ms]
+(pass) typescript hand-made samples > aligns the closing bracket of subscript declaration values [470.78ms]
+(pass) typescript hand-made samples > keeps subscript values flat when the objects differ or a row has none [842.24ms]
+(pass) typescript hand-made samples > aligns ragged guard rows onto the hand-made form [486.05ms]
+(pass) typescript hand-made samples > keeps the hand-aligned guard sample of 00_normalize-imports unchanged [132.18ms]
+(pass) typescript hand-made samples > blocks that do not end in continue and two-row groups stay as written [123.47ms]
+(pass) typescript list layer > aligns the elements, commas and closing bracket of the same literal list in a call [440.92ms]
+(pass) typescript list layer > aligns the literal list of a matcher argument [442.98ms]
+(pass) typescript list layer > aligns a declaration value that is itself a literal list [420.18ms]
+(pass) typescript list layer > keeps a list with identifiers compact and aligns only the row layer [434.98ms]
+(pass) typescript list layer > keeps the call layer but drops the list slot when the arity differs [799.59ms]
+(pass) typescript list layer > drops the call layer and the lists inside its arguments when the callee differs [754.97ms]
+(pass) typescript list layer > drops a list whose item is 20 columns wider than the second widest [663.12ms]
+(pass) typescript list layer > drops a list with a trailing comma or a multi-line form [990.07ms]
+
+ 32 pass
+ 0 fail
+ 176 expect() calls
+Ran 32 tests across 2 files. [16.33s]

@@ -13,12 +13,12 @@
  * `{`, `(` or `[`; rows with a string hidden in a gap; rows whose type is uncertain, such as func literals and
  * anonymous struct/interface; bundle rows with keys, nesting, calls or assignment remaining.
  */
-import type { CodeSyntax     } from "../common/code-text.ts"    ;
+import type { CodeSyntax     } from "@/common/code-text.ts"    ;
 import type {
               LineProfiler ,
               RowProfile   ,
               Slot         ,
-                             } from "../common/table-engine.ts" ;
+                             } from "@/common/table-engine.ts" ;
 
 const GO_SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],
@@ -115,10 +115,10 @@ const rowFrom = (code: string, indices: RegExpIndicesArray, columns: readonly Co
 function bundleProfile(code: string, masked: string): RowProfile | null {
 	const match   = GROUP.exec(masked) ;
 	const indices = match?.indices     ;
-	if (!match || !indices) return null;
+	if (!match || !indices)                                               return null;
 	const interior = indices[2] ;
 	const trailer  = indices[3] ;
-	if (!interior || !trailer) return null;
+	if (!interior || !trailer)                                            return null;
 	const interiorText = masked.slice(interior[0], interior[1]);
 	if (GROUP_UNSAFE.test(interiorText) || GROUP_FUNC.test(interiorText)) return null;
 
@@ -137,7 +137,7 @@ function bundleProfile(code: string, masked: string): RowProfile | null {
 	const cells: Array<{ text: string; gap: string; commaGap: string; end: number }> = [];
 	for (const bound of bounds) {
 		const raw  = code.slice(bound.start, bound.end) ;
-		const text = raw.trim()                         ;
+		const text = raw .trim ()                       ;
 		if (text === "") return null; // empty cell from consecutive commas or after a trailing comma
 		const cellStart = bound.start + raw.indexOf(text);
 		if (text.startsWith('"') || text.startsWith("'") || text.startsWith("`")) {

@@ -1,0 +1,32 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/examples.test.ts:
+(pass) example records > a mismatched content hash, or missing asserts on a non-taste example, is an error [9.90ms]
+(pass) example checks — meaning per verdict > after-better: before has A12, after does not, and after is a fixed point [530.01ms]
+(pass) example checks — meaning per verdict > fixedPoint: an after with a table still pending alignment fails [204.29ms]
+(pass) example checks — meaning per verdict > bad: fails when the engine's fix of before equals the forbidden after [446.82ms]
+(pass) example checks — meaning per verdict > taste and unapproved examples are not checked [0.06ms]
+(pass) decision records > a section hash changes only when that section changes [0.45ms]
+(pass) decision records > reports that re-approval is needed when the referenced section changes [1.13ms]
+(pass) picking GUIDE examples > only approved after-better, by shared pattern count → recency → id, up to 3 [1.64ms]
+(pass) approval section hashes are identical across LF and CRLF checkouts [0.06ms]
+(pass) preset DB > every shipped example passes per its verdict, and each decision's document hash matches the current document [375.29ms]
+
+test/approval-gate.test.ts:
+(pass) approval write gate > only an exact key with complete human approval proof allows writing, and GUIDE gets only after-better [2.10ms]
+(pass) approval write gate > turns a detected descriptor into the current exact key and keeps the original file path [0.65ms]
+(pass) approval write gate > a candidate convention refuses writing [0.40ms]
+(pass) approval write gate > a rejected convention refuses writing [0.42ms]
+(pass) approval write gate > an unknown key and duplicate conventions of equal priority are unknown/conflict respectively [0.39ms]
+(pass) approval write gate > picks the highest layer in project → user → preset order [0.38ms]
+(pass) approval write gate > blocks a missing decision, a stale document hash, a wrong version and a missing human approval [0.71ms]
+(pass) approval write gate > blocks when any of positive, counterexample, both links, content hash or rule relevance is missing [0.94ms]
+(pass) approval write gate > refuses a document ref that escapes the root [0.58ms]
+(pass) approval write gate > resolves the same relative ref in the document root matching the convention layer [1.21ms]
+(pass) registry loader > reads JSONL from the given roots and layers and refuses malformed and duplicate proofs [2.14ms]
+(pass) registry loader > refuses registry override root escapes and symbolic/non-regular files [0.99ms]
+
+ 22 pass
+ 0 fail
+ 56 expect() calls
+Ran 22 tests across 2 files. [1.80s]

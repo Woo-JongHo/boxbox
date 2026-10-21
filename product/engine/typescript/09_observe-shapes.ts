@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import      { createHash                                         } from "node:crypto"               ;
+import      { createHash                                         } from "node:crypto"                      ;
 import      {
               closeSync                                        ,
               existsSync                                       ,
@@ -12,16 +12,16 @@ import      {
               statSync                                         ,
               unlinkSync                                       ,
               writeFileSync                                    ,
-                                                                 } from "node:fs"                   ;
-import      { join, relative, resolve                            } from "node:path"                 ;
+                                                                 } from "node:fs"                          ;
+import      { join, relative, resolve                            } from "node:path"                        ;
 
-import      { API                                                } from "typescript/unstable/async" ;
-import      { SyntaxKind, isArrowFunction, isFunctionDeclaration } from "typescript/unstable/ast"   ;
-import type { FunctionDeclaration, Node, SourceFile, Statement   } from "typescript/unstable/ast"   ;
-import      { version as typescriptVersion                       } from "typescript"                ;
+import      { API                                                } from "typescript/unstable/async"        ;
+import      { SyntaxKind, isArrowFunction, isFunctionDeclaration } from "typescript/unstable/ast"          ;
+import type { FunctionDeclaration, Node, SourceFile, Statement   } from "typescript/unstable/ast"          ;
+import      { version as typescriptVersion                       } from "typescript"                       ;
 
-import type { Pattern                                            } from "../common/grammar-ids.ts"  ;
-import      { repositoryFile                                     } from "./load-source-file.ts"     ;
+import type { Pattern                                            } from "@/common/grammar-ids.ts"          ;
+import      { repositoryFile                                     } from "@/typescript/load-source-file.ts" ;
 
 export const SHAPE_SCHEMA_VERSION    = "1"                                              ;
 export const SHAPE_EXTRACTOR_VERSION = "obs1-ts-fn"                                     ;
@@ -145,7 +145,7 @@ function segmentsOf(node: FunctionDeclaration, source: SourceFile): readonly Sha
 	const segments: ShapeSegment[] = [];
 	for (const statement of node.body?.statements ?? []) {
 		const classification = classificationOf(statement, source) ;
-		const previous       = segments.at(-1)                     ;
+		const previous       = segments.at     (-1               ) ;
 		if (previous?.classification === classification) {
 			segments[segments.length - 1] = { ...previous, count: previous.count + 1, end: statement.getEnd() };
 		} else {
@@ -229,11 +229,11 @@ function ensureSafeCacheDirectory(root: string): string {
 
 function writeCompleteCache(root: string, jsonl: string): void {
 	if (Buffer.byteLength(jsonl) > MAX_BYTES) throw new Error(`shape snapshot exceeds ${MAX_BYTES} bytes`);
-	const directory = ensureSafeCacheDirectory(root)                                      ;
-	const current   = join(directory, "shape.jsonl")                                      ;
-	const previous  = join(directory, "shape.previous.jsonl")                             ;
-	const lock      = join(directory, "shape.lock")                                       ;
-	const temporary = join(directory, `.shape.${process.pid}.${crypto.randomUUID()}.tmp`) ;
+	const directory = ensureSafeCacheDirectory(root                                                         ) ;
+	const current   = join                    (directory, "shape.jsonl"                                     ) ;
+	const previous  = join                    (directory, "shape.previous.jsonl"                            ) ;
+	const lock      = join                    (directory, "shape.lock"                                      ) ;
+	const temporary = join                    (directory, `.shape.${process.pid}.${crypto.randomUUID()}.tmp`) ;
 	for (const path of [current, previous]) if (existsSync(path) && lstatSync(path).isSymbolicLink()) throw new Error(`cache target must not be a symbolic link: ${path}`);
 	let lockDescriptor: number;
 	try {

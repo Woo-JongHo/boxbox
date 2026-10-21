@@ -5,17 +5,17 @@
  * Fails with exit code 1 when anything is misaligned and --write is absent. --json prints the shared versioned
  * result (result-json.ts) instead of the text report.
  */
-import      { readFileSync, writeFileSync          } from "node:fs"           ;
-import      { relative, resolve                    } from "node:path"         ;
-import      { compareParse                         } from "./parse-check.ts"  ;
-import      { updateFileAtomicallySync             } from "./safe-file.ts"    ;
-import      { alignSource                          } from "./table-engine.ts" ;
-import type { AlignResult, LineProfiler            } from "./table-engine.ts" ;
-import      { envelope, summarize                  } from "./result-json.ts"  ;
-import type { FileResult, ResultGroup, ResultParse } from "./result-json.ts"  ;
+import      { readFileSync, writeFileSync          } from "node:fs"                  ;
+import      { relative, resolve                    } from "node:path"                ;
+import      { compareParse                         } from "@/common/parse-check.ts"  ;
+import      { updateFileAtomicallySync             } from "@/common/safe-file.ts"    ;
+import      { alignSource                          } from "@/common/table-engine.ts" ;
+import type { AlignResult, LineProfiler            } from "@/common/table-engine.ts" ;
+import      { envelope, summarize                  } from "@/common/result-json.ts"  ;
+import type { FileResult, ResultGroup, ResultParse } from "@/common/result-json.ts"  ;
 
 /** Re-exported so CodeSyntax can also be imported from this module. */
-export type { CodeSyntax } from "./code-text.ts";
+export type { CodeSyntax } from "@/common/code-text.ts";
 
 export interface AlignCliResult {
 	readonly report : string;

@@ -1,0 +1,32 @@
+import pathlib, subprocess, json, os, hashlib, difflib, itertools
+root=pathlib.Path('/tmp/boxbox-mode-behavior-m7RwTv')
+def sha(path): return hashlib.sha256(path.read_bytes()).hexdigest()
+def invoke(part,label,args):
+ command=['bun',str(root/'cli.ts'),*args]
+ r=subprocess.run(command,cwd=root/part,env={**os.environ,'XDG_CONFIG_HOME':str(root/part/'user-config')},capture_output=True,text=True)
+ evidence={'cwd':str(root/part),'command':command,'code':r.returncode,'stdout':r.stdout,'stderr':r.stderr}
+ (root/f'{part}-{label}.json').write_text(json.dumps(evidence,indent=2))
+ print(part,label,r.returncode,r.stdout)
+ return evidence
+(root/'write/settings.py').write_text('retry           = 3\ntimeout_seconds = 30\nbatch_size      = 100\n\ndef get_settings():\n    return retry, timeout_seconds, batch_size\n')
+(root/'write/verify.py').write_text('from pathlib import Path\nimport ast\nsource = Path("settings.py").read_text()\nast.parse(source)\nnamespace = {}\nexec(compile(source, "settings.py", "exec"), namespace)\nassert namespace["get_settings"]() == (3, 30, 100)\nassert all(type(namespace[name]) is int for name in ("retry", "timeout_seconds", "batch_size"))\nprint("PASS: syntax and requested numeric settings tuple")\n')
+r=subprocess.run(['python3','verify.py'],cwd=root/'write',capture_output=True,text=True)
+(root/'write-behavior.json').write_text(json.dumps({'command':['python3','verify.py'],'code':r.returncode,'stdout':r.stdout,'stderr':r.stderr},indent=2))
+assert r.returncode==0
+invoke('write','check',['check','--file','settings.py','--json'])
+original=root/'refactor/settings.py'; before=original.read_text(); initial=sha(original)
+proposal=root/'refactor-proposal/settings.py'
+proposal.write_text('def classify(enabled, attempts, quota):\n    if not enabled:\n        return "disabled"\n\n    if not attempts < 3:\n        return "attempts"\n\n    if not quota > 0:\n        return "quota"\n\n    return "ready"\n')
+(root/'refactor-proposal.patch').write_text(''.join(difflib.unified_diff(before.splitlines(keepends=True),proposal.read_text().splitlines(keepends=True),fromfile='a/settings.py',tofile='b/settings.py')))
+(root/'verify-refactor.py').write_text('from pathlib import Path\nimport ast, itertools, json\nroot = Path(__file__).parent\nfunctions = []\nfor part in ("refactor", "refactor-proposal"):\n    source = (root / part / "settings.py").read_text()\n    ast.parse(source)\n    namespace = {}\n    exec(compile(source, str(root / part / "settings.py"), "exec"), namespace)\n    functions.append(namespace["classify"])\ncases = list(itertools.product([False, True], [-10, 0, 1, 2, 3, 4, 99, float("nan"), float("inf"), -float("inf")], [-10, -1, 0, 1, 99, float("nan"), float("inf"), -float("inf")]))\nfor args in cases:\n    assert functions[0](*args) == functions[1](*args), args\nprint(json.dumps({"syntax": "passed", "equivalenceCases": len(cases), "result": "passed", "scope": "boolean enabled; integer, NaN and infinite attempts/quota"}))\n')
+r=subprocess.run(['python3',str(root/'verify-refactor.py')],capture_output=True,text=True)
+(root/'refactor-verification.json').write_text(json.dumps({'command':['python3',str(root/'verify-refactor.py')],'code':r.returncode,'stdout':r.stdout,'stderr':r.stderr},indent=2))
+assert r.returncode==0
+invoke('refactor-proposal','check',['check','--file','settings.py','--json'])
+assert sha(original)==initial
+align=root/'align/settings.py'
+assert align.read_text()=='retry = 3\ntimeout_seconds = 30\nbatch_size = 100\n'
+assert not (root/'align/formatter-sentinel').exists()
+checks={'alignTargetUnchanged':True,'alignSentinelAbsent':True,'refactorTargetUnchanged':True,'hashes':{str(p.relative_to(root)):sha(p) for p in [root/'write/settings.py',align,original,proposal]},'refactorCases':160,'refactorUnverified':'Custom input types and exception traces, performance, native host integration'}
+(root/'observations.json').write_text(json.dumps(checks,indent=2))
+print(json.dumps(checks,indent=2))

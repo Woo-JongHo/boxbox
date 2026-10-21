@@ -26,9 +26,13 @@ function versioned(text: string, version: string): string {
 
 /** Every shipped file comes from product/. This also reconstructs a missing plugin/ folder. */
 export function expectedPluginFiles(root = ROOT): ReadonlyMap<string, string> {
-	const read     = (path: string): string => readFileSync(resolve(root, path), "utf8")        ;
-	const version  = String((JSON.parse(read("package.json")) as { version: unknown }).version) ;
-	const expected = new Map<string, string>()                                                  ;
+	const read      = (path: string): string => readFileSync(resolve(root, path), "utf8")        ;
+	const version   = String((JSON.parse(read("package.json")) as { version: unknown }).version) ;
+	const expected  = new Map<string, string>()                                                  ;
+	const cliPath   = "product/engine/cli.ts"                                                    ;
+	const cliSource = read(cliPath)                                                              ;
+	if (!/^export const CLI_VERSION = "[^"\n]+";/mu.test(cliSource)) throw new Error("Missing CLI_VERSION declaration; update version synchronization before shipping.");
+	expected.set(cliPath, cliSource.replace(/^export const CLI_VERSION = "[^"\n]+";/mu, `export const CLI_VERSION = "${version}";`));
 	for (const path of PLUGIN_FILES) {
 		const source = `product/plugin/${path}`         ;
 		let text     = versioned(read(source), version) ;

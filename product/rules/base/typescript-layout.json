@@ -1,0 +1,34 @@
+{
+	"schemaVersion": 1,
+	"language": "typescript",
+	"rowKinds": {
+		"declaration": {
+			"gap": "blank",
+			"minRows": {
+				"operation": "every-row-has-axis",
+				"axis": "equals",
+				"value": 2
+			}
+		}
+	},
+	"kinds": {
+		"declaration": { "gap": ["colon", "semicolon"], "insert": ["comment"] },
+		"declaration-equals": { "gap": ["colon", "equals", "call-arg{i}", "list-value-comma{i}", "list-value-el{i}", "list-arg{i}-comma{i}", "list-arg{i}-el{i}", "semicolon"], "insert": ["call-open-paren", "call-comma{i}", "call-close-paren", "list-value-open", "list-value-close", "list-arg{i}-open", "list-arg{i}-close", "subscript-close", "comment"] },
+		"declaration-extended-equals": { "gap": ["colon", "equals", "call-arg{i}", "list-value-comma{i}", "list-value-el{i}", "list-arg{i}-comma{i}", "list-arg{i}-el{i}", "semicolon"], "insert": ["call-open-paren", "call-comma{i}", "call-close-paren", "list-value-open", "list-value-close", "list-arg{i}-open", "list-arg{i}-close", "subscript-close", "comment"] },
+		"return-guards": { "gap": ["guard-return"], "insert": [] },
+		"declaration-call-envelope": { "gap": ["colon", "equals", "semicolon"], "insert": ["call-member-dot", "call-envelope-open", "call-envelope-close", "comment"] },
+		"guard-statements": { "gap": [], "insert": ["guard-close-paren", "guard-semi1", "guard-continue"] },
+		"type-alias": { "gap": ["equals", "semicolon"], "insert": ["comment"] },
+		"method-signature": { "gap": [], "insert": ["open-paren", "close-paren", "colon", "comment"] },
+		"class-method": { "gap": [], "insert": ["open-paren", "close-paren", "colon", "comment"] },
+		"interface-members": { "gap": ["colon", "equals", "semicolon"], "insert": ["comment"] },
+		"type-members": { "gap": ["colon", "equals", "semicolon"], "insert": ["comment"] },
+		"class-members": { "gap": ["colon", "equals", "semicolon"], "insert": ["comment"] },
+		"enum-member": { "gap": ["equals", "comma"], "insert": ["comment"] },
+		"case-clause": { "gap": [], "insert": ["case-colon", "call-paren", "return-tail"] },
+		"assignments": { "gap": ["equals", "semicolon"], "insert": ["comment"] },
+		"call-statements": { "gap": ["call-arg{i}", "list-arg{i}-comma{i}", "list-arg{i}-el{i}", "list-matcher-arg{i}-comma{i}", "list-matcher-arg{i}-el{i}", "semicolon"], "insert": ["call-open-paren", "call-comma{i}", "call-close-paren", "list-arg{i}-open", "list-arg{i}-close", "list-matcher-arg{i}-open", "list-matcher-arg{i}-close", "subject-close-paren", "matcher-dot", "matcher-open-paren", "matcher-close-paren", "comment"] },
+		"object-rows": { "gap": ["property{i}", "colon{i}", "value{i}", "comma{i}", "close-brace"], "insert": ["open-brace", "tail"] },
+		"registration": { "gap": ["colon", "value"], "insert": [] }
+	}
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-YYYYMMDD-NNN",
+  "title": "Describe the observed failure",
+  "category": "syntax-boundary",
+  "tags": [
+    "searchable-syntax-or-component"
+  ],
+  "status": "investigating",
+  "symptom": "State the actual observation and a concrete example.",
+  "rootCause": {
+    "confidence": "hypothesis",
+    "summary": "State the suspected mechanism and what would confirm it."
+  },
+  "requestedOutcome": "Describe a directly observable success condition.",
+  "decisions": [
+    "Record a decision and its scope; reference authorization when material."
+  ],
+  "actions": [
+    {
+      "description": "Describe the next concrete investigation or change.",
+      "status": "pending"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Name the acceptance check",
+      "status": "not-run",
+      "scope": "Name the version, files and behavior covered.",
+      "evidence": [],
+      "result": "Explain why this check has not run."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "repository/relative/path",
+      "note": "Explain the connection."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "YYYY-MM-DD",
+      "event": "reported",
+      "summary": "Preserve the original observation.",
+      "evidence": []
+    }
+  ]
+}

@@ -15,7 +15,7 @@
  * dangerous. The syntax mask handles nested block comments, multi-line and raw strings, and interpolation
  * content is blanked as part of the string.
  */
-import type { CodeSyntax, LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
+import type { CodeSyntax, LineProfiler, RowProfile, Slot } from "@/common/table-engine.ts";
 
 export const SWIFT_SYNTAX: CodeSyntax = {
 	lineComments  : ["//"],

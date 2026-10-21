@@ -1,0 +1,14 @@
+{
+  "exitCode": 2,
+  "sourceUnchanged": true,
+  "report": {
+    "schemaVersion": 1,
+    "tool": "boxbox",
+    "command": "align",
+    "ok": false,
+    "error": {
+      "code": "ALIGN_NOT_ELIGIBLE",
+      "message": "align refused: approval denied: no matching convention; no matching convention; no matching convention; no matching convention"
+    }
+  }
+}

@@ -44,8 +44,14 @@ The internal Node artifact remains a separate development artifact.
 
 `development/skills/boxbox/` contains only the development skill and metadata. Its `engine` and `rules` links point to
 the product sources, so default link installs use live source edits. `development/install.sh --copy` dereferences the
-links into a managed development copy; it does not copy test fixtures or research data. Development still requires Bun
-and the relevant runtime/parser dependencies. Public installation uses the npm installer and Node instead.
+links into an ownership-marked development copy, includes the skill-local `@/*` → `engine/*` mapping, and copies the
+pinned runtime packages plus the TypeScript platform package after dependency preflight. It does not copy test fixtures
+or research data. Development source execution still requires Bun. Public installation uses the npm installer and Node instead.
+
+Engine TypeScript modules use `@/` for imports within `product/engine/`. The one static module exception is
+`typescript/layout-policy.ts` loading `../../rules/base/typescript-layout.json`, which is owned by `product/rules/`.
+The runtime `new URL(..., import.meta.url)` paths in `hook.ts`, `report.ts` and `rule-data.ts` also remain relative
+because they locate files rather than importing engine modules. The layout checker enforces this boundary.
 
 ## Verification
 

@@ -1,0 +1,420 @@
+{
+  "docs/development/issue-library/records/BBX-20261021-008-import-alias.json": {
+    "$schema": "../issue.schema.json",
+    "schemaVersion": 1,
+    "id": "BBX-20261021-008",
+    "title": "Internal import alias requirement conflicts with isolated source-copy resolution",
+    "category": "installation",
+    "tags": [
+      "imports",
+      "alias",
+      "@/",
+      "tsconfig",
+      "copy-install",
+      "authoring"
+    ],
+    "status": "verifying",
+    "symptom": "The user expected internal imports to share a project alias. Tests and development tools use @/, while product engine imports remain relative and import alignment does not rewrite module specifiers.",
+    "rootCause": {
+      "confidence": "confirmed",
+      "summary": "The former repository contract forbade @/ in product sources because only the root tsconfig defined it and isolated development copies lacked equivalent resolution. The migration added the copied-skill mapping, dependency isolation, alias-aware layout enforcement and bundled resolution before changing engine imports."
+    },
+    "requestedOutcome": "Use configured aliases consistently for internal source imports with equivalent module resolution in development copy and release bundles, preserving package boundaries and execution order.",
+    "decisions": [
+      "The 2026-10-21 user request adds alias consistency to AUTHOR1 and the Write/Refactor skill.",
+      "An alias is not an OS absolute path. Keep the existing @/* engine-root meaning during investigation.",
+      "Migrate the resolver, checker and installation contracts together before changing product imports; horizontal Align never rewrites module specifiers.",
+      "Keep the engine-external rules JSON import and the three import.meta.url runtime paths relative because they are outside the engine module alias contract."
+    ],
+    "actions": [
+      {
+        "description": "Record alias-aware authoring guidance and explicit migration acceptance work.",
+        "status": "done"
+      },
+      {
+        "description": "Inventory imports and make isolated copy plus bundle resolution support internal source aliases.",
+        "status": "done"
+      },
+      {
+        "description": "Migrate imports and associated repository/checker contracts, then verify equivalent source-copy and bundle resolution.",
+        "status": "done"
+      },
+      {
+        "description": "Complete the final independent READINESS1 audit that includes the migrated source state.",
+        "status": "pending"
+      }
+    ],
+    "verification": [
+      {
+        "name": "Portable alias migration",
+        "status": "passed",
+        "scope": "Repository-wide source migration, isolated copy execution and installed release bundles after migration.",
+        "evidence": [
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/alias-final-report.md",
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/alias-final-leftovers.json",
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/alias-final-copy-execution.log",
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/alias-final-verification.log",
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/alias-windows-path-verification.log",
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-final.log"
+        ],
+        "result": "All 169 engine-internal module specifiers use @/; the AST inventory retains only the engine-external rules JSON import and three runtime URL paths. Isolated copied-skill TypeScript/JSON/YAML execution, Node bundle smoke, public and installer artifacts, and the final check (629 pass, 5 pre-existing parser-toolchain skips, 0 fail) succeeded. Three pre-existing non-whitespace layout refusals in Kotlin, Rust and Swift profiles remain recorded and unchanged."
+      },
+      {
+        "name": "Requirement and skill consistency",
+        "status": "passed",
+        "scope": "Alias guidance and pending migration acceptance only; no implemented source migration or release verdict.",
+        "evidence": [
+          "docs/development/issue-library/evidence/import-alias/sonnet-final.md",
+          "docs/development/issue-library/evidence/import-alias/glm-final.md",
+          "docs/development/issue-library/evidence/import-alias/contract.log",
+          "docs/development/issue-library/evidence/import-alias/plugin-guard.log",
+          "docs/development/issue-library/evidence/import-alias/scope.md"
+        ],
+        "result": "Scoped Sonnet and GLM reviews passed after precedence clarification. Plugin contract tests and plugin guard passed within the recorded scope."
+      }
+    ],
+    "related": [
+      {
+        "kind": "code",
+        "path": "tsconfig.json",
+        "note": "Current @/* engine-root mapping."
+      },
+      {
+        "kind": "code",
+        "path": "development/tools/check-layout.ts",
+        "note": "Allows existing engine-root aliases, rejects invalid targets and prevents new unintended relative engine module imports."
+      },
+      {
+        "kind": "code",
+        "path": "development/install.sh",
+        "note": "Copies the skill-local alias config and pinned runtime dependencies with ownership-safe lifecycle handling."
+      },
+      {
+        "kind": "code",
+        "path": "product/engine/typescript/00_normalize-imports.ts",
+        "note": "Normalized imports after the bounded AST module-specifier migration; Align itself remains whitespace-only."
+      },
+      {
+        "kind": "code",
+        "path": "test/layout.test.ts",
+        "note": "Pins alias targets, the explicit rules-data exception and Windows-safe containment."
+      },
+      {
+        "kind": "contract",
+        "path": "product/plugin/skills/boxbox/SKILL.md",
+        "note": "Alias-aware Write/Refactor guidance."
+      },
+      {
+        "kind": "contract",
+        "path": "docs/development/plan.md",
+        "note": "Active AUTHOR1 migration acceptance."
+      }
+    ],
+    "history": [
+      {
+        "sequence": 1,
+        "date": "2026-10-21",
+        "event": "reported",
+        "summary": "User reported missing @ alias consistency and requested a remaining-work summary.",
+        "evidence": []
+      },
+      {
+        "sequence": 2,
+        "date": "2026-10-21",
+        "event": "diagnosed",
+        "summary": "Inspection established the existing alias prohibition, engine-root mapping and copy-install boundary; this is not evidence of a completed migration.",
+        "evidence": [
+          "tsconfig.json",
+          "development/tools/check-layout.ts",
+          "development/install.sh",
+          "AGENTS.md"
+        ]
+      },
+      {
+        "sequence": 3,
+        "date": "2026-10-21",
+        "event": "decision",
+        "summary": "Add the requirement to authoring guidance and AUTHOR1; implement resolver and import changes together in subsequent work.",
+        "evidence": [
+          "product/plugin/skills/boxbox/SKILL.md",
+          "docs/development/plan.md"
+        ]
+      },
+      {
+        "sequence": 4,
+        "date": "2026-10-21",
+        "event": "verification-failed",
+        "status": "failed",
+        "summary": "Sonnet identified ambiguity between alias guidance and the retained product-source prohibition. The subsequent pass required explicit project-contract precedence and plan wording.",
+        "evidence": [
+          "docs/development/issue-library/evidence/import-alias/sonnet.md",
+          "docs/development/issue-library/evidence/import-alias/sonnet-closure.md"
+        ]
+      },
+      {
+        "sequence": 5,
+        "date": "2026-10-21",
+        "event": "verified",
+        "status": "passed",
+        "summary": "Clarified guidance and pending acceptance work passed scoped Sonnet/GLM review. Migration remains open and unimplemented.",
+        "evidence": [
+          "docs/development/issue-library/evidence/import-alias/sonnet-final.md",
+          "docs/development/issue-library/evidence/import-alias/glm-final.md",
+          "docs/development/issue-library/evidence/import-alias/scope.md"
+        ]
+      },
+      {
+        "sequence": 6,
+        "date": "2026-10-21",
+        "event": "implemented",
+        "summary": "Added copied-skill alias and dependency isolation, migrated 169 engine-internal module specifiers to the engine-root alias, and enforced the remaining relative-import boundary with one rules-data exception.",
+        "evidence": [
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/alias-final-report.md",
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/alias-final-leftovers.json"
+        ]
+      },
+      {
+        "sequence": 7,
+        "date": "2026-10-21",
+        "event": "verified",
+        "status": "passed",
+        "summary": "Copied-source execution, bundle and artifact isolation, Windows-safe containment and the final repository check (629 pass, 5 pre-existing parser-toolchain skips, 0 fail) verified the migration. The issue remains verifying until the final READINESS1 independent audit covers this source state.",
+        "evidence": [
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/alias-final-copy-execution.log",
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/alias-final-verification.log",
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/alias-windows-path-verification.log",
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-final.log"
+        ]
+      }
+    ]
+  },
+  "docs/development/issue-library/records/BBX-20261021-010-yaml-ownership.json": {
+    "$schema": "../issue.schema.json",
+    "schemaVersion": 1,
+    "id": "BBX-20261021-010",
+    "title": "Nested YAML flow pairs can overwrite the owning row candidate",
+    "category": "syntax-boundary",
+    "tags": [
+      "yaml",
+      "flow-map",
+      "ast-ownership",
+      "preservation",
+      "readiness1"
+    ],
+    "status": "verifying",
+    "symptom": "Read-only review traced a tagged or anchored nested flow map into a scalar row candidate, allowing standalone format to omit original syntax.",
+    "rootCause": {
+      "confidence": "confirmed",
+      "summary": "Source inspection confirmed same-line nested pair overwrite and incomplete gap validation. The old adapter had no preserved snapshot, so the pre-fix example was traced rather than executed."
+    },
+    "requestedOutcome": "Refuse ambiguous AST ownership and preserve every non-whitespace byte under standalone format as well as Align; validate unresolved aliases and raw UTF-8.",
+    "decisions": [
+      "Require exact candidate reconstruction from the original line and AST key range.",
+      "Verify horizontal-only edits independently of candidate parsing in all structured writes."
+    ],
+    "actions": [
+      {
+        "description": "Reproduce the review input, add regression tests and fix AST/range and byte-preservation checks.",
+        "status": "done"
+      },
+      {
+        "description": "Run independent closure before current candidate packaging.",
+        "status": "in-progress"
+      }
+    ],
+    "verification": [
+      {
+        "name": "Structured write preservation closure",
+        "status": "passed",
+        "scope": "JSON/YAML adapter and guarded public pipeline",
+        "evidence": [
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/structured-closure.md",
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/structured-blocker-fix-report.md"
+        ],
+        "result": "Sonnet source closure passed B1-B4; current regressions passed. Subsequent flow-map exclusion and formatter-preflight refinements await final integrated audit."
+      },
+      {
+        "name": "Final candidate integration",
+        "status": "pending",
+        "scope": "Latest flow-map exclusion, raw-byte formatter preflight and installed candidate",
+        "evidence": [],
+        "result": "Pending frozen candidate checks and final GLM audit."
+      }
+    ],
+    "related": [
+      {
+        "kind": "code",
+        "path": "product/engine/structured/index.ts",
+        "note": "Candidate ownership and preservation."
+      },
+      {
+        "kind": "test",
+        "path": "test/structured-align.test.ts",
+        "note": "Regression suite."
+      },
+      {
+        "kind": "review",
+        "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/r2-r3-review-initial.md",
+        "note": "Independent initial finding."
+      }
+    ],
+    "history": [
+      {
+        "sequence": 1,
+        "date": "2026-10-21",
+        "event": "reported",
+        "summary": "Independent Sonnet review traced YAML data loss and requested exact reconstruction, horizontal gap, alias and byte validation.",
+        "evidence": [
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/r2-r3-review-initial.md"
+        ]
+      },
+      {
+        "sequence": 2,
+        "date": "2026-10-21",
+        "event": "verification-failed",
+        "status": "failed",
+        "summary": "Scope B was BLOCKED; policy-only scope A passed. No release was approved.",
+        "evidence": [
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/r2-r3-review-initial.md"
+        ]
+      },
+      {
+        "sequence": 3,
+        "date": "2026-10-21",
+        "event": "verified",
+        "status": "passed",
+        "summary": "Independent closure passed mandatory adapter/pipeline fixes. Exact pre-fix execution was unavailable; newer regression evidence and later refinements remain separately labeled.",
+        "evidence": [
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/structured-closure.md",
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/structured-blocker-fix-report.md"
+        ]
+      }
+    ]
+  },
+  "docs/development/issue-library/records/BBX-20261021-012-hook-json-self-observation.json": {
+    "$schema": "../issue.schema.json",
+    "schemaVersion": 1,
+    "id": "BBX-20261021-012",
+    "title": "Lifecycle hook treated its own JSON receipts as source changes",
+    "category": "host-integration",
+    "tags": [
+      "hooks",
+      "json",
+      "snapshot",
+      "plugin-data",
+      "hud",
+      "readiness1"
+    ],
+    "status": "verifying",
+    "symptom": "After JSON entered the public tracked-language set, the integrated HUD test expected a lifecycle PostToolUse receipt with NO_CHANGES but observed PASS because project-local plugin data created BoxBox-owned baseline and receipt JSON inside the source snapshot.",
+    "rootCause": {
+      "confidence": "confirmed",
+      "summary": "Lifecycle snapshots used the repository-wide tracked-extension set without excluding the exact receipt namespace written by the same lifecycle hook. A project-local plugin-data directory therefore made SessionStart evidence appear as a later user JSON edit."
+    },
+    "requestedOutcome": "Exclude only the current project's BoxBox-owned lifecycle receipt namespace from lifecycle snapshots while continuing to inspect ordinary JSON and unrelated plugin-data JSON; restore NO_CHANGES without weakening source coverage.",
+    "decisions": [
+      "Keep JSON tracked globally and leave snapshot default behavior unchanged.",
+      "Pass an explicit exact-directory exclusion only from lifecycleHook, covering all BoxBox sessions for the current project hash.",
+      "Keep the issue verifying until the final integrated check and independent audit close the current candidate."
+    ],
+    "actions": [
+      {
+        "description": "Add an optional explicit directory exclusion set to snapshot recursion and use it for the current project's lifecycle-owned receipt namespace.",
+        "status": "done"
+      },
+      {
+        "description": "Verify no self-generated change while ordinary and unrelated plugin-data JSON remain inspected.",
+        "status": "done"
+      },
+      {
+        "description": "Run the final integrated repository check and independent final audit on the frozen candidate.",
+        "status": "pending"
+      }
+    ],
+    "verification": [
+      {
+        "name": "Initial integrated HUD regression",
+        "status": "failed",
+        "scope": "Repository check after JSON became a tracked source extension.",
+        "evidence": [
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-initial.log"
+        ],
+        "result": "test/hud.test.ts expected NO_CHANGES and received PASS because hook-owned project-local JSON was observed as a source edit."
+      },
+      {
+        "name": "Focused lifecycle/HUD remediation",
+        "status": "passed",
+        "scope": "Lifecycle snapshot exclusion, HUD real-writer scenario, exact owned namespace, ordinary project-local plugin JSON and unrelated hook namespace JSON.",
+        "evidence": [
+          "docs/development/issue-library/records/BBX-20261021-012-hook-json-self-observation.json"
+        ],
+        "result": "Focused lifecycle and HUD suites passed 9 tests with 57 assertions and no failures; TypeScript and diff checks passed. This does not replace the pending final integrated check or audit."
+      },
+      {
+        "name": "Final integrated and independent closure",
+        "status": "pending",
+        "scope": "Frozen current candidate repository check and final independent audit.",
+        "evidence": [],
+        "result": "Pending."
+      }
+    ],
+    "related": [
+      {
+        "kind": "code",
+        "path": "product/engine/common/lifecycle-hook.ts",
+        "note": "Computes and applies the exact current-project receipt namespace exclusion."
+      },
+      {
+        "kind": "code",
+        "path": "product/engine/common/guarded-run.ts",
+        "note": "Provides snapshot recursion with an optional explicit directory exclusion set."
+      },
+      {
+        "kind": "test",
+        "path": "test/lifecycle-hook.test.ts",
+        "note": "Covers self-receipts, ordinary JSON and unrelated plugin-data hook JSON."
+      },
+      {
+        "kind": "test",
+        "path": "test/hud.test.ts",
+        "note": "Original real hook writer regression remains unchanged."
+      },
+      {
+        "kind": "review",
+        "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-initial.log",
+        "note": "Initial integrated failure evidence."
+      }
+    ],
+    "history": [
+      {
+        "sequence": 1,
+        "date": "2026-10-21",
+        "event": "verification-failed",
+        "status": "failed",
+        "summary": "The integrated suite found a self-caused PASS where the real HUD writer expected NO_CHANGES after project-local BoxBox receipt JSON entered the source snapshot.",
+        "evidence": [
+          "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-initial.log"
+        ]
+      },
+      {
+        "sequence": 2,
+        "date": "2026-10-21",
+        "event": "implemented",
+        "summary": "Lifecycle snapshots now exclude only the exact current-project BoxBox receipt namespace through an explicit snapshot parameter.",
+        "evidence": [
+          "docs/development/issue-library/records/BBX-20261021-012-hook-json-self-observation.json"
+        ]
+      },
+      {
+        "sequence": 3,
+        "date": "2026-10-21",
+        "event": "verified",
+        "status": "passed",
+        "summary": "Focused lifecycle and HUD tests passed while ordinary and unrelated plugin-data JSON remained visible; final integrated and independent closure remains pending.",
+        "evidence": [
+          "docs/development/issue-library/records/BBX-20261021-012-hook-json-self-observation.json"
+        ]
+      }
+    ]
+  }
+}

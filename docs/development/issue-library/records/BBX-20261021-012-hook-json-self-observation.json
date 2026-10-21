@@ -1,0 +1,135 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261021-012",
+  "title": "Lifecycle hook treated its own JSON receipts as source changes",
+  "category": "host-integration",
+  "tags": [
+    "hooks",
+    "json",
+    "snapshot",
+    "plugin-data",
+    "hud",
+    "readiness1"
+  ],
+  "status": "resolved",
+  "symptom": "After JSON entered the public tracked-language set, the integrated HUD test expected a lifecycle PostToolUse receipt with NO_CHANGES but observed PASS because project-local plugin data created BoxBox-owned baseline and receipt JSON inside the source snapshot.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "Lifecycle snapshots used the repository-wide tracked-extension set without excluding the exact receipt namespace written by the same lifecycle hook. A project-local plugin-data directory therefore made SessionStart evidence appear as a later user JSON edit."
+  },
+  "requestedOutcome": "Exclude only the current project's BoxBox-owned lifecycle receipt namespace from lifecycle snapshots while continuing to inspect ordinary JSON and unrelated plugin-data JSON; restore NO_CHANGES without weakening source coverage.",
+  "decisions": [
+    "Keep JSON tracked globally and leave snapshot default behavior unchanged.",
+    "Pass an explicit exact-directory exclusion only from lifecycleHook, covering all BoxBox sessions for the current project hash.",
+    "The final integration check and GLM source audit closed this bounded defect; native host acceptance is tracked separately."
+  ],
+  "actions": [
+    {
+      "description": "Add an optional explicit directory exclusion set to snapshot recursion and use it for the current project's lifecycle-owned receipt namespace.",
+      "status": "done"
+    },
+    {
+      "description": "Verify no self-generated change while ordinary and unrelated plugin-data JSON remain inspected.",
+      "status": "done"
+    },
+    {
+      "description": "Run the final integrated repository check and independent final audit on the frozen candidate.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Focused lifecycle/HUD remediation",
+      "status": "passed",
+      "scope": "Lifecycle snapshot exclusion, HUD real-writer scenario, exact owned namespace, ordinary project-local plugin JSON and unrelated hook namespace JSON.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hook-json-remediation-report.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-post-native-fix.log"
+      ],
+      "result": "Focused lifecycle and HUD suites passed 9 tests with 57 assertions and no failures; TypeScript and diff checks passed. This does not replace the pending final integrated check or audit."
+    },
+    {
+      "name": "Final integrated and independent closure",
+      "status": "passed",
+      "scope": "Frozen current candidate repository check and final independent audit.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-post-native-fix.log",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-final-result.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-closure-result.md"
+      ],
+      "result": "Current runtime sources passed the 632-test repository check (five existing missing-parser skips, zero failures) and the supplied-snapshot GLM-5.3 audit. The test-only upgrade addition passed a separate six-test run and GLM closure. No public rule or publication approval is implied."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "product/engine/common/lifecycle-hook.ts",
+      "note": "Computes and applies the exact current-project receipt namespace exclusion."
+    },
+    {
+      "kind": "code",
+      "path": "product/engine/common/guarded-run.ts",
+      "note": "Provides snapshot recursion with an optional explicit directory exclusion set."
+    },
+    {
+      "kind": "test",
+      "path": "test/lifecycle-hook.test.ts",
+      "note": "Covers self-receipts, ordinary JSON and unrelated plugin-data hook JSON."
+    },
+    {
+      "kind": "test",
+      "path": "test/hud.test.ts",
+      "note": "Original real hook writer regression remains unchanged."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-initial.log",
+      "note": "Initial integrated failure evidence."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-21",
+      "event": "verification-failed",
+      "status": "failed",
+      "summary": "The integrated suite found a self-caused PASS where the real HUD writer expected NO_CHANGES after project-local BoxBox receipt JSON entered the source snapshot.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-initial.log"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-21",
+      "event": "implemented",
+      "summary": "Lifecycle snapshots now exclude only the exact current-project BoxBox receipt namespace through an explicit snapshot parameter.",
+      "evidence": [
+        "docs/development/issue-library/records/BBX-20261021-012-hook-json-self-observation.json"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-21",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Focused lifecycle and HUD tests passed while ordinary and unrelated plugin-data JSON remained visible; final integrated and independent closure remains pending.",
+      "evidence": [
+        "docs/development/issue-library/records/BBX-20261021-012-hook-json-self-observation.json"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Closed the bounded implementation with the post-native-fix 632-pass repository check, scoped GLM final audit and supplementary hash/test review. Prior failures and pre-closure verification lists are retained; native host acceptance, rule approvals and publication are separate.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/records-before-readiness-closure.json",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-post-native-fix.log",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-final-result.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-closure-result.md"
+      ]
+    }
+  ]
+}

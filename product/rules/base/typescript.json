@@ -6,6 +6,7 @@
 		{ "kind": "declaration", "pattern": "DEFINE" },
 		{ "kind": "declaration-equals", "pattern": "DEFINE" },
 		{ "kind": "declaration-extended-equals", "pattern": "DEFINE" },
+		{ "kind": "declaration-call-envelope", "pattern": "DEFINE" },
 		{ "kind": "type-alias", "pattern": "DEFINE" },
 		{ "kind": "interface-members", "pattern": "DESCRIBE" },
 		{ "kind": "type-members", "pattern": "DESCRIBE" },
@@ -19,6 +20,7 @@
 		{ "kind": "call-statements", "pattern": "DO" },
 		{ "kind": "assignments", "pattern": "CHANGE" },
 		{ "kind": "case-clause", "pattern": "WHEN" },
-		{ "kind": "guard-statements", "pattern": "WHEN" }
+		{ "kind": "guard-statements", "pattern": "WHEN" },
+		{ "kind": "return-guards", "pattern": "WHEN" }
 	]
 }

@@ -1,0 +1,125 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261021-011",
+  "title": "HUD receipt state could appear as native host acceptance",
+  "category": "host-integration",
+  "tags": [
+    "hud",
+    "codex",
+    "claude",
+    "receipt",
+    "native-acceptance",
+    "readiness1"
+  ],
+  "status": "verifying",
+  "symptom": "Independent review found that the compact Claude statusLine and Codex HUD rendered an unqualified session PASS from a recorded hook receipt while file verification and native host acceptance remained unverified. Long sessions, user-edited launcher ownership and repeated disable also had bounded-state gaps.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "The compact renderer omitted evidence qualifiers, receipt scanning treated more than 256 entries as an error, Codex launcher ownership trusted only a header marker, and Claude disable required retained ownership state after manual statusLine removal. Receipt presence alone cannot prove native host delivery."
+  },
+  "requestedOutcome": "Keep receipt observation, file verification and native host acceptance visibly distinct; keep long-session scanning bounded; preserve user-edited host configuration; independently verify the fixes and then capture the same frozen current candidate in real Codex and Claude terminal hosts.",
+  "decisions": [
+    "Treat recorded receipts as observation metadata, never native host-acceptance evidence.",
+    "Keep the issue in verifying state after static and focused-test closure until the frozen current candidate has native Codex and Claude evidence.",
+    "Use Sonnet for independent review and the user-selected GLM final audit instead of the earlier unexecuted Opus pass."
+  ],
+  "actions": [
+    {
+      "description": "Qualify compact HUD output, bound recent receipt selection, preserve edited Codex launchers and make absent Claude statusLine disable idempotent.",
+      "status": "done"
+    },
+    {
+      "description": "Run focused HUD tests and independent Sonnet fix verification.",
+      "status": "done"
+    },
+    {
+      "description": "Install the exact frozen current candidate in disposable profiles and capture native Codex and Claude HUD acceptance without borrowing the historical 0.2.3 result.",
+      "status": "pending"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Bounded HUD static and focused-test closure",
+      "status": "passed",
+      "scope": "Current product/hud collector, renderer and setup ownership behavior plus focused HUD launcher tests; no native host claim.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-remediation-tests-final.log",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-review-closure.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-remediation-report.md"
+      ],
+      "result": "The focused suite passed 21 tests with 149 assertions and no failures; safe-mode Sonnet fix verification returned PASS with no mandatory findings. Current native host acceptance was explicitly outside this result."
+    },
+    {
+      "name": "Frozen current-candidate native HUD acceptance",
+      "status": "pending",
+      "scope": "Exact frozen candidate in disposable macOS Codex and Claude terminal profiles, including ready, not-ready, recovery, session scope and cleanup behavior.",
+      "evidence": [],
+      "result": "Not run. Historical 0.2.3 captures do not verify the current candidate, and no live profile change is authorized in this preparation pass."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "product/hud/status.mjs",
+      "note": "Receipt selection and qualified compact rendering."
+    },
+    {
+      "kind": "code",
+      "path": "product/hud/setup.mjs",
+      "note": "Codex launcher ownership and Claude statusLine disable behavior."
+    },
+    {
+      "kind": "test",
+      "path": "test/product-hud.test.ts",
+      "note": "Qualified compact state and bounded long-session regressions."
+    },
+    {
+      "kind": "test",
+      "path": "test/hud-installation.test.ts",
+      "note": "Edited-launcher preservation and idempotent disable regressions."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-review-initial.md",
+      "note": "Initial independent FIX_REQUIRED finding and evidence limits."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-review-closure.md",
+      "note": "Independent bounded static fix verification."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-21",
+      "event": "verification-failed",
+      "status": "failed",
+      "summary": "Safe-mode Sonnet review returned FIX_REQUIRED because compact receipt PASS could be mistaken for file or native host acceptance and identified related bounded-state and ownership gaps.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-review-initial.md"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-21",
+      "event": "implemented",
+      "summary": "The HUD now qualifies receipt state, bounds newest receipt validation, preserves edited launchers and makes absent statusLine disable idempotent.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-remediation-report.md"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-21",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Focused tests and independent static fix verification passed within their bounded scope; current-candidate native host acceptance remains pending.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-remediation-tests-final.log",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-review-closure.md"
+      ]
+    }
+  ]
+}

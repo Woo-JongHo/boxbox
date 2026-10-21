@@ -11,10 +11,10 @@
  * 4. The candidate output is compared with the source by changedLines (preservation.ts). A table whose edits change
  *    anything but horizontal whitespace between tokens is refused as a whole and reported in `refused`.
  */
-import      { changedLines } from "./preservation.ts"  ;
-import      { displayWidth } from "./display-width.ts" ;
-import      { maskSource   } from "./code-text.ts"     ;
-import type { CodeSyntax   } from "./code-text.ts"     ;
+import      { changedLines } from "@/common/preservation.ts"  ;
+import      { displayWidth } from "@/common/display-width.ts" ;
+import      { maskSource   } from "@/common/code-text.ts"     ;
+import type { CodeSyntax   } from "@/common/code-text.ts"     ;
 
 /** Re-exported so profilers can import CodeSyntax directly from table-engine. */
 export type { CodeSyntax };
@@ -113,10 +113,10 @@ function rebuildCode(aligner: LineProfiler, profile: RowProfile, widths: readonl
 }
 
 export function alignSource(source: string, aligner: LineProfiler, options: AlignOptions): AlignResult {
-	const minRows     = Math.max(3, options.minRows)       ;
-	const mask        = maskSource(source, aligner.syntax) ;
-	const lines       = source.split("\n")                 ;
-	const maskedLines = mask.text.split("\n")              ;
+	const minRows     = Math     .max  (3, options.minRows    ) ;
+	const mask        = maskSource     (source, aligner.syntax) ;
+	const lines       = source   .split("\n"                  ) ;
+	const maskedLines = mask.text.split("\n"                  ) ;
 
 	interface Accepted {
 		readonly index   : number        ;

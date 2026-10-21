@@ -1,0 +1,25 @@
+{
+  "groups": [
+    {
+      "kind": "declaration-call-envelope",
+      "startLine": 111,
+      "endLine": 113,
+      "edits": 3
+    },
+    {
+      "kind": "declaration-call-envelope",
+      "startLine": 120,
+      "endLine": 121,
+      "edits": 4
+    },
+    {
+      "kind": "registration",
+      "startLine": 140,
+      "endLine": 144,
+      "edits": 5
+    }
+  ],
+  "tokensPreserved": true,
+  "beforeDiagnostics": [],
+  "afterDiagnostics": []
+}

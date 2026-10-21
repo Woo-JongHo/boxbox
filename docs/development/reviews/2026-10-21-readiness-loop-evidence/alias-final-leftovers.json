@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "root": "/Users/jonghoPro/woo/00_project/98_BoxBox",
+  "counts": {
+    "files": 77,
+    "moduleSpecifiers": 1,
+    "convert": 0,
+    "retainRelative": 1,
+    "runtimePaths": 3
+  },
+  "moduleSpecifiers": [
+    {
+      "file": "product/engine/typescript/layout-policy.ts",
+      "kind": "import",
+      "specifier": "../../rules/base/typescript-layout.json",
+      "target": "product/rules/base/typescript-layout.json",
+      "decision": "retain-relative",
+      "reason": "target-outside-engine"
+    }
+  ],
+  "runtimePaths": [
+    {
+      "file": "product/engine/hook.ts",
+      "specifier": "./report.ts",
+      "decision": "retain-relative",
+      "reason": "runtime-import-meta-url-path"
+    },
+    {
+      "file": "product/engine/report.ts",
+      "specifier": "./${language}/06_align-tables.ts",
+      "decision": "retain-relative",
+      "reason": "runtime-import-meta-url-path"
+    },
+    {
+      "file": "product/engine/rule-data.ts",
+      "specifier": "../rules/${path}",
+      "decision": "retain-relative",
+      "reason": "runtime-import-meta-url-path"
+    }
+  ]
+}

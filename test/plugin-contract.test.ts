@@ -49,7 +49,7 @@ describe("plugin distribution contract", () => {
 			String((parseJson(".claude-plugin/marketplace.json").plugins as Array<Record<string, unknown>>)[0]!.description),
 			read("plugin/skills/boxbox/SKILL.md").split("---", 3)[1] ?? "",
 		];
-		for (const description of published) expect(description).toContain("TypeScript and Python");
+		for (const description of published) for (const language of ["TypeScript", "Python", "JSON", "YAML"]) expect(description).toContain(language);
 	});
 
 	test("the plugin folder does not drift from the single source", () => {

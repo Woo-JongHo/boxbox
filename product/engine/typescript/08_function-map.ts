@@ -10,11 +10,11 @@ import      {
               isFunctionDeclaration ,
               isFunctionExpression  ,
               isVariableStatement   ,
-                                      } from "typescript/unstable/ast"    ;
-import type { Node, SourceFile        } from "typescript/unstable/ast"    ;
+                                      } from "typescript/unstable/ast"          ;
+import type { Node, SourceFile        } from "typescript/unstable/ast"          ;
 
-import      { displayWidth            } from "../common/display-width.ts" ;
-import      { loadSourceFile          } from "./load-source-file.ts"      ;
+import      { displayWidth            } from "@/common/display-width.ts"        ;
+import      { loadSourceFile          } from "@/typescript/load-source-file.ts" ;
 
 interface MapRow {
 	readonly line : number;
@@ -83,11 +83,11 @@ function collectDeclarations(node: Node, source: SourceFile, out: Map<string, De
 }
 
 async function main(): Promise<void> {
-	const root      = process.cwd()              ;
-	const raw       = process.argv.slice(2)      ;
-	const scaffold  = raw.includes("--scaffold") ;
-	const write     = raw.includes("--write")    ;
-	const fileIndex = raw.indexOf("--file")      ;
+	const root      = process     .cwd     ()             ;
+	const raw       = process.argv.slice   (2           ) ;
+	const scaffold  = raw         .includes("--scaffold") ;
+	const write     = raw         .includes("--write"   ) ;
+	const fileIndex = raw         .indexOf ("--file"    ) ;
 	if (raw[0] !== "--file" || !raw[1]) throw new Error("usage: 08_function-map.ts --file <repository TypeScript file> [--check|--scaffold]");
 	const { source, relative } = await loadSourceFile(root, raw[1]);
 

@@ -1,0 +1,704 @@
+$ bun development/tools/sync-product.ts --check && bun run check:layout && bun test --timeout 60000 && bunx tsc --noEmit && bash -n development/install.sh
+$ bun development/tools/check-layout.ts
+product dependencies: PASS
+bun test v1.4.0 (34cbb9a40)
+
+test/plugin-contract.test.ts:
+(pass) plugin distribution contract > package, Claude and Codex manifests and both marketplaces share name and version [0.21ms]
+(pass) plugin distribution contract > plugin components live inside the plugin folder [0.28ms]
+(pass) plugin distribution contract > the development skill lists every language; the shipped plugin introduces only the first public scope [0.20ms]
+(pass) plugin distribution contract > the plugin folder does not drift from the single source [1.15ms]
+(pass) plugin distribution contract > hooks call only the shim inside the plugin, and the shim requires an explicit local engine [0.13ms]
+(pass) plugin distribution contract > the plugin folder stays within the directory submission limits [0.24ms]
+(pass) plugin distribution contract > shipped docs never instruct running a nonexistent repository test [0.04ms]
+(pass) plugin distribution contract > every table-kind axis has a human-readable note [0.26ms]
+
+test/corpus-signatures.test.ts:
+(pass) pattern signature > axis ids lose their column, fold digit runs and generalize callees [0.07ms]
+(pass) pattern signature > the identity key is language, context, kind, ordered axes and depth — never the result state [0.04ms]
+(pass) pattern signature > a table keeps its key before and after it is aligned [3.03ms]
+(pass) pattern signature > depth counts four columns per level and a tab as four columns [0.02ms]
+(pass) pattern signature > two python assignment tables of the same shape collapse into one type, depth apart [0.39ms]
+(pass) pattern signature > different callees and arities are different types even when the row text looks alike [0.22ms]
+
+test/node-artifact.test.ts:
+(pass) Node-only local package artifact > the isolated installed tarball fixes and rechecks TypeScript/Python without Bun or the repository [5496.17ms]
+
+test/parse-check.test.ts:
+(pass) compareParse > python: a parse-changing edit is detected and a whitespace edit is not [167.33ms]
+(pass) compareParse > go: a parse-changing edit is detected and a whitespace edit is not [63.54ms]
+(pass) compareParse > javascript: a parse-changing edit is detected and a whitespace edit is not [306.15ms]
+(pass) compareParse > c: a parse-changing edit is detected and a whitespace edit is not [299.36ms]
+(pass) compareParse > cpp: a parse-changing edit is detected and a whitespace edit is not [205.46ms]
+(pass) compareParse > java: a parse-changing edit is detected and a whitespace edit is not [2179.39ms]
+(skip) compareParse > rust: a parse-changing edit is detected and a whitespace edit is not
+(pass) syntacticDiagnostics (TypeScript) > reports parse errors by line and code, and none for valid code [275.63ms]
+
+test/preservation.test.ts:
+(pass) changedLines > accepts whitespace added or removed between tokens [3.63ms]
+(pass) changedLines > flags whitespace that joins or splits tokens [2.10ms]
+(pass) changedLines > flags any change inside strings and comments [0.16ms]
+(pass) changedLines > whitespace at the end of a line comment may go; at the end of a continuing string it may not [0.55ms]
+(pass) changedLines > flags indentation changes and line count changes [0.10ms]
+(pass) engine refusal > a table whose alignment would change a string is refused, not applied [4.83ms]
+(pass) preservesTokens (TypeScript scanner) > accepts whitespace between tokens [1.21ms]
+(pass) preservesTokens (TypeScript scanner) > flags changes inside templates, regular expressions and comments, and joined tokens [1.43ms]
+
+test/go-align.test.ts:
+(pass) go: alignment changes only whitespace between tokens and refuses nothing [7.46ms]
+(pass) go: the aligned table and trap files parse like their sources [24.54ms]
+(pass) go: alignment is idempotent — running twice gives the same result [1.83ms]
+(pass) go: matches the golden aligned file [0.97ms]
+(pass) go: the already aligned golden has 0 changes [0.49ms]
+(pass) go: the string/comment trap file has 0 changes [0.14ms]
+(pass) go: 2-row groups are not aligned [1.88ms]
+(pass) go: a struct field type column is not padded when it is the row's last cell [0.33ms]
+(pass) go: the tag column aligns to the longest tag value including backticks [0.15ms]
+(pass) go: map rows attach the colon with zero gap and do not read string key contents as structure [0.09ms]
+(pass) go: bundle rows align inner cell columns and the closing brace shares the cell width [1.55ms]
+(pass) go: the profile refuses bundle rows with keys, nesting, calls, a single cell or func [0.52ms]
+(pass) go: the profile refuses declaration, control-flow, opening-bracket and := rows [0.07ms]
+(pass) go: the CLI only reports by default and writes only with --enable-go [77.73ms]
+
+test/examples.test.ts:
+(pass) example records > a mismatched content hash, or missing asserts on a non-taste example, is an error [2.48ms]
+(pass) example checks — meaning per verdict > after-better: before has A12, after does not, and after is a fixed point [521.57ms]
+(pass) example checks — meaning per verdict > fixedPoint: an after with a table still pending alignment fails [199.77ms]
+(pass) example checks — meaning per verdict > bad: fails when the engine's fix of before equals the forbidden after [430.21ms]
+(pass) example checks — meaning per verdict > taste and unapproved examples are not checked [0.07ms]
+(pass) decision records > a section hash changes only when that section changes [0.24ms]
+(pass) decision records > reports that re-approval is needed when the referenced section changes [0.92ms]
+(pass) picking GUIDE examples > only approved after-better, by shared pattern count → recency → id, up to 3 [11.93ms]
+(pass) approval section hashes are identical across LF and CRLF checkouts [0.12ms]
+(pass) preset DB > every shipped example passes per its verdict, and each decision's document hash matches the current document [366.44ms]
+
+test/formatter-process.test.ts:
+(pass) formatter process execution > resolves the actual runtime through PATH and explicit paths [1.00ms]
+(pass) formatter process execution > detects replacement of a resolved formatter [0.44ms]
+(pass) formatter process execution > passes spaces and shell metacharacters as literal arguments [15.67ms]
+(pass) formatter process execution > bounds each output stream and retains nonzero exit status [18.01ms]
+(pass) formatter process execution > a timeout kills descendants before a delayed write can reach the working file [2107.46ms]
+(pass) formatter process execution > spawn errors reject rather than reporting formatter success [1.04ms]
+
+test/guarded-run.test.ts:
+{"schemaVersion":1,"tool":"boxbox","command":"run","runId":"11aa24bd-177c-44f8-99c8-ab675eaca970","root":"/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-qj880M","engineVersion":"test","runtime":{"node":"26.3.0","bunVersion":"1.4.0"},"startedAt":"2026-10-21T06:05:02.722Z","finishedAt":"2026-10-21T06:05:02.753Z","state":"PASS","childExitCode":0,"preflight":"PASS","validation":"PASS","errorCode":null,"before":{},"after":{"one.py":"98752ee28d5484bdc2814fb70adb6a0b2fb31f6a9b8ee7ae81fd2fc9cf300b3b"},"afterSnapshotComplete":true,"ignoredSymlinks":[],"changed":["one.py"],"checked":[{"file":"one.py","result":{"file":"one.py","language":"python","mode":"check","summary":{"groups":0,"misaligned":0,"edits":0,"refused":0,"suggested":0},"groups":[],"parse":{"status":"not-run","tool":"test"}}}],"unsupported":[],"deleted":[],"excludedDirectories":[".git",".boxbox","node_modules",".venv","venv","__pycache__","dist","build"],"symlinkDirectoriesFollowed":false,"nativeHookVerified":false,"automaticFixPerformed":false}
+(pass) distinguishes a successful check, no changes and not storing arguments [33.60ms]
+boxbox run: TOOL_ERROR; run=50d83bb2-eec4-4c57-9d44-a54c2b72fc33; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-pVGhHO/.boxbox/runs/50d83bb2-eec4-4c57-9d44-a54c2b72fc33.json
+(pass) a preflight failure ends before running and is recorded [2.20ms]
+boxbox run: CHILD_FAILED; run=353d0a1c-47ca-4303-ba00-ad34dbd74cb0; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-xLap77/.boxbox/runs/353d0a1c-47ca-4303-ba00-ad34dbd74cb0.json
+boxbox run: UNSUPPORTED; run=8196dcf5-fa52-4359-8c55-77b94508b9b0; checked=0; changed=1
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-3S4ajA/.boxbox/runs/8196dcf5-fa52-4359-8c55-77b94508b9b0.json
+boxbox run: NO_CHANGES; run=0d3e2710-6223-49cd-a62b-b55b13f2c1b3; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-Z77BMA/.boxbox/runs/0d3e2710-6223-49cd-a62b-b55b13f2c1b3.json
+(pass) child failure, unsupported and unchanged are not PASS [71.37ms]
+boxbox run: TOOL_ERROR; run=56ef83bc-a3b3-4d20-ac15-39c681f3e184; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-xLIwZc/.boxbox/runs/56ef83bc-a3b3-4d20-ac15-39c681f3e184.json
+(pass) check errors and non-runnable commands leave an end record [1.99ms]
+boxbox run: TOOL_ERROR; run=da0da8bb-8acf-431e-ad7a-03bae584ddf3; checked=0; changed=1
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-CoV5b7/.boxbox/runs/da0da8bb-8acf-431e-ad7a-03bae584ddf3.json
+(pass) a changed symbolic code file is not approved by the check [25.48ms]
+boxbox run: NO_CHANGES; run=a87624ef-5eba-4220-851d-23dada1cb038; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-tuPfcF/.boxbox/runs/a87624ef-5eba-4220-851d-23dada1cb038.json
+(pass) status marks changes made outside a run as STALE [28.72ms]
+(pass) status reads only bounded headers before loading the latest run [0.36ms]
+(pass) snapshot streams source files larger than the former size cap [48.80ms]
+(pass) macOS status lock canonicalizes aliases and ignores TMPDIR [0.62ms]
+(pass) direct status rejects a concurrent status process [6.89ms]
+lockf: /private/tmp/boxbox-locks-502/2bce935bfa9c36e0fb9bb370791dc6ba/status.advisory.lock: already locked
+(pass) macOS status uses the operating system advisory lock [2010.31ms]
+(pass) macOS production status enters the uncontended lockf child [95.86ms]
+(pass) status lock does not steal a fresh partial owner and recovers an old malformed owner [3.98ms]
+(pass) status rejects a symbolic .boxbox directory before reading receipts [0.46ms]
+{"schemaVersion":1,"tool":"boxbox","command":"run","runId":"41cb1b42-79f5-4238-ba19-9462be6e8eb4","root":"/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-G7FHTX","engineVersion":"test","runtime":{"node":"26.3.0","bunVersion":"1.4.0"},"startedAt":"2026-10-21T06:05:05.052Z","finishedAt":"2026-10-21T06:05:05.082Z","state":"FAIL","childExitCode":0,"preflight":"PASS","validation":"FAIL","errorCode":null,"before":{},"after":{"bad.py":"1f206b11c23e28cc250ded7fc0098d3823a8467a54340f1ac4e535cb8544493f"},"afterSnapshotComplete":true,"ignoredSymlinks":[],"changed":["bad.py"],"checked":[{"file":"bad.py","result":{"file":"bad.py","language":"python","mode":"check","summary":{"groups":0,"misaligned":1,"edits":0,"refused":0,"suggested":0},"groups":[],"parse":{"status":"not-run","tool":"test"}}}],"unsupported":[],"deleted":[],"excludedDirectories":[".git",".boxbox","node_modules",".venv","venv","__pycache__","dist","build"],"symlinkDirectoriesFollowed":false,"nativeHookVerified":false,"automaticFixPerformed":false}
+{"schemaVersion":1,"tool":"boxbox","command":"run","runId":"e2fdb9af-c1f3-4f55-a6b1-2963ab3f26f5","root":"/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-NrvJNN","engineVersion":"test","runtime":{"node":"26.3.0","bunVersion":"1.4.0"},"startedAt":"2026-10-21T06:05:05.083Z","finishedAt":"2026-10-21T06:05:05.106Z","state":"TOOL_ERROR","childExitCode":0,"preflight":"PASS","validation":"NOT_RUN","errorCode":"GUARD_ERROR","before":{},"after":{"bad.py":"1f206b11c23e28cc250ded7fc0098d3823a8467a54340f1ac4e535cb8544493f"},"afterSnapshotComplete":true,"ignoredSymlinks":[],"changed":["bad.py"],"checked":[],"unsupported":[],"deleted":[],"excludedDirectories":[".git",".boxbox","node_modules",".venv","venv","__pycache__","dist","build"],"symlinkDirectoriesFollowed":false,"nativeHookVerified":false,"automaticFixPerformed":false}
+(pass) distinguishes check failures from check exceptions and preserves the child result [55.55ms]
+
+test/install-lifecycle.test.ts:
+(pass) install.sh lifecycle > links the same skill source into Claude, ZCode and Codex and survives a rerun [69.69ms]
+(pass) install.sh lifecycle > copy install creates an independent copy and uninstall removes only installed targets [152.37ms]
+(pass) install.sh lifecycle > never overwrites a regular file owned by the user [12.85ms]
+
+test/corpus-triage.test.ts:
+(pass) corpus AI pre-verdicts > picks and validates only verdict lines and drops unknown ranks, verdicts and flags [0.34ms]
+(pass) corpus AI pre-verdicts > the summary shows AI suggestions separately from verdicts, and the last suggestion wins for the same signature [0.12ms]
+
+test/cpp-align.test.ts:
+(pass) cpp: alignment changes only whitespace between tokens and refuses nothing [3.33ms]
+(pass) cpp: the aligned table and trap files parse like their sources [1162.57ms]
+(pass) cpp: alignment is idempotent — running twice gives the same result [1.17ms]
+(pass) cpp: matches the golden aligned file [0.78ms]
+(pass) cpp: the already aligned golden has 0 changes [0.77ms]
+(pass) cpp: the string/comment trap file has 0 changes [0.90ms]
+(pass) cpp: 2-row groups are not aligned [0.80ms]
+(pass) cpp profile specific properties > preserves the std::vector<int> type cell and aligns the name column at minimum width [0.18ms]
+(pass) cpp profile specific properties > lines with an open R"( raw string and their contents are not tables [0.05ms]
+(pass) cpp profile specific properties > refuses parentheses in type cells (function pointers) and function-like macros, accepts object-like macros [0.05ms]
+(pass) cpp profile specific properties > does not read = ; inside strings as structure and keeps them in the value cell [0.08ms]
+(pass) cpp profile specific properties > aligns bundle-row inner cell columns at minimum width [0.08ms]
+(pass) cpp profile specific properties > refuses bundle rows with nesting, assignment or indexing, and single or empty cells [0.06ms]
+(pass) cpp profile specific properties > the 2-row groups in tables.cpp are a field-table pair and a bundle-row pair [0.85ms]
+
+test/recommended-preset.test.ts:
+(pass) the approved recommended preset > ships exactly the two human-approved rules with matching dated, versioned proof records [4.61ms]
+(pass) the approved recommended preset > a prepared public package retains complete proofs and refuses changed approval documents [3.90ms]
+(pass) the approved recommended preset > both shipped approval proofs survive a CRLF document checkout [0.45ms]
+(pass) the approved recommended preset > approval lookup remains limited to the exact language, scope, container and axes [0.23ms]
+(pass) the approved recommended preset > the approved TypeScript example and two-row declaration exception use real safe writes and reach a token-preserving fixed point [1379.32ms]
+(pass) the approved recommended preset > using declarations never inherit the direct-call approval [214.75ms]
+(pass) the approved recommended preset > await using declarations never inherit the direct-call approval [207.45ms]
+(pass) the approved recommended preset > constructor initializers never inherit the direct-call approval [206.48ms]
+(pass) the approved recommended preset > awaited initializers never inherit the direct-call approval [203.81ms]
+(pass) the approved recommended preset > the approved Python example remains safe at its existing indentation [358.32ms]
+(pass) the approved recommended preset > the excluded single TypeScript row and two Python rows stay unchanged [80.15ms]
+(pass) the approved recommended preset > attribute assignment tables do not inherit the simple-name approval [0.51ms]
+(pass) the approved recommended preset > chained assignments do not inherit the single-name approval [316.78ms]
+(pass) the approved recommended preset > compound assignments and differing indentation never become approved Python tables [0.30ms]
+
+test/corpus-evidence.test.ts:
+(pass) raw corpus evidence > preserves the lookup key, diagnostic signature, provenance and whole-file hash losslessly [0.76ms]
+(pass) raw corpus evidence > IDs are stable without time and change when the location or provenance changes [1.81ms]
+
+test/strip-stray-padding.test.ts:
+(pass) out-of-table padding (A12) > a statement line with spaces only before the trailing `;` and no other alignment spaces is a target [0.19ms]
+(pass) out-of-table padding (A12) > lines that form a `;` column with a neighbor, or are aligned by hand into several columns, are left alone [0.17ms]
+(pass) out-of-table padding (A12) > comments and import lines are not targets [0.01ms]
+(pass) out-of-table padding (A12) > cleanup changes only target lines, judged against the original body [0.07ms]
+
+test/corpus-judge.test.ts:
+(pass) corpus judging > type slugs are rank-padded, sanitized and unique per signature [0.26ms]
+(pass) corpus judging > the last verdict record for a signature wins and blank lines are skipped [0.08ms]
+(pass) corpus judging > the summary marks approved, judged and unjudged types by rank [0.06ms]
+
+test/config-layers.test.ts:
+(pass) config layers > replaces arrays and per-language formatters in Base → Preset → User → Project order [1.34ms]
+(pass) config layers > schema 1 migrates only in memory and never changes the original [0.50ms]
+(pass) config layers > schema 2 init writes a minimal file that does not shadow upper-layer values [0.45ms]
+(pass) config layers > refuses unknown fields, safety overrides and future schemas fail-closed [0.07ms]
+(pass) config layers > strictly validates the formatter command contract and timeout bounds [0.13ms]
+(pass) config layers > refuses empty languages and unsupported formatter languages [0.06ms]
+(pass) config layers > missing layers keep defaults, the fingerprint is deterministic and detects raw changes [0.55ms]
+(pass) config layers > refuses project and user config symbolic links [0.91ms]
+
+test/typescript-write-safety.test.ts:
+(pass) atomic file replacement helper > on success keeps the mode and cleans up temporary files [0.97ms]
+(pass) atomic file replacement helper > the synchronous entry point uses the same commit and cleanup contract [0.76ms]
+(pass) atomic file replacement helper > when an external edit is found, keeps that edit and refuses the commit [0.70ms]
+(pass) atomic file replacement helper > on rename failure keeps the original and cleans up temporary files [0.67ms]
+(pass) atomic file replacement helper > refuses symbolic and hard link targets conservatively [1.02ms]
+(pass) TS multi-pass working copy > on later pass exception, the original is never changed [0.77ms]
+(pass) TS multi-pass working copy > on parser throw, the original is never changed [0.71ms]
+(pass) TS multi-pass working copy > on diagnostic mismatch, the original is never changed [0.67ms]
+(pass) TS multi-pass working copy > on non-convergence, the original is never changed [0.68ms]
+(pass) TS multi-pass working copy > a rerun after a real CLI success is byte-identical [730.82ms]
+
+test/hud.test.ts:
+(pass) HUD never runs a checkout engine when the host plugin is absent or its discovery fails [0.36ms]
+(pass) HUD keeps disabled host state, runtime readiness and unobserved hook delivery separate [0.67ms]
+(pass) HUD reports malformed receipts and actual latest outcomes without turning receipts into host acceptance [1.72ms]
+(pass) HUD reads a receipt from the real hook writer and marks inaccessible receipt roots incomplete [83.95ms]
+
+test/engine.test.ts:
+(pass) maskSource > preserves geometry and masks only string contents [0.03ms]
+(pass) maskSource > marks lines inside block comments with opensInBlock [0.02ms]
+(pass) maskSource > quotes inside comments do not open strings [0.02ms]
+(pass) maskSource > does not mistake the Rust lifetime 'a for a string [0.05ms]
+(pass) maskSource > masks the whole C++ raw string R"( )" [0.02ms]
+(pass) alignSource > aligns columns at the minimum width of the actual longest cell [0.21ms]
+(pass) alignSource > blank lines and comments break sections — a later section never shares an earlier section's width [0.12ms]
+(pass) alignSource > a 2-row run is reported as a pair and not aligned [0.09ms]
+(pass) alignSource > minRows below 3 is raised to 3: a 2-row run stays unaligned even when asked [0.09ms]
+(pass) alignSource > alignment preserves content and is idempotent [0.14ms]
+(pass) alignSource > separators inside strings are not mistaken for tables [0.05ms]
+(pass) alignSource > trailing comments align into one column within a table [0.04ms]
+(pass) alignSource > refuses profile rows that fail lossless decomposition [0.04ms]
+(pass) alignSource > apply=false only reports and returns the original [0.04ms]
+
+test/javascript-align.test.ts:
+(pass) javascript: alignment changes only whitespace between tokens and refuses nothing [1.25ms]
+(pass) javascript: the aligned table and trap files parse like their sources [141.33ms]
+(pass) javascript: alignment is idempotent — running twice gives the same result [0.79ms]
+(pass) javascript: matches the golden aligned file [0.44ms]
+(pass) javascript: the already aligned golden has 0 changes [0.20ms]
+(pass) javascript: the string/comment trap file has 0 changes [0.09ms]
+(pass) javascript: 2-row groups are not aligned [0.50ms]
+(pass) javascript profile specific properties > object-literal rows and const assignment rows keep separate tables and widths even when adjacent [0.19ms]
+(pass) javascript profile specific properties > does not mistake : = ; inside strings for structure and keeps the value cell intact [0.06ms]
+(pass) javascript profile specific properties > arrow functions, comparisons, control flow, multiple declarations and uncertain rows are not table rows [0.04ms]
+(pass) javascript profile specific properties > cuts template literals and quoted keys as single cells [0.07ms]
+(pass) javascript profile specific properties > bundle rows attach the first cell to the opening bracket and align cell and closing-bracket columns at minimum width [0.10ms]
+(pass) javascript profile specific properties > bundle rows with nesting, assignment or calls, and single-cell or empty-cell rows are not table rows [0.03ms]
+
+test/mutation.test.ts:
+(pass) mutation invariants > python: 1000 variants keep whitespace-only output and idempotence [723.50ms]
+(pass) mutation invariants > python: sampled variants parse like their aligned output [46.28ms]
+(pass) mutation invariants > java: 1000 variants keep whitespace-only output and idempotence [696.78ms]
+(pass) mutation invariants > java: sampled variants parse like their aligned output [502.36ms]
+(pass) mutation invariants > go: 1000 variants keep whitespace-only output and idempotence [1046.51ms]
+(pass) mutation invariants > go: sampled variants parse like their aligned output [52.01ms]
+(pass) mutation invariants > rust: 1000 variants keep whitespace-only output and idempotence [923.31ms]
+(skip) mutation invariants > rust: sampled variants parse like their aligned output
+(pass) mutation invariants > javascript: 1000 variants keep whitespace-only output and idempotence [670.90ms]
+(pass) mutation invariants > javascript: sampled variants parse like their aligned output [93.30ms]
+(pass) mutation invariants > c: 1000 variants keep whitespace-only output and idempotence [946.90ms]
+(pass) mutation invariants > c: sampled variants parse like their aligned output [75.33ms]
+(pass) mutation invariants > cpp: 1000 variants keep whitespace-only output and idempotence [854.91ms]
+(pass) mutation invariants > cpp: sampled variants parse like their aligned output [74.71ms]
+(pass) mutation invariants > swift: 1000 variants keep whitespace-only output and idempotence [365.22ms]
+(pass) mutation invariants > swift: sampled variants parse like their aligned output [515.29ms]
+(pass) mutation invariants > kotlin: 1000 variants keep whitespace-only output and idempotence [294.32ms]
+(skip) mutation invariants > kotlin: sampled variants parse like their aligned output
+(pass) mutation invariants (TypeScript aligner) > 5 variants keep the token stream, refuse nothing, parse alike and are idempotent [5703.17ms]
+
+test/swift-align.test.ts:
+(pass) swift: alignment changes only whitespace between tokens and refuses nothing [0.41ms]
+(pass) swift: the aligned table and trap files parse like their sources [442.08ms]
+(pass) swift: alignment is idempotent — running twice gives the same result [0.35ms]
+(pass) swift: matches the golden aligned file [0.18ms]
+(pass) swift: the already aligned golden has 0 changes [0.08ms]
+(pass) swift: the string/comment trap file has 0 changes [0.04ms]
+(pass) swift: 2-row groups are not aligned [0.18ms]
+(pass) swift profile specific properties > let rows with and without types form separate tables and align keyword, name, type and value [0.14ms]
+(pass) swift profile specific properties > nested block comments hide look-alike rows even across inner opens [0.06ms]
+(pass) swift profile specific properties > raw strings and interpolation are masked, so their punctuation is invisible [0.04ms]
+(pass) swift profile specific properties > declaration and control-flow rows are refused [0.08ms]
+
+test/kotlin-align.test.ts:
+(pass) kotlin: alignment changes only whitespace between tokens and refuses nothing [0.28ms]
+(skip) kotlin: the aligned table and trap files parse like their sources (parser not installed — skipped, not passed)
+(pass) kotlin: alignment is idempotent — running twice gives the same result [0.20ms]
+(pass) kotlin: matches the golden aligned file [0.16ms]
+(pass) kotlin: the already aligned golden has 0 changes [0.05ms]
+(pass) kotlin: the string/comment trap file has 0 changes [0.03ms]
+(pass) kotlin: 2-row groups are not aligned [0.15ms]
+(pass) kotlin profile specific properties > val rows with and without types form separate tables and align keyword, name, type and value [0.07ms]
+(pass) kotlin profile specific properties > nested block comments hide look-alike rows even across inner opens [0.06ms]
+(pass) kotlin profile specific properties > string templates are masked, so their dollar punctuation is invisible [0.03ms]
+(pass) kotlin profile specific properties > declaration and control-flow rows are refused [0.03ms]
+
+test/edge-inputs.test.ts:
+(pass) edge inputs > CRLF python files align and keep their line endings [0.12ms]
+(pass) edge inputs > CRLF dict rows are no longer refused by the trailing  [0.06ms]
+(pass) edge inputs > a BOM is preserved and only the first line is excluded [0.03ms]
+(pass) edge inputs > a multi-thousand-line file aligns within the time budget [25.77ms]
+
+test/approval-gate.test.ts:
+(pass) approval write gate > only an exact key with complete human approval proof allows writing, and GUIDE gets only after-better [0.86ms]
+(pass) approval write gate > turns a detected descriptor into the current exact key and keeps the original file path [0.48ms]
+(pass) approval write gate > a candidate convention refuses writing [0.56ms]
+(pass) approval write gate > a rejected convention refuses writing [0.34ms]
+(pass) approval write gate > an unknown key and duplicate conventions of equal priority are unknown/conflict respectively [0.38ms]
+(pass) approval write gate > picks the highest layer in project → user → preset order [0.37ms]
+(pass) approval write gate > blocks a missing decision, a stale document hash, a wrong version and a missing human approval [0.59ms]
+(pass) approval write gate > blocks when any of positive, counterexample, both links, content hash or rule relevance is missing [0.70ms]
+(pass) approval write gate > refuses a document ref that escapes the root [0.62ms]
+(pass) approval write gate > resolves the same relative ref in the document root matching the convention layer [1.04ms]
+(pass) registry loader > reads JSONL from the given roots and layers and refuses malformed and duplicate proofs [1.66ms]
+(pass) registry loader > refuses registry override root escapes and symbolic/non-regular files [0.85ms]
+
+test/hud-installation.test.ts:
+(pass) Claude HUD opt-in preserves unrelated settings, repairs its own command and removes only its key [6.46ms]
+(pass) HUD setup refuses foreign settings, user changes, symlinks and unsupported platform without replacing them [1.74ms]
+(pass) Codex launcher keeps literal paths and argv, refuses foreign bins, and removes only its own launcher [429.25ms]
+(pass) installed hook launcher forwards exact input and protocol while recording a bounded project locator [74.15ms]
+
+test/java-align.test.ts:
+(pass) java: alignment changes only whitespace between tokens and refuses nothing [0.89ms]
+(pass) java: the aligned table and trap files parse like their sources [850.37ms]
+(pass) java: alignment is idempotent — running twice gives the same result [0.93ms]
+(pass) java: matches the golden aligned file [0.55ms]
+(pass) java: the already aligned golden has 0 changes [0.19ms]
+(pass) java: the string/comment trap file has 0 changes [0.04ms]
+(pass) java: 2-row groups are not aligned [0.52ms]
+(pass) java profile refusal rules > refuses brace, annotation, control-flow and method-signature rows with null [0.34ms]
+(pass) java profile refusal rules > decomposes the four forms into axis sequences and keeps enum argument lists as one cell including parentheses [0.07ms]
+(pass) java profile refusal rules > does not read = ; inside strings as structure and keeps them whole in the value cell [0.06ms]
+(pass) java profile refusal rules > separator axes are not column axes and canonical gaps follow Java conventions [0.05ms]
+(pass) java profile refusal rules > reassembling enum constants adds no space between the name and the parenthesis [0.04ms]
+(pass) java profile refusal rules > refuses as uncertain initializers with an empty value or more than one ; outside strings [0.03ms]
+(pass) java profile refusal rules > refuses bundle rows with nesting, assignment, calls, indexing or generics, and single or empty cells [0.10ms]
+(pass) java alignment properties > bundle rows align inner cell columns to each longest cell [0.10ms]
+(pass) java alignment properties > initialized fields of different shapes split into different tables by slot count [0.12ms]
+
+test/product-hud.test.ts:
+(pass) collector uses only the explicitly installed engine and bounded doctor probe [3.59ms]
+(pass) missing manifests and malformed, oversized or symlinked runtime data fail closed [2.99ms]
+(pass) doctor errors and invalid payloads never become ready; a valid negative doctor is not-ready [3.67ms]
+(pass) session filtering never borrows a different session's PASS and project history is explicit [3.58ms]
+(pass) stale receipts are historical and invalid newer records cannot reveal a misleading PASS [2.82ms]
+(pass) receipt scanning rejects symlinks, invalid events, future dates and excess entries [36.58ms]
+(pass) invalid project pointers cannot select another project or mismatching directory [5.90ms]
+(pass) receipt timestamps order checks and ambiguous ties never claim PASS [3.96ms]
+(pass) renderer strips terminal and directional controls and bounds every line [2.28ms]
+(pass) CLI supports real installed doctor, non-TTY watch once, and bounded Claude JSON input [160.09ms]
+
+test/conventions.test.ts:
+(pass) lookup key > drops depth, prefixes the version and writes an empty context as `-` [0.50ms]
+(pass) pattern records > a malformed record and a duplicate id within one layer are errors [0.19ms]
+(pass) pattern records > glob: `**` spans several segments, `*` stays within one [0.09ms]
+(pass) lookup > the project layer wins over the preset [1.34ms]
+(pass) lookup > within one layer the most specific scope wins [0.07ms]
+(pass) lookup > different statuses at the same layer and specificity are a conflict (file order never decides) [0.04ms]
+(pass) lookup > a candidate is not an approval, and keys of another version or missing keys are unknown [0.05ms]
+(pass) report and CLI > the report attaches a lookup result per table and does not look up two-row pairs [1.00ms]
+(pass) report and CLI > the CLI reads .boxbox/conventions.jsonl in the working folder for lookup [43.16ms]
+
+test/hook.test.ts:
+(pass) hook — target decision > is a target only when a write tool writes a first-scope language file [0.10ms]
+(pass) hook — target decision > the session guidance uses the charter's three core lines verbatim [0.37ms]
+(pass) hook — text to report > reports nothing when the only alarms are ones the agent cannot fix (A5 ambiguous) [0.23ms]
+(pass) hook — text to report > reports only new alarms and states that existing alarms are not this edit's responsibility [0.13ms]
+(pass) hook — flow (simulating Claude Code input) > editing an existing file returns only the alarms that edit introduced, and the baseline is cleaned up [93.99ms]
+(pass) hook — flow (simulating Claude Code input) > a new file gets guidance once per language per session, and an edit without new alarms is silent [81.99ms]
+(pass) hook — flow (simulating Claude Code input) > with BOXBOX_HOOKS=off it does nothing, and invalid input never blocks the edit [28.03ms]
+(pass) hook — flow (simulating Claude Code input) > the plugin hooks.json connects three events to this hook script [0.49ms]
+
+test/product-identity.test.ts:
+(pass) a naming preview changes nothing; applying it updates discovery, runtime references and directory identity together [8.27ms]
+(pass) an occupied rename destination is rejected before any content changes [5.24ms]
+(pass) invalid names and inconsistent generated identity are rejected before planning [4.26ms]
+
+test/parser-fault.test.ts:
+(pass) parser faults close before writing > failure: reports an execution fault as an error [406.65ms]
+(pass) parser faults close before writing > failure-error: reports an execution fault as an error [197.38ms]
+(pass) parser faults close before writing > signal: reports an execution fault as an error [253.61ms]
+(pass) parser faults close before writing > timeout: reports an execution fault as an error [2213.01ms]
+(pass) parser faults close before writing > probe-timeout: reports an execution fault as an error [90.58ms]
+(pass) parser faults close before writing > output: reports an execution fault as an error [360.38ms]
+(pass) parser faults close before writing > vanish: reports an execution fault as an error [200.13ms]
+(pass) parser faults close before writing > refuses rustfmt status 1 without a recognized diagnostic [217.16ms]
+(pass) parser faults close before writing > formatted Rust source cannot disguise an unexplained parser failure [225.17ms]
+(pass) parser faults close before writing > BOXBOX_REQUIRE_PARSERS=0 cannot bypass writing without a parser [26.43ms]
+(pass) parser faults close before writing > when the parser exits abnormally, the real Python CLI preserves the original bytes [223.35ms]
+(pass) parser faults close before writing > the real Python parser lets successful output be written [110.58ms]
+
+test/rust-align.test.ts:
+(pass) rust: alignment changes only whitespace between tokens and refuses nothing [3.11ms]
+(skip) rust: the aligned table and trap files parse like their sources (parser not installed — skipped, not passed)
+(pass) rust: alignment is idempotent — running twice gives the same result [1.01ms]
+(pass) rust: matches the golden aligned file [0.59ms]
+(pass) rust: the already aligned golden has 0 changes [0.24ms]
+(pass) rust: the string/comment trap file has 0 changes [0.08ms]
+(pass) rust: 2-row groups are not aligned [0.65ms]
+(pass) rust: aligns match arm pattern and action columns at minimum width [0.18ms]
+(pass) rust: preserves type cells containing lifetimes [0.08ms]
+(pass) rust: treats an enum variant's closed parenthesis pair as one cell [0.04ms]
+(pass) rust: let mut rows align on the keyword axis together with name and value columns [0.08ms]
+(pass) rust: the profile refuses declaration, attribute, opening-bracket and lifetime-label rows [0.04ms]
+(pass) rust: bundle rows align inner cell columns and the closing bracket shares the cell width [0.26ms]
+(pass) rust: the profile refuses nested or assigning bundle rows and path, lifetime or type-name cells [0.15ms]
+
+test/format-pipeline.test.ts:
+(pass) the real TypeScript pipeline writes only the approved working copy and stays fixed on rerun [1390.49ms]
+(pass) the real Python pipeline writes only the approved working copy and stays fixed on rerun [505.25ms]
+(pass) standalone typescript alignment previews and writes with the same approval and fixed-point safeguards [20138.19ms]
+(pass) standalone python alignment previews and writes with the same approval and fixed-point safeguards [538.67ms]
+(pass) the TypeScript pipeline writes the same result even with a symlink in the root path [811.96ms]
+(pass) format pipeline fails closed > dry-run returns the full verification result and bounded output without writing the original [289.07ms]
+(pass) format pipeline fails closed > on formatter abnormal exit, the original and temporary files are preserved [9.27ms]
+(pass) format pipeline fails closed > on parser failure, the original and temporary files are preserved [65.42ms]
+(pass) format pipeline fails closed > on timeout, the child process group is ended and the original is not written [105.12ms]
+(pass) format pipeline fails closed > a missing executable and an approval refusal each close before writing [69.58ms]
+(pass) format pipeline fails closed > the direct API also refuses parent-directory symlink root escapes and invalid timeouts [1.69ms]
+(pass) format pipeline fails closed > does not write when the approval rules are empty or the second full run differs [260.35ms]
+(pass) format pipeline fails closed > external edits and provenance changes are detected right before commit [372.58ms]
+
+test/installer-artifact.test.ts:
+(pass) Windows native host discovery, permanent paths and PowerShell quotes support spaced and smart-quote paths [3.98ms]
+(pass) Windows Claude Node bridge runs from Bash with literal paths, spaced arguments and child exit status [348.54ms]
+(pass) npm installer name differs from private engine and both host payloads have an exact allowlist [36.47ms]
+(pass) real npx infers the boxbox bin from the public installer and installs both hosts independently of cache and origin [14928.97ms]
+(pass) explicit host flags install only selected adapters and engine-only does not register any host [3876.53ms]
+(pass) repair filesystem failures retain a recovery backup and report its path [1335.84ms]
+(pass) help, invalid flags, missing hosts and invalid Codex home refuse without installing; child status propagates [1101.60ms]
+
+test/codex-hud-launcher.test.ts:
+(pass) launcher accepts only its own options before the Codex separator [6.24ms]
+(pass) project selection follows Codex cd syntax and refuses roots that cannot be observed [5.20ms]
+(pass) unsupported hosts and nested sessions fail before creating any tmux server [2.90ms]
+(pass) launcher preserves argv and permissions, dedicates its server, and returns the main pane exit status [2.95ms]
+(pass) failed pane setup cleans only the owned server and its temporary state [1.81ms]
+(pass) attachment failure cleans the owned server and path semicolons cannot become tmux commands [1.69ms]
+(pass) real pane runner passes hostile-looking arguments literally and records executable failure [103.60ms]
+
+test/corpus-promote.test.ts:
+(pass) verdict promotion > scaffolds are minimized synthetic cases per language and kind [0.66ms]
+(pass) verdict promotion > the promotion gate passes a consistent fixture and flags a drifted golden [172.89ms]
+(pass) verdict promotion > fixtureDir pins the fixture to the signature hash under the language corpus tree [1.79ms]
+(pass) verdict promotion > the aligner is the promotion gate's only engine dependency [0.02ms]
+
+test/result-json.test.ts:
+(pass) shared result JSON > TypeScript aligner emits a valid envelope [269.25ms]
+(pass) shared result JSON > python aligner emits a valid envelope [29.44ms]
+(pass) shared result JSON > java aligner emits a valid envelope [30.07ms]
+(pass) shared result JSON > go aligner emits a valid envelope [31.62ms]
+(pass) shared result JSON > rust aligner emits a valid envelope [30.52ms]
+(pass) shared result JSON > javascript aligner emits a valid envelope [30.05ms]
+(pass) shared result JSON > c aligner emits a valid envelope [29.89ms]
+(pass) shared result JSON > cpp aligner emits a valid envelope [32.00ms]
+(pass) shared result JSON > write mode reports the re-parse result [123.16ms]
+
+test/typescript-align.test.ts:
+(pass) typescript call statement alignment > aligns subject/matcher parentheses, dots and semicolons of consecutive call statements [647.02ms]
+(pass) typescript object row alignment > aligns braces, properties, colons, values and commas of object rows [746.68ms]
+(pass) typescript whitespace-only guarantee > the fixture aligns with an identical token stream and no refused table [762.68ms]
+(pass) typescript row floors > a 2-row = declaration table is aligned; a 2-row group of another kind is not [728.22ms]
+(pass) typescript call layer > aligns the commas and closing paren of the same call in declaration values [644.22ms]
+(pass) typescript call layer > aligns the call inside call-statement subjects [804.92ms]
+(pass) typescript call layer > keeps one layer when the callee or the arity differs [1218.51ms]
+(pass) typescript declaration vertical form > takes the outlier row vertical when one argument is 20 columns wider than the second widest [606.79ms]
+(pass) typescript declaration vertical form > keeps the call layer on the remaining rows when one row goes vertical [636.58ms]
+(pass) typescript declaration vertical form > takes every row vertical when each is the outlier of its own column [729.37ms]
+(pass) typescript declaration vertical form > keeps a single-argument call flat; a vertical row leaves the table on the next run [1528.94ms]
+(pass) typescript declaration vertical form > call statements keep one flat layer instead of going vertical [604.78ms]
+(pass) typescript hand-made samples > aligns the closing bracket of subscript declaration values [600.56ms]
+(pass) typescript hand-made samples > keeps subscript values flat when the objects differ or a row has none [1266.13ms]
+(pass) typescript hand-made samples > aligns ragged guard rows onto the hand-made form [609.31ms]
+(pass) typescript hand-made samples > keeps the hand-aligned guard sample of 00_normalize-imports unchanged [201.50ms]
+(pass) typescript hand-made samples > blocks that do not end in continue and two-row groups stay as written [242.99ms]
+(pass) typescript list layer > aligns the elements, commas and closing bracket of the same literal list in a call [622.02ms]
+(pass) typescript list layer > aligns the literal list of a matcher argument [603.72ms]
+(pass) typescript list layer > aligns a declaration value that is itself a literal list [583.89ms]
+(pass) typescript list layer > keeps a list with identifiers compact and aligns only the row layer [589.23ms]
+(pass) typescript list layer > keeps the call layer but drops the list slot when the arity differs [572.60ms]
+(pass) typescript list layer > drops the call layer and the lists inside its arguments when the callee differs [633.51ms]
+(pass) typescript list layer > drops a list whose item is 20 columns wider than the second widest [586.59ms]
+(pass) typescript list layer > drops a list with a trailing comma or a multi-line form [797.88ms]
+
+test/corpus-measures.test.ts:
+(pass) corpus measures > the last verdict per signature wins [1.47ms]
+(pass) corpus measures > judged share, table share and wrong-grouping rate come out per language [2.24ms]
+(pass) corpus measures > taste and unsure are judgments, not grouping misses [0.06ms]
+(pass) corpus measures > unseen share counts the signatures a new census has that the baseline lacks [0.13ms]
+(pass) corpus measures > census types map to patterns through the surface-form data, and ambiguous ones are written with their alternatives [0.42ms]
+
+test/layout.test.ts:
+(pass) a version bump stamps generated manifests without modifying product templates [32.10ms]
+(pass) dangling output links never create external files or directories [30.44ms]
+(pass) product dependencies exclude development and repository import aliases [50.49ms]
+(pass) the entire marketplace plugin regenerates from product sources and detects manual changes [42.37ms]
+
+test/public-preset.test.ts:
+(pass) public preset release policy > approved synthetic rules are prepared together with the public documents they reference [3.89ms]
+(pass) public preset release policy > extracts only the referenced approved section and never ships other sections of the same source document [2.28ms]
+(pass) public preset release policy > refuses arbitrary unregistered fields inside asserts [2.70ms]
+(pass) public preset release policy > drops an earlier private value of a duplicate JSON key from the normalized release JSONL [2.23ms]
+(pass) public preset release policy > example.rules must be an array of short rule IDs [1.91ms]
+(pass) public preset release policy > also refuses arbitrary fields inside versions [1.88ms]
+(pass) public preset release policy > refuses source paths and unauthorized license values regardless of the approved synthetic label [2.30ms]
+(pass) public preset release policy > refuses a parent symlink on the docs/public path even when it points inside the preset [2.61ms]
+(pass) public preset release policy > refuses paths that normalize outside docs/public [2.16ms]
+
+test/c-align.test.ts:
+(pass) c: alignment changes only whitespace between tokens and refuses nothing [3.57ms]
+(pass) c: the aligned table and trap files parse like their sources [167.34ms]
+(pass) c: alignment is idempotent — running twice gives the same result [0.86ms]
+(pass) c: matches the golden aligned file [0.59ms]
+(pass) c: the already aligned golden has 0 changes [0.20ms]
+(pass) c: the string/comment trap file has 0 changes [0.10ms]
+(pass) c: 2-row groups are not aligned [0.58ms]
+(pass) C profiler specific properties > designated initializers align the dotfield column to the actual longest cell [0.12ms]
+(pass) C profiler specific properties > function-like macros NAME(args) are not table rows [0.05ms]
+(pass) C profiler specific properties > pointer stars attach to the name cell and type/name columns align [0.06ms]
+(pass) C profiler specific properties > macro tables align only the name column and never pad the replacement list [0.05ms]
+(pass) C profiler specific properties > bundle rows align inner cell columns to each longest cell [0.07ms]
+(pass) C profiler specific properties > refuses bundle rows with nesting, assignment or calls, and single-cell rows [0.08ms]
+(pass) C profiler specific properties > refuses return statements and backslash-continued macros [0.03ms]
+
+test/harness.test.ts:
+(pass) parseBunTestOutput > parses pass, skip, fail and the Ran summary [0.31ms]
+(pass) parseBunTestOutput > returns null without a summary [0.19ms]
+(pass) validateRunRecord > accepts a record that satisfies the minimal contract [0.19ms]
+(pass) validateRunRecord > refuses schemaVersion, runId and stage entry violations [1.39ms]
+(pass) store > after append, records read back oldest first [0.52ms]
+(pass) store > latest is updated only by complete runs and reads back [0.54ms]
+(pass) store > completion counting distinguishes ran, failed and skipped [0.04ms]
+(pass) parseRelTable > reads REL0–REL12 from docs/development/plan.md in order [0.59ms]
+(pass) parseRelTable > evidence joining never changes the human verdict [0.07ms]
+
+test/line-write-safety.test.ts:
+(pass) safe file replacement in the line-engine CLI > read mode never changes the original, and write mode keeps the mode and cleanup contract [124.15ms]
+(pass) safe file replacement in the line-engine CLI > --groups --write is exploration-only and never changes the original [19.50ms]
+(pass) safe file replacement in the line-engine CLI > refuses symbolic and hard link targets while preserving the original bytes [35.62ms]
+(pass) safe file replacement in the line-engine CLI > an external edit during the parser run keeps the external bytes and refuses the commit [460.09ms]
+
+test/surface.test.ts:
+(pass) grammar ID registry > the tables in grammar.md match the list in grammar-ids.ts [0.43ms]
+(pass) surface forms — TypeScript > every engine kind maps to a pattern [0.30ms]
+(pass) surface forms — TypeScript > an enum with values is MAP, names only is LIST [0.05ms]
+(pass) surface forms — TypeScript > declaration and assignment are different patterns and not ambiguous [0.04ms]
+(pass) surface forms — TypeScript > an unknown kind is not mapped (target of alarm A8) [0.02ms]
+(pass) surface forms — Python > every table in the fixture maps to a pattern [5.30ms]
+(pass) surface forms — Python > `a = v`, where declaration and assignment share syntax, is marked ambiguous [0.08ms]
+(pass) surface-form data validation > every shipped data file is valid [0.09ms]
+(pass) surface-form data validation > refuses IDs missing from the grammar, forms with no matcher or two, and other language names [0.22ms]
+
+test/usage.test.ts:
+(pass) AI usage > estimated tokens: 1 per 4 ASCII characters, 1 per CJK character [0.06ms]
+(pass) AI usage > reads the token count, model and reasoning effort Codex leaves [0.19ms]
+(pass) AI usage > sums by model, source and event, and marks rows that include estimates [0.32ms]
+(pass) AI usage > accuracy: compares only types that have both an AI suggestion and a human verdict [0.14ms]
+
+test/installer-platform.test.ts:
+(pass) Windows discovery skips an unrelated codex.exe shadow before the standard OpenAI npm entry [0.10ms]
+(pass) Windows discovery preserves a verified native Codex ahead of a later npm entry [0.04ms]
+(pass) Windows native candidates fail closed on errors, signals, nonzero status and ambiguous identities [0.12ms]
+(pass) Windows discovery can continue to a later verified native executable using real bounded process probes [30.25ms]
+(pass) real overflowing and timed-out identity probes continue to the known npm entry [3017.46ms]
+(pass) other native hosts retain discovery without the Codex identity probe [0.34ms]
+
+test/corpus-candidates.test.ts:
+(pass) corpus candidate builder > representatives secure source diversity first and keep status priority within each pick [0.47ms]
+(pass) corpus candidate builder > safely copies the real pinned checkout, verifies before and after, and reruns identically [306.82ms]
+(pass) corpus candidate builder > a failed representative extraction is kept without a fake after and every key keeps its candidate [155.02ms]
+(pass) corpus candidate builder > TypeScript representatives also verify the native aligner's parser status and fixed point [338.32ms]
+(pass) corpus candidate builder > an unchanged representative states that the parser did not run, and a review document is written [91.54ms]
+(pass) corpus candidate builder > does not replace a valid existing cache when the observation linkage or source hash differs [47.50ms]
+
+test/corpus.test.ts:
+(pass) pinned corpus > every manifest source is pinned by repository, 40-hex commit and a permissive license [0.45ms]
+(pass) pinned corpus > the four TypeScript and four Python candidates from the plan are pinned [0.08ms]
+(pass) pinned corpus > local-only sources are gitignored and, when present, validate like manifest sources [0.20ms]
+(pass) pinned corpus > the fetcher merges manifest and local sources and refuses a duplicate id [0.12ms]
+
+test/python-align.test.ts:
+(pass) python: alignment changes only whitespace between tokens and refuses nothing [0.84ms]
+(pass) python: the aligned table and trap files parse like their sources [63.32ms]
+(pass) python: alignment is idempotent — running twice gives the same result [0.72ms]
+(pass) python: matches the golden aligned file [0.44ms]
+(pass) python: the already aligned golden has 0 changes [0.18ms]
+(pass) python: the string/comment trap file has 0 changes [0.04ms]
+(pass) python: 2-row groups are not aligned [0.43ms]
+(pass) python profile specific properties > dictionary rows decompose into key, colon, value, comma axes and align the colon column [0.14ms]
+(pass) python profile specific properties > annotated assignments align name and type columns and never pad the trailing value [0.06ms]
+(pass) python profile specific properties > tightly written assignments also form a table and are fixed to conventional gaps (none after colon, spaces around equal) [0.04ms]
+(pass) python profile specific properties > attribute assignments form a table without changing Python syntax or non-whitespace tokens [24.26ms]
+(pass) python profile specific properties > assigned calls decompose into the call cell and argument columns [0.20ms]
+(pass) python profile specific properties > a call wrapping one flat bundle aligns the bundle cells inside the call [0.08ms]
+(pass) python profile specific properties > calls with a different callee, a different arity, nesting or keyword arguments never share a table [0.13ms]
+(pass) python profile specific properties > the profile refuses control-flow, call and line-continuation rows so they never form tables [0.04ms]
+(pass) python profile specific properties > bundle rows align inner cell columns, and rows with different bracket pairs split tables [0.07ms]
+(pass) python profile specific properties > the profile refuses bundle rows with nesting, indexing, assignment, empty cells or f-strings [0.09ms]
+(pass) python profile specific properties > keeps == comparisons inside values and refuses values starting with == [0.09ms]
+
+test/release-candidate.test.ts:
+(pass) candidate staging records the exact prebuilt bytes and commit without rebuilding [90.99ms]
+(pass) candidate staging refuses an archive for another package [44.86ms]
+(pass) smoke refuses altered archive bytes and a replaced metadata digest before installation [80.81ms]
+(pass) smoke requires a separate build digest and refuses an escaping archive filename [78.21ms]
+
+test/plugin-hook.test.ts:
+(pass) hooks.json commands run the configured local CLI through the shim and leave no files in the project [626.18ms]
+(pass) the plugin refuses an unconfigured engine before invoking a runtime or registry [3.92ms]
+
+test/report.test.ts:
+(pass) check report — safety checks > the same input yields the same report [0.33ms]
+(pass) check report — safety checks > changed re-parse diagnostics fail S2 and the result fails [0.05ms]
+(pass) check report — safety checks > rechecking after a write fails S3 when edits remain and passes otherwise [0.06ms]
+(pass) check report — safety checks > two-row auto-fix is allowed only for approved kinds (S4) [0.06ms]
+(pass) check report — alarms > A1: once per line outside a table, once per group inside [0.11ms]
+(pass) check report — alarms > A2: between the soft and hard limits is an allowed-range alarm [0.04ms]
+(pass) check report — alarms > A3: points at the longest row when it is much wider than the second [0.04ms]
+(pass) check report — alarms > A4 cannot decompose, A6 two-row pair and A9 large change come from group state [0.36ms]
+(pass) check report — alarms > A5 ambiguous and A8 no mapping come from the surface-form data [0.06ms]
+(pass) check report — alarms > A7: when alignment spaces far exceed the content [0.03ms]
+(pass) check report — alarms > a clean table without alarms [0.02ms]
+(pass) check report — output > the description column of the safety-check lines lines up in one column by display width [0.21ms]
+(pass) check report — output > CLI: checking the Python fixture in check mode passes the safety checks with exit code 0 [37.56ms]
+(pass) check report — baseline comparison > the same file gives all existing alarms and 0 new alarms [0.11ms]
+(pass) check report — baseline comparison > pairs the same alarm even when lines shift or only whitespace changes [0.04ms]
+(pass) check report — baseline comparison > one resolved and one introduced gives 1 new and 1 resolved alarm (closes the total-count loophole) [0.04ms]
+(pass) check report — baseline comparison > several identical alarms are paired only as many times as they exist [0.04ms]
+(pass) check report — baseline comparison > CLI: with --baseline only alarms introduced by the edit are new, and with --baseline none all are new [147.65ms]
+
+test/normalize-imports.test.ts:
+(pass) import table cells > reserves the type head and shares { } from ; columns across the blocks of a section [64.54ms]
+(pass) import table cells > an import over 120 columns goes vertical inside the table [64.88ms]
+(pass) import table cells > an import whose names outgrow the next widest by 20 goes vertical [66.03ms]
+(pass) import table cells > when long names and a long module on different rows push the table past 120, the widest names go vertical [65.91ms]
+(pass) import table cells > imports without braces stay as written and a lone brace import stays compact [131.81ms]
+(pass) import table cells > already aligned rows are recognized and realigned, not skipped [63.92ms]
+(pass) import table cells > files without semicolons get no ; column [63.80ms]
+
+test/shape-observation.test.ts:
+(pass) code shape observation > produces the same JSONL regardless of file order and repeated runs [147.17ms]
+(pass) code shape observation > the real parser version and config fingerprint are part of the snapshot invalidation input [73.92ms]
+(pass) code shape observation > assignment is CHANGE, comparison and control flow are unknown, and debugger is notApplicable [39.72ms]
+(pass) code shape observation > missing files and JavaScript files do not stop collecting other files [38.84ms]
+(pass) code shape observation > distinguishes same-named, nested and same-line functions by range and parent [36.61ms]
+(pass) code shape observation > reports a broken file as partial and keeps the last completed cache [102.62ms]
+(pass) code shape observation > keeps only the current and previous completed snapshot and does not rotate for the same run [120.16ms]
+(pass) code shape observation > arrows and bodiless declarations do not become units and are counted as unsupported [60.68ms]
+(pass) code shape observation > only reads the source and approval DB and refuses paths outside the root and cache symbolic links [1.92ms]
+
+test/cli.test.ts:
+94 | 		const version = invoke(root, ["--version"]) ;
+95 | 		expect(help.status          ).toBe     (0               ) ;
+96 | 		expect(help.stdout          ).toContain("Usage: boxbox" ) ;
+97 | 		expect(help.stdout          ).toContain("exactly one"   ) ;
+98 | 		expect(version.status       ).toBe     (0               ) ;
+99 | 		expect(version.stdout.trim()).toBe     ("0.2.2"         ) ;
+                                     ^
+error: expect(received).toBe(expected)
+
+Expected: "0.2.2"
+Received: "0.2.3"
+
+      at <anonymous> (/Users/jonghoPro/woo/00_project/98_BoxBox/test/cli.test.ts:99:33)
+(fail) public CLI > help and version work through the real entry API [89.88ms]
+(pass) public CLI > init preserves existing user files and never overwrites the config when rerun [85.40ms]
+(pass) public CLI > a corrupt or unknown config fails explicitly and is preserved [97.82ms]
+(pass) public CLI > check inspects one Python file read-only without init and returns 1 when misaligned [47.32ms]
+(pass) public CLI > a clean project previews and formats with the bundled approval and no formatter [568.28ms]
+(pass) public CLI > with a verified test approval and formatter, GUIDE, dry-run and the real format use the same pipeline [666.45ms]
+(pass) public CLI > standalone CLI alignment needs approval but no external formatter [737.96ms]
+(pass) public CLI > GUIDE uses the bundled preset but never exposes candidate overrides as guidance [77.86ms]
+(pass) public CLI > candidate, rejected, conflict and stale approvals refuse format and preserve the original [448.17ms]
+(pass) public CLI > doctor refuses a missing Python even when the bundled approval data is present [39.16ms]
+(pass) public CLI > doctor separates runnable state, format configuration and overall release readiness [48.24ms]
+(pass) public CLI > usage errors still print exactly one JSON to stdout and refuse unknown languages and options [102.94ms]
+(pass) public CLI > refuses path escapes and symbolic links for init writes [70.20ms]
+(pass) public CLI > refuses parent-directory symbolic link escapes and languages disabled in the config [71.61ms]
+(pass) public CLI > fails when the explicit language differs from the extension and infers the language for TS files [171.68ms]
+
+test/lifecycle-hook.test.ts:
+(pass) changes to unsupported files do not block later PostToolUse or Stop [111.81ms]
+(pass) Stop does not block again with stop_hook_active even when an alignment failure remains [187.59ms]
+(pass) plugin hooks use the cwd input and write records to the plugin data folder, not the project [73.58ms]
+(pass) hook errors never block work; they are only reported [36.87ms]
+
+test/public-artifact.test.ts:
+104 | 		const help = run(executable, ["--help"], { cwd: project, env: runtimeEnv });
+105 | 		expectStatus(help, 0);
+106 | 		expect(help.stdout).toContain("Usage: boxbox");
+107 | 		const version = run(executable, ["--version"], { cwd: project, env: runtimeEnv });
+108 | 		expectStatus(version, 0);
+109 | 		expect(version.stdout.trim()).toBe("0.2.2");
+                                      ^
+error: expect(received).toBe(expected)
+
+Expected: "0.2.2"
+Received: "0.2.3"
+
+      at <anonymous> (/Users/jonghoPro/woo/00_project/98_BoxBox/test/public-artifact.test.ts:109:33)
+(fail) public CLI local package artifact > the isolated installed boxbox bin ships approved standalone rules and safely honors project overrides [1751.59ms]
+
+5 tests skipped:
+(skip) compareParse > rust: a parse-changing edit is detected and a whitespace edit is not
+(skip) mutation invariants > rust: sampled variants parse like their aligned output
+(skip) mutation invariants > kotlin: sampled variants parse like their aligned output
+(skip) kotlin: the aligned table and trap files parse like their sources (parser not installed — skipped, not passed)
+(skip) rust: the aligned table and trap files parse like their sources (parser not installed — skipped, not passed)
+
+
+2 tests failed:
+(fail) public CLI > help and version work through the real entry API [89.88ms]
+(fail) public CLI local package artifact > the isolated installed boxbox bin ships approved standalone rules and safely honors project overrides [1751.59ms]
+
+ 510 pass
+ 5 skip
+ 2 fail
+ 2365 expect() calls
+Ran 517 tests across 60 files. [123.63s]
+error: script "check" exited with code 1

@@ -1,12 +1,25 @@
 # BoxBox — Design
 
+**Reading note (2026-10-21):** This draft includes historical implementation notes and proposed commands. Use the [maintainer index](README.md), [current inspection process](inspection-process.md) and [storage contract](storage.md) for current behavior. In particular, public `check` does not run the formatter/parse/fixed-point pipeline; raw parser equivalence is not zero-error validation; the approved TypeScript rule has a two-row exception. The old implementation table below is historical, not the current capability map.
+
 Status: Draft
 Date: 2026-09-28
 Product name: **BoxBox** (confirmed by the user on 2026-10-16); display name: `BoxBox`; environment prefix: `BOXBOX`
 
+**Release target expansion (2026-10-21 user decision):** include JSON and YAML alongside TypeScript and Python,
+covering source code and structured configuration/documents used in AI workflows. Current public execution remains
+TypeScript/Python only. See [FORMAT1 in the plan](plan.md#planned-scope-expansion--format1-json-and-yaml) for the
+proposed safety boundary and acceptance work. Specific JSON/YAML conventions, parser choices and embedded Markdown
+support are not approved or implemented by this decision.
+
+**Pattern management clarification (2026-10-21):** the user authorized a completion loop covering diverse pattern
+families, not only return guards. [Pattern management](pattern-management.md) owns the current target decision
+model and engine/data responsibilities; [READINESS1](plan.md#completion-loop--readiness1-2026-10-21) owns implementation
+and evidence. Approved JSON/JSONL remains authoritative during the initial migration; runtime SQLite is not assumed.
+
 ## 1. Summary
 
-BoxBox is a code readability plugin that aligns code into a readable, table-like layout.
+BoxBox is a code readability plugin that guides matrix-first authoring and checks and aligns comparable rows.
 
 - It is **agent-agnostic**: any coding agent (Claude Code, Codex, ZCode, Pi, or a plain rules file) can plug it in. The engine and data live in one place; hosts get thin adapters.
 - **Current phase: learn and harden.** We collect evidence from real code, find where the engine is wrong, and turn every verdict into a permanent test or registry entry.
@@ -17,10 +30,49 @@ BoxBox is a code readability plugin that aligns code into a readable, table-like
 
 Philosophy: **Simplify first. Align second. Verify always.** — *Follow the structure. Don't force it.*
 
+### Authoring direction clarified on 2026-10-21
+
+The user's central goal is to read code as a matrix. BoxBox must guide agents to author comparable rows and
+syntax-defined columns from the start, then check their work. Post-hoc whitespace alignment is one part of that
+workflow. Row ownership, column roles and syntax boundaries such as commas, closing parentheses, semicolons and
+arrows must be defined by context and nesting, not by matching raw punctuation.
+
+The existing axis registry and authoring contract support this direction. Ordinary `guide` inspects an existing file
+and selects guidance from detected approved groups. The AUTHOR1 0.2.4 source candidate adds `guide --authoring`
+to retrieve approved guidance before an existing, empty or not-yet-created file is authored. The same rule identities
+and approval proofs feed guidance and checks; example availability is not proof that an arbitrary proposed file is safe to write.
+Integration verification and independent review remain in progress.
+
+Structural authoring guidance must distinguish enforceable layout conditions from judgments about
+function purpose, grouping and simplification. Absence of detected tables is not proof that an authoring request was
+satisfied. Unknown patterns must remain visible rather than being silently accepted or forced into a table.
+
+Correctness and performance constrain readability choices: do not add work, allocations, indirection or change
+evaluation order solely to make rows match. Structural edits require appropriate functional verification and,
+where performance may change, workload-specific measurements. Whitespace preservation checks do not establish
+semantic or performance equivalence for agent-authored structural changes. This direction does not approve new
+preset rules or enable automatic refactoring.
+
+### User workflows approved on 2026-10-21
+
+| Workflow | Responsibility | Change boundary |
+|---|---|---|
+| Write | Host agent composes requested behavior using approved guidance | Authorized new implementation; separate behavior verification |
+| Refactor | Host agent improves an existing structure | Required behavior, public contracts and execution dependencies remain constraints |
+| Align | Deterministic engine applies approved layout | Horizontal layout whitespace only; preserve indentation, physical lines and non-layout content |
+| Check | Deterministic engine reports detected groups | Read-only; absent or unsupported groups do not establish whole-file compliance |
+
+Preview is shared: it presents a proposal without modifying the target. The standalone `align` candidate executes no
+external formatter and refuses changes outside its boundary. The existing `format` pipeline remains a distinct operation
+for projects that intend the optional formatter step. Explicit user requests select the workflow; an ambiguous fix starts
+with inspection and clarification when the change scope matters. Multi-file authorization is executed one file at a time.
+See [the user contract](../user/modes.md) and [AUTHOR1 acceptance](plan.md#active-task--author1-matrix-first-workflows).
+
 ### What BoxBox is not
 
 - Not a formatter that normalizes all whitespace (Prettier, rustfmt, black).
-- Not an AI refactoring tool. No LLM sits on the review/fix path.
+- The deterministic CLI does not generate or refactor code. Write and Refactor are explicit host-agent workflows;
+  engine alignment checks do not certify those structural changes.
 - Not a column-alignment switch like clang-format's `AlignConsecutive*` or gofmt's struct alignment. Those group rows by syntax only. BoxBox groups rows by **role**, checks for simplification before aligning, and refuses when it is not sure.
 
 ## 2. Invariants (never change, never configurable)
@@ -31,13 +83,18 @@ Philosophy: **Simplify first. Align second. Verify always.** — *Follow the str
 4. **Relative layout only.** Conventions store slots, anchors and spacing relations — never absolute columns. Width is the minimum the current group needs. Groups never share widths.
 5. **Layer precedence.** Safety > Project > User > Preset > Base. Nothing overrides Safety.
 6. **Only humans approve.** Evidence never auto-promotes into a convention. Agents inspect and propose only.
-7. **Deterministic decisions.** Same input and config → same result. LLMs are used only to consume guides and to pre-triage review queues.
+7. **Deterministic engine decisions.** Same input and config → same engine result. Host-agent Write/Refactor workflows
+   consume approved guidance and require separate verification; they cannot alter the approval policy.
 8. **Single source, thin adapters.** Engine, registry and cases live in this repository. Hosts differ only by install location and manifest. The result JSON schema is versioned as a public contract.
 9. **BoxBox runs last.** BoxBox is the final pass after the project's code formatter. The canonical form of a file is `C(file) = boxbox(formatter(file))`, and it must be a fixed point: `C(C(file)) == C(file)`. The ordering is guaranteed only through the `boxbox format` / `boxbox check` wrapper, which runs the formatter itself (see 3.5).
 
 ## 3. Architecture
 
 ### 3.1 Modes
+
+LEARN/GUIDE/REVIEW below describe the data lifecycle, not extra user-facing edit modes. The current user workflows
+are Write/Refactor/Align with read-only Check and preview, as defined above. LEARN remains a research path rather than
+a public CLI learning command.
 
 | Mode | Question it answers | Output |
 |---|---|---|

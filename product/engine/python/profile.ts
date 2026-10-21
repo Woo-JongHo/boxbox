@@ -16,7 +16,7 @@
  * rows; rows whose value is empty, starts with =, or contains ; or ,; rows with trailing whitespace.
  * Refusal is safe; misrecognition is dangerous.
  */
-import type { CodeSyntax, LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
+import type { CodeSyntax, LineProfiler, RowProfile, Slot } from "@/common/table-engine.ts";
 
 export const PYTHON_SYNTAX: CodeSyntax = {
 	lineComments  : ["#"],
@@ -68,9 +68,9 @@ function isUnsafe(masked: string): boolean {
 function valueSlot(code: string, masked: string, match: RegExpExecArray, gapGroup: number, textGroup: number): Slot | null {
 	const gapRange  = match.indices?.[gapGroup ] ;
 	const textRange = match.indices?.[textGroup] ;
-	if (!gapRange || !textRange) return null;
+	if (!gapRange || !textRange)                               return null;
 	const text = code.slice(textRange[0], textRange[1]);
-	if (text.trim() === "" || text.startsWith("=")) return null;
+	if (text.trim() === "" || text.startsWith("="))            return null;
 	if (/[;,]/.test(masked.slice(textRange[0], textRange[1]))) return null;
 	return { axis: "value", text, gapBefore: code.slice(gapRange[0], gapRange[1]) };
 }
@@ -92,11 +92,11 @@ function bundleProfile(code: string, masked: string): RowProfile | null {
 	if ((open === "[") !== (close === "]")) return null; // mismatched bracket pair is not a bundle
 	const interior = indices[3] ;
 	const trailer  = indices[5] ;
-	if (!interior || !trailer) return null;
+	if (!interior || !trailer)                                      return null;
 	if (BUNDLE_UNSAFE.test(masked.slice(interior[0], interior[1]))) return null;
 
 	const cells = cellsIn(code, masked, interior[0], interior[1]);
-	if (!cells) return null;
+	if (!cells)                                                     return null;
 
 	const slots: Slot[] = [{ axis: open === "[" ? "open[" : "open(", text: open, gapBefore: "" }];
 	cells.forEach((cell, position) => {
@@ -124,7 +124,7 @@ function cellsIn(code: string, masked: string, start: number, end: number): Arra
 	const cells: Array<{ text: string; gap: string; commaGap: string; end: number }> = [];
 	for (const bound of bounds) {
 		const raw  = code.slice(bound.start, bound.end) ;
-		const text = raw.trim()                         ;
+		const text = raw .trim ()                       ;
 		if (text === "") return null; // empty cell from consecutive commas or after a trailing comma
 		const cellStart = bound.start + raw.indexOf(text);
 		if (text.startsWith('"') || text.startsWith("'")) {
@@ -202,9 +202,9 @@ function profilePython(code: string, masked: string): RowProfile | null {
 	// into the call cell and its argument cells the same way. Non-bundle rows with remaining brackets are refused
 	// by isUnsafe below — the existing refusal rules still hold.
 	const bundle = bundleProfile(code, masked);
-	if (bundle) return bundle;
+	if (bundle)           return bundle;
 	const assignedCall = assignedCallProfile(code, masked);
-	if (assignedCall) return assignedCall;
+	if (assignedCall)     return assignedCall;
 	if (isUnsafe(masked)) return null;
 
 	const annotated = ANNOTATED.exec(masked);

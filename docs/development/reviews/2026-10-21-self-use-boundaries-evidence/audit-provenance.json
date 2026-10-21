@@ -1,0 +1,10 @@
+{
+  "provider": "zai",
+  "model": "glm-5.3",
+  "fullTranscript": "/tmp/boxbox-boundaries-20261021/glm.jsonl",
+  "fullTranscriptSha256": "2eb375a1419c6b114820701adac0724f154550dbc3dbecc08d156cf3c488a557",
+  "sourceSha256": {
+    "product/engine/common/authoring-guide.ts": "f9f4597b8dfd336ebcdd59969b7d173fbfd41584252c05272d36605d6883af3d",
+    "product/engine/typescript/grid-kinds.ts": "68d3f8486c2f9dd958c98395e6e8fbe1758e90ccce88901bfa5ec230e28f7675"
+  }
+}

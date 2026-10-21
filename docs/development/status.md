@@ -1,10 +1,86 @@
 # Release readiness
 
-Updated: 2026-10-21 (native Codex evidence audited; Windows editing blocked) · Source baseline: `e8362d2`
+**Active: READINESS1 completion loop.** The user authorized plan, implementation and verification of the accumulated
+requirements without per-step confirmation. See the [phase table and acceptance gate](plan.md#completion-loop--readiness1-2026-10-21).
+Earlier sections below preserve their scoped results; they are not a final release verdict.
+
+Current loop: R1 record validation, the development-only SQLite catalog and safe copy installation passed focused
+checks and independent review. Four-language syntax checks, JSON/YAML adapters and effective approval facts are
+implemented; reviewed preservation fixes passed the frozen integration run: **632 passed, five existing missing-parser
+skips, zero failures**, plus TypeScript and shell checks. Internal aliases were migrated and verified in copied skills
+and installed bundles. The 45 catalog scenarios remain design-only, and new JSON/YAML preset rules plus four example
+licenses await human decisions. Native testing found a macOS symlink-path HUD entry-point defect; the correction passed that
+full run and 24 focused HUD tests. One later test-only upgrade regression passed separately. GLM source audit passed
+with no mandatory findings; the supplemental test binding check also passed. Current-candidate CI/host acceptance remains open. These facts supersede historical snapshots below.
+
+
+## Active work — AUTHOR1 matrix-first workflows
+
+The user authorized Write, Refactor and Align with shared Check and preview on 2026-10-21. The 0.2.4 source
+candidate adds `guide --authoring` before composing code and a standalone `align` command that never runs an external
+formatter. Write and Refactor are host-agent workflows; their behavior and performance need separate verification.
+Alignment preserves line structure, indentation and non-layout content and refuses proposals beyond that boundary.
+At the AUTHOR1 snapshot, ordinary `guide`, `check` and `format` supported TypeScript/Python;
+JSON/YAML were planned. READINESS1 above records the later integration. See [workflow selection](../user/modes.md) and [acceptance work](plan.md#active-task--author1-matrix-first-workflows).
+
+Implementation verification passed: `bun run check` completed with 554 passes, 5 existing missing-parser skips and no failures.
+The final archive registered in both native hosts using disposable profiles; both installed launchers completed the new
+Guide/Align/Check flow. Sonnet 5.5 review passed after the initial session-limit blocker. At the user's request,
+GLM 5.3 replaced Opus for this task's final audit and returned PASS with no mandatory fixes. Both reviews were static;
+broader native skill activation and authoring-quality evaluation remain open. See the [AUTHOR1 evidence](reviews/2026-10-21-authoring-modes.md). Active local profiles
+remain on 0.2.3; this candidate has not been publicly released. Prior HUD evidence has separate coverage.
+
+## Matrix follow-up and remaining release work — 2026-10-21
+
+The subsequent matrix changes passed **571 tests, 5 existing parser skips and zero failures**, plus type checking,
+plugin validation, isolated installed-launcher checks and scoped Sonnet/GLM reviews. This supersedes the 554-test
+implementation snapshot above for the matrix scope; it is not a fresh cross-platform release verdict. See the
+[matrix evidence](reviews/2026-10-21-matrix-columns.md). New guard/call/dot keys have no additional public preset approval.
+
+| Remaining work | Observable completion |
+| --- | --- |
+| Consistent internal aliases | Migration and isolated copy/bundle execution passed; final integrated GLM closure remains open. See [alias acceptance](plan.md#import-alias-follow-up--user-requirement-2026-10-21). |
+| Authoring quality and rule coverage | Real host Write/Refactor scenarios, missing-boundary reporting and rule-specific approvals cover the requested patterns. |
+| JSON/YAML | FORMAT1 adapters, preservation/refusal cases, approved examples and installed verification pass. |
+| Syntax and stored records | Read-only syntax and runtime record validation implemented and tested. Derived development SQLite indexing is implemented; it is not runtime approval authority. |
+| Hosts and HUD | Complete outstanding native hook/HUD acceptance within the declared host/OS support table. |
+| Release candidate | Run the existing CI/candidate pipeline against the final version; verify supported OS installs, public payload contents, documentation, licensing and publication access before tagging/publishing and external installation. |
+
+The configured `@/` alias serves internal engine imports as well as tests/development tools. READINESS1 migrated
+169 module specifiers across 57 files and verified copied-skill resolution, dependency boundaries and release bundles. [Issue 008](issue-library/records/BBX-20261021-008-import-alias.json)
+tracks this distinction. Active host profiles still use 0.2.3.
+
+## Deferred work — HUD2 terminal visibility
+
+The 0.2.3 local candidate is installed for Codex and Claude Code on this Mac. Claude uses its official statusLine;
+`~/.local/bin/boxbox-codex` launches actual Codex with a separate tmux HUD pane. Ordinary `codex` is unchanged.
+Native captures prove both screens show engine readiness and respond to an invalid project config and recovery.
+Codex exit code 0 and owned-server cleanup were measured. Hook trust was not granted; temporary workspace trust
+was accepted only for the empty native test project. Desktop and Windows HUDs are outside this adapter's scope.
+
+Sonnet and fixed Opus review attempts both returned the provider's session-limit response. At that snapshot independent review was
+**unexecuted and blocking final acceptance**. READINESS1 later obtained Sonnet review, fixed findings and passed
+its scoped closure; current-candidate native rendering and the requested GLM final audit remain pending. See the
+[HUD record](reviews/2026-10-21-terminal-hud.md) and [user instructions](../user/hud.md).
+
+## Documentation and consistency audit — DOC1
+
+Current request: detailed maintainable docs, consistent inspection stages, storage/grammar validation and HUD status.
+Start at the [maintainer index](README.md). Architecture, inspection, storage and change recipes use a common structure.
+Current versus proposed behavior is explicit. The [audit](reviews/2026-10-21-maintainer-docs.md) records tests and gaps:
+at that audit baseline read-only check did not validate syntax, runtime record validation was incomplete, and common result tests omitted
+Swift/Kotlin. READINESS1 subsequently implemented a derived development pattern index; it has no runtime approval authority. At the DOC1 audit baseline, HUD was an on-request development panel; HUD2 above adds terminal adapters.
+DOC1 is complete: Sonnet corrections and final Opus fix verification passed. Proposed runtime improvements remain open;
+CODEX1 remains open while AUTHOR1 is active. The DOC1 pass changed no package, engine, approved rule or host trust setting.
+
+Updated: 2026-10-21 (AUTHOR1 bounded implementation verified; Sonnet and GLM audits passed) · Source baseline: `07f568c`
 
 ## Goal and current verdict
 
-The first public scope is **core TypeScript and Python features + the CLI + a thin agent plugin**. The immediate user-selected target is a **Windows Codex test on another PC** (2026-10-16).
+The first public target is **TypeScript, Python, JSON and YAML + the CLI + a thin agent plugin**, expanded by the
+user on 2026-10-21. Current source and installed candidates execute TypeScript/Python/JSON/YAML checks; JSON/YAML default write approvals
+and current-candidate host acceptance remain pending in [FORMAT1](plan.md#planned-scope-expansion--format1-json-and-yaml).
+The earlier user-selected host test target is **Windows Codex on another PC** (2026-10-16).
 Safe writes, the Node package, the public CLI foundation, config layers, approval proofs and the formatter core are implemented.
 GUIDE and format are connected in the public CLI and the installed artifact. The plugin folder `plugin/` installs in both
 Claude Code and Codex. **This is not a completed public release.**
@@ -16,7 +92,7 @@ Claude Code and Codex. **This is not a completed public release.**
 - [Handoff for verification by another AI](handoff-2026-10-05.md): code map, 12 held IDs, reproduction commands and independent review questions
 - [Release tracking harness](../../development/harness/README.md): run history DB (`runs.jsonl`, `latest.json`) and a report against the REL table
 
-## Active work — CODEX1 native hook acceptance
+## Open work — CODEX1 native hook acceptance
 
 Controlled macOS Codex CLI 0.163.0 sessions loaded the unchanged BoxBox 0.2.2 plugin in a disposable profile.
 Native transcripts prove SessionStart developer context, an apply_patch PostToolUse FAIL delivered as context/tool
@@ -119,7 +195,7 @@ Node isolated install journey. That historical 0.2.0 package had no approved pre
 
 ## Next resume point
 
-The active task is CODEX1. Controlled native evidence is audited; Windows edit-dependent events remain blocked by
+DOC1 documentation is complete. AUTHOR1 is active; HUD2 is deferred pending independent review; CODEX1 remains open. Controlled native evidence is audited; Windows edit-dependent events remain blocked by
 the effective native read-only sandbox/approval policy. Registry publication remains a separate decision.
 FIRSTUSE1 explicit formatting and candidate delivery, DELIVERY1 CI/HUD, and LAYOUT1 separation/audit are verified.
 Public registry publication and native acceptance outside the measured test scope remain open. The two exact preset rules have human approval; broader

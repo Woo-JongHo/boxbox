@@ -14,11 +14,11 @@ import      {
               isInterfaceDeclaration         ,
               isObjectLiteralExpression      ,
               isSourceFile                   ,
-                                               } from "typescript/unstable/ast" ;
-import type { Node, SourceFile as TsSourceFile } from "typescript/unstable/ast" ;
+                                               } from "typescript/unstable/ast"          ;
+import type { Node, SourceFile as TsSourceFile } from "typescript/unstable/ast"          ;
 
-import      { boundaryAxesOf                   } from "./grid-tokens.ts"        ;
-import      { loadSourceFile                   } from "./load-source-file.ts"   ;
+import      { boundaryAxesOf                   } from "@/typescript/grid-tokens.ts"      ;
+import      { loadSourceFile                   } from "@/typescript/load-source-file.ts" ;
 
 interface RowContainer {
 	readonly label : string;
@@ -100,7 +100,7 @@ function errorMessage(value: unknown): string {
 }
 
 async function main(): Promise<void> {
-	const root    = process.cwd()     ;
+	const root    = process.cwd    () ;
 	const minRows = minRowsArgument() ;
 	const { source, relative } = await loadSourceFile(root, targetArgument());
 

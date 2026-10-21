@@ -1,6 +1,6 @@
 import      { afterEach, expect, test              } from "bun:test"           ;
-import      { existsSync, mkdtempSync, readdirSync } from "node:fs"            ;
-import      { rmSync, writeFileSync                } from "node:fs"            ;
+import      { existsSync, mkdtempSync, readFileSync, readdirSync } from "node:fs" ;
+import      { mkdirSync, rmSync, writeFileSync                    } from "node:fs" ;
 import      { join                                 } from "node:path"          ;
 import      { spawnSync                            } from "node:child_process" ;
 
@@ -23,6 +23,13 @@ function hook(root: string, mode: "session" | "post" | "stop", input: Record<str
 	const run  = spawnSync(process.execPath, args, { input: JSON.stringify(data ? { ...input, cwd: root } : input), encoding: "utf8", env: { ...process.env, CLAUDE_PLUGIN_DATA: data ?? "" } }) ;
 	expect(run.status).toBe(0);
 	return JSON.parse(run.stdout);
+}
+
+function receiptOf(output: Record<string, unknown>): Record<string, unknown> {
+	const context = JSON.stringify(output)                                      ;
+	const path    = /\[boxbox\] \w+: \w+\. ([^"\\]+\.json)/u.exec(context)?.[1] ;
+	if (!path) throw new Error(`receipt path missing: ${context}`);
+	return JSON.parse(readFileSync(path, "utf8"));
 }
 
 test("changes to unsupported files do not block later PostToolUse or Stop", () => {
@@ -56,9 +63,32 @@ test("plugin hooks use the cwd input and write records to the plugin data folder
 	expect(readdirSync(join(data, "hooks")).length                                             ).toBe(1      ) ;
 }, 60_000);
 
+test("project-local plugin data excludes only BoxBox's owned receipt namespace", () => {
+	const root = project()                    ;
+	const data = join   (root, "plugin-data") ;
+	hook(root, "session", { session_id: "local-data" }, data);
+
+	const unchanged = hook(root, "post", { session_id: "local-data", tool_name: "Read" }, data);
+	expect(receiptOf(unchanged)).toMatchObject({ state: "NO_CHANGES", files: [], checked: [] });
+
+	writeFileSync(join(data, "user.json"), "{}\n");
+	const userChange  = receiptOf(hook(root, "post", { session_id: "local-data", tool_name: "Write" }, data)) ;
+	const userChecked = userChange.checked as { file: string }[]                                              ;
+	expect(userChange.state).toBe("PASS");
+	expect(userChecked.map(entry => entry.file)).toContain("plugin-data/user.json");
+
+	const unrelated = join(data, "hooks", "unrelated-project");
+	mkdirSync(unrelated, { recursive: true });
+	writeFileSync(join(unrelated, "receipt.json"), "{}\n");
+	const unrelatedChange  = receiptOf(hook(root, "post", { session_id: "local-data", tool_name: "Write" }, data)) ;
+	const unrelatedChecked = unrelatedChange.checked as { file: string }[]                                         ;
+	expect(unrelatedChange.state).toBe("PASS");
+	expect(unrelatedChecked.map(entry => entry.file)).toContain("plugin-data/hooks/unrelated-project/receipt.json");
+}, 60_000);
+
 test("hook errors never block work; they are only reported", () => {
-	const root   = project()                                     ;
-	const output = hook(root, "post", { session_id: "missing" }) ;
+	const root   = project()                                        ;
+	const output = hook   (root, "post", { session_id: "missing" }) ;
 
 	expect(output.decision                        ).toBeUndefined()            ;
 	expect(JSON.stringify(output.hookSpecificOutput)).toContain("hook error") ;

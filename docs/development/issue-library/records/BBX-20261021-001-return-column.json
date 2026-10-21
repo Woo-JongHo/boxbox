@@ -1,0 +1,159 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261021-001",
+  "title": "Early-return boundary was interpreted as a paragraph break",
+  "category": "grouping",
+  "tags": [
+    "typescript",
+    "return",
+    "guard-return",
+    "paragraph",
+    "noncontiguous-region"
+  ],
+  "status": "resolved",
+  "symptom": "The user requested a shared return column in subscriptPartsOf, subjectCall and callLayer; the preceding correction inserted blank lines instead.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "The author interpreted boundary as paragraph separation. The existing contiguous grouping and guard-statements detector did not model unbraced early returns across intervening statements."
+  },
+  "requestedOutcome": "Align sibling one-line guard return tokens in one immediate block, preserving execution order and independently sizing nested blocks.",
+  "decisions": [
+    "Treat a column-sharing region separately from a contiguous paragraph.",
+    "Use a distinct return-guards kind with a three-row minimum; barriers and nested scope remain explicit.",
+    "Local user-directed layout changes do not create public preset approval."
+  ],
+  "actions": [
+    {
+      "description": "Add guard-return detection and scoped regions with positive and negative regression cases.",
+      "status": "done"
+    },
+    {
+      "description": "Apply the engine proposals to the actual reported helper functions.",
+      "status": "done"
+    },
+    {
+      "description": "Complete the final integrated review after all boundary follow-ups.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Final repository check",
+      "status": "passed",
+      "scope": "All current repository suites, TypeScript type checking and installer shell syntax",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log"
+      ],
+      "result": "bun run check exited 0: 571 pass, 5 existing unavailable Rust/Kotlin parser skips, 0 fail, 2799 assertions. Skipped parsers were not verified."
+    },
+    {
+      "name": "Independent review closure",
+      "status": "passed",
+      "scope": "Static review of the implemented correction and its documented limits",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet.md",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/glm-closure.md"
+      ],
+      "result": "The scoped independent review passed. Prior BLOCKED reviews and corrections remain in history. Reviewers did not execute tests."
+    },
+    {
+      "name": "Installed host compatibility",
+      "status": "passed",
+      "scope": "Isolated Codex and Claude registrations and bundled launchers",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/installed.json",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/installed-transcript.json",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/archive-source-match.json"
+      ],
+      "result": "Both installations expose the new axes/row membership, preserve legacy approved TS/Python writes and refuse unapproved new groups without source changes. Final source rebuild is byte-identical to the tested installer. Live profiles and native model sessions were not changed."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "product/engine/typescript/grid-kinds.ts",
+      "note": "Return-guard detection and region construction."
+    },
+    {
+      "kind": "test",
+      "path": "test/typescript-matrix-boundaries.test.ts",
+      "note": "Guard alignment across statements, loops and scope barriers."
+    },
+    {
+      "kind": "contract",
+      "path": "product/rules/references/readability-contract.md",
+      "note": "Column-sharing regions."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-21-self-use-boundaries.md",
+      "note": "Retains the earlier paragraph interpretation and its limited checks."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-21-matrix-columns.md",
+      "note": "Corrected matrix implementation and scope."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-21",
+      "event": "reported",
+      "summary": "User clarified that the return tokens themselves must share a column.",
+      "evidence": []
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-21",
+      "event": "diagnosed",
+      "summary": "Paragraph-only changes did not implement the requested axis.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-self-use-boundaries.md"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-21",
+      "event": "implemented",
+      "summary": "Added same-block guard regions and applied them to the reported functions.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns.md"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-21",
+      "event": "verified",
+      "summary": "Pre-dot suite passed; final integrated audit remains pending.",
+      "evidence": [
+        "docs/development/issue-library/evidence/pre-dot-check.txt"
+      ]
+    },
+    {
+      "sequence": 5,
+      "date": "2026-10-21",
+      "event": "decision",
+      "summary": "Previous current-verification entries are preserved in the linked snapshot. The current list below records the final checked state; earlier failures remain searchable in history.",
+      "evidence": [
+        "docs/development/issue-library/evidence/records-before-final-closure.json"
+      ]
+    },
+    {
+      "sequence": 6,
+      "date": "2026-10-21",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Closed for the documented supported scope after final repository checks, applicable installed-artifact evidence and independent review. No new public preset approvals or live profile installation is implied.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet.md",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/glm-closure.md",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/installed.json",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/installed-transcript.json",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/archive-source-match.json"
+      ]
+    }
+  ]
+}

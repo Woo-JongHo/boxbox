@@ -1,0 +1,11 @@
+def classify(enabled, attempts, quota):
+    if enabled:
+        if attempts < 3:
+            if quota > 0:
+                return "ready"
+            else:
+                return "quota"
+        else:
+            return "attempts"
+    else:
+        return "disabled"

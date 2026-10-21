@@ -3,15 +3,15 @@
  * builds pass/fail for safety checks S1–S4 and alarms A1–A9. It is a pure function: the same input yields the same report.
  * Alarms are not failures but "places for a human or an AI to look". Deciding (whether to fix, whether to change a rule) is not this module's job.
  */
-import      { displayWidth            } from "./display-width.ts" ;
-import type { FileResult, ResultGroup } from "./result-json.ts"   ;
-import      { patternOf               } from "./surface.ts"       ;
+import      { displayWidth            } from "@/common/display-width.ts" ;
+import type { FileResult, ResultGroup } from "@/common/result-json.ts"   ;
+import      { patternOf               } from "@/common/surface.ts"       ;
 import      {
               lookup                ,
               type ConventionDb     ,
               type LookupResult     ,
-                                      } from "./conventions.ts"   ;
-import      { lookupKeyOf             } from "./signature.ts"     ;
+                                      } from "@/common/conventions.ts"   ;
+import      { lookupKeyOf             } from "@/common/signature.ts"     ;
 
 export const REPORT_SCHEMA_VERSION = 1;
 
@@ -46,14 +46,14 @@ export function straySemicolonPadding(lines: readonly string[], index: number): 
 	if (/^\s*(\/\/|\*|\/\*|import\b|export\s.*\bfrom\b|\}\s*from\b)/u.test(line)) return undefined;
 
 	const padding = /\S([ \t]+);\r?$/u.exec(line);
-	if (!padding) return undefined;
+	if (!padding)                                                                 return undefined;
 
 	const body = line.slice(0, padding.index + 1).replace(/^[ \t]*/u, "");
-	if (/ {2,}|\t/u.test(body)) return undefined;
+	if (/ {2,}|\t/u.test(body))                                                   return undefined;
 
 	const column    = semicolonColumn(line)                                                                                                              ;
 	const neighbors = [lines[index - 1], lines[index + 1]].filter((other): other is string => other !== undefined && indentOf(other) === indentOf(line)) ;
-	if (neighbors.some(other => semicolonColumn(other) === column)) return undefined;
+	if (neighbors.some(other => semicolonColumn(other) === column))               return undefined;
 
 	return padding[1]!.length;
 }
@@ -61,7 +61,7 @@ export function straySemicolonPadding(lines: readonly string[], index: number): 
 export const DEFAULT_LIMITS: ReportLimits = { hard: 118, soft: 100, outlierGap: 20, paddingRatio: 0.5, largeEdits: 20 };
 
 /** Kinds allowed to be fixed automatically from two rows (user approval, charter invariant 4) */
-const TWO_ROW_KINDS = new Set(["declaration-equals", "import-declarations"]);
+const TWO_ROW_KINDS = new Set(["declaration-equals", "declaration-call-envelope", "import-declarations"]);
 
 export type CheckStatus = "pass" | "fail" | "not-run" | "skipped";
 
@@ -170,7 +170,7 @@ function checksOf(input: ReportInput): readonly ReportCheck[] {
 		{ id : "S1" , label : "whitespace-only change"    , status : "pass"                                                              , detail : `the engine verifies token, string and comment preservation per edit and never writes a failing edit (refused groups ${refused})`                                                 },
 		{ id : "S2" , label : "same re-parse diagnostics" , status : parse === "ok" ? "pass" : parse === "changed" ? "fail" : parse      , detail : PARSE_DETAIL[parse](result.parse.tool || result.language)                                                                                                                         },
 		{ id : "S3" , label : "idempotent"                , status : idempotent === undefined ? "not-run" : idempotent ? "pass" : "fail" , detail : idempotent === undefined ? "checked only when rechecking after --write" : `pending edits on recheck ${recheck!.summary.edits}`                                                    },
-		{ id : "S4" , label : "auto-fix needs 3+ rows"    , status : floorBreaks.length === 0 ? "pass" : "fail"                          , detail : floorBreaks.length === 0 ? "two-row exceptions only for declaration-equals and import" : floorBreaks.map(group => `${group.startLine}-${group.endLine} ${group.kind}`).join(", ") },
+		{ id : "S4" , label : "auto-fix needs 3+ rows"    , status : floorBreaks.length === 0 ? "pass" : "fail"                          , detail : floorBreaks.length === 0 ? "two-row exceptions: declarations, call envelopes, imports" : floorBreaks.map(group => `${group.startLine}-${group.endLine} ${group.kind}`).join(", ") },
 	];
 }
 
@@ -180,6 +180,11 @@ function paddingOf(line: string): { readonly padding: number; readonly content: 
 	const padding = [...body.matchAll(/ {2,}/gu)].reduce((sum, match) => sum + match[0].length - 1, 0) ;
 	const content = body.replace(/\s/gu, "").length                                                    ;
 	return { padding, content };
+}
+
+/** Noncontiguous table spans describe their extent, not ownership of every line inside that extent. */
+function rowLinesOf(group: ResultGroup): readonly number[] {
+	return group.rowLines ?? Array.from({ length: group.endLine - group.startLine + 1 }, (_, index) => group.startLine + index);
 }
 
 function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlarm[] {
@@ -192,7 +197,8 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 		alarms.push({ id, label: ALARM_LABELS[id], startLine, endLine, detail, hint, anchor });
 	};
 	const groupAt = (lineNumber: number): ResultGroup | undefined =>
-		result.groups.find(group => group.startLine <= lineNumber && lineNumber <= group.endLine);
+		result.groups.find(group => group.rowLines !== undefined
+			? group.rowLines.includes(lineNumber) : group.startLine <= lineNumber && lineNumber <= group.endLine);
 
 	// ① Screen axis: lines that cause horizontal scrolling. Lines in the same table are grouped into one alarm, noting the pattern and column count (density axis).
 	const reported = new Set<ResultGroup>();
@@ -207,9 +213,9 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 		}
 		if (reported.has(group)) continue                                                                            ;
 		reported.add(group)                                                                                          ;
-		const rows   = Array.from({ length: group.endLine - group.startLine + 1 }, (_, index) => group.startLine + index) ;
-		const over   = rows.filter(row => widthOf(row) > limits.hard)                                                     ;
-		const widest = Math.max(...over.map(widthOf))                                                                     ;
+		const rows   = rowLinesOf (group                            ) ;
+		const over   = rows.filter(row => widthOf(row) > limits.hard) ;
+		const widest = Math.max   (...over.map(widthOf)             ) ;
 		push("A1", group.startLine, group.endLine, `${over.length} row(s) over hard ${limits.hard} (max ${widest} cols) · pattern ${patternName(result.language, group) ?? "?"} · columns ${group.axes.length}`, hint);
 	}
 
@@ -222,11 +228,11 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 	}
 
 	for (const group of result.groups) {
-		const rows    = Array.from({ length: group.endLine - group.startLine + 1 }, (_, index) => group.startLine + index) ;
-		const widths  = rows.map(widthOf)                                                                                  ;
-		const widest  = Math.max(...widths)                                                                                ;
-		const pattern = patternName(result.language, group)                                                                ;
-		const span    = [group.startLine, group.endLine] as const                                                          ;
+		const rows    = rowLinesOf(group)                         ;
+		const widths  = rows.map(widthOf)                         ;
+		const widest  = Math.max(...widths)                       ;
+		const pattern = patternName(result.language, group)       ;
+		const span    = [group.startLine, group.endLine] as const ;
 
 		if (widest > limits.soft && widest <= limits.hard) push("A2", ...span, `table width ${widest} > soft ${limits.soft}`, "allowed range; check whether it can be simplified");
 
@@ -262,7 +268,7 @@ function conventionsOf(result: FileResult, db: ConventionDb): ConventionSummary 
 		if (group.kind === "pair") continue;
 
 		const key   = lookupKeyOf(result.language, group.context, group.kind, group.axes) ;
-		const found = lookup(db, key, result.file)                                        ;
+		const found = lookup     (db, key, result.file                                  ) ;
 		counts[found.status] += 1;
 		lookups.push({ startLine: group.startLine, endLine: group.endLine, kind: group.kind, key, ...found });
 	}

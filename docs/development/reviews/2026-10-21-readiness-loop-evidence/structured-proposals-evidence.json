@@ -1,0 +1,297 @@
+{
+  "generatedAt": "2026-10-21T14:29:55.800Z",
+  "adapter": "product/engine/structured/index.ts",
+  "scenarios": [
+    {
+      "id": "json-positive",
+      "language": "json",
+      "before": "{\n  \"id\":1,\n  \"displayName\" : \"BoxBox\",\n  \"id\"  :2\n}\n",
+      "expected": "{\n  \"id\"         : 1,\n  \"displayName\": \"BoxBox\",\n  \"id\"         : 2\n}\n",
+      "expectedGroups": [
+        {
+          "kind": "mapping",
+          "startLine": 2,
+          "endLine": 4,
+          "rows": 3,
+          "axes": [
+            "key-colon",
+            "value"
+          ],
+          "state": "FIXABLE",
+          "edits": 3,
+          "context": "object",
+          "depth": 1
+        }
+      ],
+      "expectedRefusalFragments": [],
+      "analyzed": {
+        "output": "{\n  \"id\"         : 1,\n  \"displayName\": \"BoxBox\",\n  \"id\"         : 2\n}\n",
+        "refusals": [],
+        "result": {
+          "file": "json-positive.json",
+          "language": "json",
+          "mode": "check",
+          "groups": [
+            {
+              "kind": "mapping",
+              "startLine": 2,
+              "endLine": 4,
+              "rows": 3,
+              "axes": [
+                "key-colon",
+                "value"
+              ],
+              "state": "FIXABLE",
+              "edits": 3,
+              "context": "object",
+              "depth": 1
+            }
+          ],
+          "summary": {
+            "groups": 1,
+            "misaligned": 1,
+            "edits": 3,
+            "refused": 0,
+            "suggested": 0
+          },
+          "unsupported": [],
+          "parse": {
+            "status": "not-run",
+            "tool": "JSON.parse"
+          }
+        }
+      },
+      "assertions": {
+        "outputExact": true,
+        "groupsExact": true,
+        "refusalCoverage": true,
+        "preservation": true,
+        "fixedPoint": true
+      }
+    },
+    {
+      "id": "json-counterexample",
+      "language": "json",
+      "before": "{\n  \"object\": {\"nested\": 1},\n  \"array\": [1, 2],\n  \"plain\": 3\n}\n",
+      "expected": "{\n  \"object\": {\"nested\": 1},\n  \"array\": [1, 2],\n  \"plain\": 3\n}\n",
+      "expectedGroups": [],
+      "expectedRefusalFragments": [
+        "only single-line scalar JSON properties are alignable"
+      ],
+      "analyzed": {
+        "output": "{\n  \"object\": {\"nested\": 1},\n  \"array\": [1, 2],\n  \"plain\": 3\n}\n",
+        "refusals": [
+          {
+            "line": 2,
+            "reason": "only single-line scalar JSON properties are alignable"
+          },
+          {
+            "line": 3,
+            "reason": "only single-line scalar JSON properties are alignable"
+          }
+        ],
+        "result": {
+          "file": "json-counterexample.json",
+          "language": "json",
+          "mode": "check",
+          "groups": [],
+          "summary": {
+            "groups": 0,
+            "misaligned": 0,
+            "edits": 0,
+            "refused": 0,
+            "suggested": 0
+          },
+          "unsupported": [
+            {
+              "line": 2,
+              "reason": "only single-line scalar JSON properties are alignable"
+            },
+            {
+              "line": 3,
+              "reason": "only single-line scalar JSON properties are alignable"
+            }
+          ],
+          "parse": {
+            "status": "not-run",
+            "tool": "JSON.parse"
+          }
+        }
+      },
+      "assertions": {
+        "outputExact": true,
+        "groupsExact": true,
+        "refusalCoverage": true,
+        "preservation": true,
+        "fixedPoint": true
+      }
+    },
+    {
+      "id": "yaml-positive",
+      "language": "yaml",
+      "before": "# settings retained exactly\nid: 1 # keep\ndisplay_name : BoxBox\nenabled:  true\n",
+      "expected": "# settings retained exactly\nid          : 1 # keep\ndisplay_name: BoxBox\nenabled     : true\n",
+      "expectedGroups": [
+        {
+          "kind": "mapping",
+          "startLine": 2,
+          "endLine": 4,
+          "rows": 3,
+          "axes": [
+            "key-colon",
+            "value"
+          ],
+          "state": "FIXABLE",
+          "edits": 3,
+          "context": "block-map",
+          "depth": 0
+        }
+      ],
+      "expectedRefusalFragments": [],
+      "analyzed": {
+        "output": "# settings retained exactly\nid          : 1 # keep\ndisplay_name: BoxBox\nenabled     : true\n",
+        "refusals": [],
+        "result": {
+          "file": "yaml-positive.yaml",
+          "language": "yaml",
+          "mode": "check",
+          "groups": [
+            {
+              "kind": "mapping",
+              "startLine": 2,
+              "endLine": 4,
+              "rows": 3,
+              "axes": [
+                "key-colon",
+                "value"
+              ],
+              "state": "FIXABLE",
+              "edits": 3,
+              "context": "block-map",
+              "depth": 0
+            }
+          ],
+          "summary": {
+            "groups": 1,
+            "misaligned": 1,
+            "edits": 3,
+            "refused": 0,
+            "suggested": 0
+          },
+          "unsupported": [],
+          "parse": {
+            "status": "not-run",
+            "tool": "yaml@2.9.1"
+          }
+        }
+      },
+      "assertions": {
+        "outputExact": true,
+        "groupsExact": true,
+        "refusalCoverage": true,
+        "preservation": true,
+        "fixedPoint": true
+      }
+    },
+    {
+      "id": "yaml-counterexample",
+      "language": "yaml",
+      "before": "block: |\n  keep: exact\nanchored: &shared value\nalias: *shared\nlist:\n  - one\nflow: { key: value }\ntagged: !!str value\n",
+      "expected": "block: |\n  keep: exact\nanchored: &shared value\nalias: *shared\nlist:\n  - one\nflow: { key: value }\ntagged: !!str value\n",
+      "expectedGroups": [],
+      "expectedRefusalFragments": [
+        "block scalars",
+        "anchors, aliases, and tags",
+        "scalar YAML mapping values",
+        "sequence entries"
+      ],
+      "analyzed": {
+        "output": "block: |\n  keep: exact\nanchored: &shared value\nalias: *shared\nlist:\n  - one\nflow: { key: value }\ntagged: !!str value\n",
+        "refusals": [
+          {
+            "line": 1,
+            "reason": "YAML block scalars are not alignable"
+          },
+          {
+            "line": 3,
+            "reason": "YAML anchors, aliases, and tags are not alignable"
+          },
+          {
+            "line": 4,
+            "reason": "only scalar YAML mapping values are alignable"
+          },
+          {
+            "line": 5,
+            "reason": "only simple plain-scalar YAML keys are alignable"
+          },
+          {
+            "line": 6,
+            "reason": "complex keys, flow collections, and sequence entries are not alignable"
+          },
+          {
+            "line": 7,
+            "reason": "only simple scalar YAML mapping values are alignable"
+          },
+          {
+            "line": 8,
+            "reason": "YAML anchors, aliases, and tags are not alignable"
+          }
+        ],
+        "result": {
+          "file": "yaml-counterexample.yaml",
+          "language": "yaml",
+          "mode": "check",
+          "groups": [],
+          "summary": {
+            "groups": 0,
+            "misaligned": 0,
+            "edits": 0,
+            "refused": 0,
+            "suggested": 0
+          },
+          "unsupported": [
+            {
+              "line": 1,
+              "reason": "YAML block scalars are not alignable"
+            },
+            {
+              "line": 3,
+              "reason": "YAML anchors, aliases, and tags are not alignable"
+            },
+            {
+              "line": 4,
+              "reason": "only scalar YAML mapping values are alignable"
+            },
+            {
+              "line": 5,
+              "reason": "only simple plain-scalar YAML keys are alignable"
+            },
+            {
+              "line": 6,
+              "reason": "complex keys, flow collections, and sequence entries are not alignable"
+            },
+            {
+              "line": 7,
+              "reason": "only simple scalar YAML mapping values are alignable"
+            },
+            {
+              "line": 8,
+              "reason": "YAML anchors, aliases, and tags are not alignable"
+            }
+          ],
+          "parse": {
+            "status": "not-run",
+            "tool": "yaml@2.9.1"
+          }
+        }
+      },
+      "assertions": {
+        "outputExact": true,
+        "groupsExact": true,
+        "refusalCoverage": true,
+        "preservation": true,
+        "fixedPoint": true
+      }
+    }
+  ]
+}

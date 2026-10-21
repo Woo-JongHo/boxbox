@@ -1,0 +1,107 @@
+[
+  {
+    "file": "documentation-check.json",
+    "bytes": 569,
+    "sha256": "5cf30d6dac2373f5cf5bc4bb2605e7d57f67c93821cba6313a458081ac9af96b"
+  },
+  {
+    "file": "grammar-tests.log",
+    "bytes": 2833,
+    "sha256": "86fe2cb9df85f510afa6db9181982f31139bad489e36952528c3fa6208b3e132"
+  },
+  {
+    "file": "hud.json",
+    "bytes": 588,
+    "sha256": "44cdfff143b2bf4bfad1bc898db9ae5cdf58ca5c7b64643bbd86a21195d0bb1e"
+  },
+  {
+    "file": "opus-fixes.json",
+    "bytes": 3918,
+    "sha256": "60e2f27a20dbca52a6c64eede981103d8dec21eb1b460801ca60d3de9cc46328"
+  },
+  {
+    "file": "opus-fixes.md",
+    "bytes": 2070,
+    "sha256": "be811b29411ff3563198e0240adb3476be593229c8ce3bc59414cb0fde96da6b"
+  },
+  {
+    "file": "opus-fixes.stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "file": "opus.json",
+    "bytes": 8073,
+    "sha256": "69c93514693c44b073b6a9cf35b55fe4c4c46f1acbbc20128e12b2e6d868f000"
+  },
+  {
+    "file": "opus.md",
+    "bytes": 6180,
+    "sha256": "15c400864c41f36f4ea7ae112789239319b00910c38a1b4121daac26e92512fb"
+  },
+  {
+    "file": "opus.stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "file": "process-audit.md",
+    "bytes": 15892,
+    "sha256": "f84f2e7696887826edfb7cacfad01e750daa8322d37e56d4823582361e7bf65f"
+  },
+  {
+    "file": "process-syntax-probe.log",
+    "bytes": 481,
+    "sha256": "96cb4598fc969fc0c166fc866a17ef2b38e77300616289cfd303b00d6b1f49cb"
+  },
+  {
+    "file": "process-syntax-probe.ts",
+    "bytes": 515,
+    "sha256": "44584245727124437ad71acd173a3acac25aa6c1beaa0a81cddbbc8c638b4fb2"
+  },
+  {
+    "file": "process-tests.log",
+    "bytes": 6882,
+    "sha256": "d5e198b45bd3d5ae9cc7ebb809e8c86935daacb7cddc278f8303b3225ec3b914"
+  },
+  {
+    "file": "sonnet.json",
+    "bytes": 6634,
+    "sha256": "805dfee033c183ed2dec5832062dd28a1a03d5093ca507c1d116c86e4f8d3a48"
+  },
+  {
+    "file": "sonnet.md",
+    "bytes": 4763,
+    "sha256": "701c4b0c5da6f72e6396731dd45bd6458164a18a2ed9c7ef869e8f3cb7b162d5"
+  },
+  {
+    "file": "sonnet.stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "file": "storage-audit.md",
+    "bytes": 12577,
+    "sha256": "82a3882b6bee6f279ecffd97af19491c7267138286246720c3142b555d76adb0"
+  },
+  {
+    "file": "storage-grammar-tests.log",
+    "bytes": 2155,
+    "sha256": "6c990234934e9c09d7a570e3591108e1fef9fd509e689644c8fda3abd00c1fdc"
+  },
+  {
+    "file": "storage-probe.log",
+    "bytes": 234,
+    "sha256": "69e1eece86ecac2666128e7ef40cdb4f4228763c604ae97f8279fc1ba8943c52"
+  },
+  {
+    "file": "storage-probe.ts",
+    "bytes": 1313,
+    "sha256": "e2360e04472e26cdc586e5a648cbcb8f224728fcc1f0b644ca37d53e76d00c6a"
+  },
+  {
+    "file": "storage-tests.log",
+    "bytes": 6704,
+    "sha256": "686c0b1720a89202319d989a074be0a6d20da8937c816515d660f3a5bba898d1"
+  }
+]

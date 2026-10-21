@@ -1,5 +1,5 @@
-import      { existsSync, lstatSync, readFileSync, realpathSync } from "node:fs"          ;
-import      { isAbsolute, relative, resolve                     } from "node:path"        ;
+import      { existsSync, lstatSync, readFileSync, realpathSync } from "node:fs"                 ;
+import      { isAbsolute, relative, resolve                     } from "node:path"               ;
 
 import      {
               CONVENTION_SCHEMA_VERSION                       ,
@@ -7,7 +7,7 @@ import      {
               parseConventions                                ,
               type ConventionLayer                            ,
               type LoadedConvention                           ,
-                                                                } from "./conventions.ts" ;
+                                                                } from "@/common/conventions.ts" ;
 import      {
               DECISION_SCHEMA_VERSION                         ,
               EXAMPLE_SCHEMA_VERSION                          ,
@@ -18,8 +18,8 @@ import      {
               validateExample                                 ,
               type Decision                                   ,
               type Example                                    ,
-                                                                } from "./examples.ts"    ;
-import      { LOOKUP_KEY_VERSION, lookupKeyOf                   } from "./signature.ts"   ;
+                                                                } from "@/common/examples.ts"    ;
+import      { LOOKUP_KEY_VERSION, lookupKeyOf                   } from "@/common/signature.ts"   ;
 
 export const APPROVAL_VERSIONS = {
 	lookupKey        : LOOKUP_KEY_VERSION         ,
@@ -84,15 +84,15 @@ const LAYER_ORDER: readonly ConventionLayer[] = ["project", "user", "preset"];
 const specificity = (scope: string): number => scope.replace(/[*?]/gu, "").length;
 
 function readOptional(root: string, name: string | undefined, fallback: string): { readonly text: string; readonly where: string } {
-	const physicalRoot = realpathSync(root)                      ;
-	const where        = resolve(physicalRoot, name ?? fallback) ;
-	const lexical      = relative(physicalRoot, where)           ;
+	const physicalRoot = realpathSync(root                          ) ;
+	const where        = resolve     (physicalRoot, name ?? fallback) ;
+	const lexical      = relative    (physicalRoot, where           ) ;
 	if (lexical === ".." || lexical.startsWith("../") || lexical.startsWith("..\\") || isAbsolute(lexical)) throw new Error(`registry file escapes root: ${where}`);
 	if (!existsSync(where)) return { text: "", where };
 	const metadata = lstatSync(where);
 	if (metadata.isSymbolicLink() || !metadata.isFile()) throw new Error(`registry file must be a regular non-symbolic file: ${where}`);
-	const physical = realpathSync(where)              ;
-	const inside   = relative(physicalRoot, physical) ;
+	const physical = realpathSync(where                 ) ;
+	const inside   = relative    (physicalRoot, physical) ;
 	if (inside === ".." || inside.startsWith("../") || inside.startsWith("..\\") || isAbsolute(inside)) throw new Error(`registry file escapes root: ${where}`);
 	return { text: readFileSync(physical, "utf8"), where: physical };
 }
@@ -126,14 +126,14 @@ export function documentResolver(roots: DocumentRoots): DocumentResolver {
 		const root = typeof roots === "string" ? roots : layer ? roots[layer] : undefined;
 		if (!root) throw new Error(`document root is missing for layer: ${layer ?? "unspecified"}`);
 		const physicalRoot = realpathSync(root) ;
-		const marker       = ref.indexOf("#")   ;
+		const marker       = ref.indexOf ("#" ) ;
 		if (marker <= 0 || marker === ref.length - 1) throw new Error(`invalid document ref: ${ref}`);
-		const path    = ref.slice(0, marker)  ;
+		const path    = ref.slice(0, marker ) ;
 		const heading = ref.slice(marker + 1) ;
 		if (isAbsolute(path)) throw new Error(`document ref escapes root: ${ref}`);
 
 		const physical = realpathSync(resolve(physicalRoot, path)) ;
-		const inside   = relative(physicalRoot, physical)          ;
+		const inside   = relative    (physicalRoot, physical     ) ;
 		if (inside === ".." || inside.startsWith("../") || inside.startsWith("..\\") || isAbsolute(inside)) throw new Error(`document ref escapes root: ${ref}`);
 		return { document: readFileSync(physical, "utf8"), heading };
 	};
@@ -146,12 +146,12 @@ function resolveConvention(registry: ApprovalRegistry, query: ApprovalQuery): { 
 	for (const layer of LAYER_ORDER) {
 		const inLayer = candidates.filter(record => record.layer === layer);
 		if (inLayer.length === 0) continue;
-		const top     = Math.max(...inLayer.map(record => specificity(record.scope))) ;
-		const winners = inLayer.filter(record => specificity(record.scope) === top)   ;
-		if (winners.length !== 1) return { status: "conflict", reasons: [`ambiguous conventions: ${winners.map(record => record.id).sort().join(",")}`] };
+		const top     = Math   .max   (...inLayer.map(record => specificity(record.scope))) ;
+		const winners = inLayer.filter(record => specificity(record.scope) === top        ) ;
+		if (winners.length !== 1)              return { status: "conflict", reasons: [`ambiguous conventions: ${winners.map(record => record.id).sort().join(",")}`] };
 		const convention = winners[0]!;
 		if (convention.status === "candidate") return { status: "unknown", convention, reasons: ["convention is candidate"] };
-		if (convention.status === "rejected") return { status: "rejected", convention, reasons: ["convention is rejected"] };
+		if (convention.status === "rejected")  return { status: "rejected", convention, reasons: ["convention is rejected"] };
 		return { status: "approved", convention, reasons: [] };
 	}
 	return { status: "unknown", reasons: ["no matching convention"] };

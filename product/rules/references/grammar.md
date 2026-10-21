@@ -31,7 +31,13 @@ IDs are written in English capitals and are never translated.
 
 **Exception — a check right after a definition:** a guard that checks a name defined just above (`if (!found) throw …;` after `const found = …;`) stays in the same paragraph as the definition, because "find it, and refuse if missing" is one purpose (the extract → refuse ladder of the `ALGORITHM` genre has this shape too). If the guard checks a different name, it is not an exception.
 
-**Paragraphs and tables differ.** A paragraph is a group separated by blank lines, and one paragraph may hold sentences with several roles. A **table** is **three or more consecutive sentences of the same pattern** within one paragraph. Alignment (FIX, whitespace only) happens only inside a table. A table never crosses a blank line or a comment, and tables never share widths.
+**Paragraphs and tables differ.** A paragraph is a group separated by blank lines, and one paragraph may hold sentences with several roles. Normally a **table** is **three or more consecutive sentences of the same pattern** within one paragraph, with documented declaration/import pair exceptions. Tables have independent widths and normally stop at blank lines or comments.
+
+**Scoped return-guard exception (2026-10-21 user clarification):** supported `WHEN` sentences of the form
+`if (condition) return value;` can share a return-start column across ordinary statements and blank lines in one
+immediate block. All statements retain their original order. Inner blocks calculate their own widths; their guards
+do not enter the outer table. Comments between statements, unsupported guards, unconditional exits and function/class
+declarations separate regions. See [column-sharing regions](readability-contract.md#column-sharing-regions).
 
 ## 2. Roles and markers
 

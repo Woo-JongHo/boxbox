@@ -1,6 +1,28 @@
 # Current implementation
 
+For a structured entry point and maintenance recipes, start with the [maintainer index](README.md). The [inspection contract](inspection-process.md) distinguishes current check, format and raw engine behavior; the [storage contract](storage.md) records current validation gaps and proposed hardening.
+
 > Snapshot: 2026-10-04 · base commit `8338798` · including the then-uncommitted `development/tools/eval.ts` in the working tree. The 2026-10-07 plugin structure (`plugin/`, lifecycle hooks) is noted where it changes a statement.
+
+> Current-state addendum (2026-10-21): later READINESS1 work added public Check inspection for TypeScript, Python,
+> strict JSON and guarded YAML, with a separate top-level syntax result (`valid`, `invalid` or `error`). The
+> `FileResult.parse` field remains write-gate evidence and is `not-run` in read-only Check. All four adapters enter
+> the common inspection/approval lifecycle, while AST, line-profile and structured-document candidate extraction
+> remain separate. JSON/YAML engine support does not authorize writes: the default public preset still contains only
+> the two existing TypeScript/Python rules, evaluated through the effective layered registry and exposed as
+> `approvalFacts`. YAML uses strict 1.2 core parsing and only aligns runs of at least three adjacent, same-parent,
+> same-indent single-line scalar mappings; directives, markers, complex keys, flow/sequence forms, anchors, aliases,
+> tags, block scalars and multiline/non-scalar values are unsupported.
+>
+> READINESS1 also added complete runtime shape validation for convention, example and decision-reference/receipt
+> records, a versioned TypeScript
+> layout-policy slice, and a nine-family/45-case advisory pattern catalog. Its SQLite index is rebuildable development
+> output under `.boxbox/cache/`; runtime selection and approval continue to use canonical records. All 169
+> engine-internal module specifiers now use the engine-root `@/` alias. Copied-skill TypeScript/JSON/YAML execution,
+> isolated Node bundle resolution, public and installer artifacts, Windows-safe path containment and the final
+> repository check passed with 629 passes, five pre-existing parser-toolchain skips and zero failures. Three
+> pre-existing non-whitespace alignment refusals in the Kotlin, Rust and Swift profiles remain unchanged. The final
+> READINESS1 independent audit is still pending.
 
 This document describes the code that runs today, not the target design. The target state and roadmap follow
 [`design.md`](design.md), and the work order and completion verdicts follow [`plan.md`](plan.md).
@@ -319,14 +341,18 @@ It places `~/.claude/skills/boxbox` and `~/.claude/agents/readability-inspector.
 `~/.agents/skills/boxbox` for ZCode, `~/.codex/skills/boxbox` and
 `~/.codex/agents/readability-inspector.toml` for Codex, and `$PWD/.pi/skills/boxbox` for Pi.
 
-A `--copy` install contains only the skill folder, so the shipped engine does not depend on the `@/` alias of `tsconfig.json`
-and uses relative imports. The install script only installs dependencies and places the skill and agent; it does not create formatters,
-the project `.boxbox/`, hook settings or an integrated CLI executable.
+A `--copy` install contains the skill folder with a local `tsconfig.json` mapping `@/*` to `engine/*`. It dereferences
+the engine and rules links and copies the exact pinned runtime dependencies plus the installed TypeScript platform
+package after preflight. Matched directory identities, file hashes and link targets protect refresh and uninstall from
+stale markers or user-owned replacements. The install script does not create formatters, the project `.boxbox/`, hook
+settings or an integrated CLI executable.
 
-Dependencies are installed in the source repository, and a copied skill does not include the source `node_modules`.
-So a copy or marketplace install alone cannot be considered to resolve the TypeScript dependency.
+Engine-internal TypeScript imports use `@/`. The rules JSON import in `typescript/layout-policy.ts` stays relative
+because its target is outside `product/engine/`; three `new URL(..., import.meta.url)` runtime paths likewise retain
+file-relative semantics. Copied-skill checks executed TypeScript, JSON and YAML outside repository ancestry.
 The separate `dist/cli` Node package was run outside the repository after npm pack/offline install, with a PATH without Bun.
-This is evidence for local macOS arm64 with a prepared npm cache. Real host acceptance, other OSes and installs without a cache remain.
+The public and installer artifact isolation suites also passed after migration. This remains local macOS arm64 evidence;
+native Windows execution and installs without the prepared dependency inputs remain separate support evidence.
 
 | Data | Current location |
 |---|---|
@@ -425,3 +451,10 @@ When judging current behavior, prefer this document and the running code; when d
 `design.md` and `plan.md`. In particular, "proven safe", "approved rule" and "installed in the host" are different
 claims. Each needs separate evidence: `06`'s gate results, whether the convention lookup actually controls writes, and whether a real host
 accepted the wiring.
+
+## Terminal HUD candidate — 0.2.3
+
+The installer opt-in `--hud` deploys a shared read-only collector from `product/hud/`. Claude uses `statusLine`;
+Codex uses an explicit tmux companion launcher. Native macOS terminal rendering and configuration-state changes
+were measured. Windows/desktop HUD support and independent audit completion are not claimed.
+See [the HUD contract](hud.md), [user setup](../user/hud.md) and [verification record](reviews/2026-10-21-terminal-hud.md).

@@ -6,10 +6,10 @@
  * and chains already spanning lines are excluded — cases that would break a table or need structural
  * judgment are fixed by a person under rule 38.
  */
-import type { Node, SourceFile } from "typescript/unstable/ast" ;
+import type { Node, SourceFile } from "typescript/unstable/ast"          ;
 
-import      { syntaxKindName   } from "./grid-kinds.ts"         ;
-import      { loadSourceFile   } from "./load-source-file.ts"   ;
+import      { syntaxKindName   } from "@/typescript/grid-kinds.ts"       ;
+import      { loadSourceFile   } from "@/typescript/load-source-file.ts" ;
 
 function operatorOf(node: Node, source: SourceFile): string | undefined {
 	if (syntaxKindName(node) !== "BinaryExpression") return undefined;
@@ -46,11 +46,11 @@ function lineIndent(source: SourceFile, position: number): string {
 function parentKind(parent: Node, grandparent: Node): "if" | "return" | "variable" | "expression" | undefined {
 	const parentName = syntaxKindName(parent     ) ;
 	const grandName  = syntaxKindName(grandparent) ;
-	if (parentName === "IfStatement") return "if";
-	if (parentName === "ReturnStatement") return "return";
+	if (parentName === "IfStatement")                                                                                           return "if";
+	if (parentName === "ReturnStatement")                                                                                       return "return";
 	if (parentName === "VariableDeclaration" && (grandName === "VariableStatement" || grandName === "VariableDeclarationList")) return "variable";
-	if (parentName === "VariableStatement") return "variable";
-	if (parentName === "ExpressionStatement") return "expression";
+	if (parentName === "VariableStatement")                                                                                     return "variable";
+	if (parentName === "ExpressionStatement")                                                                                   return "expression";
 	return undefined;
 }
 

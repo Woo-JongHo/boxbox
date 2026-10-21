@@ -9,3 +9,10 @@ eval/
 dist/
 .boxbox/runs/
 .boxbox/hooks/
+
+# Local model-review session state; durable summaries live in docs/development/reviews.
+.gjc/
+
+# Local Python validation bytecode.
+__pycache__/
+*.pyc

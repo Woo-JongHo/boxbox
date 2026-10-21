@@ -1,6 +1,6 @@
 import      { describe, expect, test        } from "bun:test"                         ;
 import      { resolve                       } from "node:path"                        ;
-import      { compareParse, parserAvailable } from "@/common/parse-check.ts"          ;
+import      { compareParse, parserAvailable, syntaxDiagnostics } from "@/common/parse-check.ts" ;
 import      { syntacticDiagnostics          } from "@/typescript/load-source-file.ts" ;
 
 /** A valid snippet and a whitespace-free break of it, per language. */
@@ -21,6 +21,13 @@ describe("compareParse", () => {
 			expect(compareParse(language, valid, valid.replace(" = ", "   = ")).status).toBe("ok"     ) ;
 		});
 	}
+});
+
+describe("syntaxDiagnostics", () => {
+	test("parses one input even when no comparison edit exists", () => {
+		expect(syntaxDiagnostics("python", "pass\n").diagnostics).toEqual([]);
+		expect(syntaxDiagnostics("python", "if:\n").diagnostics.length).toBeGreaterThan(0);
+	});
 });
 
 describe("syntacticDiagnostics (TypeScript)", () => {

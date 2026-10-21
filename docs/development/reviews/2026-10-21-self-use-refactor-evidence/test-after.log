@@ -1,0 +1,29 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/authoring-modes.test.ts:
+(pass) matrix authoring and alignment modes > new-file guidance includes only scoped proved rules with their exact contracts and counterexamples [159.06ms]
+(pass) matrix authoring and alignment modes > authoring guidance is read-only advice even for empty or invalid existing source [145.06ms]
+(pass) matrix authoring and alignment modes > authoring scope and project rejection override the shipped rule without falling back [294.77ms]
+(pass) matrix authoring and alignment modes > new-file guidance rejects unsafe paths, unsupported formats and disabled languages [281.84ms]
+(pass) matrix authoring and alignment modes > only authoring GUIDE accepts nonexistent files; mode and language errors stay explicit [275.87ms]
+(pass) matrix authoring and alignment modes > align previews and applies approved whitespace changes without executing a configured formatter [688.12ms]
+(pass) matrix authoring and alignment modes > align refuses a file without applicable groups rather than reporting completed authoring [98.26ms]
+
+test/approval-gate.test.ts:
+(pass) approval write gate > only an exact key with complete human approval proof allows writing, and GUIDE gets only after-better [2.92ms]
+(pass) approval write gate > turns a detected descriptor into the current exact key and keeps the original file path [0.46ms]
+(pass) approval write gate > a candidate convention refuses writing [0.36ms]
+(pass) approval write gate > a rejected convention refuses writing [0.34ms]
+(pass) approval write gate > an unknown key and duplicate conventions of equal priority are unknown/conflict respectively [0.39ms]
+(pass) approval write gate > picks the highest layer in project → user → preset order [0.41ms]
+(pass) approval write gate > blocks a missing decision, a stale document hash, a wrong version and a missing human approval [0.57ms]
+(pass) approval write gate > blocks when any of positive, counterexample, both links, content hash or rule relevance is missing [0.68ms]
+(pass) approval write gate > refuses a document ref that escapes the root [0.48ms]
+(pass) approval write gate > resolves the same relative ref in the document root matching the convention layer [1.13ms]
+(pass) registry loader > reads JSONL from the given roots and layers and refuses malformed and duplicate proofs [1.91ms]
+(pass) registry loader > refuses registry override root escapes and symbolic/non-regular files [0.73ms]
+
+ 19 pass
+ 0 fail
+ 149 expect() calls
+Ran 19 tests across 2 files. [2.12s]
