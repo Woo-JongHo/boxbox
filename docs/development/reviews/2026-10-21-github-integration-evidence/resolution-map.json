@@ -1,0 +1,1133 @@
+[
+  {
+    "path": ".agents/plugins/marketplace.json",
+    "stages": {
+      "2": "0fdcb86ee19a6432e18b2a71cdeb29b29cc810d3",
+      "3": "1566d494194582a333d37f489f93de811daac923"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": ".claude-plugin/marketplace.json",
+    "stages": {
+      "1": "84f372a862ad415f2a681360725fbe0c605c628b",
+      "2": "58a2ccd11f45be7a2b124d2c9cf1ca1a1742c05c",
+      "3": "178d77f9a3118a49c7d82896a6a4fea03c704a3a"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": ".github/workflows/verify.yml",
+    "stages": {
+      "1": "065b4dcc1d79cef612d17c0d8673ca79ed0bd705",
+      "2": "ef9be0e3de12f01c3a6b9e2b2036d78a36d67c56",
+      "3": "daa91eccee491a137b9c5f721eb5c0d0d00d740d"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": ".gitignore",
+    "stages": {
+      "1": "aef23362ec1a3c5bde0749ecb4cd7495950fdd3f",
+      "2": "12e31f48775649e4421b2d21a2fc0a612d535a43",
+      "3": "d5700cc454a59aed1cc19a38f6a4f1a520f713be"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "AGENTS.md",
+    "stages": {
+      "1": "0a5796c1d313495f54827f3abb8ff2fa54f1c069",
+      "2": "0f2d92d760e3eb960b0e697db7e4caf6062faaf3",
+      "3": "9143af0b01b75616b7952927d321b17b50a8d641"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "README.md",
+    "stages": {
+      "1": "3cab8819a266c07c1f6ca415c04196ae94c4ed85",
+      "2": "7abc7c4f240c6a4726671ce704621cde983e74d6",
+      "3": "28a24b0b43ec23ade8543ae5dea3c6384caa85e5"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "development/skills/boxbox/SKILL.md",
+    "stages": {
+      "1": "b9d4bbd82258c067004bff35e6455b2617d49172",
+      "2": "58543d889290ce860b3d9055d1a290cb0e60b1fa",
+      "3": "c9270bbe7b9845c46df6f18500c23c9bb732f992"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "development/tools/build-cli-artifact.ts",
+    "stages": {
+      "2": "5411dacd92699b395c0dc542dd6574df58b6544b",
+      "3": "34958aed90f8b3fc48fb85be6aeb4c060acd1f2d"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "development/tools/build-node-artifact.ts",
+    "stages": {
+      "2": "f210b895d08dea435d900a00e6ffae453cf1cf86",
+      "3": "b50337d0897f9c6484da22e9cd3a85474d7d47a1"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "development/tools/corpus-candidates.ts",
+    "stages": {
+      "2": "b6eeb5f73f9ece33a307ef1a10e9ced7bb98dcf9",
+      "3": "10fcb270d4b69c140a0d07866f9e6cccdbacec24"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "development/tools/corpus-judge.ts",
+    "stages": {
+      "1": "3111e17ea2ffbbdef0706cc42a9cc699e7636efc",
+      "2": "bb7148e713ad74dbb8a644e3b56b5e01844f76cb",
+      "3": "d8771889f158b5f867f65ca975031a1af2a3f543"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "development/tools/corpus-measures.ts",
+    "stages": {
+      "1": "ff5bda1dedb69b37387e8104cc45384843f1149d",
+      "2": "0d691ed0d95e9a6be48dd46f13ccc0620cb52cc4",
+      "3": "0657a922000a892ec306b05740e997d7afdf3f05"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "development/tools/corpus-promote.ts",
+    "stages": {
+      "1": "e37060fe3c105f2ae01fd5e711e1f17189d16943",
+      "2": "7763ed6dfab5e2ff434d30e96a75405f23d1abfb",
+      "3": "75cac6c06045d094a7b9190a7950ad05b1c9be2d"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "development/tools/corpus-triage.ts",
+    "stages": {
+      "2": "1fbffa50ba22a7cd089e001387c3e7743403f4b0",
+      "3": "6bc120c212fcaac073861ea5e23fe4a6be39e61c"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "development/tools/eval.ts",
+    "stages": {
+      "2": "5b915e20030e003c62c6ec3198bc9fe6722a2853",
+      "3": "5dd14500af19441b08a7a530ee01b282b768661d"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "development/tools/examples-check.ts",
+    "stages": {
+      "2": "542870d313a474b482adc2d374379079d5fefb70",
+      "3": "dd14b314f61e9a36681444dbf2b397a9df840c61"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "development/tools/public-preset.ts",
+    "stages": {
+      "2": "29c00e01ea9f6aa59266f28689f99ef077fe0bd2",
+      "3": "29c00e01ea9f6aa59266f28689f99ef077fe0bd2"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "development/tools/rename-product.ts",
+    "stages": {
+      "3": "ee6eeeba9f77f90aa95578f1d5bf59980dbbc9d8"
+    },
+    "resolution": "keep current layout deletion; archive historical incoming source"
+  },
+  {
+    "path": "development/tools/strip-stray-padding.ts",
+    "stages": {
+      "2": "f3599f0a343d5ff7f40efb426658902aaedc473d",
+      "3": "d762590552057116b66302c1559f6ccb6a47769d"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "development/tools/sync-plugin.ts",
+    "stages": {
+      "2": "2a5baa34fdc2c958e7e5c4e01b0003bc350196cc",
+      "3": "209624fe9e54e346b09141385cd3588456e72788"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "development/tools/test-completed.ts",
+    "stages": {
+      "1": "7376b36bafbd606a501475786b47e9fca2592c27",
+      "2": "6e0fd5e80fe008b2cc7c5bf0848e365ca97d56da",
+      "3": "cd63ac61dc14a2ef783cf287b68ea704827eda0a"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "development/tools/usage-report.ts",
+    "stages": {
+      "2": "4271f53a6e87b7e5323283d8fcd1ee1c0d25623e",
+      "3": "7bc9623b4b63e5b381352be73fd01647a4db1f79"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/design.md",
+    "stages": {
+      "1": "a8f8cdb1baed7512901b63d58246168e53f8670e",
+      "2": "492454d940abb80e18be0d561b9456c2f6b5cccd",
+      "3": "b71a6fca29449c128d802d1a93de782dae03c02e"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-09-30-codex-attribute-order-review.md",
+    "stages": {
+      "2": "0745df33a200054cb2eb6fe24c365e070dfa1012",
+      "3": "248e6920613ac5e73fcd3f89760fac9434440e2d"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-09-30-codex-authoring-flow-review.md",
+    "stages": {
+      "2": "d8956408ff4de1bd523793736791ea51645ac548",
+      "3": "a23d45ab415eaf66f61e5e8d65d2f8d11aad0455"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-09-30-codex-eval-review.md",
+    "stages": {
+      "2": "4da5a73b522392304fb254edbf977c1966eeb0b7",
+      "3": "82d87f6fdcc93c07f1e5ed9627d177175cd39c38"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-09-30-codex-grammar-review.md",
+    "stages": {
+      "2": "1c1be1978c18ebe712db2c2414ba0af20f6c2719",
+      "3": "f24633e9401bece40142035f537585c07cc45af6"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-09-30-codex-learning-db-review.md",
+    "stages": {
+      "2": "a24b8504bcc8156fcd39e1eaf638d1fa885767db",
+      "3": "ab768d40ac6bc8e41b11ff68b8686c0c9647e3c5"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-09-30-codex-lookup-review.md",
+    "stages": {
+      "2": "746e19f38e0427ecc3a6c542bc453b7cde4f3fb6",
+      "3": "c3d231b987395472dc6b8f6bbd7cf220e20b0eab"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-09-30-codex-protocol-review.md",
+    "stages": {
+      "2": "9507c475d545e55b661c496b83b5c6f177641a0a",
+      "3": "43c3e5ac2ce3c1ce6c603444612c4b198f11fb99"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-01-codex-astra-paper-review.md",
+    "stages": {
+      "2": "588d5b83a5a60369f2ce4c8a6aabccec990ff33c",
+      "3": "1d7915576341461525bd923dd1621ff8bffaffb6"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-03-codex-code-shape-db-review.md",
+    "stages": {
+      "2": "addf49ad4e505937e58eddd22b22d621c55a5e3a",
+      "3": "3cc9610869b3062b6e6c69fe36450e22c8a4fb70"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-04-atomic-node-artifact.md",
+    "stages": {
+      "2": "2de6174a3c5faaef9782cd7c502261bf5600915c",
+      "3": "f53a8d2fcc678b0db556995f0849451fc0266bba"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-04-format-integration.md",
+    "stages": {
+      "2": "899ba42e05c38d44b3fa118a3e5455f61b70e621",
+      "3": "720b62afdd98b20bc0ba2371f39158d47e55a968"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-04-implementation-docs-review.md",
+    "stages": {
+      "2": "248ab8645f82012af32880e17c3466aa3bea51b3",
+      "3": "0e3f4acefb37775c37d7a5410f2bcd4c19469ceb"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-04-parser-fail-closed.md",
+    "stages": {
+      "2": "229592821facc4cdbf2838b01ce41d0d243ddbc5",
+      "3": "e3579fd1b522d4dc3b7e9f9d8949eed4f3c45e2d"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-04-public-cli.md",
+    "stages": {
+      "2": "14443cf83a9aad9cb72166e7814a9acaa94ea9db",
+      "3": "798c565113c5413852086d5f130398b4bb910b7f"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-04-public-preset-db-boundary.md",
+    "stages": {
+      "2": "1092baeafb21a4f35c73cdb1a3d95208232e9d06",
+      "3": "1dce25dc645dacc68a097a1cb7c7cd450fdb5cb0"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-04-shape-observation.md",
+    "stages": {
+      "2": "3834d227a9aa1e31d888d190a5d78499103d4154",
+      "3": "1a87848a7d2b80a8c7e2c0c7edf921f4d17452f2"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-05-data2-forensic-boundary-verification.md",
+    "stages": {
+      "2": "5a0bcedf16fbfdacafd6d2979549fe8a80a5164c",
+      "3": "0574f5bbb40dc35647ebb33e0a587287d88ca283"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-06-learning-system-inspection.md",
+    "stages": {
+      "2": "efbf57a0854e470368b51d04028bc369ad6e4730",
+      "3": "3af00d102c55d7446d4111d94d59b4718ace18c4"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-06-reddit-launch-scenario.md",
+    "stages": {
+      "2": "874c5377457c25e60e978b31534dbe097ef206f0",
+      "3": "1b83a32a553616b40c601c14628b2140824a16ed"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-06-release-readiness-review.md",
+    "stages": {
+      "2": "765a757d5529ec9d958edad0ed59f02f84cc0dfe",
+      "3": "20db621eee0d563d17a2f65bbb4f8488e247ee50"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-07-guarded-execution-evidence/4bc2a81c-3cfd-425a-94e0-5f5df9aca117.json",
+    "stages": {
+      "2": "6606829690f7f3c30293a834a8ce585e8b031db8",
+      "3": "6606829690f7f3c30293a834a8ce585e8b031db8"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-07-guarded-execution-evidence/c9ea817e-2fea-450f-99a0-16691277a40b.json",
+    "stages": {
+      "2": "f3a0857d7c3a4e45e94a0f5ea661dee4c622b24d",
+      "3": "f3a0857d7c3a4e45e94a0f5ea661dee4c622b24d"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-07-guarded-execution-evidence/xxx-artifact-style.json",
+    "stages": {
+      "2": "4c9ffde59587fd8a2769bfaa0e5960bce96769d0",
+      "3": "4c9ffde59587fd8a2769bfaa0e5960bce96769d0"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-07-guarded-execution-evidence/xxx-cli-style.json",
+    "stages": {
+      "2": "0ad81b6c103e0a2d7a5c9614dc35e617597eea26",
+      "3": "0ad81b6c103e0a2d7a5c9614dc35e617597eea26"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-07-guarded-execution-evidence/xxx-guard-finaltests.log",
+    "stages": {
+      "2": "663622c2a520fc8602e7de3d0ecca2985394a43a",
+      "3": "663622c2a520fc8602e7de3d0ecca2985394a43a"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-07-guarded-execution-evidence/xxx-guard-last.log",
+    "stages": {
+      "2": "b53e001b0f446f4e58bc067087a157406819b09b",
+      "3": "b53e001b0f446f4e58bc067087a157406819b09b"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-07-guarded-execution-evidence/xxx-guard-style.json",
+    "stages": {
+      "2": "f2f5cc2525cb1fc38023f31e93c195dcd2345194",
+      "3": "f2f5cc2525cb1fc38023f31e93c195dcd2345194"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-07-guarded-execution-evidence/xxx-test-style.json",
+    "stages": {
+      "2": "b3ccc0d264a5dcfb0d2685ac855ffef8da832191",
+      "3": "b3ccc0d264a5dcfb0d2685ac855ffef8da832191"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-07-guarded-execution.md",
+    "stages": {
+      "2": "6ec414378ee398cbc485ec9f81be0034fba786aa",
+      "3": "e2f3509db2c6425be0793bc59306699c2b4dd06c"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-08-first-preset-format.md",
+    "stages": {
+      "3": "08d89e127ef6c4ce4d00e6ab7a24c155c588a8c2"
+    },
+    "resolution": "keep current layout deletion; archive historical incoming source"
+  },
+  {
+    "path": "docs/development/reviews/2026-10-08-rel9-host-acceptance.md",
+    "stages": {
+      "3": "0f3ed66848582faabf3fa17fb1057ab6181f453d"
+    },
+    "resolution": "keep current layout deletion; archive historical incoming source"
+  },
+  {
+    "path": "docs/plan.md",
+    "stages": {
+      "1": "7921f80894ff86dbfbcd8a643f3a3cd60e2aeb22",
+      "3": "23a2f01b664bb3441f50c2379a19c61e7bcdaa49"
+    },
+    "resolution": "keep current layout deletion; archive historical incoming source"
+  },
+  {
+    "path": "package.json",
+    "stages": {
+      "1": "7cdc7438dc24899bbdb8464317cb5fd1e5d336e4",
+      "2": "63e281cdeaa8bdd3bacfbbb144506799b6f715b4",
+      "3": "6f7d695106eaf38d42d29b5ac9739f5336a23fcf"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "plugin/.claude-plugin/plugin.json",
+    "stages": {
+      "2": "697a4637941fb40b3036738852b1be18c30e7647",
+      "3": "1a4eb6b91ec532f8a8fd619508c08de7fb4ccdab"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "plugin/.codex-plugin/plugin.json",
+    "stages": {
+      "2": "f14f982484220ee6c912495ffcdc798c7e9310e2",
+      "3": "be42f3b279b22738c2616a57e4446d468c662d6f"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "plugin/README.md",
+    "stages": {
+      "2": "d87df0e8106e20df64d42f8e7d483de51b32d9ee",
+      "3": "77588d4f100feaaa43fd21b2d0179311a930401b"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "plugin/agents/readability-inspector.md",
+    "stages": {
+      "2": "a6ea8de985bff916cc633e956f0c43f603a32186",
+      "3": "8daedbdee291288302514f6b6007d1fabcf9aa9f"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "plugin/hooks/hooks.json",
+    "stages": {
+      "2": "54cb227e17682ad7e6b549ef64ce215b8cfb2a0e",
+      "3": "46c0752ffd64bf744e1d71469907e8dd2647c066"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "plugin/skills/boxbox/references/charter.md",
+    "stages": {
+      "2": "11ce6b35dd063cb73f244f6cf117ea0cef9077c2",
+      "3": "083b90e48c8c254721303dbeabfe3fb69ca0d122"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "plugin/skills/boxbox/references/grammar.md",
+    "stages": {
+      "2": "e7e158117f4e838693305ea09f2816e11512c5f2",
+      "3": "e6545c35b800452e88f7b1ba19287c808f7c9461"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/cli.ts",
+    "stages": {
+      "2": "fdd25b821e65362f0934dc27ef3052dd73975614",
+      "3": "2cd524aba5319fc1162cf4da54cba17b32729820"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/common/approval-gate.ts",
+    "stages": {
+      "2": "1add4fa6dddc866ce78a185730b818f90981e8f0",
+      "3": "1add4fa6dddc866ce78a185730b818f90981e8f0"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/common/conventions.ts",
+    "stages": {
+      "2": "c1ba3c3fbfa8618c144c3f1da3c94861f349379c",
+      "3": "448c9f48056c6b738c7dcc384ced614ed801c980"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/common/examples.ts",
+    "stages": {
+      "2": "08dcfa2faf341be82bef7ba1802c7c4daadf1a0b",
+      "3": "46fc936ea4b0481f4d787a69cfe68d95804bcc51"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/common/format-pipeline.ts",
+    "stages": {
+      "2": "b16bfadb93b39c42b400c766b74536d6e545ee13",
+      "3": "42b5a90da357f2dc1df55fd0f4abcede0de0e10e"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/common/grammar-ids.ts",
+    "stages": {
+      "2": "f709f9f7438f377615dbcc53d444570620f7465e",
+      "3": "f709f9f7438f377615dbcc53d444570620f7465e"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/common/guarded-run.ts",
+    "stages": {
+      "2": "ba9d4717b61f55f5de1f85e0288c9d95f2b1825b",
+      "3": "23eb64ce51bbc6553adacc96cb31b6df97cecc2d"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/common/hook.ts",
+    "stages": {
+      "2": "060d6946db78dda0d6b3743cf2ea5154179957ef",
+      "3": "90313bfcb1c2332358a860eec72cfdb15ef38158"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/common/lifecycle-hook.ts",
+    "stages": {
+      "2": "a8b3fb3623d50a7b7cfff32f267c31fe007b7795",
+      "3": "44f2925154b396ef1bf3cb1c698b5e44802dcdcf"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/common/parse-check.ts",
+    "stages": {
+      "1": "e14fad53b2da4817feb425c74d43df25c136ff59",
+      "2": "b4dc518982fcb42cf794be1f0899b24d2ca6e8a0",
+      "3": "dfd42caf951bb01c4d4b5cf52a743fa1bb0b7ff8"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/common/project-config.ts",
+    "stages": {
+      "2": "9ef6a8a91e35bd8e8c846a76671bb655d6c7fb5a",
+      "3": "1a01c3e2b1a308bd74e57be20a418509d9c8fba2"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/common/report.ts",
+    "stages": {
+      "2": "4b04013f569898522cb3bdd6090f48fa84c57518",
+      "3": "9ce959d82110d1ea478e86c07eb337ba3b77c693"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/common/safe-file.ts",
+    "stages": {
+      "2": "42382b27820a598ec77cae296aa662897e208036",
+      "3": "589c80a587c963cfeebab61aa6041ad845ff83b8"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/common/signature.ts",
+    "stages": {
+      "2": "4a4944e429e52590a27cbf53402afc00cbc2d228",
+      "3": "24cc06ad5a96262144fcc3af4eec0477305d6b27"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/common/surface.ts",
+    "stages": {
+      "2": "ad4c91f16aaf29452777fad2ec2ab7f3ebdd1ce2",
+      "3": "837de6c93a77f93941d8300d5f1d4a20c29cb80d"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/common/usage.ts",
+    "stages": {
+      "2": "2f2c9616908b0572ba1d34a08f2f44d26c637077",
+      "3": "2f2c9616908b0572ba1d34a08f2f44d26c637077"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/hook.ts",
+    "stages": {
+      "2": "e895a012dff9d45ad71022d35aa2b244c36b237a",
+      "3": "bab804879d898a30374841679d571fa7c6026be7"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/internal-runner.ts",
+    "stages": {
+      "2": "096f6d60a52483f70c9cfb8557766c72ae2de94a",
+      "3": "096f6d60a52483f70c9cfb8557766c72ae2de94a"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/python/profile.ts",
+    "stages": {
+      "1": "356ba1e25fe25197382b95d815bfef262c0e9595",
+      "2": "0cb0c53a4d99c22a66dfcec5f2734012e85ffadf",
+      "3": "cf0502005f2f43f742b64d05463dda1dc693908d"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/report.ts",
+    "stages": {
+      "2": "f4352b4ec467b878d20498b6e0ee7982c26f2ed9",
+      "3": "b4bbc23c9b62de3a599d4a0be1b54d0c75010dfd"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/typescript/09_observe-shapes.ts",
+    "stages": {
+      "2": "0954d8cb7ca1a11eda3676e753ec90947dbbb341",
+      "3": "f86c41eaa576fea5627a03e5c42fc5199ab902c8"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "product/engine/typescript/align.ts",
+    "stages": {
+      "2": "ca222d577ff652880f98dca6b329e382c9b8020f",
+      "3": "b1130c782af12fb6c37ca4dc02bb704c296235ee"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "scripts/corpus-signatures.ts",
+    "stages": {
+      "1": "d7407defaf3c612da50237a794d8e67ccd817695",
+      "3": "8616f3fa5fe0dee3ab6289d3059a1038f11c7ec1"
+    },
+    "resolution": "keep current layout deletion; archive historical incoming source"
+  },
+  {
+    "path": "test/cli.test.ts",
+    "stages": {
+      "2": "e72634e7e09e49aef90187647ea6f8a537a18899",
+      "3": "9e040956f79705bde3b3be1981a5e4694f880d57"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/config-layers.test.ts",
+    "stages": {
+      "2": "8fd5730ac8ace0cee4f6f6377c2676cd263d8a7e",
+      "3": "6ab4fb62f82d50afa2110af3a59c516376f1d3dd"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/conventions.test.ts",
+    "stages": {
+      "2": "5a2f3620eee89e5131eb8beed416cdca247f5822",
+      "3": "917cc15acf1c717525c520d5663d88137d024bfd"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/corpus-candidates.test.ts",
+    "stages": {
+      "2": "468a35e9ef8e40a05cc4583e8022704e5fccb819",
+      "3": "7e11dc1fe48f6548df8273cc183498d100363cce"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/corpus-evidence.test.ts",
+    "stages": {
+      "2": "cb9f9f2fc1a0e3b814d613b769e7448893cd2698",
+      "3": "33b5c77c734b38a209ec1bc99558ab03b9a40c98"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/corpus-measures.test.ts",
+    "stages": {
+      "1": "8a86be477e2980c4a6d32be9760253ad11a7789c",
+      "2": "6ab8261bdd39e8698d87a4c0981cc6005624f2ce",
+      "3": "6ed0bce93f70c6202f85804de22a3e7cb3297508"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/corpus-triage.test.ts",
+    "stages": {
+      "2": "af42d0879254bcb105e8280d1976243417a1facc",
+      "3": "e524b7a8c2c8cd6ec8c0695202ebab7df95fd7df"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/examples.test.ts",
+    "stages": {
+      "2": "2ee67d6289720430e75c7af60dd499996a7b576f",
+      "3": "be2df6193d1964af476dfd71890a1860a0256dd1"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/format-pipeline.test.ts",
+    "stages": {
+      "2": "9382834fda5d177fbc03e97d91409c33cb5f790d",
+      "3": "41d00dc12c65c6bde42442b93927753dc7a7cd51"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/guarded-run.test.ts",
+    "stages": {
+      "2": "d7e7cd6eb70b11bf7210f53f21126038ed227f72",
+      "3": "fc3694420ecda283d7b0619677d343795b6a2be1"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/harness.test.ts",
+    "stages": {
+      "2": "f602f808b6326f4816e034ff9370752786aed027",
+      "3": "ddc671833dce5130e942ec9488b72a286c67ae61"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/hook.test.ts",
+    "stages": {
+      "2": "4d5a85c28dcbe08a32be98814676c69ed79655e7",
+      "3": "f4a01c3152d128604530677f41155ed60fe9d255"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/lifecycle-hook.test.ts",
+    "stages": {
+      "2": "475e228105cd12406d3d89b459ceef4d1d31d003",
+      "3": "bc342aec33b6e6857ef333111f9c335f836042d8"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/line-write-safety.test.ts",
+    "stages": {
+      "2": "fee8c8b97ac3b40a892603b87c2a40d2942a02ca",
+      "3": "83bed499c6a070f612cd3eeeb90f42eb126af5a2"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/node-artifact.test.ts",
+    "stages": {
+      "2": "ddddef4f274da9791dbddc39492019161c9c7235",
+      "3": "4e949141ba82acb5ba1bb1c1940c2e5662169b7c"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/parser-fault.test.ts",
+    "stages": {
+      "2": "f9b59350f49fb40349fbe7275807f44783c6d884",
+      "3": "c60b6e10655fcee2ca66106ef4a1720d73c67a68"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/plugin-contract.test.ts",
+    "stages": {
+      "1": "d0a2692929b1890a54c0c36143e8f9fc16aee7e3",
+      "2": "5f03ac4ee9f11d591012ecc7cbf769add5205632",
+      "3": "0afefae0879b4a87ff7b9251491ce8ac930238e7"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/plugin-hook.test.ts",
+    "stages": {
+      "2": "c587d6617b9aa33274000a225f811e0c6f1cea13",
+      "3": "fd8f1f8ee15b035c8a1db79976661c28f11797f2"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/public-artifact.test.ts",
+    "stages": {
+      "2": "709c5d27ccd7fb808890a90616e721812f9f5e0d",
+      "3": "fda8cb7e6a0627f5595bf6b8c3c07c3d751662e2"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/public-preset.test.ts",
+    "stages": {
+      "2": "c1c94a56477d01023cab54d127f41f364b9a638b",
+      "3": "84ffbd4a7216cdd1a50b01a3b926f76772befd8f"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/python-align.test.ts",
+    "stages": {
+      "1": "d89180cc7e4c951f43b3cdf0e4a0c030e28e8176",
+      "2": "a7c416f54748d36821513477987b96cf9ee3987b",
+      "3": "9930911cdb6b1484552c262eccb94ed53c4cf315"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/report.test.ts",
+    "stages": {
+      "2": "f3b2ce84d52e9e226ab70dfdde2109123a5913e6",
+      "3": "303d5de3885b6b1cec4e70c2fe89a77bd0bceaea"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/shape-observation.test.ts",
+    "stages": {
+      "2": "e6152f63723d28958de209f42497612ebf3a15b6",
+      "3": "4d2b1c855df5c5e7202542bee2443004d18bfecf"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/strip-stray-padding.test.ts",
+    "stages": {
+      "2": "de43ee6973af5a0be8162a653fd168442e665e67",
+      "3": "fe0ee4fa722d0d15b9a5c0c0621abdae07dbc014"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/surface.test.ts",
+    "stages": {
+      "2": "d41de4c963454f68d77b3264e85ea13918901419",
+      "3": "b359c5daa777ad213734c1c0ee23295c015da5d8"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/typescript-write-safety.test.ts",
+    "stages": {
+      "2": "080d57d32f2324d4cf7fa490b22cbe26e5642689",
+      "3": "fa4c910f852b6c9a93840f674694ae21c09683c3"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "test/usage.test.ts",
+    "stages": {
+      "2": "842384e4d0cdd5ec0aa9d23eebdc1a087b7a44f3",
+      "3": "15d3ba6e0f560926383ab3bc0049b2ebec4acc24"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": "tsconfig.json",
+    "stages": {
+      "1": "3dcae7dfdcab6ec3f9417d060e0f42caaf4ac568",
+      "2": "75a6a915dc8ad9ad9515df73ff98b8683d6c540f",
+      "3": "582391126acc20be83447fb75f68c3f2287c7c5d"
+    },
+    "resolution": "retain current canonical development implementation; GitHub source preserved in merge ancestry and patch"
+  },
+  {
+    "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/authoring-flow.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/candidates/initial-conventions.jsonl",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/candidates/initial-decisions-proposed.jsonl",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/candidates/initial-examples.jsonl",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/candidates/initial-rules.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/corpus-data.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/handoff-2026-10-05.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/implementation.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/paper/eval-methodology.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/paper/service-registered-report.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/plan-refactor-i18n-2026-10-06.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/public/decisions/py-simple-assignments.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/public/decisions/ts-sourcefile-call-declarations.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/release-contract.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/rename-candidates.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/research/ai-cost.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/research/column-ruler.txt",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/research/column-width.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/research/eval-protocol.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/research/model-eval.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/research/report-template.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/research/reports/2026-10-01-pilot-prep.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/research/reports/2026-10-01-smoke.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "docs/status.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "eval-smoke/linear-contract.ts",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "harness/README.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "harness/db.ts",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "harness/evidence/latest.json",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "harness/evidence/runs.jsonl",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "harness/report.ts",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "harness/run.ts",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "hooks/hooks.json",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "packaging/cli/README.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "packaging/cli/entry.ts",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "packaging/cli/package.json",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "packaging/node/README.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "packaging/node/package.json",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "plugin/scripts/xxx",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "plugin/skills/xxx/SKILL.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "plugin/skills/xxx/references/charter.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "plugin/skills/xxx/references/grammar.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "plugin/skills/xxx/references/readability-contract.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "plugin/skills/xxx/references/typescript-grid-template.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "skills/xxx/base/python.json",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "skills/xxx/base/typescript.json",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "skills/xxx/presets/recommended/conventions.jsonl",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "skills/xxx/presets/recommended/decisions.jsonl",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "skills/xxx/presets/recommended/docs/public/decisions/py-simple-assignments.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "skills/xxx/presets/recommended/docs/public/decisions/ts-sourcefile-call-declarations.md",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  },
+  {
+    "path": "skills/xxx/presets/recommended/examples.jsonl",
+    "resolution": "omit obsolete duplicate projection; preserve entire incoming delta in merge ancestry and github-main-only.patch"
+  }
+]

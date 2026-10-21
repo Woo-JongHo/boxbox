@@ -29,7 +29,7 @@ not the development tree. Repository visibility and artifact visibility still fo
 ## Pull request verification
 
 `.github/workflows/verify.yml` runs for pull requests, pushes to `main`, and calls from the candidate workflow. It keeps
-the existing Ubuntu parser/toolchain setup, pins Node.js 22.22.3 and Bun 1.4.0, installs the frozen Bun lockfile,
+the existing Ubuntu/macOS parser/toolchain coverage, pins Node.js 22.22.3 and Bun 1.4.0, installs the frozen Bun lockfile,
 primes the npm cache for real offline artifact installation tests, checks generated plugin drift, and runs `bun run check`
 with `BOXBOX_REQUIRE_PARSERS=1`. Required parsers must be present; skipped local checks are not substituted for this CI gate.
 
@@ -97,8 +97,7 @@ separate real-host evidence. A green candidate is not a public release readiness
 At inspection time on 2026-10-21, the local `origin` points to the self-hosted repository and GitHub
 `Woo-JongHo/rowgrid` is private with `main` as its default branch. Pushing to the self-hosted origin does not install
 GitHub workflows. These files must be pushed or mirrored to the intended GitHub repository and merged into its default
-branch before GitHub can show the forms and run the pipeline. No remote settings or publication are changed by adding
-these files locally.
+branch before GitHub can show the forms and run the pipeline. The integration PR preserves GitHub main ancestry, its MIT LICENSE, and contribution/rule-proposal intake while migrating active code into the current layout. Adding these files does not itself publish a release.
 
 After the first real GitHub run, configure the actual `verify / plugin-contract` check as required in the repository's
 branch protection/ruleset, require the intended review policy, and disable direct pushes if desired. Check the exact
