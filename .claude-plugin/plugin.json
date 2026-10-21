@@ -1,9 +1,0 @@
-{
-	"name": "xxx",
-	"description": "Provides a skill that inspects, fixes and verifies TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, and Kotlin files against tabular readability rules, plus a read-only inspector.",
-	"version": "0.2.0",
-	"author": { "name": "Woo-JongHo" },
-	"keywords": ["readability", "typescript", "code-style", "align", "skill"],
-	"skills": "./skills",
-	"agents": "./agents"
-}

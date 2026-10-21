@@ -15,12 +15,12 @@ import      { join, relative, resolve                        } from "node:path" 
 import      { updateFileAtomically, updateFileAtomicallySync } from "@/common/safe-file.ts" ;
 import      { runStagedPasses, writeDiagnosedOutput          } from "@/typescript/align.ts" ;
 
-const root                 = resolve(import.meta.dir, "..")                                    ;
-const script               = resolve(root, "skills/xxx/scripts/typescript/06_align-tables.ts") ;
-const workspaces: string[] = []                                                                ;
+const root                 = resolve(import.meta.dir, "..")                                ;
+const script               = resolve(root, "product/engine/typescript/06_align-tables.ts") ;
+const workspaces: string[] = []                                                            ;
 
 function workspace(): string {
-	const value = mkdtempSync(join(import.meta.dir, "xxx-ts-write-"));
+	const value = mkdtempSync(join(import.meta.dir, "boxbox-ts-write-"));
 	workspaces.push(value);
 	return value;
 }
@@ -32,7 +32,7 @@ function targetWith(text = "original\n"): string {
 }
 
 function leftovers(target: string): readonly string[] {
-	return readdirSync(resolve(target, "..")).filter(name => name.includes("xxx-stage") || name.includes("xxx-write.lock"));
+	return readdirSync(resolve(target, "..")).filter(name => name.includes("boxbox-stage") || name.includes("boxbox-write.lock"));
 }
 
 afterEach(() => {

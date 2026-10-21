@@ -1,0 +1,29 @@
+import-declarations files=6 changed=0 errors=0
+align-tables file=development/tools/sync-plugin.ts groups=5 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      12-13  declaration-equals rows= 2  equals=17 semicolon=106  edits=0
+      30-32  declaration-equals rows= 3  equals=19 semicolon=96  edits=0
+      34-35  declaration-equals rows= 2  equals=21 semicolon=56  edits=0
+      71-72  declaration-equals rows= 2  equals=19 semicolon=75  edits=0
+      76-77  declaration-equals rows= 2  equals=23 semicolon=45  edits=0
+align-tables file=development/tools/build-cli-artifact.ts groups=3 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+       6-10  declaration-equals rows= 5  equals=19 semicolon=89  edits=0
+      28-35  registration       rows= 8  colon=16 value=18  edits=0
+      39-40  declaration-equals rows= 2  equals=17 semicolon=53  edits=0
+align-tables file=development/tools/build-node-artifact.ts groups=3 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+       9-11  declaration-equals rows= 3  equals=15 semicolon=67  edits=0
+      22-28  registration       rows= 7  colon=16 value=18  edits=0
+      32-33  declaration-equals rows= 2  equals=17 semicolon=62  edits=0
+align-tables file=test/layout.test.ts groups=4 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      16-17  declaration-equals rows= 2  equals=26 semicolon=59  edits=0
+      32-34  declaration-equals rows= 3  equals=20 semicolon=187  edits=0
+      59-61  call-statements    rows= 3  subject-close-paren=43 matcher-dot=44 matcher-open-paren=60 matcher-close-paren=66 semicolon=68  edits=0
+      73-75  call-statements    rows= 3  subject-close-paren=65 matcher-dot=66 matcher-open-paren=76 matcher-close-paren=112 semicolon=114  edits=0
+align-tables file=product/engine/report.ts groups=3 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      34-36  declaration-equals rows= 3  equals=17 semicolon=95  edits=0
+      67-69  declaration-equals rows= 3  equals=17 semicolon=62  edits=0
+      72-77  declaration-equals rows= 6  equals=19 semicolon=124  edits=0
+align-tables file=product/engine/common/hook.ts groups=4 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      10-14  interface-members  rows= 5  colon=26 semicolon=87  edits=0
+      42-43  declaration-equals rows= 2  equals=16 call-open-paren=33 call-close-paren=62 semicolon=64  edits=0
+      77-78  declaration-equals rows= 2  equals=17 semicolon=111  edits=0
+      81-82  declaration-equals rows= 2  equals=19 semicolon=191  edits=0

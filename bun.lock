@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "woo-readability",
+      "name": "boxbox",
       "dependencies": {
         "typescript": "7.0.2",
       },

@@ -1,0 +1,285 @@
+import      { afterEach, describe, expect, test                 } from "bun:test"                              ;
+import      { mkdirSync, mkdtempSync, readFileSync, rmSync      } from "node:fs"                               ;
+import      { writeFileSync                                     } from "node:fs"                               ;
+import      { tmpdir                                            } from "node:os"                               ;
+import      { join                                              } from "node:path"                             ;
+
+import      {
+              APPROVAL_VERSIONS                                ,
+              documentResolver                                 ,
+              evaluateApproval                                 ,
+              loadApprovalRegistry                             ,
+                                                                } from "@/common/approval-gate.ts"             ;
+import      { contentHashOf                                     } from "@/common/examples.ts"                  ;
+import      { runFormatPipeline                                 } from "@/common/format-pipeline.ts"           ;
+import      { compareParse                                      } from "@/common/parse-check.ts"               ;
+import      { changedLines                                      } from "@/common/preservation.ts"              ;
+import type { ResultEnvelope                                    } from "@/common/result-json.ts"               ;
+import      { lookupKeyOf                                       } from "@/common/signature.ts"                 ;
+import      { alignSource                                       } from "@/common/table-engine.ts"              ;
+import      { PYTHON_ALIGNER                                    } from "@/python/profile.ts"                   ;
+import      { preservesTokens                                   } from "@/typescript/token-preservation.ts"   ;
+import      { preparePublicPreset                               } from "../development/tools/public-preset.ts" ;
+
+const PRESET          = join(import.meta.dir, "../product/rules/presets/recommended")                                   ;
+const TS_KEY          = "v1|typescript|SourceFile|declaration-equals|equals>call-open-paren>call-close-paren>semicolon" ;
+const PY_KEY          = "v1|python|-|table|name>equal>value"                                                            ;
+const roots: string[] = []                                                                                              ;
+
+function workspace(): string {
+	const root = mkdtempSync(join(tmpdir(), "boxbox-recommended-"));
+	roots.push(root);
+	return root;
+}
+
+function registry(root = PRESET): ReturnType<typeof loadApprovalRegistry> {
+	return loadApprovalRegistry([{ root, layer: "preset" }]);
+}
+
+function inspectTypeScript(root: string, file: string, write = false): ResultEnvelope {
+	const script = join(import.meta.dir, "../product/engine/typescript/06_align-tables.ts")                                                                          ;
+	const run    = Bun.spawnSync([process.execPath, script, "--file", file, "--json", ...(write ? ["--write"] : [])], { cwd: root, stdout: "pipe", stderr: "pipe" }) ;
+	if (run.exitCode !== 0 && run.exitCode !== 1) throw new Error(`TypeScript inspection failed: ${run.stderr.toString()}`);
+	return JSON.parse(run.stdout.toString()) as ResultEnvelope;
+}
+
+afterEach(() => {
+	for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+});
+
+describe("the approved recommended preset", () => {
+	test("ships exactly the two human-approved rules with matching dated, versioned proof records", () => {
+		const data = registry();
+
+		expect(data.conventions.map(record => record.id)).toEqual(["ts-sourcefile-call-declarations", "py-simple-assignments"]) ;
+		expect(data.examples.size                       ).toBe   (4                                                           ) ;
+		expect(data.decisions.size                      ).toBe   (2                                                           ) ;
+		for (const convention of data.conventions) {
+			expect(convention).toMatchObject({ status: "approved", approvedBy: "maintainer", date: "2026-10-21", versions: APPROVAL_VERSIONS });
+			const decision = data.decisions.get(convention.id)!;
+
+			expect(decision).toMatchObject({ kind: "rule", layer: "convention", approvedBy: "maintainer", date: "2026-10-21", examples: convention.examples });
+			const { document } = documentResolver(PRESET)(decision.ref, "preset");
+
+			expect(document).toContain("A human maintainer approved this exact scope, the positive example and the excluded boundary on 2026-10-21.");
+			for (const id of convention.examples!) {
+				const example = data.examples.get(id)!;
+
+				expect(example).toMatchObject({ status: "approved", approvedBy: "maintainer", date: "2026-10-21", versions: APPROVAL_VERSIONS, source: { kind: "synthetic", license: "CC0-1.0" } });
+				expect(example.contentHash).toBe(contentHashOf(example.before, example.after));
+				if (example.verdict === "bad") expect(example.after).not.toBe(example.before);
+			}
+		}
+	});
+
+	test("a prepared public package retains complete proofs and refuses changed approval documents", () => {
+		const output = workspace()                 ;
+		const files  = preparePublicPreset(PRESET) ;
+
+		expect(files.map(file => file.path)).toEqual([
+			"conventions.jsonl", "examples.jsonl", "decisions.jsonl",
+			"docs/public/decisions/ts-sourcefile-call-declarations.md",
+			"docs/public/decisions/py-simple-assignments.md",
+		]);
+		for (const file of files) {
+			const target = join(output, file.path);
+			mkdirSync(join(target, ".."), { recursive: true });
+			writeFileSync(target, file.text);
+		}
+		const data = registry(output);
+		for (const [key, file] of [[TS_KEY, "src/sample.ts"], [PY_KEY, "src/sample.py"]]) {
+			const result = evaluateApproval(data, { key: key!, file: file! }, documentResolver(output));
+
+			expect(result).toMatchObject({ status: "approved", writable: true, layer: "preset", reasons: [] });
+			expect(result.guide).toHaveLength(1);
+		}
+		const decision = data.decisions.get("py-simple-assignments")! ;
+		const document = join(output, decision.ref.split("#")[0]!)    ;
+		writeFileSync(document, `${readFileSync(document, "utf8")}\nUnapproved expansion.\n`);
+
+		expect(evaluateApproval(data, { key: PY_KEY, file: "sample.py" }, documentResolver(output))).toMatchObject({ status: "unknown", writable: false, reasons: ["decision document hash is stale"] });
+	});
+
+	test("both shipped approval proofs survive a CRLF document checkout", () => {
+		const data            = registry()               ;
+		const resolveDocument = documentResolver(PRESET) ;
+		for (const convention of data.conventions) {
+			const result = evaluateApproval(data, { key: convention.key, file: convention.id.startsWith("ts-") ? "table.ts" : "table.py" }, (ref, layer) => {
+				const resolved = resolveDocument(ref, layer);
+				return { ...resolved, document: resolved.document.replaceAll("\n", "\r\n") };
+			});
+			expect(result.writable, convention.id).toBe(true);
+		}
+	});
+
+	test("approval lookup remains limited to the exact language, scope, container and axes", () => {
+		const data            = registry()               ;
+		const resolveDocument = documentResolver(PRESET) ;
+		const denied = [
+			{ key : TS_KEY                                                , file : "sample.tsx" },
+			{ key : TS_KEY.replace("SourceFile", "Block")                 , file : "sample.ts"  },
+			{ key : TS_KEY.replace("call-open-paren>", "")                , file : "sample.ts"  },
+			{ key : PY_KEY                                                , file : "sample.js"  },
+			{ key : PY_KEY.replace("name>equal", "name>colon>type>equal") , file : "sample.py"  },
+		];
+		for (const query of denied) expect(evaluateApproval(data, query, resolveDocument)).toMatchObject({ status: "unknown", writable: false });
+	});
+
+	test("the approved TypeScript example and two-row declaration exception use real safe writes and reach a token-preserving fixed point", async () => {
+		const root     = workspace()                                                    ;
+		const data     = registry()                                                     ;
+		const positive = data.examples.get("ts-sourcefile-call-declarations-positive")! ;
+		const cases = [
+			{ file: "three.ts", before: positive.before, after: positive.after },
+			{ file: "two.ts", before: "let short = make(1);\nvar muchLonger = make(22);\n", after: undefined },
+		];
+		for (const scenario of cases) {
+			const target = join(root, scenario.file);
+			writeFileSync(target, scenario.before);
+			const checked = await inspectTypeScript(root, scenario.file) ;
+			const group   = checked.results[0]!.groups[0]!               ;
+
+			expect(group).toMatchObject({ state: "FIXABLE", rows: scenario.file === "two.ts" ? 2 : 3, context: "SourceFile" });
+			expect(lookupKeyOf("typescript", group.context, group.kind, group.axes)).toBe(TS_KEY);
+			const options = { root, file: scenario.file, language: "typescript" as const, registry: data, resolveDocument: documentResolver(PRESET) } ;
+			const first   = await runFormatPipeline(options)                                                                                          ;
+			const after   = readFileSync(target, "utf8")                                                                                              ;
+
+			expect(first).toMatchObject({ written: true, fixedPoint: true, approvals: ["ts-sourcefile-call-declarations"] });
+			if (scenario.after !== undefined) expect(after).toBe(scenario.after);
+			expect(preservesTokens(scenario.before, after)   ).toBe(true ) ;
+			expect((await runFormatPipeline(options)).written).toBe(false) ;
+			expect(readFileSync(target, "utf8")              ).toBe(after) ;
+		}
+	}, 60_000);
+
+	for (const scenario of [
+		{ name : "using declarations"       , source : "using short = make(1);\nusing muchLonger = make(22);\n"             },
+		{ name : "await using declarations" , source : "await using short = make(1);\nawait using muchLonger = make(22);\n" },
+		{ name : "constructor initializers" , source : "const short = new Make(1);\nconst muchLonger = new Make(22);\n"     },
+		{ name : "awaited initializers"     , source : "const short = await make(1);\nconst muchLonger = await make(22);\n" },
+	]) test(`${scenario.name} never inherit the direct-call approval`, async () => {
+		const root            = workspace()              ;
+		const data            = registry()               ;
+		const resolveDocument = documentResolver(PRESET) ;
+		const file            = "excluded.ts"            ;
+		const target          = join(root, file)         ;
+		writeFileSync(target, scenario.source);
+		const checked = await inspectTypeScript(root, file);
+
+		expect(checked.results[0]!.groups).toHaveLength(1);
+		for (const group of checked.results[0]!.groups) {
+			const key = lookupKeyOf("typescript", group.context, group.kind, group.axes);
+
+			expect(evaluateApproval(data, { key, file }, resolveDocument).writable).toBe(false);
+		}
+		const cli = join(import.meta.dir, "../product/packages/cli/entry.ts");
+		const refused = Bun.spawnSync([process.execPath, cli, "format", "--file", file, "--json"], {
+			cwd: root, env: { ...process.env, XDG_CONFIG_HOME: join(root, "user-config") }, stdout: "pipe", stderr: "pipe",
+		});
+		const result = JSON.parse(refused.stdout.toString());
+
+		expect(refused.exitCode            ).toBe         (2                              ) ;
+		expect(result.error                ).toMatchObject({ code: "FORMAT_NOT_ELIGIBLE" }) ;
+		expect(result.error.message        ).toContain    ("approval denied"              ) ;
+		expect(readFileSync(target, "utf8")).toBe         (scenario.source                ) ;
+	}, 60_000);
+
+	test("the approved Python example remains safe at its existing indentation", async () => {
+		const root     = workspace()                                          ;
+		const data     = registry()                                           ;
+		const positive = data.examples.get("py-simple-assignments-positive")! ;
+		const target   = join(root, "sample.py")                              ;
+		writeFileSync(target, positive.before);
+		const options = { root, file: "sample.py", language: "python" as const, registry: data, resolveDocument: documentResolver(PRESET) } ;
+		const first   = await runFormatPipeline(options)                                                                                    ;
+		const after   = readFileSync(target, "utf8")                                                                                        ;
+
+		expect(first                                                      ).toMatchObject({ written: true, fixedPoint: true, approvals: ["py-simple-assignments"] }) ;
+		expect(after                                                      ).toBe         (positive.after                                                           ) ;
+		expect(changedLines(positive.before, after, PYTHON_ALIGNER.syntax)).toEqual      ([]                                                                       ) ;
+		expect(compareParse("python", positive.before, after).status      ).toBe         ("ok"                                                                     ) ;
+		expect((await runFormatPipeline(options)).written                 ).toBe         (false                                                                    ) ;
+	});
+
+	test("the excluded single TypeScript row and two Python rows stay unchanged", async () => {
+		const root      = workspace()                                                                     ;
+		const data      = registry()                                                                      ;
+		const tsCounter = data.examples.get("ts-sourcefile-call-declarations-single-row-counterexample")! ;
+		const pyCounter = data.examples.get("py-simple-assignments-two-row-counterexample")!              ;
+		writeFileSync(join(root, "single.ts"), tsCounter.before);
+		const checked = await inspectTypeScript(root, "single.ts", true);
+
+		expect(checked.results[0]!.groups).toEqual([]);
+		expect(readFileSync(join(root, "single.ts"), "utf8")).toBe(tsCounter.before);
+		const aligned = alignSource(pyCounter.before, PYTHON_ALIGNER, { minRows: 3, apply: true });
+
+		expect(aligned.output).toBe        (pyCounter.before) ;
+		expect(aligned.pairs ).toHaveLength(1               ) ;
+		expect(aligned.tables).toBe        (0               ) ;
+	});
+
+	test("attribute assignment tables do not inherit the simple-name approval", () => {
+		const aligned = alignSource("self.alpha = 1\nself.much_longer = 22\nself.mid = 333\n", PYTHON_ALIGNER, { minRows: 3, apply: false }) ;
+		const group   = aligned.details[0]!                                                                                                  ;
+		const key     = lookupKeyOf("python", undefined, "table", group.axes)                                                                ;
+
+		expect(group.axes).toEqual(["attribute", "equal", "value"]);
+		expect(evaluateApproval(registry(), { key, file: "sample.py" }, documentResolver(PRESET))).toMatchObject({ status: "unknown", writable: false });
+	});
+
+	test("chained assignments do not inherit the single-name approval", () => {
+
+		const root   = workspace()                                   ;
+		const source = "a = b = 1\nlonger = c = 22\nmid = d = 333\n" ;
+
+		writeFileSync(join(root, "chained.py"), source);
+
+		const aligned = alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: false });
+
+		expect(aligned.details[0]!.axes).toEqual(["chain-target", "equal", "value"]);
+
+		const approval = evaluateApproval(registry(), { key: lookupKeyOf("python", undefined, "table", aligned.details[0]!.axes), file: "chained.py" }, documentResolver(PRESET));
+
+		expect(approval.writable).toBe(false);
+
+		const result = Bun.spawnSync([process.execPath, join(import.meta.dir, "../product/packages/cli/entry.ts"), "format", "--file", "chained.py", "--json"], { cwd: root, stdout: "pipe", stderr: "pipe", env: { ...process.env, XDG_CONFIG_HOME: join(root, "config") } });
+
+		expect(result.exitCode                                ).toBe(2                    ) ;
+		expect(JSON.parse(result.stdout.toString()).error.code).toBe("FORMAT_NOT_ELIGIBLE") ;
+		expect(readFileSync(join(root, "chained.py"), "utf8") ).toBe(source               ) ;
+
+		for (const excluded of [
+			"alpha = 1\nmuch_longer = self.cache = 22\nmid = 333\n",
+			"alpha = self.first = 1\nmuch_longer = self.second = 22\nmid = self.third = 333\n",
+		]) {
+
+			writeFileSync(join(root, "chained.py"), excluded);
+
+			const refused = Bun.spawnSync([process.execPath, join(import.meta.dir, "../product/packages/cli/entry.ts"), "format", "--file", "chained.py", "--json"], { cwd: root, stdout: "pipe", stderr: "pipe", env: { ...process.env, XDG_CONFIG_HOME: join(root, "config") } });
+
+			expect(refused.exitCode                                ).toBe(2                    ) ;
+			expect(JSON.parse(refused.stdout.toString()).error.code).toBe("FORMAT_NOT_ELIGIBLE") ;
+			expect(readFileSync(join(root, "chained.py"), "utf8")  ).toBe(excluded             ) ;
+		}
+
+		for (const valid of ["a = value == 1\nlonger = value != 2\nmid = value >= 3\n", "a = 'x=y'\nlonger = 'u=v'\nmid = 'm=n'\n"]) {
+
+			const checked = alignSource(valid, PYTHON_ALIGNER, { minRows: 3, apply: false });
+
+			expect(checked.details[0]!.axes).toEqual(["name", "equal", "value"]);
+		}
+	});
+
+	test("compound assignments and differing indentation never become approved Python tables", () => {
+		for (const source of [
+			"alpha += 1\nmuch_longer += 22\nmid += 333\n",
+			"alpha = 1\n  much_longer = 22\nmid = 333\n",
+		]) {
+			const aligned = alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true });
+
+			expect(aligned.output).toBe(source);
+			expect(aligned.details).toEqual([]);
+		}
+	});
+});

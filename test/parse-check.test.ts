@@ -28,7 +28,7 @@ describe("syntacticDiagnostics (TypeScript)", () => {
 		const root = resolve(import.meta.dir, "..");
 		const file = resolve(
 			root                                ,
-			"skills/xxx/fixtures/table-kinds.ts"
+			"test/fixtures/table-kinds.ts"
 		);
 		expect(await syntacticDiagnostics(root, file, await Bun.file(file).text())).toEqual([]);
 	});

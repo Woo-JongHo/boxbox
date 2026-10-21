@@ -1,6 +1,6 @@
-import      { describe, expect, test } from "bun:test"                          ;
-import      { straySemicolonPadding  } from "@/common/report.ts"                ;
-import      { stripSemicolonPadding  } from "../scripts/strip-stray-padding.ts" ;
+import      { describe, expect, test } from "bun:test"                                    ;
+import      { straySemicolonPadding  } from "@/common/report.ts"                          ;
+import      { stripSemicolonPadding  } from "../development/tools/strip-stray-padding.ts" ;
 
 const at = (text: string, line: number): number | undefined => straySemicolonPadding(text.split("\n"), line - 1);
 

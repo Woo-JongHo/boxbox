@@ -1,0 +1,7 @@
+# TypeScript source-file call declarations
+
+Two or more consecutive variable declaration rows in a TypeScript source file may be aligned when each has a single call expression as its initializer and the engine detects exactly the lookup key `v1|typescript|SourceFile|declaration-equals|equals>call-open-paren>call-close-paren>semicolon`. The scope is `**/*.ts`; the pattern is `DEFINE`. The declaration kind may be `const`, `let` or `var`. Execution order and all non-whitespace tokens must be preserved. Resource-management declarations (`using` or `await using`), awaited initializers, constructor (`new`) initializers, other AST containers and other axis combinations are outside this approval.
+
+The positive example `ts-sourcefile-call-declarations-positive` records the approved three-row transformation. The existing two-row exception for this table kind is explicitly included. A single declaration is outside the rule and must remain unchanged. In `ts-sourcefile-call-declarations-single-row-counterexample`, the padded after form has verdict `bad` because automatically rewriting a single row violates that boundary; this is not a general style judgment about manually written whitespace.
+
+A human maintainer approved this exact scope, the positive example and the excluded boundary on 2026-10-21. The public receipt uses the anonymous role `maintainer`; it does not grant approval for additional rules. The linked short synthetic examples are provided under CC0-1.0.

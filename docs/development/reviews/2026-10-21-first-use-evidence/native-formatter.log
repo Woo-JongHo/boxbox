@@ -1,0 +1,1 @@
+{"ok":true,"platform":"win32","node":"24.12.0","results":["PATH/PATHEXT native executable","Node script and literal arguments including spaces/metacharacters","batch refusal with actionable guidance","timeout waits for Windows process-tree cleanup; child delayed write prevented"]}

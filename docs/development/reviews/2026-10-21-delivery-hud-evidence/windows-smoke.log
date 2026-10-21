@@ -1,0 +1,52 @@
+{"startedAt": "20261021T031802Z", "remoteWSL": "/mnt/c/Users/woo/Downloads/BoxBox/ci-smoke-20261021T031802Z", "remoteWindows": "C:\\Users\\woo\\Downloads\\BoxBox\\ci-smoke-20261021T031802Z", "inputDigests": {"release-smoke.mjs": "2093988c272116b9dd3b615e524210baaf4ebf352d7a57264f4f96f4efe9f2d0", "candidate.json": "6cb185e980f95ef132a35f50ba18d8dd8308d370fd936738ffea41a8dda63540", "SHA256SUMS": "f828e9aa306a2f4de6540aed7d9f27bfc7fb622ff74471a16ab6b2fe8bbca6f5", "boxbox-plugin-0.2.1.tgz": "6fc35d7c92f6eeb1b442d6d21901ed6f27c06e9654f412750b4530b638b89b8f"}}
+#< CLIXML
+WINDOWS_PREFLIGHT {"platform":"win32","node":"v24.12.0","execPath":"C:\\Program Files\\nodejs\\node.exe","python3":{"status":0,"stdout":"Python 3.14.0\r\n","stderr":"","where":"C:\\Users\\woo\\.local\\bin\\python3.exe\r\nC:\\Users\\woo\\AppData\\Local\\Microsoft\\WindowsApps\\python3.exe\r\n"},"scriptSha256":"2093988c272116b9dd3b615e524210baaf4ebf352d7a57264f4f96f4efe9f2d0","archiveSha256":"6fc35d7c92f6eeb1b442d6d21901ed6f27c06e9654f412750b4530b638b89b8f"}
+{
+	"schemaVersion": 1,
+	"ok": true,
+	"sha256": "6fc35d7c92f6eeb1b442d6d21901ed6f27c06e9654f412750b4530b638b89b8f",
+	"version": "0.2.1",
+	"platform": "win32",
+	"arch": "x64",
+	"node": "24.12.0",
+	"checks": [
+		{
+			"command": "doctor",
+			"ok": true,
+			"python": "Python 3.14.0"
+		},
+		{
+			"file": "LF-calls.ts",
+			"previewPreserved": true,
+			"approvedOutput": true,
+			"recheck": true,
+			"idempotent": true
+		},
+		{
+			"file": "CRLF-calls.ts",
+			"previewPreserved": true,
+			"approvedOutput": true,
+			"recheck": true,
+			"idempotent": true
+		},
+		{
+			"file": "LF-assignments.py",
+			"previewPreserved": true,
+			"approvedOutput": true,
+			"recheck": true,
+			"idempotent": true
+		},
+		{
+			"file": "CRLF-assignments.py",
+			"previewPreserved": true,
+			"approvedOutput": true,
+			"recheck": true,
+			"idempotent": true
+		}
+	],
+	"limitations": [
+		"Host checks and plugin registration were skipped (--engine-only).",
+		"Native host hook-event delivery was not exercised."
+	]
+}
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04"><Obj S="progress" RefId="0"><TN RefId="0"><T>System.Management.Automation.PSCustomObject</T><T>System.Object</T></TN><MS><I64 N="SourceId">1</I64><PR N="Record"><AV>ó�� ����ϱ� ���� ����� �غ��ϴ� ���Դϴ�.</AV><AI>0</AI><Nil /><PI>-1</PI><PC>-1</PC><T>Completed</T><SR>-1</SR><SD> </SD></PR></MS></Obj><Obj S="progress" RefId="1"><TNRef RefId="0" /><MS><I64 N="SourceId">1</I64><PR N="Record"><AV>ó�� ����ϱ� ���� ����� �غ��ϴ� ���Դϴ�.</AV><AI>0</AI><Nil /><PI>-1</PI><PC>-1</PC><T>Completed</T><SR>-1</SR><SD> </SD></PR></MS></Obj></Objs>NATIVE_SMOKE_EXIT=0

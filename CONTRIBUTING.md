@@ -12,7 +12,7 @@ syntax boundaries line up into minimum-width columns.
   fix needs an approved convention, a matching decision, examples and
   counterexamples whose document hashes pin the approval. Candidate data is
   never guidance.
-- **Every fix passes the full gate or nothing is written:** explicit
+- **Every fix passes the full gate or nothing is written:** optional configured
   formatter, approval proof, re-parse check, and a two-run byte fixed point,
   replaced atomically.
 - Content preservation, idempotence, and minimum width are property-tested
@@ -24,22 +24,24 @@ syntax boundaries line up into minimum-width columns.
 ```bash
 bun install        # pins typescript@7 used by the engine
 bun run test       # full suite (toolchain integration tests included)
-bun run check      # test + tsc --noEmit + install.sh syntax, same as CI
+bun run check      # test + tsc --noEmit + development/install.sh syntax, same as CI
 bun run pack:cli   # build the public engine tarball into dist/
 ```
 
-The runtime is Bun for development; the shipped engine runs on Node 22+.
+The runtime is Bun for development; the shipped engine runs on Node 22.22.3+.
 TypeScript code in this repository follows the project's own rules — run the
 relevant aligner on files you change.
+
+The issue/PR/candidate workflow is documented in [CI operation](docs/development/cicd.md).
 
 ## Proposing a rule
 
 1. Open an issue with the table kind, the languages, real-world frequency
    evidence, a positive example, and a forbidden-shape counterexample.
-2. The maintainers record a candidate under `docs/candidates/` with before /
+2. The maintainers record a candidate under `docs/development/candidates/` with before /
    after text, content hashes, and the exact lookup key.
 3. A human approval (convention + decision + examples + decision document)
-   promotes it to `skills/xxx/presets/recommended/`. Until then the engine
+   promotes it to `product/rules/presets/recommended/`. Until then the engine
    may suggest but never write.
 
 ## Reporting bugs
@@ -52,3 +54,5 @@ that is a safety bug — please say so loudly in the title.
 
 By contributing you agree that your contributions are licensed under the
 MIT License.
+
+The four bundled synthetic examples have their separately recorded CC0-1.0 license. The existing MIT LICENSE is retained from GitHub main; installer candidates still use UNLICENSED preview metadata, and this candidate pipeline does not authorize publication.

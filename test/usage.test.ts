@@ -1,6 +1,6 @@
-import      { describe, expect, test                  } from "bun:test"                   ;
-import      { codexModel, codexTokens, estimateTokens } from "@/common/usage.ts"          ;
-import      { agreementOf, usageRows                  } from "../scripts/usage-report.ts" ;
+import      { describe, expect, test                  } from "bun:test"                             ;
+import      { codexModel, codexTokens, estimateTokens } from "@/common/usage.ts"                    ;
+import      { agreementOf, usageRows                  } from "../development/tools/usage-report.ts" ;
 
 describe("AI usage", () => {
 	test("estimated tokens: 1 per 4 ASCII characters, 1 per CJK character", () => {

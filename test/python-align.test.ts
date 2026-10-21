@@ -6,7 +6,7 @@ import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
 	aligner     : PYTHON_ALIGNER,
-	fixturesDir : new URL("../skills/xxx/fixtures/python/", import.meta.url).pathname,
+	fixturesDir : new URL("../test/fixtures/python/", import.meta.url).pathname,
 	tableFile   : "tables.py",
 	alignedFile : "tables.aligned.py",
 	trickyFile  : "tricky.py",
@@ -69,6 +69,7 @@ describe("python profile specific properties", () => {
 		const result = align(source);
 
 		expect(result.groups).toBe(1);
+		expect(result.details[0]!.axes).toEqual(["attribute", "equal", "value"]);
 		expect(result.output).toBe([
 			"self.a           = 0",
 			"self.longer_name = 0",

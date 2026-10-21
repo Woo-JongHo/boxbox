@@ -1,0 +1,31 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/parser-fault.test.ts:
+(pass) parser faults close before writing > failure: reports an execution fault as an error [249.93ms]
+(pass) parser faults close before writing > failure-error: reports an execution fault as an error [198.97ms]
+(pass) parser faults close before writing > signal: reports an execution fault as an error [192.59ms]
+(pass) parser faults close before writing > timeout: reports an execution fault as an error [2173.17ms]
+(pass) parser faults close before writing > probe-timeout: reports an execution fault as an error [93.80ms]
+(pass) parser faults close before writing > output: reports an execution fault as an error [385.10ms]
+(pass) parser faults close before writing > vanish: reports an execution fault as an error [201.25ms]
+(pass) parser faults close before writing > refuses rustfmt status 1 without a recognized diagnostic [291.29ms]
+(pass) parser faults close before writing > formatted Rust source cannot disguise an unexplained parser failure [968.71ms]
+(pass) parser faults close before writing > BOXBOX_REQUIRE_PARSERS=0 cannot bypass writing without a parser [30.04ms]
+(pass) parser faults close before writing > when the parser exits abnormally, the real Python CLI preserves the original bytes [242.64ms]
+(pass) parser faults close before writing > the real Python parser lets successful output be written [167.53ms]
+
+test/surface.test.ts:
+(pass) grammar ID registry > the tables in grammar.md match the list in grammar-ids.ts [1.30ms]
+(pass) surface forms — TypeScript > every engine kind maps to a pattern [1.77ms]
+(pass) surface forms — TypeScript > an enum with values is MAP, names only is LIST [0.03ms]
+(pass) surface forms — TypeScript > declaration and assignment are different patterns and not ambiguous [0.03ms]
+(pass) surface forms — TypeScript > an unknown kind is not mapped (target of alarm A8) [0.14ms]
+(pass) surface forms — Python > every table in the fixture maps to a pattern [12.91ms]
+(pass) surface forms — Python > `a = v`, where declaration and assignment share syntax, is marked ambiguous [0.09ms]
+(pass) surface-form data validation > every shipped data file is valid [0.08ms]
+(pass) surface-form data validation > refuses IDs missing from the grammar, forms with no matcher or two, and other language names [0.78ms]
+
+ 21 pass
+ 0 fail
+ 97 expect() calls
+Ran 21 tests across 2 files. [5.25s]

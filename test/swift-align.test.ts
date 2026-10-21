@@ -6,7 +6,7 @@ import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
 	aligner     : SWIFT_ALIGNER,
-	fixturesDir : new URL("../skills/xxx/fixtures/swift/", import.meta.url).pathname,
+	fixturesDir : new URL("../test/fixtures/swift/", import.meta.url).pathname,
 	tableFile   : "tables.swift",
 	alignedFile : "tables.aligned.swift",
 	trickyFile  : "tricky.swift",

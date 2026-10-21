@@ -38,11 +38,11 @@ const black    = { command: "python3", args: ["-m", "black", "{file}"], timeoutM
 
 describe("config layers", () => {
 	test("replaces arrays and per-language formatters in Base → Preset → User → Project order", () => {
-		const root     = workspace()                          ;
-		const userRoot = workspace()                          ;
-		const user     = join(userRoot, "xxx", "config.json") ;
+		const root     = workspace()                             ;
+		const userRoot = workspace()                             ;
+		const user     = join(userRoot, "boxbox", "config.json") ;
 		writeConfig(user, { schemaVersion: 2, languages: ["python"], formatters: { typescript: prettier, python: black } });
-		writeConfig(join(root, ".xxx", "config.json"), { schemaVersion: 2, languages: ["typescript"], formatters: { typescript: { command: "biome", args: ["format", "--write", "{file}"], timeoutMs: 1000 } } });
+		writeConfig(join(root, ".boxbox", "config.json"), { schemaVersion: 2, languages: ["typescript"], formatters: { typescript: { command: "biome", args: ["format", "--write", "{file}"], timeoutMs: 1000 } } });
 		const resolved = resolveConfig(root, {
 			userConfigPath : user,
 			preset         : { schemaVersion: 2, languages: ["typescript", "python"], formatters: { python: { command: "ruff", args: ["format", "{file}"], timeoutMs: 2000 } } },
@@ -55,8 +55,8 @@ describe("config layers", () => {
 	});
 
 	test("schema 1 migrates only in memory and never changes the original", () => {
-		const root = workspace()                       ;
-		const path = join(root, ".xxx", "config.json") ;
+		const root = workspace()                          ;
+		const path = join(root, ".boxbox", "config.json") ;
 		writeConfig(path, { schemaVersion: 1, languages: ["python"] });
 		const before   = readFileSync(path, "utf8")                                               ;
 		const direct   = readProjectConfig(root)!                                                 ;
@@ -106,7 +106,7 @@ describe("config layers", () => {
 		const second = resolveConfig(root, { userConfigPath: user }) ;
 		expect(first.effective.languages).toEqual(["typescript", "python"]);
 		expect(first.fingerprint).toBe(second.fingerprint);
-		const path = join(root, ".xxx", "config.json");
+		const path = join(root, ".boxbox", "config.json");
 		writeConfig(path, { schemaVersion: 2 });
 		const compact = resolveConfig(root, { userConfigPath: user });
 		writeFileSync(path, '{ "schemaVersion": 2 }\n');
@@ -119,12 +119,12 @@ describe("config layers", () => {
 		const root    = workspace() ;
 		const outside = workspace() ;
 		writeConfig(join(outside, "config.json"), { schemaVersion: 2 });
-		symlinkSync(outside, join(root, ".xxx"));
+		symlinkSync(outside, join(root, ".boxbox"));
 		expect(() => resolveConfig(root, { userConfigPath: join(root, "missing-user.json") })).toThrow("symlink");
-		rmSync(join(root, ".xxx"));
+		rmSync(join(root, ".boxbox"));
 		const userRoot = workspace();
-		mkdirSync(join(userRoot, "xxx"));
-		symlinkSync(join(outside, "config.json"), join(userRoot, "xxx", "config.json"));
-		expect(() => resolveConfig(root, { userConfigPath: join(userRoot, "xxx", "config.json") })).toThrow("symlink");
+		mkdirSync(join(userRoot, "boxbox"));
+		symlinkSync(join(outside, "config.json"), join(userRoot, "boxbox", "config.json"));
+		expect(() => resolveConfig(root, { userConfigPath: join(userRoot, "boxbox", "config.json") })).toThrow("symlink");
 	});
 });

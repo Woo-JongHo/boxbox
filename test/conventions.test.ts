@@ -96,15 +96,15 @@ describe("report and CLI", () => {
 		expect(report.conventions?.lookups.length).toBe   (1                                                    ) ;
 	});
 
-	test("the CLI reads .xxx/conventions.jsonl in the working folder for lookup", () => {
-		const project = mkdtempSync(join(tmpdir(), "xxx-conv-"))                                                                                                                                                               ;
+	test("the CLI reads .boxbox/conventions.jsonl in the working folder for lookup", () => {
+		const project = mkdtempSync(join(tmpdir(), "boxbox-conv-"))                                                                                                                                                            ;
 		const approve = { schemaVersion: 1, id: "py-define", key: "v1|python|-|table|name>equal>value", pattern: "DEFINE", status: "approved", scope: "**", versions: { grammar: 1 }, approvedBy: "user", date: "2026-09-30" } ;
-		mkdirSync(join(project, ".xxx"));
-		writeFileSync(join(project, ".xxx", "conventions.jsonl"), `${JSON.stringify(approve)}\n`);
-		writeFileSync(join(project, "a.py"), readFileSync(join(ROOT, "skills/xxx/fixtures/python/tables.py"), "utf8"));
+		mkdirSync(join(project, ".boxbox"));
+		writeFileSync(join(project, ".boxbox", "conventions.jsonl"), `${JSON.stringify(approve)}\n`);
+		writeFileSync(join(project, "a.py"), readFileSync(join(ROOT, "test/fixtures/python/tables.py"), "utf8"));
 
-		const run    = spawnSync(process.execPath, [join(ROOT, "skills/xxx/scripts/report.ts"), "--file", "a.py", "--json"], { cwd: project, encoding: "utf8" }) ;
-		const report = JSON.parse(run.stdout) as ReturnType<typeof buildReport>                                                                                  ;
+		const run    = spawnSync(process.execPath, [join(ROOT, "product/engine/report.ts"), "--file", "a.py", "--json"], { cwd: project, encoding: "utf8" }) ;
+		const report = JSON.parse(run.stdout) as ReturnType<typeof buildReport>                                                                              ;
 
 		expect(report.conventions?.counts.approved).toBeGreaterThan(0);
 		expect(report.conventions?.lookups.filter(entry => entry.status === "approved").every(entry => entry.id === "py-define")).toBe(true);

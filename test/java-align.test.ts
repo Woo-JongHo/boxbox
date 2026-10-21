@@ -6,7 +6,7 @@ import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
 	aligner     : JAVA_ALIGNER,
-	fixturesDir : new URL("../skills/xxx/fixtures/java/", import.meta.url).pathname,
+	fixturesDir : new URL("../test/fixtures/java/", import.meta.url).pathname,
 	tableFile   : "tables.java",
 	alignedFile : "tables.aligned.java",
 	trickyFile  : "tricky.java",

@@ -1,0 +1,6 @@
+docs/development/status.md:12:- [Execution TODO](plan.md): the canonical source of status and next work
+docs/development/plan.md:303:## Public release execution TODO
+docs/development/plan.md:307:| REL0 | Canonicalize the release goal, status and execution TODO | — | ⏸ waiting for independent review and acceptance |
+docs/development/plan.md:323:- **Current implementation:** the M1–M1.8 history and implementation documents exist, but there was no single TODO for the release path.
+docs/development/plan.md:417:`bun run check` passes. Before completion, search the changed files directly for TODO placeholders,
+docs/development/plan.md:418:`test.skip`/`test.only`, empty tests and unimplemented branches.

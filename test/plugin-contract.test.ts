@@ -1,9 +1,9 @@
-import      { existsSync, lstatSync, readdirSync } from "node:fs"                    ;
-import      { readFileSync, statSync             } from "node:fs"                    ;
-import      { join, resolve                      } from "node:path"                  ;
-import      { describe, expect, test             } from "bun:test"                   ;
-import      { AXIS_NOTES, KIND_AXES              } from "@/typescript/grid-kinds.ts" ;
-import      { pluginDrift                        } from "../scripts/sync-plugin.ts"  ;
+import      { existsSync, lstatSync, readdirSync } from "node:fs"                             ;
+import      { readFileSync, statSync             } from "node:fs"                             ;
+import      { join, resolve                      } from "node:path"                           ;
+import      { describe, expect, test             } from "bun:test"                            ;
+import      { AXIS_NOTES, KIND_AXES              } from "@/typescript/grid-kinds.ts"          ;
+import      { pluginDrift                        } from "../development/tools/sync-plugin.ts" ;
 
 const ROOT                    = resolve(import.meta.dir, "..")                                                               ;
 const read                    = (path: string): string => readFileSync(resolve(ROOT, path), "utf8")                          ;
@@ -32,22 +32,22 @@ describe("plugin distribution contract", () => {
 	test("plugin components live inside the plugin folder", () => {
 		// Agents are discovered from the default location: with an agents array in the manifest, Claude Code 2.1.286 did not detect the inspector.
 		expect(parseJson("plugin/.claude-plugin/plugin.json").agents).toBeUndefined();
-		for (const path of ["agents/readability-inspector.md", "skills/xxx/SKILL.md", "hooks/hooks.json", "scripts/xxx", "README.md"]) expect(existsSync(resolve(ROOT, "plugin", path))).toBe(true);
-		expect(statSync(resolve(ROOT, "plugin/scripts/xxx")).mode & 0o111   ).not.toBe(0   ) ;
-		expect(existsSync(resolve(ROOT, "skills/xxx/SKILL.md")             ))    .toBe(true) ;
-		expect(existsSync(resolve(ROOT, "agents/readability-inspector.md") ))    .toBe(true) ;
-		expect(existsSync(resolve(ROOT, "codex/readability-inspector.toml")))    .toBe(true) ;
+		for (const path of ["agents/readability-inspector.md", "skills/boxbox/SKILL.md", "hooks/hooks.json", "scripts/boxbox", "README.md"]) expect(existsSync(resolve(ROOT, "plugin", path))).toBe(true);
+		expect(statSync(resolve(ROOT, "plugin/scripts/boxbox")).mode & 0o111               ).not.toBe(0   ) ;
+		expect(existsSync(resolve(ROOT, "development/skills/boxbox/SKILL.md")             ))    .toBe(true) ;
+		expect(existsSync(resolve(ROOT, "development/agents/readability-inspector.md") )   )    .toBe(true) ;
+		expect(existsSync(resolve(ROOT, "development/codex/readability-inspector.toml"))   )    .toBe(true) ;
 	});
 
 	test("the development skill lists every language; the shipped plugin introduces only the first public scope", () => {
-		for (const description of [String(parseJson("package.json").description), read("skills/xxx/SKILL.md").split("---", 3)[1] ?? ""]) {
+		for (const description of [String(parseJson("package.json").description), read("development/skills/boxbox/SKILL.md").split("---", 3)[1] ?? ""]) {
 			expect(description).toContain(LANGUAGE_DISCOVERY_TEXT);
 		}
 		const published = [
 			String(parseJson("plugin/.claude-plugin/plugin.json").description),
 			String(parseJson("plugin/.codex-plugin/plugin.json").description),
 			String((parseJson(".claude-plugin/marketplace.json").plugins as Array<Record<string, unknown>>)[0]!.description),
-			read("plugin/skills/xxx/SKILL.md").split("---", 3)[1] ?? "",
+			read("plugin/skills/boxbox/SKILL.md").split("---", 3)[1] ?? "",
 		];
 		for (const description of published) expect(description).toContain("TypeScript and Python");
 	});
@@ -56,12 +56,13 @@ describe("plugin distribution contract", () => {
 		expect(pluginDrift()).toEqual([]);
 	});
 
-	test("hooks call only the shim inside the plugin, and the shim pins the exact engine version", () => {
+	test("hooks call only the shim inside the plugin, and the shim requires an explicit local engine", () => {
 		const hooks    = JSON.parse(read("plugin/hooks/hooks.json")) as { hooks: Record<string, Array<{ hooks: Array<{ command: string }> }>> } ;
 		const commands = Object.values(hooks.hooks).flat().flatMap(entry => entry.hooks.map(hook => hook.command))                              ;
 		expect(commands.length).toBe(3);
-		for (const command of commands) expect(command).toMatch(/^"\$\{CLAUDE_PLUGIN_ROOT\}"\/scripts\/xxx hook (session|post|stop)$/u);
-		expect(read("plugin/scripts/xxx")).toContain(`exec npx --yes "xxx@${String(parseJson("package.json").version)}" "$@"`);
+		for (const command of commands) expect(command).toMatch(/^"\$\{CLAUDE_PLUGIN_ROOT\}"\/scripts\/boxbox hook (session|post|stop)$/u);
+		expect(read("plugin/scripts/boxbox")).toContain('exec node "$BOXBOX_CLI" "$@"');
+		expect(read("plugin/scripts/boxbox")).not.toContain("exec npx");
 	});
 
 	test("the plugin folder stays within the directory submission limits", () => {
@@ -76,7 +77,7 @@ describe("plugin distribution contract", () => {
 	});
 
 	test("shipped docs never instruct running a nonexistent repository test", () => {
-		const skill = read("skills/xxx/SKILL.md");
+		const skill = read("development/skills/boxbox/SKILL.md");
 		expect(skill).not.toContain("test/code-readability-tools.test.ts");
 	});
 

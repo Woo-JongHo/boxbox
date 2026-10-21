@@ -1,0 +1,2125 @@
+{
+	"schemaVersion": 1,
+	"purpose": "research-examples-not-approved-rules",
+	"cases": [
+		{
+			"id": "python.example.plain-assignment",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value = source",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.annotated-assignment",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value: int = 1",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AnnAssign",
+				"Constant",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.annotation-only",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value: int",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AnnAssign",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.attribute-target",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "self.value = source",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Attribute",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.index-target",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "values[index] = source",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"Subscript"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.unpacking-target",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "first, *rest = values",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Load",
+				"Module",
+				"Name",
+				"Starred",
+				"Store",
+				"Tuple"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.chained-assignment",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "first = second = source",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.named-expression",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "if (value := source):\n pass",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"If",
+				"Load",
+				"Module",
+				"Name",
+				"NamedExpr",
+				"Pass",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.call-empty",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = make()",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Call",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.call-positional",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = make(first, second)",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Call",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.call-keyword",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = make(first, count=2)",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Call",
+				"Constant",
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"keyword"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.call-expansion",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = make(*values, **options)",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Call",
+				"Load",
+				"Module",
+				"Name",
+				"Starred",
+				"Store",
+				"keyword"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.call-nested",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = make(other(first, second), last)",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Call",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.call-trailing-comma",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = make(first, second,)",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Call",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.call-multiline",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = make(\n first,\n second,\n)",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Call",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.attribute-expression",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = self.value",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Attribute",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.index-expression",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = values[index]",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"Subscript"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.slice-expression",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = values[start:stop:step]",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Load",
+				"Module",
+				"Name",
+				"Slice",
+				"Store",
+				"Subscript"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.list-literal",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = [1, 2, 3]",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Constant",
+				"List",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.list-unpacking",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = [first, *rest]",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"List",
+				"Load",
+				"Module",
+				"Name",
+				"Starred",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.dict-literal",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = {\"first\": 1, \"second\": 2}",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Constant",
+				"Dict",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.dict-unpacking",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = {\"first\": 1, **options}",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Constant",
+				"Dict",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.set-literal",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = {1, 2, 3}",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Constant",
+				"Module",
+				"Name",
+				"Set",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.tuple-literal",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = (first, second)",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"Tuple"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.list-comprehension",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = [x for x in values if x]",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"ListComp",
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"comprehension"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.dict-comprehension",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = {x: x for x in values}",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"DictComp",
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"comprehension"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.set-comprehension",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = {x for x in values}",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Load",
+				"Module",
+				"Name",
+				"SetComp",
+				"Store",
+				"comprehension"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.generator-expression",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = (x for x in values)",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"GeneratorExp",
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"comprehension"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.conditional-expression",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first if condition else second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"IfExp",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.lambda-expression",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = lambda x=1: x",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Constant",
+				"Lambda",
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"arg",
+				"arguments"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.f-string",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = f\"value={value!r:>10}\"",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Constant",
+				"FormattedValue",
+				"JoinedStr",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.t-string",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = t\"value={value}\"",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Constant",
+				"Interpolation",
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"TemplateStr"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.literals",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "a = 1\nb = 1.0\nc = 1j\nd = \"text\"\ne = b\"bytes\"\nf = None\ng = True\nh = ...",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Constant",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.escaped-separators",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = \"comma, colon: equal= parens()\"",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Constant",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.import",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "import package.module as local",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Import",
+				"Module",
+				"alias"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.import-from",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "from package import first as local, second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"ImportFrom",
+				"Module",
+				"alias"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.import-relative",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "from .package import first",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"ImportFrom",
+				"Module",
+				"alias"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.import-star",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "from package import *",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"ImportFrom",
+				"Module",
+				"alias"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.function",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "def run(a, /, b: int=1, *args, option=True, **kwargs) -> str:\n return str(a)",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Call",
+				"Constant",
+				"FunctionDef",
+				"Load",
+				"Module",
+				"Name",
+				"Return",
+				"arg",
+				"arguments"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.function-decorator",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "@decorate(option=1)\ndef run():\n pass",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Call",
+				"Constant",
+				"FunctionDef",
+				"Load",
+				"Module",
+				"Name",
+				"Pass",
+				"arguments",
+				"keyword"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.async-function",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "async def run():\n return await make()",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AsyncFunctionDef",
+				"Await",
+				"Call",
+				"Load",
+				"Module",
+				"Name",
+				"Return",
+				"arguments"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.yield",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "def run():\n yield value",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Expr",
+				"FunctionDef",
+				"Load",
+				"Module",
+				"Name",
+				"Yield",
+				"arguments"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.yield-from",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "def run():\n yield from values",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Expr",
+				"FunctionDef",
+				"Load",
+				"Module",
+				"Name",
+				"YieldFrom",
+				"arguments"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.async-generator",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "async def run():\n yield value",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AsyncFunctionDef",
+				"Expr",
+				"Load",
+				"Module",
+				"Name",
+				"Yield",
+				"arguments"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.generic-function",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "def run[T](value: T) -> T:\n return value",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"FunctionDef",
+				"Load",
+				"Module",
+				"Name",
+				"Return",
+				"TypeVar",
+				"arg",
+				"arguments"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.class",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "@decorate\nclass Item(Base, metaclass=Meta):\n value: int = 1",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AnnAssign",
+				"ClassDef",
+				"Constant",
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"keyword"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.generic-class",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "class Item[T: int = int]:\n pass",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"ClassDef",
+				"Load",
+				"Module",
+				"Name",
+				"Pass",
+				"TypeVar"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.paramspec",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "type CallableAlias[**P] = Callable[P, int]",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Load",
+				"Module",
+				"Name",
+				"ParamSpec",
+				"Store",
+				"Subscript",
+				"Tuple",
+				"TypeAlias"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.variadic-type",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "type TupleAlias[*Ts] = tuple[*Ts]",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Load",
+				"Module",
+				"Name",
+				"Starred",
+				"Store",
+				"Subscript",
+				"Tuple",
+				"TypeAlias",
+				"TypeVarTuple"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.generic-type-alias",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "type MappingAlias[T] = dict[str, T]",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"Subscript",
+				"Tuple",
+				"TypeAlias",
+				"TypeVar"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.if-elif-else",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "if first:\n pass\nelif second:\n pass\nelse:\n pass",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"If",
+				"Load",
+				"Module",
+				"Name",
+				"Pass"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.for-else",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "for x in values:\n continue\nelse:\n pass",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Continue",
+				"For",
+				"Load",
+				"Module",
+				"Name",
+				"Pass",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.while-else",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "while condition:\n break\nelse:\n pass",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Break",
+				"Load",
+				"Module",
+				"Name",
+				"Pass",
+				"While"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.async-for",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "async def run():\n async for x in values:\n  pass",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AsyncFor",
+				"AsyncFunctionDef",
+				"Load",
+				"Module",
+				"Name",
+				"Pass",
+				"Store",
+				"arguments"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.with",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "with first() as a, second() as b:\n pass",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Call",
+				"Load",
+				"Module",
+				"Name",
+				"Pass",
+				"Store",
+				"With",
+				"withitem"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.async-with",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "async def run():\n async with resource() as item:\n  pass",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AsyncFunctionDef",
+				"AsyncWith",
+				"Call",
+				"Load",
+				"Module",
+				"Name",
+				"Pass",
+				"Store",
+				"arguments",
+				"withitem"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.try-except-finally",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "try:\n make()\nexcept Error as error:\n raise OtherError() from error\nelse:\n pass\nfinally:\n pass",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Call",
+				"ExceptHandler",
+				"Expr",
+				"Load",
+				"Module",
+				"Name",
+				"Pass",
+				"Raise",
+				"Try"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.exception-group",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "try:\n make()\nexcept* Error as errors:\n pass",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Call",
+				"ExceptHandler",
+				"Expr",
+				"Load",
+				"Module",
+				"Name",
+				"Pass",
+				"TryStar"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.raise-bare",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "def run():\n raise",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"FunctionDef",
+				"Module",
+				"Raise",
+				"arguments"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.assert-message",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "assert condition, \"message\"",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assert",
+				"Constant",
+				"Load",
+				"Module",
+				"Name"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.delete",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "del item, values[index]",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Del",
+				"Delete",
+				"Load",
+				"Module",
+				"Name",
+				"Subscript"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.global",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "def run():\n global first, second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"FunctionDef",
+				"Global",
+				"Module",
+				"arguments"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.nonlocal",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "def outer():\n value = 1\n def inner():\n  nonlocal value",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Constant",
+				"FunctionDef",
+				"Module",
+				"Name",
+				"Nonlocal",
+				"Store",
+				"arguments"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.match",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "match value:\n case 1 | 2:\n  pass\n case None:\n  pass\n case [first, *rest]:\n  pass\n case {\"key\": item, **rest}:\n  pass\n case Item(field=x) as item if x:\n  pass\n case _:\n  pass",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Constant",
+				"Load",
+				"Match",
+				"MatchAs",
+				"MatchClass",
+				"MatchMapping",
+				"MatchOr",
+				"MatchSequence",
+				"MatchSingleton",
+				"MatchStar",
+				"MatchValue",
+				"Module",
+				"Name",
+				"Pass",
+				"match_case"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.function-type",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "(int, str) -> bool",
+			"parseMode": "func_type",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"FunctionType",
+				"Load",
+				"Name"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.eval-expression",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "first + second",
+			"parseMode": "eval",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Add",
+				"BinOp",
+				"Expression",
+				"Load",
+				"Name"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.interactive-statement",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value = 1",
+			"parseMode": "single",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Constant",
+				"Interactive",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.comment-boundaries",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "first = 1\n# group boundary\nsecond = 2\n\nthird = 3",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Constant",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.type-ignore",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value = source # type: ignore[assignment]",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"TypeIgnore"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.type-comment",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value = source # type: int",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.explicit-continuation",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value = first + \\\n second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Add",
+				"Assign",
+				"BinOp",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.semicolon-statements",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "first = 1; second = 2",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Constant",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.binary-0",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first + second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Add",
+				"Assign",
+				"BinOp",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.augmented-0",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value += other",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Add",
+				"AugAssign",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.binary-1",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first - second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"BinOp",
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"Sub"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.augmented-1",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value -= other",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AugAssign",
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"Sub"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.binary-2",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first * second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"BinOp",
+				"Load",
+				"Module",
+				"Mult",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.augmented-2",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value *= other",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AugAssign",
+				"Load",
+				"Module",
+				"Mult",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.binary-3",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first @ second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"BinOp",
+				"Load",
+				"MatMult",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.augmented-3",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value @= other",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AugAssign",
+				"Load",
+				"MatMult",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.binary-4",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first / second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"BinOp",
+				"Div",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.augmented-4",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value /= other",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AugAssign",
+				"Div",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.binary-5",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first // second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"BinOp",
+				"FloorDiv",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.augmented-5",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value //= other",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AugAssign",
+				"FloorDiv",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.binary-6",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first % second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"BinOp",
+				"Load",
+				"Mod",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.augmented-6",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value %= other",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AugAssign",
+				"Load",
+				"Mod",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.binary-7",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first ** second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"BinOp",
+				"Load",
+				"Module",
+				"Name",
+				"Pow",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.augmented-7",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value **= other",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AugAssign",
+				"Load",
+				"Module",
+				"Name",
+				"Pow",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.binary-8",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first << second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"BinOp",
+				"LShift",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.augmented-8",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value <<= other",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AugAssign",
+				"LShift",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.binary-9",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first >> second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"BinOp",
+				"Load",
+				"Module",
+				"Name",
+				"RShift",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.augmented-9",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value >>= other",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AugAssign",
+				"Load",
+				"Module",
+				"Name",
+				"RShift",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.binary-10",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first | second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"BinOp",
+				"BitOr",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.augmented-10",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value |= other",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AugAssign",
+				"BitOr",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.binary-11",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first ^ second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"BinOp",
+				"BitXor",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.augmented-11",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value ^= other",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AugAssign",
+				"BitXor",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.binary-12",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first & second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"BinOp",
+				"BitAnd",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.augmented-12",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "value &= other",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"AugAssign",
+				"BitAnd",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.comparison-0",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first == second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Compare",
+				"Eq",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.comparison-1",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first != second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Compare",
+				"Load",
+				"Module",
+				"Name",
+				"NotEq",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.comparison-2",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first < second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Compare",
+				"Load",
+				"Lt",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.comparison-3",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first <= second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Compare",
+				"Load",
+				"LtE",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.comparison-4",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first > second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Compare",
+				"Gt",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.comparison-5",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first >= second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Compare",
+				"GtE",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.comparison-6",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first is second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Compare",
+				"Is",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.comparison-7",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first is not second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Compare",
+				"IsNot",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.comparison-8",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first in second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Compare",
+				"In",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.comparison-9",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first not in second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Compare",
+				"Load",
+				"Module",
+				"Name",
+				"NotIn",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.unary-0",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = not value",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Load",
+				"Module",
+				"Name",
+				"Not",
+				"Store",
+				"UnaryOp"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.unary-1",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = +value",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"UAdd",
+				"UnaryOp"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.unary-2",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = -value",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"USub",
+				"UnaryOp"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.unary-3",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = ~value",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"Invert",
+				"Load",
+				"Module",
+				"Name",
+				"Store",
+				"UnaryOp"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.boolean-and",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first and second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"And",
+				"Assign",
+				"BoolOp",
+				"Load",
+				"Module",
+				"Name",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "python.example.boolean-or",
+			"language": "python",
+			"sourceKind": "synthetic",
+			"code": "result = first or second",
+			"parseMode": "exec",
+			"parserVersion": "3.14.2",
+			"parseVerified": true,
+			"observedKinds": [
+				"Assign",
+				"BoolOp",
+				"Load",
+				"Module",
+				"Name",
+				"Or",
+				"Store"
+			],
+			"alignmentDecision": "unreviewed"
+		}
+	]
+}

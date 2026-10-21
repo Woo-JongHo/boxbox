@@ -1,0 +1,1422 @@
+{
+	"schemaVersion": 1,
+	"purpose": "research-examples-not-approved-rules",
+	"cases": [
+		{
+			"id": "typescript.example.plain-declaration",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = source;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.declaration-with-type",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "let value: number = 1;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.declaration-without-initializer",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "let value: number;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.multiple-declarations",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "let first = 1, second = 2;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.object-binding",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const { first: local = 1, ...rest } = source;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.array-binding",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const [first, , ...rest] = source;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.destructuring-assignment",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "({ first: value } = source);",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.property-assignment",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "self.value = source;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.index-assignment",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "values[index] = source;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.call-empty",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = make();",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.call-positional",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = make(first, second);",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.call-spread",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = make(first, ...rest);",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.call-nested",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = make(other(first, second), last);",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.call-generic",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = make<Value>(first, second);",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.new-expression",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = new Item(first, second);",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.optional-call",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = make?.(first);",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.optional-property",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = item?.field;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.optional-index",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = values?.[index];",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.property-read",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = item.field;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.index-read",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = values[index];",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.nullish",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first ?? second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.conditional",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = condition ? first : second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.array-literal",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = [first, , ...rest];",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.object-literal",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = { first, field: source, [key]: other, ...rest };",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.object-method",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = { run(input: number) { return input; }, get size() { return 1; }, set size(value: number) {} };",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.arrow",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const run = (first: number, second = 1): number => first + second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.arrow-destructuring",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const run = ({first}: Item, ...rest: number[]) => first;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.async-arrow",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const run = async () => await make();",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.function-expression",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const run = function named(value: number) { return value; };",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.function-declaration",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "function run<T>(first: T, second?: T, ...rest: T[]): T { return first; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.overloads",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "function run(value: number): number; function run(value: string): string; function run(value: any) { return value; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.generator",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "function* run() { yield first; yield* rest; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.async-generator",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "async function* run() { yield await make(); }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.class",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "class Item extends Base implements Contract { field: number = 1; optional?: string; definite!: string; readonly fixed = 1; static shared = 2; #private = 3; constructor(public value: number) {} run() { return this.value; } }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.class-accessors",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "class Item { accessor value = 1; get size() { return 1; } set size(value: number) {} static { initialize(); } }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.class-abstract",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "abstract class Item { protected abstract run(): void; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.class-override",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "class Item extends Base { override run() { return super.run(); } }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.class-expression",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const Item = class extends Base {};",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.decorators",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "@decorate class Item { @fieldDecorator value = 1; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.interface",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "interface Item<T> extends Base { readonly field: T; optional?: T; run(input: T): T; (input: T): T; new(input: T): Item<T>; [key: string]: T; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.interface-merging",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "interface Item { first: string; } interface Item { second: number; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.enum",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "enum State { First, Second = 2, Third = \"third\" }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.const-enum",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const enum State { First = 1, Second = 2 }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.namespace",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "namespace Outer.Inner { export const value = 1; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.ambient-module",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "declare module \"package\" { export const value: number; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.global-augmentation",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "export {}; declare global { interface Item { value: number; } }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.ambient-declaration",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "declare const value: number;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.import-default",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "import Item from \"package\";",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.import-named",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "import { first as local, second } from \"package\";",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.import-type",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Value = import(\"package\").Item;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.import-type-specifier",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "import { type Item, value } from \"package\";",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.import-namespace",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "import * as Items from \"package\";",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.import-side-effect",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "import \"package\";",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.import-attributes",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "import data from \"data.json\" with { type: \"json\" };",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.import-equals",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "import Items = require(\"package\");",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.export-named",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "export { first as publicName, second };",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.export-reexport",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "export { first as local } from \"package\";",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.export-star",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "export * as Items from \"package\";",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.export-default",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "export default function run() {}",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.export-assignment",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "export = Item;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.export-type",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "export type { Item } from \"package\";",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.dynamic-import",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = import(\"package\");",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.import-meta",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = import.meta.url;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.new-target",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "function Item() { return new.target; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.if",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "if (condition) make(); else other();",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.switch",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "switch (value) { case 1: make(); break; default: other(); }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.for",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "for (let index = 0; index < 3; index++) { continue; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.for-in",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "for (const key in values) make(key);",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.for-of",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "for (const value of values) make(value);",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.for-await",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "async function run() { for await (const value of values) make(value); }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.while",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "while (condition) { break; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.do-while",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "do { make(); } while (condition);",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.label",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "outer: for (;;) { break outer; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.try",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "try { make(); } catch (error) { throw error; } finally { other(); }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.catch-no-binding",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "try { make(); } catch { other(); }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.debugger",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "debugger;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.empty-statement",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": ";",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.block",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "{ const value = 1; make(value); }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.with-legacy-js",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "with (item) { make(); }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.return",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "function run() { return value; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.using",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "using resource = open();",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.await-using",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "async function run() { await using resource = open(); }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.parenthesized-expression",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = (first + second);",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.as-assertion",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = source as Item;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.angle-assertion",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = <Item>source;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.non-null",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = source!;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.satisfies",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = { first: 1 } satisfies Item;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.literal-types",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Value = \"text\" | 1 | true | null | undefined;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.primitive-types",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Value = [any, unknown, never, void, number, string, boolean, bigint, symbol, object, undefined];",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.array-type",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Value = Item[];",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.readonly-array",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Value = readonly Item[];",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.generic-type",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Value = Map<string, Item>;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.union-intersection",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Value = (First | Second) & Third;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.named-tuple",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Value = [first: string, second?: number, ...rest: boolean[]];",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.function-type",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Run = <T>(value: T) => T;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.constructor-type",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Construct = abstract new(value: number) => Item;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.object-type",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Item = { readonly value: number; optional?: string; [key: string]: unknown; };",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.mapped-type",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Values<T> = { -readonly [K in keyof T as `get${string & K}`]-?: T[K] };",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.conditional-type",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Value<T> = T extends Promise<infer U> ? U : never;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.indexed-access-type",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Value = Item[\"field\"];",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.keyof-type",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Key = keyof Item;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.type-query",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Value = typeof source;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.import-type-query",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Value = typeof import(\"package\");",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.unique-symbol",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "declare const key: unique symbol;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.predicate",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "function isItem(value: unknown): value is Item { return true; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.assertion-signature",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "function assertItem(value: unknown): asserts value is Item {}",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.const-type-parameter",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "function make<const T extends Item = Default>(value: T) { return value; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.variance",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "interface Item<in Input, out Output> { run(input: Input): Output; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.this-type",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "interface Item { next(): this; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.no-substitution-template",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = `literal`; ",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.template",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = `first=${first}, second=${second}`;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.tagged-template",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = tag`first=${first}`;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.template-literal-type",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Key = `prefix-${string}`;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.regex",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = /a,b:(x)=y/gi;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.bigint",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = 123n;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.comments",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const first = 1; // trailing\n/* group */\nconst second = 2;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.jsdoc",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "/** @template T\n * @param {T} value\n * @returns {T}\n */\nfunction run(value) { return value; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.jsx",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".tsx",
+			"code": "const value = <Panel label=\"text\" enabled={true} {...props}>Hello {name}<Button /></Panel>;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.jsx-fragment",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".tsx",
+			"code": "const value = <>first<UI.Button />{value}</>;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.jsx-namespace",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".tsx",
+			"code": "const value = <svg:path data:name=\"value\" />;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-0",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first + second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-1",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first - second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-2",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first * second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-3",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first / second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-4",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first % second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-5",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first ** second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-6",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first << second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-7",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first >> second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-8",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first >>> second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-9",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first & second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-10",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first | second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-11",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first ^ second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-12",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first && second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-13",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first || second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-14",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first ?? second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-15",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first == second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-16",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first === second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-17",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first != second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-18",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first !== second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-19",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first < second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-20",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first <= second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-21",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first > second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-22",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first >= second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-23",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first in second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.binary-24",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = first instanceof second;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.assignment-0",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "value += other;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.assignment-1",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "value -= other;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.assignment-2",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "value *= other;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.assignment-3",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "value /= other;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.assignment-4",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "value %= other;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.assignment-5",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "value **= other;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.assignment-6",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "value <<= other;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.assignment-7",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "value >>= other;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.assignment-8",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "value >>>= other;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.assignment-9",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "value &= other;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.assignment-10",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "value |= other;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.assignment-11",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "value ^= other;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.assignment-12",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "value &&= other;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.assignment-13",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "value ||= other;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.assignment-14",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "value ??= other;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.unary-or-sequence-0",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = !source;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.unary-or-sequence-1",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = ~source;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.unary-or-sequence-2",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = +source;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.unary-or-sequence-3",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = -source;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.unary-or-sequence-4",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = typeof source;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.unary-or-sequence-5",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = void source;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.unary-or-sequence-6",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = delete source.field;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.unary-or-sequence-7",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "++value;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.unary-or-sequence-8",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "value--;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.unary-or-sequence-9",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "const value = (first, second);",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.type-only-import",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "import type { Item } from \"package\";",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.qualified-type",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Value = NS.Item;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.unnamed-optional-tuple",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Value = [string?, number?];",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.unnamed-rest-tuple",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "type Value = [string, ...number[]];",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.class-empty-member",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "class Item { ; }",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.umd-namespace-export",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "export as namespace Library;",
+			"alignmentDecision": "unreviewed"
+		},
+		{
+			"id": "typescript.example.deferred-import",
+			"language": "typescript",
+			"sourceKind": "synthetic",
+			"extension": ".ts",
+			"code": "import defer * as Items from \"package\";",
+			"alignmentDecision": "unreviewed"
+		}
+	]
+}

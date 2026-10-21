@@ -1,0 +1,24 @@
+align-tables file=product/engine/common/parse-check.ts groups=6 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0 write=true
+      30-32  interface-members  rows= 3  colon=23 semicolon=75  edits=0
+      40-48  registration       rows= 9  colon=15 value=17  edits=0
+      51-52  declaration-equals rows= 2  equals=25 semicolon=37  edits=0
+      66-67  declaration-equals rows= 2  equals=21 semicolon=120  edits=0
+      98-99  declaration-equals rows= 2  equals=16 call-open-paren=29 call-comma1=39 call-arg2=41 call-comma2=47 call-arg3=49 call-close-paren=58 semicolon=60  edits=0
+    112-113  declaration-equals rows= 2  equals=20 semicolon=73  edits=0
+align-tables file=test/parser-fault.test.ts groups=8 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0 write=true
+      14-18  declaration-equals rows= 5  equals=13 semicolon=82  edits=0
+      31-32  declaration-equals rows= 2  equals=21 call-open-paren=27 call-comma1=37 call-arg2=39 call-close-paren=43 semicolon=45  edits=0
+      40-41  declaration-equals rows= 2  equals=18 semicolon=290  edits=0
+      43-45  registration       rows= 3  colon=15 value=17  edits=0
+      51-54  registration       rows= 4  colon=15 value=17  edits=0
+      88-89  declaration-equals rows= 2  equals=21 call-open-paren=27 call-comma1=35 call-arg2=37 call-close-paren=49 semicolon=51  edits=0
+      94-96  call-statements    rows= 3  subject-close-paren=43 matcher-dot=48 matcher-open-paren=58 matcher-close-paren=88 semicolon=90  edits=0
+    104-106  call-statements    rows= 3  subject-close-paren=43 matcher-dot=48 matcher-open-paren=58 matcher-close-paren=80 semicolon=82  edits=0
+align-tables file=test/surface.test.ts groups=6 misaligned=1 edits=1 compressed=0 compressed-members=0 refused=0 write=true
+      10-11  declaration-equals rows= 2  equals=14 semicolon=88  edits=0
+      15-17  declaration-equals rows= 3  equals=16 semicolon=66  edits=0
+      23-27  call-statements    rows= 5  call-open-paren=27 call-close-paren=29 subject-close-paren=30 matcher-dot=31 matcher-open-paren=39 matcher-close-paren=63 semicolon=65  edits=0
+      55-56  declaration-equals rows= 2  equals=19 semicolon=58  edits=1
+      70-74  call-statements    rows= 5  subject-close-paren=92 matcher-dot=93 matcher-open-paren=101 matcher-close-paren=151 semicolon=153  edits=0
+      88-93  call-statements    rows= 6  subject-close-paren=123 matcher-dot=124 matcher-open-paren=132 matcher-close-paren=154 semicolon=156  edits=0
+  parse=ok tool=typescript passes=2

@@ -1,0 +1,16 @@
+{
+	"name": "boxbox",
+	"displayName": "BoxBox",
+	"version": "@BOXBOX_VERSION@",
+	"description": "Inspects TypeScript and Python files one at a time against tabular readability rules and formats only through human-approved rules, plus a read-only inspector.",
+	"author": {
+		"name": "Woo-JongHo"
+	},
+	"keywords": [
+		"readability",
+		"typescript",
+		"python",
+		"code-style",
+		"align"
+	]
+}

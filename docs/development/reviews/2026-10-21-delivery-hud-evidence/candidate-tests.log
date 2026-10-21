@@ -1,0 +1,12 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/release-candidate.test.ts:
+(pass) candidate staging records the exact prebuilt bytes and commit without rebuilding [118.28ms]
+(pass) candidate staging refuses an archive for another package [45.89ms]
+(pass) smoke refuses altered archive bytes and a replaced metadata digest before installation [83.18ms]
+(pass) smoke requires a separate build digest and refuses an escaping archive filename [79.05ms]
+
+ 4 pass
+ 0 fail
+ 11 expect() calls
+Ran 4 tests across 1 file. [482.00ms]

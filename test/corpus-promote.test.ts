@@ -1,10 +1,10 @@
-import      { afterEach, describe, expect, test              } from "bun:test"                     ;
-import      { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs"                      ;
-import      { join                                           } from "node:path"                    ;
-import      { checkGate, fixtureDir, scaffoldFor             } from "../scripts/corpus-promote.ts" ;
+import      { afterEach, describe, expect, test              } from "bun:test"                               ;
+import      { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs"                                ;
+import      { join                                           } from "node:path"                              ;
+import      { checkGate, fixtureDir, scaffoldFor             } from "../development/tools/corpus-promote.ts" ;
 
-const FIXTURES             = join(import.meta.dir, "..", "skills", "xxx", "fixtures") ;
-const workspaces: string[] = []                                                       ;
+const FIXTURES             = join(import.meta.dir, "..", "test", "fixtures") ;
+const workspaces: string[] = []                                              ;
 
 afterEach(() => {
 	for (const workspace of workspaces.splice(0)) rmSync(workspace, { recursive: true, force: true });
@@ -22,8 +22,8 @@ describe("verdict promotion", () => {
 	});
 
 	test("the promotion gate passes a consistent fixture and flags a drifted golden", () => {
-		const dir     = join(FIXTURES, "python", "corpus", "099-gateprobe-1234abcd")                            ;
-		const aligner = join(import.meta.dir, "..", "skills", "xxx", "scripts", "python", "06_align-tables.ts") ;
+		const dir     = join(FIXTURES, "python", "corpus", "099-gateprobe-1234abcd")                     ;
+		const aligner = join(import.meta.dir, "..", "product", "engine", "python", "06_align-tables.ts") ;
 		workspaces.push(dir)                                                                                  ;
 		mkdirSync(dir, { recursive: true })                                                                   ;
 		writeFileSync(join(dir, "tables.py"), scaffoldFor("python", "table"))                                 ;

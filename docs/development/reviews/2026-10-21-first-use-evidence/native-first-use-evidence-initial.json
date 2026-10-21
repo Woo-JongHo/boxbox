@@ -1,0 +1,45 @@
+{
+  "platform": "win32",
+  "node": "24.12.0",
+  "root": "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-verification-20261021\\native-first-use-1792541244949",
+  "commands": [
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "exec",
+        "--yes",
+        "--package",
+        "file:///C:/Users/woo/Downloads/BoxBox/first-use-verification-20261021/boxbox-plugin-0.2.1.tgz",
+        "--",
+        "boxbox",
+        "--codex"
+      ],
+      "status": 0,
+      "stdout": "11.6.2\n0.2.3\n\nadded 3 packages in 2s\n0.2.1\nBoxBox is installed for Codex. Restart that host and select the BoxBox skill. Review the current hooks manually before relying on them.\nPermanent installation: C:\\Users\\woo\\Downloads\\BoxBox\\first-use-verification-20261021\\native-first-use-1792541244949\\app data\\BoxBox\\Codex\\0.2.1\\\nApproved TypeScript call declarations and Python simple assignments can format without an external formatter. Run check and guide, then format --dry-run before an explicit format request; other patterns require approval.\n",
+      "stderr": "(node:40292) Warning: Accessing non-existent property 'lineno' of module exports inside circular dependency\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:40292) Warning: Accessing non-existent property 'filename' of module exports inside circular dependency\n(node:40292) Warning: Accessing non-existent property 'lineno' of module exports inside circular dependency\n(node:40292) Warning: Accessing non-existent property 'filename' of module exports inside circular dependency\n(node:42152) Warning: Accessing non-existent property 'lineno' of module exports inside circular dependency\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:42152) Warning: Accessing non-existent property 'filename' of module exports inside circular dependency\n(node:42152) Warning: Accessing non-existent property 'lineno' of module exports inside circular dependency\n(node:42152) Warning: Accessing non-existent property 'filename' of module exports inside circular dependency\n(node:44672) Warning: Accessing non-existent property 'lineno' of module exports inside circular dependency\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:44672) Warning: Accessing non-existent property 'filename' of module exports inside circular dependency\n(node:44672) Warning: Accessing non-existent property 'lineno' of module exports inside circular dependency\n(node:44672) Warning: Accessing non-existent property 'filename' of module exports inside circular dependency\n(node:41172) Warning: Accessing non-existent property 'lineno' of module exports inside circular dependency\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:41172) Warning: Accessing non-existent property 'filename' of module exports inside circular dependency\n(node:41172) Warning: Accessing non-existent property 'lineno' of module exports inside circular dependency\n(node:41172) Warning: Accessing non-existent property 'filename' of module exports inside circular dependency\nnpm notice\nnpm notice New minor version of npm available! 11.6.2 -> 11.21.1\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v11.21.1\nnpm notice To update run: npm install -g npm@11.21.1\nnpm notice\n"
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js",
+        "--version"
+      ],
+      "status": 0,
+      "stdout": "codex-cli 0.157.1\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js",
+        "plugin",
+        "list"
+      ],
+      "status": 0,
+      "stdout": "No marketplace plugins found.\n",
+      "stderr": ""
+    }
+  ],
+  "failure": "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /boxbox@boxbox-plugins.*installed, enabled/. Input:\n\n'No marketplace plugins found.\\n'\n\n    at file:///C:/Users/woo/Downloads/BoxBox/first-use-verification-20261021/native-first-use.mjs:29:76"
+}
