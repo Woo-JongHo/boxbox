@@ -26,7 +26,7 @@ install → boxbox init → boxbox doctor → boxbox check → boxbox format →
      → the same engine call from a supported host → update → recheck → uninstall
 ```
 
-`format` runs the project formatter first and applies BoxBox last. Automatic fixes are allowed only when the installed parser,
+`format` aligns approved tables directly by default. If a project formatter is configured, it runs first and BoxBox runs last. Automatic fixes are allowed only when the installed parser,
 human-approved rules and the pre/post-write safety checks all pass. If any step is unclear, it only
 reports and does not write the file.
 
@@ -69,7 +69,7 @@ review. The requirement of full verification before release stays.
 
 Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked/on hold`.
 
-1. There is always exactly one `▶ active`. The current active task is LAYOUT1: separate product sources, development tools and generated distribution (user direction 2026-10-20). CODEX1 registry/Windows verification and DATA2 remain on hold. PKG1 release work remains open. Safety improvements independent of open release-scope decisions go first.
+1. There is always exactly one `▶ active`. The current active task is DELIVERY1: issue forms, PR verification, release candidates and installed BoxBox status in Codex (user direction 2026-10-21). FIRSTUSE1 implementation/delivery and LAYOUT1 audits are verified; native host event acceptance remains separate. CODEX1 registry verification, DATA2 and PKG1 public release work remain open.
 2. Each REL becomes a completion candidate only with prerequisites, current implementation, remaining work, acceptance criteria and verification evidence.
 3. **Existing** in verification means it is checked with a command that exists now; **new** means the verifier must first be
    implemented in that REL. A command name appearing in the plan is not evidence.
@@ -79,21 +79,42 @@ Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked/on hold`
 5. Implementation complete, plan accepted, final audit and public release are different states. Never say "released" before a tag, push, registry publish and a real
    external install check.
 
+## Current implementation — DELIVERY1 GitHub candidates and Codex status
+
+**▶ active — local implementation/checks and final Opus follow-up verified; user-selected GitHub PR integration underway (2026-10-21).**
+
+- **Scope:** issue/PR templates, shared CI verification, one built installer archived with source identity and SHA-256, same-archive smoke journeys on Linux/macOS/Windows, and an on-request development HUD in Codex.
+- **Local acceptance:** install the tested 0.2.1 candidate into the actual local Codex, verify its enabled listing and installed-engine doctor/check, and report status from that installed engine. The HUD is a project skill and development tool outside release artifacts; native hook trust and host-output acceptance remain distinct.
+- **Pipeline acceptance:** focused tool tests, actual candidate build and installed-archive journey, workflow validation, full repository checks, independent Sonnet 5 review and final Opus audit. Remote Actions results require a GitHub push and actual runs; local configuration is not evidence of those results.
+- **Local result:** final full check 490 pass / 5 existing parser skips / 0 fail; TypeScript/shell, focused tests, actionlint and plugin guard pass. Same-archive macOS/native Windows smoke and a fresh Codex HUD session passed. Linux/real Actions are unexecuted; The user chose a GitHub PR preserving main changes; integration is underway. Final Opus follow-up closed F1/F2/F3. See [evidence and remaining boundaries](reviews/2026-10-21-delivery-hud.md).
+- **Boundary:** no registry publication, tag, issue automation agent, or release publication. GitHub `Woo-JongHo/rowgrid` is private; the existing `origin` remains self-hosted SSH, so an origin push alone cannot activate GitHub workflows.
+
+## Current implementation — FIRSTUSE1 clean-install formatting
+
+**✅ done for implementation and candidate delivery — native host event acceptance remains open under CODEX1. User authorized implementation on 2026-10-21 after reviewing GitHub issue [#1](https://github.com/Woo-JongHo/rowgrid/issues/1).**
+
+- **Problem:** the 0.2.0 installer works, but explicit formatting requires both an external formatter and a user-authored approval database; the bundled preset is empty. Windows formatter execution is also refused unconditionally.
+- **Scope:** standalone approved alignment by default; configured formatters remain an optional preceding stage. Preserve approval proof, parsing, token preservation, two-run fixed point, provenance and atomic replacement. Hooks remain read-only.
+- **Human decision:** the user approved both concrete initial TypeScript/Python rules on 2026-10-21, including the exact scope, examples and minimum-row counterexamples. Public receipts use the privacy-preserving `maintainer` identity; the actual decision was by Woo-JongHo. Only those two rules may enter the shipped preset. The user separately authorized CC0-1.0 for the four synthetic examples only; repository/product licensing stays undecided.
+- **Acceptance:** clean installed Node CLI without a custom formatter/database can preview and apply an approved table; original stays unchanged on preview/refusal/failure; rerun is byte-identical. A configured formatter must fail explicitly when unavailable or broken. Readiness distinguishes detection, approval and write verification. Windows command resolution/timeout cleanup and native Windows execution require direct evidence; hook registration and native host event delivery are reported separately.
+- **Verification:** targeted process/pipeline/CLI/preset/artifact tests, full `bun run check`, isolated package installation, plugin guard, native Windows tests through `chacada`, read-only Sonnet 5 review and final Opus audit. Updated plugin delivery is authorized; public publication is separate.
+- **Result:** 482 pass / 5 existing parser skips / 0 fail, TypeScript/shell and final plugin guard passed. Native Windows LF/CRLF preview/write/preservation/idempotence, unsafe-key refusals, configured formatter and timeout cleanup passed. Sonnet findings and Opus N1 were fixed; final Opus passed the implementation and prior layout findings. Candidate SHA-256 `6fc35d7c92f6eeb1b442d6d21901ed6f27c06e9654f412750b4530b638b89b8f` was delivered and verified at `C:\Users\woo\Downloads\BoxBox\0.2.1\20261021T094515-KST`. Full [evidence and limits](reviews/2026-10-21-first-use.md).
+
 ## Current implementation — LAYOUT1 source and distribution separation
 
-**▶ active — implementation complete; final Opus follow-up blocked by provider session quota (2026-10-20).**
+**✅ done — source separation and final Opus follow-up verified (2026-10-21).**
 
 - **Scope:** product engine, shared rules, plugin templates and installer sources under `product/`; tools, corpus, harness and development adapters under `development/`; fixtures under `test/fixtures/`; user and development documentation separated.
 - **Generated output:** retain the marketplace `./plugin` path as a tracked, completely regenerable projection. npm packages stay in gitignored `dist/`. Product imports must stay inside `product/` or use external dependencies.
 - **Acceptance:** existing behavior and fixture bytes preserved, complete plugin regeneration and drift detection, development link/copy installation, exact outer and nested artifact allowlists, isolated Node install/repair and read-only hooks, full checks and independent review.
 - **Verification:** `bun run check`, `bun run pack:installer`, `bun run check:layout`, `bun run sync:plugin -- --check`, official plugin validation and isolated real host registration. Baseline on 2026-10-20: 448 pass / 5 existing skips / 0 fail, TypeScript and shell syntax passed.
-- **Current machine evidence:** 452 pass / 5 existing skips / 0 fail; identity, product dependency, TypeScript and shell checks passed. The final plugin guard passed strict validation, hook/contract tests and isolated Claude Code 2.1.286 / Codex 0.163.0 registration. The 32-file installer excludes development paths; fixtures and historical machine evidence were preserved.
-- **Review:** Sonnet 5 necessary findings were fixed and its follow-up passed. Opus found a dangling-output-link gap and stale paths; those were fixed and regression-tested. The required Opus follow-up returned a session-limit error (reset shown as 20:20 Asia/Seoul), so it is unexecuted and blocks final audit acceptance. No lower-model substitution was used. See [the migration record](reviews/2026-10-20-layout.md).
+- **2026-10-20 baseline evidence:** 452 pass / 5 existing skips / 0 fail; identity, product dependency, TypeScript and shell checks passed. The final plugin guard passed strict validation, hook/contract tests and isolated Claude Code 2.1.286 / Codex 0.163.0 registration. The 32-file installer excludes development paths; fixtures and historical machine evidence were preserved.
+- **Review:** Sonnet 5 necessary findings were fixed and its follow-up passed. Opus found a dangling-output-link gap and stale paths; those were fixed and regression-tested. The 2026-10-20 Opus follow-up returned a session-limit error and was unexecuted. The actual 2026-10-21 Opus follow-up inspected and closed both carried-forward findings; no lower-model substitution was used. See [the follow-up audit](reviews/2026-10-21-first-use-evidence/opus-followup.md). See [the migration record](reviews/2026-10-20-layout.md).
 - **Contract:** [layout.md](layout.md). Publication, licensing and native Windows acceptance remain separate.
 
 ## Current implementation — CODEX1 npm plugin installer
 
-**⏸ on hold during LAYOUT1 — user direction 2026-10-16: install Codex and Claude Code plugins through npm/npx; prioritize testing Windows Codex today. ZIP transfer was explicitly rejected.**
+**⏸ registry publication and native hook-event acceptance pending — user direction 2026-10-16: install Codex and Claude Code plugins through npm/npx; prioritize testing Windows Codex today. ZIP transfer was explicitly rejected.**
 
 - **Identity:** product `BoxBox`, core/plugin/skill `boxbox`, public installer candidate `boxbox-plugin`. `product.json` owns `displayName` and `npmName`. The user has no access to the occupied npm `boxbox` name and authorized an available alternative. `box-box` was rejected under npm's similarity policy; `boxbox-plugin` and `boxboxplugin` returned E404 on 2026-10-16. This is not reservation or final registry acceptance.
 - **Scope:** `npx boxbox-plugin` detects supported local CLIs and installs their thin plugins and included local engine into permanent user directories. `--codex` and `--claude` select hosts explicitly. Installation must survive removal of npm's temporary cache and must not require Bun or the author checkout.
