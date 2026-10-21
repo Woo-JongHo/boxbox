@@ -1,0 +1,22 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/recommended-preset.test.ts:
+(pass) the approved recommended preset > ships exactly the two human-approved rules with matching dated, versioned proof records [10.20ms]
+(pass) the approved recommended preset > a prepared public package retains complete proofs and refuses changed approval documents [13.64ms]
+(pass) the approved recommended preset > both shipped approval proofs survive a CRLF document checkout [1.54ms]
+(pass) the approved recommended preset > approval lookup remains limited to the exact language, scope, container and axes [0.94ms]
+(pass) the approved recommended preset > the approved TypeScript example and two-row declaration exception use real safe writes and reach a token-preserving fixed point [1393.41ms]
+(pass) the approved recommended preset > using declarations never inherit the direct-call approval [194.17ms]
+(pass) the approved recommended preset > await using declarations never inherit the direct-call approval [184.01ms]
+(pass) the approved recommended preset > constructor initializers never inherit the direct-call approval [182.89ms]
+(pass) the approved recommended preset > awaited initializers never inherit the direct-call approval [188.08ms]
+(pass) the approved recommended preset > the approved Python example remains safe at its existing indentation [323.13ms]
+(pass) the approved recommended preset > the excluded single TypeScript row and two Python rows stay unchanged [73.39ms]
+(pass) the approved recommended preset > attribute assignment tables do not inherit the simple-name approval [0.47ms]
+(pass) the approved recommended preset > chained assignments do not inherit the single-name approval [279.44ms]
+(pass) the approved recommended preset > compound assignments and differing indentation never become approved Python tables [0.09ms]
+
+ 14 pass
+ 0 fail
+ 98 expect() calls
+Ran 14 tests across 1 file. [3.05s]

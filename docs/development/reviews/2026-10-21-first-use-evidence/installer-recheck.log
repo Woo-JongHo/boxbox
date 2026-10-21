@@ -1,0 +1,15 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/installer-artifact.test.ts:
+(pass) Windows native host discovery, permanent paths and PowerShell quotes support spaced and smart-quote paths [7.70ms]
+(pass) Windows Claude Node bridge runs from Bash with literal paths, spaced arguments and child exit status [292.53ms]
+(pass) npm installer name differs from private engine and both host payloads have an exact allowlist [27.21ms]
+(pass) real npx infers the boxbox bin from the public installer and installs both hosts independently of cache and origin [11946.22ms]
+(pass) explicit host flags install only selected adapters and engine-only does not register any host [4572.53ms]
+(pass) repair filesystem failures retain a recovery backup and report its path [1153.44ms]
+(pass) help, invalid flags, missing hosts and invalid Codex home refuse without installing; child status propagates [920.99ms]
+
+ 7 pass
+ 0 fail
+ 222 expect() calls
+Ran 7 tests across 1 file. [20.88s]

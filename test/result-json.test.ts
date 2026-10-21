@@ -18,7 +18,7 @@ const PARSES = new Set(["ok"  , "changed", "skipped", "not-run"]) ;
 function problems(value: ResultEnvelope): readonly string[] {
 	const found: string[] = [];
 	if (value.schemaVersion !== RESULT_SCHEMA_VERSION) found.push("schemaVersion");
-	if (value.tool !== "xxx") found.push("tool");
+	if (value.tool !== "boxbox") found.push("tool");
 	if (!Array.isArray(value.results) || value.results.length === 0) found.push("results");
 	for (const result of value.results ?? []) {
 		const file = result as FileResult;
@@ -43,7 +43,7 @@ const LINE_ENGINE = [["python", "py"], ["java", "java"], ["go", "go"], ["rust", 
 
 describe("shared result JSON", () => {
 	test("TypeScript aligner emits a valid envelope", () => {
-		const value = run("skills/xxx/scripts/typescript/06_align-tables.ts", ["--file", "skills/xxx/fixtures/table-kinds.ts"]);
+		const value = run("product/engine/typescript/06_align-tables.ts", ["--file", "test/fixtures/table-kinds.ts"]);
 		expect(problems(value)                                                  ).toEqual([]          ) ;
 		expect(value.results[0]!.language                                       ).toBe   ("typescript") ;
 		expect(value.results[0]!.groups.some(group => group.state === "FIXABLE")).toBe   (true        ) ;
@@ -51,7 +51,7 @@ describe("shared result JSON", () => {
 
 	for (const [language, extension] of LINE_ENGINE) {
 		test(`${language} aligner emits a valid envelope`, () => {
-			const value = run(`skills/xxx/scripts/${language}/06_align-tables.ts`, ["--file", `skills/xxx/fixtures/${language}/tables.${extension}`]);
+			const value = run(`product/engine/${language}/06_align-tables.ts`, ["--file", `test/fixtures/${language}/tables.${extension}`]);
 			expect(problems(value)).toEqual([]);
 			expect(value.results[0]!.language).toBe(language);
 		});
@@ -61,8 +61,8 @@ describe("shared result JSON", () => {
 		const workspace = mkdtempSync(join(import.meta.dir, "result-json-")) ;
 		const target    = join(workspace, "tables.py")                       ;
 		workspaces.push(workspace);
-		copyFileSync(resolve(root, "skills/xxx/fixtures/python/tables.py"), target);
-		const value = run("skills/xxx/scripts/python/06_align-tables.ts", ["--file", relative(root, target), "--write"]);
+		copyFileSync(resolve(root, "test/fixtures/python/tables.py"), target);
+		const value = run("product/engine/python/06_align-tables.ts", ["--file", relative(root, target), "--write"]);
 		expect(problems(value)       ).toEqual  ([]                            ) ;
 		expect(value.results[0]!.mode).toBe     ("write"                       ) ;
 		expect(["ok", "skipped"]     ).toContain(value.results[0]!.parse.status) ;

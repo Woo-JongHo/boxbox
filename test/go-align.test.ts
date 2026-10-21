@@ -13,7 +13,7 @@ import      { GO_ALIGNER          } from "@/go/profile.ts"          ;
 
 defineLanguageSuite({
 	aligner     : GO_ALIGNER,
-	fixturesDir : new URL("../skills/xxx/fixtures/go/", import.meta.url).pathname,
+	fixturesDir : new URL("../test/fixtures/go/", import.meta.url).pathname,
 	tableFile   : "tables.go",
 	alignedFile : "tables.aligned.go",
 	trickyFile  : "tricky.go",
@@ -124,9 +124,9 @@ test("go: the profile refuses declaration, control-flow, opening-bracket and := 
 test("go: the CLI only reports by default and writes only with --enable-go", () => {
 	const workspace = mkdtempSync(join(import.meta.dir, "go-align-"));
 	try {
-		const target = join(workspace, "tables.go")                                                          ;
-		const source = readFileSync(new URL("../skills/xxx/fixtures/go/tables.go", import.meta.url), "utf8") ;
-		const script = new URL("../skills/xxx/scripts/go/06_align-tables.ts", import.meta.url).pathname      ;
+		const target = join(workspace, "tables.go")                                                    ;
+		const source = readFileSync(new URL("../test/fixtures/go/tables.go", import.meta.url), "utf8") ;
+		const script = new URL("../product/engine/go/06_align-tables.ts", import.meta.url).pathname    ;
 		writeFileSync(target, source);
 		const reportOnly = Bun.spawnSync(["bun", script, "--file", target, "--write"], { stdout: "pipe", stderr: "pipe" });
 		expect(reportOnly.exitCode         ).toBe     (0               ) ;

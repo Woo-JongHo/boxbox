@@ -7,9 +7,9 @@ import      { AGENT_ALARMS, coreLines, hookTarget, postMessage                  
 import      { buildReport, compareAlarms                                        } from "@/common/report.ts"      ;
 import type { FileResult                                                        } from "@/common/result-json.ts" ;
 
-const ROOT    = join(import.meta.dir, ".."                                  ) ;
-const HOOK    = join(ROOT           , "skills/xxx/scripts/hook.ts"          ) ;
-const FIXTURE = join(ROOT           , "skills/xxx/fixtures/python/tables.py") ;
+const ROOT    = join(import.meta.dir, ".."                            ) ;
+const HOOK    = join(ROOT           , "product/engine/hook.ts"        ) ;
+const FIXTURE = join(ROOT           , "test/fixtures/python/tables.py") ;
 
 describe("hook — target decision", () => {
 	test("is a target only when a write tool writes a first-scope language file", () => {
@@ -20,12 +20,12 @@ describe("hook — target decision", () => {
 		expect(target("MultiEdit", "/p/a.mts")).toBe("typescript") ;
 		expect(target("Read"     , "/p/a.ts"        )).toBeUndefined()    ;
 		expect(target("Write"    , "/p/a.d.ts"      )).toBeUndefined()    ;
-		expect(target("Write"    , "/p/.xxx/cache/a.ts")).toBeUndefined() ;
+		expect(target("Write"    , "/p/.boxbox/cache/a.ts")).toBeUndefined() ;
 		expect(target("Write"    , "/p/a.go"        )).toBeUndefined()    ;
 	});
 
 	test("the session guidance uses the charter's three core lines verbatim", () => {
-		const core = coreLines(readFileSync(join(ROOT, "skills/xxx/references/charter.md"), "utf8"));
+		const core = coreLines(readFileSync(join(ROOT, "product/rules/references/charter.md"), "utf8"));
 
 		expect(core.split("\n")).toHaveLength(3);
 		expect(core).toStartWith("1. Write same-role code") ;
@@ -66,7 +66,7 @@ describe("hook — flow (simulating Claude Code input)", () => {
 	const context = (stdout: string): string | undefined => stdout.trim() === "" ? undefined : (JSON.parse(stdout) as { hookSpecificOutput: { additionalContext: string } }).hookSpecificOutput.additionalContext;
 
 	test("editing an existing file returns only the alarms that edit introduced, and the baseline is cleaned up", () => {
-		const project = mkdtempSync(join(tmpdir(), "xxx-hook-"))                                                   ;
+		const project = mkdtempSync(join(tmpdir(), "boxbox-hook-"))                                                ;
 		const file    = join(project, "app.py")                                                                    ;
 		const input   = { session_id: "s", tool_name: "Edit", tool_use_id: "t1", tool_input: { file_path: file } } ;
 		writeFileSync(file, readFileSync(FIXTURE, "utf8"));
@@ -75,16 +75,16 @@ describe("hook — flow (simulating Claude Code input)", () => {
 		writeFileSync(file, readFileSync(file, "utf8").replace('    "port": 8080,', `    "port": 8080,\n    "description": "${"x".repeat(120)}",`));
 		const message = context(run(project, "post", input).stdout);
 
-		expect(message                                                     )    .toContain("A1 over hard limit") ;
-		expect(message                                                     )    .toContain("A3 outlier row"    ) ;
-		expect(message                                                     ).not.toContain("A5"                ) ;
-		expect(readdirSync(join(project, ".xxx/cache/baseline"))           )    .toEqual  ([]                  ) ;
-		expect(readFileSync(join(project, ".xxx/cache/.gitignore"), "utf8"))    .toBe     ("*\n"               ) ;
-		expect(existsSync(join(project, ".xxx/cache/hook-timing.jsonl"))   )    .toBe     (true                ) ;
+		expect(message                                                        )    .toContain("A1 over hard limit") ;
+		expect(message                                                        )    .toContain("A3 outlier row"    ) ;
+		expect(message                                                        ).not.toContain("A5"                ) ;
+		expect(readdirSync(join(project, ".boxbox/cache/baseline"))           )    .toEqual  ([]                  ) ;
+		expect(readFileSync(join(project, ".boxbox/cache/.gitignore"), "utf8"))    .toBe     ("*\n"               ) ;
+		expect(existsSync(join(project, ".boxbox/cache/hook-timing.jsonl"))   )    .toBe     (true                ) ;
 	});
 
 	test("a new file gets guidance once per language per session, and an edit without new alarms is silent", () => {
-		const project = mkdtempSync(join(tmpdir(), "xxx-hook-"))                                                                     ;
+		const project = mkdtempSync(join(tmpdir(), "boxbox-hook-"))                                                                  ;
 		const first   = { session_id: "s", tool_name: "Write", tool_use_id: "t1", tool_input: { file_path: join(project, "a.py") } } ;
 		const second  = { session_id: "s", tool_name: "Write", tool_use_id: "t2", tool_input: { file_path: join(project, "b.py") } } ;
 
@@ -95,9 +95,9 @@ describe("hook — flow (simulating Claude Code input)", () => {
 		expect(context(run(project, "post", first).stdout)).toBeUndefined();
 	});
 
-	test("with XXX_HOOKS=off it does nothing, and invalid input never blocks the edit", () => {
-		const project = mkdtempSync(join(tmpdir(), "xxx-hook-"))                                                                                                    ;
-		const off     = run(project, "session", {}, { XXX_HOOKS: "off" })                                                                                           ;
+	test("with BOXBOX_HOOKS=off it does nothing, and invalid input never blocks the edit", () => {
+		const project = mkdtempSync(join(tmpdir(), "boxbox-hook-"))                                                                                                 ;
+		const off     = run(project, "session", {}, { BOXBOX_HOOKS: "off" })                                                                                        ;
 		const broken  = spawnSync(process.execPath, [HOOK, "post"], { input: "{not json", encoding: "utf8", env: { ...process.env, CLAUDE_PROJECT_DIR: project } }) ;
 
 		expect(off.stdout   ).toBe("") ;
@@ -106,10 +106,10 @@ describe("hook — flow (simulating Claude Code input)", () => {
 	});
 
 	test("the plugin hooks.json connects three events to this hook script", () => {
-		const hooks = JSON.parse(readFileSync(join(ROOT, "hooks/hooks.json"), "utf8")) as { hooks: Record<string, { matcher?: string; hooks: { command: string }[] }[]> };
+		const hooks = JSON.parse(readFileSync(join(ROOT, "development/hooks/hooks.json"), "utf8")) as { hooks: Record<string, { matcher?: string; hooks: { command: string }[] }[]> };
 
 		expect(Object.keys(hooks.hooks).sort()).toEqual(["PostToolUse", "PreToolUse", "SessionStart"]);
-		for (const entries of Object.values(hooks.hooks)) expect(entries[0]?.hooks[0]?.command).toContain("${CLAUDE_PLUGIN_ROOT}/skills/xxx/scripts/hook.ts");
+		for (const entries of Object.values(hooks.hooks)) expect(entries[0]?.hooks[0]?.command).toContain("${CLAUDE_PLUGIN_ROOT}/product/engine/hook.ts");
 		expect(hooks.hooks["PostToolUse"]?.[0]?.matcher).toBe("Write|Edit|MultiEdit");
 	});
 });

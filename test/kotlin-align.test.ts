@@ -6,7 +6,7 @@ import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
 	aligner     : KOTLIN_ALIGNER,
-	fixturesDir : new URL("../skills/xxx/fixtures/kotlin/", import.meta.url).pathname,
+	fixturesDir : new URL("../test/fixtures/kotlin/", import.meta.url).pathname,
 	tableFile   : "tables.kt",
 	alignedFile : "tables.aligned.kt",
 	trickyFile  : "tricky.kt",

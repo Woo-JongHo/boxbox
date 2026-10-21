@@ -1,0 +1,66 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/examples.test.ts:
+(pass) example records > a mismatched content hash, or missing asserts on a non-taste example, is an error [2.34ms]
+(pass) example checks — meaning per verdict > after-better: before has A12, after does not, and after is a fixed point [475.49ms]
+(pass) example checks — meaning per verdict > fixedPoint: an after with a table still pending alignment fails [186.59ms]
+(pass) example checks — meaning per verdict > bad: fails when the engine's fix of before equals the forbidden after [422.98ms]
+(pass) example checks — meaning per verdict > taste and unapproved examples are not checked [0.06ms]
+(pass) decision records > a section hash changes only when that section changes [0.56ms]
+(pass) decision records > reports that re-approval is needed when the referenced section changes [0.23ms]
+(pass) picking GUIDE examples > only approved after-better, by shared pattern count → recency → id, up to 3 [4.66ms]
+(pass) approval section hashes are identical across LF and CRLF checkouts [0.06ms]
+(pass) preset DB > every shipped example passes per its verdict, and each decision's document hash matches the current document [358.73ms]
+
+test/recommended-preset.test.ts:
+(pass) the approved recommended preset > ships exactly the two human-approved rules with matching dated, versioned proof records [1.36ms]
+(pass) the approved recommended preset > a prepared public package retains complete proofs and refuses changed approval documents [3.50ms]
+(pass) the approved recommended preset > approval lookup remains limited to the exact language, scope, container and axes [0.26ms]
+(pass) the approved recommended preset > the approved TypeScript example and two-row declaration exception use real safe writes and reach a token-preserving fixed point [1228.90ms]
+(pass) the approved recommended preset > using declarations never inherit the direct-call approval [202.46ms]
+(pass) the approved recommended preset > await using declarations never inherit the direct-call approval [202.76ms]
+(pass) the approved recommended preset > constructor initializers never inherit the direct-call approval [216.44ms]
+(pass) the approved recommended preset > awaited initializers never inherit the direct-call approval [191.74ms]
+(pass) the approved recommended preset > the approved Python example remains safe at its existing indentation [329.96ms]
+(pass) the approved recommended preset > the excluded single TypeScript row and two Python rows stay unchanged [76.10ms]
+(pass) the approved recommended preset > attribute assignment tables do not inherit the simple-name approval [0.51ms]
+(pass) the approved recommended preset > compound assignments and differing indentation never become approved Python tables [0.08ms]
+
+test/surface.test.ts:
+(pass) grammar ID registry > the tables in grammar.md match the list in grammar-ids.ts [0.28ms]
+(pass) surface forms — TypeScript > every engine kind maps to a pattern [0.44ms]
+(pass) surface forms — TypeScript > an enum with values is MAP, names only is LIST [0.03ms]
+(pass) surface forms — TypeScript > declaration and assignment are different patterns and not ambiguous [0.03ms]
+(pass) surface forms — TypeScript > an unknown kind is not mapped (target of alarm A8) [0.15ms]
+(pass) surface forms — Python > every table in the fixture maps to a pattern [8.11ms]
+(pass) surface forms — Python > `a = v`, where declaration and assignment share syntax, is marked ambiguous [0.07ms]
+(pass) surface-form data validation > every shipped data file is valid [0.27ms]
+(pass) surface-form data validation > refuses IDs missing from the grammar, forms with no matcher or two, and other language names [0.20ms]
+
+test/cli.test.ts:
+(pass) public CLI > help and version work through the real entry API [71.20ms]
+(pass) public CLI > init preserves existing user files and never overwrites the config when rerun [70.01ms]
+(pass) public CLI > a corrupt or unknown config fails explicitly and is preserved [79.47ms]
+(pass) public CLI > check inspects one Python file read-only without init and returns 1 when misaligned [39.46ms]
+(pass) public CLI > a clean project previews and formats with the bundled approval and no formatter [482.69ms]
+(pass) public CLI > with a verified test approval and formatter, GUIDE, dry-run and the real format use the same pipeline [651.49ms]
+(pass) public CLI > standalone CLI alignment needs approval but no external formatter [653.94ms]
+(pass) public CLI > GUIDE uses the bundled preset but never exposes candidate overrides as guidance [79.79ms]
+(pass) public CLI > candidate, rejected, conflict and stale approvals refuse format and preserve the original [441.45ms]
+(pass) public CLI > doctor refuses a missing Python even when the bundled approval data is present [37.47ms]
+(pass) public CLI > doctor separates runnable state, format configuration and overall release readiness [46.25ms]
+(pass) public CLI > usage errors still print exactly one JSON to stdout and refuse unknown languages and options [103.83ms]
+(pass) public CLI > refuses path escapes and symbolic links for init writes [69.77ms]
+(pass) public CLI > refuses parent-directory symbolic link escapes and languages disabled in the config [71.10ms]
+(pass) public CLI > fails when the explicit language differs from the extension and infers the language for TS files [221.98ms]
+
+test/lifecycle-hook.test.ts:
+(pass) changes to unsupported files do not block later PostToolUse or Stop [110.35ms]
+(pass) Stop does not block again with stop_hook_active even when an alignment failure remains [178.02ms]
+(pass) plugin hooks use the cwd input and write records to the plugin data folder, not the project [71.54ms]
+(pass) hook errors never block work; they are only reported [34.79ms]
+
+ 50 pass
+ 0 fail
+ 301 expect() calls
+Ran 50 tests across 5 files. [7.57s]

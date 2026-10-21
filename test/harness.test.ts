@@ -1,6 +1,6 @@
-import      { afterEach, describe, expect, test              } from "bun:test"             ;
-import      { mkdtempSync, readFileSync, rmSync              } from "node:fs"              ;
-import      { join, resolve                                  } from "node:path"            ;
+import      { afterEach, describe, expect, test              } from "bun:test"                         ;
+import      { mkdtempSync, readFileSync, rmSync              } from "node:fs"                          ;
+import      { join, resolve                                  } from "node:path"                        ;
 
 import      {
               appendRun                                    ,
@@ -12,8 +12,8 @@ import      {
               updateLatest                                 ,
               validateRunRecord                            ,
               type RunRecord                               ,
-                                                             } from "../harness/db.ts"     ;
-import      { parseBunTestOutput, parseRelTable, relEvidence } from "../harness/report.ts" ;
+                                                             } from "../development/harness/db.ts"     ;
+import      { parseBunTestOutput, parseRelTable, relEvidence } from "../development/harness/report.ts" ;
 
 const root = resolve(import.meta.dir, "..") ;
 
@@ -110,8 +110,8 @@ describe("store", () => {
 });
 
 describe("parseRelTable", () => {
-	test("reads REL0–REL12 from docs/plan.md in order", () => {
-		const rows = parseRelTable(readFileSync(resolve(root, "docs/plan.md"), "utf8")) ;
+	test("reads REL0–REL12 from docs/development/plan.md in order", () => {
+		const rows = parseRelTable(readFileSync(resolve(root, "docs/development/plan.md"), "utf8")) ;
 		expect(rows.map(row => row.id)).toEqual(["REL0", "REL1", "REL2", "REL3", "REL4", "REL5", "REL6", "REL7", "REL8", "REL9", "REL10", "REL11", "REL12"]) ;
 		expect(rows.every(row => row.task.length > 0 && row.status.length > 0)).toBe(true) ;
 	});

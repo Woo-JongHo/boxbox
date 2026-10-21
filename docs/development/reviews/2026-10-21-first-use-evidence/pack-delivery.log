@@ -1,0 +1,242 @@
+$ bun development/tools/build-installer-artifact.ts
+$ bun development/tools/sync-plugin.ts
+synced 0 file(s)
+
+$ bun run build:cli && npm pack ./dist/cli --pack-destination ./dist --json
+$ bun run development/tools/build-cli-artifact.ts
+/Users/jonghoPro/woo/00_project/98_BoxBox/dist/cli
+[
+  {
+    "id": "boxbox@0.2.1",
+    "name": "boxbox",
+    "version": "0.2.1",
+    "size": 46410,
+    "unpackedSize": 184595,
+    "shasum": "b83f8762cf252ebfd809b5bfe51748a8367b7007",
+    "integrity": "sha512-oIwD/pF+ZPmbQbqwgAJJSXcwAiuDPtI4lF8LSUCKfftlmIv+BUxdRVymQ+SGnV8YBncwiVf2W8gmt3bxMQ6PsA==",
+    "filename": "boxbox-0.2.1.tgz",
+    "files": [
+      {
+        "path": "README.md",
+        "size": 4318,
+        "mode": 420
+      },
+      {
+        "path": "dist/cli.js",
+        "size": 172712,
+        "mode": 493
+      },
+      {
+        "path": "package.json",
+        "size": 537,
+        "mode": 420
+      },
+      {
+        "path": "rules/presets/recommended/conventions.jsonl",
+        "size": 838,
+        "mode": 420
+      },
+      {
+        "path": "rules/presets/recommended/decisions.jsonl",
+        "size": 834,
+        "mode": 420
+      },
+      {
+        "path": "rules/presets/recommended/docs/public/decisions/py-simple-assignments.md",
+        "size": 1281,
+        "mode": 420
+      },
+      {
+        "path": "rules/presets/recommended/docs/public/decisions/ts-sourcefile-call-declarations.md",
+        "size": 1477,
+        "mode": 420
+      },
+      {
+        "path": "rules/presets/recommended/examples.jsonl",
+        "size": 2598,
+        "mode": 420
+      }
+    ],
+    "entryCount": 8,
+    "bundled": []
+  }
+]
+
+[
+  {
+    "id": "boxbox-plugin@0.2.1",
+    "name": "boxbox-plugin",
+    "version": "0.2.1",
+    "size": 126110,
+    "unpackedSize": 259035,
+    "shasum": "867098251968be619d45f4a91f90403a44a74141",
+    "integrity": "sha512-PNKZzJpxDdlOrfxsKBMrhaXPkKr761e7CS54vpG3aK57fdgvPtxkOjhAXniMWEHpwDZIiSZR8p4wdtH7oIjoQA==",
+    "filename": "boxbox-plugin-0.2.1.tgz",
+    "files": [
+      {
+        "path": "README.md",
+        "size": 6746,
+        "mode": 420
+      },
+      {
+        "path": "bin/boxbox.mjs",
+        "size": 5129,
+        "mode": 493
+      },
+      {
+        "path": "package.json",
+        "size": 311,
+        "mode": 420
+      },
+      {
+        "path": "payload/bundle.json",
+        "size": 132,
+        "mode": 420
+      },
+      {
+        "path": "payload/claude/.claude-plugin/marketplace.json",
+        "size": 424,
+        "mode": 420
+      },
+      {
+        "path": "payload/claude/bundle.json",
+        "size": 151,
+        "mode": 420
+      },
+      {
+        "path": "payload/claude/install.mjs",
+        "size": 5969,
+        "mode": 420
+      },
+      {
+        "path": "payload/claude/packages/boxbox-0.2.1.tgz",
+        "size": 46410,
+        "mode": 420
+      },
+      {
+        "path": "payload/claude/platform.mjs",
+        "size": 4676,
+        "mode": 420
+      },
+      {
+        "path": "payload/claude/plugin/.claude-plugin/plugin.json",
+        "size": 378,
+        "mode": 420
+      },
+      {
+        "path": "payload/claude/plugin/agents/readability-inspector.md",
+        "size": 1465,
+        "mode": 420
+      },
+      {
+        "path": "payload/claude/plugin/hooks/hooks.json",
+        "size": 986,
+        "mode": 420
+      },
+      {
+        "path": "payload/claude/plugin/scripts/boxbox.mjs",
+        "size": 1643,
+        "mode": 420
+      },
+      {
+        "path": "payload/claude/plugin/skills/boxbox/references/charter.md",
+        "size": 6342,
+        "mode": 420
+      },
+      {
+        "path": "payload/claude/plugin/skills/boxbox/references/grammar.md",
+        "size": 13179,
+        "mode": 420
+      },
+      {
+        "path": "payload/claude/plugin/skills/boxbox/references/readability-contract.md",
+        "size": 25680,
+        "mode": 420
+      },
+      {
+        "path": "payload/claude/plugin/skills/boxbox/references/typescript-grid-template.md",
+        "size": 10492,
+        "mode": 420
+      },
+      {
+        "path": "payload/claude/plugin/skills/boxbox/SKILL.md",
+        "size": 3819,
+        "mode": 420
+      },
+      {
+        "path": "payload/codex/.agents/plugins/marketplace.json",
+        "size": 278,
+        "mode": 420
+      },
+      {
+        "path": "payload/codex/bundle.json",
+        "size": 150,
+        "mode": 420
+      },
+      {
+        "path": "payload/codex/install.mjs",
+        "size": 5969,
+        "mode": 420
+      },
+      {
+        "path": "payload/codex/packages/boxbox-0.2.1.tgz",
+        "size": 46410,
+        "mode": 420
+      },
+      {
+        "path": "payload/codex/platform.mjs",
+        "size": 4676,
+        "mode": 420
+      },
+      {
+        "path": "payload/codex/plugin/.codex-plugin/plugin.json",
+        "size": 743,
+        "mode": 420
+      },
+      {
+        "path": "payload/codex/plugin/hooks/hooks.json",
+        "size": 1064,
+        "mode": 420
+      },
+      {
+        "path": "payload/codex/plugin/scripts/boxbox.mjs",
+        "size": 1643,
+        "mode": 420
+      },
+      {
+        "path": "payload/codex/plugin/skills/boxbox/references/charter.md",
+        "size": 6342,
+        "mode": 420
+      },
+      {
+        "path": "payload/codex/plugin/skills/boxbox/references/grammar.md",
+        "size": 13179,
+        "mode": 420
+      },
+      {
+        "path": "payload/codex/plugin/skills/boxbox/references/readability-contract.md",
+        "size": 25680,
+        "mode": 420
+      },
+      {
+        "path": "payload/codex/plugin/skills/boxbox/references/typescript-grid-template.md",
+        "size": 10492,
+        "mode": 420
+      },
+      {
+        "path": "payload/codex/plugin/skills/boxbox/SKILL.md",
+        "size": 3801,
+        "mode": 420
+      },
+      {
+        "path": "payload/platform.mjs",
+        "size": 4676,
+        "mode": 420
+      }
+    ],
+    "entryCount": 32,
+    "bundled": []
+  }
+]
+
+/Users/jonghoPro/woo/00_project/98_BoxBox/dist/installer/boxbox-plugin-0.2.1.tgz

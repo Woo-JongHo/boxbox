@@ -1,0 +1,259 @@
+{
+  "platform": "win32",
+  "node": "24.12.0",
+  "root": "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454",
+  "commands": [
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "exec",
+        "--yes",
+        "--package",
+        "file:///C:/Users/woo/Downloads/BoxBox/first-use-final-20261021/boxbox-plugin-0.2.1.tgz",
+        "--",
+        "boxbox",
+        "--codex"
+      ],
+      "status": 0,
+      "stdout": "11.6.2\ncodex-cli 0.157.1\nInstall a plugin from a configured or remote marketplace.\n\nPass either `PLUGIN@MARKETPLACE` or pass `PLUGIN` with `--marketplace MARKETPLACE`.\n\nUsage: codex plugin add [OPTIONS] <PLUGIN[@MARKETPLACE]>\n\nArguments:\n  <PLUGIN[@MARKETPLACE]>\n          Plugin selector to install: either PLUGIN@MARKETPLACE or PLUGIN with --marketplace\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n  -m, --marketplace <MARKETPLACE>\n          Marketplace name to use when PLUGIN does not include @MARKETPLACE\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --json\n          Output install result as JSON\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n  -h, --help\n          Print help (see a summary with '-h')\n\nExamples:\n  codex plugin add sample@debug\n  codex plugin add sample --marketplace debug\n\nadded 3 packages in 2s\n0.2.1\nAdded marketplace `boxbox-plugins` from \\\\?\\C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1.\nInstalled marketplace root: C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\nAdded plugin `boxbox` from marketplace `boxbox-plugins`.\nInstalled plugin root: C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\codex home\\plugins\\cache\\boxbox-plugins\\boxbox\\0.2.1\nBoxBox is installed for Codex. Restart that host and select the BoxBox skill. Review the current hooks manually before relying on them.\nPermanent installation: C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\\nApproved TypeScript call declarations and Python simple assignments can format without an external formatter. Run check and guide, then format --dry-run before an explicit format request; other patterns require approval.\n",
+      "stderr": "npm notice\nnpm notice New minor version of npm available! 11.6.2 -> 11.21.1\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v11.21.1\nnpm notice To update run: npm install -g npm@11.21.1\nnpm notice\n"
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js",
+        "--version"
+      ],
+      "status": 0,
+      "stdout": "codex-cli 0.157.1\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js",
+        "plugin",
+        "list"
+      ],
+      "status": 0,
+      "stdout": "Marketplace `boxbox-plugins`\nC:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\.agents\\plugins\\marketplace.json\n\nPLUGIN                 STATUS              VERSION  SOURCE\nboxbox@boxbox-plugins  installed, enabled  0.2.1    C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\plugin\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\plugin\\scripts\\boxbox.mjs",
+        "doctor",
+        "--json"
+      ],
+      "status": 0,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"doctor\",\"ok\":true,\"runtimeUsable\":true,\"formatConfigured\":true,\"releaseReady\":false,\"checks\":{\"runtime\":{\"ok\":true,\"detail\":\"Node 24.12.0 (artifact candidate minimum: 22.22.3)\"},\"python\":{\"ok\":true,\"detail\":\"Python 3.14.0\"},\"config\":{\"ok\":true,\"detail\":\"schema 2; languages=typescript,python; project=absent, inherited defaults\",\"fingerprint\":\"sha256:ed218d10f12622a8177e87e900a5ce379e288d08893cff48689ba34b4c5836c5\",\"layers\":[{\"layer\":\"base\",\"path\":\"embedded:base\",\"present\":true,\"fingerprint\":\"sha256:37aec6f2b8fd46de14fef7d6360e04e72229f2a118999db2400263f4edfd7fd8\"},{\"layer\":\"preset\",\"path\":\"embedded:preset/recommended\",\"present\":true,\"fingerprint\":\"sha256:bafebd36189ad3688b7b3915ea55d461e0bfcfbdde11e54b0a123999fb6be50f\"},{\"layer\":\"user\",\"path\":\"C:\\\\Users\\\\woo\\\\Downloads\\\\BoxBox\\\\first-use-final-20261021\\\\native-first-use-1792543207454\\\\config\\\\boxbox\\\\config.json\",\"present\":false,\"fingerprint\":\"sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"},{\"layer\":\"project\",\"path\":\"C:\\\\Users\\\\woo\\\\Downloads\\\\BoxBox\\\\first-use-final-20261021\\\\native-first-use-1792543207454\\\\project with spaces\\\\.boxbox\\\\config.json\",\"present\":false,\"fingerprint\":\"sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}],\"formatters\":[]},\"approval\":{\"ok\":true,\"detail\":\"2 approved convention record(s) loaded; proof remains file-specific\"},\"formatter\":{\"ok\":true,\"detail\":\"standalone alignment; no external formatter required\"}},\"limitations\":[\"format readiness is finally decided per file by exact approval proof\",\"only one explicit TypeScript or Python file is accepted\",\"installation and hook registration do not prove native host event delivery\"]}\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\plugin\\scripts\\boxbox.mjs",
+        "check",
+        "--file",
+        "table.py",
+        "--json"
+      ],
+      "status": 1,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"results\":[{\"file\":\"table.py\",\"language\":\"python\",\"mode\":\"check\",\"summary\":{\"groups\":1,\"misaligned\":1,\"edits\":2,\"refused\":0,\"suggested\":0},\"groups\":[{\"kind\":\"table\",\"startLine\":1,\"endLine\":3,\"rows\":3,\"axes\":[\"name\",\"equal\",\"value\"],\"state\":\"FIXABLE\",\"edits\":2,\"depth\":0}],\"parse\":{\"status\":\"not-run\",\"tool\":\"\"}}],\"formatReadiness\":{\"mode\":\"standalone\",\"approvalEligible\":true,\"verification\":\"not-run\",\"reasons\":[],\"next\":\"format --dry-run verifies parser, preservation and fixed point before writing\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\plugin\\scripts\\boxbox.mjs",
+        "guide",
+        "--file",
+        "table.py",
+        "--json"
+      ],
+      "status": 0,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"guide\",\"ok\":true,\"file\":\"table.py\",\"language\":\"python\",\"conventions\":[\"py-simple-assignments\"],\"guides\":[{\"id\":\"py-simple-assignments-positive\",\"before\":\"if enabled:\\n  alpha = 1\\n  much_longer = 22\\n  mid = 333\\n\",\"after\":\"if enabled:\\n  alpha       = 1\\n  much_longer = 22\\n  mid         = 333\\n\"}]}\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\plugin\\scripts\\boxbox.mjs",
+        "format",
+        "--file",
+        "table.py",
+        "--dry-run",
+        "--json"
+      ],
+      "status": 0,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"format\",\"ok\":true,\"dryRun\":true,\"formatEligible\":true,\"file\":\"table.py\",\"formatterChanged\":false,\"boxboxChanged\":true,\"fixedPoint\":true,\"written\":false,\"formatter\":null,\"formatterExecuted\":false,\"formatMode\":\"standalone\",\"approvals\":[\"py-simple-assignments\"],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":null}}\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\plugin\\scripts\\boxbox.mjs",
+        "format",
+        "--file",
+        "table.py",
+        "--json"
+      ],
+      "status": 0,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"format\",\"ok\":true,\"dryRun\":false,\"formatEligible\":true,\"file\":\"table.py\",\"formatterChanged\":false,\"boxboxChanged\":true,\"fixedPoint\":true,\"written\":true,\"formatter\":null,\"formatterExecuted\":false,\"formatMode\":\"standalone\",\"approvals\":[\"py-simple-assignments\"],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":null}}\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\plugin\\scripts\\boxbox.mjs",
+        "format",
+        "--file",
+        "table.py",
+        "--json"
+      ],
+      "status": 0,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"format\",\"ok\":true,\"dryRun\":false,\"formatEligible\":true,\"file\":\"table.py\",\"formatterChanged\":false,\"boxboxChanged\":false,\"fixedPoint\":true,\"written\":false,\"formatter\":null,\"formatterExecuted\":false,\"formatMode\":\"standalone\",\"approvals\":[\"py-simple-assignments\"],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":null}}\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\plugin\\scripts\\boxbox.mjs",
+        "check",
+        "--file",
+        "table.py",
+        "--json"
+      ],
+      "status": 0,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"results\":[{\"file\":\"table.py\",\"language\":\"python\",\"mode\":\"check\",\"summary\":{\"groups\":1,\"misaligned\":0,\"edits\":0,\"refused\":0,\"suggested\":0},\"groups\":[{\"kind\":\"table\",\"startLine\":1,\"endLine\":3,\"rows\":3,\"axes\":[\"name\",\"equal\",\"value\"],\"state\":\"PASS\",\"edits\":0,\"depth\":0}],\"parse\":{\"status\":\"not-run\",\"tool\":\"\"}}],\"formatReadiness\":{\"mode\":\"standalone\",\"approvalEligible\":true,\"verification\":\"not-run\",\"reasons\":[],\"next\":\"format --dry-run verifies parser, preservation and fixed point before writing\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": "python3",
+      "args": [
+        "-c",
+        "import ast,tokenize,io,sys; a,b=sys.argv[1:]; ast.parse(b); norm=lambda s:[(t.type,t.string) for t in tokenize.generate_tokens(io.StringIO(s).readline) if t.type not in (tokenize.ENCODING,tokenize.ENDMARKER)]; assert norm(a)==norm(b)",
+        "alpha = 1\nmuch_longer = 22\nmid = 333\n",
+        "alpha       = 1\nmuch_longer = 22\nmid         = 333\n"
+      ],
+      "status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\plugin\\scripts\\boxbox.mjs",
+        "format",
+        "--file",
+        "crlf.py",
+        "--dry-run",
+        "--json"
+      ],
+      "status": 0,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"format\",\"ok\":true,\"dryRun\":true,\"formatEligible\":true,\"file\":\"crlf.py\",\"formatterChanged\":false,\"boxboxChanged\":true,\"fixedPoint\":true,\"written\":false,\"formatter\":null,\"formatterExecuted\":false,\"formatMode\":\"standalone\",\"approvals\":[\"py-simple-assignments\"],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":null}}\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\plugin\\scripts\\boxbox.mjs",
+        "format",
+        "--file",
+        "crlf.py",
+        "--json"
+      ],
+      "status": 0,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"format\",\"ok\":true,\"dryRun\":false,\"formatEligible\":true,\"file\":\"crlf.py\",\"formatterChanged\":false,\"boxboxChanged\":true,\"fixedPoint\":true,\"written\":true,\"formatter\":null,\"formatterExecuted\":false,\"formatMode\":\"standalone\",\"approvals\":[\"py-simple-assignments\"],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":null}}\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\plugin\\scripts\\boxbox.mjs",
+        "format",
+        "--file",
+        "crlf.py",
+        "--json"
+      ],
+      "status": 0,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"format\",\"ok\":true,\"dryRun\":false,\"formatEligible\":true,\"file\":\"crlf.py\",\"formatterChanged\":false,\"boxboxChanged\":false,\"fixedPoint\":true,\"written\":false,\"formatter\":null,\"formatterExecuted\":false,\"formatMode\":\"standalone\",\"approvals\":[\"py-simple-assignments\"],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":null}}\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\plugin\\scripts\\boxbox.mjs",
+        "format",
+        "--file",
+        "attribute.py",
+        "--json"
+      ],
+      "status": 2,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"format\",\"ok\":false,\"error\":{\"code\":\"FORMAT_NOT_ELIGIBLE\",\"message\":\"format refused: approval denied: no matching convention\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\plugin\\scripts\\boxbox.mjs",
+        "check",
+        "--file",
+        "chained.py",
+        "--json"
+      ],
+      "status": 1,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"results\":[{\"file\":\"chained.py\",\"language\":\"python\",\"mode\":\"check\",\"summary\":{\"groups\":1,\"misaligned\":1,\"edits\":2,\"refused\":0,\"suggested\":0},\"groups\":[{\"kind\":\"table\",\"startLine\":1,\"endLine\":3,\"rows\":3,\"axes\":[\"chain-target\",\"equal\",\"value\"],\"state\":\"FIXABLE\",\"edits\":2,\"depth\":0}],\"parse\":{\"status\":\"not-run\",\"tool\":\"\"}}],\"formatReadiness\":{\"mode\":\"standalone\",\"approvalEligible\":false,\"verification\":\"not-run\",\"reasons\":[\"no matching convention\"],\"next\":\"format --dry-run verifies parser, preservation and fixed point before writing\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\plugin\\scripts\\boxbox.mjs",
+        "format",
+        "--file",
+        "chained.py",
+        "--json"
+      ],
+      "status": 2,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"format\",\"ok\":false,\"error\":{\"code\":\"FORMAT_NOT_ELIGIBLE\",\"message\":\"format refused: approval denied: no matching convention\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\plugin\\scripts\\boxbox.mjs",
+        "format",
+        "--file",
+        "table.py",
+        "--json"
+      ],
+      "status": 0,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"format\",\"ok\":true,\"dryRun\":false,\"formatEligible\":true,\"file\":\"table.py\",\"formatterChanged\":false,\"boxboxChanged\":true,\"fixedPoint\":true,\"written\":true,\"formatter\":{\"exitCode\":0,\"signal\":null,\"timedOut\":false,\"stdout\":\"\",\"stderr\":\"\",\"truncated\":false},\"formatterExecuted\":true,\"formatMode\":\"formatter\",\"approvals\":[\"py-simple-assignments\"],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-first-use-1792543207454\\app data\\BoxBox\\Codex\\0.2.1\\plugin\\scripts\\boxbox.mjs",
+        "format",
+        "--file",
+        "table.py",
+        "--json"
+      ],
+      "status": 2,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"format\",\"ok\":false,\"error\":{\"code\":\"FORMAT_NOT_ELIGIBLE\",\"message\":\"format refused: formatter timed out after 400ms\"}}\n",
+      "stderr": ""
+    }
+  ],
+  "nativeFormatterTimeoutVerified": true,
+  "ok": true,
+  "hashes": {
+    "original": "3748bb970c8dabd1f0a6b36df5e48a4f2a6c18782c17e77f63530e13a6c87f5a",
+    "aligned": "1103562ed468f2fbfa76f72ceedf1191c06cfd24a22ddcc9f55455685b165bc3"
+  },
+  "nativeHookVerified": false,
+  "automaticFixPerformed": false
+}

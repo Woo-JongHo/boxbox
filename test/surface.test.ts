@@ -7,8 +7,8 @@ import      { patternOf, surfaceOf, validateSurface              } from "@/commo
 import      { PYTHON_ALIGNER                                     } from "@/python/profile.ts"        ;
 import      { KIND_AXES                                          } from "@/typescript/grid-kinds.ts" ;
 
-const ROOT    = join(import.meta.dir, "..")                                          ;
-const GRAMMAR = readFileSync(join(ROOT, "skills/xxx/references/grammar.md"), "utf8") ;
+const ROOT    = join(import.meta.dir, "..")                                             ;
+const GRAMMAR = readFileSync(join(ROOT, "product/rules/references/grammar.md"), "utf8") ;
 
 /** Reads the `ID`s in the first column of the tables in grammar.md's `## <n>.` sections, in order. */
 function idsInSection(number: number): readonly string[] {
@@ -52,8 +52,8 @@ describe("surface forms — TypeScript", () => {
 
 describe("surface forms — Python", () => {
 	test("every table in the fixture maps to a pattern", () => {
-		const dirs = [join(ROOT, "skills/xxx/fixtures/python"), join(ROOT, "skills/xxx/fixtures/python/corpus")] ;
-		let tables = 0                                                                                           ;
+		const dirs = [join(ROOT, "test/fixtures/python")] ;
+		let tables = 0                                    ;
 		for (const dir of dirs) {
 			for (const file of readdirSync(dir, { recursive: true }).map(String).filter(name => name.endsWith(".py"))) {
 				const result = alignSource(readFileSync(join(dir, file), "utf8"), PYTHON_ALIGNER, { minRows: 3, apply: false });

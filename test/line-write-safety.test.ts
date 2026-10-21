@@ -19,21 +19,21 @@ import      {
 import      { tmpdir          } from "node:os"   ;
 import      { join, resolve   } from "node:path" ;
 
-const ROOT    = resolve(import.meta.dir, "..")                                           ;
-const BUN     = process.execPath                                                         ;
-const SCRIPT  = join(ROOT, "skills/xxx/scripts/python/06_align-tables.ts")               ;
-const FIXTURE = readFileSync(join(ROOT, "skills/xxx/fixtures/python/tables.py"), "utf8") ;
+const ROOT    = resolve(import.meta.dir, "..")                                     ;
+const BUN     = process.execPath                                                   ;
+const SCRIPT  = join(ROOT, "product/engine/python/06_align-tables.ts")             ;
+const FIXTURE = readFileSync(join(ROOT, "test/fixtures/python/tables.py"), "utf8") ;
 
 const workspaces: string[] = [];
 
 function workspace(): string {
-	const value = mkdtempSync(join(tmpdir(), "xxx-line-write-"));
+	const value = mkdtempSync(join(tmpdir(), "boxbox-line-write-"));
 	workspaces.push(value);
 	return value;
 }
 
 function leftovers(target: string): readonly string[] {
-	return readdirSync(resolve(target, "..")).filter(name => name.includes("xxx-stage") || name.includes("xxx-write.lock"));
+	return readdirSync(resolve(target, "..")).filter(name => name.includes("boxbox-stage") || name.includes("boxbox-write.lock"));
 }
 
 function run(target: string, args: readonly string[] = ["--write"], path = process.env.PATH): ReturnType<typeof Bun.spawnSync> {

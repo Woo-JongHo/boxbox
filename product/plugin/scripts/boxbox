@@ -1,0 +1,8 @@
+#!/bin/sh
+# The npm identity is not owned by this project. Run only an explicitly configured local engine.
+# The BoxBox npm installer configures its own Node launcher during installation.
+if [ -z "${BOXBOX_CLI:-}" ]; then
+	printf '%s\n' 'BoxBox: no local engine configured. Install the BoxBox npm installer or set BOXBOX_CLI to the installed BoxBox dist/cli.js path.' >&2
+	exit 2
+fi
+exec node "$BOXBOX_CLI" "$@"

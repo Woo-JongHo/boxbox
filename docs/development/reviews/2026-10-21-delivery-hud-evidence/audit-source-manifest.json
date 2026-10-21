@@ -1,0 +1,19 @@
+{
+  ".github/workflows/verify.yml": "024c5543a052ae5727f40ccc2d52748536deeef3120abfd8132aa0e00ee52aac",
+  ".github/workflows/release-candidate.yml": "0426546ff21d408dd3bd64c5a4a45c70d56c91ec681bb111c16bed93af773bd3",
+  ".github/ISSUE_TEMPLATE/bug.yml": "8b164faf8cfb4a3fcd38839860f81f4d5a8011e366c5d66978c71740ea434018",
+  ".github/ISSUE_TEMPLATE/feature.yml": "ff99d8f8521523e11bf3adf908c6d405a2ed556622d4568a28406dca71f9fc39",
+  ".github/ISSUE_TEMPLATE/release.yml": "f420ffde60cc9d32e90a919199ff23a15d58e652fae88012db18c48daa9ec374",
+  ".github/ISSUE_TEMPLATE/config.yml": "13064e7bea658e01e718b414fbb7b3b244f36411fe25ee2055c151f7b534547a",
+  ".github/pull_request_template.md": "c7ca79eca29bea290c08025aabf62f603e4ee42f4125fc899000ac43403b2bb1",
+  "development/tools/release-candidate.ts": "d80ac3e55da42b5211eb320019ded3b312b6125add1404b4fa831255c30acb31",
+  "development/tools/release-smoke.mjs": "2093988c272116b9dd3b615e524210baaf4ebf352d7a57264f4f96f4efe9f2d0",
+  "test/release-candidate.test.ts": "a222cfcb181209d3c253d5deccfe5c9486cdee2226703d1f841e19b0b7da0446",
+  "docs/development/cicd.md": "bc8af01958b68c9e5293c2676b6367b1e6a4225cc4e5081026c6b588a2f1afe2",
+  "development/tools/hud.mjs": "2915eb923c9b1831879165701064debeb612c56cfdec4bb37a62c9aa27cc17d8",
+  "test/hud.test.ts": "790687abaaa1234c0056741dada60b786f549f556b8c47ef3f3af66db0dea8b1",
+  "development/skills/boxbox-status/SKILL.md": "8bc9b2f8aab1e3853fc02637af6042becc33014826e9e848dd066dbc712c1afe",
+  "docs/development/hud.md": "bfcf62f35733b1b073a9cea09d2132bfa81c6d0850e2b2e110acf5f6649c7f30",
+  "package.json": "f64971ef23bfe7c567aa6ff82a0f54d8d2e567f273532fe82c8888655a509d18",
+  "product/installer/platform.mjs": "fa92c707282691fafe0c7a8ffd58bc4d43c7eea286bbc1274884e091cba017f0"
+}

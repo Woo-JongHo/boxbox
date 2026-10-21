@@ -1,0 +1,20 @@
+{
+	"name": "boxbox",
+	"version": "@BOXBOX_VERSION@",
+	"private": true,
+	"description": "Development artifact for the BoxBox TypeScript and Python alignment engine",
+	"type": "module",
+	"engines": {
+		"node": ">=22.22.3"
+	},
+	"files": [
+		"dist/internal-runner.js",
+		"README.md"
+	],
+	"exports": {
+		"./internal-runner": "./dist/internal-runner.js"
+	},
+	"dependencies": {
+		"typescript": "7.0.2"
+	}
+}

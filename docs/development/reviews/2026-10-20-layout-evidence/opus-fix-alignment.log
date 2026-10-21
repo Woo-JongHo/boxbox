@@ -1,0 +1,62 @@
+import-declarations files=3 changed=0 errors=0
+align-tables file=development/tools/sync-plugin.ts groups=7 misaligned=2 edits=6 compressed=0 compressed-members=0 refused=0 write=true
+      11-12  declaration-equals rows= 2  equals=17 semicolon=106  edits=0
+      29-31  declaration-equals rows= 3  equals=19 semicolon=96  edits=0
+      33-34  declaration-equals rows= 2  equals=21 semicolon=56  edits=0
+      50-51  declaration-equals rows= 2  equals=19 semicolon=68  edits=3
+      63-64  declaration-equals rows= 2  equals=23 semicolon=72  edits=3
+      72-73  declaration-equals rows= 2  equals=19 semicolon=75  edits=0
+      77-78  declaration-equals rows= 2  equals=23 semicolon=45  edits=0
+  parse=ok tool=typescript passes=2
+align-tables file=test/layout.test.ts groups=6 misaligned=2 edits=18 compressed=0 compressed-members=0 refused=0 write=true
+      17-18  declaration-equals rows= 2  equals=26 semicolon=59  edits=0
+      33-35  declaration-equals rows= 3  equals=20 semicolon=187  edits=0
+      51-53  call-statements    rows= 3  subject-close-paren=34 matcher-dot=35 matcher-open-paren=45 matcher-close-paren=72 semicolon=74  edits=9
+      57-59  call-statements    rows= 3  subject-close-paren=39 matcher-dot=40 matcher-open-paren=50 matcher-close-paren=86 semicolon=88  edits=9
+      78-80  call-statements    rows= 3  subject-close-paren=43 matcher-dot=44 matcher-open-paren=60 matcher-close-paren=66 semicolon=68  edits=0
+      92-94  call-statements    rows= 3  subject-close-paren=65 matcher-dot=66 matcher-open-paren=76 matcher-close-paren=112 semicolon=114  edits=0
+  parse=ok tool=typescript passes=2
+align-tables file=product/engine/typescript/grid-kinds.ts groups=43 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0 write=true
+      47-49  interface-members  rows= 3  colon=18 semicolon=27  edits=0
+      61-63  interface-members  rows= 3  colon=19 semicolon=37  edits=0
+      69-72  interface-members  rows= 4  colon=24 semicolon=97  edits=0
+      98-99  declaration-equals rows= 2  equals=16 semicolon=67  edits=0
+    106-107  declaration-equals rows= 2  equals=17 semicolon=50  edits=0
+    112-114  declaration-equals rows= 3  equals=18 semicolon=117  edits=0
+    122-124  declaration-equals rows= 3  equals=18 semicolon=89  edits=0
+    168-170  declaration-equals rows= 3  equals=17 semicolon=81  edits=0
+    174-176  declaration-equals rows= 3  equals=20 semicolon=57  edits=0
+    181-182  declaration-equals rows= 2  equals=16 semicolon=48  edits=0
+    223-225  declaration-equals rows= 3  equals=20 semicolon=62  edits=0
+    230-231  declaration-equals rows= 2  equals=16 semicolon=68  edits=0
+    295-296  declaration-equals rows= 2  equals=17 semicolon=108  edits=0
+    313-315  declaration-equals rows= 3  equals=36 semicolon=71  edits=0
+    317-318  declaration-equals rows= 2  equals=23 semicolon=80  edits=0
+    331-332  declaration-equals rows= 2  equals=21 semicolon=59  edits=0
+    343-344  declaration-equals rows= 2  equals=17 semicolon=127  edits=0
+    360-362  declaration-equals rows= 3  equals=36 semicolon=80  edits=0
+    364-365  declaration-equals rows= 2  equals=23 semicolon=125  edits=0
+    367-368  declaration-equals rows= 2  equals=21 semicolon=76  edits=0
+    379-380  declaration-equals rows= 2  equals=18 semicolon=53  edits=0
+    382-385  declaration-equals rows= 4  equals=24 semicolon=81  edits=0
+    393-394  declaration-equals rows= 2  equals=24 semicolon=73  edits=0
+    402-404  declaration-equals rows= 3  equals=36 semicolon=102  edits=0
+    406-407  declaration-equals rows= 2  equals=19 semicolon=76  edits=0
+    442-443  declaration-equals rows= 2  equals=36 semicolon=84  edits=0
+    475-479  object-rows        rows= 5  open-brace=8 property1=10 colon1=15 value1=17 comma1=39 property2=41 colon2=46 value2=48 comma2=79 property3=81 colon3=84 value3=86 comma3=99 property4=101 colon4=108 value4=110 close-brace=115 tail=116  edits=0
+    507-508  declaration-equals rows= 2  equals=26 semicolon=91  edits=0
+    513-515  object-rows        rows= 3  open-brace=8 property1=10 colon1=15 value1=17 comma1=37 property2=39 colon2=44 value2=46 comma2=71 property3=73 colon3=76 value3=78 comma3=100 property4=102 colon4=109 value4=111 close-brace=116 tail=117  edits=0
+    528-529  declaration-equals rows= 2  equals=36 semicolon=101  edits=0
+    561-562  declaration-equals rows= 2  equals=21 semicolon=46  edits=0
+    566-567  declaration-equals rows= 2  equals=36 semicolon=109  edits=0
+    569-572  declaration-equals rows= 4  equals=24 semicolon=76  edits=0
+    580-583  declaration-equals rows= 4  equals=26 semicolon=71  edits=0
+    602-603  declaration-equals rows= 2  equals=18 semicolon=62  edits=0
+    716-754  registration       rows=39  colon=29 value=31  edits=0
+    767-781  registration       rows=15  colon=25 value=27  edits=0
+    793-796  declaration-equals rows= 4  colon=20 equals=38 semicolon=61  edits=0
+    798-800  declaration-equals rows= 3  equals=25 semicolon=171  edits=0
+    824-829  declaration-equals rows= 6  equals=21 semicolon=112  edits=0
+    836-837  declaration-equals rows= 2  equals=23 semicolon=112  edits=0
+    860-861  declaration-equals rows= 2  equals=17 semicolon=40  edits=0
+    897-907  declaration-equals rows=11  equals=20 semicolon=176  edits=0

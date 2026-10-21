@@ -1,0 +1,11 @@
+{
+  "command": "bun run pack:installer",
+  "exitCode": 0,
+  "sourceManifestSha256": "e7def196c0e7e0192b797922440ab6b28a533a4c172463c9547b2ded8a640e0d",
+  "sourceStableDuringBuild": true,
+  "artifactSha256": "6fc35d7c92f6eeb1b442d6d21901ed6f27c06e9654f412750b4530b638b89b8f",
+  "engineSha256": "7c45f6b4d062147e0adfbb7a2d0e9c7a1cceccee118a90be48fc33fae2c6d632",
+  "buildLogSha256": "cc9187a2d93fb57cbf4c2f64aea6fd0083b5a6e4845878039359582518fbf280",
+  "sourceBaseCommit": "34581a76384e91317b3563e475f564a3fb55778c",
+  "sourceWorktreeDirty": true
+}

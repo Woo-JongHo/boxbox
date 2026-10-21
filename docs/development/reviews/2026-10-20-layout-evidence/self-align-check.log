@@ -1,0 +1,736 @@
+import-declarations files=77 changed=0 errors=0
+align-tables file=development/harness/report.ts groups=10 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      22-23  declaration-equals rows= 2  equals=18 semicolon=63  edits=0
+      26-30  interface-members  rows= 5  colon=23 semicolon=39  edits=0
+      39-41  declaration-equals rows= 3  equals=15 call-open-paren=22 call-close-paren=35 semicolon=37  edits=0
+      54-57  interface-members  rows= 4  colon=21 semicolon=30  edits=0
+      73-85  registration       rows=13  colon=10 value=12  edits=0
+    107-108  declaration-equals rows= 2  equals=15 subscript-close=37 semicolon=39  edits=0
+    127-128  declaration-equals rows= 2  equals=22 semicolon=105  edits=0
+    145-146  declaration-equals rows= 2  equals=17 call-open-paren=30 call-close-paren=39 semicolon=41  edits=0
+    149-151  declaration-equals rows= 3  equals=19 semicolon=132  edits=0
+    164-173  declaration-equals rows=10  equals=22 semicolon=122  edits=0
+align-tables file=development/harness/run.ts groups=26 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      30-33  declaration-equals rows= 4  equals=21 semicolon=60  edits=0
+      38-39  declaration-equals rows= 2  equals=23 semicolon=122  edits=0
+      42-44  interface-members  rows= 3  colon=20 semicolon=36  edits=0
+      48-49  declaration-equals rows= 2  equals=17 semicolon=97  edits=0
+      70-73  declaration-equals rows= 4  equals=17 call-open-paren=22 call-close-paren=60 semicolon=62  edits=0
+      85-87  registration       rows= 3  colon=17 value=19  edits=0
+    137-141  interface-members  rows= 5  colon=24 semicolon=78  edits=0
+    148-152  declaration-equals rows= 5  equals=26 semicolon=95  edits=0
+    155-157  declaration-equals rows= 3  equals=30 semicolon=83  edits=0
+    160-163  registration       rows= 4  colon=25 value=27  edits=0
+    171-173  registration       rows= 3  colon=17 value=19  edits=0
+    178-182  declaration-equals rows= 5  equals=17 semicolon=77  edits=0
+    187-189  registration       rows= 3  colon=17 value=19  edits=0
+    196-198  declaration-equals rows= 3  equals=18 semicolon=151  edits=0
+    200-205  registration       rows= 6  colon=15 value=17  edits=0
+    225-227  declaration-equals rows= 3  equals=17 semicolon=133  edits=0
+    235-237  declaration-equals rows= 3  equals=19 semicolon=93  edits=0
+    245-246  declaration-equals rows= 2  equals=16 call-open-paren=23 call-comma1=27 call-arg2=29 list-arg2-open=29 list-arg2-comma1=57 list-arg2-el2=59 list-arg2-close=66 call-comma2=67 call-arg3=69 call-close-paren=76 semicolon=78  edits=0
+    251-256  registration       rows= 6  colon=23 value=25  edits=0
+    268-269  declaration-equals rows= 2  equals=22 semicolon=68  edits=0
+    292-300  declaration-equals rows= 9  equals=20 semicolon=148  edits=0
+    302-303  declaration-equals rows= 2  equals=26 semicolon=125  edits=0
+    306-308  declaration-equals rows= 3  equals=24 semicolon=50  edits=0
+    315-318  declaration-equals rows= 4  colon=22 equals=38 semicolon=65  edits=0
+    338-340  registration       rows= 3  colon=22 value=24  edits=0
+    362-363  declaration-equals rows= 2  equals=26 semicolon=109  edits=0
+align-tables file=development/tools/build-cli-artifact.ts groups=3 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+       6-10  declaration-equals rows= 5  equals=19 semicolon=89  edits=0
+      25-32  registration       rows= 8  colon=16 value=18  edits=0
+      36-37  declaration-equals rows= 2  equals=17 semicolon=53  edits=0
+align-tables file=development/tools/build-installer-artifact.ts groups=4 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      32-37  declaration-equals rows= 6  equals=22 semicolon=166  edits=0
+      50-52  declaration-equals rows= 3  equals=30 semicolon=122  edits=0
+      62-63  declaration-equals rows= 2  equals=24 semicolon=544  edits=0
+      69-70  declaration-equals rows= 2  equals=24 semicolon=70  edits=0
+align-tables file=development/tools/build-node-artifact.ts groups=3 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+       9-11  declaration-equals rows= 3  equals=15 semicolon=67  edits=0
+      19-25  registration       rows= 7  colon=16 value=18  edits=0
+      29-30  declaration-equals rows= 2  equals=17 semicolon=62  edits=0
+align-tables file=development/tools/check-layout.ts groups=3 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      16-18  declaration-equals rows= 3  equals=29 semicolon=68  edits=0
+      22-24  declaration-equals rows= 3  equals=22 semicolon=90  edits=0
+      26-28  declaration-equals rows= 3  equals=27 semicolon=66  edits=0
+align-tables file=development/tools/collect-syntax-cases.ts groups=8 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      14-19  interface-members  rows= 6  colon=37 semicolon=72  edits=0
+      44-45  declaration-equals rows= 2  equals=22 semicolon=75  edits=0
+      49-51  declaration-equals rows= 3  equals=26 semicolon=139  edits=0
+      55-58  registration       rows= 4  colon=24 value=26  edits=0
+      65-67  registration       rows= 3  colon=34 value=36  edits=0
+      72-76  registration       rows= 5  colon=26 value=28  edits=0
+      83-84  declaration-equals rows= 2  equals=17 semicolon=117  edits=0
+      86-91  registration       rows= 6  colon=39 value=41  edits=0
+align-tables file=development/tools/corpus-candidates.ts groups=26 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      25-28  declaration-equals rows= 4  equals=20 semicolon=68  edits=0
+      31-42  interface-members  rows=12  colon=27 semicolon=133  edits=0
+      46-51  interface-members  rows= 6  colon=24 semicolon=55  edits=0
+      55-71  interface-members  rows=17  colon=31 semicolon=71  edits=0
+      74-77  declaration-equals rows= 4  equals=17 semicolon=104  edits=0
+      89-90  declaration-equals rows= 2  equals=18 semicolon=229  edits=0
+    100-101  declaration-equals rows= 2  equals=23 semicolon=51  edits=0
+    117-118  declaration-equals rows= 2  equals=27 semicolon=56  edits=0
+    134-136  declaration-equals rows= 3  equals=32 semicolon=179  edits=0
+    146-147  declaration-equals rows= 2  equals=23 call-open-paren=37 call-close-paren=44 semicolon=46  edits=0
+    159-161  declaration-equals rows= 3  equals=19 semicolon=266  edits=0
+    170-171  declaration-equals rows= 2  equals=44 semicolon=109  edits=0
+    173-174  declaration-equals rows= 2  equals=24 semicolon=67  edits=0
+    178-179  declaration-equals rows= 2  equals=22 semicolon=158  edits=0
+    181-183  declaration-equals rows= 3  equals=28 semicolon=142  edits=0
+    188-189  declaration-equals rows= 2  equals=26 semicolon=66  edits=0
+    191-192  declaration-equals rows= 2  equals=20 semicolon=40  edits=0
+    222-224  declaration-equals rows= 3  equals=29 semicolon=239  edits=0
+    228-229  declaration-equals rows= 2  equals=29 call-open-paren=38 call-close-paren=53 semicolon=55  edits=0
+    240-242  declaration-equals rows= 3  equals=21 semicolon=222  edits=0
+    248-252  declaration-equals rows= 5  equals=20 semicolon=65  edits=0
+    254-255  declaration-equals rows= 2  equals=21 semicolon=92  edits=0
+    259-260  declaration-equals rows= 2  equals=30 semicolon=60  edits=0
+    264-265  declaration-equals rows= 2  equals=27 call-open-paren=47 call-close-paren=184 semicolon=186  edits=0
+    268-272  declaration-equals rows= 5  equals=31 semicolon=886  edits=0
+    278-279  declaration-equals rows= 2  equals=16 semicolon=142  edits=0
+align-tables file=development/tools/corpus-fetch.ts groups=4 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      18-23  interface-members  rows= 6  colon=24 semicolon=44  edits=0
+      31-32  declaration-equals rows= 2  equals=12 semicolon=60  edits=0
+      55-56  declaration-equals rows= 2  equals=17 semicolon=65  edits=0
+      80-82  declaration-equals rows= 3  equals=19 semicolon=94  edits=0
+align-tables file=development/tools/corpus-judge.ts groups=19 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      33-34  declaration-equals rows= 2  equals=12 semicolon=76  edits=0
+      36-37  declaration-equals rows= 2  equals=10 semicolon=74  edits=0
+      39-40  declaration-equals rows= 2  equals=22 semicolon=89  edits=0
+      43-47  interface-members  rows= 5  colon=23 semicolon=32  edits=0
+      51-59  interface-members  rows= 9  colon=23 semicolon=58  edits=0
+      63-68  interface-members  rows= 6  colon=27 semicolon=36  edits=0
+      73-76  declaration-equals rows= 4  equals=16 semicolon=81  edits=0
+     94-102  interface-members  rows= 9  colon=27 semicolon=47  edits=0
+    119-121  declaration-equals rows= 3  equals=21 semicolon=130  edits=0
+    133-134  declaration-equals rows= 2  equals=22 semicolon=67  edits=0
+    143-144  declaration-equals rows= 2  equals=17 semicolon=53  edits=0
+    150-151  declaration-equals rows= 2  equals=23 semicolon=82  edits=0
+    157-159  declaration-equals rows= 3  equals=36 semicolon=135  edits=0
+    163-164  declaration-equals rows= 2  equals=30 semicolon=130  edits=0
+    174-176  declaration-equals rows= 3  equals=17 semicolon=84  edits=0
+    182-183  declaration-equals rows= 2  equals=17 semicolon=53  edits=0
+    191-192  declaration-equals rows= 2  equals=15 semicolon=118  edits=0
+    194-195  declaration-equals rows= 2  equals=22 semicolon=66  edits=0
+    200-202  declaration-equals rows= 3  equals=21 semicolon=74  edits=0
+align-tables file=development/tools/corpus-measures.ts groups=8 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      21-23  declaration-equals rows= 3  equals=12 semicolon=76  edits=0
+      26-28  interface-members  rows= 3  colon=23 semicolon=32  edits=0
+      32-40  interface-members  rows= 9  colon=28 semicolon=37  edits=0
+      64-66  declaration-equals rows= 3  equals=27 semicolon=81  edits=0
+      72-80  registration       rows= 9  colon=27 value=29  edits=0
+      88-89  declaration-equals rows= 2  equals=16 semicolon=69  edits=0
+    105-106  declaration-equals rows= 2  equals=21 semicolon=78  edits=0
+    114-119  declaration-equals rows= 6  equals=22 semicolon=131  edits=0
+align-tables file=development/tools/corpus-promote.ts groups=8 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      28-31  declaration-equals rows= 4  equals=15 semicolon=79  edits=0
+      34-36  interface-members  rows= 3  colon=23 semicolon=32  edits=0
+      40-45  interface-members  rows= 6  colon=27 semicolon=36  edits=0
+      91-92  declaration-equals rows= 2  equals=29 semicolon=34  edits=0
+      97-99  declaration-equals rows= 3  equals=25 call-open-paren=31 call-comma1=38 call-arg2=40 call-close-paren=102 semicolon=104  edits=0
+    142-143  declaration-equals rows= 2  equals=22 semicolon=79  edits=0
+    148-151  declaration-equals rows= 4  equals=20 semicolon=80  edits=0
+    156-157  declaration-equals rows= 2  equals=14 semicolon=64  edits=0
+align-tables file=development/tools/corpus-signatures.ts groups=24 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      38-39  declaration-equals rows= 2  equals=12 semicolon=60  edits=0
+      42-47  interface-members  rows= 6  colon=24 semicolon=44  edits=0
+      56-60  interface-members  rows= 5  colon=23 semicolon=32  edits=0
+      64-75  interface-members  rows=12  colon=27 semicolon=92  edits=0
+      79-87  interface-members  rows= 9  colon=23 semicolon=58  edits=0
+      92-94  interface-members  rows= 3  colon=31 semicolon=46  edits=0
+    101-102  declaration-equals rows= 2  equals=17 semicolon=95  edits=0
+    122-123  declaration-equals rows= 2  equals=26 semicolon=46  edits=0
+    162-170  interface-members  rows= 9  colon=24 semicolon=36  edits=0
+    174-178  interface-members  rows= 5  colon=28 semicolon=51  edits=0
+    185-195  registration       rows=11  colon=22 value=24  edits=0
+    208-213  declaration-equals rows= 6  equals=28 semicolon=79  edits=0
+    227-229  declaration-equals rows= 3  equals=26 semicolon=51  edits=0
+    233-234  declaration-equals rows= 2  equals=28 semicolon=99  edits=0
+    236-237  declaration-equals rows= 2  equals=49 semicolon=98  edits=0
+    245-246  declaration-equals rows= 2  equals=40 semicolon=106  edits=0
+    248-256  registration       rows= 9  colon=43 value=45  edits=0
+    290-293  declaration-equals rows= 4  equals=25 semicolon=166  edits=0
+    314-321  interface-members  rows= 8  colon=27 semicolon=57  edits=0
+    340-349  declaration-equals rows=10  colon=24 equals=148 semicolon=233  edits=0
+    357-358  declaration-equals rows= 2  equals=27 semicolon=86  edits=0
+    370-372  declaration-equals rows= 3  equals=23 semicolon=147  edits=0
+    374-377  declaration-equals rows= 4  equals=27 semicolon=267  edits=0
+    380-381  declaration-equals rows= 2  equals=26 call-open-paren=32 call-comma1=38 call-arg2=40 call-close-paren=60 semicolon=62  edits=0
+align-tables file=development/tools/corpus-triage.ts groups=10 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      22-24  declaration-equals rows= 3  equals=12 semicolon=72  edits=0
+      27-30  interface-members  rows= 4  colon=23 semicolon=58  edits=0
+      59-60  declaration-equals rows= 2  equals=18 semicolon=127  edits=0
+      63-64  declaration-equals rows= 2  equals=23 call-open-paren=29 call-comma1=33 call-arg2=35 call-close-paren=65 semicolon=67  edits=0
+      87-88  declaration-equals rows= 2  equals=24 semicolon=160  edits=0
+     97-102  declaration-equals rows= 6  equals=24 semicolon=173  edits=0
+    104-105  declaration-equals rows= 2  equals=28 semicolon=56  edits=0
+    114-115  declaration-equals rows= 2  equals=17 semicolon=65  edits=0
+    120-121  declaration-equals rows= 2  equals=18 semicolon=205  edits=0
+    124-125  declaration-equals rows= 2  equals=22 semicolon=174  edits=0
+align-tables file=development/tools/eval.ts groups=37 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      33-38  declaration-equals rows= 6  equals=17 semicolon=84  edits=0
+      40-41  declaration-equals rows= 2  equals=13 semicolon=75  edits=0
+      44-52  interface-members  rows= 9  colon=13 semicolon=31  edits=0
+      56-64  interface-members  rows= 9  colon=10 semicolon=29  edits=0
+      83-85  declaration-equals rows= 3  equals=25 semicolon=63  edits=0
+    155-156  declaration-equals rows= 2  equals=17 semicolon=95  edits=0
+    160-161  declaration-equals rows= 2  equals=21 semicolon=57  edits=0
+    178-181  declaration-equals rows= 4  equals=20 semicolon=292  edits=0
+    199-200  declaration-equals rows= 2  equals=20 semicolon=40  edits=0
+    225-230  declaration-equals rows= 6  equals=24 semicolon=83  edits=0
+    232-233  declaration-equals rows= 2  equals=17 semicolon=79  edits=0
+    242-247  declaration-equals rows= 6  equals=23 semicolon=103  edits=0
+    251-254  declaration-equals rows= 4  equals=18 semicolon=79  edits=0
+    280-285  registration       rows= 6  colon=37 value=39  edits=0
+    314-316  declaration-equals rows= 3  equals=20 semicolon=58  edits=0
+    337-338  declaration-equals rows= 2  colon=17 equals=49 semicolon=56  edits=0
+    347-349  declaration-equals rows= 3  colon=19 equals=35 semicolon=42  edits=0
+    352-353  declaration-equals rows= 2  equals=22 semicolon=101  edits=0
+    379-380  declaration-equals rows= 2  equals=16 semicolon=100  edits=0
+    385-387  declaration-equals rows= 3  equals=40 semicolon=84  edits=0
+    392-393  declaration-equals rows= 2  equals=19 semicolon=70  edits=0
+    398-400  declaration-equals rows= 3  equals=21 semicolon=131  edits=0
+    406-408  declaration-equals rows= 3  equals=26 semicolon=31  edits=0
+    410-412  declaration-equals rows= 3  equals=21 semicolon=115  edits=0
+    414-415  declaration-equals rows= 2  equals=24 semicolon=59  edits=0
+    422-424  registration       rows= 3  colon=30 value=32  edits=0
+    426-428  registration       rows= 3  colon=28 value=30  edits=0
+    431-433  declaration-equals rows= 3  equals=31 semicolon=93  edits=0
+    435-437  declaration-equals rows= 3  equals=27 semicolon=161  edits=0
+    446-451  declaration-equals rows= 6  equals=18 semicolon=121  edits=0
+    463-465  registration       rows= 3  colon=29 value=31  edits=0
+    469-474  registration       rows= 6  colon=26 value=28  edits=0
+    491-493  declaration-equals rows= 3  equals=24 semicolon=97  edits=0
+    543-544  declaration-equals rows= 2  equals=16 semicolon=34  edits=0
+    558-561  declaration-equals rows= 4  colon=15 equals=29 semicolon=142  edits=0
+    596-598  declaration-equals rows= 3  equals=17 semicolon=56  edits=0
+    600-601  declaration-equals rows= 2  equals=15 semicolon=40  edits=0
+align-tables file=development/tools/examples-check.ts groups=1 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      30-32  declaration-equals rows= 3  equals=16 semicolon=79  edits=0
+align-tables file=development/tools/stress-corpus.ts groups=22 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      29-31  declaration-equals rows= 3  equals=13 semicolon=68  edits=0
+      49-52  registration       rows= 4  colon=13 value=15  edits=0
+      55-58  registration       rows= 4  colon=13 value=15  edits=0
+      61-64  registration       rows= 4  colon=13 value=15  edits=0
+      67-70  registration       rows= 4  colon=13 value=15  edits=0
+      73-76  registration       rows= 4  colon=13 value=15  edits=0
+      79-82  registration       rows= 4  colon=13 value=15  edits=0
+      85-88  registration       rows= 4  colon=13 value=15  edits=0
+      92-94  declaration-equals rows= 3  equals=16 semicolon=22  edits=0
+     97-100  interface-members  rows= 4  colon=22 semicolon=31  edits=0
+    109-110  declaration-equals rows= 2  equals=17 semicolon=53  edits=0
+    118-119  declaration-equals rows= 2  equals=20 semicolon=48  edits=0
+    129-130  declaration-equals rows= 2  equals=34 semicolon=80  edits=0
+    135-136  declaration-equals rows= 2  equals=27 semicolon=46  edits=0
+    141-144  declaration-equals rows= 4  equals=28 semicolon=93  edits=0
+    158-164  registration       rows= 7  colon=15 value=17  edits=0
+    168-175  interface-members  rows= 8  colon=24 semicolon=34  edits=0
+    181-184  declaration-equals rows= 4  equals=32 semicolon=94  edits=0
+    186-188  declaration-equals rows= 3  equals=23 semicolon=93  edits=0
+    196-198  declaration-equals rows= 3  equals=29 semicolon=111  edits=0
+    201-203  registration       rows= 3  colon=23 value=25  edits=0
+    205-207  registration       rows= 3  colon=27 value=29  edits=0
+align-tables file=development/tools/strip-stray-padding.ts groups=3 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      30-32  declaration-equals rows= 3  equals=16 semicolon=56  edits=0
+      34-35  declaration-equals rows= 2  equals=21 semicolon=25  edits=0
+      37-38  declaration-equals rows= 2  equals=23 semicolon=55  edits=0
+align-tables file=development/tools/sync-plugin.ts groups=5 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      12-13  declaration-equals rows= 2  equals=17 semicolon=106  edits=0
+      30-32  declaration-equals rows= 3  equals=19 semicolon=96  edits=0
+      34-35  declaration-equals rows= 2  equals=21 semicolon=56  edits=0
+      75-76  declaration-equals rows= 2  equals=19 semicolon=75  edits=0
+      80-81  declaration-equals rows= 2  equals=23 semicolon=45  edits=0
+align-tables file=development/tools/sync-product.ts groups=8 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      24-27  interface-members  rows= 4  colon=33 semicolon=42  edits=0
+      36-40  interface-members  rows= 5  colon=22 semicolon=80  edits=0
+      43-45  declaration-equals rows= 3  equals=15 semicolon=145  edits=0
+      66-68  declaration-equals rows= 3  equals=19 semicolon=111  edits=0
+      86-87  declaration-equals rows= 2  equals=22 semicolon=85  edits=0
+    103-104  declaration-equals rows= 2  equals=26 semicolon=117  edits=0
+    114-116  declaration-equals rows= 3  equals=27 semicolon=57  edits=0
+    118-123  declaration-equals rows= 6  equals=32 semicolon=123  edits=0
+align-tables file=development/tools/test-completed.ts groups=7 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      30-34  declaration-equals rows= 5  equals=15 semicolon=71  edits=0
+      39-43  interface-members  rows= 5  colon=20 semicolon=40  edits=0
+      57-60  declaration-equals rows= 4  equals=20 semicolon=94  edits=0
+      73-75  declaration-equals rows= 3  equals=17 semicolon=58  edits=0
+      78-80  declaration-equals rows= 3  equals=17 semicolon=183  edits=0
+    108-109  declaration-equals rows= 2  equals=19 semicolon=128  edits=0
+    116-118  declaration-equals rows= 3  equals=14 semicolon=114  edits=0
+align-tables file=development/tools/usage-report.ts groups=6 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      18-24  interface-members  rows= 7  colon=23 semicolon=33  edits=0
+      31-33  declaration-equals rows= 3  equals=20 semicolon=142  edits=0
+      40-42  interface-members  rows= 3  colon=22 semicolon=31  edits=0
+      47-49  declaration-equals rows= 3  equals=22 semicolon=78  edits=0
+      55-56  declaration-equals rows= 2  equals=23 semicolon=78  edits=0
+      87-93  declaration-equals rows= 7  equals=20 semicolon=156  edits=0
+align-tables file=development/tools/verify-syntax-cases.ts groups=7 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      14-17  interface-members  rows= 4  colon=35 semicolon=45  edits=0
+      22-24  declaration-equals rows= 3  equals=20 semicolon=179  edits=0
+      35-36  declaration-equals rows= 2  equals=107 semicolon=132  edits=0
+      86-88  declaration-equals rows= 3  equals=20 semicolon=197  edits=0
+      90-92  registration       rows= 3  colon=26 value=28  edits=0
+      94-99  registration       rows= 6  colon=44 value=46  edits=0
+    107-108  declaration-equals rows= 2  equals=17 semicolon=56  edits=0
+align-tables file=product/engine/cli.ts groups=21 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      50-53  interface-members  rows= 4  colon=22 semicolon=39  edits=0
+      57-61  interface-members  rows= 5  colon=27 semicolon=81  edits=0
+      92-93  declaration-equals rows= 2  equals=19 semicolon=46  edits=0
+    100-102  declaration-equals rows= 3  equals=19 semicolon=50  edits=0
+    117-120  declaration-equals rows= 4  equals=15 colon=17 semicolon=46  edits=0
+    142-143  declaration-equals rows= 2  equals=19 semicolon=48  edits=0
+    158-160  interface-members  rows= 3  colon=29 semicolon=48  edits=0
+    164-168  declaration-equals rows= 5  equals=21 semicolon=84  edits=0
+    174-176  declaration-equals rows= 3  equals=26 semicolon=131  edits=0
+    187-190  registration       rows= 4  colon=20 value=22  edits=0
+    211-215  declaration-equals rows= 5  equals=22 semicolon=258  edits=0
+    217-219  declaration-equals rows= 3  equals=25 semicolon=87  edits=0
+    226-227  declaration-equals rows= 2  equals=23 semicolon=108  edits=0
+    238-242  declaration-equals rows= 5  equals=27 semicolon=220  edits=0
+    257-258  declaration-equals rows= 2  equals=17 semicolon=33  edits=0
+    263-269  registration       rows= 7  colon=26 value=28  edits=0
+    313-314  declaration-equals rows= 2  equals=20 semicolon=54  edits=0
+    318-321  declaration-equals rows= 4  equals=22 semicolon=169  edits=0
+    344-347  registration       rows= 4  colon=28 value=30  edits=0
+    359-361  declaration-equals rows= 3  equals=18 semicolon=40  edits=0
+    385-387  declaration-equals rows= 3  equals=27 semicolon=234  edits=0
+align-tables file=product/engine/common/conventions.ts groups=8 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      20-30  interface-members  rows=11  colon=27 semicolon=62  edits=0
+      40-42  interface-members  rows= 3  colon=20 semicolon=38  edits=0
+      63-64  declaration-equals rows= 2  equals=38 semicolon=58  edits=0
+      80-82  interface-members  rows= 3  colon=19 semicolon=70  edits=0
+      86-87  declaration-equals rows= 2  equals=16 semicolon=56  edits=0
+    106-107  declaration-equals rows= 2  equals=18 semicolon=173  edits=0
+    139-140  declaration-equals rows= 2  equals=21 semicolon=105  edits=0
+    146-148  declaration-equals rows= 3  equals=23 semicolon=140  edits=0
+align-tables file=product/engine/common/examples.ts groups=8 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      10-11  declaration-equals rows= 2  equals=37 semicolon=41  edits=0
+      17-19  interface-members  rows= 3  colon=25 semicolon=45  edits=0
+      23-40  interface-members  rows=18  colon=27 semicolon=167  edits=0
+      44-52  interface-members  rows= 9  colon=27 semicolon=89  edits=0
+      55-59  declaration-equals rows= 5  colon=15 equals=35 semicolon=108  edits=0
+      68-69  declaration-equals rows= 2  equals=16 semicolon=117  edits=0
+      72-73  declaration-equals rows= 2  equals=16 semicolon=129  edits=0
+    107-108  declaration-equals rows= 2  equals=23 semicolon=43  edits=0
+align-tables file=product/engine/common/hook.ts groups=4 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      10-14  interface-members  rows= 5  colon=26 semicolon=87  edits=0
+      42-43  declaration-equals rows= 2  equals=16 call-open-paren=33 call-close-paren=62 semicolon=64  edits=0
+      77-78  declaration-equals rows= 2  equals=17 semicolon=111  edits=0
+      81-82  declaration-equals rows= 2  equals=19 semicolon=191  edits=0
+align-tables file=product/engine/common/report.ts groups=21 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      54-55  declaration-equals rows= 2  equals=20 semicolon=153  edits=0
+      69-72  interface-members  rows= 4  colon=20 semicolon=48  edits=0
+      78-83  interface-members  rows= 6  colon=23 semicolon=33  edits=0
+      90-92  interface-members  rows= 3  colon=28 semicolon=53  edits=0
+     96-103  interface-members  rows= 8  colon=27 semicolon=62  edits=0
+    114-117  interface-members  rows= 4  colon=23 semicolon=32  edits=0
+    121-123  interface-members  rows= 3  colon=21 semicolon=72  edits=0
+    138-148  registration       rows=11  colon=8 value=10  edits=0
+    157-160  registration       rows= 4  colon=14 value=16  edits=0
+    165-168  declaration-equals rows= 4  equals=22 semicolon=133  edits=0
+    170-173  object-rows        rows= 4  open-brace=8 property1=10 colon1=13 value1=15 comma1=20 property2=22 colon2=28 value2=30 comma2=58 property3=60 colon3=67 value3=69 comma3=137 property4=139 colon4=146 value4=148 close-brace=326 tail=327  edits=0
+    179-181  declaration-equals rows= 3  equals=18 semicolon=103  edits=0
+    187-189  declaration-equals rows= 3  equals=32 semicolon=108  edits=0
+    202-203  declaration-equals rows= 2  equals=20 semicolon=107  edits=0
+    210-212  declaration-equals rows= 3  equals=21 semicolon=122  edits=0
+    225-229  declaration-equals rows= 5  equals=22 semicolon=123  edits=0
+    258-259  declaration-equals rows= 2  equals=39 semicolon=95  edits=0
+    264-265  declaration-equals rows= 2  equals=20 semicolon=90  edits=0
+    273-275  declaration-equals rows= 3  equals=41 semicolon=74  edits=0
+    278-281  registration       rows= 4  colon=22 value=24  edits=0
+    301-302  declaration-equals rows= 2  colon=25 equals=41 semicolon=46  edits=0
+align-tables file=product/engine/common/signature.ts groups=1 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      11-12  declaration-equals rows= 2  equals=16 semicolon=55  edits=0
+align-tables file=product/engine/common/surface.ts groups=3 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      14-17  interface-members  rows= 4  colon=25 semicolon=45  edits=0
+      24-26  interface-members  rows= 3  colon=27 semicolon=52  edits=0
+      46-47  declaration-equals rows= 2  equals=21 semicolon=84  edits=0
+align-tables file=product/engine/hook.ts groups=4 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      38-39  declaration-equals rows= 2  equals=14 semicolon=84  edits=0
+      73-75  declaration-equals rows= 3  equals=19 semicolon=92  edits=0
+      90-95  declaration-equals rows= 6  equals=19 semicolon=145  edits=0
+    118-119  declaration-equals rows= 2  equals=18 semicolon=84  edits=0
+align-tables file=product/engine/report.ts groups=3 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      34-36  declaration-equals rows= 3  equals=17 semicolon=95  edits=0
+      67-69  declaration-equals rows= 3  equals=17 semicolon=62  edits=0
+      72-77  declaration-equals rows= 6  equals=19 semicolon=124  edits=0
+align-tables file=product/engine/rule-data.ts groups=0 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+align-tables file=product/packages/cli/entry.ts groups=0 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+align-tables file=test/c-align.test.ts groups=11 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+       7-11  registration       rows= 5  colon=16 value=18  edits=0
+      23-24  declaration-equals rows= 2  equals=21 semicolon=83  edits=0
+      25-28  call-statements    rows= 4  subject-close-paren=32 matcher-dot=33 matcher-open-paren=38 matcher-close-paren=64 semicolon=66  edits=0
+      38-40  call-statements    rows= 3  subject-close-paren=32 matcher-dot=33 matcher-open-paren=38 matcher-close-paren=45 semicolon=47  edits=0
+      51-52  declaration-equals rows= 2  equals=21 semicolon=83  edits=0
+      53-55  call-statements    rows= 3  subject-close-paren=23 matcher-dot=24 matcher-open-paren=29 matcher-close-paren=54 semicolon=56  edits=0
+      64-65  declaration-equals rows= 2  equals=21 semicolon=83  edits=0
+      66-68  call-statements    rows= 3  subject-close-paren=23 matcher-dot=24 matcher-open-paren=29 matcher-close-paren=57 semicolon=59  edits=0
+      79-80  declaration-equals rows= 2  equals=21 semicolon=83  edits=0
+      81-84  call-statements    rows= 4  subject-close-paren=32 matcher-dot=33 matcher-open-paren=38 matcher-close-paren=67 semicolon=69  edits=0
+    118-120  call-statements    rows= 3  subject-close-paren=36 matcher-dot=37 matcher-open-paren=42 matcher-close-paren=49 semicolon=51  edits=0
+align-tables file=test/cli.test.ts groups=34 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      18-20  declaration-equals rows= 3  equals=27 semicolon=74  edits=0
+      23-25  interface-members  rows= 3  colon=20 semicolon=29  edits=0
+      41-44  registration       rows= 4  colon=15 value=17  edits=0
+      56-58  declaration-equals rows= 3  equals=20 call-open-paren=26 call-comma1=36 call-arg2=38 call-close-paren=53 semicolon=55  edits=0
+      62-64  registration       rows= 3  colon=22 value=24  edits=0
+      66-71  declaration-equals rows= 6  equals=25 semicolon=97  edits=0
+      92-94  declaration-equals rows= 3  equals=22 semicolon=52  edits=0
+      95-99  call-statements    rows= 5  subject-close-paren=36 matcher-dot=37 matcher-open-paren=47 matcher-close-paren=64 semicolon=66  edits=0
+    106-109  declaration-equals rows= 4  equals=25 semicolon=64  edits=0
+    110-115  call-statements    rows= 6  subject-close-paren=71 matcher-dot=72 matcher-open-paren=77 matcher-close-paren=88 semicolon=90  edits=0
+    124-126  call-statements    rows= 3  subject-close-paren=57 matcher-dot=58 matcher-open-paren=68 matcher-close-paren=85 semicolon=87  edits=0
+    134-138  declaration-equals rows= 5  equals=21 semicolon=79  edits=0
+    139-143  call-statements    rows= 5  subject-close-paren=50 matcher-dot=51 matcher-open-paren=67 matcher-close-paren=76 semicolon=78  edits=0
+    147-150  declaration-equals rows= 4  equals=21 semicolon=80  edits=0
+    151-153  call-statements    rows= 3  subject-close-paren=51 matcher-dot=52 matcher-open-paren=57 matcher-close-paren=79 semicolon=81  edits=0
+    155-157  call-statements    rows= 3  subject-close-paren=51 matcher-dot=52 matcher-open-paren=62 matcher-close-paren=86 semicolon=88  edits=0
+    161-162  declaration-equals rows= 2  equals=19 semicolon=41  edits=0
+    164-166  declaration-equals rows= 3  equals=25 semicolon=83  edits=0
+    167-170  call-statements    rows= 4  subject-close-paren=37 matcher-dot=42 matcher-open-paren=55 matcher-close-paren=77 semicolon=79  edits=0
+    171-172  declaration-equals rows= 2  equals=27 semicolon=99  edits=0
+    173-178  call-statements    rows= 6  subject-close-paren=45 matcher-dot=46 matcher-open-paren=51 matcher-close-paren=58 semicolon=60  edits=0
+    179-180  declaration-equals rows= 2  equals=29 semicolon=88  edits=0
+    181-184  call-statements    rows= 4  subject-close-paren=41 matcher-dot=46 matcher-open-paren=54 matcher-close-paren=76 semicolon=78  edits=0
+    198-200  call-statements    rows= 3  subject-close-paren=50 matcher-dot=55 matcher-open-paren=65 matcher-close-paren=84 semicolon=86  edits=0
+    205-206  declaration-equals rows= 2  equals=23 semicolon=45  edits=0
+    208-210  declaration-equals rows= 3  equals=33 semicolon=111  edits=0
+    219-220  declaration-equals rows= 2  equals=25 semicolon=84  edits=0
+    228-230  declaration-equals rows= 3  equals=21 semicolon=97  edits=0
+    231-238  call-statements    rows= 8  subject-close-paren=46 matcher-dot=47 matcher-open-paren=63 matcher-close-paren=84 semicolon=86  edits=0
+    242-244  declaration-equals rows= 3  equals=21 semicolon=58  edits=0
+    245-249  call-statements    rows= 5  subject-close-paren=37 matcher-dot=38 matcher-open-paren=43 matcher-close-paren=49 semicolon=51  edits=0
+    268-269  declaration-equals rows= 2  equals=22 semicolon=36  edits=0
+    277-279  call-statements    rows= 3  subject-close-paren=64 matcher-dot=65 matcher-open-paren=75 matcher-close-paren=85 semicolon=87  edits=0
+    283-284  declaration-equals rows= 2  equals=22 semicolon=36  edits=0
+align-tables file=test/conventions.test.ts groups=7 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      22-23  declaration-equals rows= 2  equals=11 semicolon=101  edits=0
+      38-40  call-statements    rows= 3  subject-close-paren=91 matcher-dot=92 matcher-open-paren=100 matcher-close-paren=118 semicolon=120  edits=0
+      48-51  call-statements    rows= 4  subject-close-paren=61 matcher-dot=62 matcher-open-paren=67 matcher-close-paren=73 semicolon=75  edits=0
+      78-80  call-statements    rows= 3  subject-close-paren=47 matcher-dot=48 matcher-open-paren=56 matcher-close-paren=78 semicolon=80  edits=0
+      94-96  call-statements    rows= 3  subject-close-paren=49 matcher-dot=50 matcher-open-paren=58 matcher-close-paren=112 semicolon=114  edits=0
+    100-101  declaration-equals rows= 2  equals=22 semicolon=223  edits=0
+    106-107  declaration-equals rows= 2  equals=21 semicolon=157  edits=0
+align-tables file=test/corpus-candidates.test.ts groups=13 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      15-17  declaration-equals rows= 3  equals=27 semicolon=105  edits=0
+      22-28  declaration-equals rows= 7  equals=19 semicolon=97  edits=0
+      50-51  declaration-equals rows= 2  equals=23 semicolon=370  edits=0
+      56-57  declaration-equals rows= 2  equals=19 semicolon=58  edits=0
+      65-66  declaration-equals rows= 2  equals=22 semicolon=82  edits=0
+      67-71  call-statements    rows= 5  subject-close-paren=76 matcher-dot=81 matcher-open-paren=86 matcher-close-paren=109 semicolon=111  edits=0
+      77-78  declaration-equals rows= 2  equals=19 semicolon=388  edits=0
+      83-85  call-statements    rows= 3  subject-close-paren=142 matcher-dot=143 matcher-open-paren=156 matcher-close-paren=161 semicolon=163  edits=0
+      89-90  declaration-equals rows= 2  equals=19 semicolon=352  edits=0
+      94-97  call-statements    rows= 4  subject-close-paren=76 matcher-dot=81 matcher-open-paren=86 matcher-close-paren=102 semicolon=104  edits=0
+    101-102  declaration-equals rows= 2  equals=19 semicolon=336  edits=0
+    105-106  declaration-equals rows= 2  equals=22 call-open-paren=34 call-close-paren=92 semicolon=94  edits=0
+    107-109  call-statements    rows= 3  subject-close-paren=67 matcher-dot=68 matcher-open-paren=78 matcher-close-paren=151 semicolon=153  edits=0
+align-tables file=test/corpus-evidence.test.ts groups=5 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+       7-12  registration       rows= 6  colon=15 value=17  edits=0
+      16-24  registration       rows= 9  colon=15 value=17  edits=0
+      31-38  registration       rows= 8  colon=26 value=28  edits=0
+      43-44  declaration-equals rows= 2  equals=21 call-open-paren=36 call-comma1=47 call-arg2=49 call-close-paren=62 semicolon=64  edits=0
+      53-56  call-statements    rows= 4  subject-close-paren=24 matcher-dot=29 matcher-open-paren=37 matcher-close-paren=61 semicolon=63  edits=0
+align-tables file=test/corpus-judge.test.ts groups=6 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+        4-5  declaration-equals rows= 2  equals=12 semicolon=72  edits=0
+       9-10  declaration-equals rows= 2  equals=16 call-open-paren=26 call-comma1=32 call-arg2=34 call-close-paren=36 semicolon=38  edits=0
+      11-14  call-statements    rows= 4  subject-close-paren=33 matcher-dot=34 matcher-open-paren=42 matcher-close-paren=93 semicolon=95  edits=0
+      25-28  call-statements    rows= 4  subject-close-paren=43 matcher-dot=44 matcher-open-paren=49 matcher-close-paren=59 semicolon=61  edits=0
+      33-35  object-rows        rows= 3  open-brace=12 property1=14 colon1=24 value1=26 comma1=89 property2=91 colon2=97 value2=99 comma2=104 property3=106 colon3=112 value3=114 close-brace=119 tail=120  edits=0
+      42-47  call-statements    rows= 6  subject-close-paren=23 matcher-dot=24 matcher-open-paren=34 matcher-close-paren=61 semicolon=63  edits=0
+align-tables file=test/corpus-measures.test.ts groups=6 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      10-12  declaration-equals rows= 3  equals=10 semicolon=75  edits=0
+      26-28  object-rows        rows= 3  open-brace=12 property1=14 colon1=24 value1=26 comma1=30 property2=32 colon2=41 value2=43 comma2=56 property3=58 colon3=64 value3=66 close-brace=70 tail=71  edits=0
+      34-36  declaration-equals rows= 3  equals=23 semicolon=53  edits=0
+      38-42  call-statements    rows= 5  subject-close-paren=31 matcher-dot=32 matcher-open-paren=44 matcher-close-paren=49 semicolon=51  edits=0
+      58-60  call-statements    rows= 3  subject-close-paren=96 matcher-dot=97 matcher-open-paren=109 matcher-close-paren=115 semicolon=117  edits=0
+      64-66  call-statements    rows= 3  call-open-paren=28 call-close-paren=68 subject-close-paren=69 matcher-dot=70 matcher-open-paren=75 matcher-close-paren=91 semicolon=93  edits=0
+align-tables file=test/corpus-promote.test.ts groups=4 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+        6-7  declaration-equals rows= 2  equals=27 semicolon=77  edits=0
+      15-17  declaration-equals rows= 3  equals=21 call-open-paren=34 call-comma1=47 call-arg2=49 call-close-paren=69 semicolon=71  edits=0
+      18-21  call-statements    rows= 4  subject-close-paren=36 matcher-dot=41 matcher-open-paren=51 matcher-close-paren=127 semicolon=129  edits=0
+      25-26  declaration-equals rows= 2  equals=22 semicolon=105  edits=0
+align-tables file=test/corpus-triage.test.ts groups=3 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+        5-7  declaration-equals rows= 3  equals=12 semicolon=72  edits=0
+      22-25  call-statements    rows= 4  subject-close-paren=78 matcher-dot=79 matcher-open-paren=87 matcher-close-paren=118 semicolon=120  edits=0
+      36-38  call-statements    rows= 3  subject-close-paren=23 matcher-dot=24 matcher-open-paren=34 matcher-close-paren=47 semicolon=49  edits=0
+align-tables file=test/corpus.test.ts groups=4 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+       9-14  interface-members  rows= 6  colon=24 semicolon=34  edits=0
+      31-36  call-statements    rows= 6  subject-close-paren=56 matcher-dot=57 matcher-open-paren=67 matcher-close-paren=105 semicolon=107  edits=0
+      42-43  declaration-equals rows= 2  equals=22 semicolon=65  edits=0
+      57-59  declaration-equals rows= 3  equals=23 semicolon=178  edits=0
+align-tables file=test/cpp-align.test.ts groups=6 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      14-18  registration       rows= 5  colon=16 value=18  edits=0
+      31-33  call-statements    rows= 3  subject-close-paren=24 matcher-dot=25 matcher-open-paren=30 matcher-close-paren=58 semicolon=60  edits=0
+      43-45  call-statements    rows= 3  subject-close-paren=32 matcher-dot=33 matcher-open-paren=38 matcher-close-paren=45 semicolon=47  edits=0
+      63-65  call-statements    rows= 3  subject-close-paren=24 matcher-dot=25 matcher-open-paren=30 matcher-close-paren=68 semicolon=70  edits=0
+      77-79  call-statements    rows= 3  subject-close-paren=24 matcher-dot=25 matcher-open-paren=30 matcher-close-paren=59 semicolon=61  edits=0
+    100-101  declaration-equals rows= 2  equals=21 semicolon=105  edits=0
+align-tables file=test/examples.test.ts groups=4 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      20-23  declaration-equals rows= 4  equals=14 semicolon=154  edits=0
+      38-39  declaration-equals rows= 2  equals=20 semicolon=158  edits=0
+      52-53  declaration-equals rows= 2  equals=32 semicolon=186  edits=0
+      71-73  call-statements    rows= 3  subject-close-paren=72 matcher-dot=77 matcher-open-paren=85 matcher-close-paren=105 semicolon=107  edits=0
+align-tables file=test/go-align.test.ts groups=11 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      15-19  registration       rows= 5  colon=16 value=18  edits=0
+      32-33  declaration-equals rows= 2  equals=17 semicolon=80  edits=0
+      34-36  call-statements    rows= 3  subject-close-paren=19 matcher-dot=20 matcher-open-paren=25 matcher-close-paren=45 semicolon=47  edits=0
+      49-51  declaration-equals rows= 3  equals=20 semicolon=83  edits=0
+      52-54  call-statements    rows= 3  subject-close-paren=50 matcher-dot=51 matcher-open-paren=56 matcher-close-paren=96 semicolon=98  edits=0
+      65-66  declaration-equals rows= 2  equals=17 semicolon=80  edits=0
+      67-69  call-statements    rows= 3  subject-close-paren=19 matcher-dot=20 matcher-open-paren=25 matcher-close-paren=44 semicolon=46  edits=0
+      80-81  declaration-equals rows= 2  equals=17 semicolon=80  edits=0
+      82-84  call-statements    rows= 3  subject-close-paren=19 matcher-dot=20 matcher-open-paren=25 matcher-close-paren=52 semicolon=54  edits=0
+    127-129  declaration-equals rows= 3  equals=21 semicolon=103  edits=0
+    132-134  call-statements    rows= 3  subject-close-paren=43 matcher-dot=44 matcher-open-paren=54 matcher-close-paren=71 semicolon=73  edits=0
+align-tables file=test/guarded-run.test.ts groups=18 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      26-30  declaration-equals rows= 5  equals=22 semicolon=257  edits=0
+      35-36  declaration-equals rows= 2  equals=17 semicolon=45  edits=0
+      37-40  call-statements    rows= 4  subject-close-paren=152 matcher-dot=157 matcher-open-paren=167 matcher-close-paren=176 semicolon=178  edits=0
+      65-66  declaration-equals rows= 2  equals=18 semicolon=27  edits=0
+      77-78  declaration-equals rows= 2  equals=29 semicolon=43  edits=0
+      87-88  declaration-equals rows= 2  equals=30 semicolon=144  edits=0
+      90-93  registration       rows= 4  colon=19 value=21  edits=0
+      95-98  call-statements    rows= 4  subject-close-paren=24 matcher-dot=25 matcher-open-paren=39 matcher-close-paren=63 semicolon=65  edits=0
+    102-103  declaration-equals rows= 2  equals=18 semicolon=51  edits=0
+    110-113  declaration-equals rows= 4  equals=20 semicolon=48  edits=0
+    129-130  declaration-equals rows= 2  equals=18 semicolon=70  edits=0
+    139-140  declaration-equals rows= 2  equals=20 semicolon=42  edits=0
+    142-144  declaration-equals rows= 3  equals=19 semicolon=93  edits=0
+    146-147  declaration-equals rows= 2  equals=29 semicolon=43  edits=0
+    162-164  declaration-equals rows= 3  equals=16 semicolon=113  edits=0
+    170-172  declaration-equals rows= 3  equals=20 semicolon=53  edits=0
+    183-184  declaration-equals rows= 2  equals=18 semicolon=27  edits=0
+    198-201  call-statements    rows= 4  subject-close-paren=145 matcher-dot=150 matcher-open-paren=160 matcher-close-paren=192 semicolon=194  edits=0
+align-tables file=test/harness.test.ts groups=2 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      22-35  registration       rows=14  colon=24 value=26  edits=0
+    104-106  object-rows        rows= 3  open-brace=12 property1=14 colon1=17 value1=19 comma1=27 property2=29 colon2=32 value2=34 comma2=40 property3=42 colon3=50 value3=52 comma3=58 property4=60 colon4=69 value4=71 comma4=76 property5=78 colon5=89 value5=91 comma5=93 property6=95 colon6=103 value6=105 close-brace=108 tail=109  edits=0
+align-tables file=test/hook.test.ts groups=9 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      10-12  declaration-equals rows= 3  equals=14 call-open-paren=20 call-comma1=36 call-arg2=38 call-close-paren=70 semicolon=72  edits=0
+      18-20  call-statements    rows= 3  call-open-paren=21 call-comma1=33 call-arg2=35 call-close-paren=45 subject-close-paren=46 matcher-dot=47 matcher-open-paren=52 matcher-close-paren=65 semicolon=67  edits=0
+      52-54  declaration-equals rows= 3  equals=23 semicolon=113  edits=0
+      56-59  call-statements    rows= 4  subject-close-paren=22 matcher-dot=27 matcher-open-paren=37 matcher-close-paren=95 semicolon=97  edits=0
+      69-71  declaration-equals rows= 3  equals=22 semicolon=115  edits=0
+      78-83  call-statements    rows= 6  subject-close-paren=78 matcher-dot=83 matcher-open-paren=93 matcher-close-paren=114 semicolon=116  edits=0
+      87-89  declaration-equals rows= 3  equals=22 semicolon=133  edits=0
+     99-101  declaration-equals rows= 3  equals=22 semicolon=164  edits=0
+    103-105  call-statements    rows= 3  subject-close-paren=28 matcher-dot=29 matcher-open-paren=34 matcher-close-paren=37 semicolon=39  edits=0
+align-tables file=test/install-lifecycle.test.ts groups=4 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      20-21  declaration-equals rows= 2  equals=22 semicolon=55  edits=0
+      62-66  call-statements    rows= 5  subject-close-paren=64 matcher-dot=65 matcher-open-paren=75 matcher-close-paren=90 semicolon=92  edits=0
+      76-77  declaration-equals rows= 2  equals=21 semicolon=58  edits=0
+      82-84  call-statements    rows= 3  subject-close-paren=62 matcher-dot=63 matcher-open-paren=73 matcher-close-paren=112 semicolon=114  edits=0
+align-tables file=test/installer-artifact.test.ts groups=33 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      25-28  declaration-equals rows= 4  equals=27 semicolon=123  edits=0
+      30-34  declaration        rows= 5  colon=13 semicolon=22  edits=0
+      58-60  declaration-equals rows= 3  equals=21 call-open-paren=27 call-comma1=37 call-arg2=39 call-close-paren=52 semicolon=54  edits=0
+      80-83  declaration-equals rows= 4  equals=22 call-open-paren=27 call-comma1=37 call-arg2=39 call-close-paren=65 semicolon=67  edits=0
+      88-91  assignments        rows= 4  equals=13 semicolon=61  edits=0
+    101-106  declaration-equals rows= 6  equals=22 semicolon=216  edits=0
+    107-109  call-statements    rows= 3  call-open-paren=31 call-comma1=40 call-arg2=42 call-close-paren=49 subject-close-paren=50 matcher-dot=51 matcher-open-paren=59 matcher-close-paren=97 semicolon=99  edits=0
+    116-118  call-statements    rows= 3  subject-close-paren=124 matcher-dot=125 matcher-open-paren=133 matcher-close-paren=188 semicolon=190  edits=0
+    121-122  declaration-equals rows= 2  equals=18 semicolon=163  edits=0
+    123-128  call-statements    rows= 6  subject-close-paren=70 matcher-dot=75 matcher-open-paren=85 matcher-close-paren=188 semicolon=190  edits=0
+    134-135  declaration-equals rows= 2  equals=21 semicolon=76  edits=0
+    138-140  declaration-equals rows= 3  equals=21 semicolon=92  edits=0
+    141-144  call-statements    rows= 4  subject-close-paren=71 matcher-dot=76 matcher-open-paren=88 matcher-close-paren=113 semicolon=115  edits=0
+    148-150  declaration-equals rows= 3  equals=20 semicolon=86  edits=0
+    154-155  declaration-equals rows= 2  equals=18 semicolon=112  edits=0
+    164-166  declaration-equals rows= 3  equals=22 semicolon=92  edits=0
+    173-176  declaration-equals rows= 4  equals=30 semicolon=510  edits=0
+    200-205  declaration-equals rows= 6  equals=33 semicolon=79  edits=0
+    213-214  declaration-equals rows= 2  equals=28 call-open-paren=34 call-comma1=57 call-arg2=59 call-close-paren=74 semicolon=76  edits=0
+    225-227  call-statements    rows= 3  subject-close-paren=110 matcher-dot=111 matcher-open-paren=116 matcher-close-paren=160 semicolon=162  edits=0
+    231-234  declaration-equals rows= 4  equals=28 semicolon=93  edits=0
+    244-245  declaration-equals rows= 2  equals=28 call-open-paren=34 call-comma1=44 call-arg2=46 call-close-paren=67 semicolon=69  edits=0
+    253-254  declaration-equals rows= 2  equals=26 semicolon=286  edits=0
+    262-263  declaration-equals rows= 2  equals=22 semicolon=97  edits=0
+    270-272  call-statements    rows= 3  subject-close-paren=70 matcher-dot=71 matcher-open-paren=76 matcher-close-paren=98 semicolon=100  edits=0
+    274-276  call-statements    rows= 3  subject-close-paren=46 matcher-dot=47 matcher-open-paren=55 matcher-close-paren=69 semicolon=71  edits=0
+    283-284  declaration-equals rows= 2  equals=17 semicolon=120  edits=0
+    295-296  declaration-equals rows= 2  equals=24 semicolon=56  edits=0
+    306-307  declaration-equals rows= 2  equals=20 semicolon=52  edits=0
+    309-311  call-statements    rows= 3  subject-close-paren=75 matcher-dot=76 matcher-open-paren=81 matcher-close-paren=87 semicolon=89  edits=0
+    316-319  declaration-equals rows= 4  equals=26 semicolon=60  edits=0
+    332-333  declaration-equals rows= 2  equals=22 semicolon=95  edits=0
+    348-352  declaration-equals rows= 5  equals=22 semicolon=62  edits=0
+align-tables file=test/java-align.test.ts groups=7 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+       8-12  registration       rows= 5  colon=16 value=18  edits=0
+      49-53  call-statements    rows= 5  subject-close-paren=83 matcher-dot=84 matcher-open-paren=92 matcher-close-paren=153 semicolon=155  edits=0
+      57-58  declaration-equals rows= 2  equals=22 semicolon=67  edits=0
+      82-83  declaration-equals rows= 2  equals=24 semicolon=177  edits=0
+    119-120  declaration-equals rows= 2  equals=21 semicolon=86  edits=0
+    121-124  call-statements    rows= 4  subject-close-paren=32 matcher-dot=33 matcher-open-paren=38 matcher-close-paren=70 semicolon=72  edits=0
+    141-144  call-statements    rows= 4  subject-close-paren=29 matcher-dot=30 matcher-open-paren=35 matcher-close-paren=81 semicolon=83  edits=0
+align-tables file=test/javascript-align.test.ts groups=8 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+       8-12  registration       rows= 5  colon=16 value=18  edits=0
+      28-32  call-statements    rows= 5  subject-close-paren=40 matcher-dot=41 matcher-open-paren=49 matcher-close-paren=100 semicolon=102  edits=0
+      44-45  declaration-equals rows= 2  equals=21 semicolon=49  edits=0
+      46-48  call-statements    rows= 3  subject-close-paren=23 matcher-dot=24 matcher-open-paren=29 matcher-close-paren=51 semicolon=53  edits=0
+      69-70  declaration-equals rows= 2  equals=23 semicolon=53  edits=0
+      75-77  declaration-equals rows= 3  equals=26 semicolon=69  edits=0
+      91-93  call-statements    rows= 3  subject-close-paren=40 matcher-dot=41 matcher-open-paren=49 matcher-close-paren=107 semicolon=109  edits=0
+      95-97  call-statements    rows= 3  subject-close-paren=23 matcher-dot=24 matcher-open-paren=29 matcher-close-paren=55 semicolon=57  edits=0
+align-tables file=test/kotlin-align.test.ts groups=3 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+       8-12  registration       rows= 5  colon=16 value=18  edits=0
+      25-27  call-statements    rows= 3  subject-close-paren=23 matcher-dot=24 matcher-open-paren=29 matcher-close-paren=61 semicolon=63  edits=0
+      50-52  declaration-equals rows= 3  equals=21 semicolon=69  edits=0
+align-tables file=test/layout.test.ts groups=3 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      16-17  declaration-equals rows= 2  equals=26 semicolon=59  edits=0
+      45-47  call-statements    rows= 3  subject-close-paren=43 matcher-dot=44 matcher-open-paren=60 matcher-close-paren=66 semicolon=68  edits=0
+      59-61  call-statements    rows= 3  subject-close-paren=65 matcher-dot=66 matcher-open-paren=76 matcher-close-paren=112 semicolon=114  edits=0
+align-tables file=test/lifecycle-hook.test.ts groups=5 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+        7-8  declaration-equals rows= 2  equals=28 semicolon=88  edits=0
+      22-23  declaration-equals rows= 2  equals=15 semicolon=193  edits=0
+      49-50  declaration-equals rows= 2  equals=15 semicolon=27  edits=0
+      54-56  call-statements    rows= 3  subject-close-paren=95 matcher-dot=96 matcher-open-paren=101 matcher-close-paren=109 semicolon=111  edits=0
+      60-61  declaration-equals rows= 2  equals=17 semicolon=65  edits=0
+align-tables file=test/line-write-safety.test.ts groups=8 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      22-25  declaration-equals rows= 4  equals=14 semicolon=83  edits=0
+      41-44  registration       rows= 4  colon=15 value=17  edits=0
+      63-66  call-statements    rows= 4  subject-close-paren=45 matcher-dot=50 matcher-open-paren=58 matcher-close-paren=66 semicolon=68  edits=0
+      74-76  call-statements    rows= 3  subject-close-paren=43 matcher-dot=44 matcher-open-paren=54 matcher-close-paren=70 semicolon=72  edits=0
+      80-83  declaration-equals rows= 4  equals=24 semicolon=57  edits=0
+     97-101  declaration-equals rows= 5  equals=24 semicolon=57  edits=0
+    108-111  registration       rows= 4  colon=19 value=21  edits=0
+    114-117  call-statements    rows= 4  subject-close-paren=43 matcher-dot=48 matcher-open-paren=58 matcher-close-paren=89 semicolon=91  edits=0
+align-tables file=test/mutation.test.ts groups=10 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      26-28  declaration-equals rows= 3  equals=19 semicolon=76  edits=0
+      31-33  interface-members  rows= 3  colon=23 semicolon=38  edits=0
+      37-45  object-rows        rows= 9  open-brace=4 property1=6 colon1=14 value1=16 comma1=35 property2=37 colon2=47 value2=49 comma2=57 property3=59 colon3=67 value3=69 close-brace=74 tail=75  edits=0
+      52-53  declaration-equals rows= 2  equals=17 semicolon=78  edits=0
+      63-64  declaration-equals rows= 2  equals=22 semicolon=131  edits=0
+      68-70  declaration-equals rows= 3  equals=30 semicolon=117  edits=0
+      80-83  declaration-equals rows= 4  equals=30 semicolon=117  edits=0
+      91-94  declaration-equals rows= 4  equals=22 semicolon=78  edits=0
+    100-101  declaration-equals rows= 2  equals=30 semicolon=107  edits=0
+    103-106  declaration-equals rows= 4  equals=28 semicolon=135  edits=0
+align-tables file=test/normalize-imports.test.ts groups=2 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+        5-7  declaration-equals rows= 3  equals=27 semicolon=96  edits=0
+      15-16  declaration-equals rows= 2  equals=20 semicolon=79  edits=0
+align-tables file=test/parse-check.test.ts groups=1 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+       8-14  registration       rows= 7  colon=15 value=17  edits=0
+align-tables file=test/parser-fault.test.ts groups=8 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      14-18  declaration-equals rows= 5  equals=13 semicolon=82  edits=0
+      31-32  declaration-equals rows= 2  equals=21 call-open-paren=27 call-comma1=37 call-arg2=39 call-close-paren=43 semicolon=45  edits=0
+      40-41  declaration-equals rows= 2  equals=18 semicolon=290  edits=0
+      43-45  registration       rows= 3  colon=15 value=17  edits=0
+      51-54  registration       rows= 4  colon=15 value=17  edits=0
+      82-83  declaration-equals rows= 2  equals=21 call-open-paren=27 call-comma1=35 call-arg2=37 call-close-paren=49 semicolon=51  edits=0
+      88-90  call-statements    rows= 3  subject-close-paren=43 matcher-dot=48 matcher-open-paren=58 matcher-close-paren=88 semicolon=90  edits=0
+     98-100  call-statements    rows= 3  subject-close-paren=43 matcher-dot=48 matcher-open-paren=58 matcher-close-paren=80 semicolon=82  edits=0
+align-tables file=test/plugin-contract.test.ts groups=6 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+       8-11  declaration-equals rows= 4  equals=30 semicolon=125  edits=0
+      15-19  declaration-equals rows= 5  equals=26 semicolon=122  edits=0
+      25-29  call-statements    rows= 5  subject-close-paren=32 matcher-dot=33 matcher-open-paren=41 matcher-close-paren=79 semicolon=81  edits=0
+      36-39  call-statements    rows= 4  subject-close-paren=91 matcher-dot=96 matcher-open-paren=101 matcher-close-paren=106 semicolon=108  edits=0
+      60-61  declaration-equals rows= 2  equals=23 semicolon=144  edits=0
+      73-75  call-statements    rows= 3  subject-close-paren=60 matcher-dot=65 matcher-open-paren=78 matcher-close-paren=89 semicolon=91  edits=0
+align-tables file=test/plugin-hook.test.ts groups=4 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      12-15  declaration-equals rows= 4  equals=28 semicolon=74  edits=0
+      35-40  declaration-equals rows= 6  equals=18 semicolon=162  edits=0
+      44-47  registration       rows= 4  colon=21 value=23  edits=0
+      69-71  call-statements    rows= 3  subject-close-paren=24 matcher-dot=25 matcher-open-paren=35 matcher-close-paren=64 semicolon=66  edits=0
+align-tables file=test/product-identity.test.ts groups=2 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      44-45  declaration-equals rows= 2  equals=15 semicolon=43  edits=0
+      48-55  call-statements    rows= 8  subject-close-paren=87 matcher-dot=88 matcher-open-paren=93 matcher-close-paren=147 semicolon=149  edits=0
+align-tables file=test/public-artifact.test.ts groups=11 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      19-20  declaration-equals rows= 2  equals=28 semicolon=61  edits=0
+      30-33  registration       rows= 4  colon=17 value=19  edits=0
+      49-51  declaration-equals rows= 3  equals=24 semicolon=57  edits=0
+      72-74  declaration-equals rows= 3  equals=25 semicolon=239  edits=0
+      75-77  call-statements    rows= 3  subject-close-paren=36 matcher-dot=37 matcher-open-paren=45 matcher-close-paren=72 semicolon=74  edits=0
+      89-90  declaration-equals rows= 2  equals=26 semicolon=67  edits=0
+    137-139  object-rows        rows= 3  open-brace=12 property1=14 colon1=19 value1=21 comma1=35 property2=37 colon2=42 value2=44 comma2=46 property3=48 colon3=54 value3=56 comma3=58 property4=60 colon4=67 value4=69 close-brace=74 tail=75  edits=0
+    144-145  declaration-equals rows= 2  equals=23 semicolon=110  edits=0
+    158-164  declaration-equals rows= 7  equals=24 semicolon=123  edits=0
+    169-172  declaration-equals rows= 4  equals=30 semicolon=479  edits=0
+    195-197  object-rows        rows= 3  open-brace=12 property1=14 colon1=19 value1=21 comma1=35 property2=37 colon2=42 value2=44 comma2=46 property3=48 colon3=54 value3=56 comma3=90 property4=92 colon4=99 value4=101 close-brace=106 tail=107  edits=0
+align-tables file=test/public-preset.test.ts groups=5 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      20-22  interface-members  rows= 3  colon=22 semicolon=50  edits=0
+      29-36  declaration-equals rows= 8  equals=24 semicolon=77  edits=0
+      41-42  declaration-equals rows= 2  equals=21 semicolon=290  edits=0
+      73-75  declaration-equals rows= 3  equals=29 semicolon=137  edits=0
+      76-80  call-statements    rows= 5  subject-close-paren=55 matcher-dot=60 matcher-open-paren=70 matcher-close-paren=117 semicolon=119  edits=0
+align-tables file=test/python-align.test.ts groups=15 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+       8-12  registration       rows= 5  colon=16 value=18  edits=0
+      26-27  declaration-equals rows= 2  equals=21 semicolon=49  edits=0
+      28-31  call-statements    rows= 4  subject-close-paren=28 matcher-dot=29 matcher-open-paren=34 matcher-close-paren=67 semicolon=69  edits=0
+      42-43  declaration-equals rows= 2  equals=21 semicolon=49  edits=0
+      44-47  call-statements    rows= 4  subject-close-paren=32 matcher-dot=33 matcher-open-paren=38 matcher-close-paren=65 semicolon=67  edits=0
+      56-57  declaration-equals rows= 2  equals=21 semicolon=49  edits=0
+      58-60  call-statements    rows= 3  subject-close-paren=23 matcher-dot=24 matcher-open-paren=29 matcher-close-paren=50 semicolon=52  edits=0
+      87-88  declaration-equals rows= 2  equals=21 semicolon=49  edits=0
+      89-91  call-statements    rows= 3  subject-close-paren=23 matcher-dot=24 matcher-open-paren=29 matcher-close-paren=71 semicolon=73  edits=0
+    100-101  declaration-equals rows= 2  equals=21 semicolon=49  edits=0
+    102-104  call-statements    rows= 3  subject-close-paren=23 matcher-dot=24 matcher-open-paren=29 matcher-close-paren=82 semicolon=84  edits=0
+    144-146  call-statements    rows= 3  subject-close-paren=32 matcher-dot=33 matcher-open-paren=38 matcher-close-paren=45 semicolon=47  edits=0
+    158-159  declaration-equals rows= 2  equals=21 semicolon=49  edits=0
+    160-162  call-statements    rows= 3  subject-close-paren=23 matcher-dot=24 matcher-open-paren=29 matcher-close-paren=58 semicolon=60  edits=0
+    200-203  call-statements    rows= 4  subject-close-paren=51 matcher-dot=52 matcher-open-paren=57 matcher-close-paren=73 semicolon=75  edits=0
+align-tables file=test/report.test.ts groups=15 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      28-29  declaration-equals rows= 2  equals=11 semicolon=113  edits=0
+      48-50  call-statements    rows= 3  subject-close-paren=113 matcher-dot=114 matcher-open-paren=119 matcher-close-paren=129 semicolon=131  edits=0
+      54-55  declaration-equals rows= 2  equals=23 call-open-paren=36 list-arg1-open=37 list-arg1-comma1=142 list-arg1-el2=144 list-arg1-close=152 call-close-paren=153 semicolon=155  edits=0
+      57-59  call-statements    rows= 3  subject-close-paren=41 matcher-dot=42 matcher-open-paren=47 matcher-close-paren=54 semicolon=56  edits=0
+      65-67  declaration-equals rows= 3  equals=21 semicolon=134  edits=0
+      69-71  call-statements    rows= 3  subject-close-paren=64 matcher-dot=65 matcher-open-paren=75 matcher-close-paren=100 semicolon=102  edits=0
+      75-76  declaration-equals rows= 2  equals=21 semicolon=150  edits=0
+      98-99  declaration-equals rows= 2  equals=21 semicolon=180  edits=0
+    121-122  declaration-equals rows= 2  equals=23 semicolon=139  edits=0
+    129-130  declaration-equals rows= 2  equals=21 semicolon=180  edits=0
+    132-134  call-statements    rows= 3  subject-close-paren=51 matcher-dot=52 matcher-open-paren=62 matcher-close-paren=67 semicolon=69  edits=0
+    139-141  declaration-equals rows= 3  equals=19 semicolon=123  edits=0
+    172-173  declaration-equals rows= 2  equals=22 semicolon=91  edits=0
+    176-178  declaration-equals rows= 3  equals=22 semicolon=252  edits=0
+    180-182  call-statements    rows= 3  subject-close-paren=73 matcher-dot=74 matcher-open-paren=82 matcher-close-paren=107 semicolon=109  edits=0
+align-tables file=test/result-json.test.ts groups=5 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+        7-8  declaration-equals rows= 2  equals=27 semicolon=60  edits=0
+      14-15  declaration-equals rows= 2  equals=13 call-open-paren=22 list-arg1-open=23 list-arg1-comma1=30 list-arg1-el2=32 list-arg1-comma2=41 list-arg1-el3=43 list-arg1-comma3=52 list-arg1-el4=54 list-arg1-close=63 call-close-paren=64 semicolon=66  edits=0
+      47-49  call-statements    rows= 3  subject-close-paren=80 matcher-dot=81 matcher-open-paren=89 matcher-close-paren=102 semicolon=104  edits=0
+      61-62  declaration-equals rows= 2  equals=24 semicolon=77  edits=0
+      66-68  call-statements    rows= 3  subject-close-paren=37 matcher-dot=38 matcher-open-paren=48 matcher-close-paren=79 semicolon=81  edits=0
+align-tables file=test/rust-align.test.ts groups=8 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+       8-12  registration       rows= 5  colon=16 value=18  edits=0
+      27-29  call-statements    rows= 3  subject-close-paren=19 matcher-dot=20 matcher-open-paren=25 matcher-close-paren=52 semicolon=54  edits=0
+      38-39  declaration-equals rows= 2  equals=17 semicolon=82  edits=0
+      40-43  call-statements    rows= 4  subject-close-paren=28 matcher-dot=29 matcher-open-paren=34 matcher-close-paren=65 semicolon=67  edits=0
+      60-61  declaration-equals rows= 2  equals=17 semicolon=82  edits=0
+      62-64  call-statements    rows= 3  subject-close-paren=19 matcher-dot=20 matcher-open-paren=25 matcher-close-paren=56 semicolon=58  edits=0
+     99-101  call-statements    rows= 3  subject-close-paren=24 matcher-dot=25 matcher-open-paren=30 matcher-close-paren=58 semicolon=60  edits=0
+    114-116  call-statements    rows= 3  subject-close-paren=23 matcher-dot=24 matcher-open-paren=29 matcher-close-paren=48 semicolon=50  edits=0
+align-tables file=test/strip-stray-padding.test.ts groups=0 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+align-tables file=test/surface.test.ts groups=6 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      10-11  declaration-equals rows= 2  equals=14 semicolon=88  edits=0
+      15-17  declaration-equals rows= 3  equals=16 semicolon=66  edits=0
+      23-27  call-statements    rows= 5  call-open-paren=27 call-close-paren=29 subject-close-paren=30 matcher-dot=31 matcher-open-paren=39 matcher-close-paren=63 semicolon=65  edits=0
+      55-56  declaration-equals rows= 2  equals=19 semicolon=101  edits=0
+      70-74  call-statements    rows= 5  subject-close-paren=92 matcher-dot=93 matcher-open-paren=101 matcher-close-paren=151 semicolon=153  edits=0
+      88-93  call-statements    rows= 6  subject-close-paren=123 matcher-dot=124 matcher-open-paren=132 matcher-close-paren=154 semicolon=156  edits=0
+align-tables file=test/swift-align.test.ts groups=3 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+       8-12  registration       rows= 5  colon=16 value=18  edits=0
+      25-27  call-statements    rows= 3  subject-close-paren=23 matcher-dot=24 matcher-open-paren=29 matcher-close-paren=61 semicolon=63  edits=0
+      50-52  declaration-equals rows= 3  equals=21 semicolon=65  edits=0
+align-tables file=test/typescript-align.test.ts groups=10 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+        6-8  declaration-equals rows= 3  equals=27 semicolon=91  edits=0
+      11-12  declaration-equals rows= 2  equals=18 semicolon=88  edits=0
+      20-21  declaration-equals rows= 2  equals=24 semicolon=82  edits=0
+      29-30  declaration-equals rows= 2  equals=21 semicolon=128  edits=0
+      43-44  declaration-equals rows= 2  equals=24 semicolon=82  edits=0
+      56-57  declaration-equals rows= 2  equals=21 semicolon=128  edits=0
+      74-76  declaration-equals rows= 3  equals=24 semicolon=94  edits=0
+      81-84  call-statements    rows= 4  subject-close-paren=68 matcher-dot=69 matcher-open-paren=79 matcher-close-paren=91 semicolon=93  edits=0
+      90-91  declaration-equals rows= 2  equals=24 semicolon=82  edits=0
+    119-120  declaration-equals rows= 2  equals=20 semicolon=78  edits=0
+align-tables file=test/typescript-write-safety.test.ts groups=6 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      18-20  declaration-equals rows= 3  equals=27 semicolon=91  edits=0
+      49-51  call-statements    rows= 3  subject-close-paren=45 matcher-dot=46 matcher-open-paren=54 matcher-close-paren=66 semicolon=68  edits=0
+      59-61  call-statements    rows= 3  subject-close-paren=43 matcher-dot=44 matcher-open-paren=52 matcher-close-paren=61 semicolon=63  edits=0
+      88-91  declaration-equals rows= 4  equals=24 semicolon=57  edits=0
+    125-127  declaration-equals rows= 3  equals=22 semicolon=129  edits=0
+    129-132  call-statements    rows= 4  subject-close-paren=51 matcher-dot=52 matcher-open-paren=60 matcher-close-paren=65 semicolon=67  edits=0
+align-tables file=test/usage.test.ts groups=2 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+      23-25  object-rows        rows= 3  open-brace=12 property1=14 colon1=19 value1=21 comma1=25 property2=27 colon2=34 value2=36 comma2=44 property3=46 colon3=52 value3=54 comma3=68 property4=70 colon4=76 value4=78 comma4=82 property5=84 colon5=91 value5=93 comma5=96 property6=98 colon6=108 value6=110 comma6=116 property7=118 colon7=124 value7=126 close-brace=138 tail=139  edits=0
+      32-33  declaration-equals rows= 2  equals=25 semicolon=206  edits=0

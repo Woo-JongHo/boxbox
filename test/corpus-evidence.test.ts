@@ -1,7 +1,7 @@
-import      { describe, expect, test  } from "bun:test"                        ;
+import      { describe, expect, test  } from "bun:test"                                  ;
 
-import      { observationOf           } from "../scripts/corpus-signatures.ts" ;
-import type { CensusRow, CorpusSource } from "../scripts/corpus-signatures.ts" ;
+import      { observationOf           } from "../development/tools/corpus-signatures.ts" ;
+import type { CensusRow, CorpusSource } from "../development/tools/corpus-signatures.ts" ;
 
 const source: CorpusSource = {
 	id         : "fixture",

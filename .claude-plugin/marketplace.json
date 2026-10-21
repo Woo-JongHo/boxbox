@@ -1,14 +1,15 @@
 {
-	"name": "xxx-plugins",
+	"name": "boxbox-plugins",
 	"owner": {
 		"name": "Woo-JongHo"
 	},
 	"plugins": [
 		{
-			"name": "xxx",
+			"name": "boxbox",
 			"source": "./plugin",
-			"description": "The xxx plugin: checks and aligns TypeScript and Python files one at a time against tabular readability rules",
-			"version": "0.2.0"
+			"description": "Inspects TypeScript and Python files one at a time against tabular readability rules and formats only through human-approved rules, plus a read-only inspector.",
+			"version": "0.2.2"
 		}
-	]
+	],
+	"description": "BoxBox: tabular readability checks for TypeScript and Python"
 }

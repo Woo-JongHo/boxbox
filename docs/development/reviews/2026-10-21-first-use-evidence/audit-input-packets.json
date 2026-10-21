@@ -1,0 +1,12 @@
+{
+  "opus-snapshot-packet.txt": {
+    "sha256": "b32cfc7a69dc6847a82631a2e670a5a7ca463d9eb273bbaa9991b0fb0a438590",
+    "bytes": 337565,
+    "localSource": "/tmp/boxbox-first-use.lOogPD/opus-snapshot-packet.txt"
+  },
+  "opus-followup-packet.txt": {
+    "sha256": "8cba34ba2e6b89aeff66f3f33b5068a65f2c9ff49cd3632ff1cac62793110aea",
+    "bytes": 239364,
+    "localSource": "/tmp/boxbox-first-use.lOogPD/opus-followup-packet.txt"
+  }
+}

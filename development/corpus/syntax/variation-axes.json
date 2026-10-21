@@ -1,0 +1,203 @@
+{
+	"schemaVersion": 1,
+	"purpose": "research-dimensions-not-formatting-policy",
+	"coverage": "dimensions-listed; combinations-not-exhaustively-generated",
+	"axes": [
+		{
+			"id": "container",
+			"values": [
+				"file",
+				"module-or-namespace",
+				"class",
+				"interface-or-type",
+				"function",
+				"block",
+				"loop",
+				"branch",
+				"literal",
+				"parameter-list",
+				"argument-list",
+				"type-expression",
+				"documentation"
+			],
+			"decision": "unreviewed"
+		},
+		{
+			"id": "target",
+			"values": [
+				"identifier",
+				"attribute-or-property",
+				"index-or-computed-property",
+				"private-name",
+				"array-or-tuple-destructure",
+				"object-destructure",
+				"multiple-targets",
+				"chained-targets"
+			],
+			"decision": "unreviewed"
+		},
+		{
+			"id": "declaration",
+			"values": [
+				"runtime-value",
+				"erased-type",
+				"type-annotation-present",
+				"type-annotation-absent",
+				"initializer-present",
+				"initializer-absent",
+				"optional-member",
+				"definite-assignment",
+				"readonly",
+				"visibility",
+				"static",
+				"ambient",
+				"exported"
+			],
+			"decision": "unreviewed"
+		},
+		{
+			"id": "rhs",
+			"values": [
+				"literal",
+				"name",
+				"attribute",
+				"index-or-slice",
+				"call",
+				"constructor",
+				"await",
+				"yield",
+				"operator-expression",
+				"conditional",
+				"lambda-or-arrow",
+				"function-or-class",
+				"array-or-tuple",
+				"object-or-dict",
+				"set",
+				"comprehension",
+				"template-or-interpolation",
+				"assertion"
+			],
+			"decision": "unreviewed"
+		},
+		{
+			"id": "arguments",
+			"values": [
+				"empty",
+				"one",
+				"many",
+				"positional",
+				"keyword-python",
+				"spread",
+				"star-python",
+				"double-star-python",
+				"nested-call",
+				"bundle",
+				"trailing-comma",
+				"multiline"
+			],
+			"decision": "unreviewed"
+		},
+		{
+			"id": "parameters",
+			"values": [
+				"required",
+				"optional-typescript",
+				"default",
+				"rest",
+				"keyword-only-python",
+				"positional-only-python",
+				"destructured",
+				"generic",
+				"type-bound",
+				"type-default"
+			],
+			"decision": "unreviewed"
+		},
+		{
+			"id": "delimiter-role",
+			"values": [
+				"assignment-equals",
+				"parameter-default-equals",
+				"keyword-argument-equals",
+				"type-colon",
+				"member-colon",
+				"dict-colon",
+				"conditional-colon",
+				"slice-colon",
+				"block-colon",
+				"argument-comma",
+				"parameter-comma",
+				"literal-comma",
+				"binding-comma",
+				"sequence-operator-comma",
+				"optional-question",
+				"conditional-question",
+				"optional-chain",
+				"nullish"
+			],
+			"decision": "unreviewed"
+		},
+		{
+			"id": "shape",
+			"values": [
+				"same-callee",
+				"different-callee",
+				"same-arity",
+				"different-arity",
+				"optional-cells-present",
+				"optional-cells-absent",
+				"nested-shape-match",
+				"nested-shape-mismatch"
+			],
+			"decision": "unreviewed"
+		},
+		{
+			"id": "layout",
+			"values": [
+				"one-line",
+				"multiline",
+				"blank-line",
+				"ordinary-comment",
+				"separator-comment",
+				"trailing-comment",
+				"documentation",
+				"tabs",
+				"spaces",
+				"lf",
+				"crlf",
+				"explicit-continuation-python",
+				"implicit-continuation"
+			],
+			"decision": "unreviewed"
+		},
+		{
+			"id": "width",
+			"values": [
+				"short",
+				"medium",
+				"one-long-outlier",
+				"several-long-values",
+				"mostly-long-values",
+				"unicode-wide",
+				"combining-character",
+				"emoji",
+				"escaped-string"
+			],
+			"decision": "unreviewed"
+		},
+		{
+			"id": "safety",
+			"values": [
+				"valid-syntax",
+				"malformed-syntax",
+				"unterminated-string",
+				"token-joining-risk",
+				"indentation-sensitive",
+				"side-effect-order",
+				"unsupported-profile",
+				"parser-unavailable"
+			],
+			"decision": "unreviewed"
+		}
+	]
+}
