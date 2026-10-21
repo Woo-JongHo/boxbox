@@ -1,0 +1,25 @@
+name: Feature proposal
+description: Describe a problem and measurable acceptance criteria.
+title: "[Feature] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and concrete example
+      description: Describe the user task, current behavior, and a small synthetic example.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Proposed behavior
+      description: Include the affected language, command, host, or installation path.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria and counterexamples
+      description: Specify what must pass and which cases must remain unchanged or refused. New formatting rules require separate human approval.
+    validations:
+      required: true

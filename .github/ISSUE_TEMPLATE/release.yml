@@ -1,0 +1,41 @@
+name: Release candidate
+description: Track candidate evidence and remaining release decisions.
+title: "[Release] "
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Candidate version and source commit
+    validations:
+      required: true
+  - type: textarea
+    id: changes
+    attributes:
+      label: Changes and linked issues or pull requests
+    validations:
+      required: true
+  - type: checkboxes
+    id: candidate-evidence
+    attributes:
+      label: Candidate evidence
+      description: Leave items unchecked until the linked run or evidence exists.
+      options:
+        - label: PR verification passed for the selected source commit.
+        - label: The manual release-candidate workflow passed for that commit.
+        - label: Linux, macOS, and Windows consumed the same recorded SHA-256 archive.
+        - label: Candidate metadata, checksums, native smoke evidence, and change notes are linked below.
+        - label: Required independent review and final audit are recorded.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Workflow runs, artifact digest, evidence, and limitations
+      description: Engine-only smoke does not prove native host hook-event delivery. Record host acceptance separately.
+    validations:
+      required: true
+  - type: textarea
+    id: publication
+    attributes:
+      label: Publication decision and remaining blockers
+      description: Candidate creation does not publish. Record license, package ownership, channel, and explicit publication authorization before a later publishing workflow.
+    validations:
+      required: true
