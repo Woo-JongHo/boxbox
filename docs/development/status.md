@@ -24,15 +24,20 @@ auth and no candidate-root process. A later independently reviewed native Codex 
 648 tests with five existing parser skips, plus TypeScript/shell checks. A later whitespace-only self-layout closure
 passed 39 focused tests and TypeScript checking; it was not another full run. The scoped GLM static source review passed with no mandatory findings. The same local `2b43d24…` archive was delivered to a new chacada directory and independently passed native Windows installation, unknown-key refusal, approved TS/Python journeys and 180-input behavior. It remains a local development artifact, not CI-produced or publicly released.
 
-PR [#5](https://github.com/Woo-JongHo/rowgrid/pull/5) is open. Candidate CI at `3811e34` passed Linux; macOS passed
-637 tests and timed out one alignment child at 60 seconds. The unchanged candidate retry and later PR runs could
-not acquire a macOS runner; they executed no macOS tests. Latest committed-head PR `9b20c44` passed Linux with
-638 tests and 3,290 assertions. Packaging and three-OS smoke remain gated. Instrumented local pressure completed
-160 whole-file runs without a 60-second stationary process; timing instrumentation may alter the symptom.
-[Issue 007](issue-library/records/BBX-20261021-007-validation-timeout.json) remains investigating with unknown cause.
-No speculative runtime fix or timeout increase was made. New TypeScript and Python calculation proposals and their six example
-licenses also await separate decisions in [issue 014](issue-library/records/BBX-20261022-014-preset-coverage.json).
-The isolated Claude authentication probe returned `loggedIn=false`; native Claude hook verification awaits a temporary-login decision. These facts supersede historical snapshots below.
+PR [#5](https://github.com/Woo-JongHo/rowgrid/pull/5) remains open. At frozen source head
+`35b61780ae122744f39d9cb0b935db5f8bccd14b`, [PR run 39635921495](https://github.com/Woo-JongHo/rowgrid/actions/runs/39635921495)
+passed Ubuntu and macOS with 653 tests and zero failures on each. [Candidate run 39637622755](https://github.com/Woo-JongHo/rowgrid/actions/runs/39637622755)
+verified the same source, built one archive with SHA-256 `bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be`,
+and exercised that downloaded archive successfully in engine-only smoke on Ubuntu, macOS and Windows. These passes
+did not reproduce the historical macOS timeout; [issue 007](issue-library/records/BBX-20261021-007-validation-timeout.json)
+remains investigating because its cause is unknown and no timeout or runtime fix was made. The CI archive has the same
+file contents after decompressing its two byte-different embedded host-package streams as local `2b43d24…`, but its
+compressed archive identity is distinct; local native host evidence remains bound to `2b43d24…`. The exact CI archive
+was delivered without installation to a new Windows directory and matched its digest in WSL and native PowerShell;
+delivery did not change live profiles or extend the engine-only CI scope. New TypeScript and Python calculation proposals and their six example
+licenses await separate decisions in [issue 014](issue-library/records/BBX-20261022-014-preset-coverage.json).
+The isolated Claude and Windows Codex authentication probes are unauthenticated; their native hook verification remains
+open. This candidate is not a public release. These facts supersede historical snapshots below.
 
 
 ## Active work — AUTHOR1 matrix-first workflows

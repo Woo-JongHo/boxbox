@@ -1,0 +1,66 @@
+{
+	"schemaVersion": 1,
+	"ok": true,
+	"sha256": "bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be",
+	"version": "0.2.4",
+	"platform": "linux",
+	"arch": "x64",
+	"node": "22.22.3",
+	"checks": [
+		{
+			"command": "doctor",
+			"ok": true,
+			"python": "Python 3.13.16"
+		},
+		{
+			"file": "LF-calls.ts",
+			"previewPreserved": true,
+			"approvedOutput": true,
+			"recheck": true,
+			"idempotent": true
+		},
+		{
+			"file": "CRLF-calls.ts",
+			"previewPreserved": true,
+			"approvedOutput": true,
+			"recheck": true,
+			"idempotent": true
+		},
+		{
+			"file": "LF-assignments.py",
+			"previewPreserved": true,
+			"approvedOutput": true,
+			"recheck": true,
+			"idempotent": true
+		},
+		{
+			"file": "CRLF-assignments.py",
+			"previewPreserved": true,
+			"approvedOutput": true,
+			"recheck": true,
+			"idempotent": true
+		},
+		{
+			"file": "mapping.json",
+			"syntax": true,
+			"candidate": true,
+			"approvalEligible": false,
+			"sourcePreserved": true
+		},
+		{
+			"file": "mapping.yaml",
+			"syntax": true,
+			"candidate": true,
+			"approvalEligible": false,
+			"sourcePreserved": true
+		},
+		{
+			"structuredInvalidSyntaxRefused": true,
+			"unsupportedYamlPreserved": true
+		}
+	],
+	"limitations": [
+		"Host checks and plugin registration were skipped (--engine-only).",
+		"Native host hook-event delivery was not exercised."
+	]
+}

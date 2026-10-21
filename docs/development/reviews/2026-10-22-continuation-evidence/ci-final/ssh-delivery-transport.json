@@ -1,0 +1,19 @@
+{
+  "exitCode": 0,
+  "stdout": "boxbox-plugin-0.2.4.tgz: OK\n",
+  "stderr": "",
+  "files": [
+    "boxbox-plugin-0.2.4.tgz",
+    "candidate.json",
+    "SHA256SUMS",
+    "README.txt",
+    "smoke-Linux.json",
+    "smoke-Windows.json",
+    "smoke-macOS.json"
+  ],
+  "method": "tar stream over ssh",
+  "earlierAttempts": [
+    "SFTP/scp had no output or completion for about 40 seconds; only its owned local processes were terminated.",
+    "A premature PowerShell verification attempt failed before completed delivery; decoding its error output also failed. No acceptance claim was made."
+  ]
+}

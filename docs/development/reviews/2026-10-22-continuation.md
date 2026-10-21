@@ -45,6 +45,29 @@ instrumentation can affect timing, so this is not evidence that the original def
 deadlines were not changed by that experiment. See [the diagnostic report](2026-10-22-continuation-evidence/ts-stage-diagnostic/report.md)
 and [issue 007](../issue-library/records/BBX-20261021-007-validation-timeout.json).
 
+The later frozen source head `35b61780ae122744f39d9cb0b935db5f8bccd14b` completed both current pipelines.
+[PR run 39635921495](https://github.com/Woo-JongHo/rowgrid/actions/runs/39635921495) passed Ubuntu and macOS with
+653 tests and zero failures on each. [Candidate run 39637622755](https://github.com/Woo-JongHo/rowgrid/actions/runs/39637622755)
+verified the same source, built one archive with SHA-256
+`bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be`, and passed engine-only smoke with that
+downloaded archive on Ubuntu, macOS and Windows. The smoke covered doctor, approved TypeScript/Python LF and CRLF
+preview/apply/recheck/idempotence, JSON/YAML candidate detection and refusal/preservation boundaries. It did not run
+host registration or native hook events. These macOS passes did not reproduce the old timeout, but they do not identify
+its cause or prove a fix; issue 007 remains investigating. The [terminal metadata and smoke outputs](2026-10-22-continuation-evidence/ci-final/)
+retain the exact scope.
+
+The CI archive and local `2b43d24…` archive have different compressed SHA-256 identities. Comparison found only the
+two embedded host-package gzip streams byte-different; their decompressed tar bytes and all file contents are equal.
+This content comparison does not transfer local native host or hook evidence to the CI archive. The candidate is bound
+to source `35b6178`; the subsequent documentation-only commit records these results and is not the candidate source.
+
+The exact CI archive and its safe manifest/smoke records were delivered to the new Windows directory
+`C:\Users\woo\Downloads\BoxBox\0.2.4\ci-39637622755-1-bec62643`. WSL `sha256sum -c` and native PowerShell
+both verified SHA-256 `bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be`. This was delivery and
+digest verification only: it did not reinstall the candidate, change live profiles, or add Windows native-host evidence.
+The retained transport record preserves an abandoned non-completing scp attempt and a premature verification failure
+before the successful tar-over-SSH delivery; neither failed attempt supports an acceptance claim.
+
 ## Work in progress and artifact boundary
 
 The new Python projection has a distinct exact rule key and no inherited approval. The earlier 632-pass local
@@ -94,7 +117,7 @@ acceptance.
 The first independent audit found that the disposable project trust table remained in the isolated candidate config,
 contradicting the initial cleanup sentence. The exact table was subsequently removed; independent closure verified
 zero project tables, mode 0600 with unrelated candidate settings preserved, no temporary candidate auth file and no
-candidate-root process. The finding and correction history are both retained. This closes local cleanup only. The scoped GLM source review passed; SSH/native Windows verification subsequently passed independent review. Same-archive CI/OS remains open.
+candidate-root process. The finding and correction history are both retained. This closes local cleanup only. The scoped GLM source review passed; SSH/native Windows verification subsequently passed independent review. At that local-cleanup stage, same-archive CI/OS remained open; the final CI section above records its later engine-only closure on the distinct source-`35b6178` CI archive.
 
 ## Final scoped GLM source verdict
 

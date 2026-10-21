@@ -105,6 +105,16 @@
         "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/claude-isolated-auth-probe.md"
       ],
       "result": "The isolated candidate CLI returned loggedIn=false, authMethod=none and exit 1. A user decision about temporary isolated login is pending; native Claude hook acceptance has not run. This is distinct from prior provider/model rate limits."
+    },
+    {
+      "name": "Current isolated Windows Codex native-hook prerequisite",
+      "status": "pending",
+      "scope": "Retained isolated 2b43 Windows Codex context only; read-only version/help/login-status probe. No model or hook invocation, login, credential copy, trust/security change or live-profile claim.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/windows-codex-auth-probe.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/windows-codex-auth-probe.json"
+      ],
+      "result": "The installed CLI and enabled plugin expose the required bounded execution controls, but codex login status exited 1 with loggedIn=false and no isolated auth file. Current Windows native hook acceptance cannot run from this retained context as-is."
     }
   ],
   "related": [
@@ -218,6 +228,17 @@
       "summary": "The current macOS Codex native hook scenario passed independent review after correcting evidence integrity/lifecycle/receipt-path gaps. Initial INCOMPLETE reports remain retained. Claude and current Windows native hook acceptance remain open; HUD receipt state is not promoted to host acceptance.",
       "evidence": [
         "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/codex-hooks-2b43/independent-review.md"
+      ]
+    },
+    {
+      "sequence": 9,
+      "date": "2026-10-22",
+      "event": "diagnosed",
+      "status": "pending",
+      "summary": "A read-only prerequisite probe found the retained isolated Windows Codex candidate context unauthenticated. CLI and plugin wiring are present, but no model or hook journey ran. Claude and Windows native hook acceptance remain open without any live-profile claim.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/windows-codex-auth-probe.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/windows-codex-auth-probe.json"
       ]
     }
   ]

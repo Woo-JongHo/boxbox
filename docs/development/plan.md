@@ -28,7 +28,7 @@ The review's AST-hash proposal cannot replace token preservation, syntax accepta
 | R2 | Bounded data-driven policy experiment, consistent Check/Guide lookup and syntax reporting, authoring coverage | Existing approved rule remains byte-identical; unknown/conflicting policies refuse; layered lookup and syntax regressions; diverse positive/negative authoring cases | Python projection source/GLM and local/native Windows `2b43d24…` verification passed; new rule approval pending |
 | R3 | JSON/YAML safe adapters and shared lifecycle; new convention proposals | Strict syntax, source-range edits, comments/scalars preserved, idempotence, installed preview/apply/refusal, reviewed before/after and counterexamples | implementation verified; human decisions pending |
 | R4 | Complete internal alias migration, native host/HUD and supported-platform validation | No unintended relative internal imports; self-contained copy/bundle execution; native output acceptance and accurate HUD state; recorded Windows limits | aliases reviewed; local/native Windows engine and Codex upper/HUD/hooks passed; Claude statusLine passed; Claude/current Windows hooks remain open |
-| R5 | Release integration, documentation and public payload hygiene | Full check, independent review/GLM closure, generated drift check, same-archive CI/OS journeys, EN/KO/zh-CN consistency, clean public payload, concrete publication prerequisites | 648-test full check and local artifact audit passed; later 39-test whitespace closure passed separately; scoped GLM and SSH/native Windows verification passed; same-archive CI/OS remain open |
+| R5 | Release integration, documentation and public payload hygiene | Full check, independent review/GLM closure, generated drift check, same-archive CI/OS journeys, EN/KO/zh-CN consistency, clean public payload, concrete publication prerequisites | Source `35b6178` PR verification passed Ubuntu/macOS; its single CI archive passed engine-only smoke on Ubuntu/macOS/Windows; publication and remaining decisions stay open |
 
 R1's independent catalog, validation and installer work may run concurrently; broad engine import rewriting waits
 until concurrent engine edits settle. R2/R3 share CLI/pipeline ownership and are integrated sequentially. Full build and
@@ -108,7 +108,7 @@ The first implementation deliberately excludes rows already owned by a detailed 
 assignment role could match neighboring rows; nested overlapping alignment is a separate design question.
 
 The later local `2b43d24…` archive passed independent installed verification for the exact unknown key, existing
-approved rules, 180-case behavior and bounded native host surfaces. The scoped GLM static source review and exact-archive SSH/native Windows verification subsequently passed. This remains local-development-candidate evidence; same-archive CI/OS and public approval gates remain open.
+approved rules, 180-case behavior and bounded native host surfaces. The scoped GLM static source review and exact-archive SSH/native Windows verification subsequently passed. That remains local-development-candidate evidence and is separate from the later source-`35b6178` CI candidate, whose single archive passed Ubuntu/macOS/Windows engine smoke. Public approval gates remain open.
 
 ### Loop and completion gate
 
@@ -130,7 +130,7 @@ identified as waiting for a concrete user/external prerequisite; prerequisites d
 on 2026-10-21. The current source CLI accepts all four languages; JSON/YAML write rules are candidate proposals awaiting human
 approval. The native HUD entry-point defect was corrected. The local `2b43d24…` archive passed the Python
 common-column detector boundary and reached the authenticated Codex upper prompt, with disposable trust cleaned after
-an independent finding. Scoped GLM source review and SSH/native Windows verification passed; current macOS Codex hook acceptance passed; Claude/current Windows hook acceptance and current-candidate CI remain open. The existing
+an independent finding. Scoped GLM source review and SSH/native Windows verification passed; current macOS Codex hook acceptance passed. Source `35b6178` PR verification and its single-archive Ubuntu/macOS/Windows engine smoke passed. Claude/current Windows hook acceptance, public rule/license decisions and publication remain open. The existing
 10-language engine is kept, but equivalent product quality for Java, Go, Rust, JavaScript, C, C++, Swift and Kotlin is
 not a completion condition of the first release.
 
