@@ -1,0 +1,6 @@
+This is a controlled integration test in a disposable fixture directory. Use the native apply_patch tool exactly once to replace sample.py with these exact bytes, ending in a newline:
+a = 1
+longer = 22
+mid = 333
+
+Do not format or repair this intentionally misaligned test fixture and do not invoke the engine or any hooks manually. Do not call shell tools. If a hook reports feedback after the edit, do not retry the edit. If a stop hook continues the turn, do not edit anything further; finish with a report. Return JSON containing the session receipt directory you actually received in startup context (or null), the observed edit-hook receipt path (or null), any observed stop-hook receipt path (or null), and whether a hook asked you to continue. Report only paths actually supplied by hooks; do not construct or guess paths.

@@ -1,0 +1,1 @@
+The inventory report is preserved verbatim. Its `.*` matcher statement refers to the development installHooks helper. The release plugin and native hooks/list response use `Write|Edit|MultiEdit|apply_patch`. No hook or engine source was changed for this measurement.

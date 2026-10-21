@@ -1,0 +1,1 @@
+Controlled hook-trust control. Do not use any tool, do not read or edit files, and do not invoke the engine or hooks. Reply exactly UNTRUSTED_CONTROL_DONE.

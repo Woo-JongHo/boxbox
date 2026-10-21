@@ -1,0 +1,7 @@
+{
+  "phase": "profile setup",
+  "failedAssertion": "expected only one installed plugin",
+  "cause": "account-synced remote plugins appear in isolated CODEX_HOME",
+  "executedHostSession": false,
+  "action": "disable all non-BoxBox plugins in test config only; verify effective listing before hook automation"
+}

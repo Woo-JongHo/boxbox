@@ -1,0 +1,27 @@
+{
+  "executable": "C:\\Program Files\\nodejs\\node.exe",
+  "argv": [
+    "C:\\Users\\woo\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js",
+    "exec",
+    "--sandbox",
+    "read-only",
+    "--model",
+    "gpt-5.6-terra",
+    "--skip-git-repo-check",
+    "--json",
+    "--cd",
+    "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\project",
+    "--output-last-message",
+    "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\evidence\\untrusted.final.txt",
+    "-"
+  ],
+  "environmentOverrides": {
+    "LOCALAPPDATA": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\profile-local",
+    "CODEX_HOME": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\codex-home",
+    "XDG_CONFIG_HOME": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\config",
+    "XDG_DATA_HOME": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\data",
+    "npm_config_cache": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\npm-cache"
+  },
+  "admitHooks": false,
+  "sandbox": "read-only"
+}

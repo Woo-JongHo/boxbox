@@ -1,0 +1,7 @@
+11.6.2
+
+added 3 packages in 3s
+0.2.2
+BoxBox local engine is ready; host checks and registration were skipped.
+Permanent installation: C:\Users\woo\Downloads\BoxBox\native-hooks-20261021T045654Z\profile-local\BoxBox\Codex\0.2.2\
+Approved TypeScript call declarations and Python simple assignments can format without an external formatter. Run check and guide, then format --dry-run before an explicit format request; other patterns require approval.

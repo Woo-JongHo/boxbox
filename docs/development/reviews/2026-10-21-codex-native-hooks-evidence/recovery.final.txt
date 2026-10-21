@@ -1,0 +1,3 @@
+Hook feedback: `PostToolUse: PASS.`
+
+Receipt path: `/private/tmp/boxbox-native-hooks-20261021/codex-home/plugins/data/boxbox-boxbox-plugins/hooks/5fb646832fdbed35/6addb1aa0fee98d6ab9606fe2bb055d5ed44fae899db409d4e586af79f3aef27/1792558374487-3cc94a90-5427-486e-ba38-3fea175b2cc8.json`

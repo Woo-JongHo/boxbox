@@ -1,0 +1,1 @@
+This is a read-only host integration probe. Do not call tools. From context actually supplied by startup hooks, report JSON with sessionContextSeen (boolean) and receiptDirectory (exact path or null). Do not infer the directory from this prompt or invent it. If no hook context was supplied, say false/null. Do not inspect files or run commands.

@@ -1,0 +1,5 @@
+{
+  "node": "C:\\Program Files\\nodejs\\node.exe",
+  "cli": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\profile-local\\BoxBox\\Codex\\0.2.2\\runtime\\node_modules\\boxbox\\dist\\cli.js",
+  "skillCommand": "& 'C:\\Program Files\\nodejs\\node.exe' 'C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\profile-local\\BoxBox\\Codex\\0.2.2\\plugin\\scripts\\boxbox.mjs'"
+}

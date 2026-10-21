@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "case": "edit",
+  "threadId": "01a15cd4-2127-7e22-9f92-99b80a57fbf7",
+  "source": {
+    "path": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\codex-home\\sessions\\2026\\10\\21\\rollout-2026-10-21T13-59-28-01a15cd4-2127-7e22-9f92-99b80a57fbf7.jsonl",
+    "sha256": "2be70b1de343ea3002120d2ea52cc423f7e21ff85d432f603b0b894caf146100",
+    "bytes": 82291,
+    "threadIdAssociation": "Thread id matches the recorded native exec thread.started event in edit.jsonl and the original rollout filename; no session_meta was extracted."
+  },
+  "selection": {
+    "method": "Read and verify the full original native rollout, then select only turn_context identity and permission fields at its one-based physical source line; record.ordinal is preserved separately.",
+    "omitted": "Raw session_meta, unrelated instructions, and non-permission turn_context fields were not collected.",
+    "originalEvidenceUnchanged": true,
+    "newHostOrModelSessionStarted": false
+  },
+  "contexts": [
+    {
+      "threadId": "01a15cd4-2127-7e22-9f92-99b80a57fbf7",
+      "turnId": "01a15cd4-217c-7bb1-b820-84e65129669d",
+      "sourceLineOrdinal1Based": 8,
+      "recordOrdinal": 7,
+      "recordTimestamp": "2026-10-21T04:59:31.603Z",
+      "recordType": "turn_context",
+      "selectedPermissionFields": {
+        "cwd": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\project",
+        "model": "gpt-5.6-terra",
+        "approval_policy": "never",
+        "sandbox_policy": {
+          "type": "read-only"
+        }
+      },
+      "sourceLineSha256": "661bd4447960d6e1001ed453d802ac69aa0438fd2afdc9150690e420cb3abae1",
+      "sourceLineBytes": 974,
+      "lineDigestIncludesOriginalLineEnding": true
+    }
+  ]
+}

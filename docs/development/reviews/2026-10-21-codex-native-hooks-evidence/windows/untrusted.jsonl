@@ -1,0 +1,4 @@
+{"type":"thread.started","thread_id":"01a15cd3-4376-7182-8256-846c5cb24877"}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"UNTRUSTED_CONTROL_DONE"}}
+{"type":"turn.completed","usage":{"input_tokens":18294,"cached_input_tokens":6912,"cache_write_input_tokens":0,"output_tokens":10,"reasoning_output_tokens":0}}
