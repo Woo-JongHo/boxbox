@@ -1,0 +1,27 @@
+{
+	"schemaVersion": 1,
+	"name": "boxbox-plugin",
+	"version": "0.2.1",
+	"filename": "boxbox-plugin-0.2.1.tgz",
+	"sha256": "6fc35d7c92f6eeb1b442d6d21901ed6f27c06e9654f412750b4530b638b89b8f",
+	"bytes": 126110,
+	"source": {
+		"scope": "staging-checkout",
+		"commit": "34581a76384e91317b3563e475f564a3fb55778c",
+		"ref": "m1-safety-proof",
+		"repository": null,
+		"dirty": true
+	},
+	"build": {
+		"createdAt": "2026-10-21T03:23:56.117Z",
+		"node": "v22.22.3",
+		"bun": "1.4.0",
+		"runId": null,
+		"runAttempt": null
+	},
+	"limitations": [
+		"Candidate only; no registry publication.",
+		"Source identity describes the staging checkout. Only the clean CI workflow binds its preceding build to that checkout; local archive build provenance is unverified.",
+		"Engine-only smoke does not verify native host hook-event delivery."
+	]
+}
