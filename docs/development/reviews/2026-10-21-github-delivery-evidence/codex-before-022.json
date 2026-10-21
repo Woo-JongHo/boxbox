@@ -1,0 +1,23 @@
+{
+  "installed": [
+    {
+      "pluginId": "boxbox@boxbox-plugins",
+      "name": "boxbox",
+      "marketplaceName": "boxbox-plugins",
+      "version": "0.2.1",
+      "installed": true,
+      "enabled": true,
+      "source": {
+        "source": "local",
+        "path": "/Users/jonghoPro/.local/share/boxbox/codex/0.2.1/plugin"
+      },
+      "marketplaceSource": {
+        "sourceType": "local",
+        "source": "/Users/jonghoPro/.local/share/boxbox/codex/0.2.1"
+      },
+      "installPolicy": "AVAILABLE",
+      "authPolicy": "ON_INSTALL"
+    }
+  ],
+  "available": []
+}

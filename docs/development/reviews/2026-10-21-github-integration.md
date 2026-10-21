@@ -68,3 +68,10 @@ The Ubuntu-only fixture difference was traced to `test/corpus-promote.test.ts`: 
 Suite ordering explains why an unconditional second traversal sometimes worked. The new surface test requires
 only the tracked fixture parent and recursively sees any actual regular corpus children. No corpus fixture paths
 are tracked, and the Python fixture root has no symlinked children.
+
+## Final operational result
+
+PR #2 merged as `6e74c9327c44b4121a7ec4803d3acad66ee0f071` after final run39543306308 passed 496 tests with no skips
+on both Ubuntu and macOS. Manual candidate run39543872402 then passed all six jobs, including same-archive
+Linux/macOS/Windows smoke. The exact 0.2.2 archive is installed/enabled in local Codex. See the
+[delivery record](2026-10-21-github-delivery.md) for the digest, original reports and remaining boundaries.

@@ -1,0 +1,48 @@
+{
+	"schemaVersion": 1,
+	"ok": true,
+	"sha256": "611858a6b7f72e1a27aaddf9593d5a1404a0baf7c705bb2ec21ea2f2bbec7137",
+	"version": "0.2.2",
+	"platform": "linux",
+	"arch": "x64",
+	"node": "22.22.3",
+	"checks": [
+		{
+			"command": "doctor",
+			"ok": true,
+			"python": "Python 3.13.16"
+		},
+		{
+			"file": "LF-calls.ts",
+			"previewPreserved": true,
+			"approvedOutput": true,
+			"recheck": true,
+			"idempotent": true
+		},
+		{
+			"file": "CRLF-calls.ts",
+			"previewPreserved": true,
+			"approvedOutput": true,
+			"recheck": true,
+			"idempotent": true
+		},
+		{
+			"file": "LF-assignments.py",
+			"previewPreserved": true,
+			"approvedOutput": true,
+			"recheck": true,
+			"idempotent": true
+		},
+		{
+			"file": "CRLF-assignments.py",
+			"previewPreserved": true,
+			"approvedOutput": true,
+			"recheck": true,
+			"idempotent": true
+		}
+	],
+	"limitations": [
+		"Host checks and plugin registration were skipped (--engine-only).",
+		"Native host hook-event delivery was not exercised."
+	]
+}
