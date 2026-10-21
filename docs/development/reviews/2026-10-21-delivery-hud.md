@@ -41,8 +41,7 @@ is inferred from this test.
   Python 3.14.0. Both TypeScript and Python LF/CRLF examples passed preview preservation, approved apply, parser/approval
   gates, clean recheck and byte idempotence. The frozen smoke script SHA-256 was
   `2093988c272116b9dd3b615e524210baaf4ebf352d7a57264f4f96f4efe9f2d0` on both machines.
-- Linux and real GitHub Actions runs remain unexecuted. A local Docker attempt found no running daemon and is not
-  counted as Linux verification. Windows smoke does not establish full Windows development-suite support.
+- Linux WSL Node22.22.3/npm10.9.8/Python3.12.3 passed the same frozen archive/script after the official Node tarball was checked against official SHASUMS256.txt. Real GitHub-hosted Actions runs remain unexecuted. A local Docker attempt found no running daemon and was not counted as verification. Windows smoke does not establish full Windows development-suite support.
 
 ## Independent review
 
