@@ -28,7 +28,7 @@ The review's AST-hash proposal cannot replace token preservation, syntax accepta
 | R2 | Bounded data-driven policy experiment, consistent Check/Guide lookup and syntax reporting, authoring coverage | Existing approved rule remains byte-identical; unknown/conflicting policies refuse; layered lookup and syntax regressions; diverse positive/negative authoring cases | source verified; native authoring evaluation open |
 | R3 | JSON/YAML safe adapters and shared lifecycle; new convention proposals | Strict syntax, source-range edits, comments/scalars preserved, idempotence, installed preview/apply/refusal, reviewed before/after and counterexamples | implementation verified; human decisions pending |
 | R4 | Complete internal alias migration, native host/HUD and supported-platform validation | No unintended relative internal imports; self-contained copy/bundle execution; native output acceptance and accurate HUD state; recorded Windows limits | aliases reviewed; native session authentication pending |
-| R5 | Release integration, documentation and public payload hygiene | Full check, independent review/GLM closure, generated drift check, same-archive CI/OS journeys, EN/KO/zh-CN consistency, clean public payload, concrete publication prerequisites | local checks and GLM passed; GitHub candidate active |
+| R5 | Release integration, documentation and public payload hygiene | Full check, independent review/GLM closure, generated drift check, same-archive CI/OS journeys, EN/KO/zh-CN consistency, clean public payload, concrete publication prerequisites | local checks and GLM passed; Linux CI passed, macOS child-process timeout under investigation |
 
 R1's independent catalog, validation and installer work may run concurrently; broad engine import rewriting waits
 until concurrent engine edits settle. R2/R3 share CLI/pipeline ownership and are integrated sequentially. Full build and
@@ -102,7 +102,7 @@ identified as waiting for a concrete user/external prerequisite; prerequisites d
 **User goal (2026-10-04): finish implementing this service to the point of a real release.** The first public scope is
 **TypeScript, Python, JSON and YAML + the engine CLI + a thin agent plugin**, following the user's scope expansion
 on 2026-10-21. The current source CLI accepts all four languages; JSON/YAML write rules are candidate proposals awaiting human
-approval. Current-source installed-artifact verification passed in the 629-test integration run; the later native HUD defect requires a new candidate. The existing
+approval. The native HUD entry-point defect was corrected and the rebuilt local archive passed installed checks; authenticated host acceptance and current-candidate CI remain open. The existing
 10-language engine is kept, but equivalent product quality for Java, Go, Rust, JavaScript, C, C++, Swift and Kotlin is
 not a completion condition of the first release.
 
