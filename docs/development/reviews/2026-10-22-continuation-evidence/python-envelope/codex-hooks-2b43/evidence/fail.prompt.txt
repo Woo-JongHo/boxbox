@@ -1,0 +1,1 @@
+Controlled BoxBox native-hook acceptance test in a disposable project. Use the native apply_patch tool exactly once. In sample.py, replace only the line `  alpha       = 1` with `  alpha = 1`. Do not change any other bytes or file. If the tool reports a hook failure after applying the patch, do not call any tool again; report the failure and stop.

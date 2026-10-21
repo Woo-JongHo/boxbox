@@ -1,0 +1,3 @@
+57628 {'HOME': '/tmp/boxbox-native-fixed.Shl97G/home', 'CODEX_HOME': '/tmp/boxbox-native-fixed.Shl97G/codex', 'XDG_CONFIG_HOME': '/tmp/boxbox-native-fixed.Shl97G/home/config'}
+57634 {'HOME': '/tmp/boxbox-native-fixed.Shl97G/home', 'CODEX_HOME': '/tmp/boxbox-native-fixed.Shl97G/codex', 'XDG_CONFIG_HOME': '/tmp/boxbox-native-fixed.Shl97G/home/config'}
+57637 {'HOME': '/tmp/boxbox-native-fixed.Shl97G/home', 'CODEX_HOME': '/tmp/boxbox-native-fixed.Shl97G/codex', 'XDG_CONFIG_HOME': '/tmp/boxbox-native-fixed.Shl97G/home/config'}

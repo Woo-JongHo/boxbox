@@ -1,0 +1,14 @@
+[
+  {
+    "name": "fail",
+    "exitCode": 0,
+    "elapsedSeconds": 14.143,
+    "sample": "if enabled:\n  alpha = 1\n  much_longer = 22\n  mid         = 333\n"
+  },
+  {
+    "name": "recovery",
+    "exitCode": 0,
+    "elapsedSeconds": 11.63,
+    "sample": "if enabled:\n  alpha       = 1\n  much_longer = 22\n  mid         = 333\n"
+  }
+]

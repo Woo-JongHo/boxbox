@@ -1,0 +1,2 @@
+BoxBox 0.2.4 | engine ready | approved 2
+session receipt: unknown (unknown) | file not run | host unverified

@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "status": "INCOMPLETE_BEFORE_FINAL_TEXT_RETRY",
+  "model": "zai/glm-5.3",
+  "sourceVerdict": null,
+  "eventSummary": {
+    "lines": 29330,
+    "message_update": 29319,
+    "terminalEvents": 0,
+    "assistantFinalMessages": 0,
+    "invalidTruncatedLines": 1
+  },
+  "artifacts": [
+    {
+      "path": "/tmp/boxbox-readiness/python-review-glm-raw.jsonl.gz",
+      "bytes": 303837,
+      "sha256": "e1d50a572c38340343f5c80410935e6c3d8815bb60768b45c0e07c59ab375d17"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/python-review-glm.stderr.log",
+      "bytes": 1131,
+      "sha256": "c07c060cf5fc3cd9aab399524d2152b246e1e395d947f7c09bc701c643fbe22e"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/python-review-glm-retry.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/python-review-glm-retry.status",
+      "bytes": 13,
+      "sha256": "1736375ad2e5690d7fbcc6893b0a5cf28134c635b398ebd7e7e5af42347b5765"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/python-review-glm-retry-request.md",
+      "bytes": 44283,
+      "sha256": "a55ada0eb4713cb7a151a7c7bedd85a617496957f680259ec0c51c7408540335"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/python-review-glm-retry-raw.jsonl.gz",
+      "bytes": 1030887962,
+      "sha256": "692ab1042828277398628fce5f4cbbbfc017921b0109560605fbd61aa358c88f",
+      "retained": false,
+      "deletionReason": "verified stream amplification exhausted shared disk after event summary was recorded"
+    }
+  ]
+}

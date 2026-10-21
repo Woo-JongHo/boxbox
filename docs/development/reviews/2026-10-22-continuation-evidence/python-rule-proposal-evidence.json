@@ -1,0 +1,173 @@
+{
+  "generatedAt": "2026-10-21T16:00:19.955Z",
+  "positive": {
+    "before": "def calculate(unit_price, quantity, discount, shipping):\n    subtotal = unit_price * quantity\n    discounted = max(0, subtotal - discount)\n    total = discounted + shipping\n    return total\n",
+    "expected": "def calculate(unit_price, quantity, discount, shipping):\n    subtotal   = unit_price * quantity\n    discounted = max(0, subtotal - discount)\n    total      = discounted + shipping\n    return total\n",
+    "raw": {
+      "first": {
+        "output": "def calculate(unit_price, quantity, discount, shipping):\n    subtotal   = unit_price * quantity\n    discounted = max(0, subtotal - discount)\n    total      = discounted + shipping\n    return total\n",
+        "groups": 1,
+        "tables": 1,
+        "misaligned": 2,
+        "edits": 2,
+        "details": [
+          {
+            "startLine": 2,
+            "endLine": 4,
+            "rows": 3,
+            "indent": "    ",
+            "axes": [
+              "name",
+              "equal",
+              "assignment-value"
+            ],
+            "widths": [
+              10,
+              1,
+              27
+            ],
+            "edits": [
+              {
+                "index": 1,
+                "before": "    subtotal = unit_price * quantity",
+                "after": "    subtotal   = unit_price * quantity"
+              },
+              {
+                "index": 3,
+                "before": "    total = discounted + shipping",
+                "after": "    total      = discounted + shipping"
+              }
+            ]
+          }
+        ],
+        "pairs": [],
+        "refused": []
+      },
+      "second": {
+        "output": "def calculate(unit_price, quantity, discount, shipping):\n    subtotal   = unit_price * quantity\n    discounted = max(0, subtotal - discount)\n    total      = discounted + shipping\n    return total\n",
+        "groups": 1,
+        "tables": 1,
+        "misaligned": 0,
+        "edits": 0,
+        "details": [
+          {
+            "startLine": 2,
+            "endLine": 4,
+            "rows": 3,
+            "indent": "    ",
+            "axes": [
+              "name",
+              "equal",
+              "assignment-value"
+            ],
+            "widths": [
+              10,
+              1,
+              27
+            ],
+            "edits": []
+          }
+        ],
+        "pairs": [],
+        "refused": []
+      },
+      "alignmentOnly": true
+    }
+  },
+  "counterexample": {
+    "before": "def rejected(unit_price, quantity, shipping):\n    subtotal = unit_price * \\\n        quantity\n    discounted = max(value=0, other=subtotal)\n    total = discounted + shipping\n    return total\n",
+    "expected": "def rejected(unit_price, quantity, shipping):\n    subtotal = unit_price * \\\n        quantity\n    discounted = max(value=0, other=subtotal)\n    total = discounted + shipping\n    return total\n",
+    "raw": {
+      "first": {
+        "output": "def rejected(unit_price, quantity, shipping):\n    subtotal = unit_price * \\\n        quantity\n    discounted = max(value=0, other=subtotal)\n    total = discounted + shipping\n    return total\n",
+        "groups": 0,
+        "tables": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "details": [],
+        "pairs": [],
+        "refused": []
+      },
+      "second": {
+        "output": "def rejected(unit_price, quantity, shipping):\n    subtotal = unit_price * \\\n        quantity\n    discounted = max(value=0, other=subtotal)\n    total = discounted + shipping\n    return total\n",
+        "groups": 0,
+        "tables": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "details": [],
+        "pairs": [],
+        "refused": []
+      },
+      "alignmentOnly": true
+    }
+  },
+  "rawAssertions": {
+    "positiveOutputExact": true,
+    "positiveAxesExact": true,
+    "positiveOneTable": true,
+    "positivePreserved": true,
+    "positiveFixedPoint": true,
+    "counterexampleUnchanged": true,
+    "counterexampleNoProjectedTable": true,
+    "counterexampleFixedPoint": true
+  },
+  "publicRuns": [
+    {
+      "args": [
+        "check",
+        "--file",
+        "sample.py",
+        "--json"
+      ],
+      "exitCode": 1,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"results\":[{\"file\":\"sample.py\",\"language\":\"python\",\"mode\":\"check\",\"summary\":{\"groups\":1,\"misaligned\":1,\"edits\":2,\"refused\":0,\"suggested\":0},\"groups\":[{\"kind\":\"table\",\"startLine\":2,\"endLine\":4,\"rows\":3,\"axes\":[\"name\",\"equal\",\"assignment-value\"],\"state\":\"FIXABLE\",\"edits\":2,\"depth\":1}],\"parse\":{\"status\":\"not-run\",\"tool\":\"\"}}],\"syntax\":{\"status\":\"valid\",\"tool\":\"python3\",\"diagnostics\":[]},\"formatReadiness\":{\"mode\":\"standalone\",\"approvalEligible\":false,\"verification\":\"not-run\",\"approvalFacts\":[{\"key\":\"v1|python|-|table|name>equal>assignment-value\",\"status\":\"unknown\",\"proofComplete\":false,\"reasons\":[\"no matching convention\"]}],\"reasons\":[\"no matching convention\"],\"next\":\"align --dry-run verifies horizontal whitespace only; format --dry-run includes the configured formatter. Both verify parser, preservation and fixed point before writing\"}}\n",
+      "stderr": "",
+      "unchanged": true
+    },
+    {
+      "args": [
+        "guide",
+        "--file",
+        "sample.py",
+        "--json"
+      ],
+      "exitCode": 1,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"guide\",\"ok\":false,\"file\":\"sample.py\",\"language\":\"python\",\"conventions\":[],\"guides\":[]}\n",
+      "stderr": "",
+      "unchanged": true
+    },
+    {
+      "args": [
+        "align",
+        "--file",
+        "sample.py",
+        "--dry-run",
+        "--json"
+      ],
+      "exitCode": 2,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"align\",\"ok\":false,\"error\":{\"code\":\"ALIGN_NOT_ELIGIBLE\",\"message\":\"align refused: approval denied: no matching convention\"}}\n",
+      "stderr": "",
+      "unchanged": true
+    },
+    {
+      "args": [
+        "align",
+        "--file",
+        "sample.py",
+        "--json"
+      ],
+      "exitCode": 2,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"align\",\"ok\":false,\"error\":{\"code\":\"ALIGN_NOT_ELIGIBLE\",\"message\":\"align refused: approval denied: no matching convention\"}}\n",
+      "stderr": "",
+      "unchanged": true
+    }
+  ],
+  "publicAssertions": {
+    "checkExitOne": true,
+    "checkKeyUnknown": true,
+    "guideExitOneEmpty": true,
+    "alignDryRunRefused": true,
+    "alignApplyRefused": true,
+    "allPublicRunsPreserveFile": true
+  }
+}

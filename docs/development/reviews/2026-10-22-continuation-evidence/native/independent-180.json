@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "cases": 180,
+  "domains": {
+    "unit_price": [0, 1, 7, 25, 100],
+    "quantity": [0, 1, 4],
+    "discount": [0, 1, 7, 100],
+    "shipping": [0, 2, 11]
+  },
+  "allMatchReference": true,
+  "baselineMatchesReference": true,
+  "writeStructure": ["Assign", "Assign", "Assign", "Return"],
+  "refactorBeforeStructure": ["Return"],
+  "refactorAfterStructure": ["Assign", "Assign", "Assign", "Return"],
+  "finalFilesEqual": true,
+  "sha256": {
+    "write": "bcaa36507954fe1d1933c5e44dbb939bc7540f63377b985c4d38575cb8aa802b",
+    "refactor": "bcaa36507954fe1d1933c5e44dbb939bc7540f63377b985c4d38575cb8aa802b",
+    "baseline": "aede577151b277e860eac2952d837aa1c001a0059440c225d78207e5a65782f2"
+  }
+}

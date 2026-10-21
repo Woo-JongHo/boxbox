@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "source": "selected completed events from native Codex JSONL; thread IDs, usage, started-event duplicates and full skill text omitted",
+  "write": [
+    {"order": 1, "event": "guide", "file": "quote.py", "basis": "authoring", "exitCode": 0, "ruleIds": ["py-simple-assignments"], "verification": "not-run", "writeAuthorized": false},
+    {"order": 2, "event": "file-change", "path": "quote.py", "kind": "add"},
+    {"order": 3, "event": "check", "syntax": "valid", "groups": 0, "misaligned": 0, "approvalEligible": false},
+    {"order": 4, "event": "align-dry-run", "exitCode": 2, "error": "ALIGN_NOT_ELIGIBLE"},
+    {"order": 5, "event": "align-apply", "exitCode": 2, "error": "ALIGN_NOT_ELIGIBLE"},
+    {"order": 6, "event": "final-check", "syntax": "valid", "groups": 0, "misaligned": 0, "approvalEligible": false}
+  ],
+  "refactor": [
+    {"order": 1, "event": "baseline-read", "file": "refactor_quote.py", "body": ["Return"]},
+    {"order": 2, "event": "guide", "file": "refactor_quote.py", "basis": "authoring", "exitCode": 0, "ruleIds": ["py-simple-assignments"], "verification": "not-run", "writeAuthorized": false},
+    {"order": 3, "event": "pre-edit-check", "syntax": "valid", "groups": 0, "misaligned": 0, "approvalEligible": false},
+    {"order": 4, "event": "file-change", "path": "refactor_quote.py", "kind": "update"},
+    {"order": 5, "event": "post-edit-check", "syntax": "valid", "groups": 0, "misaligned": 0, "approvalEligible": false},
+    {"order": 6, "event": "align-dry-run", "exitCode": 2, "error": "ALIGN_NOT_ELIGIBLE"},
+    {"order": 7, "event": "final-check", "syntax": "valid", "groups": 0, "misaligned": 0, "approvalEligible": false}
+  ]
+}

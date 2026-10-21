@@ -1,0 +1,9 @@
+Raw log excerpt: run39625594819 job119309857240 head9b20c44; full log retained in scratch.
+2026-10-21T15:31:25.8057176Z 
+2026-10-21T15:31:25.8057666Z  638 pass
+2026-10-21T15:31:25.8058205Z  0 fail
+2026-10-21T15:31:25.8058759Z  3290 expect() calls
+2026-10-21T15:31:25.8059457Z Ran 638 tests across 70 files. [265.90s]
+2026-10-21T15:31:26.8113302Z Post job cleanup.
+2026-10-21T15:31:26.9626546Z (node:12784) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-21T15:31:26.9628647Z (Use `node --trace-deprecation ...` to show where the warning was created)

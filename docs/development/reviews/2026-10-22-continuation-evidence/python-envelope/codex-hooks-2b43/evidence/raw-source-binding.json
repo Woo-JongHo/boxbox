@@ -1,0 +1,66 @@
+{
+  "fail.rollout.jsonl": {
+    "bytes": 95676,
+    "sha256": "cde3d718f272ced392dc6a49508f5cc63c5a3f8cadc2a3810f09b4e6140417a1"
+  },
+  "fail.stdout.jsonl": {
+    "bytes": 1589,
+    "sha256": "8de210dbdca9c101f6c8fa0fe985eca723c665c57902210dc8161ac748e54feb"
+  },
+  "fail.stderr.txt": {
+    "bytes": 321,
+    "sha256": "10b06dc951e7b143fe05d3ecf3aa4f116d833a5e881778b640109fe63dbea51b"
+  },
+  "fail.final.txt": {
+    "bytes": 89,
+    "sha256": "ba77779baac2118c49b648af24aaeee1856639f51939b75678009b3c7ad71bd0"
+  },
+  "fail.receipt-1.json": {
+    "bytes": 944,
+    "sha256": "4d5a5dc2e231fa008592f1d2cead9668369142abe26f8e86484f33fd2bb904f7"
+  },
+  "fail.receipt-2.json": {
+    "bytes": 928,
+    "sha256": "60c23c92ad1684ed36ed54c4491db42c299dc267369e0cb5a998fb1a602d1d11"
+  },
+  "fail.receipt-3.json": {
+    "bytes": 928,
+    "sha256": "d5add97157fcd426602d3d783219c4cabb4ddce98c81280809a3bb5ba2b9bf8f"
+  },
+  "fail.baseline.json": {
+    "bytes": 80,
+    "sha256": "61cbadf0add2ff7cfaaa419bebf352e6c94849f65b41e87d030fc32770ec8c39"
+  },
+  "recovery.rollout.jsonl": {
+    "bytes": 67167,
+    "sha256": "f1657c3f778f180d3d70c41b6d888606972aa3c9377d785663e268986a01f82d"
+  },
+  "recovery.stdout.jsonl": {
+    "bytes": 1412,
+    "sha256": "796e4dc007b97e27c6780645bf0d2d9a005d061968d505b7119e7e0cc41c3d10"
+  },
+  "recovery.stderr.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "recovery.final.txt": {
+    "bytes": 142,
+    "sha256": "d84b77ee7d8de275a9f6f627531640554bfe268e62b6748c85cb5f74d94f42c1"
+  },
+  "recovery.receipt-1.json": {
+    "bytes": 941,
+    "sha256": "71b7da0a5341c8c90f02a820bec588e364510b28f4b4ac393755cc8eff6ed9a1"
+  },
+  "recovery.receipt-2.json": {
+    "bytes": 925,
+    "sha256": "0959fe81521d1a6bfef9ea945600cf96fbc0fa6ccf0cc4c19779e27f0e1e09c1"
+  },
+  "recovery.baseline.json": {
+    "bytes": 80,
+    "sha256": "d084e4b2b9cdb619b1c3098f4e0df798d61224e323f357efe838f7d84f9a75e4"
+  },
+  "execution.json": {
+    "bytes": 336,
+    "sha256": "15ee3dbc7fd3cd798ccc5ddc84f516e65dee67e9dbf4ee56e0f7ced0cf02eefa"
+  }
+}

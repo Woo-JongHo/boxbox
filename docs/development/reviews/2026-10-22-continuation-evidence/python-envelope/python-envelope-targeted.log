@@ -1,0 +1,54 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/python-assignment-envelope.test.ts:
+(pass) Python assignment envelopes > the real subtotal, discount and shipping calculation shares outer assignment columns [9.02ms]
+(pass) arithmetic behavior and positional-call evaluation order remain identical [58.09ms]
+(pass) opaque RHS bytes, CRLF, indentation and the fixed point are preserved [29.00ms]
+(pass) detailed tables retain ownership while a neighboring calculation receives its own envelope [1.01ms]
+(pass) a detailed pair inside three heterogeneous rows is replaced by one outer owner [0.13ms]
+(pass) primary preservation refusal never retries the same rows through a broader projection [1.12ms]
+(pass) projection rows must independently pass exact source reconstruction [0.10ms]
+(pass) single rows, pairs, blank lines, comments and different indentation do not become automatic tables [0.39ms]
+(pass) parenthesized keyword arguments and prior-line explicit continuation cannot become assignments [0.98ms]
+(pass) unsupported targets, values and damaged delimiters never project an outer calculation [0.14ms]
+(pass) quoted continuations are skipped and a complete ordinary docstring does not absorb following calculations [0.37ms]
+(pass) the new exact key cannot inherit the shipped simple-assignment approval [134.40ms]
+233 | 
+234 | 		expect(checked.syntax.status).toBe("valid");
+235 | 		expect(checked.results[0].groups[0].axes).toEqual(["name", "equal", "assignment-value"]);
+236 | 		expect(checked.formatReadiness.approvalEligible).toBe(false);
+237 | 		expect(checked.formatReadiness.approvalFacts[0].status).toBe("unknown");
+238 | 		expect(guided.guides[0].status).toBe("unknown");
+                             ^
+TypeError: undefined is not an object (evaluating 'guided.guides[0].status')
+      at <anonymous> (/Users/jonghoPro/woo/00_project/98_BoxBox/test/python-assignment-envelope.test.ts:238:24)
+(fail) public Check and Guide expose the new group without approved write coverage [197.26ms]
+(pass) a complete synthetic test proof permits preview and apply of the new envelope without changing product approvals [441.86ms]
+
+test/python-align.test.ts:
+(pass) python: alignment changes only whitespace between tokens and refuses nothing [2.73ms]
+(pass) python: the aligned table and trap files parse like their sources [65.19ms]
+(pass) python: alignment is idempotent — running twice gives the same result [2.08ms]
+(pass) python: matches the golden aligned file [0.69ms]
+(pass) python: the already aligned golden has 0 changes [0.36ms]
+(pass) python: the string/comment trap file has 0 changes [0.10ms]
+(pass) python: 2-row groups are not aligned [0.73ms]
+(pass) python profile specific properties > dictionary rows decompose into key, colon, value, comma axes and align the colon column [0.11ms]
+(pass) python profile specific properties > annotated assignments align name and type columns and never pad the trailing value [0.10ms]
+(pass) python profile specific properties > tightly written assignments also form a table and are fixed to conventional gaps (none after colon, spaces around equal) [0.06ms]
+(pass) python profile specific properties > attribute assignments form a table without changing Python syntax or non-whitespace tokens [22.09ms]
+(pass) python profile specific properties > assigned calls decompose into the call cell and argument columns [0.28ms]
+(pass) python profile specific properties > a call wrapping one flat bundle aligns the bundle cells inside the call [0.13ms]
+(pass) python profile specific properties > heterogeneous positional calculations share only outer assignment columns; keyword arguments stay unsupported [0.29ms]
+(pass) python profile specific properties > the profile refuses control-flow, call and line-continuation rows so they never form tables [0.04ms]
+(pass) python profile specific properties > bundle rows align inner cell columns, and rows with different bracket pairs split tables [0.10ms]
+(pass) python profile specific properties > the profile refuses bundle rows with nesting, indexing, assignment, empty cells or f-strings [0.68ms]
+(pass) python profile specific properties > keeps == comparisons inside values and refuses values starting with == [0.12ms]
+
+1 tests failed:
+(fail) public Check and Guide expose the new group without approved write coverage [197.26ms]
+
+ 31 pass
+ 1 fail
+ 176 expect() calls
+Ran 32 tests across 2 files. [1246.00ms]

@@ -25,10 +25,10 @@ The review's AST-hash proposal cannot replace token preservation, syntax accepta
 | --- | --- | --- | --- |
 | R0 | Reconcile requirements, broad pattern taxonomy, decision contracts and this execution order | Source-linked design, support/exception matrix, scoped independent critique | reviewed |
 | R1 | Runtime record validation, alias portability infrastructure and pattern catalog | Negative record cases, isolated copy resolution, dependency-escape checks, validated catalog covering nine families | reviewed |
-| R2 | Bounded data-driven policy experiment, consistent Check/Guide lookup and syntax reporting, authoring coverage | Existing approved rule remains byte-identical; unknown/conflicting policies refuse; layered lookup and syntax regressions; diverse positive/negative authoring cases | source verified; native authoring evaluation open |
+| R2 | Bounded data-driven policy experiment, consistent Check/Guide lookup and syntax reporting, authoring coverage | Existing approved rule remains byte-identical; unknown/conflicting policies refuse; layered lookup and syntax regressions; diverse positive/negative authoring cases | Python projection source/GLM and local/native Windows `2b43d24…` verification passed; new rule approval pending |
 | R3 | JSON/YAML safe adapters and shared lifecycle; new convention proposals | Strict syntax, source-range edits, comments/scalars preserved, idempotence, installed preview/apply/refusal, reviewed before/after and counterexamples | implementation verified; human decisions pending |
-| R4 | Complete internal alias migration, native host/HUD and supported-platform validation | No unintended relative internal imports; self-contained copy/bundle execution; native output acceptance and accurate HUD state; recorded Windows limits | aliases reviewed; native session authentication pending |
-| R5 | Release integration, documentation and public payload hygiene | Full check, independent review/GLM closure, generated drift check, same-archive CI/OS journeys, EN/KO/zh-CN consistency, clean public payload, concrete publication prerequisites | local checks and GLM passed; Linux CI passed, macOS child-process timeout under investigation |
+| R4 | Complete internal alias migration, native host/HUD and supported-platform validation | No unintended relative internal imports; self-contained copy/bundle execution; native output acceptance and accurate HUD state; recorded Windows limits | aliases reviewed; local/native Windows engine and Codex upper/HUD/hooks passed; Claude statusLine passed; Claude/current Windows hooks remain open |
+| R5 | Release integration, documentation and public payload hygiene | Full check, independent review/GLM closure, generated drift check, same-archive CI/OS journeys, EN/KO/zh-CN consistency, clean public payload, concrete publication prerequisites | 648-test full check and local artifact audit passed; later 39-test whitespace closure passed separately; scoped GLM and SSH/native Windows verification passed; same-archive CI/OS remain open |
 
 R1's independent catalog, validation and installer work may run concurrently; broad engine import rewriting waits
 until concurrent engine edits settle. R2/R3 share CLI/pipeline ownership and are integrated sequentially. Full build and
@@ -84,6 +84,32 @@ verification directories are part of the authorized local tests.
   authorization or external credential needed. Earlier authorized SSH delivery/commit/push scope is retained;
   release publication remains distinct from development and candidate verification.
 
+### R2 follow-up — Python outer assignment columns (2026-10-22)
+
+Authenticated native Write and Refactor used the exact installed 0.2.4 candidate and preserved the requested
+calculation behavior over 180 input combinations each. However, `subtotal = unit_price * quantity`,
+`discounted = max(0, subtotal - discount)`, and `total = discounted + shipping` produced zero detected groups.
+The shared engine requires identical detailed signatures; the middle call is outside the Python scalar-call
+profile. Zero groups does not satisfy the requested common assignment columns.
+
+Follow the [source-linked implementation design](proposals/2026-10-22-python-assignment-envelope.md).
+Implement a bounded Python opt-in outer projection for consecutive, same-indent plain assignments whose
+right-hand expressions remain opaque and byte-identical. Preserve existing detailed tables as their sole
+row owners; do not merge through a detailed table, blank line, comment-only line, continuation or unsupported
+statement. Use a distinct exact axis/key so the existing simple-assignment approval cannot authorize the
+new detector. Keep the current Python minimum of three rows. Public writes remain unapproved until a separate
+concrete proposal is reviewed and accepted.
+
+Execution order: document the source-linked design → reproduce the actual native fixture in a failing test →
+implement shared optional projection and Python bounds → verify old detailed groups, continuation refusals,
+RHS/indent/newline preservation, fixed points and exact approval isolation → independent source review →
+full check and rebuilt artifact verification. The old archive and source audit do not cover this new change.
+The first implementation deliberately excludes rows already owned by a detailed table, even when their outer
+assignment role could match neighboring rows; nested overlapping alignment is a separate design question.
+
+The later local `2b43d24…` archive passed independent installed verification for the exact unknown key, existing
+approved rules, 180-case behavior and bounded native host surfaces. The scoped GLM static source review and exact-archive SSH/native Windows verification subsequently passed. This remains local-development-candidate evidence; same-archive CI/OS and public approval gates remain open.
+
 ### Loop and completion gate
 
 For each phase: inspect current behavior → write the smallest implementation → run meaningful targeted tests →
@@ -102,7 +128,9 @@ identified as waiting for a concrete user/external prerequisite; prerequisites d
 **User goal (2026-10-04): finish implementing this service to the point of a real release.** The first public scope is
 **TypeScript, Python, JSON and YAML + the engine CLI + a thin agent plugin**, following the user's scope expansion
 on 2026-10-21. The current source CLI accepts all four languages; JSON/YAML write rules are candidate proposals awaiting human
-approval. The native HUD entry-point defect was corrected and the rebuilt local archive passed installed checks; authenticated host acceptance and current-candidate CI remain open. The existing
+approval. The native HUD entry-point defect was corrected. The local `2b43d24…` archive passed the Python
+common-column detector boundary and reached the authenticated Codex upper prompt, with disposable trust cleaned after
+an independent finding. Scoped GLM source review and SSH/native Windows verification passed; current macOS Codex hook acceptance passed; Claude/current Windows hook acceptance and current-candidate CI remain open. The existing
 10-language engine is kept, but equivalent product quality for Java, Go, Rust, JavaScript, C, C++, Swift and Kotlin is
 not a completion condition of the first release.
 

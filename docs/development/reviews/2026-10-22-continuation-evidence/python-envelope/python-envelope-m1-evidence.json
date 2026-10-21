@@ -1,0 +1,39 @@
+{
+  "fixtureBytesMatchRetainedQuote": true,
+  "fixtureSHA256": "bcaa36507954fe1d1933c5e44dbb939bc7540f63377b985c4d38575cb8aa802b",
+  "baselineBytesMatchRetainedBefore": true,
+  "baselineSHA256": "aede577151b277e860eac2952d837aa1c001a0059440c225d78207e5a65782f2",
+  "unchangedOtherOwnedFiles": {
+    "product/engine/common/table-engine.ts": true,
+    "product/engine/python/assignment-envelope.ts": true,
+    "product/engine/python/profile.ts": true,
+    "test/python-align.test.ts": true
+  },
+  "testSHA256": "563e9a1845699616851638155dac319440624e98dc558ab60fa1c67b5b79d1b5",
+  "nativeDomains": {
+    "unit_price": [
+      0,
+      1,
+      7,
+      25,
+      100
+    ],
+    "quantity": [
+      0,
+      1,
+      4
+    ],
+    "discount": [
+      0,
+      1,
+      7,
+      100
+    ],
+    "shipping": [
+      0,
+      2,
+      11
+    ]
+  },
+  "cases": 180
+}

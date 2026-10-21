@@ -1,0 +1,19 @@
+
+  >_ OpenAI Codex (v0.163.0)
+     /private/tmp/boxbox-python-native.TflF0A/project
+
+
+
+
+
+
+
+
+
+
+
+
+› Ask Codex to do anything
+
+  GPT-6.1-Sol default · /private/tmp/boxbox-python-native.TflF0A/project
+  ← for agents · ? for shortcuts

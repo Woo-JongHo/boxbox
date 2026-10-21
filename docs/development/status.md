@@ -12,14 +12,27 @@ and installed bundles. The 45 catalog scenarios remain design-only, and new JSON
 licenses await human decisions. Native testing found a macOS symlink-path HUD entry-point defect; the correction passed that
 full run and 24 focused HUD tests. One later test-only upgrade regression passed separately. GLM source audit passed
 with no mandatory findings; the supplemental test binding check also passed. The rebuilt local archive also passed native Windows installation and check/align/check through `chacada`.
-Codex PTY HUD rendering/cleanup passed; authenticated Codex/Claude transitions remain pending because isolated
-profiles reached provider login screens. PR [#5](https://github.com/Woo-JongHo/rowgrid/pull/5) is open. At source/evidence
-commit `3811e34`, candidate CI Linux passed all 638 tests; macOS passed 637 and timed out one alignment child at
-60 seconds. [Issue 007](issue-library/records/BBX-20261021-007-validation-timeout.json) is reopened for diagnosis;
-an unchanged retry cannot establish a fix. Same-archive candidate packaging and three-OS smoke remain gated by
-verification. The separate PR run ended with macOS runner-acquisition failure before tests started; Linux passed.
-Local stress did not establish the candidate timeout cause, and no speculative runtime fix was made. These facts
-supersede historical snapshots below.
+Native continuation on 2026-10-22 first verified Claude statusLine and Codex companion-pane transitions on the
+historical `c18a7da9…` candidate. The later local `2b43d24…` candidate contains the bounded Python outer-assignment
+implementation. Its independent installed-artifact audit passed doctor, the new key's unknown/no-write boundary,
+the two existing approved preview/apply/recheck/fixed-point journeys, and the exact quote calculation over 180 inputs.
+Its Codex upper pane reached the authenticated normal prompt after disposable folder trust; hooks were explicitly left
+untrusted. The companion stayed qualified as project history/unknown/file-not-run, and Claude's actual statusLine
+showed ready/error/recovery with host unverified. The first audit found the disposable-project trust table still in the
+isolated candidate config; exact removal and an independent closure then verified zero project tables, absent temporary
+auth and no candidate-root process. A later independently reviewed native Codex run verified SessionStart delivery, PostToolUse FAIL/PASS, one bounded Stop continuation and exact recovery on this same candidate. Initial evidence gaps and corrected-run closure are retained. Claude and current Windows hook acceptance remain open; HUD qualifiers are unchanged. The current full check passed
+648 tests with five existing parser skips, plus TypeScript/shell checks. A later whitespace-only self-layout closure
+passed 39 focused tests and TypeScript checking; it was not another full run. The scoped GLM static source review passed with no mandatory findings. The same local `2b43d24…` archive was delivered to a new chacada directory and independently passed native Windows installation, unknown-key refusal, approved TS/Python journeys and 180-input behavior. It remains a local development artifact, not CI-produced or publicly released.
+
+PR [#5](https://github.com/Woo-JongHo/rowgrid/pull/5) is open. Candidate CI at `3811e34` passed Linux; macOS passed
+637 tests and timed out one alignment child at 60 seconds. The unchanged candidate retry and later PR runs could
+not acquire a macOS runner; they executed no macOS tests. Latest committed-head PR `9b20c44` passed Linux with
+638 tests and 3,290 assertions. Packaging and three-OS smoke remain gated. Instrumented local pressure completed
+160 whole-file runs without a 60-second stationary process; timing instrumentation may alter the symptom.
+[Issue 007](issue-library/records/BBX-20261021-007-validation-timeout.json) remains investigating with unknown cause.
+No speculative runtime fix or timeout increase was made. New TypeScript and Python calculation proposals and their six example
+licenses also await separate decisions in [issue 014](issue-library/records/BBX-20261022-014-preset-coverage.json).
+The isolated Claude authentication probe returned `loggedIn=false`; native Claude hook verification awaits a temporary-login decision. These facts supersede historical snapshots below.
 
 
 ## Active work — AUTHOR1 matrix-first workflows
@@ -69,7 +82,9 @@ was accepted only for the empty native test project. Desktop and Windows HUDs ar
 Sonnet and fixed Opus review attempts both returned the provider's session-limit response. At that snapshot independent review was
 **unexecuted and blocking final acceptance**. READINESS1 later obtained Sonnet review, fixed findings and passed
 its scoped closure; GLM final source audit also passed. The rebuilt 0.2.4 candidate rendered the real Codex PTY HUD,
-while authenticated host transitions and Claude native UI remain pending after isolated login screens. See the
+and the later 2026-10-22 continuation verified Claude statusLine and Codex companion ready/error/recovery transitions.
+Authenticated direct Codex workflows also ran; the later `2b43d24…` candidate reached the authenticated upper prompt,
+and separately passed current macOS Codex hook delivery/control-flow verification. Claude/current Windows hook acceptance remains open. See the
 [HUD record](reviews/2026-10-21-terminal-hud.md) and [user instructions](../user/hud.md).
 
 ## Documentation and consistency audit — DOC1
