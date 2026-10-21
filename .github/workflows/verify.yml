@@ -15,7 +15,11 @@ concurrency:
 
 jobs:
   plugin-contract:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -41,6 +45,10 @@ jobs:
       - uses: swift-actions/setup-swift@7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a # v2
         with:
           swift-version: "6.0"
+        if: runner.os == 'Linux'
+      - name: Verify Swift parser on macOS
+        if: runner.os == 'macOS'
+        run: swift --version
       # kotlinc for the Kotlin parse gate; a plain zip download keeps the workflow dependency-free.
       - name: Install Kotlin parser
         run: |
