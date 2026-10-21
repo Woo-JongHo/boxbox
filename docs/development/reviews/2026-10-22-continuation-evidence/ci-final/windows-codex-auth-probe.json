@@ -1,0 +1,27 @@
+{
+  "version": "codex-cli 0.157.1",
+  "versionExitCode": 0,
+  "auth": {
+    "exitCode": 1,
+    "loggedIn": false,
+    "authMethod": "none",
+    "provider": "none",
+    "rawOutputRetained": false
+  },
+  "documented": {
+    "loginStatusHelpExitCode": 0,
+    "loginStatusCommand": true,
+    "execHelpExitCode": 0,
+    "workspaceWriteSandbox": true,
+    "hookTrustOneInvocationFlag": true,
+    "jsonEvents": true,
+    "workingDirectoryFlag": true
+  },
+  "isolatedContext": {
+    "codexHomeExists": true,
+    "configExists": true,
+    "marketplaceConfigured": true,
+    "pluginEnabled": true,
+    "authFilePresent": false
+  }
+}

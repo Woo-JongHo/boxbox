@@ -64,6 +64,17 @@
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/ci-macos-matrix-timeout.log"
       ],
       "result": "637 passed, one failed out of 638 tests; the first Bun.spawnSync align child did not complete by 60 seconds and returned null after runner cleanup. No alignment output mismatch was observed. Root cause is not yet established."
+    },
+    {
+      "name": "Frozen 35b6178 PR and candidate non-recurrence",
+      "status": "passed",
+      "scope": "Exact source head 35b61780ae122744f39d9cb0b935db5f8bccd14b; current Ubuntu/macOS PR and candidate verification plus engine-only macOS smoke. This is non-recurrence evidence, not a root-cause diagnosis.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/pr-run-39635921495.json",
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/candidate-run-39637622755.json",
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/smoke-macOS.json"
+      ],
+      "result": "PR run 39635921495 and candidate run 39637622755 each passed macOS with 653 tests and zero failures; the candidate macOS smoke also passed. No runtime, test deadline or timeout budget was changed to obtain these results. The historical cause remains unknown."
     }
   ],
   "related": [
@@ -172,6 +183,17 @@
       "summary": "An isolated checkout with API-stage and CLI-exit breadcrumbs completed 160 p12 full-file runs, with no sustained 60-second hang. Five 30-second observations showed late active children and then completed. Synchronous trace I/O may alter timing; the original CI cause remains unknown and production source/deadlines are unchanged.",
       "evidence": [
         "docs/development/reviews/2026-10-22-continuation-evidence/ts-stage-diagnostic/report.md"
+      ]
+    },
+    {
+      "sequence": 10,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Exact head 35b6178 completed current PR and candidate macOS checks with 653 tests and zero failures, then passed same-archive engine smoke. The timeout did not recur, but no cause or fix was established; the issue remains investigating.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/pr-run-39635921495.json",
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/candidate-run-39637622755.json"
       ]
     }
   ]
