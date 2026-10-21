@@ -1,0 +1,14 @@
+{
+  "remoteWindows": "C:\\Users\\woo\\Downloads\\BoxBox\\ci-smoke-20261021T031802Z",
+  "remoteWSL": "/mnt/c/Users/woo/Downloads/BoxBox/ci-smoke-20261021T031802Z",
+  "exitCode": 0,
+  "inputDigests": {
+    "release-smoke.mjs": "2093988c272116b9dd3b615e524210baaf4ebf352d7a57264f4f96f4efe9f2d0",
+    "candidate.json": "6cb185e980f95ef132a35f50ba18d8dd8308d370fd936738ffea41a8dda63540",
+    "SHA256SUMS": "f828e9aa306a2f4de6540aed7d9f27bfc7fb622ff74471a16ab6b2fe8bbca6f5",
+    "boxbox-plugin-0.2.1.tgz": "6fc35d7c92f6eeb1b442d6d21901ed6f27c06e9654f412750b4530b638b89b8f"
+  },
+  "scriptUnchanged": true,
+  "archiveUnchanged": true,
+  "reportRetrieved": true
+}

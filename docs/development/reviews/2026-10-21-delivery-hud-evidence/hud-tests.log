@@ -1,0 +1,11 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/hud.test.ts:
+(pass) HUD never runs a checkout engine when the host plugin is absent or its discovery fails [5.19ms]
+(pass) HUD keeps disabled host state, runtime readiness and unobserved hook delivery separate [5.97ms]
+(pass) HUD reports malformed receipts and actual latest outcomes without turning receipts into host acceptance [6.65ms]
+
+ 3 pass
+ 0 fail
+ 16 expect() calls
+Ran 3 tests across 1 file. [185.00ms]
