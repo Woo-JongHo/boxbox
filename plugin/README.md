@@ -19,8 +19,8 @@ Requirements: Node.js 22.22.3 or later, npm and Codex CLI. Python fixes addition
 - **Hooks:** at session start, after edits and when a response ends, they check TypeScript and Python files changed
   during the session, read-only. They never fix anything automatically. Records are written only to the host's plugin
   data folder (`CLAUDE_PLUGIN_DATA`) and are deleted with the plugin. No files are created in the target project.
-- **Fixes:** a single target file is replaced atomically only when the user runs `format` and the explicit formatter,
-  human-approved rules, re-parsing and fixed-point checks all pass.
+- **Fixes:** a single target file is replaced atomically only when the user runs `format` and human-approved rules,
+  re-parsing, preservation and fixed-point checks all pass. No external formatter is required; a configured formatter runs first, including during dry-run.
 - **Inspector:** a read-only Claude Code subagent that never writes files.
 
 ## Uninstall

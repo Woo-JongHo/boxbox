@@ -81,7 +81,7 @@ export function checkExample(example: Example): readonly string[] {
 /** Checks the document hash of one decision. */
 export function checkDecision(decision: Decision): readonly string[] {
 	const [path, heading] = decision.ref.split("#") as [string, string];
-	const file            = join(ROOT, path);
+	const file            = join(path.startsWith("docs/public/") ? PRESET : ROOT, path);
 	if (!existsSync(file)) return [`${decision.id}: missing document ${path}`];
 
 	return sectionHash(readFileSync(file, "utf8"), heading) === decision.docHash ? [] : [`${decision.id}: ${decision.ref} changed — re-approve`];

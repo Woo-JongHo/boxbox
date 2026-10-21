@@ -1,0 +1,68 @@
+import { strict as assert } from 'node:assert';
+import { spawnSync } from 'node:child_process';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { createHash } from 'node:crypto';
+const stage=dirname(fileURLToPath(import.meta.url));
+const root=join(stage,'native-first-use-'+Date.now());
+mkdirSync(root,{recursive:true});
+const project=join(root,'project with spaces');mkdirSync(project);
+const env={...process.env,LOCALAPPDATA:join(root,'app data'),CODEX_HOME:join(root,'codex home'),XDG_CONFIG_HOME:join(root,'config'),npm_config_cache:join(root,'npm cache'),CLAUDE_PLUGIN_ROOT:'',CLAUDE_PLUGIN_DATA:'',PLUGIN_ROOT:'',PLUGIN_DATA:''};
+mkdirSync(env.CODEX_HOME,{recursive:true});
+const evidence={platform:process.platform,node:process.versions.node,root,commands:[]};
+const run=(command,args,expected=0)=>{
+ const r=spawnSync(command,args,{cwd:project,env,encoding:'utf8',timeout:180000,maxBuffer:8*1024*1024});
+ evidence.commands.push({command,args,status:r.status,stdout:r.stdout,stderr:r.stderr,error:r.error?.message});
+ writeFileSync(join(root,'evidence.json'),JSON.stringify(evidence,null,2));
+ assert.equal(r.status,expected,`${args.join(' ')}\n${r.stdout}\n${r.stderr}\n${r.error??''}`);return r;
+};
+try {
+ assert.equal(process.platform,'win32');
+ const npm=join(dirname(process.execPath),'node_modules','npm','bin','npm-cli.js');
+ run(process.execPath,[npm,'exec','--yes','--package',pathToFileURL(join(stage,'boxbox-plugin-0.2.1.tgz')).href,'--','boxbox','--codex']);
+ const install=join(env.LOCALAPPDATA,'BoxBox','Codex','0.2.1');
+ const launcher=join(install,'plugin','scripts','boxbox.mjs');
+ const platform=await import(pathToFileURL(join(install,'platform.mjs')).href);
+ const codex=platform.findCommand('codex');assert.ok(codex);
+ run(codex.executable,[...codex.args,'--version']);
+ const listed=run(codex.executable,[...codex.args,'plugin','list']);assert.match(listed.stdout,/boxbox@boxbox-plugins.*installed, enabled/);
+ const cli=(args,expected=0)=>JSON.parse(run(process.execPath,[launcher,...args,'--json'],expected).stdout);
+ const source='alpha = 1\nmuch_longer = 22\nmid = 333\n';
+ const target=join(project,'table.py');writeFileSync(target,source);
+ const hash=()=>createHash('sha256').update(readFileSync(target)).digest('hex');
+ const original=hash();
+ assert.equal(cli(['doctor']).formatConfigured,true);
+ const checked=cli(['check','--file','table.py'],1);assert.equal(checked.formatReadiness.approvalEligible,true);assert.equal(checked.formatReadiness.verification,'not-run');
+ assert.deepEqual(cli(['guide','--file','table.py']).conventions,['py-simple-assignments']);
+ const preview=cli(['format','--file','table.py','--dry-run']);assert.equal(preview.written,false);assert.equal(preview.formatterExecuted,false);assert.equal(hash(),original);
+ const formatted=cli(['format','--file','table.py']);assert.equal(formatted.written,true);assert.equal(formatted.safety.parserChecked,true);
+ assert.equal(readFileSync(target,'utf8'),'alpha       = 1\nmuch_longer = 22\nmid         = 333\n');
+ const aligned=hash();assert.notEqual(aligned,original);assert.equal(cli(['format','--file','table.py']).written,false);assert.equal(hash(),aligned);cli(['check','--file','table.py']);
+ run('python3',['-c',"import ast,tokenize,io,sys; a,b=sys.argv[1:]; ast.parse(b); norm=lambda s:[(t.type,t.string) for t in tokenize.generate_tokens(io.StringIO(s).readline) if t.type not in (tokenize.ENCODING,tokenize.ENDMARKER)]; assert norm(a)==norm(b)",source,readFileSync(target,'utf8')]);
+ const crlfFile=join(project,'crlf.py');writeFileSync(crlfFile,source.replaceAll('\n','\r\n'));
+ assert.equal(cli(['format','--file','crlf.py','--dry-run']).written,false);assert.equal(readFileSync(crlfFile,'utf8'),source.replaceAll('\n','\r\n'));
+ assert.equal(cli(['format','--file','crlf.py']).written,true);assert.equal(readFileSync(crlfFile,'utf8'),'alpha       = 1\r\nmuch_longer = 22\r\nmid         = 333\r\n');assert.equal(cli(['format','--file','crlf.py']).written,false);
+ writeFileSync(join(project,'attribute.py'),'self.a = 1\nself.longer = 2\nself.mid = 3\n');
+ const refused=cli(['format','--file','attribute.py'],2);assert.equal(refused.error.code,'FORMAT_NOT_ELIGIBLE');
+ assert.equal(readFileSync(join(project,'attribute.py'),'utf8'),'self.a = 1\nself.longer = 2\nself.mid = 3\n');
+ const chained='a = b = 1\nlonger = c = 22\nmid = d = 333\n';writeFileSync(join(project,'chained.py'),chained);
+ assert.equal(cli(['check','--file','chained.py'],1).formatReadiness.approvalEligible,false);
+ assert.equal(cli(['format','--file','chained.py'],2).error.code,'FORMAT_NOT_ELIGIBLE');assert.equal(readFileSync(join(project,'chained.py'),'utf8'),chained);
+ // Exercise the optional formatter in the actual installed Windows pipeline.
+ const script=join(project,'formatter & native.mjs');writeFileSync(script,"import {readFileSync,writeFileSync} from 'node:fs';const p=process.argv[2];writeFileSync(p,readFileSync(p,'utf8').replaceAll(/\\s*=\\s*/gu,' = '));");
+ mkdirSync(join(project,'.boxbox'));writeFileSync(join(project,'.boxbox','config.json'),JSON.stringify({schemaVersion:2,formatters:{python:{command:process.execPath,args:[script,'{file}'],timeoutMs:3000}}}));
+ writeFileSync(target,source);const optional=cli(['format','--file','table.py']);assert.equal(optional.formatterExecuted,true);assert.equal(optional.formatMode,'formatter');assert.equal(optional.written,true);
+ // Verify timeout cleanup through the final installed CLI, preserving the original.
+ const marker=join(project,'timeout-child.txt');
+ const delayed="require('fs').writeFileSync(process.argv[1]+'.started','yes');setTimeout(()=>require('fs').writeFileSync(process.argv[1],'escaped'),1200)";
+ writeFileSync(script,`import {spawn} from 'node:child_process';spawn(process.execPath,['-e',${JSON.stringify(delayed)},${JSON.stringify(marker)}],{stdio:'ignore'});setInterval(()=>{},1000);`);
+ writeFileSync(join(project,'.boxbox','config.json'),JSON.stringify({schemaVersion:2,formatters:{python:{command:process.execPath,args:[script,'{file}'],timeoutMs:400}}}));
+ writeFileSync(target,source);const timeoutOriginal=hash();
+ const timeout=cli(['format','--file','table.py'],2);assert.match(timeout.error.message,/timed out/);assert.equal(hash(),timeoutOriginal);
+ assert.equal(existsSync(marker+'.started'),true);await new Promise(r=>setTimeout(r,1400));assert.equal(existsSync(marker),false);
+ evidence.nativeFormatterTimeoutVerified=true;
+ evidence.ok=true;evidence.hashes={original,aligned};evidence.nativeHookVerified=false;evidence.automaticFixPerformed=false;
+ writeFileSync(join(root,'evidence.json'),JSON.stringify(evidence,null,2));
+ console.log(JSON.stringify({ok:true,root,evidence:join(root,'evidence.json'),platform:process.platform,node:process.versions.node,hashes:evidence.hashes,nativeHookVerified:false}));
+} catch(error) { evidence.failure=error.stack;writeFileSync(join(root,'evidence.json'),JSON.stringify(evidence,null,2));console.error(error);process.exitCode=1; }

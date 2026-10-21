@@ -1,0 +1,53 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/recommended-preset.test.ts:
+(pass) the approved recommended preset > ships exactly the two human-approved rules with matching dated, versioned proof records [11.16ms]
+(pass) the approved recommended preset > a prepared public package retains complete proofs and refuses changed approval documents [13.68ms]
+(pass) the approved recommended preset > both shipped approval proofs survive a CRLF document checkout [0.88ms]
+(pass) the approved recommended preset > approval lookup remains limited to the exact language, scope, container and axes [0.72ms]
+(pass) the approved recommended preset > the approved TypeScript example and two-row declaration exception use real safe writes and reach a token-preserving fixed point [1351.08ms]
+(pass) the approved recommended preset > using declarations never inherit the direct-call approval [190.76ms]
+(pass) the approved recommended preset > await using declarations never inherit the direct-call approval [187.89ms]
+(pass) the approved recommended preset > constructor initializers never inherit the direct-call approval [186.08ms]
+(pass) the approved recommended preset > awaited initializers never inherit the direct-call approval [183.20ms]
+(pass) the approved recommended preset > the approved Python example remains safe at its existing indentation [326.60ms]
+(pass) the approved recommended preset > the excluded single TypeScript row and two Python rows stay unchanged [73.98ms]
+(pass) the approved recommended preset > attribute assignment tables do not inherit the simple-name approval [0.49ms]
+(pass) the approved recommended preset > chained assignments do not inherit the single-name approval [281.59ms]
+(pass) the approved recommended preset > compound assignments and differing indentation never become approved Python tables [0.09ms]
+
+test/surface.test.ts:
+(pass) grammar ID registry > the tables in grammar.md match the list in grammar-ids.ts [0.55ms]
+(pass) surface forms — TypeScript > every engine kind maps to a pattern [0.33ms]
+(pass) surface forms — TypeScript > an enum with values is MAP, names only is LIST [0.03ms]
+(pass) surface forms — TypeScript > declaration and assignment are different patterns and not ambiguous [0.18ms]
+(pass) surface forms — TypeScript > an unknown kind is not mapped (target of alarm A8) [0.02ms]
+(pass) surface forms — Python > every table in the fixture maps to a pattern [8.35ms]
+(pass) surface forms — Python > `a = v`, where declaration and assignment share syntax, is marked ambiguous [0.08ms]
+(pass) surface-form data validation > every shipped data file is valid [0.23ms]
+(pass) surface-form data validation > refuses IDs missing from the grammar, forms with no matcher or two, and other language names [0.43ms]
+
+test/python-align.test.ts:
+(pass) python: alignment changes only whitespace between tokens and refuses nothing [1.27ms]
+(pass) python: the aligned table and trap files parse like their sources [62.91ms]
+(pass) python: alignment is idempotent — running twice gives the same result [0.97ms]
+(pass) python: matches the golden aligned file [0.58ms]
+(pass) python: the already aligned golden has 0 changes [0.23ms]
+(pass) python: the string/comment trap file has 0 changes [0.07ms]
+(pass) python: 2-row groups are not aligned [0.57ms]
+(pass) python profile specific properties > dictionary rows decompose into key, colon, value, comma axes and align the colon column [0.09ms]
+(pass) python profile specific properties > annotated assignments align name and type columns and never pad the trailing value [0.08ms]
+(pass) python profile specific properties > tightly written assignments also form a table and are fixed to conventional gaps (none after colon, spaces around equal) [0.06ms]
+(pass) python profile specific properties > attribute assignments form a table without changing Python syntax or non-whitespace tokens [21.75ms]
+(pass) python profile specific properties > assigned calls decompose into the call cell and argument columns [0.23ms]
+(pass) python profile specific properties > a call wrapping one flat bundle aligns the bundle cells inside the call [0.12ms]
+(pass) python profile specific properties > calls with a different callee, a different arity, nesting or keyword arguments never share a table [0.12ms]
+(pass) python profile specific properties > the profile refuses control-flow, call and line-continuation rows so they never form tables [0.04ms]
+(pass) python profile specific properties > bundle rows align inner cell columns, and rows with different bracket pairs split tables [0.10ms]
+(pass) python profile specific properties > the profile refuses bundle rows with nesting, indexing, assignment, empty cells or f-strings [0.08ms]
+(pass) python profile specific properties > keeps == comparisons inside values and refuses values starting with == [0.10ms]
+
+ 41 pass
+ 0 fail
+ 238 expect() calls
+Ran 41 tests across 3 files. [3.14s]

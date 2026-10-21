@@ -69,6 +69,7 @@ describe("python profile specific properties", () => {
 		const result = align(source);
 
 		expect(result.groups).toBe(1);
+		expect(result.details[0]!.axes).toEqual(["attribute", "equal", "value"]);
 		expect(result.output).toBe([
 			"self.a           = 0",
 			"self.longer_name = 0",

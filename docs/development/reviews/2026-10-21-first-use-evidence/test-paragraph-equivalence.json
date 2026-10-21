@@ -1,0 +1,6 @@
+{
+  "file": "test/recommended-preset.test.ts",
+  "beforeSha256": "e171cd97ff5a1d975476820e78aacdfadb490ffce3a2a2162146938f56556b65",
+  "afterSha256": "870a73a3308975b98756a35a277f7f91825d26cd7f190452c6305fc98a35f8bc",
+  "onlyInsertedBlankLines": true
+}

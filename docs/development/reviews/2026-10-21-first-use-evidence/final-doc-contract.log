@@ -1,0 +1,16 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/plugin-contract.test.ts:
+(pass) plugin distribution contract > package, Claude and Codex manifests and both marketplaces share name and version [4.60ms]
+(pass) plugin distribution contract > plugin components live inside the plugin folder [0.96ms]
+(pass) plugin distribution contract > the development skill lists every language; the shipped plugin introduces only the first public scope [1.58ms]
+(pass) plugin distribution contract > the plugin folder does not drift from the single source [8.14ms]
+(pass) plugin distribution contract > hooks call only the shim inside the plugin, and the shim requires an explicit local engine [1.26ms]
+(pass) plugin distribution contract > the plugin folder stays within the directory submission limits [0.88ms]
+(pass) plugin distribution contract > shipped docs never instruct running a nonexistent repository test [0.04ms]
+(pass) plugin distribution contract > every table-kind axis has a human-readable note [0.52ms]
+
+ 8 pass
+ 0 fail
+ 166 expect() calls
+Ran 8 tests across 1 file. [172.00ms]

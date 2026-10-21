@@ -1,0 +1,35 @@
+import { resolveFormatterExecutable, runFormatterProcess } from './formatter-process.mjs';
+import { strict as assert } from 'node:assert';
+import { mkdtempSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+const root = mkdtempSync(join(tmpdir(), 'boxbox-native-formatter-'));
+const results = [];
+try {
+  assert.equal(process.platform, 'win32');
+  const executable = resolveFormatterExecutable('node', root);
+  assert.ok(executable.path.toLowerCase().endsWith('node.exe'));
+  results.push('PATH/PATHEXT native executable');
+  const script = join(root, 'format & literal.mjs');
+  const target = join(root, 'source & name.py');
+  writeFileSync(target, 'original\n');
+  writeFileSync(script, `import {writeFileSync} from 'node:fs';writeFileSync(process.argv[2], JSON.stringify(process.argv.slice(3)));`);
+  const command = resolveFormatterExecutable(script, root);
+  const formatted = await runFormatterProcess(command.path, {command:script,args:['{file}','a&b','$(never)','with space','"quoted"'],timeoutMs:3000},target,root);
+  assert.equal(formatted.exitCode, 0);
+  assert.deepEqual(JSON.parse(readFileSync(target,'utf8')), ['a&b','$(never)','with space','"quoted"']);
+  results.push('Node script and literal arguments including spaces/metacharacters');
+  const batch = join(root, 'unsafe.cmd');
+  writeFileSync(batch, '@echo never');
+  assert.throws(()=>resolveFormatterExecutable(batch,root), /batch formatter commands are unsupported/);
+  results.push('batch refusal with actionable guidance');
+  const marker = join(root, 'escaped-child.txt');
+  writeFileSync(script, `import {spawn} from 'node:child_process';spawn(process.execPath,['-e',${JSON.stringify("require('fs').writeFileSync(process.argv[1]+'.started','yes');setTimeout(()=>require('fs').writeFileSync(process.argv[1],'escaped'),1200)")},${JSON.stringify(marker)}],{stdio:'ignore'});setInterval(()=>{},1000);`);
+  const timed = await runFormatterProcess(command.path,{command:script,args:['{file}'],timeoutMs:400},target,root);
+  assert.equal(timed.timedOut,true);
+  assert.equal(existsSync(marker+'.started'),true);
+  await new Promise(r=>setTimeout(r,1400));
+  assert.equal(existsSync(marker),false);
+  results.push('timeout waits for Windows process-tree cleanup; child delayed write prevented');
+  console.log(JSON.stringify({ok:true,platform:process.platform,node:process.versions.node,results}));
+} finally { rmSync(root,{recursive:true,force:true}); }

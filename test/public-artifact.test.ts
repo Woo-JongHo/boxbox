@@ -45,7 +45,7 @@ afterEach(() => {
 });
 
 describe("public CLI local package artifact", () => {
-	test("the isolated installed boxbox bin keeps the empty preset and applies only synthetic project approvals safely", () => {
+	test("the isolated installed boxbox bin ships approved standalone rules and safely honors project overrides", () => {
 		const temporary = workspace()                    ;
 		const project   = join(temporary, "project")     ;
 		const packs     = join(temporary, "public-pack") ;
@@ -62,6 +62,8 @@ describe("public CLI local package artifact", () => {
 			"package.json",
 			"rules/presets/recommended/conventions.jsonl",
 			"rules/presets/recommended/decisions.jsonl",
+			"rules/presets/recommended/docs/public/decisions/py-simple-assignments.md",
+			"rules/presets/recommended/docs/public/decisions/ts-sourcefile-call-declarations.md",
 			"rules/presets/recommended/examples.jsonl",
 		]);
 
@@ -77,8 +79,10 @@ describe("public CLI local package artifact", () => {
 		expect(manifest.dependencies).toEqual({ typescript: "7.0.2" }   ) ;
 		expect(manifest.exports     ).toBeUndefined()               ;
 		expect(existsSync(join(installed, "dist/internal-runner.js"))).toBe(false);
-		for (const name of ["conventions.jsonl", "examples.jsonl", "decisions.jsonl"]) {
-			expect(readFileSync(join(installed, "rules/presets/recommended", name), "utf8")).toBe("");
+		for (const [name, rows] of [["conventions.jsonl", 2], ["examples.jsonl", 4], ["decisions.jsonl", 2]] as const) {
+			const records = readFileSync(join(installed, "rules/presets/recommended", name), "utf8").trim().split("\n").map(line => JSON.parse(line));
+			expect(records).toHaveLength(rows);
+			expect(records.every(record => record.approvedBy === "maintainer")).toBe(true);
 		}
 		expect(existsSync(join(installed, "rules/presets/recommended/docs/candidates/initial-rules.md"))).toBe(false);
 
@@ -102,7 +106,7 @@ describe("public CLI local package artifact", () => {
 		expect(help.stdout).toContain("Usage: boxbox");
 		const version = run(executable, ["--version"], { cwd: project, env: runtimeEnv });
 		expectStatus(version, 0);
-		expect(version.stdout.trim()).toBe("0.2.0");
+		expect(version.stdout.trim()).toBe("0.2.1");
 
 		const init = run(executable, ["init", "--json"], { cwd: project, env: runtimeEnv });
 		expectStatus(init, 0);
@@ -110,7 +114,7 @@ describe("public CLI local package artifact", () => {
 		expect(existsSync(join(project, ".boxbox/config.json"))).toBe(true);
 		const doctor = run(executable, ["doctor", "--json"], { cwd: project, env: runtimeEnv });
 		expectStatus(doctor, 0);
-		expect(JSON.parse(doctor.stdout)).toMatchObject({ command: "doctor", ok: true, runtimeUsable: true, formatConfigured: false, releaseReady: false });
+		expect(JSON.parse(doctor.stdout)).toMatchObject({ command: "doctor", ok: true, runtimeUsable: true, formatConfigured: true, releaseReady: false });
 		const guarded = run(executable, ["run", "--root", project, "--json", "--", "python3", "-c", "open('guarded.py','w').write('x = 1\\n')"], { cwd: project, env: runtimeEnv });
 		expectStatus(guarded, 0);
 		expect(JSON.parse(guarded.stdout)).toMatchObject({ command: "run", state: "PASS", childExitCode: 0, nativeHookVerified: false, automaticFixPerformed: false });
@@ -146,14 +150,19 @@ describe("public CLI local package artifact", () => {
 		expectStatus(check, 1);
 		expect(readFileSync(target).equals(original)).toBe(true);
 
-		const dryRun = run(executable, ["format", "--file", "sample.ts", "--dry-run"], { cwd: project, env: runtimeEnv });
-		expectStatus(dryRun, 2);
-		expect(dryRun.stderr).toContain("format refused");
+		const dryRun = run(executable, ["format", "--file", "sample.ts", "--dry-run", "--json"], { cwd: project, env: runtimeEnv });
+		expectStatus(dryRun, 0);
+		expect(JSON.parse(dryRun.stdout)).toMatchObject({ formatMode: "standalone", formatterExecuted: false, formatter: null, written: false, approvals: ["ts-sourcefile-call-declarations"] });
 		expect(readFileSync(target).equals(original)).toBe(true);
-		const refused = run(executable, ["format", "--file", "sample.ts"], { cwd: project, env: runtimeEnv });
-		expectStatus(refused, 2);
-		expect(refused.stderr).toContain("format refused");
-		expect(readFileSync(target).equals(original)).toBe(true);
+		const standalone = run(executable, ["format", "--file", "sample.ts", "--json"], { cwd: project, env: runtimeEnv });
+		expectStatus(standalone, 0);
+		expect(JSON.parse(standalone.stdout)).toMatchObject({ written: true, fixedPoint: true, approvals: ["ts-sourcefile-call-declarations"] });
+		const standaloneOutput = readFileSync(target)                                                                            ;
+		const unchanged        = run(executable, ["format", "--file", "sample.ts", "--json"], { cwd: project, env: runtimeEnv }) ;
+		expectStatus(unchanged, 0);
+		expect(JSON.parse(unchanged.stdout).written).toBe(false);
+		expect(readFileSync(target).equals(standaloneOutput)).toBe(true);
+		writeFileSync(target, original);
 
 		const rule      = "synthetic-ts-rule"                                                                              ;
 		const positive  = `${rule}-positive`                                                                               ;

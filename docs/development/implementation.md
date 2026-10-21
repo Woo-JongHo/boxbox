@@ -10,7 +10,7 @@ Only behavior confirmed in the repository's scripts, tests and manifests counts 
 
 `boxbox` is an agent skill plugin that finds consecutive same-role rows in one file and aligns them into minimum-width
 columns. The product and display names are `boxbox` / `BoxBox`, confirmed on 2026-10-16, and
-[`package.json`](../../package.json) is `private: true`, version `0.2.0`.
+[`package.json`](../../package.json) is `private: true`, version `0.2.1`.
 
 The usable surfaces today are the TypeScript 7 AST tools, a shared line engine for the other 9 languages,
 version 1 Result JSON, TypeScript and Python reports, Claude Code observation hooks, corpus verdict and fixture
@@ -18,7 +18,7 @@ promotion tools, and an install script for the skill and inspector on Claude Cod
 
 A public CLI foundation and the config, approval and formatter cores were added. `init`, `doctor` and `check` in `cli.ts`
 were verified on a Node-only isolated install. Config is Base → recommended Preset → User → Project, and
-schema 1 is interpreted as schema 2 without changing the original. Formatter commands are given explicitly per language.
+schema 1 is interpreted as schema 2 without changing the original. Optional formatter commands are given explicitly per language; absence selects standalone approved alignment.
 
 `boxbox db init` creates the empty `conventions.jsonl`, `examples.jsonl` and `decisions.jsonl` of the user-layer DB
 with 0600 file permissions and new user paths with 0700 permissions. `boxbox db status` returns only the
@@ -28,7 +28,7 @@ send data anywhere, and they keep or refuse existing files, symlinks and path co
 
 `common/approval-gate.ts` checks not only a rule's status but also the human approval information, examples and counterexamples,
 versions and document hash of the linked decision. It checks path escapes of per-layer document roots and registry files.
-`common/format-pipeline.ts` applies formatter → parser → approval gate → BoxBox to a working copy, then
+`common/format-pipeline.ts` applies optional formatter → parser → approval gate → BoxBox to a working copy, then
 runs the whole process again to confirm a byte fixed point. Only a successful result is replaced, once, and dry-run keeps the original.
 The public CLI's `guide` returns only verified after-better examples, and `format` calls the pipeline above.
 `doctor` exits by whether the environment is runnable and reports `formatConfigured` and the undecided `releaseReady` separately.
@@ -227,7 +227,8 @@ specific scopes win. A tied status conflict is `conflict`; candidates and old-ve
 
 The existing report lookup and the raw per-language aligners do not share the approval policy. The public format path
 limits writes by the new approval gate's verification results. Raw development writers are excluded from the public CLI artifact. At survey time, the preset's convention,
-example and decision JSONL and [`development/corpus/verdicts.jsonl`](../../development/corpus/verdicts.jsonl) all have 0 entries.
+example and decision JSONL were empty. On 2026-10-21 the user approved two exact rules and their four examples;
+[`development/corpus/verdicts.jsonl`](../../development/corpus/verdicts.jsonl) remains separate from that public preset.
 
 The development [`hooks.json`](../../development/hooks/hooks.json) for the Claude Code plugin registers `SessionStart`, `PreToolUse` and
 `PostToolUse`. Targets are `.ts/.mts/.cts/.py` touched by Write/Edit/MultiEdit, excluding `.d.ts` and
@@ -358,7 +359,10 @@ The release preset is maker-owned read-only data, separate from the user DB and 
 outputs, in [`development/tools/build-cli-artifact.ts`](../../development/tools/build-cli-artifact.ts), only records that pass the policy checks of
 [`public-preset.ts`](../../development/tools/public-preset.ts). JSONL is reserialized from the validated objects, dropping hidden values of duplicate keys,
 and only the document section hashed by an approved decision is extracted to `docs/public/decisions/<id>.md`. Release decision refs also point
-at the extract, and sibling sections are not copied. The preset is currently three empty JSONL files. Internal evidence stays in
+at the extract, and sibling sections are not copied. Since the human approval on 2026-10-21, the preset contains two
+conventions, four synthetic examples (CC0-1.0 for those examples only) and two decisions. TypeScript resource declarations
+and awaited/constructor initializers use a separate kind; Python dotted assignment targets use a separate axis, preventing
+inheritance of the narrower approved keys. Internal evidence stays in
 `~/.cache/boxbox/corpus/` and is not in the CLI package allowlist. Numbers and privacy limits follow
 [`corpus-data.md`](corpus-data.md).
 This boundary protects only research data. The current npm package includes the unminified 143,179 B CLI bundle,

@@ -89,4 +89,4 @@ if (host) {
 }
 console.log(engineOnly ? "BoxBox local engine is ready; host checks and registration were skipped." : `BoxBox is installed for ${metadata.host === "codex" ? "Codex" : "Claude Code"}. Restart that host and select the BoxBox skill. Review the current hooks manually before relying on them.`);
 console.log(`Permanent installation: ${root}`);
-console.log("The public preset is empty; formatting refuses without your formatter and human approval proof.");
+console.log("Approved TypeScript call declarations and Python simple assignments can format without an external formatter. Run check and guide, then format --dry-run before an explicit format request; other patterns require approval.");

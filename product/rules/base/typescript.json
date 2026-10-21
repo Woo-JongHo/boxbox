@@ -5,6 +5,7 @@
 		{ "kind": "import-declarations", "pattern": "IMPORT" },
 		{ "kind": "declaration", "pattern": "DEFINE" },
 		{ "kind": "declaration-equals", "pattern": "DEFINE" },
+		{ "kind": "declaration-extended-equals", "pattern": "DEFINE" },
 		{ "kind": "type-alias", "pattern": "DEFINE" },
 		{ "kind": "interface-members", "pattern": "DESCRIBE" },
 		{ "kind": "type-members", "pattern": "DESCRIBE" },

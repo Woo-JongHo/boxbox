@@ -14,7 +14,7 @@ function rootOf(args: readonly string[]): string {
 	return args[1]!;
 }
 
-/** Plugin hooks write to the host's data folder (set by both Claude and Codex) so no files are left in the user's project. */
+/** Use host plugin data when provided; direct CLI hooks fall back to project-local receipts. */
 function stateDirectory(root: string, id: string): string {
 	const data = process.env.CLAUDE_PLUGIN_DATA || process.env.PLUGIN_DATA;
 	if (!data) return join(root, ".boxbox/hooks", id);
@@ -38,7 +38,7 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 		const baseline = join(directory, "baseline.json");
 		if (mode === "session") {
 			if (!existsSync(baseline)) writeFileSync(baseline, JSON.stringify(snapshot(root)), { flag: "wx" });
-			console.log(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: "[boxbox] Changed code is checked after each edit, and all session changes are checked again on completion. Results are recorded in .boxbox/hooks." } }));
+			console.log(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: `[boxbox] Changed code is checked after each edit, and all session changes are checked again on completion. Results are recorded in ${directory}.` } }));
 			return 0;
 		}
 		if (!existsSync(baseline)) throw new Error("Missing SessionStart baseline; start a session in this project");

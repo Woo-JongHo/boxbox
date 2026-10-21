@@ -1,8 +1,15 @@
 # BoxBox CLI development candidate
 
 This private package is a Node-only CLI development candidate that checks TypeScript and Python projects and runs
-initial setup and environment diagnostics. `format` changes a file only when the project names a formatter and an
-exactly matching human approval proof, the safety checks and the formatter fixed point are all confirmed for the target file.
+initial setup and environment diagnostics. `format` aligns approved tables directly. An external formatter is optional;
+when configured, it runs before BoxBox in both format and dry-run, and failures stop the operation. Exact human approval proof, parsing, preservation
+and a two-run byte fixed point must all pass before the original file is replaced.
+
+The recommended preset includes two narrowly approved rules: top-level TypeScript single-call variable declarations
+(two or more rows, `.ts`) and Python simple name assignments (three or more rows at the same indentation). Other patterns
+require their own approval. `check --json` reports `formatReadiness.approvalEligible`; `verification=not-run` means that
+`format --dry-run` must still verify the actual write pipeline. `doctor` reports runtime and configuration readiness
+separately from release acceptance. Neither command promises that an arbitrary file is writable.
 
 Users can keep a personal DB separate from the plugin preset. Run these commands with the downloaded CLI.
 

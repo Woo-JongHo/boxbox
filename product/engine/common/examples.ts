@@ -65,7 +65,7 @@ export const contentHashOf = (before: string, after: string): string => sha256(`
 
 /** Document section hash: from a `# …`/`## …` heading up to the next heading of the same or higher level. A missing heading is an error. */
 export function sectionHash(document: string, heading: string): string {
-	const lines = document.split("\n")                                                                               ;
+	const lines = document.split(/\r?\n/u)                                                                           ;
 	const start = lines.findIndex(line => /^#+ /u.test(line) && line.replace(/^#+ /u, "").trim() === heading.trim()) ;
 	if (start < 0) throw new Error(`heading not found: ${heading}`);
 

@@ -1,6 +1,6 @@
 {
 	"name": "boxbox",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"description": "Inspects TypeScript and Python files one at a time against tabular readability rules and formats only through human-approved rules.",
 	"author": {
 		"name": "Woo-JongHo"

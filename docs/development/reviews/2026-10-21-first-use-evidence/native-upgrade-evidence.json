@@ -1,0 +1,96 @@
+{
+  "platform": "win32",
+  "node": "24.12.0",
+  "root": "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-upgrade-1792542089329",
+  "commands": [
+    {
+      "exe": "C:\\WINDOWS\\System32\\tar.exe",
+      "args": [
+        "-xzf",
+        "C:\\Users\\woo\\Downloads\\BoxBox\\0.2.0\\20261020T181927-KST\\boxbox-plugin-0.2.0.tgz",
+        "-C",
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-upgrade-1792542089329\\old"
+      ],
+      "status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "exe": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js",
+        "plugin",
+        "marketplace",
+        "add",
+        "C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-upgrade-1792542089329\\old\\package\\payload\\codex"
+      ],
+      "status": 0,
+      "stdout": "Added marketplace `boxbox-plugins` from \\\\?\\C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-upgrade-1792542089329\\old\\package\\payload\\codex.\nInstalled marketplace root: C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-upgrade-1792542089329\\old\\package\\payload\\codex\n",
+      "stderr": ""
+    },
+    {
+      "exe": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js",
+        "plugin",
+        "add",
+        "boxbox@boxbox-plugins"
+      ],
+      "status": 0,
+      "stdout": "Added plugin `boxbox` from marketplace `boxbox-plugins`.\nInstalled plugin root: C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-upgrade-1792542089329\\codex home\\plugins\\cache\\boxbox-plugins\\boxbox\\0.2.0\n",
+      "stderr": ""
+    },
+    {
+      "exe": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js",
+        "plugin",
+        "list"
+      ],
+      "status": 0,
+      "stdout": "Marketplace `boxbox-plugins`\nC:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-upgrade-1792542089329\\old\\package\\payload\\codex\\.agents\\plugins\\marketplace.json\n\nPLUGIN                 STATUS              VERSION  SOURCE\nboxbox@boxbox-plugins  installed, enabled  0.2.0    C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-upgrade-1792542089329\\old\\package\\payload\\codex\\plugin\n",
+      "stderr": ""
+    },
+    {
+      "exe": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js",
+        "plugin",
+        "marketplace",
+        "remove",
+        "boxbox-plugins"
+      ],
+      "status": 0,
+      "stdout": "Removed marketplace `boxbox-plugins`.\n",
+      "stderr": ""
+    },
+    {
+      "exe": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "exec",
+        "--yes",
+        "--package",
+        "file:///C:/Users/woo/Downloads/BoxBox/first-use-final-20261021/boxbox-plugin-0.2.1.tgz",
+        "--",
+        "boxbox",
+        "--codex"
+      ],
+      "status": 0,
+      "stdout": "11.6.2\ncodex-cli 0.157.1\nInstall a plugin from a configured or remote marketplace.\n\nPass either `PLUGIN@MARKETPLACE` or pass `PLUGIN` with `--marketplace MARKETPLACE`.\n\nUsage: codex plugin add [OPTIONS] <PLUGIN[@MARKETPLACE]>\n\nArguments:\n  <PLUGIN[@MARKETPLACE]>\n          Plugin selector to install: either PLUGIN@MARKETPLACE or PLUGIN with --marketplace\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n  -m, --marketplace <MARKETPLACE>\n          Marketplace name to use when PLUGIN does not include @MARKETPLACE\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --json\n          Output install result as JSON\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n  -h, --help\n          Print help (see a summary with '-h')\n\nExamples:\n  codex plugin add sample@debug\n  codex plugin add sample --marketplace debug\n\nadded 3 packages in 2s\n0.2.1\nAdded marketplace `boxbox-plugins` from \\\\?\\C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-upgrade-1792542089329\\app data\\BoxBox\\Codex\\0.2.1.\nInstalled marketplace root: C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-upgrade-1792542089329\\app data\\BoxBox\\Codex\\0.2.1\nAdded plugin `boxbox` from marketplace `boxbox-plugins`.\nInstalled plugin root: C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-upgrade-1792542089329\\codex home\\plugins\\cache\\boxbox-plugins\\boxbox\\0.2.1\nBoxBox is installed for Codex. Restart that host and select the BoxBox skill. Review the current hooks manually before relying on them.\nPermanent installation: C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-upgrade-1792542089329\\app data\\BoxBox\\Codex\\0.2.1\\\nApproved TypeScript call declarations and Python simple assignments can format without an external formatter. Run check and guide, then format --dry-run before an explicit format request; other patterns require approval.\n",
+      "stderr": "npm notice\nnpm notice New minor version of npm available! 11.6.2 -> 11.21.1\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v11.21.1\nnpm notice To update run: npm install -g npm@11.21.1\nnpm notice\n"
+    },
+    {
+      "exe": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\woo\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js",
+        "plugin",
+        "list"
+      ],
+      "status": 0,
+      "stdout": "Marketplace `boxbox-plugins`\nC:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-upgrade-1792542089329\\app data\\BoxBox\\Codex\\0.2.1\\.agents\\plugins\\marketplace.json\n\nPLUGIN                 STATUS              VERSION  SOURCE\nboxbox@boxbox-plugins  installed, enabled  0.2.1    C:\\Users\\woo\\Downloads\\BoxBox\\first-use-final-20261021\\native-upgrade-1792542089329\\app data\\BoxBox\\Codex\\0.2.1\\plugin\n",
+      "stderr": ""
+    }
+  ],
+  "ok": true
+}

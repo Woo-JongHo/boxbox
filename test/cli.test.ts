@@ -90,13 +90,13 @@ function approvedPythonProject(root: string): void {
 describe("public CLI", () => {
 	test("help and version work through the real entry API", () => {
 		const root    = workspace()                 ;
-		const help    = invoke(root, ["--help"])    ; 
+		const help    = invoke(root, ["--help"])    ;
 		const version = invoke(root, ["--version"]) ;
 		expect(help.status          ).toBe     (0               ) ;
 		expect(help.stdout          ).toContain("Usage: boxbox" ) ;
 		expect(help.stdout          ).toContain("exactly one"   ) ;
 		expect(version.status       ).toBe     (0               ) ;
-		expect(version.stdout.trim()).toBe     ("0.2.0"         ) ;
+		expect(version.stdout.trim()).toBe     ("0.2.1"         ) ;
 	});
 
 	test("init preserves existing user files and never overwrites the config when rerun", () => {
@@ -143,18 +143,20 @@ describe("public CLI", () => {
 		expect(existsSync(join(root, ".boxbox"))  ).toBe           (false   ) ;
 	});
 
-	test("format refuses to write and dry-run does not change the file either", () => {
-		const root   = workspace()                                              ;
-		const path   = pythonFixture(root)                                      ;
-		const before = readFileSync(path, "utf8")                               ;
-		const denied = invoke(root, ["format", "--file", "table.py", "--json"]) ;
-		expect(denied.status                       ).toBe(2                    ) ;
-		expect(JSON.parse(denied.stdout).error.code).toBe("FORMAT_NOT_ELIGIBLE") ;
-		expect(readFileSync(path, "utf8")          ).toBe(before               ) ;
-		const dry = invoke(root, ["format", "--file", "table.py", "--dry-run", "--json"]);
-		expect(dry.status                          ).toBe     (2                      ) ;
-		expect(JSON.parse(dry.stdout).error.message).toContain("no explicit formatter") ;
-		expect(readFileSync(path, "utf8")          ).toBe     (before                 ) ;
+	test("a clean project previews and formats with the bundled approval and no formatter", () => {
+		const root    = workspace()                                             ;
+		const path    = pythonFixture(root)                                     ;
+		const before  = readFileSync(path)                                      ;
+		const checked = invoke(root, ["check", "--file", "table.py", "--json"]) ;
+		expect(JSON.parse(checked.stdout).formatReadiness).toMatchObject({ mode: "standalone", approvalEligible: true, verification: "not-run" });
+		const preview = invoke(root, ["format", "--file", "table.py", "--dry-run", "--json"]);
+		expect(preview.status                   ).toBe         (0                                                                                                                            ) ;
+		expect(JSON.parse(preview.stdout)       ).toMatchObject({ formatMode: "standalone", formatterExecuted: false, formatter: null, written: false, approvals: ["py-simple-assignments"] }) ;
+		expect(readFileSync(path).equals(before)).toBe         (true                                                                                                                         ) ;
+		const formatted = invoke(root, ["format", "--file", "table.py", "--json"]);
+		expect(formatted.status                    ).toBe(0    ) ;
+		expect(JSON.parse(formatted.stdout).written).toBe(true ) ;
+		expect(existsSync(join(root, ".boxbox"))   ).toBe(false) ;
 	});
 
 	test("with a verified test approval and formatter, GUIDE, dry-run and the real format use the same pipeline", () => {
@@ -186,12 +188,43 @@ describe("public CLI", () => {
 		expect(check.status).toBe(0);
 	});
 
-	test("GUIDE never exposes an empty registry or candidate data as guidance", () => {
+	test("standalone CLI alignment needs approval but no external formatter", () => {
+		const root = workspace()         ;
+		const path = pythonFixture(root) ;
+		approvedPythonProject(root);
+		writeFileSync(join(root, ".boxbox/config.json"), JSON.stringify({ schemaVersion: 2 }));
+		const checked = invoke(root, ["check", "--file", "table.py", "--json"]);
+		expect(JSON.parse(checked.stdout).formatReadiness).toMatchObject({ mode: "standalone", approvalEligible: true, verification: "not-run", reasons: [] });
+		const before  = readFileSync(path)                                                    ;
+		const preview = invoke(root, ["format", "--file", "table.py", "--dry-run", "--json"]) ;
+		expect(preview.status                   ).toBe         (0                                                                                                           ) ;
+		expect(JSON.parse(preview.stdout)       ).toMatchObject({ formatterExecuted: false, formatter: null, formatMode: "standalone", written: false, boxboxChanged: true }) ;
+		expect(readFileSync(path).equals(before)).toBe         (true                                                                                                        ) ;
+		const formatted = invoke(root, ["format", "--file", "table.py", "--json"]);
+		expect(formatted.status).toBe(0);
+		expect(JSON.parse(formatted.stdout).written).toBe(true);
+		const second = invoke(root, ["format", "--file", "table.py", "--json"]);
+		expect(second.status).toBe(0);
+		expect(JSON.parse(second.stdout).written).toBe(false);
+		writeFileSync(join(root, ".boxbox/config.json"), JSON.stringify({ schemaVersion: 2, formatters: { python: { command: "boxbox-missing-formatter", args: ["{file}"] } } }));
+		const output = readFileSync(path)                                       ;
+		const broken = invoke(root, ["format", "--file", "table.py", "--json"]) ;
+		expect(broken.status                          ).toBe     (2                     ) ;
+		expect(JSON.parse(broken.stdout).error.message).toContain("executable not found") ;
+		expect(readFileSync(path).equals(output)      ).toBe     (true                  ) ;
+		const diagnostic = JSON.parse(invoke(root, ["doctor", "--json"]).stdout);
+		expect(diagnostic.runtimeUsable          ).toBe     (true                  ) ;
+		expect(diagnostic.formatConfigured       ).toBe     (false                 ) ;
+		expect(diagnostic.checks.formatter.ok    ).toBe     (false                 ) ;
+		expect(diagnostic.checks.formatter.detail).toContain("executable not found") ;
+	});
+
+	test("GUIDE uses the bundled preset but never exposes candidate overrides as guidance", () => {
 		const root = workspace();
 		pythonFixture(root);
 		const empty = invoke(root, ["guide", "--file", "table.py", "--json"]);
-		expect(empty.status).toBe(1);
-		expect(JSON.parse(empty.stdout).guides).toEqual([]);
+		expect(empty.status).toBe(0);
+		expect(JSON.parse(empty.stdout).conventions).toEqual(["py-simple-assignments"]);
 		mkdirSync(join(root, ".boxbox"));
 		writeFileSync(join(root, ".boxbox", "conventions.jsonl"), `${JSON.stringify({ schemaVersion: 1, id: "candidate-secret", key: lookupKeyOf("python", undefined, "table", ["name", "equal", "value"]), pattern: "DEFINE", status: "candidate", scope: "**", versions: APPROVAL_VERSIONS, approvedBy: "", date: "" })}\n`);
 		const candidate = invoke(root, ["guide", "--file", "table.py", "--json"]);
@@ -200,15 +233,15 @@ describe("public CLI", () => {
 		expect(JSON.parse(candidate.stdout).guides)    .toEqual  ([]                ) ;
 	});
 
-	test("unknown, rejected, conflict and stale approvals refuse format and preserve the original", () => {
-		for (const scenario of ["unknown", "rejected", "conflict", "stale"] as const) {
+	test("candidate, rejected, conflict and stale approvals refuse format and preserve the original", () => {
+		for (const scenario of ["candidate", "rejected", "conflict", "stale"] as const) {
 			const root = workspace()         ;
 			const path = pythonFixture(root) ;
 			approvedPythonProject(root);
 			const conventionPath = join(root, ".boxbox", "conventions.jsonl")                                  ;
 			const decisionPath   = join(root, ".boxbox", "decisions.jsonl")                                    ;
 			const convention     = JSON.parse(readFileSync(conventionPath, "utf8")) as Record<string, unknown> ;
-			if (scenario === "unknown") convention.key = "v1|python|-|other|name>equal>value";
+			if (scenario === "candidate") convention.status = "candidate";
 			if (scenario === "rejected") convention.status = "rejected";
 			if (scenario === "conflict") writeFileSync(conventionPath, `${JSON.stringify(convention)}\n${JSON.stringify({ ...convention, id: "test-python-table-conflict" })}\n`);
 			else writeFileSync(conventionPath, `${JSON.stringify(convention)}\n`);
@@ -224,7 +257,7 @@ describe("public CLI", () => {
 		}
 	});
 
-	test("doctor never reports a missing Python, config or approval DB as ready", () => {
+	test("doctor refuses a missing Python even when the bundled approval data is present", () => {
 		const root   = workspace()                                                               ;
 		const result = invoke(root, ["doctor", "--json"], { PATH: "/definitely/no/tools/here" }) ;
 		const value  = JSON.parse(result.stdout)                                                 ;
@@ -234,7 +267,7 @@ describe("public CLI", () => {
 		expect(value.checks.config.detail     ).toContain      ("inherited defaults") ;
 		expect(value.checks.config.fingerprint).toMatch        (/^sha256:/          ) ;
 		expect(value.checks.config.layers     ).toHaveLength   (4                   ) ;
-		expect(value.checks.approval.ok       ).toBe           (false               ) ;
+		expect(value.checks.approval.ok       ).toBe           (true                ) ;
 		expect(value.limitations.length       ).toBeGreaterThan(0                   ) ;
 	});
 
@@ -245,7 +278,7 @@ describe("public CLI", () => {
 		expect(result.status         ).toBe(0    ) ;
 		expect(value.ok              ).toBe(true ) ;
 		expect(value.runtimeUsable   ).toBe(true ) ;
-		expect(value.formatConfigured).toBe(false) ;
+		expect(value.formatConfigured).toBe(true ) ;
 		expect(value.releaseReady    ).toBe(false) ;
 	});
 
