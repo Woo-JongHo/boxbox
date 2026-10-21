@@ -1,0 +1,81 @@
+name: Bug report
+description: Report installation, checking, formatting, or preservation failures.
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use a small synthetic example and remove private paths, source code, and credentials from logs.
+        If formatting changes tokens or leaves a partially written file, preserve the original and report the safety regression below.
+  - type: input
+    id: version
+    attributes:
+      label: BoxBox version and installation command
+      placeholder: "0.2.1; npm exec --package /path/boxbox-plugin-0.2.1.tgz -- boxbox --codex"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows (native)
+        - Windows (WSL)
+        - macOS
+        - Linux
+    validations:
+      required: true
+  - type: input
+    id: runtime
+    attributes:
+      label: OS, Node.js, npm, and Python versions
+      description: Include the OS release, node --version, npm --version, and python3 --version.
+    validations:
+      required: true
+  - type: dropdown
+    id: host
+    attributes:
+      label: Host
+      options:
+        - Codex
+        - Claude Code
+        - Standalone engine CLI
+    validations:
+      required: true
+  - type: input
+    id: host-version
+    attributes:
+      label: Host version
+      description: Use N/A for the standalone engine.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Include exact commands and a minimal input file. Describe any formatter or custom rule configuration.
+    validations:
+      required: true
+  - type: textarea
+    id: expected-actual
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: dropdown
+    id: safety
+    attributes:
+      label: Preservation or write-safety regression
+      options:
+        - No unexpected file write
+        - Tokens or behavior changed
+        - Original changed after a refused or failed operation
+        - Read-only check or hook wrote source files
+        - Unsure
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized doctor, command output, and before/after diff
+      render: text
