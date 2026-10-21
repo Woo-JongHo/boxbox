@@ -99,7 +99,7 @@ The local `origin` points to the self-hosted repository; the separate `github` r
 The first real PR run exposes `plugin-contract (ubuntu-latest)` and `plugin-contract (macos-latest)` as its check names. Configure those exact checks as required in the repository's
 branch protection/ruleset, require the intended review policy, and disable direct pushes if desired. Check the exact
 status name in the first run before making it required; a guessed required name can block every merge. These are
-GitHub repository settings, separate from the checked-in workflow.
+GitHub repository settings, separate from the checked-in workflow. The private repository currently returns HTTP 403 for branch protection and requires GitHub Pro (or public visibility). Visibility is unchanged; PR checks run, but required-check enforcement cannot be enabled on the current plan.
 
 Publishing remains separate because release-package license metadata, package ownership, public channel, and explicit
 publication authorization are unresolved. A later publishing job should use a protected environment and consume the

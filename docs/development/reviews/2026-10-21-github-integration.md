@@ -47,3 +47,24 @@ Version 0.2.2 distinguishes the changed engine bundle from the previously tested
 examples now use the actual version placeholder. The exact 0.2.0-to-0.2.1 Windows migration evidence stays historical.
 The failed diagnostic Rust installation was cleaned up, including only its exact temporary source lines in shell
 profiles; no usable global Rust toolchain was installed.
+
+Local 0.2.2 full check passed: 491 tests / 5 existing Rust/Kotlin parser skips / 0 failures, 2301 assertions; TypeScript
+and shell checks passed. Focused parser/surface checks passed 21 tests / 97 assertions. Plugin guard, drift and actionlint
+passed. Fresh Sonnet found no parser-safety blocker and required only docs/alignment corrections, now applied; final
+Opus follow-up passed (`claude-opus-5-5`) and closed the README, update-guidance and alignment findings. The next hosted run is [39543011360](https://github.com/Woo-JongHo/rowgrid/actions/runs/39543011360).
+
+Branch-protection inspection returned HTTP 403: this private repository's current GitHub plan cannot enforce required
+checks. No setting/visibility was changed. The workflow still runs and exposes both PR checks; making them required
+needs a plan change or a separately authorized visibility decision.
+
+The final Opus report records a pre-existing, non-blocking development-only Rust limitation: a rustup proxy with a
+missing rustfmt component can return a nonzero version probe and repeat an infrastructure `error:` diagnostic.
+This PR preserves existing tool probing; tightening version probes needs per-tool semantics (gofmt lacks `--version`)
+and remains follow-up work. The public first-release formatting scope is TypeScript/Python. Hosted CI explicitly
+installs rustfmt and tests a syntax-changing Rust case rather than treating proxy presence as parser proof.
+
+The Ubuntu-only fixture difference was traced to `test/corpus-promote.test.ts`: its gate fixture creates
+`test/fixtures/python/corpus/099-gateprobe-1234abcd`, then removes only that child, leaving the empty parent.
+Suite ordering explains why an unconditional second traversal sometimes worked. The new surface test requires
+only the tracked fixture parent and recursively sees any actual regular corpus children. No corpus fixture paths
+are tracked, and the Python fixture root has no symlinked children.

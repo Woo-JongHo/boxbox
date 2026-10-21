@@ -1,0 +1,14 @@
+{
+  ".github/workflows/verify.yml": "e55aa880043629a1e7b25238a54d19ce833e1ace3fe60afc6d27c8f06bf03905",
+  ".github/workflows/release-candidate.yml": "0426546ff21d408dd3bd64c5a4a45c70d56c91ec681bb111c16bed93af773bd3",
+  ".github/ISSUE_TEMPLATE/rule_proposal.md": "c9b7189bc73b24b7c40b007b16104a13fba1cab84a0c679bac854fe1fd59d0bc",
+  "CONTRIBUTING.md": "d59413e3e8ccc8a4aa85496f9e387b4032f4338d6795b2629d04d7c2154420e4",
+  "CHANGELOG.md": "0b54cf8321fa023f834e79c20368fe9952b4e6b78cb9359995536a778e1e15d4",
+  "LICENSE": "c1532bdb792370a19ab8f4f8ef51ae82f9a81209a4dfc2b279478679c8fb3623",
+  "test/parser-fault.test.ts": "6378901aac9b1156179d73d006597962760ebcbef19e18b70d63413508cb3fc1",
+  "docs/development/cicd.md": "dc5f6aa8e411ffbe3a2be4330a97718924e756a5769e6de280b18bdc193179b0",
+  "docs/development/reviews/2026-10-21-github-integration.md": "1c359617e93420fe934fdf0601617d99025605b2305b093cb8006c2582370d9a",
+  "README.md": "dc23480dd206cd61005ea0fbb10c3f4d66f1c295db9750a41760ad4fc9f39ea4",
+  "AGENTS.md": "6dbe86e94b5a91972282b533b803f1c762b08995807c653481e5c59c9ba45236",
+  "docs/development/release-contract.md": "015d78e00c1cba934830dc80080c326f2d3227a54f28a1f437bf407d214fe91b"
+}
