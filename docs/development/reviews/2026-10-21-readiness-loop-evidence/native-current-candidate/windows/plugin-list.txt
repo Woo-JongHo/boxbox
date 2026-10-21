@@ -1,0 +1,6 @@
+WARNING: proceeding, even though we could not create PATH aliases: Refusing to create helper binaries under temporary dir "C:\\Users\\woo\\AppData\\Local\\Temp\\" (codex_home: AbsolutePathBuf("C:\\Users\\woo\\AppData\\Local\\Temp\\boxbox-native-cd5d3a686c8946e7872cb82f57fd5db3\\profile\\codex"))
+Marketplace `boxbox-plugins`
+C:\Users\woo\AppData\Local\Temp\boxbox-native-cd5d3a686c8946e7872cb82f57fd5db3\profile\local\BoxBox\Codex\0.2.4\.agents\plugins\marketplace.json
+
+PLUGIN                 STATUS              VERSION  SOURCE
+boxbox@boxbox-plugins  installed, enabled  0.2.4    C:\Users\woo\AppData\Local\Temp\boxbox-native-cd5d3a686c8946e7872cb82f57fd5db3\profile\local\BoxBox\Codex\0.2.4\plugin

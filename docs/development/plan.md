@@ -26,8 +26,8 @@ The review's AST-hash proposal cannot replace token preservation, syntax accepta
 | R0 | Reconcile requirements, broad pattern taxonomy, decision contracts and this execution order | Source-linked design, support/exception matrix, scoped independent critique | reviewed |
 | R1 | Runtime record validation, alias portability infrastructure and pattern catalog | Negative record cases, isolated copy resolution, dependency-escape checks, validated catalog covering nine families | reviewed |
 | R2 | Bounded data-driven policy experiment, consistent Check/Guide lookup and syntax reporting, authoring coverage | Existing approved rule remains byte-identical; unknown/conflicting policies refuse; layered lookup and syntax regressions; diverse positive/negative authoring cases | source verified; native authoring evaluation open |
-| R3 | JSON/YAML safe adapters and shared lifecycle; new convention proposals | Strict syntax, source-range edits, comments/scalars preserved, idempotence, installed preview/apply/refusal, reviewed before/after and counterexamples | verification |
-| R4 | Complete internal alias migration, native host/HUD and supported-platform validation | No unintended relative internal imports; self-contained copy/bundle execution; native output acceptance and accurate HUD state; recorded Windows limits | aliases tested; native HUD repair active |
+| R3 | JSON/YAML safe adapters and shared lifecycle; new convention proposals | Strict syntax, source-range edits, comments/scalars preserved, idempotence, installed preview/apply/refusal, reviewed before/after and counterexamples | implementation verified; human decisions pending |
+| R4 | Complete internal alias migration, native host/HUD and supported-platform validation | No unintended relative internal imports; self-contained copy/bundle execution; native output acceptance and accurate HUD state; recorded Windows limits | aliases reviewed; native session authentication pending |
 | R5 | Release integration, documentation and public payload hygiene | Full check, independent review/GLM closure, generated drift check, same-archive CI/OS journeys, EN/KO/zh-CN consistency, clean public payload, concrete publication prerequisites | local checks and GLM passed; GitHub candidate active |
 
 R1's independent catalog, validation and installer work may run concurrently; broad engine import rewriting waits
@@ -232,10 +232,10 @@ Align remains whitespace-only. READINESS1 migrated 169 internal specifiers acros
 copied-skill resolver, checked package boundaries and verified copied-source plus installed-bundle execution.
 `@/*` retains its engine-root meaning. One rules JSON static import and three runtime-relative URLs remain intentional;
 external packages and `node:` specifiers are unchanged. The [alias report](reviews/2026-10-21-readiness-loop-evidence/alias-final-report.md)
-records the exact inventory and three pre-existing development-language alignment refusals. Final GLM closure remains open.
+records the exact inventory and three pre-existing development-language alignment refusals. Final GLM source review and supplementary closure passed.
 See [issue 008](issue-library/records/BBX-20261021-008-import-alias.json).
 
-Acceptance checklist retained from AUTHOR1 (implementation and local checks now passed; final audit pending):
+Acceptance checklist retained from AUTHOR1 (implementation, local checks and final GLM audit passed):
 
 1. Inventory static, type-only and literal dynamic internal imports, resolver boundaries and public entry points.
    Preserve external packages, `node:` specifiers, evaluation order and paths that cannot be proven equivalent.

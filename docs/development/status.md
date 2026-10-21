@@ -11,7 +11,9 @@ skips, zero failures**, plus TypeScript and shell checks. Internal aliases were 
 and installed bundles. The 45 catalog scenarios remain design-only, and new JSON/YAML preset rules plus four example
 licenses await human decisions. Native testing found a macOS symlink-path HUD entry-point defect; the correction passed that
 full run and 24 focused HUD tests. One later test-only upgrade regression passed separately. GLM source audit passed
-with no mandatory findings; the supplemental test binding check also passed. Current-candidate CI/host acceptance remains open. These facts supersede historical snapshots below.
+with no mandatory findings; the supplemental test binding check also passed. The rebuilt local archive also passed native Windows installation and check/align/check through `chacada`.
+Codex PTY HUD rendering/cleanup passed; authenticated Codex/Claude transitions remain pending because isolated
+profiles reached provider login screens. PR [#5](https://github.com/Woo-JongHo/rowgrid/pull/5) is open; current-candidate CI is queued. These facts supersede historical snapshots below.
 
 
 ## Active work — AUTHOR1 matrix-first workflows
@@ -39,7 +41,7 @@ implementation snapshot above for the matrix scope; it is not a fresh cross-plat
 
 | Remaining work | Observable completion |
 | --- | --- |
-| Consistent internal aliases | Migration and isolated copy/bundle execution passed; final integrated GLM closure remains open. See [alias acceptance](plan.md#import-alias-follow-up--user-requirement-2026-10-21). |
+| Consistent internal aliases | Migration and isolated copy/bundle execution passed; final GLM source audit and closure passed. See [alias acceptance](plan.md#import-alias-follow-up--user-requirement-2026-10-21). |
 | Authoring quality and rule coverage | Real host Write/Refactor scenarios, missing-boundary reporting and rule-specific approvals cover the requested patterns. |
 | JSON/YAML | FORMAT1 adapters, preservation/refusal cases, approved examples and installed verification pass. |
 | Syntax and stored records | Read-only syntax and runtime record validation implemented and tested. Derived development SQLite indexing is implemented; it is not runtime approval authority. |
@@ -60,7 +62,8 @@ was accepted only for the empty native test project. Desktop and Windows HUDs ar
 
 Sonnet and fixed Opus review attempts both returned the provider's session-limit response. At that snapshot independent review was
 **unexecuted and blocking final acceptance**. READINESS1 later obtained Sonnet review, fixed findings and passed
-its scoped closure; current-candidate native rendering and the requested GLM final audit remain pending. See the
+its scoped closure; GLM final source audit also passed. The rebuilt 0.2.4 candidate rendered the real Codex PTY HUD,
+while authenticated host transitions and Claude native UI remain pending after isolated login screens. See the
 [HUD record](reviews/2026-10-21-terminal-hud.md) and [user instructions](../user/hud.md).
 
 ## Documentation and consistency audit — DOC1
