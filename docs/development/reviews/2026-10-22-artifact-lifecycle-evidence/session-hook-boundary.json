@@ -1,0 +1,58 @@
+{
+  "scope": "Observed installed 0.2.3 whole-session development hook; not final-candidate native hook acceptance",
+  "sourceReceipt": "/Users/jonghoPro/.codex/plugins/data/boxbox-boxbox-plugins/hooks/fad9c159d56a9a80/790841f4263be43268bccd31ca4bb93443191857316018cbaf055b6974507ff7/1792604886758-ec2e59aa-7b1b-49aa-8b0a-ea677ea55645.json",
+  "receiptSha256": "17c2f43e3b29d53795efee40403462e22157f2c8b6b5ca7c51d1ed1cab7899a2",
+  "state": "FAIL",
+  "at": "2026-10-21T17:48:06.757Z",
+  "nonpassingChecks": [
+    {
+      "file": "docs/development/reviews/2026-10-21-readiness-loop-evidence/ts-timeout-diagnosis/repro.ts",
+      "summary": {
+        "groups": 3,
+        "misaligned": 3,
+        "edits": 25,
+        "refused": 0,
+        "suggested": 0
+      },
+      "error": null
+    },
+    {
+      "file": "product/engine/kotlin/profile.ts",
+      "summary": {
+        "groups": 4,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 1,
+        "suggested": 0
+      },
+      "error": null
+    },
+    {
+      "file": "product/engine/rust/profile.ts",
+      "summary": {
+        "groups": 17,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 1,
+        "suggested": 0
+      },
+      "error": null
+    },
+    {
+      "file": "product/engine/swift/profile.ts",
+      "summary": {
+        "groups": 5,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 1,
+        "suggested": 0
+      },
+      "error": null
+    }
+  ],
+  "limitations": [
+    "Historical reproduction input is intentionally retained; no formatting applied to evidence.",
+    "Refused Kotlin/Rust/Swift profile groups are outside the four-language public-release quality target.",
+    "Focused changed-source layout checks and full test runs do not establish a whole-session hook PASS."
+  ]
+}

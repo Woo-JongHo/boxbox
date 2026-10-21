@@ -1,0 +1,22 @@
+[
+  {
+    "originalPath": "development/tools/release-lifecycle.mjs",
+    "storedPath": "release-lifecycle.mjs.txt",
+    "sha256": "292b730c122612479e39d0745623d8095ea066b1c2129c71d30e0a1f8bfa5d30"
+  },
+  {
+    "originalPath": "development/tools/release-hud-lifecycle.mjs",
+    "storedPath": "release-hud-lifecycle.mjs.txt",
+    "sha256": "73da0018b1761b18c271fe50cc18ab87b2daf8bd086d1c6e606794968a5059e0"
+  },
+  {
+    "originalPath": "test/release-lifecycle.test.ts",
+    "storedPath": "release-lifecycle.test.ts.txt",
+    "sha256": "3bb60086e0f718a089739448aee453cf9b945755a395a6de197669001fa10879"
+  },
+  {
+    "originalPath": "test/release-hud-lifecycle.test.ts",
+    "storedPath": "release-hud-lifecycle.test.ts.txt",
+    "sha256": "7441b2eb4d6d217170ce4b86576f7829a062baf32347928d5f84ce8da100ef55"
+  }
+]

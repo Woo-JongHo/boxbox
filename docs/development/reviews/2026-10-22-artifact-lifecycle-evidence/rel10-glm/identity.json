@@ -1,0 +1,62 @@
+{
+  "completed_at": "2026-10-21T17:22:54.999274+00:00",
+  "provider_route": "GJC model route",
+  "gjc_version": "0.18.7",
+  "requested_model": "zai/glm-5.3",
+  "model_substitution_allowed": false,
+  "output_mode": "text",
+  "thinking": "low",
+  "disabled": [
+    "tools",
+    "rules",
+    "mcp",
+    "lsp",
+    "session"
+  ],
+  "system_prompt": "You are a read-only source reviewer. Return one final concise verdict with concrete defects; do not execute or request tools.",
+  "exit_code": 0,
+  "terminal_verdict": "PASS",
+  "mandatory_findings": 0,
+  "native_cells_claimed": false,
+  "scope_note": "Static source audit only. Native macOS/Windows/Linux lifecycle cells were outside this invocation and may independently fail.",
+  "invocation_template": "gjc -p --model zai/glm-5.3 --thinking low --mode text --system-prompt <fixed-read-only-prompt> --no-tools --no-rules --no-mcp --no-lsp --no-session @request.md",
+  "inputs": [
+    {
+      "path": "development/tools/release-lifecycle.mjs",
+      "bytes": 25809,
+      "sha256": "1b8a197be252133fb5792194d74f80e43a227c8feb747dc8a69998afb0a4ef49"
+    },
+    {
+      "path": "test/release-lifecycle.test.ts",
+      "bytes": 7965,
+      "sha256": "d0c451acde4770a32463af8c6756f2e261d05a90e2f0f7c60204ba498252da04"
+    },
+    {
+      "path": "docs/development/proposals/2026-10-22-artifact-lifecycle.md",
+      "bytes": 5486,
+      "sha256": "d5caa444445609680636817a31cc9213a9f8b7f028d1b3687ac5a1018a4c5d2f"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/tmp/boxbox-readiness/rel10-glm/request.md",
+      "bytes": 42390,
+      "sha256": "d8e7ee20cc7e0a622f0cc65b8b769645f0f4b59224f4046b46f8a9bf84f73933"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-glm/raw.txt",
+      "bytes": 5257,
+      "sha256": "a44bb24c13942dbf72dd2c4d1192b224bb5baa5c590e46b6e9afcd6a91064947"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-glm/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-glm/review.md",
+      "bytes": 5257,
+      "sha256": "a44bb24c13942dbf72dd2c4d1192b224bb5baa5c590e46b6e9afcd6a91064947"
+    }
+  ]
+}

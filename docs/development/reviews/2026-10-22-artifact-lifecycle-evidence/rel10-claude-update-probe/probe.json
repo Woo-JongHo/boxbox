@@ -1,0 +1,321 @@
+{
+  "schemaVersion": 1,
+  "scope": "one authorized update in retained disposable failed Mac Claude cell",
+  "hostVersion": "2.1.286 (Claude Code)",
+  "workspace": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp",
+  "originalHashes": {
+    "lifecycle.json": "e6beceffe5f4d94113c72b5032de5f1a7bdb05f24e2ece81ccd25b9fbfcfff7f",
+    "043.stdout.log": "489acfbcdedcb844d9da0b864bc1bb047a26e8294e856df1a9401883fb32fc59",
+    "043.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "044.stdout.log": "b3c80cd0039caa9ea65a57f6a78ec919314b7ecf774c2675c280e35f259f8f48",
+    "044.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "045.stdout.log": "20c687203480d9105b3d36b64bc7777492799474cedbd9cb18b4fb84095a8714",
+    "045.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "sourceHashes": {
+    "product/installer/install.mjs": "5fec25befeb61c5c9887234a53778b52a6444493edfb9d03f67fad2748262544",
+    "product/installer/entry.mjs": "23b42dd9efeb5be56d9994ad8b915c1eb5dd5a5e67f351db47e0ddef92fa3a23"
+  },
+  "commands": [
+    {
+      "label": "before-plugins",
+      "args": [
+        "plugin",
+        "list",
+        "--json"
+      ],
+      "startedAt": "2026-10-21T17:21:39.832Z",
+      "exitCode": 0,
+      "signal": null,
+      "pid": 9790,
+      "stdout": "before-plugins.stdout.log",
+      "stderr": "before-plugins.stderr.log"
+    },
+    {
+      "label": "before-marketplaces",
+      "args": [
+        "plugin",
+        "marketplace",
+        "list",
+        "--json"
+      ],
+      "startedAt": "2026-10-21T17:21:40.634Z",
+      "exitCode": 0,
+      "signal": null,
+      "pid": 9826,
+      "stdout": "before-marketplaces.stdout.log",
+      "stderr": "before-marketplaces.stderr.log"
+    },
+    {
+      "label": "update-once",
+      "args": [
+        "plugin",
+        "update",
+        "boxbox@boxbox-plugins",
+        "--scope",
+        "user"
+      ],
+      "startedAt": "2026-10-21T17:21:40.762Z",
+      "exitCode": 0,
+      "signal": null,
+      "pid": 9832,
+      "stdout": "update-once.stdout.log",
+      "stderr": "update-once.stderr.log"
+    },
+    {
+      "label": "after-plugins",
+      "args": [
+        "plugin",
+        "list",
+        "--json"
+      ],
+      "startedAt": "2026-10-21T17:21:41.191Z",
+      "exitCode": 0,
+      "signal": null,
+      "pid": 9837,
+      "stdout": "after-plugins.stdout.log",
+      "stderr": "after-plugins.stderr.log"
+    },
+    {
+      "label": "after-marketplaces",
+      "args": [
+        "plugin",
+        "marketplace",
+        "list",
+        "--json"
+      ],
+      "startedAt": "2026-10-21T17:21:41.355Z",
+      "exitCode": 0,
+      "signal": null,
+      "pid": 9844,
+      "stdout": "after-marketplaces.stdout.log",
+      "stderr": "after-marketplaces.stderr.log"
+    }
+  ],
+  "updateInvocations": 1,
+  "ok": true,
+  "beforePlugins": [
+    {
+      "id": "boxbox@boxbox-plugins",
+      "version": "0.2.3",
+      "scope": "user",
+      "enabled": true,
+      "installPath": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/claude/plugins/cache/boxbox-plugins/boxbox/0.2.3",
+      "installedAt": "2026-10-21T17:17:15.059Z",
+      "lastUpdated": "2026-10-21T17:17:15.059Z",
+      "projectEnabled": false
+    }
+  ],
+  "beforeMarketplaces": [
+    {
+      "name": "boxbox-plugins",
+      "source": "directory",
+      "path": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.4",
+      "installLocation": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.4"
+    }
+  ],
+  "beforeInstalled": {
+    "record": {
+      "id": "boxbox@boxbox-plugins",
+      "version": "0.2.3",
+      "scope": "user",
+      "enabled": true,
+      "installPath": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/claude/plugins/cache/boxbox-plugins/boxbox/0.2.3",
+      "installedAt": "2026-10-21T17:17:15.059Z",
+      "lastUpdated": "2026-10-21T17:17:15.059Z",
+      "projectEnabled": false
+    },
+    "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/claude/plugins/cache/boxbox-plugins/boxbox/0.2.3",
+    "realpath": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/claude/plugins/cache/boxbox-plugins/boxbox/0.2.3",
+    "isSymlink": false,
+    "link": null,
+    "manifest": {
+      "name": "boxbox",
+      "displayName": "BoxBox",
+      "version": "0.2.3",
+      "description": "Inspects TypeScript and Python files one at a time against tabular readability rules and formats only through human-approved rules, plus a read-only inspector.",
+      "author": {
+        "name": "Woo-JongHo"
+      },
+      "keywords": [
+        "readability",
+        "typescript",
+        "python",
+        "code-style",
+        "align"
+      ]
+    },
+    "runtime": {
+      "node": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node",
+      "cli": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.3/runtime/node_modules/boxbox/dist/cli.js",
+      "skillCommand": "'/opt/homebrew/Cellar/node@22/22.22.3/bin/node' '/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.3/plugin/scripts/boxbox.mjs'",
+      "hudData": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/hud"
+    }
+  },
+  "beforePreservation": [
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.3/rel10-user-file.txt",
+      "sha256": "0907eef48874f6b2d260842714f1c8ebe3ac46022d3ea4125af5c52858711e2c",
+      "actualSHA256": "0907eef48874f6b2d260842714f1c8ebe3ac46022d3ea4125af5c52858711e2c",
+      "matches": true
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project/.boxbox/config.json",
+      "sha256": "8e8f7734731552374e7a08d17b3d932ebceb2a5e959865bd02d5936dedf09b80",
+      "actualSHA256": "8e8f7734731552374e7a08d17b3d932ebceb2a5e959865bd02d5936dedf09b80",
+      "matches": true
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project/.boxbox/retained-approved-fixture/conventions.jsonl",
+      "sha256": "e9ed8c2fc41ebfced18658027786c4ae2c174a8710f9c64dc68f934304708a54",
+      "actualSHA256": "e9ed8c2fc41ebfced18658027786c4ae2c174a8710f9c64dc68f934304708a54",
+      "matches": true
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project/.boxbox/retained-approved-fixture/decisions.jsonl",
+      "sha256": "1143577d3f1b58860300a7b5e06c575f2e36c2b8a7f50152fbe1a1c3344f9991",
+      "actualSHA256": "1143577d3f1b58860300a7b5e06c575f2e36c2b8a7f50152fbe1a1c3344f9991",
+      "matches": true
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project/.boxbox/retained-approved-fixture/docs/public/decisions/py-simple-assignments.md",
+      "sha256": "61997c3071a0558c9992335fb6245a589e5b85d27c5e6c5f9991a82942ba4848",
+      "actualSHA256": "61997c3071a0558c9992335fb6245a589e5b85d27c5e6c5f9991a82942ba4848",
+      "matches": true
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project/.boxbox/retained-approved-fixture/docs/public/decisions/ts-sourcefile-call-declarations.md",
+      "sha256": "d6fc3b19f594d9b4865e24defbd236c30367c6244dbfeed09843c4c5ea5de600",
+      "actualSHA256": "d6fc3b19f594d9b4865e24defbd236c30367c6244dbfeed09843c4c5ea5de600",
+      "matches": true
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project/.boxbox/retained-approved-fixture/examples.jsonl",
+      "sha256": "7e047d5b7311d2b55430c64864128716c2bbc32279e1d547b8f07dbb2baf9e16",
+      "actualSHA256": "7e047d5b7311d2b55430c64864128716c2bbc32279e1d547b8f07dbb2baf9e16",
+      "matches": true
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project/.boxbox/user-note.txt",
+      "sha256": "225e7c137917f32e3140bdf42d1c3f99f4cecf62ba6dbeba4de77ffce382e9f3",
+      "actualSHA256": "225e7c137917f32e3140bdf42d1c3f99f4cecf62ba6dbeba4de77ffce382e9f3",
+      "matches": true
+    }
+  ],
+  "afterPlugins": [
+    {
+      "id": "boxbox@boxbox-plugins",
+      "version": "0.2.4",
+      "scope": "user",
+      "enabled": true,
+      "installPath": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/claude/plugins/cache/boxbox-plugins/boxbox/0.2.4",
+      "installedAt": "2026-10-21T17:17:15.059Z",
+      "lastUpdated": "2026-10-21T17:21:40.906Z",
+      "projectEnabled": false
+    }
+  ],
+  "afterMarketplaces": [
+    {
+      "name": "boxbox-plugins",
+      "source": "directory",
+      "path": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.4",
+      "installLocation": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.4"
+    }
+  ],
+  "afterInstalled": [
+    {
+      "record": {
+        "id": "boxbox@boxbox-plugins",
+        "version": "0.2.4",
+        "scope": "user",
+        "enabled": true,
+        "installPath": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/claude/plugins/cache/boxbox-plugins/boxbox/0.2.4",
+        "installedAt": "2026-10-21T17:17:15.059Z",
+        "lastUpdated": "2026-10-21T17:21:40.906Z",
+        "projectEnabled": false
+      },
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/claude/plugins/cache/boxbox-plugins/boxbox/0.2.4",
+      "realpath": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/claude/plugins/cache/boxbox-plugins/boxbox/0.2.4",
+      "isSymlink": false,
+      "link": null,
+      "manifest": {
+        "name": "boxbox",
+        "displayName": "BoxBox",
+        "version": "0.2.4",
+        "description": "Guides writing and refactoring TypeScript and Python, with syntax and tabular checks for TypeScript, Python, JSON and YAML and human-approved whitespace alignment.",
+        "author": {
+          "name": "Woo-JongHo"
+        },
+        "keywords": [
+          "readability",
+          "typescript",
+          "python",
+          "code-style",
+          "align",
+          "json",
+          "yaml"
+        ]
+      },
+      "runtime": {
+        "node": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node",
+        "cli": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.4/runtime/node_modules/boxbox/dist/cli.js",
+        "skillCommand": "'/opt/homebrew/Cellar/node@22/22.22.3/bin/node' '/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.4/plugin/scripts/boxbox.mjs'",
+        "hudData": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/hud"
+      }
+    }
+  ],
+  "afterPreservation": [
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.3/rel10-user-file.txt",
+      "sha256": "0907eef48874f6b2d260842714f1c8ebe3ac46022d3ea4125af5c52858711e2c",
+      "actualSHA256": "0907eef48874f6b2d260842714f1c8ebe3ac46022d3ea4125af5c52858711e2c",
+      "matches": true
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project/.boxbox/config.json",
+      "sha256": "8e8f7734731552374e7a08d17b3d932ebceb2a5e959865bd02d5936dedf09b80",
+      "actualSHA256": "8e8f7734731552374e7a08d17b3d932ebceb2a5e959865bd02d5936dedf09b80",
+      "matches": true
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project/.boxbox/retained-approved-fixture/conventions.jsonl",
+      "sha256": "e9ed8c2fc41ebfced18658027786c4ae2c174a8710f9c64dc68f934304708a54",
+      "actualSHA256": "e9ed8c2fc41ebfced18658027786c4ae2c174a8710f9c64dc68f934304708a54",
+      "matches": true
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project/.boxbox/retained-approved-fixture/decisions.jsonl",
+      "sha256": "1143577d3f1b58860300a7b5e06c575f2e36c2b8a7f50152fbe1a1c3344f9991",
+      "actualSHA256": "1143577d3f1b58860300a7b5e06c575f2e36c2b8a7f50152fbe1a1c3344f9991",
+      "matches": true
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project/.boxbox/retained-approved-fixture/docs/public/decisions/py-simple-assignments.md",
+      "sha256": "61997c3071a0558c9992335fb6245a589e5b85d27c5e6c5f9991a82942ba4848",
+      "actualSHA256": "61997c3071a0558c9992335fb6245a589e5b85d27c5e6c5f9991a82942ba4848",
+      "matches": true
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project/.boxbox/retained-approved-fixture/docs/public/decisions/ts-sourcefile-call-declarations.md",
+      "sha256": "d6fc3b19f594d9b4865e24defbd236c30367c6244dbfeed09843c4c5ea5de600",
+      "actualSHA256": "d6fc3b19f594d9b4865e24defbd236c30367c6244dbfeed09843c4c5ea5de600",
+      "matches": true
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project/.boxbox/retained-approved-fixture/examples.jsonl",
+      "sha256": "7e047d5b7311d2b55430c64864128716c2bbc32279e1d547b8f07dbb2baf9e16",
+      "actualSHA256": "7e047d5b7311d2b55430c64864128716c2bbc32279e1d547b8f07dbb2baf9e16",
+      "matches": true
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project/.boxbox/user-note.txt",
+      "sha256": "225e7c137917f32e3140bdf42d1c3f99f4cecf62ba6dbeba4de77ffce382e9f3",
+      "actualSHA256": "225e7c137917f32e3140bdf42d1c3f99f4cecf62ba6dbeba4de77ffce382e9f3",
+      "matches": true
+    }
+  ],
+  "unrelatedSetting": "unrelated-user-setting",
+  "originalEvidenceUnchanged": true,
+  "sourcesUnchanged": true,
+  "finishedAt": "2026-10-21T17:21:41.475Z"
+}

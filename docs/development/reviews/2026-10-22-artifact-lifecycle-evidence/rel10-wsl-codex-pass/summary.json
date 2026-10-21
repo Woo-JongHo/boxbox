@@ -1,0 +1,1332 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "host": "codex",
+  "platform": "linux",
+  "arch": "x64",
+  "node": "v22.22.3",
+  "hostVersion": "codex-cli 0.163.0",
+  "npmVersion": "10.9.8",
+  "harnessSha256": "1b8a197be252133fb5792194d74f80e43a227c8feb747dc8a69998afb0a4ef49",
+  "startedAt": "2026-10-21T17:17:21.143Z",
+  "finishedAt": "2026-10-21T17:17:52.820Z",
+  "artifacts": {
+    "previous": {
+      "path": "/tmp/boxbox-rel10-linux.VfqJoi/artifacts/boxbox-plugin-0.2.3.tgz",
+      "bytes": 137322,
+      "version": "0.2.3",
+      "sha256": "f07df7ada9aa234c2935ed500b4fe15b1a5d53f7b7a6de7d8ec107f53c8f572c",
+      "provenance": "Historical uncommitted candidate fixture; not an approved or published release."
+    },
+    "current": {
+      "path": "/tmp/boxbox-rel10-linux.VfqJoi/artifacts/boxbox-plugin-0.2.4.tgz",
+      "bytes": 260734,
+      "version": "0.2.4",
+      "sha256": "bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be",
+      "provenance": "CI 39637622755 attempt 1; source 35b61780ae122744f39d9cb0b935db5f8bccd14b; unpublished candidate."
+    }
+  },
+  "artifactChecks": [
+    {
+      "role": "previous",
+      "stage": "pre-execution",
+      "sha256": "f07df7ada9aa234c2935ed500b4fe15b1a5d53f7b7a6de7d8ec107f53c8f572c",
+      "at": "2026-10-21T17:17:21.147Z"
+    },
+    {
+      "role": "current",
+      "stage": "pre-execution",
+      "sha256": "bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be",
+      "at": "2026-10-21T17:17:21.148Z"
+    },
+    {
+      "role": "previous",
+      "stage": "fresh-previous",
+      "sha256": "f07df7ada9aa234c2935ed500b4fe15b1a5d53f7b7a6de7d8ec107f53c8f572c",
+      "at": "2026-10-21T17:17:21.855Z"
+    },
+    {
+      "role": "current",
+      "stage": "cold-cache-offline",
+      "sha256": "bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be",
+      "at": "2026-10-21T17:17:26.007Z"
+    },
+    {
+      "role": "previous",
+      "stage": "warm-cache-previous-repair",
+      "sha256": "f07df7ada9aa234c2935ed500b4fe15b1a5d53f7b7a6de7d8ec107f53c8f572c",
+      "at": "2026-10-21T17:17:29.172Z"
+    },
+    {
+      "role": "current",
+      "stage": "upgrade",
+      "sha256": "bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be",
+      "at": "2026-10-21T17:17:32.578Z"
+    },
+    {
+      "role": "current",
+      "stage": "upgrade-documented-install",
+      "sha256": "bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be",
+      "at": "2026-10-21T17:17:36.972Z"
+    },
+    {
+      "role": "current",
+      "stage": "warm-cache-current-repair",
+      "sha256": "bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be",
+      "at": "2026-10-21T17:17:41.197Z"
+    },
+    {
+      "role": "previous",
+      "stage": "rollback",
+      "sha256": "f07df7ada9aa234c2935ed500b4fe15b1a5d53f7b7a6de7d8ec107f53c8f572c",
+      "at": "2026-10-21T17:17:44.775Z"
+    },
+    {
+      "role": "previous",
+      "stage": "rollback-documented-install",
+      "sha256": "f07df7ada9aa234c2935ed500b4fe15b1a5d53f7b7a6de7d8ec107f53c8f572c",
+      "at": "2026-10-21T17:17:48.885Z"
+    },
+    {
+      "role": "previous",
+      "stage": "final",
+      "sha256": "f07df7ada9aa234c2935ed500b4fe15b1a5d53f7b7a6de7d8ec107f53c8f572c",
+      "at": "2026-10-21T17:17:52.819Z"
+    },
+    {
+      "role": "current",
+      "stage": "final",
+      "sha256": "bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be",
+      "at": "2026-10-21T17:17:52.819Z"
+    }
+  ],
+  "commands": [
+    {
+      "label": "extract-previous",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 17,
+      "stdout": "001.stdout.log",
+      "stderr": "001.stderr.log"
+    },
+    {
+      "label": "extract-current",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 16,
+      "stdout": "002.stdout.log",
+      "stderr": "002.stderr.log"
+    },
+    {
+      "label": "host-version",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 111,
+      "stdout": "003.stdout.log",
+      "stderr": "003.stderr.log"
+    },
+    {
+      "label": "npm-version",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 107,
+      "stdout": "004.stdout.log",
+      "stderr": "004.stderr.log"
+    },
+    {
+      "label": "plugin-help",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 46,
+      "stdout": "005.stdout.log",
+      "stderr": "005.stderr.log"
+    },
+    {
+      "label": "list-help",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 45,
+      "stdout": "006.stdout.log",
+      "stderr": "006.stderr.log"
+    },
+    {
+      "label": "list-help",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 46,
+      "stdout": "007.stdout.log",
+      "stderr": "007.stderr.log"
+    },
+    {
+      "label": "remove-help",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 46,
+      "stdout": "008.stdout.log",
+      "stderr": "008.stderr.log"
+    },
+    {
+      "label": "marketplace-remove-help",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 44,
+      "stdout": "009.stdout.log",
+      "stderr": "009.stderr.log"
+    },
+    {
+      "label": "initial-plugins",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 140,
+      "stdout": "010.stdout.log",
+      "stderr": "010.stderr.log"
+    },
+    {
+      "label": "initial-marketplaces",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 70,
+      "stdout": "011.stdout.log",
+      "stderr": "011.stderr.log"
+    },
+    {
+      "label": "fresh-previous-install",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 1732,
+      "stdout": "012.stdout.log",
+      "stderr": "012.stderr.log"
+    },
+    {
+      "label": "fresh-previous-plugins",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 54,
+      "stdout": "013.stdout.log",
+      "stderr": "013.stderr.log"
+    },
+    {
+      "label": "fresh-previous-marketplaces",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 55,
+      "stdout": "014.stdout.log",
+      "stderr": "014.stderr.log"
+    },
+    {
+      "label": "fresh-previous-engine-version",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 106,
+      "stdout": "015.stdout.log",
+      "stderr": "015.stderr.log"
+    },
+    {
+      "label": "fresh-previous-init",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 105,
+      "stdout": "016.stdout.log",
+      "stderr": "016.stderr.log"
+    },
+    {
+      "label": "fresh-previous-doctor",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 113,
+      "stdout": "017.stdout.log",
+      "stderr": "017.stderr.log"
+    },
+    {
+      "label": "fresh-previous-check",
+      "state": "passed",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 170,
+      "stdout": "018.stdout.log",
+      "stderr": "018.stderr.log"
+    },
+    {
+      "label": "fresh-previous-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 611,
+      "stdout": "019.stdout.log",
+      "stderr": "019.stderr.log"
+    },
+    {
+      "label": "fresh-previous-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 589,
+      "stdout": "020.stdout.log",
+      "stderr": "020.stderr.log"
+    },
+    {
+      "label": "fresh-previous-check",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 169,
+      "stdout": "021.stdout.log",
+      "stderr": "021.stderr.log"
+    },
+    {
+      "label": "fresh-previous-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 419,
+      "stdout": "022.stdout.log",
+      "stderr": "022.stderr.log"
+    },
+    {
+      "label": "cold-cache-current-offline",
+      "state": "observed",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 896,
+      "stdout": "023.stdout.log",
+      "stderr": "023.stderr.log"
+    },
+    {
+      "label": "cold-offline-retained-plugins",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 52,
+      "stdout": "024.stdout.log",
+      "stderr": "024.stderr.log"
+    },
+    {
+      "label": "cold-offline-retained-marketplaces",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 51,
+      "stdout": "025.stdout.log",
+      "stderr": "025.stderr.log"
+    },
+    {
+      "label": "cold-offline-prior-engine-engine-version",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 101,
+      "stdout": "026.stdout.log",
+      "stderr": "026.stderr.log"
+    },
+    {
+      "label": "cold-offline-prior-engine-doctor",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 109,
+      "stdout": "027.stdout.log",
+      "stderr": "027.stderr.log"
+    },
+    {
+      "label": "cold-offline-prior-engine-check",
+      "state": "passed",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 166,
+      "stdout": "028.stdout.log",
+      "stderr": "028.stderr.log"
+    },
+    {
+      "label": "cold-offline-prior-engine-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 592,
+      "stdout": "029.stdout.log",
+      "stderr": "029.stderr.log"
+    },
+    {
+      "label": "cold-offline-prior-engine-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 612,
+      "stdout": "030.stdout.log",
+      "stderr": "030.stderr.log"
+    },
+    {
+      "label": "cold-offline-prior-engine-check",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 170,
+      "stdout": "031.stdout.log",
+      "stderr": "031.stderr.log"
+    },
+    {
+      "label": "cold-offline-prior-engine-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 404,
+      "stdout": "032.stdout.log",
+      "stderr": "032.stderr.log"
+    },
+    {
+      "label": "warm-cache-previous-repair-install",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 1152,
+      "stdout": "033.stdout.log",
+      "stderr": "033.stderr.log"
+    },
+    {
+      "label": "warm-cache-previous-repair-plugins",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 51,
+      "stdout": "034.stdout.log",
+      "stderr": "034.stderr.log"
+    },
+    {
+      "label": "warm-cache-previous-repair-marketplaces",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 52,
+      "stdout": "035.stdout.log",
+      "stderr": "035.stderr.log"
+    },
+    {
+      "label": "warm-cache-previous-repair-engine-version",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 105,
+      "stdout": "036.stdout.log",
+      "stderr": "036.stderr.log"
+    },
+    {
+      "label": "warm-cache-previous-repair-doctor",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 110,
+      "stdout": "037.stdout.log",
+      "stderr": "037.stderr.log"
+    },
+    {
+      "label": "warm-cache-previous-repair-check",
+      "state": "passed",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 169,
+      "stdout": "038.stdout.log",
+      "stderr": "038.stderr.log"
+    },
+    {
+      "label": "warm-cache-previous-repair-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 597,
+      "stdout": "039.stdout.log",
+      "stderr": "039.stderr.log"
+    },
+    {
+      "label": "warm-cache-previous-repair-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 593,
+      "stdout": "040.stdout.log",
+      "stderr": "040.stderr.log"
+    },
+    {
+      "label": "warm-cache-previous-repair-check",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 166,
+      "stdout": "041.stdout.log",
+      "stderr": "041.stderr.log"
+    },
+    {
+      "label": "warm-cache-previous-repair-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 401,
+      "stdout": "042.stdout.log",
+      "stderr": "042.stderr.log"
+    },
+    {
+      "label": "upgrade-direct-attempt",
+      "state": "observed",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 1821,
+      "stdout": "043.stdout.log",
+      "stderr": "043.stderr.log"
+    },
+    {
+      "label": "upgrade-collision-retained-plugins",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 51,
+      "stdout": "044.stdout.log",
+      "stderr": "044.stderr.log"
+    },
+    {
+      "label": "upgrade-collision-retained-marketplaces",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 53,
+      "stdout": "045.stdout.log",
+      "stderr": "045.stderr.log"
+    },
+    {
+      "label": "upgrade-collision-prior-engine-engine-version",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 102,
+      "stdout": "046.stdout.log",
+      "stderr": "046.stderr.log"
+    },
+    {
+      "label": "upgrade-collision-prior-engine-doctor",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 115,
+      "stdout": "047.stdout.log",
+      "stderr": "047.stderr.log"
+    },
+    {
+      "label": "upgrade-collision-prior-engine-check",
+      "state": "passed",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 168,
+      "stdout": "048.stdout.log",
+      "stderr": "048.stderr.log"
+    },
+    {
+      "label": "upgrade-collision-prior-engine-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 594,
+      "stdout": "049.stdout.log",
+      "stderr": "049.stderr.log"
+    },
+    {
+      "label": "upgrade-collision-prior-engine-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 600,
+      "stdout": "050.stdout.log",
+      "stderr": "050.stderr.log"
+    },
+    {
+      "label": "upgrade-collision-prior-engine-check",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 166,
+      "stdout": "051.stdout.log",
+      "stderr": "051.stderr.log"
+    },
+    {
+      "label": "upgrade-collision-prior-engine-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 401,
+      "stdout": "052.stdout.log",
+      "stderr": "052.stderr.log"
+    },
+    {
+      "label": "upgrade-documented-remove-before-plugins",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 48,
+      "stdout": "053.stdout.log",
+      "stderr": "053.stderr.log"
+    },
+    {
+      "label": "upgrade-documented-remove-before-marketplaces",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 50,
+      "stdout": "054.stdout.log",
+      "stderr": "054.stderr.log"
+    },
+    {
+      "label": "upgrade-documented-remove-plugin",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 52,
+      "stdout": "055.stdout.log",
+      "stderr": "055.stderr.log"
+    },
+    {
+      "label": "upgrade-documented-remove-marketplace",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 53,
+      "stdout": "056.stdout.log",
+      "stderr": "056.stderr.log"
+    },
+    {
+      "label": "upgrade-documented-remove-after-plugins",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 49,
+      "stdout": "057.stdout.log",
+      "stderr": "057.stderr.log"
+    },
+    {
+      "label": "upgrade-documented-remove-after-marketplaces",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 54,
+      "stdout": "058.stdout.log",
+      "stderr": "058.stderr.log"
+    },
+    {
+      "label": "upgrade-documented-install-install",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 1817,
+      "stdout": "059.stdout.log",
+      "stderr": "059.stderr.log"
+    },
+    {
+      "label": "upgrade-documented-install-plugins",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 51,
+      "stdout": "060.stdout.log",
+      "stderr": "060.stderr.log"
+    },
+    {
+      "label": "upgrade-documented-install-marketplaces",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 52,
+      "stdout": "061.stdout.log",
+      "stderr": "061.stderr.log"
+    },
+    {
+      "label": "upgrade-documented-install-engine-version",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 113,
+      "stdout": "062.stdout.log",
+      "stderr": "062.stderr.log"
+    },
+    {
+      "label": "upgrade-documented-install-doctor",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 118,
+      "stdout": "063.stdout.log",
+      "stderr": "063.stderr.log"
+    },
+    {
+      "label": "upgrade-documented-install-check",
+      "state": "passed",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 224,
+      "stdout": "064.stdout.log",
+      "stderr": "064.stderr.log"
+    },
+    {
+      "label": "upgrade-documented-install-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 604,
+      "stdout": "065.stdout.log",
+      "stderr": "065.stderr.log"
+    },
+    {
+      "label": "upgrade-documented-install-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 593,
+      "stdout": "066.stdout.log",
+      "stderr": "066.stderr.log"
+    },
+    {
+      "label": "upgrade-documented-install-check",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 216,
+      "stdout": "067.stdout.log",
+      "stderr": "067.stderr.log"
+    },
+    {
+      "label": "upgrade-documented-install-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 414,
+      "stdout": "068.stdout.log",
+      "stderr": "068.stderr.log"
+    },
+    {
+      "label": "warm-cache-current-repair-install",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 1154,
+      "stdout": "069.stdout.log",
+      "stderr": "069.stderr.log"
+    },
+    {
+      "label": "warm-cache-current-repair-plugins",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 48,
+      "stdout": "070.stdout.log",
+      "stderr": "070.stderr.log"
+    },
+    {
+      "label": "warm-cache-current-repair-marketplaces",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 52,
+      "stdout": "071.stdout.log",
+      "stderr": "071.stderr.log"
+    },
+    {
+      "label": "warm-cache-current-repair-engine-version",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 111,
+      "stdout": "072.stdout.log",
+      "stderr": "072.stderr.log"
+    },
+    {
+      "label": "warm-cache-current-repair-doctor",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 119,
+      "stdout": "073.stdout.log",
+      "stderr": "073.stderr.log"
+    },
+    {
+      "label": "warm-cache-current-repair-check",
+      "state": "passed",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 221,
+      "stdout": "074.stdout.log",
+      "stderr": "074.stderr.log"
+    },
+    {
+      "label": "warm-cache-current-repair-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 611,
+      "stdout": "075.stdout.log",
+      "stderr": "075.stderr.log"
+    },
+    {
+      "label": "warm-cache-current-repair-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 601,
+      "stdout": "076.stdout.log",
+      "stderr": "076.stderr.log"
+    },
+    {
+      "label": "warm-cache-current-repair-check",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 220,
+      "stdout": "077.stdout.log",
+      "stderr": "077.stderr.log"
+    },
+    {
+      "label": "warm-cache-current-repair-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 420,
+      "stdout": "078.stdout.log",
+      "stderr": "078.stderr.log"
+    },
+    {
+      "label": "rollback-direct-attempt",
+      "state": "observed",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 1361,
+      "stdout": "079.stdout.log",
+      "stderr": "079.stderr.log"
+    },
+    {
+      "label": "rollback-collision-retained-plugins",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 51,
+      "stdout": "080.stdout.log",
+      "stderr": "080.stderr.log"
+    },
+    {
+      "label": "rollback-collision-retained-marketplaces",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 52,
+      "stdout": "081.stdout.log",
+      "stderr": "081.stderr.log"
+    },
+    {
+      "label": "rollback-collision-prior-engine-engine-version",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 113,
+      "stdout": "082.stdout.log",
+      "stderr": "082.stderr.log"
+    },
+    {
+      "label": "rollback-collision-prior-engine-doctor",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 118,
+      "stdout": "083.stdout.log",
+      "stderr": "083.stderr.log"
+    },
+    {
+      "label": "rollback-collision-prior-engine-check",
+      "state": "passed",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 225,
+      "stdout": "084.stdout.log",
+      "stderr": "084.stderr.log"
+    },
+    {
+      "label": "rollback-collision-prior-engine-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 607,
+      "stdout": "085.stdout.log",
+      "stderr": "085.stderr.log"
+    },
+    {
+      "label": "rollback-collision-prior-engine-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 605,
+      "stdout": "086.stdout.log",
+      "stderr": "086.stderr.log"
+    },
+    {
+      "label": "rollback-collision-prior-engine-check",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 220,
+      "stdout": "087.stdout.log",
+      "stderr": "087.stderr.log"
+    },
+    {
+      "label": "rollback-collision-prior-engine-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 416,
+      "stdout": "088.stdout.log",
+      "stderr": "088.stderr.log"
+    },
+    {
+      "label": "rollback-documented-remove-before-plugins",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 50,
+      "stdout": "089.stdout.log",
+      "stderr": "089.stderr.log"
+    },
+    {
+      "label": "rollback-documented-remove-before-marketplaces",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 53,
+      "stdout": "090.stdout.log",
+      "stderr": "090.stderr.log"
+    },
+    {
+      "label": "rollback-documented-remove-plugin",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 52,
+      "stdout": "091.stdout.log",
+      "stderr": "091.stderr.log"
+    },
+    {
+      "label": "rollback-documented-remove-marketplace",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 57,
+      "stdout": "092.stdout.log",
+      "stderr": "092.stderr.log"
+    },
+    {
+      "label": "rollback-documented-remove-after-plugins",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 49,
+      "stdout": "093.stdout.log",
+      "stderr": "093.stderr.log"
+    },
+    {
+      "label": "rollback-documented-remove-after-marketplaces",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 55,
+      "stdout": "094.stdout.log",
+      "stderr": "094.stderr.log"
+    },
+    {
+      "label": "rollback-documented-install-install",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 1318,
+      "stdout": "095.stdout.log",
+      "stderr": "095.stderr.log"
+    },
+    {
+      "label": "rollback-documented-install-plugins",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 55,
+      "stdout": "096.stdout.log",
+      "stderr": "096.stderr.log"
+    },
+    {
+      "label": "rollback-documented-install-marketplaces",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 54,
+      "stdout": "097.stdout.log",
+      "stderr": "097.stderr.log"
+    },
+    {
+      "label": "rollback-documented-install-engine-version",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 104,
+      "stdout": "098.stdout.log",
+      "stderr": "098.stderr.log"
+    },
+    {
+      "label": "rollback-documented-install-doctor",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 112,
+      "stdout": "099.stdout.log",
+      "stderr": "099.stderr.log"
+    },
+    {
+      "label": "rollback-documented-install-check",
+      "state": "passed",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 169,
+      "stdout": "100.stdout.log",
+      "stderr": "100.stderr.log"
+    },
+    {
+      "label": "rollback-documented-install-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 596,
+      "stdout": "101.stdout.log",
+      "stderr": "101.stderr.log"
+    },
+    {
+      "label": "rollback-documented-install-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 598,
+      "stdout": "102.stdout.log",
+      "stderr": "102.stderr.log"
+    },
+    {
+      "label": "rollback-documented-install-check",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 168,
+      "stdout": "103.stdout.log",
+      "stderr": "103.stderr.log"
+    },
+    {
+      "label": "rollback-documented-install-format",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 404,
+      "stdout": "104.stdout.log",
+      "stderr": "104.stderr.log"
+    },
+    {
+      "label": "final-remove-before-plugins",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 53,
+      "stdout": "105.stdout.log",
+      "stderr": "105.stderr.log"
+    },
+    {
+      "label": "final-remove-before-marketplaces",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 54,
+      "stdout": "106.stdout.log",
+      "stderr": "106.stderr.log"
+    },
+    {
+      "label": "final-remove-plugin",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 54,
+      "stdout": "107.stdout.log",
+      "stderr": "107.stderr.log"
+    },
+    {
+      "label": "final-remove-marketplace",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 52,
+      "stdout": "108.stdout.log",
+      "stderr": "108.stderr.log"
+    },
+    {
+      "label": "final-remove-after-plugins",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 50,
+      "stdout": "109.stdout.log",
+      "stderr": "109.stderr.log"
+    },
+    {
+      "label": "final-remove-after-marketplaces",
+      "state": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 54,
+      "stdout": "110.stdout.log",
+      "stderr": "110.stderr.log"
+    }
+  ],
+  "steps": [
+    {
+      "label": "fresh-previous",
+      "ok": true,
+      "version": "0.2.3",
+      "installation": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.3",
+      "registeredRoot": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.3/plugin"
+    },
+    {
+      "label": "cold-cache-offline",
+      "ok": true,
+      "expectedFailure": "ENOTCACHED",
+      "priorRegistrationAndEnginePreserved": true,
+      "dependencyOfflineOnly": true
+    },
+    {
+      "label": "warm-cache-previous-repair",
+      "ok": true,
+      "version": "0.2.3",
+      "installation": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.3",
+      "registeredRoot": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.3/plugin"
+    },
+    {
+      "label": "upgrade",
+      "directTransition": "marketplace-collision",
+      "priorRegistrationAndEnginePreserved": true
+    },
+    {
+      "label": "upgrade-documented-remove",
+      "ok": true,
+      "registrationRemoved": true,
+      "filesystemRemoval": false
+    },
+    {
+      "label": "upgrade-documented-install",
+      "ok": true,
+      "version": "0.2.4",
+      "installation": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.4",
+      "registeredRoot": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.4/plugin"
+    },
+    {
+      "label": "warm-cache-current-repair",
+      "ok": true,
+      "version": "0.2.4",
+      "installation": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.4",
+      "registeredRoot": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.4/plugin"
+    },
+    {
+      "label": "rollback",
+      "directTransition": "marketplace-collision",
+      "priorRegistrationAndEnginePreserved": true
+    },
+    {
+      "label": "rollback-documented-remove",
+      "ok": true,
+      "registrationRemoved": true,
+      "filesystemRemoval": false
+    },
+    {
+      "label": "rollback-documented-install",
+      "ok": true,
+      "version": "0.2.3",
+      "installation": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.3",
+      "registeredRoot": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.3/plugin"
+    },
+    {
+      "label": "final-remove",
+      "ok": true,
+      "registrationRemoved": true,
+      "filesystemRemoval": false
+    }
+  ],
+  "preservationChecks": [
+    {
+      "afterCommand": "initial-marketplaces",
+      "files": 0,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "fresh-previous-marketplaces",
+      "files": 0,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "fresh-previous-format",
+      "files": 0,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "cold-offline-retained-marketplaces",
+      "files": 8,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "cold-offline-prior-engine-format",
+      "files": 8,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "warm-cache-previous-repair-marketplaces",
+      "files": 8,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "warm-cache-previous-repair-format",
+      "files": 8,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "upgrade-collision-retained-marketplaces",
+      "files": 8,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "upgrade-collision-prior-engine-format",
+      "files": 8,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "upgrade-documented-remove-after-marketplaces",
+      "files": 8,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "upgrade-documented-install-marketplaces",
+      "files": 8,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "upgrade-documented-install-format",
+      "files": 8,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "warm-cache-current-repair-marketplaces",
+      "files": 9,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "warm-cache-current-repair-format",
+      "files": 9,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "rollback-collision-retained-marketplaces",
+      "files": 9,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "rollback-collision-prior-engine-format",
+      "files": 9,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "rollback-documented-remove-after-marketplaces",
+      "files": 9,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "rollback-documented-install-marketplaces",
+      "files": 9,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "rollback-documented-install-format",
+      "files": 9,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "final-remove-after-marketplaces",
+      "files": 9,
+      "hostSettingPreserved": true
+    },
+    {
+      "afterCommand": "final-remove-after-marketplaces",
+      "files": 9,
+      "hostSettingPreserved": true
+    }
+  ],
+  "preserved": [
+    {
+      "path": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.3/rel10-user-file.txt",
+      "sha256": "0907eef48874f6b2d260842714f1c8ebe3ac46022d3ea4125af5c52858711e2c"
+    },
+    {
+      "path": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/project/.boxbox/config.json",
+      "sha256": "8e8f7734731552374e7a08d17b3d932ebceb2a5e959865bd02d5936dedf09b80"
+    },
+    {
+      "path": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/project/.boxbox/retained-approved-fixture/conventions.jsonl",
+      "sha256": "e9ed8c2fc41ebfced18658027786c4ae2c174a8710f9c64dc68f934304708a54"
+    },
+    {
+      "path": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/project/.boxbox/retained-approved-fixture/decisions.jsonl",
+      "sha256": "1143577d3f1b58860300a7b5e06c575f2e36c2b8a7f50152fbe1a1c3344f9991"
+    },
+    {
+      "path": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/project/.boxbox/retained-approved-fixture/docs/public/decisions/py-simple-assignments.md",
+      "sha256": "61997c3071a0558c9992335fb6245a589e5b85d27c5e6c5f9991a82942ba4848"
+    },
+    {
+      "path": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/project/.boxbox/retained-approved-fixture/docs/public/decisions/ts-sourcefile-call-declarations.md",
+      "sha256": "d6fc3b19f594d9b4865e24defbd236c30367c6244dbfeed09843c4c5ea5de600"
+    },
+    {
+      "path": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/project/.boxbox/retained-approved-fixture/examples.jsonl",
+      "sha256": "7e047d5b7311d2b55430c64864128716c2bbc32279e1d547b8f07dbb2baf9e16"
+    },
+    {
+      "path": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/project/.boxbox/user-note.txt",
+      "sha256": "225e7c137917f32e3140bdf42d1c3f99f4cecf62ba6dbeba4de77ffce382e9f3"
+    },
+    {
+      "path": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.4/rel10-user-file.txt",
+      "sha256": "59bcb7fcda27476a2a069ea01ed3e42852b2565173dee3168a1670440bb9943e"
+    }
+  ],
+  "residue": [
+    {
+      "role": "previous",
+      "path": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.3",
+      "present": true,
+      "entries": 605
+    },
+    {
+      "role": "current",
+      "path": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.4",
+      "present": true,
+      "entries": 606
+    }
+  ],
+  "limitations": [
+    "Real host registration/discovery and installed engine behavior only; no model, hooks, trust, authentication or HUD acceptance.",
+    "Version directories are intentionally retained. Host unregistration is not a product filesystem uninstaller.",
+    "npm_config_offline tests dependency-cache behavior only, not whole-process network isolation.",
+    "Historical uncommitted candidate fixture; not an approved or published release."
+  ]
+}

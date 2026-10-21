@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "startedAt": "2026-10-21T17:39:28.707Z",
+  "commands": [
+    {
+      "label": "old-enable",
+      "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node",
+      "args": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.3/plugin/scripts/hud/setup.mjs",
+        "claude",
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.3/plugin"
+      ],
+      "cwd": "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ",
+      "startedAt": "2026-10-21T17:39:28.998Z",
+      "state": "passed",
+      "stdout": "001.stdout.log",
+      "stderr": "001.stderr.log",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 110,
+      "inventoryDelta": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/claude:settings.json",
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/hud:claude-settings.before-hud.json",
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/hud:claude-statusline.json"
+      ]
+    },
+    {
+      "label": "current-enable",
+      "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node",
+      "args": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.4/plugin/scripts/hud/setup.mjs",
+        "claude",
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.4/plugin"
+      ],
+      "cwd": "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ",
+      "startedAt": "2026-10-21T17:39:29.121Z",
+      "state": "passed",
+      "stdout": "002.stdout.log",
+      "stderr": "002.stderr.log",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 112,
+      "inventoryDelta": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/claude:settings.json",
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/hud:claude-statusline.json"
+      ]
+    },
+    {
+      "label": "current-edited-enable-refusal",
+      "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node",
+      "args": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.4/plugin/scripts/hud/setup.mjs",
+        "claude",
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.4/plugin"
+      ],
+      "cwd": "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ",
+      "startedAt": "2026-10-21T17:39:29.257Z",
+      "state": "passed",
+      "stdout": "003.stdout.log",
+      "stderr": "003.stderr.log",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 196,
+      "inventoryDelta": []
+    },
+    {
+      "label": "current-edited-disable-refusal",
+      "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node",
+      "args": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.4/plugin/scripts/hud/setup.mjs",
+        "claude",
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.4/plugin",
+        "--disable"
+      ],
+      "cwd": "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ",
+      "startedAt": "2026-10-21T17:39:29.458Z",
+      "state": "passed",
+      "stdout": "004.stdout.log",
+      "stderr": "004.stderr.log",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 107,
+      "inventoryDelta": []
+    },
+    {
+      "label": "old-enable-rollback",
+      "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node",
+      "args": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.3/plugin/scripts/hud/setup.mjs",
+        "claude",
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.3/plugin"
+      ],
+      "cwd": "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ",
+      "startedAt": "2026-10-21T17:39:29.582Z",
+      "state": "passed",
+      "stdout": "005.stdout.log",
+      "stderr": "005.stderr.log",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 154,
+      "inventoryDelta": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/claude:settings.json",
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/hud:claude-statusline.json"
+      ]
+    },
+    {
+      "label": "old-disable-remove",
+      "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node",
+      "args": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.3/plugin/scripts/hud/setup.mjs",
+        "claude",
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.3/plugin",
+        "--disable"
+      ],
+      "cwd": "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ",
+      "startedAt": "2026-10-21T17:39:29.742Z",
+      "state": "passed",
+      "stdout": "006.stdout.log",
+      "stderr": "006.stderr.log",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 144,
+      "inventoryDelta": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/claude:settings.json",
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/hud:claude-statusline.json"
+      ]
+    },
+    {
+      "label": "foreign-enable-refusal",
+      "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node",
+      "args": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.4/plugin/scripts/hud/setup.mjs",
+        "claude",
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.4/plugin"
+      ],
+      "cwd": "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ",
+      "startedAt": "2026-10-21T17:39:29.899Z",
+      "state": "passed",
+      "stdout": "007.stdout.log",
+      "stderr": "007.stderr.log",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 114,
+      "inventoryDelta": []
+    },
+    {
+      "label": "foreign-disable-refusal",
+      "executable": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node",
+      "args": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.4/plugin/scripts/hud/setup.mjs",
+        "claude",
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.4/plugin",
+        "--disable"
+      ],
+      "cwd": "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ",
+      "startedAt": "2026-10-21T17:39:30.021Z",
+      "state": "passed",
+      "stdout": "008.stdout.log",
+      "stderr": "008.stderr.log",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 73,
+      "inventoryDelta": []
+    }
+  ],
+  "steps": [
+    {
+      "label": "claude-add-unrelated-setting",
+      "harnessMutation": true,
+      "inventoryDelta": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/claude:settings.json"
+      ]
+    },
+    {
+      "label": "claude-add-post-enable-setting",
+      "harnessMutation": true,
+      "inventoryDelta": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/claude:settings.json"
+      ]
+    },
+    {
+      "label": "claude-create-user-edit",
+      "harnessMutation": true,
+      "inventoryDelta": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/claude:settings.json"
+      ]
+    },
+    {
+      "label": "claude-restore-owned",
+      "harnessMutation": true,
+      "inventoryDelta": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/claude:settings.json"
+      ]
+    },
+    {
+      "label": "claude-create-foreign",
+      "harnessMutation": true,
+      "inventoryDelta": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/claude:settings.json"
+      ]
+    },
+    {
+      "label": "claude-remove-foreign",
+      "harnessMutation": true,
+      "inventoryDelta": [
+        "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/claude:settings.json"
+      ]
+    },
+    {
+      "label": "claude-hud-lifecycle",
+      "ok": true,
+      "stateRemoved": true,
+      "unrelatedSettingsPreserved": true,
+      "backupRetained": true
+    }
+  ],
+  "limitations": [
+    "Configuration ownership only; no host, model, hooks, trust, tmux or UI acceptance.",
+    "Windows HUD is unsupported."
+  ],
+  "host": "claude",
+  "platform": "darwin",
+  "workspace": "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ",
+  "roots": {
+    "previous": "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.3",
+    "current": "/private/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/data/boxbox/claude/0.2.4"
+  },
+  "bindings": {
+    "previous": {
+      "archiveSha256": "f07df7ada9aa234c2935ed500b4fe15b1a5d53f7b7a6de7d8ec107f53c8f572c",
+      "setupSha256": "4ad73e096bd7db86add4c348a2b45f88df285d07059da82bf9527fa7e43b814f"
+    },
+    "current": {
+      "archiveSha256": "1f1343e91d2799998884ed5d75e1a26d7858226d2f9f51f07621bfeedaf6ecd3",
+      "setupSha256": "e888c90357f6165d553fd5e095206a83f4b7bd442b563d7a9f4f3631f0ac927d",
+      "provenance": "Explicit caller-bound unpublished 0.2.4 candidate; source/build provenance must be recorded separately."
+    }
+  },
+  "finishedAt": "2026-10-21T17:39:30.180Z"
+}

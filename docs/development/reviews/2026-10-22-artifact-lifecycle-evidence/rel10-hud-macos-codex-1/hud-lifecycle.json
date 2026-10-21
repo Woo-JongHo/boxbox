@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "startedAt": "2026-10-21T17:23:02.783Z",
+  "commands": [],
+  "steps": [],
+  "limitations": [
+    "Configuration ownership only; no host, model, hooks, trust, tmux or UI acceptance.",
+    "Windows HUD is unsupported."
+  ],
+  "error": "Error: ENOENT: no such file or directory, lstat '/Users/jonghoPro/woo/00_project/98_BoxBox/1'\n    at realpathSync (node:fs:2791:29)\n    at canonicalInside (file:///Users/jonghoPro/woo/00_project/98_BoxBox/development/tools/release-hud-lifecycle.mjs:80:24)\n    at hudLifecycle (file:///Users/jonghoPro/woo/00_project/98_BoxBox/development/tools/release-hud-lifecycle.mjs:181:103)\n    at file:///Users/jonghoPro/woo/00_project/98_BoxBox/development/tools/release-hud-lifecycle.mjs:257:36\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)",
+  "finishedAt": "2026-10-21T17:23:02.787Z"
+}

@@ -19,10 +19,10 @@ layout rules, and the approved-rule registry owns automatic-write authority.
 | `structural-layout` | Layout changes requiring an authored structural edit | [003: nested interface types](records/BBX-20261021-003-nested-type-layout.json) |
 | `verification-gap` | A check or completion claim missed the requested property | [005: coverage versus PASS](records/BBX-20261021-005-coverage-vs-pass.json), [006: report row membership](records/BBX-20261021-006-report-row-membership.json), [014: detector versus preset coverage](records/BBX-20261022-014-preset-coverage.json) |
 | `runtime` | Execution behavior, crashes, performance or resource handling | Available; no records yet |
-| `installation` | Installation, updates, removal or platform setup | [008: internal import aliases](records/BBX-20261021-008-import-alias.json), [009: install ownership](records/BBX-20261021-009-install-ownership.json) |
+| `installation` | Installation, updates, removal or platform setup | [008: internal import aliases](records/BBX-20261021-008-import-alias.json), [009: install ownership](records/BBX-20261021-009-install-ownership.json), [017: Claude marketplace transition](records/BBX-20261022-017-claude-marketplace-transition.json) |
 | `host-integration` | Codex/Claude discovery, hooks, HUD or host contracts | [011: HUD evidence state](records/BBX-20261021-011-hud-evidence-state.json), [012: hook JSON self-observation](records/BBX-20261021-012-hook-json-self-observation.json), [013: HUD entry path alias](records/BBX-20261021-013-hud-entryguard-alias.json) |
 | `storage` | SQLite, persistence, migrations or data integrity | Available; no records yet |
-| `ci-release` | Issue/PR automation, builds, packaging or releases | [007: validation timeout](records/BBX-20261021-007-validation-timeout.json), [016: validation disk space](records/BBX-20261022-016-validation-disk-space.json) |
+| `ci-release` | Issue/PR automation, builds, packaging or releases | [007: validation timeout](records/BBX-20261021-007-validation-timeout.json), [016: validation disk space](records/BBX-20261022-016-validation-disk-space.json), [018: evidence test auto-discovery](records/BBX-20261022-018-evidence-test-autodiscovery.json) |
 | `documentation` | Missing, misleading or inconsistent instructions | Available; no records yet |
 
 Records 001–003 capture implemented changes with pre-dot test evidence. Records 004–005
@@ -38,6 +38,8 @@ HUD native acceptance remains separate in records 011 and 013.
 Record 014 keeps the requested TypeScript boundaries and Python calculation envelope open at the public approval layer, despite their implemented detectors.
 Record 015 resolves the bounded heterogeneous Python detector gap after source, local installed and native Windows verification; new public approval remains separate in record 014.
 Record 016 is resolved after full validation and the bounded GLM transport completed; it preserves the local disk/stream failures separately from the unresolved CI timeout.
+Record 017 is verifying the confirmed Claude transition repair: source/GLM, local and exact clean-CI `ebfe6a77…` six-core/four-HUD matrices passed independent review, including closure of a preserved raw-log evidence gap; PR source verification passed, while hosted macOS candidate smoke remains queued and the original product failures stay preserved.
+Record 018 resolves a full-check failure caused by Bun discovering a historical `.test.ts` evidence snapshot; byte-identical `.txt` storage plus an original-name/hash map preserves the evidence without skipping or removing an active test.
 Earlier snapshots and failures remain in history; no new public preset approval is implied.
 
 ## Find an earlier case

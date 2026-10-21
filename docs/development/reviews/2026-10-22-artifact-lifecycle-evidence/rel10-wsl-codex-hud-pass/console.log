@@ -1,0 +1,40 @@
+{
+  "ok": true,
+  "host": "codex",
+  "steps": [
+    {
+      "label": "codex-create-user-edit",
+      "harnessMutation": true,
+      "inventoryDelta": [
+        "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/hud-bin:boxbox-codex"
+      ]
+    },
+    {
+      "label": "codex-restore-owned",
+      "harnessMutation": true,
+      "inventoryDelta": [
+        "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/hud-bin:boxbox-codex"
+      ]
+    },
+    {
+      "label": "codex-create-foreign",
+      "harnessMutation": true,
+      "inventoryDelta": [
+        "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/hud-bin:boxbox-codex"
+      ]
+    },
+    {
+      "label": "codex-remove-foreign",
+      "harnessMutation": true,
+      "inventoryDelta": [
+        "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/hud-bin:boxbox-codex"
+      ]
+    },
+    {
+      "label": "codex-hud-lifecycle",
+      "ok": true,
+      "finalLauncherAbsent": true,
+      "unrelatedBinPreserved": true
+    }
+  ]
+}

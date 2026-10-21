@@ -28,7 +28,7 @@ The review's AST-hash proposal cannot replace token preservation, syntax accepta
 | R2 | Bounded data-driven policy experiment, consistent Check/Guide lookup and syntax reporting, authoring coverage | Existing approved rule remains byte-identical; unknown/conflicting policies refuse; layered lookup and syntax regressions; diverse positive/negative authoring cases | Python projection source/GLM and local/native Windows `2b43d24…` verification passed; new rule approval pending |
 | R3 | JSON/YAML safe adapters and shared lifecycle; new convention proposals | Strict syntax, source-range edits, comments/scalars preserved, idempotence, installed preview/apply/refusal, reviewed before/after and counterexamples | implementation verified; human decisions pending |
 | R4 | Complete internal alias migration, native host/HUD and supported-platform validation | No unintended relative internal imports; self-contained copy/bundle execution; native output acceptance and accurate HUD state; recorded Windows limits | aliases reviewed; local/native Windows engine and Codex upper/HUD/hooks passed; Claude statusLine passed; Claude/current Windows hooks remain open |
-| R5 | Release integration, documentation and public payload hygiene | Full check, independent review/GLM closure, generated drift check, same-archive CI/OS journeys, EN/KO/zh-CN consistency, clean public payload, concrete publication prerequisites | Source `35b6178` PR verification passed Ubuntu/macOS; its single CI archive passed engine-only smoke on Ubuntu/macOS/Windows; publication and remaining decisions stay open |
+| R5 | Release integration, documentation and public payload hygiene | Full check, independent review/GLM closure, generated drift check, same-archive CI/OS journeys, EN/KO/zh-CN consistency, clean public payload, concrete publication prerequisites | Source `66eb978` PR/source CI passed both OSes; exact CI `ebfe6a…` passed six native core/four HUD cells and Linux/Windows hosted smoke; hosted macOS smoke queued; decisions/publication remain open |
 
 R1's independent catalog, validation and installer work may run concurrently; broad engine import rewriting waits
 until concurrent engine edits settle. R2/R3 share CLI/pipeline ownership and are integrated sequentially. Full build and
@@ -110,6 +110,34 @@ assignment role could match neighboring rows; nested overlapping alignment is a 
 The later local `2b43d24…` archive passed independent installed verification for the exact unknown key, existing
 approved rules, 180-case behavior and bounded native host surfaces. The scoped GLM static source review and exact-archive SSH/native Windows verification subsequently passed. That remains local-development-candidate evidence and is separate from the later source-`35b6178` CI candidate, whose single archive passed Ubuntu/macOS/Windows engine smoke. Public approval gates remain open.
 
+### R5 follow-up — exact-artifact lifecycle (2026-10-22)
+
+A completion audit found REL10 still executable without pending model authentication or rule decisions. Fresh
+three-OS engine smoke does not cover real host update, rollback and removal. Follow the
+[exact-artifact lifecycle plan](proposals/2026-10-22-artifact-lifecycle.md) using retained 0.2.3 `f07df7…` and CI
+0.2.4 `bec626…` archives in disposable profiles. Verify actual host registration/version, post-transition engine
+behavior, configuration/approval-data preservation, documented removal residue and supported HUD ownership handoff.
+Keep Linux/WSL, native Windows and macOS evidence distinct. Authentication-dependent host UI/hooks remain separate.
+This is the current reversible R5 subtask; no new public approval, live-profile change or publication is authorized.
+
+The first Claude cells exposed stale installed-version metadata after a successful marketplace move. The correction
+now checks ownership before copying, refreshes the exact scoped registration when necessary, verifies the installed
+identity and retains recoverable files after possible partial host mutation. Source review and GLM review closed
+mandatory findings; the full local check passed 672 tests with five existing parser skips and zero failures.
+The new local `1f1343e9…` archive passed all six core host/OS lifecycles and four supported macOS/WSL HUD
+configuration ownership cells, with independent evidence reviews. A clean-source CI candidate follows with separate
+exact-byte evidence. The historical
+0.2.3 fixture still requires explicit manual rollback for Claude; no automatic rollback guarantee is introduced.
+
+Final source `66eb978` has passing ordinary PR checks and clean candidate verification (677 tests on each OS).
+The exact CI archive `ebfe6a7796d9d85e9cf3088c955df4fb5477e60513e8ebda97d517746d93c665` passed all six
+native core and four supported HUD configuration cells with independent review, and was delivered to a new chacada
+folder with matching WSL/PowerShell hashes. Linux/Windows hosted smoke passed; hosted macOS smoke remains queued.
+The public payload audit and corrected release/user guidance passed. See the
+[bound final matrix](reviews/2026-10-22-artifact-lifecycle-evidence/README.md#final-clean-ci-candidate).
+No further product implementation gap was identified in the bounded first-release audit. Complete the queued CI job
+and final record reconciliation; new rule/example, artifact license, authentication and publication gates remain open.
+
 ### Loop and completion gate
 
 For each phase: inspect current behavior → write the smallest implementation → run meaningful targeted tests →
@@ -130,7 +158,7 @@ identified as waiting for a concrete user/external prerequisite; prerequisites d
 on 2026-10-21. The current source CLI accepts all four languages; JSON/YAML write rules are candidate proposals awaiting human
 approval. The native HUD entry-point defect was corrected. The local `2b43d24…` archive passed the Python
 common-column detector boundary and reached the authenticated Codex upper prompt, with disposable trust cleaned after
-an independent finding. Scoped GLM source review and SSH/native Windows verification passed; current macOS Codex hook acceptance passed. Source `35b6178` PR verification and its single-archive Ubuntu/macOS/Windows engine smoke passed. Claude/current Windows hook acceptance, public rule/license decisions and publication remain open. The existing
+an independent finding. Scoped GLM source review and SSH/native Windows verification passed; current macOS Codex hook acceptance passed. Source `66eb978` PR/source CI verification passed; exact clean CI `ebfe6a…` passed all six native core/four HUD configuration cells and Linux/Windows hosted smoke. Hosted macOS smoke remains queued. Claude/current Windows hook acceptance, public rule/license decisions and publication remain open. The existing
 10-language engine is kept, but equivalent product quality for Java, Go, Rust, JavaScript, C, C++, Swift and Kotlin is
 not a completion condition of the first release.
 
@@ -562,20 +590,24 @@ and the single source of REL status is this document's REL table — the harness
 
 ## Public release execution TODO
 
+This table is the current release-stage summary, reconciled with READINESS1. The detailed stage definitions below
+retain their original baseline and acceptance scope; their older gap lists are not a second active work queue.
+Current remaining work is the READINESS1 phase table, the exact-artifact follow-up and named issue-library gates.
+
 | ID | Task | Prerequisites | Status |
 |---|---|---|---|
-| REL0 | Canonicalize the release goal, status and execution TODO | — | ⏸ waiting for independent review and acceptance |
-| REL1 | Settle the release contract and support scope | REL0 accepted | ⬜ next candidate |
-| REL2 | Fail-closed safety gate on the public TS/Python write surface | REL1; independent safety improvement REL2a done first | partially implemented — REL2a/b/c verified; public gate, TS timeout etc. to follow |
-| REL3 | Demonstrate the Node/npm runtime and release package | REL2 safety foundation | ✅ real Node corrected verification, empty npm cache install; macOS only |
+| REL0 | Canonicalize the release goal, status and execution TODO | — | Reviewed; READINESS1 is the authorized active plan |
+| REL1 | Settle the release contract and support scope | REL0 accepted | Four-language scope implemented; final supported-host and license decisions remain open |
+| REL2 | Fail-closed safety gate on the public write surface | REL1; independent safety improvement REL2a done first | Verified within the four-language boundaries; historical timeout 007 remains investigating |
+| REL3 | Demonstrate the Node/npm runtime and release package | REL2 safety foundation | Verified Node artifacts; corrected CI candidate passed Linux/Windows smoke; hosted macOS smoke queued |
 | REL4 | Integrated CLI and project lifecycle | REL3 | ✅ base commands and isolated bin verified; real format connected too |
 | REL5 | Rule config and layering contract | REL4 | ✅ layers, versions, fingerprints and refusal contract implemented |
-| REL6 | First data in the human approval DB | REL5 | ⏸ two concrete candidates presented, waiting for user approval |
-| REL7 | Approval DB write gate and minimal GUIDE loop | REL6 | core verified; waiting for real approval data |
+| REL6 | First data in the human approval DB | REL5 | Two approved rules/four examples shipped in the candidate; five additional rules/ten examples await decisions |
+| REL7 | Approval DB write gate and minimal GUIDE loop | REL6 | Verified with existing approved data; new exact keys remain unapproved and refuse writes |
 | REL8 | Formatter run-last fixed point | REL4, REL7 | ✅ public CLI and real Node artifact machine-verified |
-| REL9 | Real acceptance by the confirmed supported hosts | REL4, REL7, REL8 | ⬜ todo |
-| REL10 | Clean artifact install, update and removal on supported OSes | REL8, REL9 | ⬜ todo |
-| REL11 | Freeze public assets, CI and the release allowlist | REL10 | ⬜ todo |
+| REL9 | Real acceptance by the confirmed supported hosts | REL4, REL7, REL8 | Bounded native Codex/HUD evidence recorded; authenticated Claude/current Windows hook gates remain open |
+| REL10 | Clean artifact install, update and removal on supported OSes | REL8, REL9 | Six native core/four supported HUD cells reviewed; hosted macOS CI queued; authenticated host gates separate |
+| REL11 | Freeze public assets, CI and the release allowlist | REL10 | Exact CI payload and documentation audits passed; hosted macOS CI, license/publication decisions pending |
 | REL12 | Release and external reinstall check | REL11, human approval | ⬜ todo |
 
 ### REL0 — canonicalize the plan
@@ -646,8 +678,8 @@ and the single source of REL status is this document's REL table — the harness
 - **Verification:** **existing** `bun test test/hook.test.ts test/plugin-contract.test.ts`; **new** acceptance scenarios on the confirmed real hosts. Simulated runs alone do not pass.
 ### REL10 — clean artifact install, update and removal
 
-- **Current implementation:** only link/copy/uninstall in a temporary HOME was tested; the public artifact and OS-matrix lifecycle are not measured.
-- **Remaining work:** on supported OSes, perform install → init → check → fix → recheck → host call → update → removal with user files preserved.
+- **Current implementation:** reusable exact-artifact core and HUD configuration verifiers exercise real host CLIs in disposable profiles. The initial CI archive passed Codex on macOS, native Windows and Linux/WSL; Claude failed version identity acceptance on macOS/WSL. The corrected local and final clean CI archives each passed all six native core host/OS cells and four supported macOS/WSL HUD ownership cells. See the [current execution record](proposals/2026-10-22-artifact-lifecycle.md); none of these cells runs an authenticated model session.
+- **Remaining work:** complete the queued hosted macOS engine smoke job. Native lifecycle, preservation and documented removal residue are reviewed for final CI bytes; authenticated host calls remain under REL9.
 - **Acceptance criteria:** supported combinations pass with an artifact matching the recorded hash of the release candidate, and removal deletes only managed files. An update/rollback rehearsal between two candidate versions keeps user config and approval data.
 - **Verification:** **existing** `bun test test/install-lifecycle.test.ts`; **new** OS/Node/host E2E, update migration, residue, offline and error tests.
 ### REL11 — freeze for publication
