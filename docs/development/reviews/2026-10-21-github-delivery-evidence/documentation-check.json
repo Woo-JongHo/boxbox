@@ -1,0 +1,14 @@
+{
+  "scope": "staged documentation prose outside original recorded evidence",
+  "files": [
+    "docs/development/cicd.md",
+    "docs/development/plan.md",
+    "docs/development/reviews/2026-10-21-github-delivery.md",
+    "docs/development/reviews/2026-10-21-github-integration.md",
+    "docs/development/status.md"
+  ],
+  "hangulFound": false,
+  "diffWhitespaceCheck": "passed excluding recorded evidence",
+  "legacyLanguageTest": "test/language-policy.test.ts is absent from the current tree; attempted command ran no tests and is not counted as a pass",
+  "productTreeChange": false
+}
