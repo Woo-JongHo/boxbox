@@ -23,8 +23,8 @@ describe("python profile specific properties", () => {
 			`    "debug": True,`,
 			"}",
 		].join("\n");
-		const result = align(source)             ;
-		const lines  = result.output.split("\n") ;
+		const result = align              (source) ;
+		const lines  = result.output.split("\n"  ) ;
 		expect(lines[1]     ).toBe(`    "host" : "localhost:8080",`) ;
 		expect(lines[2]     ).toBe(`    "port" : 8080            ,`) ;
 		expect(lines[3]     ).toBe(`    "debug": True            ,`) ;
@@ -39,8 +39,8 @@ describe("python profile specific properties", () => {
 			`    label: str = "x"`,
 			"    verbose: bool = True",
 		].join("\n");
-		const result = align(source)             ;
-		const lines  = result.output.split("\n") ;
+		const result = align              (source) ;
+		const lines  = result.output.split("\n"  ) ;
 		expect(lines[2]         ).toBe("    retries: int  = 3"   ) ;
 		expect(lines[3]         ).toBe(`    label  : str  = "x"` ) ;
 		expect(lines[4]         ).toBe("    verbose: bool = True") ;
@@ -53,8 +53,8 @@ describe("python profile specific properties", () => {
 			"level:int=3",
 			"name:str='x'",
 		].join("\n");
-		const result = align(source)             ;
-		const lines  = result.output.split("\n") ;
+		const result = align              (source) ;
+		const lines  = result.output.split("\n"  ) ;
 		expect(lines[0]).toBe("ratio: float = 0.5") ;
 		expect(lines[1]).toBe("level: int   = 3"  ) ;
 		expect(lines[2]).toBe("name : str   = 'x'") ;
@@ -85,8 +85,8 @@ describe("python profile specific properties", () => {
 			"second = diagnostics(toolchain, after)",
 			"third  = diagnostics(toolchain, during)",
 		].join("\n");
-		const result = align(source)             ;
-		const lines  = result.output.split("\n") ;
+		const result = align              (source) ;
+		const lines  = result.output.split("\n"  ) ;
 		expect(lines[0]).toBe("first  = diagnostics(toolchain, before)") ;
 		expect(lines[1]).toBe("second = diagnostics(toolchain, after )") ;
 		expect(lines[2]).toBe("third  = diagnostics(toolchain, during)") ;
@@ -98,14 +98,14 @@ describe("python profile specific properties", () => {
 			`PARSES = frozenset({"ok", "changed", "skipped"})`,
 			`GONE = frozenset({"no", "off", "away"})`,
 		].join("\n");
-		const result = align(source)             ;
-		const lines  = result.output.split("\n") ;
+		const result = align              (source) ;
+		const lines  = result.output.split("\n"  ) ;
 		expect(lines[0]).toBe(`STATES = frozenset({"PASS", "FIXABLE", "SUGGEST"})`) ;
 		expect(lines[1]).toBe(`PARSES = frozenset({"ok"  , "changed", "skipped"})`) ;
 		expect(lines[2]).toBe(`GONE   = frozenset({"no"  , "off"    , "away"   })`) ;
 	});
 
-	test("calls with a different callee, a different arity, nesting or keyword arguments never share a table", () => {
+	test("heterogeneous positional calculations share only outer assignment columns; keyword arguments stay unsupported", () => {
 		for (const source of [
 			[
 				"first  = other(toolchain, before)",
@@ -129,8 +129,14 @@ describe("python profile specific properties", () => {
 			].join("\n"),
 		]) {
 			const result = align(source);
-			expect(result.tables    ).toBe(0     ) ;
-			expect(result.output    ).toBe(source) ;
+			if (source.includes("tool=1")) {
+				expect(result.tables).toBe(0);
+				expect(result.output).toBe(source);
+			} else {
+				expect(result.tables                                                           ).toBe   (1                                                                ) ;
+				expect(result.details[0]!.axes                                                 ).toEqual(["name", "equal", "assignment-value"]                            ) ;
+				expect(result.output.split("\n").map(line => line.slice(line.indexOf("=") + 1))).toEqual(source.split("\n").map(line => line.slice(line.indexOf("=") + 1))) ;
+			}
 		}
 	});
 
@@ -156,8 +162,8 @@ describe("python profile specific properties", () => {
 			`    ("delta", 4, "w"),`,
 			"]",
 		].join("\n");
-		const result = align(source)             ;
-		const lines  = result.output.split("\n") ;
+		const result = align              (source) ;
+		const lines  = result.output.split("\n"  ) ;
 		expect(lines[1]).toBe(`    ["alpha", 1  , "x"  ],`) ;
 		expect(lines[2]).toBe(`    ["b"    , 22 , "yy" ],`) ;
 		expect(lines[3]).toBe(`    ["ccc"  , 333, "zzz"],`) ;

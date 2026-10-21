@@ -14,9 +14,17 @@
  * Refused (null) when uncertain: non-bundle rows with remaining parens, braces or brackets (calls, containers,
  * indexing, def signatures); rows ending in a continuation (\); decorator, def, class, control-flow and import
  * rows; rows whose value is empty, starts with =, or contains ; or ,; rows with trailing whitespace.
+ * A separate outer calculation projection can compare unclaimed simple assignments without decomposing their RHS.
+ * Its distinct assignment-value axis never inherits approval for the detailed value axis.
  * Refusal is safe; misrecognition is dangerous.
  */
-import type { CodeSyntax, LineProfiler, RowProfile, Slot } from "@/common/table-engine.ts";
+import type {
+              CodeSyntax        ,
+              LineProfiler      ,
+              RowProfile        ,
+              Slot              ,
+                                  } from "@/common/table-engine.ts"        ;
+import      { assignmentEnvelopes } from "@/python/assignment-envelope.ts" ;
 
 export const PYTHON_SYNTAX: CodeSyntax = {
 	lineComments  : ["#"],
@@ -283,4 +291,5 @@ export const PYTHON_ALIGNER: LineProfiler = {
 	// The call layer's wrapped bundle attaches its brackets to the call the same way.
 	canonicalGaps : { name: " ", attribute: " ", "chain-target": " ", key: " ", type: " ", value: " ", colon: "", equal: " ", comma: "", cell: "", arg: " ", "open[": "", "open(": "", "open{": "", "close]": "", "close)": "", "close}": "" },
 	profile       : profilePython,
+	project       : assignmentEnvelopes,
 };
