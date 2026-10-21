@@ -39,7 +39,7 @@ export function buildInstallerArtifact(): string {
 	rmSync(output, { recursive: true, force: true });
 	mkdirSync(join(output, "bin"), { recursive: true });
 	mkdirSync(payload, { recursive: true });
-	cpSync(join(ROOT, "product/installer/platform.mjs"), join(payload, "platform.mjs"));
+	for (const name of ["platform.mjs", "install-state.mjs", "claude-registration.mjs"]) cpSync(join(ROOT, "product/installer", name), join(payload, name));
 	cpSync(join(ROOT, "product/installer/entry.mjs"), join(output, "bin/boxbox.mjs"));
 	cpSync(join(ROOT, "product/installer/README.md"), join(output, "README.md"));
 	chmodSync(join(output, "bin/boxbox.mjs"), 0o755);
@@ -56,7 +56,7 @@ export function buildInstallerArtifact(): string {
 		for (const path of [host === "codex" ? ".codex-plugin" : ".claude-plugin", "skills", "hooks", ...(host === "claude" ? ["agents"] : [])]) cpSync(join(ROOT, "plugin", path), join(plugin, path), { recursive: true });
 		cpSync(join(ROOT, marketplacePath), join(root, marketplacePath));
 		cpSync(join(ROOT, "dist", `${manifest.name}-${manifest.version}.tgz`), join(root, "packages", `${manifest.name}-${manifest.version}.tgz`));
-		for (const name of ["install.mjs", "platform.mjs"]) cpSync(join(ROOT, "product/installer", name), join(root, name));
+		for (const name of ["install.mjs", "platform.mjs", "install-state.mjs", "claude-registration.mjs"]) cpSync(join(ROOT, "product/installer", name), join(root, name));
 		cpSync(join(ROOT, "product/installer/launcher.mjs"), join(plugin, "scripts/boxbox.mjs"));
 		cpSync(join(ROOT, "product/hud"), join(plugin, "scripts/hud"), { recursive: true });
 		writeFileSync(join(root, "bundle.json"), JSON.stringify({ ...metadata, host }, null, "\t") + "\n");
@@ -67,7 +67,7 @@ export function buildInstallerArtifact(): string {
 			const inspector = join(plugin, "agents/readability-inspector.md");
 			writeFileSync(inspector, projectDocument(readFileSync(inspector, "utf8")) + "\nOn Windows, the generated Node bridge works from Bash or PowerShell.\n");
 		}
-		const hooksPath = join(plugin, "hooks/hooks.json")            ;
+		const hooksPath = join      (plugin, "hooks/hooks.json"     ) ;
 		const hooks     = JSON.parse(readFileSync(hooksPath, "utf8")) ;
 		for (const [event, mode] of [["SessionStart", "session"], ["PostToolUse", "post"], ["Stop", "stop"]]) {
 			for (const group of hooks.hooks[event!]) {
