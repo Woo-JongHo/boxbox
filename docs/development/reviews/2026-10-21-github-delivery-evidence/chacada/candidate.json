@@ -1,0 +1,27 @@
+{
+	"schemaVersion": 1,
+	"name": "boxbox-plugin",
+	"version": "0.2.2",
+	"filename": "boxbox-plugin-0.2.2.tgz",
+	"sha256": "611858a6b7f72e1a27aaddf9593d5a1404a0baf7c705bb2ec21ea2f2bbec7137",
+	"bytes": 126691,
+	"source": {
+		"scope": "staging-checkout",
+		"commit": "6e74c9327c44b4121a7ec4803d3acad66ee0f071",
+		"ref": "refs/heads/main",
+		"repository": "Woo-JongHo/rowgrid",
+		"dirty": false
+	},
+	"build": {
+		"createdAt": "2026-10-21T04:29:59.778Z",
+		"node": "v22.22.3",
+		"bun": "1.4.0",
+		"runId": "39543872402",
+		"runAttempt": "1"
+	},
+	"limitations": [
+		"Candidate only; no registry publication.",
+		"Source identity describes the staging checkout. Only the clean CI workflow binds its preceding build to that checkout; local archive build provenance is unverified.",
+		"Engine-only smoke does not verify native host hook-event delivery."
+	]
+}

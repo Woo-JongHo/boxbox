@@ -1,6 +1,6 @@
 # Release readiness
 
-Updated: 2026-10-21 (CI/HUD local verification complete; integration pending) · Base: branch `m1-safety-proof`
+Updated: 2026-10-21 (GitHub candidates, integration and installed Codex status verified) · Base: branch `m1-safety-proof`
 
 ## Goal and current verdict
 
@@ -18,12 +18,20 @@ Claude Code and Codex. **This is not a completed public release.**
 
 ## Active work — DELIVERY1
 
-The user selected issue forms → PR verification → candidate generation, and BoxBox status inside Codex. GitHub
-`Woo-JongHo/rowgrid` is private and separate from the self-hosted `origin`. The pipeline will produce candidate
-artifacts only; registry publication stays pending. The exact tested 0.2.1 installer is now installed and enabled in
-the local Codex, and its installed engine reports runtime/configuration ready with two approved conventions.
-The development HUD/project skill shows an on-request conversation panel and keeps host acceptance unverified.
-Final full check: 490 pass / 5 existing parser skips / 0 fail; TypeScript/shell, plugin guard, actionlint and exact-archive macOS/native Windows smoke passed. A fresh read-only Codex session invoked the HUD successfully. Final Opus follow-up passed after F1/F2/F3 corrections. The user chose to bring the current development structure into a GitHub PR while preserving the ten main-only changes (including MIT LICENSE/presets); a separate integration branch is in progress. PR #2 is pushed; its first real hosted run failed on Rust parser handling and an absent optional fixture directory. Version 0.2.2 corrects those failures; re-verification is underway. The default-branch merge and manual candidate dispatch remain pending. See [CI operation](cicd.md), [HUD usage](hud.md), [evidence](reviews/2026-10-21-delivery-hud.md), and the active task in [plan.md](plan.md).
+The user-selected issue forms → PR verification → candidate generation pipeline is operational on private GitHub
+`Woo-JongHo/rowgrid`. PR #2 preserved main history/LICENSE and merged the current development layout. Its final
+Ubuntu/macOS verification passed 496 tests on each OS with zero skips/failures. Actual manual candidate run39543872402
+passed all six jobs, including same-archive Linux/macOS/Windows installed TypeScript/Python journeys.
+
+The exact downloaded 0.2.2 archive is 126691 bytes, SHA-256
+`611858a6b7f72e1a27aaddf9593d5a1404a0baf7c705bb2ec21ea2f2bbec7137`. It is installed/enabled in local Codex; installed
+doctor/check and the development HUD passed. In a fresh session invoke `$boxbox-status` for the on-request panel.
+Sonnet 5.5 findings were resolved; final Opus 5.5 passed. Full reports and destination delivery details are in
+[the operational delivery record](reviews/2026-10-21-github-delivery.md).
+
+The private GitHub plan cannot enforce required checks (HTTP 403); visibility is unchanged. Public npm publication,
+native host hook-event acceptance and full Windows development-suite support are separate from these passes.
+DELIVERY1 is verified and ready for user review before the next task; no public release is claimed.
 
 ## First-use formatting — 2026-10-21
 
@@ -69,7 +77,7 @@ See [the migration evidence](reviews/2026-10-20-layout.md). Publication remains 
 | Formatter | optional explicit command → parser → approval → BoxBox, fixed point over two full runs, verified on the installed artifact and dry-run | a real project formatter case |
 | Evidence DB | 8 public repositories, 7,759 files → 18,613 table observations / 88 rule keys, 311 own functions | review and promote frequent candidates; SQLite not introduced |
 | Hosts | Real local npm installer installed and repaired both isolated Codex 0.162.1 (enabled) and Claude Code 2.1.286 (1 skill, 1 agent, 3 hooks); cache-independent engines, strict validation and hook tests passed | publication approval/registry installation and native host event delivery; Windows explicit CLI acceptance passed (CODEX1) |
-| Product finish | brand confirmed: boxbox/BoxBox, 0.2.1, private; docs and code in English (S8 done 2026-10-07) | license, channel, update/removal, release |
+| Product finish | brand confirmed: boxbox/BoxBox, 0.2.2, private; docs and code in English (S8 done 2026-10-07) | license, channel, update/removal, release |
 
 ## Verification state
 
