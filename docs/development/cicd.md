@@ -35,7 +35,8 @@ with `BOXBOX_REQUIRE_PARSERS=1`. Required parsers must be present; skipped local
 
 Workflows use read-only repository permissions, checkout without persisted credentials, explicit timeouts, and
 full commit pins for external actions. Superseded runs of the same PR/ref verification are canceled. Candidate runs
-for the same ref are serialized without cancellation. No workflow runs with `pull_request_target` or publishing secrets.
+for the same ref keep the running job and at most the newest pending run; a newer dispatch replaces an older pending
+run. No workflow runs with `pull_request_target` or publishing secrets.
 
 ## Creating and inspecting a candidate
 

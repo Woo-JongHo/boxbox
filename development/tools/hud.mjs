@@ -1,14 +1,9 @@
-import      { spawnSync                 } from "node:child_process"                   ;
-import      {
-              existsSync              ,
-              lstatSync               ,
-              readFileSync            ,
-              readdirSync             ,
-                                        } from "node:fs"                              ;
-import      { isAbsolute, join, resolve } from "node:path"                            ;
-import      { pathToFileURL             } from "node:url"                             ;
-import      { createHash                } from "node:crypto"                          ;
-import      { findCommand               } from "../../product/installer/platform.mjs" ;
+import      { spawnSync                                        } from "node:child_process"                   ;
+import      { existsSync, lstatSync, readFileSync, readdirSync } from "node:fs"                              ;
+import      { basename, dirname, isAbsolute, join, resolve     } from "node:path"                            ;
+import      { pathToFileURL                                    } from "node:url"                             ;
+import      { createHash                                       } from "node:crypto"                          ;
+import      { findCommand                                      } from "../../product/installer/platform.mjs" ;
 
 function command(tool, args, root) {
 	if (!tool) throw new Error("Codex CLI is unavailable");
@@ -26,9 +21,16 @@ function hookStatus(root, data) {
 	if (!data) return { state: "location-unknown", latest: null, hostAcceptance: "unverified" };
 	if (!isAbsolute(data)) throw new Error("Plugin data must be an absolute directory");
 
-	const project   = createHash("sha256").update(root).digest("hex").slice(0, 16) ;
-	const directory = join(data, "hooks", project)                                 ;
-	const records   = []                                                           ;
+	const project        = createHash("sha256").update(root).digest("hex").slice(0, 16) ;
+	const supplied       = resolve(data)                                                ;
+	const receiptProject = basename(dirname(supplied))                                  ;
+	const sessionDirectory = basename(dirname(dirname(supplied))) === "hooks"
+		&& /^[a-f0-9]{16}$/u.test(receiptProject) && /^[a-f0-9]{64}$/u.test(basename(supplied));
+	if (sessionDirectory && receiptProject !== project) return { state: "location-mismatch", latest: null, hostAcceptance: "unverified" };
+
+	const dataRoot  = sessionDirectory ? dirname(dirname(dirname(supplied))) : supplied ;
+	const directory = join(dataRoot, "hooks", project)                                  ;
+	const records   = []                                                                ;
 	let unreadable = 0;
 	try {
 		if (existsSync(directory)) for (const session of readdirSync(directory, { withFileTypes: true })) {
@@ -55,7 +57,7 @@ function hookStatus(root, data) {
 }
 
 /** Read installed-host state; inspecting the checkout never substitutes for the installed engine. */
-export function collectHud({ root = process.cwd(), pluginData = process.env.PLUGIN_DATA || process.env.CLAUDE_PLUGIN_DATA, run = command, codex = findCommand("codex") } = {}) {
+export function collectHud({ root = process.cwd(), pluginData = process.env.CLAUDE_PLUGIN_DATA || process.env.PLUGIN_DATA, run = command, codex = findCommand("codex") } = {}) {
 	root = resolve(root);
 	const report = { schemaVersion: 1, tool: "boxbox", command: "hud", root, observedAt: new Date().toISOString(), plugin: { state: "unknown" }, runtime: { state: "unknown" }, hooks: { state: "location-unknown", latest: null, hostAcceptance: "unverified" }, releaseReady: false };
 	try {

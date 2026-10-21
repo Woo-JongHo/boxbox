@@ -7,7 +7,7 @@ Run `node development/tools/hud.mjs --json` from this repository root. This deve
 Codex plugin and its engine rather than executing the checkout's engine. Present the result as a compact status panel
 in the conversation: plugin version/enabled state, runtime, approved rules, formatter and latest observed hook receipt.
 
-If the current BoxBox session context supplies its plugin data directory, pass that exact absolute directory with
+If the current BoxBox session context supplies its session receipt directory, pass that exact absolute directory with
 `--plugin-data`. Otherwise retain `location-unknown`; a missing receipt is not a successful check. Receipt existence
 does not prove the host accepted hook output. Configuration readiness leaves per-file safety verification pending.
 
