@@ -15,7 +15,8 @@
 		"harness:report": "bun development/harness/report.ts",
 		"sync:product": "bun development/tools/sync-product.ts --write && bun development/tools/sync-plugin.ts",
 		"pack:installer": "bun development/tools/build-installer-artifact.ts",
-		"check:layout": "bun development/tools/check-layout.ts"
+		"check:layout": "bun development/tools/check-layout.ts",
+		"hud": "node development/tools/hud.mjs"
 	},
 	"dependencies": {
 		"typescript": "7.0.2"
