@@ -1,6 +1,6 @@
 # Release readiness
 
-Updated: 2026-10-21 (GitHub candidates, integration and installed Codex status verified) · Base: branch `m1-safety-proof`
+Updated: 2026-10-21 (native Codex evidence audited; Windows editing blocked) · Source baseline: `e8362d2`
 
 ## Goal and current verdict
 
@@ -16,7 +16,20 @@ Claude Code and Codex. **This is not a completed public release.**
 - [Handoff for verification by another AI](handoff-2026-10-05.md): code map, 12 held IDs, reproduction commands and independent review questions
 - [Release tracking harness](../../development/harness/README.md): run history DB (`runs.jsonl`, `latest.json`) and a report against the REL table
 
-## Active work — DELIVERY1
+## Active work — CODEX1 native hook acceptance
+
+Controlled macOS Codex CLI 0.163.0 sessions loaded the unchanged BoxBox 0.2.2 plugin in a disposable profile.
+Native transcripts prove SessionStart developer context, an apply_patch PostToolUse FAIL delivered as context/tool
+feedback, exactly one Stop continuation, and a passing recovery. The HUD reads the recovery receipts as recorded/PASS;
+its hostAcceptance stays unverified because receipts alone do not attest delivery. Default untrusted SessionStart/Stop
+were skipped, and all three reviewed hook hashes remained untrusted after the one-invocation tests.
+
+Windows Codex 0.157.1 delivered SessionStart context, but its native read-only sandbox/approval policy rejected the
+requested edit despite workspace-write argv. The fixture stayed unchanged; PostToolUse and failing Stop/recovery
+acceptance remain blocked there. Sonnet 5.5 fixes and final Opus 5.5 fix verification passed. Persistent active-profile trust,
+desktop behavior, Claude event delivery and public registry publication remain separate. See [the native evidence](reviews/2026-10-21-codex-native-hooks.md).
+
+## Completed delivery — DELIVERY1
 
 The user-selected issue forms → PR verification → candidate generation pipeline is operational on private GitHub
 `Woo-JongHo/rowgrid`. PR #2 preserved main history/LICENSE and merged the current development layout. Its final
@@ -31,7 +44,7 @@ Sonnet 5.5 findings were resolved; final Opus 5.5 passed. Full reports and desti
 
 The private GitHub plan cannot enforce required checks (HTTP 403); visibility is unchanged. Public npm publication,
 native host hook-event acceptance and full Windows development-suite support are separate from these passes.
-DELIVERY1 is verified and ready for user review before the next task; no public release is claimed.
+DELIVERY1 is verified; the user authorized continuation on 2026-10-21. No public release is claimed.
 
 ## First-use formatting — 2026-10-21
 
@@ -76,7 +89,7 @@ See [the migration evidence](reviews/2026-10-20-layout.md). Publication remains 
 | Approval and GUIDE | exact key, scope, layers; full proof checks; two rules and four examples approved on 2026-10-21 | other candidates remain unapproved |
 | Formatter | optional explicit command → parser → approval → BoxBox, fixed point over two full runs, verified on the installed artifact and dry-run | a real project formatter case |
 | Evidence DB | 8 public repositories, 7,759 files → 18,613 table observations / 88 rule keys, 311 own functions | review and promote frequent candidates; SQLite not introduced |
-| Hosts | Real local npm installer installed and repaired both isolated Codex 0.162.1 (enabled) and Claude Code 2.1.286 (1 skill, 1 agent, 3 hooks); cache-independent engines, strict validation and hook tests passed | publication approval/registry installation and native host event delivery; Windows explicit CLI acceptance passed (CODEX1) |
+| Hosts | Isolated Codex/Claude installer registration and repair passed; macOS Codex 0.163.0 PostToolUse/Stop control flow passed; SessionStart delivered into native response history on macOS/Windows, without a model acknowledgment claim; Windows explicit CLI acceptance and scoped final audit passed | Windows native editing blocked by host policy; persistent trust, Claude event delivery, publication/registry installation remain separate |
 | Product finish | brand confirmed: boxbox/BoxBox, 0.2.2, private; docs and code in English (S8 done 2026-10-07) | license, channel, update/removal, release |
 
 ## Verification state
@@ -106,9 +119,10 @@ Node isolated install journey. That historical 0.2.0 package had no approved pre
 
 ## Next resume point
 
-The active task is DELIVERY1: finish candidate CI and the installed-plugin Codex HUD, then record actual verification.
-FIRSTUSE1 explicit formatting and candidate delivery, and LAYOUT1 separation/audit, are verified. Public registry
-publication and native host event delivery remain open. The two exact preset rules have human approval; broader
+The active task is CODEX1. Controlled native evidence is audited; Windows edit-dependent events remain blocked by
+the effective native read-only sandbox/approval policy. Registry publication remains a separate decision.
+FIRSTUSE1 explicit formatting and candidate delivery, DELIVERY1 CI/HUD, and LAYOUT1 separation/audit are verified.
+Public registry publication and native acceptance outside the measured test scope remain open. The two exact preset rules have human approval; broader
 candidates still require a decision. Research evidence is kept separately in `~/.cache/boxbox/corpus/`;
 the observation JSONL is **18,613 lines / 11,207,375 B** and the aggregated signatures **175,183 B**. Including the public repository
 checkouts, the whole research cache is **715,920 KiB (about 699 MiB)**. None of this data is in the npm artifact.
@@ -125,7 +139,8 @@ There is no dedicated ESLint command. `bun run check` runs tests, the TypeScript
 own aligner and normalizer keep the standing criteria (`misaligned=0`, `changed=0`) over the TypeScript files in
 `product/engine/`, `scripts/`, `test/` and `development/harness/`, and the self-align stage of the release tracking harness verifies this on every run.
 
-Git: branch `m1-safety-proof`, pushed to origin on 2026-10-07 (the plugin structure commit `09ca855`); the English translation is committed on top.
+Git baseline: GitHub main `e8362d2` includes the merged development layout, CI and delivery records. Native-hook
+evidence branches from this baseline; source/plugin bytes and the delivered 0.2.2 archive are unchanged.
 No npm publish or tag has been made.
 
 ## Product naming and distribution decision — 2026-10-16

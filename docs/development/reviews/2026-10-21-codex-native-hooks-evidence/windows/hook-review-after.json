@@ -1,0 +1,83 @@
+{
+  "ok": true,
+  "host": "codex-cli 0.157.1",
+  "hooksListSupported": true,
+  "onlyReviewedHandlers": true,
+  "handlers": [
+    {
+      "key": "boxbox@boxbox-plugins:hooks/hooks.json:post_tool_use:0:0",
+      "eventName": "postToolUse",
+      "handlerType": "command",
+      "command": "& 'C:\\Program Files\\nodejs\\node.exe' \"$env:PLUGIN_ROOT/scripts/boxbox.mjs\" hook post",
+      "async": false,
+      "matcher": "Write|Edit|MultiEdit|apply_patch",
+      "timeoutSec": 120,
+      "statusMessage": null,
+      "additionalContextLimit": null,
+      "sourcePath": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\codex-home\\plugins\\cache\\boxbox-plugins\\boxbox\\0.2.2\\hooks\\hooks.json",
+      "source": "plugin",
+      "pluginId": "boxbox@boxbox-plugins",
+      "displayOrder": 0,
+      "enabled": true,
+      "isManaged": false,
+      "currentHash": "sha256:e49eee5e228ea01bccde56d387cb228b698eb54bbc894e156a07385fbdcedf1c",
+      "trustStatus": "untrusted"
+    },
+    {
+      "key": "boxbox@boxbox-plugins:hooks/hooks.json:session_start:0:0",
+      "eventName": "sessionStart",
+      "handlerType": "command",
+      "command": "& 'C:\\Program Files\\nodejs\\node.exe' \"$env:PLUGIN_ROOT/scripts/boxbox.mjs\" hook session",
+      "async": false,
+      "matcher": null,
+      "timeoutSec": 120,
+      "statusMessage": null,
+      "additionalContextLimit": null,
+      "sourcePath": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\codex-home\\plugins\\cache\\boxbox-plugins\\boxbox\\0.2.2\\hooks\\hooks.json",
+      "source": "plugin",
+      "pluginId": "boxbox@boxbox-plugins",
+      "displayOrder": 1,
+      "enabled": true,
+      "isManaged": false,
+      "currentHash": "sha256:a4b8495cb5069bd8e42619ae0d2f0e58804054cd3e504d7bb7ad8f0a7b153d92",
+      "trustStatus": "untrusted"
+    },
+    {
+      "key": "boxbox@boxbox-plugins:hooks/hooks.json:stop:0:0",
+      "eventName": "stop",
+      "handlerType": "command",
+      "command": "& 'C:\\Program Files\\nodejs\\node.exe' \"$env:PLUGIN_ROOT/scripts/boxbox.mjs\" hook stop",
+      "async": false,
+      "matcher": null,
+      "timeoutSec": 120,
+      "statusMessage": null,
+      "additionalContextLimit": null,
+      "sourcePath": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\codex-home\\plugins\\cache\\boxbox-plugins\\boxbox\\0.2.2\\hooks\\hooks.json",
+      "source": "plugin",
+      "pluginId": "boxbox@boxbox-plugins",
+      "displayOrder": 2,
+      "enabled": true,
+      "isManaged": false,
+      "currentHash": "sha256:9da909b36a8ac67af7f4c6061719816d4a58c2eb5d4c9675e76ee21d63517f81",
+      "trustStatus": "untrusted"
+    }
+  ],
+  "sourceHashes": [
+    {
+      "path": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\codex-home\\plugins\\cache\\boxbox-plugins\\boxbox\\0.2.2\\hooks\\hooks.json",
+      "bytes": 1268,
+      "sha256": "7d0b00781ab77046905cf9aa2698b8475bfb00f449b14d8f6f786632d15e6c91"
+    },
+    {
+      "path": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\codex-home\\plugins\\cache\\boxbox-plugins\\boxbox\\0.2.2\\scripts\\boxbox.mjs",
+      "bytes": 1643,
+      "sha256": "729bf3758857e82eae6fd5ca0a4a1ec431d272c34529fe57a60c6a60ce363eeb"
+    },
+    {
+      "path": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\profile-local\\BoxBox\\Codex\\0.2.2\\runtime\\node_modules\\boxbox\\dist\\cli.js",
+      "bytes": 172567,
+      "sha256": "33928ad26bf90ad029fa26d04c69b86892c7b6a17745f6449672d02bc0597f10"
+    }
+  ],
+  "trustFlagUsed": false
+}

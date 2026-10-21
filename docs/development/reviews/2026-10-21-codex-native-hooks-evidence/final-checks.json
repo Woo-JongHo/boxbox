@@ -1,0 +1,13 @@
+{
+  "pass": true,
+  "newReportsEnglish": true,
+  "newReportsHaveNoPlaceholders": true,
+  "reportLocalLinksResolve": true,
+  "finalSonnetModel": "claude-sonnet-5-5",
+  "finalOpusModel": "claude-opus-5-5",
+  "reviewFixVerifications": "PASS",
+  "sourcePluginTestsWorkflowsUnchanged": true,
+  "credentialFieldMatches": 0,
+  "evidenceWhitespace": "recorded output retained unchanged",
+  "layoutCheck": "bun run check:layout passed"
+}

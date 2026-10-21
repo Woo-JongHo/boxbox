@@ -1,0 +1,10 @@
+{"type":"thread.started","thread_id":"01a15ccd-5532-76e1-9d56-da8533d627b0"}
+{"type":"item.completed","item":{"id":"item_0","type":"error","message":"`--dangerously-bypass-hook-trust` is enabled. Enabled hooks may run without review for this invocation."}}
+{"type":"item.completed","item":{"id":"item_1","type":"error","message":"`--dangerously-bypass-hook-trust` is enabled. Enabled hooks may run without review for this invocation."}}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_2","type":"agent_message","text":"I’ll apply the supplied patch exactly once, without running checks, hooks, or shell commands."}}
+{"type":"item.started","item":{"id":"item_3","type":"file_change","changes":[{"path":"/private/tmp/boxbox-native-hooks-20261021/project/sample.py","kind":"update"}],"status":"in_progress"}}
+{"type":"item.completed","item":{"id":"item_3","type":"file_change","changes":[{"path":"/private/tmp/boxbox-native-hooks-20261021/project/sample.py","kind":"update"}],"status":"completed"}}
+{"type":"item.completed","item":{"id":"item_4","type":"agent_message","text":"Applied the patch exactly once.\n\nReceived hook message: `[boxbox] PostToolUse: FAIL.`  \nReceipt path: `/private/tmp/boxbox-native-hooks-20261021/codex-home/plugins/data/boxbox-boxbox-plugins/hooks/5fb646832fdbed35/8fb4a3969fc45829aa2c7c9c2a37ef8ccba6c8d4c7559bc433e87a708c5d9ee1/1792558330085-c2c6691a-2564-4d88-b81b-ad6e5dad3391.json`\n\nNo retry, repair, engine run, hook invocation, or shell command was performed."}}
+{"type":"item.completed","item":{"id":"item_5","type":"agent_message","text":"Received Stop hook message: `[boxbox] Stop: FAIL.`  \nReceipt path: `/private/tmp/boxbox-native-hooks-20261021/codex-home/plugins/data/boxbox-boxbox-plugins/hooks/5fb646832fdbed35/8fb4a3969fc45829aa2c7c9c2a37ef8ccba6c8d4c7559bc433e87a708c5d9ee1/1792558332571-25ff42db-d88d-445f-9c3d-9bcb837d74c8.json`"}}
+{"type":"turn.completed","usage":{"input_tokens":47612,"cached_input_tokens":41216,"cache_write_input_tokens":0,"output_tokens":504,"reasoning_output_tokens":105}}

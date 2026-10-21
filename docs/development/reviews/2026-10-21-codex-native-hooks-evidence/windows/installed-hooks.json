@@ -1,0 +1,42 @@
+{
+	"description": "boxbox: checks TypeScript and Python files changed during the session, read-only. Records stay in the plugin data folder; no files are created in the user's project.",
+	"hooks": {
+		"SessionStart": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "'C:\\Program Files\\nodejs\\node.exe' \"${PLUGIN_ROOT}/scripts/boxbox.mjs\" hook session",
+						"timeout": 120,
+						"commandWindows": "& 'C:\\Program Files\\nodejs\\node.exe' \"$env:PLUGIN_ROOT/scripts/boxbox.mjs\" hook session"
+					}
+				]
+			}
+		],
+		"PostToolUse": [
+			{
+				"matcher": "Write|Edit|MultiEdit|apply_patch",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "'C:\\Program Files\\nodejs\\node.exe' \"${PLUGIN_ROOT}/scripts/boxbox.mjs\" hook post",
+						"timeout": 120,
+						"commandWindows": "& 'C:\\Program Files\\nodejs\\node.exe' \"$env:PLUGIN_ROOT/scripts/boxbox.mjs\" hook post"
+					}
+				]
+			}
+		],
+		"Stop": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "'C:\\Program Files\\nodejs\\node.exe' \"${PLUGIN_ROOT}/scripts/boxbox.mjs\" hook stop",
+						"timeout": 120,
+						"commandWindows": "& 'C:\\Program Files\\nodejs\\node.exe' \"$env:PLUGIN_ROOT/scripts/boxbox.mjs\" hook stop"
+					}
+				]
+			}
+		]
+	}
+}

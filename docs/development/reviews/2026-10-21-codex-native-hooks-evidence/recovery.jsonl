@@ -1,0 +1,8 @@
+{"type":"thread.started","thread_id":"01a15ccd-fea2-73f0-8749-cfc4922e078b"}
+{"type":"item.completed","item":{"id":"item_0","type":"error","message":"`--dangerously-bypass-hook-trust` is enabled. Enabled hooks may run without review for this invocation."}}
+{"type":"item.completed","item":{"id":"item_1","type":"error","message":"`--dangerously-bypass-hook-trust` is enabled. Enabled hooks may run without review for this invocation."}}
+{"type":"turn.started"}
+{"type":"item.started","item":{"id":"item_2","type":"file_change","changes":[{"path":"/private/tmp/boxbox-native-hooks-20261021/project/sample.py","kind":"update"}],"status":"in_progress"}}
+{"type":"item.completed","item":{"id":"item_2","type":"file_change","changes":[{"path":"/private/tmp/boxbox-native-hooks-20261021/project/sample.py","kind":"update"}],"status":"completed"}}
+{"type":"item.completed","item":{"id":"item_3","type":"agent_message","text":"Hook feedback: `PostToolUse: PASS.`\n\nReceipt path: `/private/tmp/boxbox-native-hooks-20261021/codex-home/plugins/data/boxbox-boxbox-plugins/hooks/5fb646832fdbed35/6addb1aa0fee98d6ab9606fe2bb055d5ed44fae899db409d4e586af79f3aef27/1792558374487-3cc94a90-5427-486e-ba38-3fea175b2cc8.json`"}}
+{"type":"turn.completed","usage":{"input_tokens":36609,"cached_input_tokens":28160,"cache_write_input_tokens":0,"output_tokens":238,"reasoning_output_tokens":38}}
