@@ -1,0 +1,41 @@
+{
+  "version": "0.2.1",
+  "npmName": "boxbox-plugin",
+  "artifact": "boxbox-plugin-0.2.1.tgz",
+  "bytes": 126110,
+  "sha256": "6fc35d7c92f6eeb1b442d6d21901ed6f27c06e9654f412750b4530b638b89b8f",
+  "deliveredAt": "2026-10-21T09:45:15.486609+09:00",
+  "windowsDirectory": "C:\\Users\\woo\\Downloads\\BoxBox\\0.2.1\\20261021T094515-KST",
+  "sourceBaseCommit": "34581a76384e91317b3563e475f564a3fb55778c",
+  "sourceWorktreeDirty": true,
+  "published": false,
+  "nativeHookVerified": false,
+  "automaticMarketplaceMigration": false,
+  "explicit020To021MigrationVerified": true,
+  "fullCheck": {
+    "pass": 482,
+    "skip": 5,
+    "fail": 0,
+    "typecheck": true,
+    "shellSyntax": true
+  },
+  "reviewModels": {
+    "sonnet": "claude-sonnet-5-5",
+    "opus": [
+      "claude-opus-5-5"
+    ]
+  },
+  "nativeWindows": {
+    "node": "24.12.0",
+    "python": "3.14.0",
+    "typescript": "7.0.2",
+    "codex": "0.157.1",
+    "emptyNpmCache": true,
+    "typescriptFormat": true,
+    "pythonFormat": true,
+    "formatterTimeoutTreeCleanup": true
+  },
+  "installerFiles": 32,
+  "nestedEngineFiles": 8,
+  "exampleLicense": "CC0-1.0 for four synthetic examples only"
+}

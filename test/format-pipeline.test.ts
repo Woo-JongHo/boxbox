@@ -92,6 +92,27 @@ for (const scenario of [
 	expect(leftovers(root)                    ).toEqual([]   ) ;
 }, 60_000);
 
+for (const scenario of [
+	{ language: "typescript" as const, file: "sample.ts", key: TS_KEY, source: "const a=fn(1);\nconst longer=fn(22);\nconst mid=fn(333);\n" },
+	{ language: "python" as const, file: "sample.py", key: PY_KEY, source: "a=1\nlonger=22\nmid=333\n" },
+]) test(`standalone ${scenario.language} alignment previews and writes with the same approval and fixed-point safeguards`, async () => {
+	const root   = workspace()                      ;
+	const target = join(root, "src", scenario.file) ;
+	writeFileSync(target, scenario.source);
+	const options = { root, file: `src/${scenario.file}`, language: scenario.language, registry: registry(root, scenario.language, scenario.key), resolveDocument: documentResolver(root) } ;
+	const preview = await runFormatPipeline({ ...options, dryRun: true })                                                                                                                   ;
+	expect(preview).toMatchObject({ formatMode: "standalone", formatterExecuted: false, formatter: null, formatterChanged: false, boxboxChanged: true, written: false, safety: { executableStable: null } });
+	expect(readFileSync(target, "utf8")).toBe(scenario.source);
+	const first  = await runFormatPipeline(options) ;
+	const output = readFileSync(target)             ;
+	expect(first.written                             ).toBe(true ) ;
+	expect((await runFormatPipeline(options)).written).toBe(false) ;
+	expect(readFileSync(target).equals(output)       ).toBe(true ) ;
+	await expect(runFormatPipeline({ ...options, registry: { ...options.registry, conventions: [] } })).rejects.toThrow("approval denied");
+	expect(readFileSync(target).equals(output)).toBe(true);
+	expect(leftovers(root)).toEqual([]);
+}, 60_000);
+
 test("the TypeScript pipeline writes the same result even with a symlink in the root path", async () => {
 	const root   = workspace()                                                                        ;
 	const linked = join(import.meta.dir, `boxbox-format-link-${Math.random().toString(16).slice(2)}`) ;
@@ -123,11 +144,11 @@ describe("format pipeline fails closed", () => {
 		const { target, options } = pythonCase(root, body);
 		const before = readFileSync(target)                                  ;
 		const result = await runFormatPipeline({ ...options, dryRun: true }) ;
-		expect(result.written                            ).toBe(false    ) ;
-		expect(result.formatterChanged                   ).toBe(true     ) ;
-		expect(result.formatter.truncated                ).toBe(true     ) ;
-		expect(Buffer.byteLength(result.formatter.stdout)).toBe(64 * 1024) ;
-		expect(readFileSync(target).equals(before)       ).toBe(true     ) ;
+		expect(result.written                             ).toBe(false    ) ;
+		expect(result.formatterChanged                    ).toBe(true     ) ;
+		expect(result.formatter!.truncated                ).toBe(true     ) ;
+		expect(Buffer.byteLength(result.formatter!.stdout)).toBe(64 * 1024) ;
+		expect(readFileSync(target).equals(before)        ).toBe(true     ) ;
 	});
 
 	for (const [name, body, expected] of [

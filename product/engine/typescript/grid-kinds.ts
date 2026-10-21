@@ -32,6 +32,7 @@ import      {
               isTypeLiteralNode              ,
               isVariableStatement            ,
               SyntaxKind                     ,
+              NodeFlags                      ,
                                                } from "typescript/unstable/ast"         ;
 import type {
               ObjectLiteralExpression        ,
@@ -609,6 +610,18 @@ function detectRegistrationRow(source: SourceFile, node: Node): readonly RowBoun
 	return boundaries;
 }
 
+/** Keep resource declarations and awaited/constructor initializers outside direct-call approval keys. */
+function declarationGroupName(run: readonly DetectedRow[]): string {
+	if (!run.some(row => row.boundaries.some(boundary => boundary.axis === "equals"))) return "declaration";
+	const extended = run.some(row => {
+		if (!isVariableStatement(row.node)) return false;
+		const declaration = row.node.declarationList                 ;
+		const initializer = declaration.declarations[0]?.initializer ;
+		return (declaration.flags & NodeFlags.Using) !== 0 || (initializer !== undefined && (isAwaitExpression(initializer) || isNewExpression(initializer)));
+	});
+	return extended ? "declaration-extended-equals" : "declaration-equals";
+}
+
 /**
  * Kind priority. Ordered so node syntaxes never overlap and no node is claimed by two kinds; when object-rows
  * claims array-element objects first, registration backs off via seen.
@@ -619,7 +632,7 @@ export const ROW_KINDS: readonly RowKind[] = [
 		gap        : "blank",
 		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
 		detect     : detectDeclaration,
-		groupName  : run => run.some(row => row.boundaries.some(boundary => boundary.axis === "equals")) ? "declaration-equals" : "declaration",
+		groupName  : declarationGroupName,
 		minRows    : run => run.every(row => row.boundaries.some(boundary => boundary.axis === "equals")) ? 2 : undefined,
 		layerCall  : node => kindLayerCall("declaration", node),
 	},
@@ -758,27 +771,30 @@ export function syntaxKindName(node: Node): string {
 	return SyntaxKind[node.kind] ?? `Kind${String(node.kind)}`;
 }
 
+const DECLARATION_EQUALS_AXES = { gap: ["colon", "equals", "call-arg{i}", "list-value-comma{i}", "list-value-el{i}", "list-arg{i}-comma{i}", "list-arg{i}-el{i}", "semicolon"], insert: ["call-open-paren", "call-comma{i}", "call-close-paren", "list-value-open", "list-value-close", "list-arg{i}-open", "list-arg{i}-close", "subscript-close", "comment"] };
+
 /**
  * Axis contract per kind — the single basis shared by authoring time (prompts, doc examples) and check time
  * (06_align-tables). gap axes keep at least one space; insert axes preserve existing conventions (`):`, `":`,
  * `//`) and only align the column. `{i}` marks per-property-position axes of object rows.
  */
 export const KIND_AXES: Readonly<Record<string, { readonly gap: readonly string[]; readonly insert: readonly string[] }>> = {
-	"declaration"        : { gap: ["colon", "semicolon"], insert: ["comment"] },
-	"declaration-equals" : { gap: ["colon", "equals", "call-arg{i}", "list-value-comma{i}", "list-value-el{i}", "list-arg{i}-comma{i}", "list-arg{i}-el{i}", "semicolon"], insert: ["call-open-paren", "call-comma{i}", "call-close-paren", "list-value-open", "list-value-close", "list-arg{i}-open", "list-arg{i}-close", "subscript-close", "comment"] },
-	"guard-statements"   : { gap: [], insert: ["guard-close-paren", "guard-semi1", "guard-continue"] },
-	"type-alias"         : { gap: ["equals", "semicolon"], insert: ["comment"] },
-	"method-signature"   : { gap: [], insert: ["open-paren", "close-paren", "colon", "comment"] },
-	"class-method"       : { gap: [], insert: ["open-paren", "close-paren", "colon", "comment"] },
-	"interface-members"  : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
-	"type-members"       : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
-	"class-members"      : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
-	"enum-member"        : { gap: ["equals", "comma"], insert: ["comment"] },
-	"case-clause"        : { gap: [], insert: ["case-colon", "call-paren", "return-tail"] },
-	"assignments"        : { gap: ["equals", "semicolon"], insert: ["comment"] },
-	"call-statements"    : { gap: ["call-arg{i}", "list-arg{i}-comma{i}", "list-arg{i}-el{i}", "list-matcher-arg{i}-comma{i}", "list-matcher-arg{i}-el{i}", "semicolon"], insert: ["call-open-paren", "call-comma{i}", "call-close-paren", "list-arg{i}-open", "list-arg{i}-close", "list-matcher-arg{i}-open", "list-matcher-arg{i}-close", "subject-close-paren", "matcher-dot", "matcher-open-paren", "matcher-close-paren", "comment"] },
-	"object-rows"        : { gap: ["property{i}", "colon{i}", "value{i}", "comma{i}", "close-brace"], insert: ["open-brace", "tail"] },
-	"registration"       : { gap: ["colon", "value"], insert: [] },
+	"declaration"                 : { gap: ["colon", "semicolon"], insert: ["comment"] },
+	"declaration-equals"          : DECLARATION_EQUALS_AXES,
+	"declaration-extended-equals" : DECLARATION_EQUALS_AXES,
+	"guard-statements"            : { gap: [], insert: ["guard-close-paren", "guard-semi1", "guard-continue"] },
+	"type-alias"                  : { gap: ["equals", "semicolon"], insert: ["comment"] },
+	"method-signature"            : { gap: [], insert: ["open-paren", "close-paren", "colon", "comment"] },
+	"class-method"                : { gap: [], insert: ["open-paren", "close-paren", "colon", "comment"] },
+	"interface-members"           : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
+	"type-members"                : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
+	"class-members"               : { gap: ["colon", "equals", "semicolon"], insert: ["comment"] },
+	"enum-member"                 : { gap: ["equals", "comma"], insert: ["comment"] },
+	"case-clause"                 : { gap: [], insert: ["case-colon", "call-paren", "return-tail"] },
+	"assignments"                 : { gap: ["equals", "semicolon"], insert: ["comment"] },
+	"call-statements"             : { gap: ["call-arg{i}", "list-arg{i}-comma{i}", "list-arg{i}-el{i}", "list-matcher-arg{i}-comma{i}", "list-matcher-arg{i}-el{i}", "semicolon"], insert: ["call-open-paren", "call-comma{i}", "call-close-paren", "list-arg{i}-open", "list-arg{i}-close", "list-matcher-arg{i}-open", "list-matcher-arg{i}-close", "subject-close-paren", "matcher-dot", "matcher-open-paren", "matcher-close-paren", "comment"] },
+	"object-rows"                 : { gap: ["property{i}", "colon{i}", "value{i}", "comma{i}", "close-brace"], insert: ["open-brace", "tail"] },
+	"registration"                : { gap: ["colon", "value"], insert: [] },
 };
 
 export interface DetectedRow {

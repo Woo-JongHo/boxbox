@@ -1,52 +1,37 @@
-import      { createHash                              } from "node:crypto"                       ;
-import      {
-              constants                             ,
-              readFileSync                          ,
-              realpathSync                          ,
-              statSync                              ,
-              writeFileSync                         ,
-                                                      } from "node:fs"                           ;
-import      { delimiter                               } from "node:path"                         ;
-import      { isAbsolute, relative, resolve           } from "node:path"                         ;
-import      { spawn                                   } from "node:child_process"                ;
+import      { readFileSync, realpathSync, writeFileSync       } from "node:fs"                           ;
+import      { isAbsolute, relative, resolve                   } from "node:path"                         ;
+import      { resolveFormatterExecutable, runFormatterProcess } from "./formatter-process.ts"            ;
+import type { PipelineProcessResult                           } from "./formatter-process.ts"            ;
 
-import      { evaluateApproval                        } from "./approval-gate.ts"                ;
-import type { ApprovalRegistry, DocumentResolver      } from "./approval-gate.ts"                ;
-import type { FormatterConfig, PublicLanguage         } from "./project-config.ts"               ;
-import type { FileResult, ResultEnvelope, ResultGroup } from "./result-json.ts"                  ;
-import      { compareParse                            } from "./parse-check.ts"                  ;
-import      { updateFileAtomically                    } from "./safe-file.ts"                    ;
-import      { lookupKeyOf                             } from "./signature.ts"                    ;
-import      { runTypeScriptAlign                      } from "../typescript/align.ts"            ;
-import      { syntacticDiagnostics                    } from "../typescript/load-source-file.ts" ;
-import      { PYTHON_ALIGNER                          } from "../python/profile.ts"              ;
-import      { runAlignCli                             } from "./align-cli.ts"                    ;
+import      { evaluateApproval                                } from "./approval-gate.ts"                ;
+import type { ApprovalRegistry, DocumentResolver              } from "./approval-gate.ts"                ;
+import type { FormatterConfig, PublicLanguage                 } from "./project-config.ts"               ;
+import type { FileResult, ResultEnvelope, ResultGroup         } from "./result-json.ts"                  ;
+import      { compareParse                                    } from "./parse-check.ts"                  ;
+import      { updateFileAtomically                            } from "./safe-file.ts"                    ;
+import      { lookupKeyOf                                     } from "./signature.ts"                    ;
+import      { runTypeScriptAlign                              } from "../typescript/align.ts"            ;
+import      { syntacticDiagnostics                            } from "../typescript/load-source-file.ts" ;
+import      { PYTHON_ALIGNER                                  } from "../python/profile.ts"              ;
+import      { runAlignCli                                     } from "./align-cli.ts"                    ;
 
-const OUTPUT_LIMIT = 64 * 1024;
-
-export interface PipelineProcessResult {
-	readonly exitCode : number | null ;
-	readonly signal   : string | null ;
-	readonly timedOut : boolean       ;
-	/** Bounded output kept for the diagnostic report. Truncation itself is not a formatter failure. */
-	readonly stdout    : string  ;
-	readonly stderr    : string  ;
-	readonly truncated : boolean ;
-}
+export type { PipelineProcessResult } from "./formatter-process.ts";
 
 export interface FormatPipelineResult {
-	readonly file             : string                ;
-	readonly formatterChanged : boolean               ;
-	readonly boxboxChanged    : boolean               ;
-	readonly fixedPoint       : true                  ;
-	readonly written          : boolean               ;
-	readonly formatter        : PipelineProcessResult ;
-	readonly approvals        : readonly string[]     ;
+	readonly file              : string                       ;
+	readonly formatterChanged  : boolean                      ;
+	readonly boxboxChanged     : boolean                      ;
+	readonly fixedPoint        : true                         ;
+	readonly written           : boolean                      ;
+	readonly formatter         : PipelineProcessResult | null ;
+	readonly formatterExecuted : boolean                      ;
+	readonly formatMode        : "standalone" | "formatter"   ;
+	readonly approvals         : readonly string[]            ;
 	readonly safety           : {
-		readonly atomic           : true ;
-		readonly approvalChecked  : true ;
-		readonly parserChecked    : true ;
-		readonly executableStable : true ;
+		readonly atomic           : true        ;
+		readonly approvalChecked  : true        ;
+		readonly parserChecked    : true        ;
+		readonly executableStable : true | null ;
 	};
 }
 
@@ -54,7 +39,7 @@ export interface FormatPipelineOptions {
 	readonly root            : string           ;
 	readonly file            : string           ;
 	readonly language        : PublicLanguage   ;
-	readonly formatter       : FormatterConfig  ;
+	readonly formatter?      : FormatterConfig  ;
 	readonly registry        : ApprovalRegistry ;
 	readonly resolveDocument : DocumentResolver ;
 	/** Runs the same working-copy verification but restores the working copy before replacing the original. */
@@ -62,11 +47,6 @@ export interface FormatPipelineOptions {
 	/** Fingerprint built by rereading the config and approval files. If it differs between start and just before commit, nothing is written. */
 	readonly provenance?       : () => string       ;
 	readonly beforeCommit?     : () => void         ;
-}
-
-interface ExecutableIdentity {
-	readonly path: string;
-	readonly fingerprint: string;
 }
 
 function targetOf(root: string, file: string): { readonly absolute: string; readonly display: string } {
@@ -77,66 +57,6 @@ function targetOf(root: string, file: string): { readonly absolute: string; read
 	const physical = relative(absoluteRoot, realpathSync(absolute)).replaceAll("\\", "/");
 	if (physical === ".." || physical.startsWith("../") || isAbsolute(physical)) throw new Error(`file resolves outside project root: ${file}`);
 	return { absolute, display };
-}
-
-function executableOf(command: string, root: string): ExecutableIdentity {
-	const candidates = command.includes("/") || command.includes("\\")
-		? [resolve(root, command)]
-		: (process.env.PATH ?? "").split(delimiter).filter(Boolean).map(directory => resolve(directory, command));
-	for (const candidate of candidates) {
-		try {
-			const physical = realpathSync(candidate) ;
-			const status   = statSync(physical)      ;
-			if (!status.isFile() || (status.mode & constants.S_IXUSR) === 0) continue;
-			const fingerprint = createHash("sha256").update(JSON.stringify([physical, status.dev, status.ino, status.mode, status.size, status.mtimeMs, status.ctimeMs])).digest("hex");
-			return { path: physical, fingerprint };
-		} catch { /* Check the next PATH candidate. */ }
-	}
-	throw new Error(`formatter executable not found: ${command}`);
-}
-
-function appendBounded(current: Buffer[], size: number, chunk: Buffer): { readonly size: number; readonly truncated: boolean } {
-	const remaining = Math.max(0, OUTPUT_LIMIT - size);
-	if (remaining > 0) current.push(chunk.subarray(0, remaining));
-	return { size: size + Math.min(chunk.length, remaining), truncated: chunk.length > remaining };
-}
-
-async function runFormatter(executable: string, config: FormatterConfig, file: string, root: string): Promise<PipelineProcessResult> {
-	if (process.platform === "win32") throw new Error("formatter process-group termination is not supported on Windows");
-	const args = config.args.map(argument => argument === "{file}" ? file : argument);
-	return new Promise((accept, reject) => {
-		const child             = spawn(executable, args, { cwd: root, detached: true, shell: false, stdio: ["ignore", "pipe", "pipe"] }) ;
-		const stdout : Buffer[] = []                                                                                                      ;
-		const stderr : Buffer[] = []                                                                                                      ;
-		let stdoutSize          = 0                                                                                                       ;
-		let stderrSize          = 0                                                                                                       ;
-		let truncated           = false                                                                                                   ;
-		let timedOut            = false                                                                                                   ;
-		const terminate = (signal: NodeJS.Signals): void => {
-			if (child.pid === undefined) return;
-			try { process.kill(-child.pid, signal); } catch { /* The process has already exited. */ }
-		};
-		const timeout = setTimeout(() => {
-			timedOut = true;
-			terminate("SIGTERM");
-			setTimeout(() => terminate("SIGKILL"), 250).unref();
-		}, config.timeoutMs);
-		child.stdout.on("data", (value: Buffer) => {
-			const next = appendBounded(stdout, stdoutSize, value);
-			stdoutSize = next.size;
-			truncated ||= next.truncated;
-		});
-		child.stderr.on("data", (value: Buffer) => {
-			const next = appendBounded(stderr, stderrSize, value);
-			stderrSize = next.size;
-			truncated ||= next.truncated;
-		});
-		child.once("error", error => { clearTimeout(timeout); reject(error); });
-		child.once("close", (exitCode, signal) => {
-			clearTimeout(timeout);
-			accept({ exitCode, signal, timedOut, stdout: Buffer.concat(stdout).toString("utf8"), stderr: Buffer.concat(stderr).toString("utf8"), truncated });
-		});
-	});
 }
 
 async function checkFile(root: string, file: string, language: PublicLanguage): Promise<FileResult> {
@@ -183,13 +103,16 @@ function approvedGroups(result: FileResult, registry: ApprovalRegistry, resolveD
 	return [...new Set(approvals.map(approval => approval.conventionId!))].sort();
 }
 
-async function cycle(options: FormatPipelineOptions, working: string, display: string): Promise<{ readonly formatter: PipelineProcessResult; readonly formatterChanged: boolean; readonly boxboxChanged: boolean; readonly approvals: readonly string[] }> {
-	const beforeFormatter = readFileSync(working)                                                         ;
-	const executable      = executableOf(options.formatter.command, options.root)                         ;
-	const formatter       = await runFormatter(executable.path, options.formatter, working, options.root) ;
-	if (formatter.timedOut) throw new Error(`formatter timed out after ${options.formatter.timeoutMs}ms`);
-	if (formatter.exitCode !== 0) throw new Error(`formatter failed with exit code ${String(formatter.exitCode)}${formatter.signal ? ` signal ${formatter.signal}` : ""}`);
-	if (executableOf(options.formatter.command, options.root).fingerprint !== executable.fingerprint) throw new Error("formatter executable changed during operation");
+async function cycle(options: FormatPipelineOptions, working: string, display: string): Promise<{ readonly formatter: PipelineProcessResult | null; readonly formatterChanged: boolean; readonly boxboxChanged: boolean; readonly approvals: readonly string[] }> {
+	const beforeFormatter                       = readFileSync(working) ;
+	let formatter: PipelineProcessResult | null = null                  ;
+	if (options.formatter) {
+		const executable = resolveFormatterExecutable(options.formatter.command, options.root);
+		formatter = await runFormatterProcess(executable.path, options.formatter, working, options.root);
+		if (formatter.timedOut) throw new Error(`formatter timed out after ${options.formatter.timeoutMs}ms`);
+		if (formatter.exitCode !== 0) throw new Error(`formatter failed with exit code ${String(formatter.exitCode)}${formatter.signal ? ` signal ${formatter.signal}` : ""}`);
+		if (resolveFormatterExecutable(options.formatter.command, options.root).fingerprint !== executable.fingerprint) throw new Error("formatter executable changed during operation");
+	}
 	const afterFormatter = readFileSync(working);
 	await assertParses(options.root, working, options.language);
 	const checked   = await checkFile(options.root, working, options.language)                    ;
@@ -203,12 +126,12 @@ async function cycle(options: FormatPipelineOptions, working: string, display: s
 	};
 }
 
-/** Applies the formatter and BoxBox twice to the working copy to prove a fixed point, then replaces the original exactly once. */
+/** Applies the optional formatter and BoxBox twice to the working copy to prove a fixed point, then replaces the original exactly once. */
 export async function runFormatPipeline(given: FormatPipelineOptions): Promise<FormatPipelineResult> {
 	// The working-copy path resolves to its real path, so resolve the root once too and use the same base in every step.
 	const options = { ...given, root: realpathSync(resolve(given.root)) };
-	if (options.formatter.args.filter(argument => argument === "{file}").length !== 1) throw new Error("formatter args must contain exactly one {file}");
-	if (!Number.isInteger(options.formatter.timeoutMs) || options.formatter.timeoutMs < 1 || options.formatter.timeoutMs > 60_000) throw new Error("formatter timeoutMs must be an integer from 1 to 60000");
+	if (options.formatter && options.formatter.args.filter(argument => argument === "{file}").length !== 1) throw new Error("formatter args must contain exactly one {file}");
+	if (options.formatter && (!Number.isInteger(options.formatter.timeoutMs) || options.formatter.timeoutMs < 1 || options.formatter.timeoutMs > 60_000)) throw new Error("formatter timeoutMs must be an integer from 1 to 60000");
 	const { absolute, display } = targetOf(options.root, options.file);
 	const initialProvenance     = options.provenance?.();
 	let first!: Awaited<ReturnType<typeof cycle>>;
@@ -231,8 +154,10 @@ export async function runFormatPipeline(given: FormatPipelineOptions): Promise<F
 		boxboxChanged    : first.boxboxChanged,
 		fixedPoint       : true,
 		written,
-		formatter : first.formatter,
-		approvals : first.approvals,
-		safety    : { atomic: true, approvalChecked: true, parserChecked: true, executableStable: true },
+		formatter         : first.formatter,
+		formatterExecuted : first.formatter !== null,
+		formatMode        : options.formatter ? "formatter" : "standalone",
+		approvals         : first.approvals,
+		safety            : { atomic: true, approvalChecked: true, parserChecked: true, executableStable: options.formatter ? true : null },
 	};
 }

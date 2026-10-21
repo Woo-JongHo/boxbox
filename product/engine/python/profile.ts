@@ -148,7 +148,7 @@ function cellsIn(code: string, masked: string, start: number, end: number): Arra
  */
 function assignedCallProfile(code: string, masked: string): RowProfile | null {
 	const match   = /^([ \t]*)([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)(\s*)=(\s*)([A-Za-z_][A-Za-z0-9_.]*)(\s*)\((.*)\)[ \t]*$/du.exec(masked) ;
-	const indices = match?.indices                                                                                             ;
+	const indices = match?.indices                                                                                                                          ;
 	if (!match || !indices) return null;
 	const nameRange = indices[2] ;
 	const inner     = indices[7] ;
@@ -254,12 +254,16 @@ function profilePython(code: string, masked: string): RowProfile | null {
 	const assigned = ASSIGNED.exec(masked);
 	if (assigned) {
 		if (slotAt(code, assigned, 6) !== "") return null;
-		const value = valueSlot(code, masked, assigned, 4, 5);
+		const value      = valueSlot(code, masked, assigned, 4, 5)                                ;
+		const name       = slotAt(code, assigned, 2)                                              ;
+		const valueRange = assigned.indices![5]!                                                  ;
+		const chained    = /(?<![=!<>:])=(?!=)/u.test(masked.slice(valueRange[0], valueRange[1])) ;
+		const targetAxis = name.includes(".") ? "attribute" : chained ? "chain-target" : "name"   ;
 		if (!value) return null;
 		return {
 			indent : slotAt(code, assigned, 1),
 			slots  : [
-				{ axis: "name",  text: slotAt(code, assigned, 2), gapBefore: "" },
+				{ axis: targetAxis, text: name, gapBefore: "" },
 				{ axis: "equal", text: "=", gapBefore: slotAt(code, assigned, 3) },
 				value,
 			],
@@ -273,10 +277,10 @@ export const PYTHON_ALIGNER: LineProfiler = {
 	language      : "python",
 	syntax        : PYTHON_SYNTAX,
 	// cell/arg axes of bundle rows are followed by a comma or the close slot, so aligning them never creates trailing whitespace.
-	columnAxes    : ["name", "key", "type", "value", "cell", "arg"],
+	columnAxes    : ["name", "attribute", "chain-target", "key", "type", "value", "cell", "arg"],
 	// Python convention: colon and comma attach to the cell; equal gets one space. Bundle rows attach the
 	// first cell to the opening bracket and attach close too, so the closing bracket shares the last cell's width.
 	// The call layer's wrapped bundle attaches its brackets to the call the same way.
-	canonicalGaps : { name: " ", key: " ", type: " ", value: " ", colon: "", equal: " ", comma: "", cell: "", arg: " ", "open[": "", "open(": "", "open{": "", "close]": "", "close)": "", "close}": "" },
+	canonicalGaps : { name: " ", attribute: " ", "chain-target": " ", key: " ", type: " ", value: " ", colon: "", equal: " ", comma: "", cell: "", arg: " ", "open[": "", "open(": "", "open{": "", "close]": "", "close)": "", "close}": "" },
 	profile       : profilePython,
 };

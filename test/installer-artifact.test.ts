@@ -110,7 +110,7 @@ test("Windows native host discovery, permanent paths and PowerShell quotes suppo
 	expect(platform.findCommand("npm", { ...options, exists: (path: string) => path.endsWith("npm.cmd") })).toBeUndefined();
 	for (const host of ["codex", "claude"]) {
 		const path = `C:\\Users\\A Person\\AppData\\Roaming\\npm\\${host}.exe`;
-		expect(platform.findCommand(host, { ...options, exists: (candidate: string) => candidate === path })).toEqual({ executable: path, args: [] });
+		expect(platform.findCommand(host, { ...options, exists: (candidate: string) => candidate === path, probe: () => ({ status: 0, stdout: "codex-cli 0.163.0\n" }) })).toEqual({ executable: path, args: [] });
 		expect(platform.installationRoot(VERSION, host, { windows: true, environment: { LOCALAPPDATA: "C:\\Users\\A Person\\AppData\\Local" } })).toBe(`C:\\Users\\A Person\\AppData\\Local\\BoxBox\\${host === "codex" ? "Codex" : "Claude"}\\${VERSION}`);
 	}
 	expect(() => platform.installationRoot(VERSION, "codex", { windows: true, environment: {} })                            ).toThrow("LOCALAPPDATA"                                        ) ;
@@ -192,7 +192,16 @@ test("npm installer name differs from private engine and both host payloads have
 	expectStatus(run("tar", ["-xzf", engine, "-C", nested]), 0);
 	const listing = run("tar", ["-tzf", engine]);
 	expectStatus(listing, 0);
-	for (const path of String(listing.stdout).trim().split("\n").filter(path => !path.endsWith("/"))) expect(readFileSync(join(nested, path), "utf8")).not.toContain(ROOT);
+	const nestedFiles = String(listing.stdout).trim().split("\n").filter(path => !path.endsWith("/"));
+	expect(nestedFiles.sort()).toEqual([
+		"package/README.md", "package/dist/cli.js", "package/package.json",
+		"package/rules/presets/recommended/conventions.jsonl",
+		"package/rules/presets/recommended/decisions.jsonl",
+		"package/rules/presets/recommended/docs/public/decisions/py-simple-assignments.md",
+		"package/rules/presets/recommended/docs/public/decisions/ts-sourcefile-call-declarations.md",
+		"package/rules/presets/recommended/examples.jsonl",
+	].sort());
+	for (const path of nestedFiles) expect(readFileSync(join(nested, path), "utf8")).not.toContain(ROOT);
 	expect(JSON.parse(readFileSync(join(nested, "package/package.json"), "utf8"))).toMatchObject({ name: "boxbox", private: true });
 });
 
@@ -265,11 +274,11 @@ test("real npx infers the boxbox bin from the public installer and installs both
 		const check = run(node, [launcher, "check", "--file", "sample.ts", "--json"], { cwd: targetProject, env });
 		expectStatus(check, 1);
 		expect(JSON.parse(String(check.stdout)).results[0].summary.misaligned).toBeGreaterThan(0);
-		const refused = run(node, [launcher, "format", "--file", "sample.ts", "--json"], { cwd: targetProject, env });
-		expectStatus(refused, 2);
-		expect(JSON.parse(String(refused.stdout)).error.code          ).toBe("FORMAT_NOT_ELIGIBLE") ;
-		expect(JSON.parse(String(hook("PostToolUse").stdout)).decision).toBe("block"              ) ;
-		expect(JSON.parse(String(hook("Stop").stdout)).decision       ).toBe("block"              ) ;
+		const preview = run(node, [launcher, "format", "--file", "sample.ts", "--dry-run", "--json"], { cwd: targetProject, env });
+		expectStatus(preview, 0);
+		expect(JSON.parse(String(preview.stdout))                     ).toMatchObject({ written: false, formatterExecuted: false, formatMode: "standalone" }) ;
+		expect(JSON.parse(String(hook("PostToolUse").stdout)).decision).toBe         ("block"                                                               ) ;
+		expect(JSON.parse(String(hook("Stop").stdout)).decision       ).toBe         ("block"                                                               ) ;
 		expect(JSON.parse(String(hook("Stop").stdout)).decision).toBeUndefined();
 		expect(readFileSync(target, "utf8")   ).toBe   (content      ) ;
 		expect(readdirSync(targetProject)     ).toEqual(["sample.ts"]) ;

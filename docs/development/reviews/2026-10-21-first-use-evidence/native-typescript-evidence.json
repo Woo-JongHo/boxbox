@@ -1,0 +1,69 @@
+{
+  "platform": "win32",
+  "node": "24.12.0",
+  "commands": [
+    {
+      "args": [
+        "check",
+        "--file",
+        "table.ts"
+      ],
+      "status": 1,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"results\":[{\"file\":\"table.ts\",\"language\":\"typescript\",\"mode\":\"check\",\"summary\":{\"groups\":1,\"misaligned\":1,\"edits\":7,\"refused\":0,\"suggested\":0},\"groups\":[{\"kind\":\"declaration-equals\",\"startLine\":1,\"endLine\":3,\"rows\":3,\"axes\":[\"equals=17\",\"call-open-paren=23\",\"call-close-paren=27\",\"semicolon=29\"],\"state\":\"FIXABLE\",\"edits\":7,\"context\":\"SourceFile\",\"depth\":0}],\"parse\":{\"status\":\"not-run\",\"tool\":\"typescript\"}}],\"formatReadiness\":{\"mode\":\"standalone\",\"approvalEligible\":true,\"verification\":\"not-run\",\"reasons\":[],\"next\":\"format --dry-run verifies parser, preservation and fixed point before writing\"}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "format",
+        "--file",
+        "table.ts",
+        "--dry-run"
+      ],
+      "status": 0,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"format\",\"ok\":true,\"dryRun\":true,\"formatEligible\":true,\"file\":\"table.ts\",\"formatterChanged\":false,\"boxboxChanged\":true,\"fixedPoint\":true,\"written\":false,\"formatter\":null,\"formatterExecuted\":false,\"formatMode\":\"standalone\",\"approvals\":[\"ts-sourcefile-call-declarations\"],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":null}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "format",
+        "--file",
+        "table.ts"
+      ],
+      "status": 0,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"format\",\"ok\":true,\"dryRun\":false,\"formatEligible\":true,\"file\":\"table.ts\",\"formatterChanged\":false,\"boxboxChanged\":true,\"fixedPoint\":true,\"written\":true,\"formatter\":null,\"formatterExecuted\":false,\"formatMode\":\"standalone\",\"approvals\":[\"ts-sourcefile-call-declarations\"],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":null}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "format",
+        "--file",
+        "table.ts"
+      ],
+      "status": 0,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"format\",\"ok\":true,\"dryRun\":false,\"formatEligible\":true,\"file\":\"table.ts\",\"formatterChanged\":false,\"boxboxChanged\":false,\"fixedPoint\":true,\"written\":false,\"formatter\":null,\"formatterExecuted\":false,\"formatMode\":\"standalone\",\"approvals\":[\"ts-sourcefile-call-declarations\"],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":null}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "check",
+        "--file",
+        "table.ts"
+      ],
+      "status": 0,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"results\":[{\"file\":\"table.ts\",\"language\":\"typescript\",\"mode\":\"check\",\"summary\":{\"groups\":1,\"misaligned\":0,\"edits\":0,\"refused\":0,\"suggested\":0},\"groups\":[{\"kind\":\"declaration-equals\",\"startLine\":1,\"endLine\":3,\"rows\":3,\"axes\":[\"equals=17\",\"call-open-paren=23\",\"call-close-paren=27\",\"semicolon=29\"],\"state\":\"PASS\",\"edits\":0,\"context\":\"SourceFile\",\"depth\":0}],\"parse\":{\"status\":\"not-run\",\"tool\":\"typescript\"}}],\"formatReadiness\":{\"mode\":\"standalone\",\"approvalEligible\":true,\"verification\":\"not-run\",\"reasons\":[],\"next\":\"format --dry-run verifies parser, preservation and fixed point before writing\"}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "format",
+        "--file",
+        "using.ts"
+      ],
+      "status": 2,
+      "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"format\",\"ok\":false,\"error\":{\"code\":\"FORMAT_NOT_ELIGIBLE\",\"message\":\"format refused: approval denied: no matching convention\"}}\n",
+      "stderr": ""
+    }
+  ],
+  "ok": true,
+  "nativeHookVerified": false
+}

@@ -5,6 +5,8 @@
 		{ "axesPrefix": ["name", "colon", "type", "equal"], "pattern": "DESCRIBE", "alternatives": ["DEFINE"], "note": "A field with a default in a class body, a definition inside a function. The line engine does not know the container (grammar decision rule 4)" },
 		{ "axesPrefix": ["name", "colon", "type"], "pattern": "DESCRIBE" },
 		{ "axesPrefix": ["key", "colon"], "pattern": "MAP" },
+		{ "axesPrefix": ["attribute", "equal"], "pattern": "CHANGE" },
+		{ "axesPrefix": ["chain-target", "equal"], "pattern": "DEFINE", "alternatives": ["CHANGE"], "note": "Possible chained or nested assignment requires its own approval" },
 		{ "axesPrefix": ["name", "equal"], "pattern": "DEFINE", "alternatives": ["CHANGE"], "note": "Declaration and assignment share syntax. Ambiguous before scope analysis (grammar decision rule 2)" },
 		{ "axesPrefix": ["open("], "pattern": "LIST" },
 		{ "axesPrefix": ["open["], "pattern": "LIST" },

@@ -1,6 +1,7 @@
-import      { existsSync   } from "node:fs"   ;
-import      { homedir      } from "node:os"   ;
-import      { posix, win32 } from "node:path" ;
+import      { spawnSync    } from "node:child_process" ;
+import      { existsSync   } from "node:fs"            ;
+import      { homedir      } from "node:os"            ;
+import      { posix, win32 } from "node:path"          ;
 
 export function supportedNode(version) {
 	const [major, minor, patch] = version.split(".").map(Number);
@@ -18,8 +19,22 @@ export function installationRoot(version, host, { windows = process.platform ===
 	return posix.join(data, "boxbox", host, version);
 }
 
-/** Resolve standard Windows npm shims to their JS entry, so no cmd.exe or PowerShell quoting is needed to spawn them. */
-export function findCommand(name, { windows = process.platform === "win32", node = process.execPath, path = process.env.PATH || "", exists = existsSync } = {}) {
+function identifiesCodex(executable, probe) {
+	try {
+		const result = probe(executable, ["--version"], {
+			encoding: "utf8", shell: false, windowsHide: true,
+			timeout: 3_000, maxBuffer: 4_096, killSignal: "SIGKILL", stdio: ["ignore", "pipe", "pipe"],
+		});
+
+		return result.status === 0 && !result.error && !result.signal
+			&& /^codex-cli \d+\.\d+\.\d+(?:-[0-9a-z.-]+)?(?:\+[0-9a-z.-]+)?$/iu.test(String(result.stdout ?? "").trim());
+	} catch {
+		return false;
+	}
+}
+
+/** Resolve standard Windows npm shims without a shell, and skip unrelated native programs named codex.exe. */
+export function findCommand(name, { windows = process.platform === "win32", node = process.execPath, path = process.env.PATH || "", exists = existsSync, probe = spawnSync } = {}) {
 	const paths = windows ? win32 : posix;
 	const directories = [...path.split(windows ? ";" : ":").filter(Boolean), paths.dirname(node)];
 	for (const directory of directories) {
@@ -33,7 +48,7 @@ export function findCommand(name, { windows = process.platform === "win32", node
 				if (exists(packaged)) return { executable: packaged, args: [] };
 			}
 			const native = paths.join(directory, `${name}.exe`);
-			if (name !== "npm" && exists(native)) return { executable: native, args: [] };
+			if (name !== "npm" && exists(native) && (name !== "codex" || identifiesCodex(native, probe))) return { executable: native, args: [] };
 		} else {
 			const executable = paths.join(directory, name);
 			if (exists(executable)) return { executable, args: [] };

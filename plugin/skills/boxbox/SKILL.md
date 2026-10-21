@@ -23,16 +23,19 @@ Every check and fix goes through the bundled launcher. Resolve `<PLUGIN_ROOT>` f
 ```
 
 - The first public stage accepts TypeScript and Python files **one at a time**. Fixing Python requires a runnable `python3`.
-- `format` writes only when an explicit formatter, human approval proof, re-parsing and a two-run fixed point all pass.
-  If any is missing it refuses; a refusal is a safety behavior, not a failure. Pass the refusal reason to the user as is.
+- `format` aligns approved tables directly without an external formatter. If one is configured for the language, it runs first.
+  `format --dry-run` also executes a configured formatter twice; inspect its command and arguments in the effective config
+  before running it. Use existing authorization; ask only when executing that command is outside the authorized work.
+  Human approval proof, re-parsing, preservation and a two-run fixed point must pass; report any refusal reason to the user.
 - Do not look for or run other alignment scripts or bypass options.
 
 ## Workflow
 
 1. Handle only the one file the user named. Wait for the user's feedback before moving to the next file.
-2. Read the groups (`groups`) and states (`PASS`, `FIXABLE`, `REFUSE`) from `check --json`. `REFUSE` means the structure
+2. Read `formatReadiness` (approval eligibility; write verification is still `not-run`), the groups (`groups`) and states (`PASS`, `FIXABLE`, `REFUSE`) from `check --json`. `REFUSE` means the structure
    cannot be split losslessly, so do not fix those rows.
-3. Check the approved rules with `guide --json`. If approved rules exist, apply them with `format --dry-run` → `format`.
+3. Check the approved rules with `guide --json`. For an explicit fix/format request, apply approved rules with
+   `format --dry-run` → `format`. For a check/review request, report the findings.
 4. If there are no approved rules, do not align by hand; report the candidate groups and the evidence to the user.
 5. After a fix, rerun `check --json` to confirm `misaligned=0`, and never claim a verification passed that you did not run.
 
@@ -48,4 +51,5 @@ Read the documents in this folder when a judgment is needed.
 ## Authoring hooks
 
 The plugin hooks check TypeScript and Python files changed during the session, read-only, and report the result. They never fix anything automatically.
-Records stay in the host's plugin data folder, and no files are created in the target project.
+The npm-installed launcher requires the host's plugin data folder and writes receipts there. Direct CLI hooks installed
+with `hooks install` can fall back to `.boxbox/hooks` when the host provides no data folder. Source files stay read-only.

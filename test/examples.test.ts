@@ -95,6 +95,12 @@ describe("picking GUIDE examples", () => {
 	});
 });
 
+test("approval section hashes are identical across LF and CRLF checkouts", () => {
+	const document = "# Rules\n\n## Approved\nAn exact rule.\n\n### Example\nExample text.\n\n## Other\nExcluded.\n";
+	expect(sectionHash(document.replaceAll("\n", "\r\n"), "Approved")).toBe(sectionHash(document, "Approved"));
+	expect(sectionHash(document.replace("An exact rule.", "A changed rule."), "Approved")).not.toBe(sectionHash(document, "Approved"));
+});
+
 describe("preset DB", () => {
 	test("every shipped example passes per its verdict, and each decision's document hash matches the current document", () => {
 		const { examples, decisions } = loadPreset();

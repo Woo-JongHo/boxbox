@@ -36,8 +36,21 @@ npx.cmd boxbox-plugin --codex --claude
 To test a local candidate before publication, use the absolute installer tarball path instead of the registry:
 
 ```powershell
-npm.cmd exec --yes --package 'C:\path\to\boxbox-plugin-0.2.0.tgz' -- boxbox
+npm.cmd exec --yes --package 'C:\path\to\boxbox-plugin-0.2.1.tgz' -- boxbox
 ```
+
+## Updating the local Codex candidate from 0.2.0
+
+Codex rejects the same marketplace name at a different versioned installation path. For this local candidate update,
+replace the old BoxBox marketplace registration once, then run the new installer:
+
+```powershell
+codex.cmd plugin marketplace remove boxbox-plugins
+npm.cmd exec --yes --package 'C:\path\to\boxbox-plugin-0.2.1.tgz' -- boxbox --codex
+```
+
+Use your installed OpenAI Codex CLI (`codex.cmd` is the standard Windows npm entry). This explicit 0.2.0 → 0.2.1
+procedure was verified with native Windows Codex 0.157.1. The installer does not migrate marketplace sources automatically.
 
 The payload is copied out of npm's temporary cache into permanent, separate host directories before registration:
 
@@ -63,7 +76,14 @@ arguments literally, so no shell switch is needed.
 The Claude plugin also includes the canonical read-only inspector; the Codex plugin does not include an agent.
 Native Windows execution must still be verified on the destination computer.
 
-The public preset is empty. Formatting refuses without an explicit formatter and valid human approval evidence.
+The recommended preset includes approved TypeScript top-level single-call variable declarations (2+ rows) and Python
+simple name assignments (3+ rows at one indentation). No custom formatter or approval DB is required for those exact
+patterns. Other patterns remain read-only until approved. Use `check --json`, `guide --json`, then `format --dry-run`
+before an explicit `format` request. Hooks remain read-only.
+
+External formatters are optional. On Windows use a native executable or a Node JS entry point (`node.exe` plus script
+and `{file}` arguments). Arbitrary `.cmd`/`.bat` formatters are refused with configuration guidance; BoxBox never
+interpolates formatter arguments into a shell. A configured formatter failure never falls back silently to standalone mode.
 `boxbox --help` prints usage without installing. `boxbox --engine-only` is for diagnosis: it prepares only the Codex
 permanent local engine and skips all host checks and registration. It cannot be combined with host selection flags.
 
