@@ -81,13 +81,13 @@ Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked/on hold`
 
 ## Current implementation — DELIVERY1 GitHub candidates and Codex status
 
-**▶ active — local implementation/checks and final Opus follow-up verified; user-selected GitHub PR integration underway (2026-10-21).**
+**▶ active — implementation, independent audits and operational candidate verification complete; ready for user review before the next task (2026-10-21).**
 
-- **Scope:** issue/PR templates, shared CI verification, one built installer archived with source identity and SHA-256, same-archive smoke journeys on Linux/macOS/Windows, and an on-request development HUD in Codex.
-- **Local acceptance:** install the tested 0.2.1 candidate into the actual local Codex, verify its enabled listing and installed-engine doctor/check, and report status from that installed engine. The HUD is a project skill and development tool outside release artifacts; native hook trust and host-output acceptance remain distinct.
-- **Pipeline acceptance:** focused tool tests, actual candidate build and installed-archive journey, workflow validation, full repository checks, independent Sonnet 5 review and final Opus audit. Remote Actions results require a GitHub push and actual runs; local configuration is not evidence of those results.
-- **Local result:** final full check 490 pass / 5 existing parser skips / 0 fail; TypeScript/shell, focused tests, actionlint and plugin guard pass. Same-archive macOS/native Windows smoke and a fresh Codex HUD session passed. Linux WSL smoke passed. The user-selected preserving integration is pushed as PR #2; its first real Actions run failed. Version 0.2.2 fixes Rust parser handling and redundant optional fixture traversal; hosted re-verification remains pending. Final Opus follow-up closed F1/F2/F3. See [evidence and remaining boundaries](reviews/2026-10-21-delivery-hud.md).
-- **Boundary:** no registry publication, tag, issue automation agent, or release publication. GitHub `Woo-JongHo/rowgrid` is private; the existing `origin` remains self-hosted SSH, so an origin push alone cannot activate GitHub workflows.
+- **Scope:** issue/PR templates, shared CI verification, one installer archived with source identity and SHA-256, same-archive Linux/macOS/Windows smoke journeys, and an on-request Codex development HUD.
+- **GitHub result:** PR #2 preserves main history and merged the current layout as `6e74c9327c44b4121a7ec4803d3acad66ee0f071`. Final PR run39543306308 passed 496 tests with zero skips/failures on Ubuntu and macOS; types and shell passed. The first failed run exposed Rustfmt diff recognition and redundant optional fixture traversal; 0.2.2 fixes both with regression coverage.
+- **Candidate result:** manual run39543872402 passed all six jobs. The same 126691-byte `boxbox-plugin-0.2.2.tgz`, SHA-256 `611858a6b7f72e1a27aaddf9593d5a1404a0baf7c705bb2ec21ea2f2bbec7137`, passed installed TypeScript/Python LF/CRLF preview/apply/recheck/idempotence on all three hosted OSes.
+- **Local result:** actual Codex reports the exact downloaded 0.2.2 plugin installed/enabled. Its installed-engine doctor and read-only check passed; the unchanged HUD reads that runtime. A fresh session already accepted the project status skill. Sonnet 5.5 findings were resolved and final Opus 5.5 passed; plugin guard and actionlint passed.
+- **Boundary:** the private GitHub plan returns HTTP 403 for required-check protection; PR checks run without server-enforced merge gating. Native host event acceptance and registry publication remain separate. The HUD/project skill is excluded from release artifacts. See [the delivery record and original receipts](reviews/2026-10-21-github-delivery.md).
 
 ## Current implementation — FIRSTUSE1 clean-install formatting
 

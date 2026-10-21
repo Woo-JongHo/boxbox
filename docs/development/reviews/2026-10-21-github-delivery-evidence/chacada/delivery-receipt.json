@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "failure": null,
+  "archiveSha256": "611858a6b7f72e1a27aaddf9593d5a1404a0baf7c705bb2ec21ea2f2bbec7137",
+  "archiveBytes": 126691,
+  "destinationWindows": "C:\\Users\\woo\\Downloads\\BoxBox\\0.2.2\\gha-20261021T043246Z",
+  "destinationWSL": "/mnt/c/Users/woo/Downloads/BoxBox/0.2.2/gha-20261021T043246Z",
+  "source": "/Users/jonghoPro/woo/00_project/98_BoxBox/dist/candidates/gha-39543872402",
+  "ghaRun": "https://github.com/Woo-JongHo/rowgrid/actions/runs/39543872402",
+  "sourceCommit": "6e74c9327c44b4121a7ec4803d3acad66ee0f071",
+  "sourceDirty": false,
+  "remoteVerifiedBy": "Native Windows PowerShell Get-FileHash",
+  "inputFiles": {
+    "boxbox-plugin-0.2.2.tgz": {
+      "sha256": "611858a6b7f72e1a27aaddf9593d5a1404a0baf7c705bb2ec21ea2f2bbec7137",
+      "bytes": 126691
+    },
+    "candidate.json": {
+      "sha256": "0ff004b7eea55b276fd93110b40c79b83ad2074e677ca00b189755ff868e02e4",
+      "bytes": 849
+    },
+    "SHA256SUMS": {
+      "sha256": "391baf9b676a79a5d04542a0c8a428237eab0adb2f985f02603209c913e8237b",
+      "bytes": 90
+    },
+    "README.md": {
+      "sha256": "65bebc9ecaca6f7920ef272507c3c53fec75bb87f9c9d4d705cb6130e39825d9",
+      "bytes": 993
+    }
+  },
+  "remoteFiles": [
+    {
+      "filename": "boxbox-plugin-0.2.2.tgz",
+      "bytes": 126691,
+      "sha256": "611858a6b7f72e1a27aaddf9593d5a1404a0baf7c705bb2ec21ea2f2bbec7137"
+    },
+    {
+      "filename": "candidate.json",
+      "bytes": 849,
+      "sha256": "0ff004b7eea55b276fd93110b40c79b83ad2074e677ca00b189755ff868e02e4"
+    },
+    {
+      "filename": "SHA256SUMS",
+      "bytes": 90,
+      "sha256": "391baf9b676a79a5d04542a0c8a428237eab0adb2f985f02603209c913e8237b"
+    },
+    {
+      "filename": "README.md",
+      "bytes": 993,
+      "sha256": "65bebc9ecaca6f7920ef272507c3c53fec75bb87f9c9d4d705cb6130e39825d9"
+    }
+  ],
+  "createdExclusively": true,
+  "existingFoldersBefore": [
+    "0.2.0",
+    "0.2.1",
+    "ci-smoke-20261021T031802Z",
+    "first-use-final-20261021",
+    "first-use-fixed-20261021",
+    "first-use-verification-20261021"
+  ],
+  "candidateExecuted": false,
+  "installed": false,
+  "hookTrustChanged": false,
+  "preparationIssue": "An initial local helper-generation quoting error was corrected before any SSH command or transfer; see preparation-first-attempt.log."
+}

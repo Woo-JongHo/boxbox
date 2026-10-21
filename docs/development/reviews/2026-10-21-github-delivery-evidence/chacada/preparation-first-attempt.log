@@ -1,0 +1,1 @@
+Local helper generation failed before SSH or transfer: SyntaxError: invalid decimal literal caused by nested Python triple-quoted strings. No helper file was created and no remote command ran. Quoting corrected before the delivery attempt.

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "verifiedAt": "2026-10-21T04:32:48.6108561Z",
+  "verifier": "Native Windows PowerShell Get-FileHash",
+  "destination": "C:\\Users\\woo\\Downloads\\BoxBox\\0.2.2\\gha-20261021T043246Z",
+  "files": [
+    {
+      "filename": "boxbox-plugin-0.2.2.tgz",
+      "bytes": 126691,
+      "sha256": "611858a6b7f72e1a27aaddf9593d5a1404a0baf7c705bb2ec21ea2f2bbec7137"
+    },
+    {
+      "filename": "candidate.json",
+      "bytes": 849,
+      "sha256": "0ff004b7eea55b276fd93110b40c79b83ad2074e677ca00b189755ff868e02e4"
+    },
+    {
+      "filename": "SHA256SUMS",
+      "bytes": 90,
+      "sha256": "391baf9b676a79a5d04542a0c8a428237eab0adb2f985f02603209c913e8237b"
+    },
+    {
+      "filename": "README.md",
+      "bytes": 993,
+      "sha256": "65bebc9ecaca6f7920ef272507c3c53fec75bb87f9c9d4d705cb6130e39825d9"
+    }
+  ],
+  "candidateRun": "39543872402",
+  "sourceCommit": "6e74c9327c44b4121a7ec4803d3acad66ee0f071",
+  "candidateExecuted": false,
+  "installed": false,
+  "hookTrustChanged": false
+}
