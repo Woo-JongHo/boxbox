@@ -5,7 +5,8 @@
  *
  * Safety rules:
  * 1. Reassemble the profile slots with their original gaps; if the result differs from the code part, refuse the row (no lossy decomposition).
- * 2. Blank lines, comment lines, block comment interiors and profile-refused rows break a region — different sections never share widths.
+ * 2. Blank lines, comment lines, block comment interiors and rows refused by both primary and optional outer profiles break a region.
+ *    Detailed tables retain exclusive row ownership; projection never joins separate sections or retries refused tables.
  * 3. Runs shorter than minRows are reported as pairs but not aligned. Automatic fixes never apply to fewer than
  *    3 rows: a lower minRows is raised to 3 (a 2-row table needs a recorded human decision, not a flag).
  * 4. The candidate output is compared with the source by changedLines (preservation.ts). A table whose edits change
@@ -42,6 +43,8 @@ export interface LineProfiler {
 	readonly canonicalGaps : Readonly<Record<string, string>>;
 	/** Returns the decomposition if the line is a table row, otherwise null. code is the source with the trailing comment cut; masked is the mask at the same coordinates. */
 	profile(code: string, masked: string): RowProfile | null;
+	/** Optional outer rows by zero-based physical line. Detailed tables keep priority; every projection must reconstruct its original code exactly. */
+	project?(source: string): ReadonlyMap<number, RowProfile>;
 }
 
 export interface TableEdit {
@@ -112,18 +115,62 @@ function rebuildCode(aligner: LineProfiler, profile: RowProfile, widths: readonl
 	return parts.join("");
 }
 
+interface AcceptedRow {
+	readonly index   : number        ;
+	readonly profile : RowProfile    ;
+	readonly comment : string | null ;
+}
+
+/** Both primary and projected rows must reconstruct the same original code with whitespace-only gaps. */
+function losslessProfile(profile: RowProfile, code: string): boolean {
+	return /^[ \t]*$/u.test(profile.indent)
+		&& profile.slots.every(slot => /^[ \t]*$/u.test(slot.gapBefore))
+		&& profile.indent + profile.slots.map((slot, position) => position === 0 ? slot.text : slot.gapBefore + slot.text).join("") === code;
+}
+
+function contiguousRuns(rows: readonly AcceptedRow[]): AcceptedRow[][] {
+	const runs  : AcceptedRow[][] = [] ;
+	let current : AcceptedRow[]   = [] ;
+	const flush = (): void => {
+		if (current.length >= 2) runs.push(current);
+		current = [];
+	};
+
+	for (const row of rows) {
+		const previous   = current.at(-1)                                                         ;
+		const contiguous = !previous || previous.index === row.index - 1                          ;
+		const sameShape  = previous && signatureOf(previous.profile) === signatureOf(row.profile) ;
+		if (contiguous && sameShape) current.push(row);
+		else { flush(); current = [row]; }
+	}
+	flush();
+
+	return runs;
+}
+
+/** Select one owner per row. A primary table remains reserved even if the preservation gate later refuses it. */
+function projectedRuns(primary: AcceptedRow[][], projected: readonly AcceptedRow[], minRows: number): AcceptedRow[][] {
+	const primaryTables  = primary.filter(run => run.length >= minRows)                                               ;
+	const reserved       = new Set(primaryTables.flatMap(run => run.map(row => row.index)))                           ;
+	const fallback       = contiguousRuns(projected.filter(row => !reserved.has(row.index)))                          ;
+	const fallbackTables = fallback.filter(run => run.length >= minRows)                                              ;
+	const claimed        = new Set(fallbackTables.flatMap(run => run.map(row => row.index)))                          ;
+	const primaryPairs   = primary.filter(run => run.length < minRows && run.every(row => !claimed.has(row.index)))   ;
+	const pairRows       = new Set(primaryPairs.flatMap(run => run.map(row => row.index)))                            ;
+	const fallbackPairs  = fallback.filter(run => run.length < minRows && run.every(row => !pairRows.has(row.index))) ;
+
+	return [...primaryTables, ...fallbackTables, ...primaryPairs, ...fallbackPairs].sort((left, right) => left[0].index - right[0].index);
+}
+
 export function alignSource(source: string, aligner: LineProfiler, options: AlignOptions): AlignResult {
 	const minRows     = Math     .max  (3, options.minRows    ) ;
 	const mask        = maskSource     (source, aligner.syntax) ;
 	const lines       = source   .split("\n"                  ) ;
 	const maskedLines = mask.text.split("\n"                  ) ;
 
-	interface Accepted {
-		readonly index   : number        ;
-		readonly profile : RowProfile    ;
-		readonly comment : string | null ;
-	}
-	const accepted: Accepted[] = [];
+	const projections               = aligner.project?.(source) ;
+	const accepted  : AcceptedRow[] = []                        ;
+	const projected : AcceptedRow[] = []                        ;
 
 	lines.forEach((raw, index) => {
 		// CRLF files carry \r at every line end; profiling strips it and the rebuilt line gets it back, so a
@@ -140,30 +187,14 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		const maskedCode = comment !== null ? maskedLine.slice(0, codeEnd).replace(/\s+$/u, "") : maskedLine.slice(0, codeEnd) ;
 		if (maskedCode.trim() === "") return;
 		const profile = aligner.profile(code, maskedCode);
-		if (!profile) return;
-		// Gaps may contain only whitespace. If a masked comment or string were absorbed into a gap it would be lost on reassembly, so refuse the row.
-		const lossless = /^[ \t]*$/u.test(profile.indent)
-			&& profile.slots.every(slot => /^[ \t]*$/u.test(slot.gapBefore))
-			&& profile.indent + profile.slots.map((slot, position) => position === 0 ? slot.text : slot.gapBefore + slot.text).join("") === code;
-		if (!lossless) return;
-		accepted.push({ index, profile, comment });
+		if (profile && losslessProfile(profile, code)) accepted.push({ index, profile, comment });
+
+		const projection = projections?.get(index);
+		if (projection && losslessProfile(projection, code)) projected.push({ index, profile: projection, comment });
 	});
 
-	const runs  : Accepted[][] = [] ;
-	let current : Accepted[]   = [] ;
-	const flush = (): void => {
-		if (current.length >= 2) runs.push(current);
-		current = [];
-	};
-	for (let position = 0; position < accepted.length; position += 1) {
-		const row        = accepted[position]                                                     ;
-		const previous   = current[current.length - 1]                                            ;
-		const contiguous = !previous || previous.index === row.index - 1                          ;
-		const sameShape  = previous && signatureOf(previous.profile) === signatureOf(row.profile) ;
-		if (contiguous && sameShape) current.push(row);
-		else { flush(); current = [row]; }
-	}
-	flush();
+	const primary = contiguousRuns(accepted)                                                         ;
+	const runs    = projections === undefined ? primary : projectedRuns(primary, projected, minRows) ;
 
 	const candidates : DetectedTable[] = [] ;
 	const pairs      : PairGroup[]     = [] ;
