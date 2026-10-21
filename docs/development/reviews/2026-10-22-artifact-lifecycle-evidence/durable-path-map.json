@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Resolve retained scratch references without rewriting recorded reports or logs. Paths are relative to this evidence directory.",
+  "scratchRoot": "/tmp/boxbox-readiness/",
+  "defaultRule": "For retained files and directories with unchanged names, remove scratchRoot and resolve the remainder under this evidence directory.",
+  "exceptions": [
+    {
+      "source": "ci-candidate-39646320662-1-early/candidate.json",
+      "stored": "ci-candidate-39646320662-1/candidate.json"
+    },
+    {
+      "source": "ci-candidate-39646320662-1-early/boxbox-plugin-0.2.4.tgz",
+      "stored": null,
+      "reason": "Archive is not committed; exact digest is bound by candidate metadata, lifecycle reports and remote delivery proof."
+    },
+    {
+      "source": "rel10-hud-pre-current-digest/release-hud-lifecycle.mjs",
+      "stored": "rel10-hud-pre-current-digest/release-hud-lifecycle.mjs.txt"
+    },
+    {
+      "source": "rel10-hud-pre-current-digest/release-hud-lifecycle.test.ts",
+      "stored": "rel10-hud-pre-current-digest/release-hud-lifecycle.test.ts.txt"
+    }
+  ]
+}

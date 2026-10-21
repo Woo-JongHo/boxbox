@@ -1,0 +1,4 @@
+ebfe6a7796d9d85e9cf3088c955df4fb5477e60513e8ebda97d517746d93c665  /tmp/boxbox-rel10-linux.VfqJoi/artifacts/ci-ebfe6a77/boxbox-plugin-0.2.4.tgz
+ebfe6a7796d9d85e9cf3088c955df4fb5477e60513e8ebda97d517746d93c665  /mnt/c/Users/woo/AppData/Local/Temp/BoxBox-rel10-7b25a75cbb5446069c3e3bfa5b464a4c/ci-ebfe6a77/boxbox-plugin-0.2.4.tgz
+ebfe6a7796d9d85e9cf3088c955df4fb5477e60513e8ebda97d517746d93c665  /mnt/c/Users/woo/Downloads/BoxBox/0.2.4/ci-39646320662-1-ebfe6a77/boxbox-plugin-0.2.4.tgz
+263896 /tmp/boxbox-rel10-linux.VfqJoi/artifacts/ci-ebfe6a77/boxbox-plugin-0.2.4.tgz

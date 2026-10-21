@@ -4,7 +4,36 @@
 requirements without per-step confirmation. See the [phase table and acceptance gate](plan.md#completion-loop--readiness1-2026-10-21).
 Earlier sections below preserve their scoped results; they are not a final release verdict.
 
-Current loop: R1 record validation, the development-only SQLite catalog and safe copy installation passed focused
+Latest engineering checkpoint (2026-10-22): the Claude stale-version transition was corrected with pre-copy
+ownership checks, exact scoped update, post-install identity verification and recoverable partial-state retention.
+Independent source review and GLM review closed all mandatory findings. The full local check passed **672 tests,
+five existing parser skips, zero failures**; clean CI source verification passed **677 tests, zero failures** on both
+Ubuntu and macOS. TypeScript/shell checks and the plugin guard passed.
+
+Source `66eb97821d6b8bd81323175e071a107b2aa3f215` produced clean CI archive
+`ebfe6a7796d9d85e9cf3088c955df4fb5477e60513e8ebda97d517746d93c665` in
+[run 39646320662](https://github.com/Woo-JongHo/rowgrid/actions/runs/39646320662). This exact archive passed all
+**six real-host core lifecycles and four supported HUD configuration cells** across macOS, native Windows and
+Linux/WSL, with independent reviews. Linux/Windows hosted engine smoke passed; hosted macOS smoke is queued for
+runner capacity, so the overall candidate workflow remains pending. The source PR verification
+[passed both platforms](https://github.com/Woo-JongHo/rowgrid/actions/runs/39646325026).
+
+The exact archive was delivered to `C:\Users\woo\Downloads\BoxBox\0.2.4\ci-39646320662-1-ebfe6a77` on chacada,
+with matching WSL and native PowerShell hashes. The payload allowlist audit and corrected release/Windows guidance
+passed independent review. See the [complete lifecycle evidence](reviews/2026-10-22-artifact-lifecycle-evidence/README.md)
+and [issue 017](issue-library/records/BBX-20261022-017-claude-marketplace-transition.json).
+
+The remaining gates are the queued hosted macOS job, five proposed rule/ten example decisions, release-package
+license alignment, authenticated Claude/current Windows hooks and applicable UI acceptance, and publication
+approval/access. No new approval data, public package, live-profile installation, persistent trust or visibility
+change was made. Existing native hook/UI evidence remains bound to its earlier exact local candidate.
+
+## Earlier READINESS1 checkpoints
+
+The following checkpoints retain their original artifact identities and test counts. The leading checkpoint above
+is the current integration state.
+
+R1 record validation, the development-only SQLite catalog and safe copy installation passed focused
 checks and independent review. Four-language syntax checks, JSON/YAML adapters and effective approval facts are
 implemented; reviewed preservation fixes passed the frozen integration run: **632 passed, five existing missing-parser
 skips, zero failures**, plus TypeScript and shell checks. Internal aliases were migrated and verified in copied skills
@@ -40,7 +69,7 @@ The isolated Claude and Windows Codex authentication probes are unauthenticated;
 open. This candidate is not a public release. These facts supersede historical snapshots below.
 
 
-## Active work — AUTHOR1 matrix-first workflows
+## Earlier milestone — AUTHOR1 matrix-first workflows
 
 The user authorized Write, Refactor and Align with shared Check and preview on 2026-10-21. The 0.2.4 source
 candidate adds `guide --authoring` before composing code and a standalone `align` command that never runs an external
@@ -107,8 +136,11 @@ Updated: 2026-10-21 (AUTHOR1 bounded implementation verified; Sonnet and GLM aud
 ## Goal and current verdict
 
 The first public target is **TypeScript, Python, JSON and YAML + the CLI + a thin agent plugin**, expanded by the
-user on 2026-10-21. Current source and installed candidates execute TypeScript/Python/JSON/YAML checks; JSON/YAML default write approvals
-and current-candidate host acceptance remain pending in [FORMAT1](plan.md#planned-scope-expansion--format1-json-and-yaml).
+user on 2026-10-21. Current source and installed candidates execute TypeScript/Python/JSON/YAML checks. JSON/YAML
+default write approvals remain pending in [FORMAT1](plan.md#planned-scope-expansion--format1-json-and-yaml).
+The exact clean CI `ebfe6a…` candidate passed six native core lifecycle and four supported HUD configuration cells
+with independent reviews. Authenticated Claude/current Windows hooks, applicable UI acceptance and the queued hosted
+macOS smoke remain separate pending gates.
 The earlier user-selected host test target is **Windows Codex on another PC** (2026-10-16).
 Safe writes, the Node package, the public CLI foundation, config layers, approval proofs and the formatter core are implemented.
 GUIDE and format are connected in the public CLI and the installed artifact. The plugin folder `plugin/` installs in both
@@ -222,7 +254,9 @@ Latest `bun run pack:cli` (2026-10-16): `boxbox@0.2.0` tarball **40,629 B compre
 It carries only the CLI bundle, README, manifest and three empty preset JSONL files, and the public artifact test ran the real
 Node isolated install journey. That historical 0.2.0 package had no approved preset rows; the current 0.2.1 candidate has the two approved rules described above.
 
-## Next resume point
+## Historical resume snapshot
+
+This snapshot predates READINESS1. Resume from the active completion loop at the top of this document.
 
 DOC1 documentation is complete. AUTHOR1 is active; HUD2 is deferred pending independent review; CODEX1 remains open. Controlled native evidence is audited; Windows edit-dependent events remain blocked by
 the effective native read-only sandbox/approval policy. Registry publication remains a separate decision.

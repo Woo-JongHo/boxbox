@@ -1,0 +1,353 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261022-017",
+  "title": "Claude marketplace transition leaves plugin version metadata behind",
+  "category": "installation",
+  "tags": [
+    "claude",
+    "marketplace",
+    "update",
+    "plugin-cache",
+    "version-metadata",
+    "REL10"
+  ],
+  "status": "verifying",
+  "symptom": "During the isolated macOS Claude 0.2.3 to 0.2.4 lifecycle transition, the installer exited zero and Claude moved the boxbox-plugins marketplace to the 0.2.4 permanent root. The immediately following plugin listing still reported version 0.2.3 and the cached 0.2.3 installPath. Claude's own installer output said the already-installed plugin would load in place from the new 0.2.4 marketplace root and that `claude plugin update boxbox@boxbox-plugins` would re-record its version from 0.2.3 to 0.2.4. The lifecycle verifier therefore stopped rather than treating the mixed listing as an accepted update.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "The installer repointed Claude's local marketplace but did not explicitly run the host's plugin-update transition or verify the resulting installed-plugin identity. Claude keeps marketplace source and installed-plugin version/cache metadata as separate state, so exit zero from marketplace installation alone can leave the marketplace on 0.2.4 while the installed record remains 0.2.3. The evidence does not establish that old plugin code executed."
+  },
+  "requestedOutcome": "Define and verify a deterministic Claude transition procedure whose post-transition marketplace, installed-plugin version, install path and effective plugin root all identify the intended artifact, while preserving the prior working installation and user-owned data on refusal or failure.",
+  "decisions": [
+    "Treat an exit-zero installer result as insufficient when Claude's machine-readable marketplace and plugin listings disagree about the active version/root.",
+    "When the exact owned Claude plugin record remains stale after marketplace registration, use one exact user-scoped plugin update and then require marketplace, installed-plugin, manifest, runtime and engine identity to agree before reporting success.",
+    "Fail closed after possible host mutation and retain recoverable filesystem state; do not infer host rollback from installer failure.",
+    "Keep the historical 0.2.3 input classified as an uncommitted lifecycle fixture, not a released or approved baseline."
+  ],
+  "actions": [
+    {
+      "description": "Inspect the retained macOS and WSL transition failures and establish how Claude separates marketplace source from installed-plugin version/cache metadata.",
+      "status": "done"
+    },
+    {
+      "description": "Measure one explicit `claude plugin update boxbox@boxbox-plugins --scope user` in the retained isolated macOS profile, including identity, effective runtime and preservation.",
+      "status": "done"
+    },
+    {
+      "description": "Complete independent source and GLM review of the bounded installer repair, including capability, exact identity, shared/same-version ownership and signaled-child retention gates.",
+      "status": "done"
+    },
+    {
+      "description": "Run and independently review the complete bounded local-candidate Claude/Codex lifecycle and supported HUD ownership matrix across macOS, Linux/WSL and native Windows.",
+      "status": "done"
+    },
+    {
+      "description": "Record the terminal hosted macOS engine-smoke result for candidate workflow 39646320662; keep workflow-level completion separate from the already reviewed native lifecycle matrix.",
+      "status": "in-progress"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Claude direct-transition mismatch reproduction",
+      "status": "failed",
+      "scope": "Isolated macOS Claude 2.1.286 and WSL Claude 2.1.280 lifecycles using historical 0.2.3 fixture f07df7ad\u2026 and unpublished 0.2.4 CI candidate bec62643\u2026.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-macos-claude-1/lifecycle.json",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-wsl-claude-failure/lifecycle.json",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-transition-inspection.json",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-transition-diagnosis.md",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-wsl-evidence-review.md"
+      ],
+      "result": "Both retained terminal cells reproduced the same bounded failure: the installer exited zero and the marketplace moved to the 0.2.4 root, while Claude still listed installed plugin version/cache 0.2.3. The lifecycle verifiers stopped at that disagreement. These remain failed lifecycle cells, not passing transition evidence."
+    },
+    {
+      "name": "Explicit Claude plugin update contract",
+      "status": "passed",
+      "scope": "One authorized user-scoped plugin update in the retained disposable macOS Claude 2.1.286 failed cell, with before/after host JSON, runtime identity and preservation checks.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-update-probe/probe.json",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-update-probe/update-once.stdout.log",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-update-probe/after-plugins.stdout.log",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-update-probe/after-marketplaces.stdout.log",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-fix-plan-review.md"
+      ],
+      "result": "The single exact scoped update changed Claude's installed record/cache from 0.2.3 to 0.2.4, retained the exact 0.2.4 marketplace root and runtime, and preserved recorded user/project bytes. This is a positive update-contract probe only; it does not convert the original failed lifecycle into a PASS or prove the repaired installer."
+    },
+    {
+      "name": "Installer remediation source and GLM closure",
+      "status": "passed",
+      "scope": "Final frozen installer source, helpers, builder, README and focused source/artifact regressions; independent source closure plus GLM-5.3 static audit.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-installer-final-independent-closure.md",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-installer-glm/summary.md",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-installer-glm/review.md"
+      ],
+      "result": "Independent closure confirms M1 through M4 and signaled-child retention closed in the frozen source; focused suites, syntax and diff checks passed. GLM reported PASS with zero mandatory findings. These are source/static gates and do not alone establish native acceptance."
+    },
+    {
+      "name": "Fixed local candidate full native matrix",
+      "status": "passed",
+      "scope": "Exact local unpublished dirty-source candidate 1f1343e9\u2026: six core host lifecycle cells across macOS, Linux/WSL and native Windows, plus four supported macOS/WSL HUD configuration-ownership cells.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-fixed-native-report.md",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-fixed-native-independent-review.md",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-fixed-macos-claude-evidence-review.md"
+      ],
+      "result": "All six core cells and four supported HUD ownership cells passed independent review. Claude direct update acceptance passed on macOS, WSL and native Windows; Codex regression cells preserved their documented manual transition behavior. This local candidate is dirty-source, unpublished and non-CI; HUD evidence is configuration ownership only, and Windows HUD remains unsupported."
+    },
+    {
+      "name": "Clean CI candidate native lifecycle matrix",
+      "status": "passed",
+      "scope": "Exact clean-staging source 66eb978\u2026 and CI archive ebfe6a77\u2026 from run 39646320662 attempt 1: six core cells across macOS, Linux/WSL and native Windows plus four supported macOS/WSL HUD configuration-ownership cells.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/ci-candidate-39646320662-1/candidate.json",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-ci-macos-independent-review.md",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-final-ci-native-independent-review.md",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-final-ci-native-independent-closure.md",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-ci-raw-SHA256SUMS.txt",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/durable-path-map.json",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/README.md"
+      ],
+      "result": "Independent reviews pass all six core and four supported HUD ownership cells for the exact clean-CI archive. The original remote review remained INCOMPLETE because its compact copy lacked command logs; the later hash-bound raw-log closure resolved that evidence gap without rewriting the original review. This is a bounded native lifecycle result, not overall workflow, UI/hook, publication or release acceptance. The durable 854-entry manifest and README `#durable-path-map` bind scratch references to retained repository evidence without rewriting the recorded reviews."
+    },
+    {
+      "name": "Clean source PR verification",
+      "status": "passed",
+      "scope": "PR verification run 39646325026 for clean source 66eb978\u2026 on hosted Ubuntu and macOS.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-final-ci-ubuntu-verify.log",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-final-ci-macos-verify.log"
+      ],
+      "result": "Both hosted source-verification jobs passed 677 tests with zero failures and completed their chained checks. This verifies the clean source checkout; it does not substitute for the candidate workflow\u2019s queued hosted macOS engine smoke."
+    },
+    {
+      "name": "Hosted macOS candidate engine smoke",
+      "status": "pending",
+      "scope": "Terminal macOS engine-smoke job in candidate workflow 39646320662 for archive ebfe6a77\u2026.",
+      "evidence": [],
+      "result": "The hosted macOS smoke remains queued due to external runner capacity. No result is inferred, and workflow 39646320662 is not recorded as overall PASS."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "product/installer/entry.mjs",
+      "note": "Owns permanent destination preparation and the fail-closed phase receipt; final source review confirms same-version/shared-catalog and signaled-child retention gates."
+    },
+    {
+      "kind": "code",
+      "path": "development/tools/release-lifecycle.mjs",
+      "note": "Fail-closed lifecycle verifier that rejected the transition when Claude's plugin version/cache did not match the new marketplace root."
+    },
+    {
+      "kind": "contract",
+      "path": "docs/development/proposals/2026-10-22-artifact-lifecycle.md",
+      "note": "REL10 execution plan requiring actual host version/root acceptance, preservation, rollback and independent review."
+    },
+    {
+      "kind": "contract",
+      "path": "product/installer/README.md",
+      "note": "Current installation, update and removal contract; any Claude-specific transition guidance must follow measured host behavior."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-transition-diagnosis.md",
+      "note": "Source-linked diagnosis confirming the missing explicit Claude update/post-identity transition and its fail-closed repair boundary."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-update-probe/probe.json",
+      "note": "One isolated macOS host update measurement; positive contract evidence, not a lifecycle PASS."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-installer-independent-review.md",
+      "note": "Initial independent source review that found mandatory gates; retained as failure history and superseded for current closure by the final independent review."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-installer-final-independent-closure.md",
+      "note": "Final frozen-source closure for M1 through M4 and signal retention; explicitly excludes native acceptance."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-installer-glm/summary.md",
+      "note": "GLM-5.3 static audit PASS with zero mandatory findings and explicit native-acceptance limitation."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-fixed-macos-claude-1/lifecycle.json",
+      "note": "Terminal fixed-candidate macOS Claude core lifecycle for the exact local 1f1343e9\u2026 candidate."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-fixed-macos-claude-evidence-review.md",
+      "note": "Independent core and HUD evidence audit preserving the original failure and platform/UI limits."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-fixed-native-independent-review.md",
+      "note": "Independent PASS for the local 1f1343e9\u2026 six-core/four-HUD matrix, with dirty-source, UI and publication limits."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/ci-candidate-39646320662-1/candidate.json",
+      "note": "Clean staging source 66eb978\u2026 and exact CI archive ebfe6a77\u2026 identity for run 39646320662 attempt 1."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-ci-macos-independent-review.md",
+      "note": "Independent PASS limited to the exact CI candidate\u2019s four macOS core/HUD cells; workflow completion and remote matrix remain separate."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-final-ci-native-independent-review.md",
+      "note": "Original independent remote review retained as INCOMPLETE because compact metadata lacked referenced raw command logs."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-final-ci-native-independent-closure.md",
+      "note": "Hash-bound raw-log closure passing the exact clean-CI WSL/native-Windows core and WSL HUD cells without claiming workflow completion."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-final-ci-ubuntu-verify.log",
+      "note": "Hosted Ubuntu source-verification log for PR run 39646325026."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-final-ci-macos-verify.log",
+      "note": "Hosted macOS source-verification log for PR run 39646325026."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-ci-raw-SHA256SUMS.txt",
+      "note": "Durable 854-entry digest manifest for the recovered final-CI raw command logs; verified by the independent closure."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/durable-path-map.json",
+      "note": "Machine-readable mapping from retained `/tmp/boxbox-readiness/` references to repository evidence, including the renamed clean candidate metadata path."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/README.md",
+      "note": "Evidence index; the `#durable-path-map` section links scratch references in immutable recorded reviews to retained candidate, raw-manifest and per-cell evidence."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-22",
+      "event": "reported",
+      "summary": "The first terminal isolated macOS Claude lifecycle stopped after a direct 0.2.3 to 0.2.4 attempt returned success and moved the marketplace root to 0.2.4 while the plugin listing retained version and cache path 0.2.3. Claude explicitly recommended `plugin update` to re-record the version.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-macos-claude-1/lifecycle.json"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-22",
+      "event": "diagnosed",
+      "summary": "A separate WSL Claude 2.1.280 lifecycle reproduced the stale installed-version record. Durable diagnosis confirmed that installation repointed the marketplace without an explicit plugin update or sufficient post-transition identity acceptance; neither failed cell proves old-code execution.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-wsl-claude-failure/lifecycle.json",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-transition-diagnosis.md",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-wsl-evidence-review.md"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-22",
+      "event": "verified",
+      "summary": "One authorized isolated macOS `plugin update` probe re-recorded version/cache 0.2.4 and verified the intended marketplace/runtime identity with preservation intact. The probe was kept separate from the original failed lifecycle and does not establish installer or lifecycle completion.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-update-probe/probe.json",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-fix-plan-review.md"
+      ],
+      "status": "passed"
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-22",
+      "event": "decision",
+      "summary": "A bounded shared phase/identity repair entered source review. Mandatory review gates, including the remaining same-version/shared-registration guard, remain open; no new candidate lifecycle has passed and the issue remains investigating.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-installer-independent-review.md"
+      ]
+    },
+    {
+      "sequence": 5,
+      "date": "2026-10-22",
+      "event": "implemented",
+      "summary": "The final frozen installer repair closed pre-mutation scoped-update capability, exact marketplace path/installLocation, single-entry catalog ownership, parent-side same-version/shared-catalog protection and signaled-child retention. Independent source closure and GLM static audit passed with no mandatory findings; native acceptance remained separate.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-installer-final-independent-closure.md",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-installer-glm/summary.md"
+      ],
+      "status": "passed"
+    },
+    {
+      "sequence": 6,
+      "date": "2026-10-22",
+      "event": "verified",
+      "summary": "A distinct exact local unpublished candidate completed the macOS Claude core and HUD cells. The core accepted 0.2.4 only after exact plugin/marketplace/cache/runtime/engine agreement, preserved the historical rollback boundary and user bytes, and removed final registration; HUD proof remained limited to isolated configuration ownership. Linux, Windows and final clean/CI evidence remain pending, so the issue moved to verifying rather than resolved.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-fixed-macos-claude-1/lifecycle.json",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-fixed-hud-macos-claude-1/hud-lifecycle.json",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-fixed-macos-claude-evidence-review.md"
+      ],
+      "status": "passed"
+    },
+    {
+      "sequence": 7,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "The exact local dirty-source candidate 1f1343e9\u2026 completed all six macOS/WSL/native-Windows core lifecycle cells and four supported macOS/WSL HUD ownership cells. Independent review passed the bounded matrix while preserving non-CI, authentication/UI/hook, Windows-HUD and publication limits.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-fixed-native-report.md",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-fixed-native-independent-review.md"
+      ]
+    },
+    {
+      "sequence": 8,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "The clean staging source 66eb978\u2026 produced CI archive ebfe6a77\u2026. Independent review passed its exact macOS Codex/Claude core and HUD ownership cells. Remote final-CI lifecycle review and hosted macOS smoke were still pending, so the workflow and issue remained verifying.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/ci-candidate-39646320662-1/candidate.json",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-ci-macos-independent-review.md"
+      ]
+    },
+    {
+      "sequence": 9,
+      "date": "2026-10-22",
+      "event": "verification-failed",
+      "status": "failed",
+      "summary": "The first independent review of the clean-CI remote native cells was INCOMPLETE because the compact evidence copy omitted the 848 raw stdout/stderr files referenced by six lifecycle reports. This was an evidence-review gap, not a demonstrated product lifecycle failure; the original review remains unchanged.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-final-ci-native-independent-review.md"
+      ]
+    },
+    {
+      "sequence": 10,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "A combined 854-file digest manifest and all 848 referenced command logs closed the raw-evidence gap. Independent review passed the exact ebfe6a77\u2026 WSL/native-Windows core and supported WSL HUD cells; combined with the separately reviewed macOS cells, the clean-CI archive has six core and four HUD ownership passes. PR run 39646325026 also passed hosted Ubuntu/macOS source verification. Hosted macOS candidate smoke remained queued, so neither workflow-level PASS nor issue resolution was claimed.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-final-ci-native-independent-closure.md",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-ci-macos-independent-review.md",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-final-ci-ubuntu-verify.log",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-final-ci-macos-verify.log",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/ci-candidate-39646320662-1/candidate.json",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-ci-raw-SHA256SUMS.txt",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/durable-path-map.json",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/README.md"
+      ]
+    }
+  ]
+}

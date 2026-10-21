@@ -1,0 +1,23 @@
+{
+  "installed": [
+    {
+      "pluginId": "boxbox@boxbox-plugins",
+      "name": "boxbox",
+      "marketplaceName": "boxbox-plugins",
+      "version": "0.2.3",
+      "installed": true,
+      "enabled": true,
+      "source": {
+        "source": "local",
+        "path": "C:\\Users\\woo\\AppData\\Local\\Temp\\BoxBox-rel10-7b25a75cbb5446069c3e3bfa5b464a4c\\win-fixed-codex-01\\workspace-1N3MA2\\profile\\local\\BoxBox\\Codex\\0.2.3\\plugin"
+      },
+      "marketplaceSource": {
+        "sourceType": "local",
+        "source": "\\\\?\\C:\\Users\\woo\\AppData\\Local\\Temp\\BoxBox-rel10-7b25a75cbb5446069c3e3bfa5b464a4c\\win-fixed-codex-01\\workspace-1N3MA2\\profile\\local\\BoxBox\\Codex\\0.2.3"
+      },
+      "installPolicy": "AVAILABLE",
+      "authPolicy": "ON_INSTALL"
+    }
+  ],
+  "available": []
+}

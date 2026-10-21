@@ -1,0 +1,12 @@
+{
+  "marketplaces": [
+    {
+      "name": "boxbox-plugins",
+      "root": "/private/tmp/boxbox-readiness/rel10-macos-codex-1/workspace-ieJGX6/profile/data/boxbox/codex/0.2.3",
+      "marketplaceSource": {
+        "sourceType": "local",
+        "source": "/private/tmp/boxbox-readiness/rel10-macos-codex-1/workspace-ieJGX6/profile/data/boxbox/codex/0.2.3"
+      }
+    }
+  ]
+}

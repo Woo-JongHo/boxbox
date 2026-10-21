@@ -1,0 +1,55 @@
+{
+  "ok": true,
+  "host": "claude",
+  "steps": [
+    {
+      "label": "claude-add-unrelated-setting",
+      "harnessMutation": true,
+      "inventoryDelta": [
+        "/tmp/boxbox-rel10-linux.VfqJoi/wsl-fixed-claude-01/workspace-axjwgk/profile/claude:settings.json"
+      ]
+    },
+    {
+      "label": "claude-add-post-enable-setting",
+      "harnessMutation": true,
+      "inventoryDelta": [
+        "/tmp/boxbox-rel10-linux.VfqJoi/wsl-fixed-claude-01/workspace-axjwgk/profile/claude:settings.json"
+      ]
+    },
+    {
+      "label": "claude-create-user-edit",
+      "harnessMutation": true,
+      "inventoryDelta": [
+        "/tmp/boxbox-rel10-linux.VfqJoi/wsl-fixed-claude-01/workspace-axjwgk/profile/claude:settings.json"
+      ]
+    },
+    {
+      "label": "claude-restore-owned",
+      "harnessMutation": true,
+      "inventoryDelta": [
+        "/tmp/boxbox-rel10-linux.VfqJoi/wsl-fixed-claude-01/workspace-axjwgk/profile/claude:settings.json"
+      ]
+    },
+    {
+      "label": "claude-create-foreign",
+      "harnessMutation": true,
+      "inventoryDelta": [
+        "/tmp/boxbox-rel10-linux.VfqJoi/wsl-fixed-claude-01/workspace-axjwgk/profile/claude:settings.json"
+      ]
+    },
+    {
+      "label": "claude-remove-foreign",
+      "harnessMutation": true,
+      "inventoryDelta": [
+        "/tmp/boxbox-rel10-linux.VfqJoi/wsl-fixed-claude-01/workspace-axjwgk/profile/claude:settings.json"
+      ]
+    },
+    {
+      "label": "claude-hud-lifecycle",
+      "ok": true,
+      "stateRemoved": true,
+      "unrelatedSettingsPreserved": true,
+      "backupRetained": true
+    }
+  ]
+}

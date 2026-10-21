@@ -144,4 +144,6 @@ the normalized catalog hash (parsed JSON serialization), schema and advisory aut
 unmanaged output databases are rejected. This is a measured development-only SQLite use, not runtime rule selection.
 The current index covers catalog cases, not all corpus observations or approval records.
 Implementation uses [Bun's SQLite module](https://bun.com/docs/runtime/sqlite); public Node bundles do not import it.
-The data-driven runtime policy experiment and broad installed-host evaluation remain pending.
+The bounded runtime policy experiment and recorded installed/native/CI checks passed within their documented scopes.
+Public rule decisions, authenticated Claude/current-Windows host journeys and the REL10 artifact lifecycle matrix
+remain open in [the execution plan](plan.md).
