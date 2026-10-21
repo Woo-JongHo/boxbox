@@ -1,0 +1,7 @@
+align-tables file=product/engine/common/parse-check.ts groups=6 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0 write=true
+      30-32  interface-members  rows= 3  colon=23 semicolon=75  edits=0
+      40-48  registration       rows= 9  colon=15 value=17  edits=0
+      51-52  declaration-equals rows= 2  equals=25 semicolon=37  edits=0
+      66-67  declaration-equals rows= 2  equals=21 semicolon=120  edits=0
+     99-100  declaration-equals rows= 2  equals=16 call-open-paren=29 call-comma1=39 call-arg2=41 call-comma2=47 call-arg3=49 call-close-paren=58 semicolon=60  edits=0
+    113-114  declaration-equals rows= 2  equals=20 semicolon=73  edits=0

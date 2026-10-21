@@ -1,0 +1,31 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/hud.test.ts:
+(pass) HUD never runs a checkout engine when the host plugin is absent or its discovery fails [3.95ms]
+(pass) HUD keeps disabled host state, runtime readiness and unobserved hook delivery separate [4.04ms]
+(pass) HUD reports malformed receipts and actual latest outcomes without turning receipts into host acceptance [4.96ms]
+(pass) HUD reads a receipt from the real hook writer and marks inaccessible receipt roots incomplete [115.24ms]
+
+test/parser-fault.test.ts:
+(pass) parser faults close before writing > failure: reports an execution fault as an error [532.08ms]
+(pass) parser faults close before writing > failure-error: reports an execution fault as an error [286.06ms]
+(pass) parser faults close before writing > signal: reports an execution fault as an error [301.71ms]
+(pass) parser faults close before writing > timeout: reports an execution fault as an error [807.14ms]
+(pass) parser faults close before writing > probe-timeout: reports an execution fault as an error [70.45ms]
+(pass) parser faults close before writing > output: reports an execution fault as an error [475.87ms]
+(pass) parser faults close before writing > vanish: reports an execution fault as an error [342.69ms]
+(pass) parser faults close before writing > refuses rustfmt status 1 when there is no recognizable formatting diff [334.44ms]
+(pass) parser faults close before writing > BOXBOX_REQUIRE_PARSERS=0 cannot bypass writing without a parser [33.22ms]
+(pass) parser faults close before writing > when the parser exits abnormally, the real Python CLI preserves the original bytes [421.18ms]
+(pass) parser faults close before writing > the real Python parser lets successful output be written [112.81ms]
+
+test/release-candidate.test.ts:
+(pass) candidate staging records the exact prebuilt bytes and commit without rebuilding [114.96ms]
+(pass) candidate staging refuses an archive for another package [45.59ms]
+(pass) smoke refuses altered archive bytes and a replaced metadata digest before installation [81.82ms]
+(pass) smoke requires a separate build digest and refuses an escaping archive filename [82.04ms]
+
+ 19 pass
+ 0 fail
+ 62 expect() calls
+Ran 19 tests across 3 files. [4.28s]

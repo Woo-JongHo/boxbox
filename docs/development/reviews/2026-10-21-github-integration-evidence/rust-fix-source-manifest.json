@@ -1,0 +1,12 @@
+{
+  "product/engine/common/parse-check.ts": "65d5d36352a63bb8e134364f0f0f911a5d4cd65b2a0c9d34957e1a06a12b7020",
+  "test/parser-fault.test.ts": "f4f7508233e048f6a588299885ec19eee9fe74c17bc805a068b6003411a2cd42",
+  "test/parse-check.test.ts": "e2028367e2a3a8eb7ae4c9869f4d0867c60c63b082b66800be15ad1fdc624f24",
+  "test/rust-align.test.ts": "e15ab75cd4e8d5219bb4592cf29bce58d08f5b20ad3acb2ccaa0d375f4bba805",
+  "test/surface.test.ts": "30bb438dec71792830644bb8f70c96c50177b84c209c70860a79a3d6fd124a58",
+  "package.json": "06e9476b566d77345e3a99a6f7dc8cbd62f98f8252b4d208337d942fe98b7d47",
+  "product/installer/README.md": "31cd12b3f05865946349d2527970498d104c071e2cd91a5f5a74750db700b551",
+  "README.md": "8bcf090b733868e8e3eceb958e51c5b5846d3c2dae951a2285056ce96a71aab6",
+  "CONTRIBUTING.md": "d59413e3e8ccc8a4aa85496f9e387b4032f4338d6795b2629d04d7c2154420e4",
+  "docs/development/cicd.md": "dc5f6aa8e411ffbe3a2be4330a97718924e756a5769e6de280b18bdc193179b0"
+}

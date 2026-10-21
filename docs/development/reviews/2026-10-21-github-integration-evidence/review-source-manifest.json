@@ -1,0 +1,10 @@
+{
+  ".github/workflows/verify.yml": "e55aa880043629a1e7b25238a54d19ce833e1ace3fe60afc6d27c8f06bf03905",
+  ".github/ISSUE_TEMPLATE/rule_proposal.md": "c9b7189bc73b24b7c40b007b16104a13fba1cab84a0c679bac854fe1fd59d0bc",
+  "CONTRIBUTING.md": "7b0d5fb4d96e8b310de106fc698f6bf6f86cee819ce7e22ce6f2a663222b225c",
+  "CHANGELOG.md": "6751b715363ecc0899fcd579103a57d52c6c02b7093fa2727de1c2346fc9129e",
+  "LICENSE": "c1532bdb792370a19ab8f4f8ef51ae82f9a81209a4dfc2b279478679c8fb3623",
+  "test/parser-fault.test.ts": "6378901aac9b1156179d73d006597962760ebcbef19e18b70d63413508cb3fc1",
+  "docs/development/cicd.md": "2ff615180a878417d5e19eff65732ce5e1d9050caf6f104700c886b550b9228b",
+  "docs/development/reviews/2026-10-21-github-integration.md": "f220d46c07d571d63505abfe6ef2d13657a26b85f7488b6ccdb7e73bdcbca80e"
+}
