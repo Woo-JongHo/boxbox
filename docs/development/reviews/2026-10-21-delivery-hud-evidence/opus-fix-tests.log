@@ -1,0 +1,18 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/hud.test.ts:
+(pass) HUD never runs a checkout engine when the host plugin is absent or its discovery fails [1.60ms]
+(pass) HUD keeps disabled host state, runtime readiness and unobserved hook delivery separate [0.89ms]
+(pass) HUD reports malformed receipts and actual latest outcomes without turning receipts into host acceptance [4.58ms]
+(pass) HUD reads a receipt from the real hook writer and marks inaccessible receipt roots incomplete [106.37ms]
+
+test/release-candidate.test.ts:
+(pass) candidate staging records the exact prebuilt bytes and commit without rebuilding [154.99ms]
+(pass) candidate staging refuses an archive for another package [57.91ms]
+(pass) smoke refuses altered archive bytes and a replaced metadata digest before installation [91.79ms]
+(pass) smoke requires a separate build digest and refuses an escaping archive filename [91.02ms]
+
+ 8 pass
+ 0 fail
+ 37 expect() calls
+Ran 8 tests across 2 files. [742.00ms]

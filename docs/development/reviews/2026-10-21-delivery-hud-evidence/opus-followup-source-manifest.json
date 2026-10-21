@@ -1,0 +1,8 @@
+{
+  "development/tools/hud.mjs": "76e8c75e0566e42b367256587fef825e7922df438ba3c85362345dae90b7e894",
+  "test/hud.test.ts": "e9addcac2578318f1053700ab3af2b2466e1f542375cccc4ef85265826f38c96",
+  "development/skills/boxbox-status/SKILL.md": "3dbd3733bbc3ebb1651c1dc9eac82473a433d4aadbec30f17342431dfd112d8e",
+  "docs/development/hud.md": "e1ff52d55eaf422d43dea85643e8dcf257bc3e76f81400df676c4e1fee4286bd",
+  "docs/development/cicd.md": "cddbd56d008fdacfa45f0a15566d79a28425be471888c70eb1e0646cd8198d56",
+  "product/engine/common/lifecycle-hook.ts": "081d768a6edaf0b4171c10b3221bcd8f2267733c1d338402e63cbe77de6e495d"
+}

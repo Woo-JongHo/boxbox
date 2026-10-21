@@ -1,6 +1,6 @@
 # Release readiness
 
-Updated: 2026-10-20 (product/development layout migration) · Base: branch `m1-safety-proof`
+Updated: 2026-10-21 (CI/HUD local verification complete; integration pending) · Base: branch `m1-safety-proof`
 
 ## Goal and current verdict
 
@@ -16,17 +16,45 @@ Claude Code and Codex. **This is not a completed public release.**
 - [Handoff for verification by another AI](handoff-2026-10-05.md): code map, 12 held IDs, reproduction commands and independent review questions
 - [Release tracking harness](../../development/harness/README.md): run history DB (`runs.jsonl`, `latest.json`) and a report against the REL table
 
+## Active work — DELIVERY1
+
+The user selected issue forms → PR verification → candidate generation, and BoxBox status inside Codex. GitHub
+`Woo-JongHo/rowgrid` is private and separate from the self-hosted `origin`. The pipeline will produce candidate
+artifacts only; registry publication stays pending. The exact tested 0.2.1 installer is now installed and enabled in
+the local Codex, and its installed engine reports runtime/configuration ready with two approved conventions.
+The development HUD/project skill shows an on-request conversation panel and keeps host acceptance unverified.
+Final full check: 490 pass / 5 existing parser skips / 0 fail; TypeScript/shell, plugin guard, actionlint and exact-archive macOS/native Windows smoke passed. A fresh read-only Codex session invoked the HUD successfully. Final Opus follow-up passed after F1/F2/F3 corrections. The user chose to bring the current development structure into a GitHub PR while preserving the ten main-only changes (including MIT LICENSE/presets); a separate integration branch is in progress. No GitHub push/default-branch merge has happened yet. See [CI operation](cicd.md), [HUD usage](hud.md), [evidence](reviews/2026-10-21-delivery-hud.md), and the active task in [plan.md](plan.md).
+
+## First-use formatting — 2026-10-21
+
+The user authorized the fix for [GitHub issue #1](https://github.com/Woo-JongHo/rowgrid/issues/1) and approved two exact
+recommended rules: TypeScript top-level single-call variable declarations (2+ rows, `.ts`) and Python simple assignments
+(3+ rows at the same indentation). Only the four synthetic examples were separately authorized for CC0-1.0.
+
+The 0.2.1 candidate aligns those patterns without an external formatter or personal approval DB. A configured formatter
+still runs first and fails explicitly when broken. Check reports provisional approval eligibility and points to dry-run
+for actual parser/preservation/fixed-point verification. Hooks stay read-only.
+
+Native Windows Node 24.12.0 / Python 3.14.0 / Codex 0.157.1 passed isolated npx installation, installed/enabled listing,
+approved GUIDE, dry-run with original hash preserved, explicit Python format, token/parse checks and byte-identical
+rerun. An optional configured formatter also passed. A shadowing unrelated `codex.exe` exposed during the first test is
+now skipped using a bounded identity probe. Native host event delivery remains unverified and is not implied by registration.
+Full verification passed 482 tests / 5 existing skips / 0 failures, with TypeScript/shell and plugin guard checks.
+Sonnet review fixes and the final Opus follow-up passed; the latter also closed the prior layout findings. The tested
+0.2.1 candidate was delivered to chacada; this is an unpublished worktree candidate.
+See [the complete evidence and destination receipt](reviews/2026-10-21-first-use.md).
+
 ## Layout migration — 2026-10-20
 
 The source/development/distribution separation is implemented; [layout.md](layout.md) owns the directory contract.
 Product sources are in `product/`, internal tools and data in `development/`, fixtures in `test/fixtures/`, and docs in
 `docs/user/` and `docs/development/`. `plugin/` is completely regenerable and `dist/` remains generated output.
 
-Current-tree verification: **452 pass / 5 existing skips / 0 fail**, TypeScript and shell syntax passed; the plugin guard and both isolated host registrations passed.
+Migration baseline (2026-10-20): **452 pass / 5 existing skips / 0 fail**, TypeScript and shell syntax passed; the plugin guard and both isolated host registrations passed.
 
 Sonnet 5 review fixes passed its follow-up. The first Opus audit identified dangling output links and stale paths;
-those were fixed with regression coverage. **The required Opus follow-up is unexecuted because the provider returned
-a session-limit error (reset shown as 20:20 Asia/Seoul).** It remains the audit blocker; no lower model was substituted.
+those were fixed with regression coverage. The 2026-10-20 Opus follow-up was unexecuted because the provider returned a session-limit error. The actual
+2026-10-21 Opus follow-up has now closed both carried-forward findings; no lower model was substituted.
 See [the migration evidence](reviews/2026-10-20-layout.md). Publication remains pending.
 
 ## Implemented and remaining
@@ -35,13 +63,13 @@ See [the migration evidence](reviews/2026-10-20-layout.md). Publication remains 
 |---|---|---|
 | Safe writes | parser missing/failure blocked, TS multi-pass and line-engine working-copy verification with one replacement, external-edit conflicts refused | TS native API timeout, measurements on other OSes |
 | Node release candidate | isolated bin run after confirming real Node, offline and empty-npm-cache installs | Linux and supported-host checks |
-| CLI | init, doctor, check, guide, format, run, status, hook, `db init/status` local user DB, synthetic approval journey on the installed artifact | DB editing, import, backup; real user approval data and host journeys |
+| CLI | init, doctor, check, guide, format, run, status, hook, `db init/status` local user DB, synthetic approval journey on the installed artifact | DB editing, import, backup; broader real-project approval coverage and real-session host event delivery |
 | Config | Base → Preset → User → Project, in-memory schema 1 migration, schema 2 partial config, fingerprint | real user project journey |
-| Approval and GUIDE | exact key, scope, layers; decision, example, counterexample, version and document hash checks | waiting for the human approval answer on two concrete candidates |
-| Formatter | explicit command → parser → approval → BoxBox, fixed point over two full runs, verified on the installed artifact and dry-run | a real project formatter case |
+| Approval and GUIDE | exact key, scope, layers; full proof checks; two rules and four examples approved on 2026-10-21 | other candidates remain unapproved |
+| Formatter | optional explicit command → parser → approval → BoxBox, fixed point over two full runs, verified on the installed artifact and dry-run | a real project formatter case |
 | Evidence DB | 8 public repositories, 7,759 files → 18,613 table observations / 88 rule keys, 311 own functions | review and promote frequent candidates; SQLite not introduced |
-| Hosts | Real local npm installer installed and repaired both isolated Codex 0.162.1 (enabled) and Claude Code 2.1.286 (1 skill, 1 agent, 3 hooks); cache-independent engines, strict validation and hook tests passed | publication approval/registry installation, native Windows and real-session acceptance (CODEX1) |
-| Product finish | brand confirmed: boxbox/BoxBox, 0.2.0, private; docs and code in English (S8 done 2026-10-07) | license, channel, update/removal, release |
+| Hosts | Real local npm installer installed and repaired both isolated Codex 0.162.1 (enabled) and Claude Code 2.1.286 (1 skill, 1 agent, 3 hooks); cache-independent engines, strict validation and hook tests passed | publication approval/registry installation and native host event delivery; Windows explicit CLI acceptance passed (CODEX1) |
+| Product finish | brand confirmed: boxbox/BoxBox, 0.2.1, private; docs and code in English (S8 done 2026-10-07) | license, channel, update/removal, release |
 
 ## Verification state
 
@@ -70,16 +98,18 @@ Node isolated install journey. The public preset still has 0 rows.
 
 ## Next resume point
 
-The active task is LAYOUT1: separate product sources, development-only material and generated distribution (user direction 2026-10-20). See [the layout contract](layout.md). CODEX1 registry/Windows verification remains on hold during this migration. Its acceptance criteria are in [plan.md](plan.md). Shared release work (PKG1) and DATA2 candidate verdicts remain on hold.
-No preset candidate is switched to approved before human approval. Research evidence is kept separately in `~/.cache/boxbox/corpus/`;
+The active task is DELIVERY1: finish candidate CI and the installed-plugin Codex HUD, then record actual verification.
+FIRSTUSE1 explicit formatting and candidate delivery, and LAYOUT1 separation/audit, are verified. Public registry
+publication and native host event delivery remain open. The two exact preset rules have human approval; broader
+candidates still require a decision. Research evidence is kept separately in `~/.cache/boxbox/corpus/`;
 the observation JSONL is **18,613 lines / 11,207,375 B** and the aggregated signatures **175,183 B**. Including the public repository
 checkouts, the whole research cache is **715,920 KiB (about 699 MiB)**. None of this data is in the npm artifact.
 
 The plugin user DB is created with `boxbox db init` as three empty JSONL files in `$XDG_CONFIG_HOME/boxbox` or `~/.config/boxbox`, and
 `db status` prints only line counts and bytes. The three public preset JSONL files are a separate release boundary owned by the maker
-and have 0 rows. The 88 candidates and 225 representative examples (213 pass, 12 held) are review material.
+and now contain 2 conventions, 4 examples and 2 decisions. The 88 candidates and 225 representative examples (213 pass, 12 held) are review material.
 
-Release blockers: no approval data, real host and other-OS journeys, license and channel decisions, a final security review,
+Release blockers: real host event acceptance, remaining other-OS journeys, license/channel decisions and final full-product security review,
 and **publication approval and registry installation of the selected `boxbox-plugin` installer are pending; core CLI and skill IDs remain `boxbox`**. The npm tarball excludes the research DB but
 includes the 159,096 B runtime JavaScript bundle, so the CLI implementation is not kept private by design.
 
