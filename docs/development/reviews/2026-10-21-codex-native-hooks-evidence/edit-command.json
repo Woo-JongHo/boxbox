@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "codex",
+    "exec",
+    "--sandbox",
+    "workspace-write",
+    "--model",
+    "gpt-5.6-terra",
+    "--skip-git-repo-check",
+    "--dangerously-bypass-hook-trust",
+    "--json",
+    "--cd",
+    "/tmp/boxbox-native-hooks-20261021/project",
+    "--output-last-message",
+    "/tmp/boxbox-native-hooks-20261021/edit.final.txt",
+    "-"
+  ],
+  "environmentOverrides": {
+    "CODEX_HOME": "/tmp/boxbox-native-hooks-20261021/codex-home"
+  },
+  "prompt": "edit-probe.txt"
+}

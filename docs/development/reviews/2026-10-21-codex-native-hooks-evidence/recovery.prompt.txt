@@ -1,0 +1,13 @@
+Controlled host integration recovery. Use the native apply_patch tool once with this exact single Update File patch:
+
+*** Begin Patch
+*** Update File: sample.py
+@@
+-a = 1
++a      = 1
+ longer = 22
+-mid = 333
++mid    = 333
+*** End Patch
+
+Do not invoke the engine or any hook manually and do not call shell tools. This patch is the only authorized edit. Report the actual hook feedback supplied by the host and quote any receipt paths verbatim. Do not guess paths.

@@ -1,0 +1,8 @@
+{
+  "pass": true,
+  "candidate": "dist/candidates/gha-39543872402/boxbox-plugin-0.2.2.tgz",
+  "sha256": "611858a6b7f72e1a27aaddf9593d5a1404a0baf7c705bb2ec21ea2f2bbec7137",
+  "bytes": 126691,
+  "sourcePluginTestsWorkflowsUnchanged": true,
+  "baseline": "e8362d2c276396cb8e37aa127c1632b46bff842b"
+}

@@ -1,0 +1,29 @@
+{
+  "pass": true,
+  "nativeSourceAndExtractChecks": {
+    "untrusted": {
+      "sourceSha256Matches": true,
+      "sourceBytesMatch": true,
+      "extractLinesAreExactOriginalLines": true
+    },
+    "edit": {
+      "sourceSha256Matches": true,
+      "sourceBytesMatch": true,
+      "extractLinesAreExactOriginalLines": true
+    },
+    "edit-exact": {
+      "sourceSha256Matches": true,
+      "sourceBytesMatch": true,
+      "extractLinesAreExactOriginalLines": true
+    },
+    "recovery": {
+      "sourceSha256Matches": true,
+      "sourceBytesMatch": true,
+      "extractLinesAreExactOriginalLines": true
+    }
+  },
+  "fixtureRestoredExactly": true,
+  "temporaryAuthRemoved": true,
+  "globalConfigHashUnchanged": true,
+  "credentialFieldScan": "no matches"
+}

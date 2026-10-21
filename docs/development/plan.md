@@ -69,7 +69,7 @@ review. The requirement of full verification before release stays.
 
 Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked/on hold`.
 
-1. There is always exactly one `▶ active`. The current active task is DELIVERY1: issue forms, PR verification, release candidates and installed BoxBox status in Codex (user direction 2026-10-21). FIRSTUSE1 implementation/delivery and LAYOUT1 audits are verified; native host event acceptance remains separate. CODEX1 registry verification, DATA2 and PKG1 public release work remain open.
+1. There is always exactly one `▶ active`. The current active task is CODEX1, resumed by the user on 2026-10-21: controlled native Codex evidence is audited, while Windows edit-dependent events remain blocked by native policy. DELIVERY1 issue/PR/candidate automation and installed BoxBox status are verified and accepted for continuation. FIRSTUSE1 implementation/delivery and LAYOUT1 audits are verified. Persistent trust, Claude event delivery, CODEX1 registry verification, DATA2 and PKG1 public release work remain open.
 2. Each REL becomes a completion candidate only with prerequisites, current implementation, remaining work, acceptance criteria and verification evidence.
 3. **Existing** in verification means it is checked with a command that exists now; **new** means the verifier must first be
    implemented in that REL. A command name appearing in the plan is not evidence.
@@ -81,7 +81,7 @@ Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked/on hold`
 
 ## Current implementation — DELIVERY1 GitHub candidates and Codex status
 
-**▶ active — implementation, independent audits and operational candidate verification complete; ready for user review before the next task (2026-10-21).**
+**✅ done — implementation, independent audits, operational candidate verification and delivery complete; the user directed continuation on 2026-10-21.**
 
 - **Scope:** issue/PR templates, shared CI verification, one installer archived with source identity and SHA-256, same-archive Linux/macOS/Windows smoke journeys, and an on-request Codex development HUD.
 - **GitHub result:** PR #2 preserves main history and merged the current layout as `6e74c9327c44b4121a7ec4803d3acad66ee0f071`. Final PR run39543306308 passed 496 tests with zero skips/failures on Ubuntu and macOS; types and shell passed. The first failed run exposed Rustfmt diff recognition and redundant optional fixture traversal; 0.2.2 fixes both with regression coverage.
@@ -114,13 +114,14 @@ Status legend: `⬜ todo` · `▶ active` · `✅ done` · `⏸ blocked/on hold`
 
 ## Current implementation — CODEX1 npm plugin installer
 
-**⏸ registry publication and native hook-event acceptance pending — user direction 2026-10-16: install Codex and Claude Code plugins through npm/npx; prioritize testing Windows Codex today. ZIP transfer was explicitly rejected.**
+**▶ active — isolated native evidence audited; Windows edit-dependent events blocked by host policy; registry publication remains a separate decision. Original user direction 2026-10-16: install Codex and Claude Code plugins through npm/npx; prioritize testing Windows Codex today. ZIP transfer was explicitly rejected.**
 
 - **Identity:** product `BoxBox`, core/plugin/skill `boxbox`, public installer candidate `boxbox-plugin`. `product.json` owns `displayName` and `npmName`. The user has no access to the occupied npm `boxbox` name and authorized an available alternative. `box-box` was rejected under npm's similarity policy; `boxbox-plugin` and `boxboxplugin` returned E404 on 2026-10-16. This is not reservation or final registry acceptance.
 - **Scope:** `npx boxbox-plugin` detects supported local CLIs and installs their thin plugins and included local engine into permanent user directories. `--codex` and `--claude` select hosts explicitly. Installation must survive removal of npm's temporary cache and must not require Bun or the author checkout.
 - **Acceptance:** real local npm artifact execution, permanent paths, real isolated Codex registration/enabled listing and Claude component discovery, Node-only checks, Windows command/path fixtures, and read-only hook execution without project writes. Preserve host trust settings and the Claude inspector's read-only restriction.
-- **Verification:** dedicated installer tests (7 pass, 219 assertions), `bun run check` (440 pass, 5 existing skips, 0 fail), artifact file list and nested-engine path scans, and real local `npx --yes 'file:<installer.tgz>'` journeys. Codex 0.162.1 and Claude Code 2.1.286 accepted installation and same-version repair in isolated homes. Cache/origin deletion did not prevent doctor and read-only checks. The final scoped Opus audit passed; native Windows and interactive session acceptance remain unmeasured. After publication, verify actual registry `npx boxbox-plugin` in a clean environment.
-- **Publication state:** this machine is authenticated to npm as `woojongho`. The outer `boxbox-plugin@0.2.0` candidate is publishable with `UNLICENSED` preview metadata and passed npm's publish dry run; it is unpublished. The nested engine remains private. Public registry command success and native Windows host acceptance are unmeasured. Full-product release approval, presets and license/channel decisions remain separate.
+- **Installer baseline (2026-10-16):** dedicated installer tests (7 pass, 219 assertions), `bun run check` (440 pass, 5 existing skips, 0 fail), artifact file list and nested-engine path scans, and real local `npx --yes 'file:<installer.tgz>'` journeys. Codex 0.162.1 and Claude Code 2.1.286 accepted installation and same-version repair in isolated homes. Cache/origin deletion did not prevent doctor and read-only checks. The final scoped Opus audit passed; native Windows and interactive session acceptance were unmeasured at that baseline. After publication, verify actual registry `npx boxbox-plugin` in a clean environment.
+- **Publication state:** npm authentication as `woojongho` and a publish dry run were verified for the historical `boxbox-plugin@0.2.0` candidate with `UNLICENSED` preview metadata. Current 0.2.2 is an unpublished candidate; the nested engine remains private. Public registry command success is unmeasured. Full-product release approval and license/channel decisions remain separate.
+- **2026-10-21 native acceptance:** controlled macOS Codex CLI 0.163.0 sessions delivered SessionStart into native response history; native apply_patch PostToolUse feedback and one bounded Stop continuation passed, as did explicit recovery. SessionStart model acknowledgment is not claimed on either platform. Exactly three reviewed handlers remained untrusted before/after one-invocation admission, and active user config digests matched before/after. Windows Codex 0.157.1 delivered SessionStart context but refused the edit under native read-only sandbox/approval policy; its PostToolUse and failing Stop/recovery remain blocked. Sonnet 5.5 necessary findings and final Opus 5.5 findings were corrected; both fix verifications passed. See [the native evidence](reviews/2026-10-21-codex-native-hooks.md).
 
 ## Current implementation — OBS1 code shape observation DB
 
@@ -689,6 +690,7 @@ Evidence material (research citations, corpus measurements: pattern distribution
 
 Findings outside the active task. Pull into a milestone when relevant.
 
+- Update the stale Codex `stop_hook_active` comment in `product/engine/common/lifecycle-hook.ts` with the next product change. Current OpenAI hooks documentation defines the flag and the implementation already checks it; the 2026-10-21 native evidence measures bounded continuation without collecting the input flag itself.
 - Different callees in one table (`run.map(…)` next to `new RegExp(…)`): align `(` after the widest callee and `)` as the cell close, arguments compact (user idea, 2026-09-28). Deferred to M1.5 judging: comparing different calls is rarely useful and `name    (` splits a call. Decide on real data.
 - The `;` axis can pad short rows far past column 120 when one row is long (seen in `stress-corpus.ts` during T1, fixed there by extracting a duplicated expression). The checker should warn when alignment pushes a table past 120 columns, pointing to the contract's "simplify the exceptional element first" step.
 - `development/tools/stress-corpus.ts` still has ten lines over 130 columns that are not tables.

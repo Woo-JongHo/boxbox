@@ -1,0 +1,10 @@
+{
+  "status": "PARTIAL: SessionStart delivered into native response history; editing and dependent events blocked",
+  "originalSummary": "verification.json",
+  "correctedInterpretationFields": [
+    "status",
+    "limitations[1]"
+  ],
+  "basis": "The original native response_item contains the SessionStart developer message; this proves delivery into input history, not model acknowledgment. Windows PostToolUse FAIL, failing Stop and recovery remain unmeasured.",
+  "rawEvidenceChanged": false
+}

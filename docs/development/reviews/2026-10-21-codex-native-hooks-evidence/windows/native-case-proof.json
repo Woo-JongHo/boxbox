@@ -1,0 +1,42 @@
+{
+  "untrusted": {
+    "threadId": "01a15cd3-4376-7182-8256-846c5cb24877",
+    "originalRollout": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\codex-home\\sessions\\2026\\10\\21\\rollout-2026-10-21T13-58-31-01a15cd3-4376-7182-8256-846c5cb24877.jsonl",
+    "originalRolloutSha256": "42073214112a414103efb347a090a507e8e69431507ea70a838d0677be66bbe2",
+    "originalRolloutBytes": 73053,
+    "extraction": "Exact original response_item lines for tool calls/results and BoxBox hook messages; session_meta and unrelated instructions omitted",
+    "startupDeveloperMessages": 0,
+    "postDeveloperMessages": 0,
+    "nativeToolCalls": 0,
+    "postToolFeedback": 0,
+    "stopContinuationPrompts": 0,
+    "receiptDirectoryExists": false,
+    "receipts": []
+  },
+  "edit": {
+    "threadId": "01a15cd4-2127-7e22-9f92-99b80a57fbf7",
+    "originalRollout": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\codex-home\\sessions\\2026\\10\\21\\rollout-2026-10-21T13-59-28-01a15cd4-2127-7e22-9f92-99b80a57fbf7.jsonl",
+    "originalRolloutSha256": "2be70b1de343ea3002120d2ea52cc423f7e21ff85d432f603b0b894caf146100",
+    "originalRolloutBytes": 82291,
+    "extraction": "Exact original response_item lines for tool calls/results and BoxBox hook messages; session_meta and unrelated instructions omitted",
+    "startupDeveloperMessages": 1,
+    "postDeveloperMessages": 0,
+    "nativeToolCalls": 1,
+    "postToolFeedback": 0,
+    "stopContinuationPrompts": 0,
+    "receiptDirectoryExists": true,
+    "receipts": [
+      {
+        "path": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\codex-home\\plugins\\data\\boxbox-boxbox-plugins\\hooks\\ed2e9555f3ee7911\\1d1dd0d5acb4f0416c29d877ead91998dc6e6ba5ee244f12adc02b33da73a689\\1792558777367-22803c7d-4199-4293-91f9-8633d5f89779.json",
+        "event": "Stop",
+        "state": "NO_CHANGES",
+        "files": [],
+        "checked": [],
+        "unsupported": [],
+        "tool": null,
+        "at": "2026-10-21T04:59:37.366Z",
+        "automaticFixPerformed": false
+      }
+    ]
+  }
+}

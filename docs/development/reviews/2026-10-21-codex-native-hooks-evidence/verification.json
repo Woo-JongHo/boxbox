@@ -1,0 +1,110 @@
+{
+  "ok": true,
+  "host": "Codex CLI 0.163.0",
+  "pluginVersion": "0.2.2",
+  "scope": "macOS isolated profile; canonical temporary Python project; documented per-invocation reviewed hook automation flag; workspace-write sandbox",
+  "cases": {
+    "untrusted": {
+      "threadId": "01a15ccb-0ba3-7270-b644-82692fd41eb6",
+      "requestedModel": "gpt-5.6-terra",
+      "originalRollout": "/tmp/boxbox-native-hooks-20261021/codex-home/sessions/2026/10/21/rollout-2026-10-21T13-49-34-01a15ccb-0ba3-7270-b644-82692fd41eb6.jsonl",
+      "originalRolloutSha256": "2056c423434c20d4600a9ae25e095c06927207933a76f8e16ac58271a9bf9068",
+      "originalRolloutBytes": 56297,
+      "extraction": "Exact original response_item lines for tool calls/results and BoxBox hook messages; session metadata and unrelated instructions omitted",
+      "receiptDirectory": null,
+      "startupDeveloperMessages": 0,
+      "nativeToolCalls": 0,
+      "stopContinuationPrompts": 0,
+      "receipts": []
+    },
+    "edit": {
+      "threadId": "01a15ccc-2a66-7a83-9677-323493a11f85",
+      "requestedModel": "gpt-5.6-terra",
+      "originalRollout": "/tmp/boxbox-native-hooks-20261021/codex-home/sessions/2026/10/21/rollout-2026-10-21T13-50-46-01a15ccc-2a66-7a83-9677-323493a11f85.jsonl",
+      "originalRolloutSha256": "082454219098b97181812089456a573bef8ebd7ae30e0b38133908d65da45fdb",
+      "originalRolloutBytes": 70871,
+      "extraction": "Exact original response_item lines for tool calls/results and BoxBox hook messages; session metadata and unrelated instructions omitted",
+      "receiptDirectory": "/private/tmp/boxbox-native-hooks-20261021/codex-home/plugins/data/boxbox-boxbox-plugins/hooks/164d800c464c6630/7e603a77e2187efe39d5f1241e71d8c7de4af6a7149a4f227ef7d8b4c43da86e",
+      "startupDeveloperMessages": 1,
+      "nativeToolCalls": 1,
+      "stopContinuationPrompts": 0,
+      "receipts": [
+        {
+          "event": "Stop",
+          "state": "NO_CHANGES",
+          "tool": null,
+          "automaticFixPerformed": false
+        }
+      ]
+    },
+    "edit-exact": {
+      "threadId": "01a15ccd-5532-76e1-9d56-da8533d627b0",
+      "requestedModel": "gpt-5.6-terra",
+      "originalRollout": "/tmp/boxbox-native-hooks-20261021/codex-home/sessions/2026/10/21/rollout-2026-10-21T13-52-03-01a15ccd-5532-76e1-9d56-da8533d627b0.jsonl",
+      "originalRolloutSha256": "fd951f5dd9cde52c5b96440c1ff6a28d240173e949d302f93bcf6b9136acc8e6",
+      "originalRolloutBytes": 75078,
+      "extraction": "Exact original response_item lines for tool calls/results and BoxBox hook messages; session metadata and unrelated instructions omitted",
+      "receiptDirectory": "/private/tmp/boxbox-native-hooks-20261021/codex-home/plugins/data/boxbox-boxbox-plugins/hooks/5fb646832fdbed35/8fb4a3969fc45829aa2c7c9c2a37ef8ccba6c8d4c7559bc433e87a708c5d9ee1",
+      "startupDeveloperMessages": 1,
+      "nativeToolCalls": 1,
+      "stopContinuationPrompts": 1,
+      "receipts": [
+        {
+          "event": "PostToolUse",
+          "state": "FAIL",
+          "tool": "apply_patch",
+          "automaticFixPerformed": false
+        },
+        {
+          "event": "Stop",
+          "state": "FAIL",
+          "tool": null,
+          "automaticFixPerformed": false
+        },
+        {
+          "event": "Stop",
+          "state": "FAIL",
+          "tool": null,
+          "automaticFixPerformed": false
+        }
+      ]
+    },
+    "recovery": {
+      "threadId": "01a15ccd-fea2-73f0-8749-cfc4922e078b",
+      "requestedModel": "gpt-5.6-terra",
+      "originalRollout": "/tmp/boxbox-native-hooks-20261021/codex-home/sessions/2026/10/21/rollout-2026-10-21T13-52-46-01a15ccd-fea2-73f0-8749-cfc4922e078b.jsonl",
+      "originalRolloutSha256": "43e78f353575f0cadb1d17d18bb5af7f6d5c22fdc2fa7d5497cec79a54a8dcba",
+      "originalRolloutBytes": 89853,
+      "extraction": "Exact original response_item lines for tool calls/results and BoxBox hook messages; session metadata and unrelated instructions omitted",
+      "receiptDirectory": "/private/tmp/boxbox-native-hooks-20261021/codex-home/plugins/data/boxbox-boxbox-plugins/hooks/5fb646832fdbed35/6addb1aa0fee98d6ab9606fe2bb055d5ed44fae899db409d4e586af79f3aef27",
+      "startupDeveloperMessages": 1,
+      "nativeToolCalls": 1,
+      "stopContinuationPrompts": 0,
+      "receipts": [
+        {
+          "event": "PostToolUse",
+          "state": "PASS",
+          "tool": "apply_patch",
+          "automaticFixPerformed": false
+        },
+        {
+          "event": "Stop",
+          "state": "PASS",
+          "tool": null,
+          "automaticFixPerformed": false
+        }
+      ]
+    }
+  },
+  "globalConfigHashUnchanged": true,
+  "fixtureRestoredExactly": true,
+  "misalignedFixtureObservedBeforeRecovery": true,
+  "hookDidNotRewriteFixture": true,
+  "persistedTrustUsed": false,
+  "limitations": [
+    "Not a persistent user-profile trust test",
+    "No native Windows or Claude event acceptance measurement",
+    "The first edit attempt was invalid Delete+Add patch syntax and did not change the fixture; not counted as edit acceptance",
+    "The first edit model self-report returned null despite a recorded startup developer message; evidence uses native transcript and receipts, not self-report"
+  ]
+}

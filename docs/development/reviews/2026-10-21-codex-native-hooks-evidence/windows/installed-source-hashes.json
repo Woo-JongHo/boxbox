@@ -1,0 +1,17 @@
+[
+  {
+    "path": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\profile-local\\BoxBox\\Codex\\0.2.2\\plugin\\hooks\\hooks.json",
+    "sha256": "7d0b00781ab77046905cf9aa2698b8475bfb00f449b14d8f6f786632d15e6c91",
+    "bytes": 1268
+  },
+  {
+    "path": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\profile-local\\BoxBox\\Codex\\0.2.2\\plugin\\scripts\\boxbox.mjs",
+    "sha256": "729bf3758857e82eae6fd5ca0a4a1ec431d272c34529fe57a60c6a60ce363eeb",
+    "bytes": 1643
+  },
+  {
+    "path": "C:\\Users\\woo\\Downloads\\BoxBox\\native-hooks-20261021T045654Z\\profile-local\\BoxBox\\Codex\\0.2.2\\runtime\\node_modules\\boxbox\\dist\\cli.js",
+    "sha256": "33928ad26bf90ad029fa26d04c69b86892c7b6a17745f6449672d02bc0597f10",
+    "bytes": 172567
+  }
+]
