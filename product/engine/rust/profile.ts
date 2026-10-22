@@ -24,11 +24,11 @@ import type {
                              } from "@/common/table-engine.ts" ;
 
 const RUST_SYNTAX: CodeSyntax = {
-	lineComments  : ["//"],
-	blockComments : [{ open: "/*", close: "*/" }],
-	strings       : [{ open: '"', close: '"', escape: true }],
-	rustChars     : true,
-	cppRaw        : false,
+	lineComments  : ["//"]                                    ,
+	blockComments : [{ open: "/*", close: "*/" }]             ,
+	strings       : [{ open: '"', close: '"', escape: true }] ,
+	rustChars     : true                                      ,
+	cppRaw        : false                                     ,
 };
 
 /** Rows starting with these tokens are declarations or control flow, not table rows. */
@@ -259,25 +259,25 @@ export const RUST_ALIGNER: LineProfiler = {
 	columnAxes : ["action", "arg", "cell", "name", "paren", "pattern", "type", "value"],
 	canonicalGaps : {
 		// Rust convention: colon, comma, semicolon and paren attach to the cell; equal and arrow get one space.
-		colon     : "",
-		comma     : "",
-		semicolon : "",
-		paren     : "",
-		arrow     : " ",
-		equal     : " ",
-		keyword   : " ",
-		name      : " ",
-		type      : " ",
-		value     : " ",
-		pattern   : " ",
-		action    : " ",
+		colon     : ""  ,
+		comma     : ""  ,
+		semicolon : ""  ,
+		paren     : ""  ,
+		arrow     : " " ,
+		equal     : " " ,
+		keyword   : " " ,
+		name      : " " ,
+		type      : " " ,
+		value     : " " ,
+		pattern   : " " ,
+		action    : " " ,
 		// Bundle rows attach the first cell to the opening symbol and attach the closing symbol + `,` too, so they share the cell column.
-		cell         : "",
-		arg          : " ",
-		parenOpen    : "",
-		parenClose   : "",
-		bracketOpen  : "",
-		bracketClose : "",
+		cell         : ""  ,
+		arg          : " " ,
+		parenOpen    : ""  ,
+		parenClose   : ""  ,
+		bracketOpen  : ""  ,
+		bracketClose : ""  ,
 	},
 	profile(code: string, masked: string): RowProfile | null {
 		const tail = code.trimEnd();

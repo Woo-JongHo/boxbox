@@ -77,12 +77,12 @@ function tokenColumn(line: string, spec: TokenSpec): number | undefined {
 
 function leftAnchorError(line: string, spec: LeftAnchorSpec): string | undefined {
 	const openingIndex = tokenIndex(line, spec);
-	if (openingIndex === undefined) return undefined;
+	if (openingIndex === undefined)                           return undefined;
 	const contentStart = openingIndex + spec.token.length                                      ;
 	const closingIndex = line.indexOf(spec.closingToken, contentStart)                         ;
 	const content      = line.slice(contentStart, closingIndex < 0 ? undefined : closingIndex) ;
-	if (!content.trim()) return undefined;
-	if (!content.startsWith(" ")) return "missing a single space after the opening boundary";
+	if (!content.trim())                                      return undefined;
+	if (!content.startsWith(" "))                             return "missing a single space after the opening boundary";
 	if (content.startsWith("  ") || content.startsWith("\t")) return "more than one space before the content";
 	return undefined;
 }
@@ -101,9 +101,9 @@ if (!filePath || filePath.startsWith("--")) {
 	throw new Error("usage: measure-layout.ts <file> [--lines 1,3-8] [--tokens 'from|//#1'] [--expect 'from=41|//=146'] [--left-anchor '{#1|(#1|<#1'] [--center-cell '(#1|<#1'] [--compact-before '}#2']");
 }
 
-const source      : string              = readFileSync(filePath, "utf8")                      ;
-const sourceLines : readonly string[]   = source.split("\n")                                  ;
-const lineFilter  : ReadonlySet<number> = parseLines(argument("--lines"), sourceLines.length) ;
+const source      : string              = readFileSync(filePath, "utf8"                       ) ;
+const sourceLines : readonly string[]   = source.split("\n"                                   ) ;
+const lineFilter  : ReadonlySet<number> = parseLines  (argument("--lines"), sourceLines.length) ;
 const tokenSpecs : readonly TokenSpec[] = (argument("--tokens") ?? ":#1|=>|= await|//")
 	.split("|")
 	.filter(Boolean)

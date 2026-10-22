@@ -45,9 +45,9 @@ function options(root: string): Options {
 		values.set(name, value);
 	}
 	return {
-		maxErrors : naturalNumber("--max-errors", values.get("--max-errors") ?? "0"),
-		top       : naturalNumber("--top", values.get("--top") ?? "20"),
-		file      : values.has("--file") ? repositoryPath(root, values.get("--file") ?? "") : null,
+		maxErrors : naturalNumber("--max-errors", values.get("--max-errors") ?? "0")               ,
+		top       : naturalNumber("--top", values.get("--top") ?? "20")                            ,
+		file      : values.has("--file") ? repositoryPath(root, values.get("--file") ?? "") : null ,
 	};
 }
 
@@ -59,9 +59,9 @@ function diagnostic(match: RegExpMatchArray): Diagnostic {
 	const message = match[5] ;
 	if (!file || !line || !column || !code || !message) throw new Error(`cannot parse TypeScript diagnostic: ${match[0]}`);
 	return {
-		file   : file.replaceAll("\\", "/").replace(/^\.\//u, ""),
-		line   : Number(line),
-		column : Number(column),
+		file   : file.replaceAll("\\", "/").replace(/^\.\//u, "") ,
+		line   : Number(line)                                     ,
+		column : Number(column)                                   ,
 		code,
 		message,
 	};
@@ -87,8 +87,8 @@ function compareText(left: string, right: string): number {
 	return left < right ? -1 : left > right ? 1 : 0;
 }
 
-const root   = process.cwd()                          ;
-const binary = resolve(root, "node_modules/.bin/tsc") ;
+const root   = process.cwd()                              ;
+const binary = resolve    (root, "node_modules/.bin/tsc") ;
 const { maxErrors, top, file } = options(root);
 const result      = runTypeScript(root, binary)                                                               ;
 const decoder     = new TextDecoder()                                                                         ;

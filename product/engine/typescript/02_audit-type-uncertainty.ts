@@ -95,9 +95,9 @@ async function main(): Promise<void> {
 		const location = source.getLineAndCharacterOfPosition(position);
 		const finding  = {
 			kind,
-			line   : location.line + 1,
-			column : location.character + 1,
-			text   : excerpt(owner, source),
+			line   : location.line + 1      ,
+			column : location.character + 1 ,
+			text   : excerpt(owner, source) ,
 		};
 		found.set(`${position}:${kind}`, finding);
 	}

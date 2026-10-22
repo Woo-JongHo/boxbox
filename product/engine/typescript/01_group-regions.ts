@@ -67,12 +67,12 @@ function collect(node: Node, source: TsSourceFile, minRows: number, groups: Grou
 				const first = run[0]              ;
 				const last  = run.at(-1) ?? first ;
 				groups.push({
-					containerLabel : container.label,
-					kind           : SyntaxKind[first.kind] ?? `Kind${first.kind}`,
-					rows           : run,
-					startLine      : lineOf(source, first.getStart(source)),
-					endLine        : lineOf(source, last.getEnd()),
-					axes           : boundaryAxesOf(node, first, source),
+					containerLabel : container.label                               ,
+					kind           : SyntaxKind[first.kind] ?? `Kind${first.kind}` ,
+					rows           : run                                           ,
+					startLine      : lineOf(source, first.getStart(source))        ,
+					endLine        : lineOf(source, last.getEnd())                 ,
+					axes           : boundaryAxesOf(node, first, source)           ,
 				});
 			}
 		}

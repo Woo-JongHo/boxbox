@@ -212,10 +212,10 @@ function approvalContext(root: string): ApprovalContext {
 		}
 	});
 	const evidence = JSON.stringify({
-		config      : config.fingerprint,
-		conventions : registry.conventions,
-		examples    : [...registry.examples.entries()],
-		decisions   : [...registry.decisions.entries()],
+		config      : config.fingerprint                ,
+		conventions : registry.conventions              ,
+		examples    : [...registry.examples.entries()]  ,
+		decisions   : [...registry.decisions.entries()] ,
 		documents,
 	});
 	return { registry, resolveDocument, fingerprint: `sha256:${createHash("sha256").update(evidence).digest("hex")}` };
@@ -303,13 +303,13 @@ function database(args: readonly string[], json: boolean): number {
 		assertSimpleFlags(tail, ["--json"]);
 		const result = initializeUserDatabase();
 		const output = {
-			schemaVersion : 1,
-			tool          : "boxbox",
-			command       : "db init",
-			ok            : true,
-			root          : result.root,
-			createdRoot   : result.createdRoot,
-			files         : result.files,
+			schemaVersion : 1                  ,
+			tool          : "boxbox"           ,
+			command       : "db init"          ,
+			ok            : true               ,
+			root          : result.root        ,
+			createdRoot   : result.createdRoot ,
+			files         : result.files       ,
 		};
 		if (json) emitJson(output);
 		else {
@@ -434,9 +434,9 @@ async function format(parsed: ParsedFileCommand, root: string, alignmentOnly = f
 			file            : parsed.file,
 			language        : parsed.language,
 			...(formatter ? { formatter } : {}),
-			registry        : context.registry,
-			resolveDocument : context.resolveDocument,
-			dryRun          : parsed.dryRun,
+			registry        : context.registry        ,
+			resolveDocument : context.resolveDocument ,
+			dryRun          : parsed.dryRun           ,
 			alignmentOnly,
 			provenance      : () => approvalContext(root).fingerprint,
 		});
