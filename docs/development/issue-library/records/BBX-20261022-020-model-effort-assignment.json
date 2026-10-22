@@ -92,6 +92,15 @@
         "docs/development/issue-library/evidence/session-usage-measurements.txt"
       ],
       "result": "A message split over several lines repeats its usage; counting once per message id reduced 909 lines to 425 messages in the development session. In the Windows session BoxBox hooks injected about 1,041 estimated tokens against 85,510 output and 14.8 million cache-read tokens, and the agent made no BoxBox engine calls, so the cost of the inspector and authoring steps is still unmeasured."
+    },
+    {
+      "name": "Baseline sessions exercising check, write, align and the inspector on the inherited model",
+      "status": "passed",
+      "scope": "Four non-interactive Claude Code 2.1.280 runs on native Windows (boxbox 0.2.5, the machine's default claude-opus-5-5 at medium effort), one new session per request, measured with development/tools/session-usage.ts including the subagent record.",
+      "evidence": [
+        "docs/development/issue-library/evidence/inspector-baseline-sessions.txt"
+      ],
+      "result": "Each run finished in 3-6 turns. Claude Code reported cost_usd 0.3171 (check), 0.3074 (write), 0.3432 (align) and 0.5120 (inspector request). In the inspector run the subagent spent 4 of 6 turns, 1,787 of 3,026 output tokens and 104,170 of 151,959 cache-read tokens. These are baseline figures on the inherited model; no alternative model has been run and correctness was not scored."
     }
   ],
   "related": [
@@ -164,6 +173,15 @@
       "summary": "Added development/tools/session-usage.ts. Measured two real sessions: hook text is a negligible share of tokens (about 1.0K estimated tokens in the Windows session; about 6.5K across 115 injections in the development session), context re-reading dominates, and neither session exercised the inspector. The evaluation therefore needs sessions that run the guide, check and inspector steps.",
       "evidence": [
         "docs/development/issue-library/evidence/session-usage-measurements.txt"
+      ]
+    },
+    {
+      "sequence": 6,
+      "date": "2026-10-22",
+      "event": "implemented",
+      "summary": "Ran four fresh non-interactive sessions on the Windows host to get a baseline for the inspector and the authoring steps. The measuring tool now reads subagent records (stored in a separate file) and recognizes the Windows skill's node -e bridge, including several engine commands in one call; before this the engine calls in Windows sessions were all classified as other. Cost figures are the ones Claude Code printed.",
+      "evidence": [
+        "docs/development/issue-library/evidence/inspector-baseline-sessions.txt"
       ]
     }
   ]

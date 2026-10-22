@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { categoryOf, formatUsage, sessionUsage } from "../development/tools/session-usage.ts";
+import { categoriesOf, categoryOf, formatUsage, sessionUsage } from "../development/tools/session-usage.ts";
 
 const SECRET = "SECRET-PROMPT-TEXT";
 
@@ -7,6 +7,7 @@ const usage      = (input: number, cacheRead: number, cacheWrite: number, output
 const assistant  = (id: string, content: unknown[], numbers: ReturnType<typeof usage>, model = "claude-sonnet-5-5", effort = "low") => JSON.stringify({ type: "assistant", sessionId: "s1", effort, uuid: `u-${id}-${content.length}`, message: { id, model, content, usage: numbers } }) ;
 const toolUse    = (id: string, name: string, input: unknown) => ({ type: "tool_use", id, name, input })                                                                                                                                                                                  ;
 const toolResult = (id: string, content: unknown) => JSON.stringify({ type: "user", message: { content: [{ type: "tool_result", tool_use_id: id, content }] } })                                                                                                                          ;
+const bridge     = (...subs: string[]) => `cd "C:/p"; B='const [n,l]=JSON.parse(Buffer.from("QUJD","base64").toString("utf8"));'; ${subs.map(sub => `node -e "$B" -- ${sub} --file a.ts --json`).join("; ")}`                                                                             ;
 const launcher   = (sub: string) => `'/usr/bin/node' '/home/x/plugin/scripts/boxbox.mjs' ${sub} --file a.ts --json`                                                                                                                                                                       ;
 
 describe("categoryOf", () => {
@@ -25,6 +26,24 @@ describe("categoryOf", () => {
 		expect(categoryOf("Read" , { file_path: "/x/boxbox.mjs" }     )).toBe("other") ;
 		expect(categoryOf("Bash" , "not an object"                    )).toBe("other") ;
 		expect(categoryOf("Skill", { skill: "other-skill" }           )).toBe("other") ;
+	});
+});
+
+describe("categoriesOf", () => {
+	test("recognizes the Windows bridge and every engine command a single shell call runs", () => {
+		expect(categoriesOf("Bash", { command: bridge("check")                               })).toEqual(["boxbox:check"]                                ) ;
+		expect(categoriesOf("Bash", { command: bridge("check", "guide", "check")             })).toEqual(["boxbox:check", "boxbox:guide", "boxbox:check"]) ;
+		expect(categoriesOf("Bash", { command: `${launcher("align")} && ${launcher("check")}`})).toEqual(["boxbox:align", "boxbox:check"]                ) ;
+	});
+
+	test("recognizes the bridge script written inline instead of through a variable", () => {
+		const inline = "cd \"C:/p\" && node -e \"const r=require('node:child_process').spawnSync(n,[l,...process.argv.slice(1)],{stdio:'inherit'})\" -- check --file a.ts --json; node -e \"const r=require('node:child_process').spawnSync(n,[l])\" -- guide --file a.ts";
+		expect(categoriesOf("Bash", { command: inline })).toEqual(["boxbox:check", "boxbox:guide"]);
+	});
+
+	test("a node -e script that is not the bridge, and a different option position, stay other", () => {
+		expect(categoriesOf("Bash", { command: `node -e "console.log(1)" -- check` })).toEqual(["other"]);
+		expect(categoriesOf("Bash", { command: "echo check guide"                  })).toEqual(["other"]);
 	});
 });
 
@@ -89,5 +108,23 @@ describe("sessionUsage", () => {
 		]);
 		expect(JSON.stringify(result)).not.toContain(SECRET);
 		expect(formatUsage(result)   ).not.toContain(SECRET);
+	});
+
+	test("reports a subagent's own turns under subagent/ and as a share of the total", () => {
+		const parent = assistant     ("p1", [toolUse("a1", "Agent", { subagent_type: "boxbox:readability-inspector" })], usage(1, 100, 10, 20)                                                                                                                                                    ) ;
+		const child  = JSON.stringify({ type: "assistant", isSidechain: true, agentId: "x", sessionId: "s1", effort: "low", uuid: "c1", message: { id: "c1", model: "claude-sonnet-5-5", content: [toolUse("b1", "Bash", { command: bridge("check", "guide") })], usage: usage(2, 300, 30, 40) } }) ;
+		const result = sessionUsage  ([parent, child]                                                                                                                                                                                                                                             ) ;
+		expect(result.total.output                          ).toBe         (60                                                                ) ;
+		expect(result.subagent                              ).toEqual      ({ turns: 1, input: 2, cacheRead: 300, cacheWrite: 30, output: 40 }) ;
+		expect(result.byCategory["boxbox:inspector"]?.output).toBe         (20                                                                ) ;
+		expect(result.byCategory["subagent/boxbox:check"]   ).toMatchObject({ turns: 1, calls: 1, output: 40 }                                ) ;
+		expect(result.byCategory["subagent/boxbox:guide"]   ).toMatchObject({ turns: 0, calls: 1 }                                            ) ;
+	});
+
+	test("a call that runs several engine commands is one turn but one call per command", () => {
+		const result = sessionUsage([assistant("m1", [toolUse("t1", "Bash", { command: bridge("check", "guide") })], usage(1, 0, 0, 7))]);
+		expect(result.total.turns               ).toBe         (1                                ) ;
+		expect(result.byCategory["boxbox:check"]).toMatchObject({ turns: 1, calls: 1, output: 7 }) ;
+		expect(result.byCategory["boxbox:guide"]).toMatchObject({ turns: 0, calls: 1, output: 0 }) ;
 	});
 });
