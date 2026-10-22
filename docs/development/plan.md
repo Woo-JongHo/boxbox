@@ -4,6 +4,72 @@ BoxBox's product direction is owned by [`design.md`](design.md), current impleme
 [`implementation.md`](implementation.md), the short resume screen by [`status.md`](status.md), and the work order and
 completion verdicts up to release by this document.
 
+## Session handoff — 2026-10-23
+
+Read this first when resuming. It records where the 0.2.5 release stands; older sections below are history.
+
+### State
+
+- `main` is `9a0406e` (PR #23). The repository has been **public** since 2026-10-22. `main` is protected: the checks
+  `plugin-contract (ubuntu-latest)` and `plugin-contract (macos-latest)` are required, force pushes and deletions are blocked,
+  there is no required review. Merged branches are deleted; no PR is open.
+- Tag `v0.2.5` (annotated, on `9a0406e`) triggered `release.yml`; all 8 jobs passed (guard, verify x2, package, smoke on
+  Linux/macOS/Windows, draft). The result is a **draft pre-release** `v0.2.5` with `boxbox-plugin-0.2.5.tgz`
+  (SHA-256 `816f7b14e2e4f834be8aaf9538653b06293d22666882e284fcf50e504a173ac6`), `SHA256SUMS` and `candidate.json`.
+  The archive was downloaded and checked: hash matches, `license: "MIT"`, `LICENSE` identical to the repository file,
+  39 files, no development content, no local paths. `npm publish --dry-run` passed.
+- A second draft release `evidence-2026-10-22` holds the archive of 3,649 uncited REL10 lifecycle evidence files
+  (see `reviews/2026-10-22-artifact-lifecycle-evidence/ARCHIVE.md`). It is not a product release; do not publish it.
+- Packages declare **MIT** and ship `LICENSE` (user decision 2026-10-22). The first release is a pre-release.
+- `main` history was rewritten once on 2026-10-22 to remove `Co-Authored-By` trailer lines from 67 commit messages.
+  Trees are unchanged; 132 hashes changed. Old-to-new map: [history-rewrite-2026-10-22.md](history-rewrite-2026-10-22.md).
+  Do not add attribution trailers to new commits or PR text.
+- Issues: closed #7, #8, #11 (fixed by PR #14 with tests); open #6 (model/effort assignment, values still
+  `unevaluated-default`), #9 (Python import tables), #10 (call-valued assignments split by callee), #12 (nested-repository
+  hook baseline error), #13 (`-monitor` report proposal), #19 (comma-terminated runs not reported as unsupported).
+  Issues carry no labels and no title prefixes; the issue forms follow the Kubernetes layout and set no labels.
+
+### Next steps (in order)
+
+1. **npm publication (user, needs login and 2FA).** Not yet done; `npm whoami` returned E401 here.
+   ```text
+   cd /tmp && gh release download v0.2.5 -R Woo-JongHo/boxbox -p 'boxbox-plugin-0.2.5.tgz' --clobber && shasum -a 256 boxbox-plugin-0.2.5.tgz
+   npm login
+   npm publish /tmp/boxbox-plugin-0.2.5.tgz --access public
+   ```
+   The hash must equal the SHA-256 above. This publishes the same bytes as the GitHub release. `boxbox-plugin` was free (E404).
+2. **Publish the GitHub release** (`gh release edit v0.2.5 --draft=false`; the pre-release flag stays).
+3. **Verify after publication:** `npm view boxbox-plugin`, and `npx boxbox-plugin` in an isolated directory and home.
+4. **Update the install text** in `README.md`, `README.ko.md`, `README.zh-CN.md` together (the status paragraph and the
+   "Install the plugin" section still say publication is pending) and in `product/installer/README.md`. Keep
+   `test/readme-parity.test.ts` green.
+5. **Refresh stale documents:** `status.md` still describes 0.2.4 with old hashes; this plan's READINESS1 phase table is
+   historical. Add a short checklist document and link it from `README.md` here (proposed, not created).
+
+### Open verification debt
+
+- R5 candidate rerun identity (issue-library record `BBX-20261022-019`, status `verifying`): the independent review and a
+  real hosted smoke-only rerun measurement are not done. The workflow change itself is merged and the first tagged run passed.
+- Authenticated host acceptance (Claude Code and Codex UI and hook events) is not established.
+- Hook checks report two files as not aligned: `product/engine/common/code-text.ts` (one group) and
+  `test/fixtures/python/tables.aligned.py` (four groups; possibly the new `NAME : type` colon rule). They belong to the
+  chacada side; the fixture is a golden file, so decide before re-aligning it.
+
+### chacada (company desktop, WSL2)
+
+Repository: `/mnt/c/Users/woo/woo/00_project/boxbox`. Its branches (`main`, `feat/matrix-first-readiness`,
+`fix/python-grid-gaps`) have no commit missing from the rewritten `main` (compared by patch) and its worktree was clean.
+After checking that no Codex session is mid-work there, run `git fetch origin && git switch main && git reset --hard origin/main`
+and delete the old branches. **Never `git pull`**: it would merge the old history and bring the trailers back.
+
+### Other open decisions
+
+- npm trusted publishing from Actions (not configured), a `boxbox update` command, `SECURITY.md` and private vulnerability
+  reporting (disabled), moving the remaining `*-evidence` folders (about 11 MB) and 45 Korean development documents out of
+  the tree, and the optional GitHub Support request to purge the old PR commit refs.
+- The maintainer's Mac data volume was 100% full (about 330 MB free); this caused one `ENOSPC` test failure.
+  Free space before running the full check.
+
 ## Completion loop — READINESS1 (2026-10-21)
 
 **▶ active.** The user authorized a documented plan followed by autonomous development, verification and repair
