@@ -1,25 +1,24 @@
-name: Feature proposal
-description: Describe a problem and measurable acceptance criteria.
-title: "[Feature] "
+name: Feature request
+description: Propose a feature or behavior change
+labels: enhancement
 body:
   - type: textarea
-    id: problem
+    id: feature
     attributes:
-      label: Problem and concrete example
-      description: Describe the user task, current behavior, and a small synthetic example.
+      label: What would you like to be added?
+      description: Describe the user task, current behavior, and a small synthetic example. Include the affected language, command, host, or installation path.
     validations:
       required: true
   - type: textarea
-    id: behavior
+    id: rationale
     attributes:
-      label: Proposed behavior
-      description: Include the affected language, command, host, or installation path.
+      label: Why is this needed?
     validations:
       required: true
   - type: textarea
     id: acceptance
     attributes:
       label: Acceptance criteria and counterexamples
-      description: Specify what must pass and which cases must remain unchanged or refused. New formatting rules require separate human approval.
+      description: Specify what must pass and which cases must remain unchanged or refused. New formatting rules need separate human approval; use the rule proposal template for those.
     validations:
       required: true
