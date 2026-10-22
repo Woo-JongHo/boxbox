@@ -2,6 +2,12 @@ name: release-candidate
 
 on:
   workflow_dispatch:
+  workflow_call:
+    outputs:
+      sha256:
+        value: ${{ jobs.package.outputs.sha256 }}
+      artifact-id:
+        value: ${{ jobs.package.outputs.artifact-id }}
 
 permissions:
   contents: read

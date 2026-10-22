@@ -1,0 +1,86 @@
+name: release
+
+# A pushed v* tag builds and smoke-tests the exact installer archive, then creates a DRAFT GitHub release.
+# Nothing here publishes: a maintainer reviews and publishes the draft by hand. No npm token is used.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.identity.outputs.version }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.0
+      - name: Require the tag to match package.json, be reachable from main and have release notes
+        id: identity
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if test "$TAG" != "v$version"; then
+            echo "Tag $TAG does not match package.json version $version" >&2
+            exit 1
+          fi
+          git fetch --no-tags origin main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "Tag commit $GITHUB_SHA is not on main" >&2
+            exit 1
+          fi
+          bun development/tools/release-notes.ts "$version" > /dev/null
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  candidate:
+    needs: guard
+    uses: ./.github/workflows/release-candidate.yml
+
+  draft:
+    needs: [guard, candidate]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          artifact-ids: ${{ needs.candidate.outputs.artifact-id }}
+          merge-multiple: true
+          path: dist/release-candidate/
+      - name: Verify the archive against the independent build digest
+        env:
+          CANDIDATE_SHA256: ${{ needs.candidate.outputs.sha256 }}
+        run: |
+          cd dist/release-candidate
+          test "$(ls boxbox-plugin-*.tgz | wc -l)" -eq 1
+          echo "$CANDIDATE_SHA256  $(ls boxbox-plugin-*.tgz)" | sha256sum -c -
+          sha256sum -c SHA256SUMS
+      - name: Create the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          VERSION: ${{ needs.guard.outputs.version }}
+        run: |
+          bun development/tools/release-notes.ts "$VERSION" > "$RUNNER_TEMP/notes.md"
+          gh release create "$TAG" dist/release-candidate/boxbox-plugin-*.tgz dist/release-candidate/SHA256SUMS dist/release-candidate/candidate.json \
+            --draft --verify-tag --title "BoxBox $VERSION" --notes-file "$RUNNER_TEMP/notes.md"
