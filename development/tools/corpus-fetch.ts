@@ -28,7 +28,7 @@ interface CorpusManifest {
 	readonly sources       : readonly CorpusSource[] ;
 }
 
-const ROOT  = join(import.meta.dir, "..", "..")             ;
+const ROOT  = join(import.meta.dir, "..", ".."            ) ;
 const CACHE = join(homedir(), ".cache", "boxbox", "corpus") ;
 
 function readManifest(path: string, required: boolean): CorpusManifest {
@@ -78,8 +78,8 @@ export function mergeSources(manifest: CorpusManifest, local: CorpusManifest): r
 
 function main(): void {
 	const manifest = readManifest(join(ROOT, "development", "corpus", "manifest.json"), true) ;
-	const local    = readManifest(join(ROOT, "development", "corpus", "local.json"), false)   ;
-	const sources  = mergeSources(manifest, local)                                            ;
+	const local    = readManifest(join(ROOT, "development", "corpus", "local.json"), false  ) ;
+	const sources  = mergeSources(manifest, local                                           ) ;
 	mkdirSync(CACHE, { recursive: true })                                               ;
 	let failures = 0                                                                    ;
 	for (const source of sources) {

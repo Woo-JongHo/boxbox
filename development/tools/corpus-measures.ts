@@ -18,9 +18,9 @@ import      { join                     } from "node:path"              ;
 import      { patternOf                } from "@/common/surface.ts"    ;
 import      { readCensusReport         } from "./corpus-signatures.ts" ;
 
-const ROOT  = join(import.meta.dir, "..", "..")                             ;
+const ROOT  = join(import.meta.dir, "..", ".."                            ) ;
 const CACHE = join(process.env["HOME"] ?? "", ".cache", "boxbox", "corpus") ;
-const LOG   = join(ROOT, "development", "corpus", "verdicts.jsonl")         ;
+const LOG   = join(ROOT, "development", "corpus", "verdicts.jsonl"        ) ;
 
 interface SignatureType {
 	readonly signature : string ;
@@ -62,22 +62,22 @@ export function measuresOf(types: readonly SignatureType[], verdicts: ReadonlyMa
 	const measures = new Map<string, Measures>();
 	for (const [language, bucket] of grouped) {
 		const judged       = bucket.filter(type => verdicts.has(type.signature)) ;
-		const judgedTables = judged.reduce((sum, type) => sum + type.count, 0)   ;
-		const tables       = bucket.reduce((sum, type) => sum + type.count, 0)   ;
+		const judgedTables = judged.reduce((sum, type) => sum + type.count, 0  ) ;
+		const tables       = bucket.reduce((sum, type) => sum + type.count, 0  ) ;
 		const misses       = judged.filter(type => {
 			const verdict = verdicts.get(type.signature)                                 ;
 			return verdict === "different-role" || verdict === "missing-kind"            ;
 		}).reduce((sum, type) => sum + type.count, 0);
 		measures.set(language, {
-			language       : language                                                       ,
-			types          : bucket.length                                                  ,
-			tables         : tables                                                         ,
-			judgedTypes    : judged.length                                                  ,
-			judgedTables   : judgedTables                                                   ,
-			wrongGroupings : misses                                                         ,
-			judgedShare    : bucket.length === 0 ? 0 : judged.length / bucket.length        ,
-			tableShare     : tables === 0 ? 0 : judgedTables / tables                       ,
-			wrongGrouping  : judgedTables === 0 ? 0 : misses / judgedTables                 ,
+			language       : language                                                ,
+			types          : bucket.length                                           ,
+			tables         : tables                                                  ,
+			judgedTypes    : judged.length                                           ,
+			judgedTables   : judgedTables                                            ,
+			wrongGroupings : misses                                                  ,
+			judgedShare    : bucket.length === 0 ? 0 : judged.length / bucket.length ,
+			tableShare     : tables === 0 ? 0 : judgedTables / tables                ,
+			wrongGrouping  : judgedTables === 0 ? 0 : misses / judgedTables          ,
 		});
 	}
 	return measures;

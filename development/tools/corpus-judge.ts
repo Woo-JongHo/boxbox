@@ -30,10 +30,10 @@ import      { spawnSync        } from "node:child_process"     ;
 import      { createHash       } from "node:crypto"            ;
 import      { readCensusReport } from "./corpus-signatures.ts" ;
 
-const ROOT  = join(import.meta.dir, "..", "..")                             ;
+const ROOT  = join(import.meta.dir, "..", ".."                            ) ;
 const CACHE = join(process.env["HOME"] ?? "", ".cache", "boxbox", "corpus") ;
 
-const OUT = join(ROOT, "TEST_COMPLETED", "corpus"        )                ;
+const OUT = join(ROOT, "TEST_COMPLETED", "corpus"                       ) ;
 const LOG = join(ROOT, "development", "corpus"        , "verdicts.jsonl") ;
 
 export const QUEUE    = join(CACHE, "review-queue.jsonl")                                ;

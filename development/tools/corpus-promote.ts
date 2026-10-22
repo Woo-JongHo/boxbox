@@ -25,10 +25,10 @@ import      { spawnSync        } from "node:child_process"     ;
 import      { createHash       } from "node:crypto"            ;
 import      { readCensusReport } from "./corpus-signatures.ts" ;
 
-const ROOT     = join(import.meta.dir, "..", "..")                             ;
+const ROOT     = join(import.meta.dir, "..", ".."                            ) ;
 const CACHE    = join(process.env["HOME"] ?? "", ".cache", "boxbox", "corpus") ;
-const LOG      = join(ROOT, "development", "corpus", "verdicts.jsonl")         ;
-const FIXTURES = join(ROOT, "test", "fixtures")                                ;
+const LOG      = join(ROOT, "development", "corpus", "verdicts.jsonl"        ) ;
+const FIXTURES = join(ROOT, "test", "fixtures"                               ) ;
 
 interface SignatureType {
 	readonly signature : string ;
@@ -139,7 +139,7 @@ function main(): void {
 		return                                                               ;
 	}
 	if (args.includes("--report")) {
-		const records = readVerdicts()                                         ;
+		const records = readVerdicts  ()                                       ;
 		const pending = records.filter(record => record.verdict !== "correct") ;
 		for (const record of pending) console.log(`pending ${record.verdict}: ${record.signature}${record.note === "" ? "" : ` — ${record.note}`}`);
 		console.log(`pending=${pending.length} judged=${records.length}`);
