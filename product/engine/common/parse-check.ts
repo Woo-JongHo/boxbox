@@ -32,25 +32,17 @@ export interface SyntaxDiagnostics {
 }
 
 interface Toolchain {
-	readonly tool      : string                                            ;
-	readonly extension : string                                            ;
-	readonly command   : (file: string, work: string) => readonly string[] ;
+	readonly tool      : string                              ;
+	readonly extension : string                              ;
+	readonly command   : (file: string) => readonly string[] ;
 	/** Keeps only diagnostic lines; everything else in the tool output is noise. */
-	readonly keep      : RegExp                                        ;
+	readonly keep      : RegExp                              ;
 }
 
 const PYTHON_PARSE = "import ast,sys\ntry:\n ast.parse(open(sys.argv[1],encoding='utf-8').read())\nexcept SyntaxError as e:\n print(f'{e.lineno}: error: {e.msg}')";
 
 const TOOLCHAINS: Readonly<Record<string, Toolchain>> = {
-	python     : { tool: "python3", extension: ".py",    keep: /error:/u,      command: file => ["python3", "-c", PYTHON_PARSE, file]                            } ,
-	go         : { tool: "gofmt",   extension: ".go",    keep: /:\d+:\d+: /u,  command: file => ["gofmt", "-e", "-l", file]                                      } ,
-	javascript : { tool: "node",    extension: ".js",    keep: /Error|:\d+$/u, command: file => ["node", "--check", file]                                        } ,
-	c          : { tool: "clang",   extension: ".c",     keep: /error:/u,      command: file => ["clang", "-fsyntax-only", "-w", file]                           } ,
-	cpp        : { tool: "clang++", extension: ".cpp",   keep: /error:/u,      command: file => ["clang++", "-std=c++20", "-fsyntax-only", "-w", file]           } ,
-	java       : { tool: "javac",   extension: ".java",  keep: /error:/u,      command: (file, work) => ["javac", "-proc:none", "-Xlint:none", "-d", work, file] } ,
-	rust       : { tool: "rustfmt", extension: ".rs",    keep: /^error/u,      command: file => ["rustfmt", "--edition", "2021", "--emit", "stdout", file]       } ,
-	swift      : { tool: "swiftc",  extension: ".swift", keep: /error:/u,      command: file => ["swiftc", "-parse", file]                                       } ,
-	kotlin     : { tool: "kotlinc", extension: ".kt",    keep: /error:/u,      command: (file, work) => ["kotlinc", file, "-d", work]                            } ,
+	python : { tool: "python3", extension: ".py", keep: /error:/u, command: file => ["python3", "-c", PYTHON_PARSE, file] },
 };
 
 const DEFAULT_TIMEOUT_MS = 60_000    ;
@@ -67,26 +59,19 @@ function diagnostics(toolchain: Toolchain, source: string, timeoutMs: number): r
 	try {
 		const file = join(work, `Input${toolchain.extension}`);
 		writeFileSync(file, source);
-		const [command, ...args] = toolchain.command(file, work);
+		const [command, ...args] = toolchain.command(file);
 		const run    = spawnSync(command!, args, { encoding: "utf8", maxBuffer: MAX_OUTPUT_BYTES, timeout: timeoutMs }) ;
 		const output = `${run.stdout ?? ""}\n${run.stderr ?? ""}`                                                       ;
 
-		// rustfmt emits formatted source on stdout; only stderr contains its diagnostics.
-		const diagnosticOutput = toolchain.tool === "rustfmt" ? run.stderr ?? "" : output;
-		const parsed = diagnosticOutput
+		const parsed = output
 			.split("\n")
 			.filter(line => toolchain.keep.test(line))
 			.map(line => line.replace(/\S*boxbox-parse-[^/\s]*\/Input\.\w+/gu, "<file>").replace(/(:\d+):\d+/gu, "$1").trim());
 		if (run.error !== undefined) throw new Error(`parser execution failed (${toolchain.tool}): ${run.error.message}`);
 		if (run.signal !== null) throw new Error(`parser terminated by signal (${toolchain.tool}): ${run.signal}`);
 		if (run.status === null) throw new Error(`parser exited without a status: ${toolchain.tool}`);
-		const diagnosticExit = parsed.length > 0 && (
-			(toolchain.tool === "gofmt" && run.status === 2)
-			|| (["node", "clang", "clang++", "javac", "rustfmt", "swiftc", "kotlinc"].includes(toolchain.tool) && run.status === 1)
-		);
-		if (run.status !== 0 && !diagnosticExit) {
-			throw new Error(`parser exited with unrecognized status (${toolchain.tool}): ${run.status}`);
-		}
+		// The Python probe prints diagnostics and exits 0; any other status is an unexplained failure.
+		if (run.status !== 0) throw new Error(`parser exited with unrecognized status (${toolchain.tool}): ${run.status}`);
 		return parsed;
 	} finally {
 		rmSync(work, { recursive: true, force: true });

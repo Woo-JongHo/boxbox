@@ -1,6 +1,6 @@
 # Agent Portability Map
 
-The reference for where the `boxbox` skill and the `readability-inspector` agent live in each coding agent and how they are installed. The content (SKILL.md body, rules, scripts) is agent-agnostic; only "where it goes" in the table below differs. The skill ships tabular alignment checkers for TypeScript (AST + LSP) and for Python, Java, Go, Rust, JavaScript, C and C++ (shared line engine).
+The reference for where the `boxbox` skill and the `readability-inspector` agent live in each coding agent and how they are installed. The content (SKILL.md body, rules, scripts) is agent-agnostic; only "where it goes" in the table below differs. The skill ships tabular alignment checkers for TypeScript (AST + LSP), Python (shared line engine) and JSON/YAML (structured adapter).
 
 ## Install matrix
 

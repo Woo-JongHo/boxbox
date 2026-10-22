@@ -11,20 +11,14 @@ export interface StringSpec {
 }
 
 export interface BlockCommentSpec {
-	readonly open    : string;
-	readonly close   : string;
-	/** Swallow nested opens (`/* … /* … * / … * /`) and close only when the depth reaches zero — Swift and Kotlin nest block comments. */
-	readonly nested? : boolean;
+	readonly open  : string;
+	readonly close : string;
 }
 
 export interface CodeSyntax {
 	readonly lineComments  : readonly string[]           ;
 	readonly blockComments : readonly BlockCommentSpec[] ;
 	readonly strings       : readonly StringSpec[]       ;
-	/** Treat only Rust char literals `'a'` as strings; leave lifetimes `'a` as code. */
-	readonly rustChars?    : boolean;
-	/** Recognize C++ raw strings `R"delim( ... )delim"`. */
-	readonly cppRaw?       : boolean;
 }
 
 export interface MaskedSource {
@@ -49,9 +43,6 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 	let lineStart                   = 0                                                   ;
 	let inBlock                     = false                                               ;
 	let blockClose                  = ""                                                  ;
-	let blockOpenToken              = ""                                                  ;
-	let blockNested                 = false                                               ;
-	let blockDepth                  = 0                                                   ;
 	let index                       = 0                                                   ;
 
 	const blank = (from: number, length: number): void => {
@@ -71,20 +62,8 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 		if (commentStarts[line] === undefined) commentStarts[line] = -1;
 
 		if (inBlock) {
-			// Nested-capable blocks (Swift, Kotlin) swallow inner opens and close only at depth zero.
-			if (blockNested && source.startsWith(blockOpenToken, index)) {
-				blank(index, blockOpenToken.length);
-				blockDepth += 1;
-				index += blockOpenToken.length;
-				continue;
-			}
 			if (source.startsWith(blockClose, index)) {
 				blank(index, blockClose.length);
-				if (blockNested && blockDepth > 0) {
-					blockDepth -= 1;
-					index += blockClose.length;
-					continue;
-				}
 				inBlock = false;
 				index += blockClose.length;
 				continue;
@@ -98,11 +77,8 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 		if (blockOpen) {
 			if (commentStarts[line] < 0) commentStarts[line] = index - lineStart;
 			blank(index, blockOpen.open.length);
-			inBlock        = true                      ;
-			blockClose     = blockOpen.close           ;
-			blockOpenToken = blockOpen.open            ;
-			blockNested    = blockOpen.nested === true ;
-			blockDepth     = 0                         ;
+			inBlock    = true            ;
+			blockClose = blockOpen.close ;
 			index += blockOpen.open.length;
 			continue;
 		}
@@ -113,22 +89,6 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 			index = source.indexOf("\n", index);
 			if (index < 0) index = source.length;
 			continue;
-		}
-
-		if (syntax.cppRaw && character === "R" && source[index + 1] === '"') {
-			let cursor    = index + 2 ;
-			let delimiter = ""        ;
-			while (cursor < source.length && source[cursor] !== "(" && source[cursor] !== "\n" && delimiter.length < 16) { delimiter += source[cursor]; cursor += 1; }
-			if (source[cursor] === "(") {
-				const close = `)${delimiter}"`;
-				index = consumeString(source, masked, index, cursor + 1, close, false);
-				continue;
-			}
-		}
-
-		if (syntax.rustChars && character === "'") {
-			const match = /^'(\\.|[^\\'])'/.exec(source.slice(index));
-			if (match) { index = consumeString(source, masked, index, index + 1, "'", true); continue; }
 		}
 
 		const openToken = strings.find(token => source.startsWith(token, index));

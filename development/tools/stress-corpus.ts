@@ -18,13 +18,7 @@ import      { basename, join     } from "node:path"                ;
 import      { spawnSync          } from "node:child_process"       ;
 import type { CodeSyntax         } from "@/common/code-text.ts"    ;
 import      { changedLines       } from "@/common/preservation.ts" ;
-import      { C_ALIGNER          } from "@/c/profile.ts"           ;
-import      { CPP_ALIGNER        } from "@/cpp/profile.ts"         ;
-import      { GO_ALIGNER         } from "@/go/profile.ts"          ;
-import      { JAVA_ALIGNER       } from "@/java/profile.ts"        ;
-import      { JAVASCRIPT_ALIGNER } from "@/javascript/profile.ts"  ;
 import      { PYTHON_ALIGNER     } from "@/python/profile.ts"      ;
-import      { RUST_ALIGNER       } from "@/rust/profile.ts"        ;
 
 const ROOT   = join(import.meta.dir, "..", "..")                    ;
 const OUT    = join(ROOT, "stress")                                 ;
@@ -50,42 +44,6 @@ const LANGUAGES: Readonly<Record<string, LanguageConfig>> = {
 		ext  : ".py",
 		dirs : [],
 		decl : /^\s*[A-Za-z_]\w*\s*(?::\s*[^=;\n]+)?=(?!=)/,
-	},
-	java       : {
-		repo : "openjdk/jdk",
-		ext  : ".java",
-		dirs : ["src/java.base/share/classes", "src/jdk.compiler/share/classes", "src/jdk.hotspot.agent/share/classes"],
-		decl : /^\s+(?:(?:public|private|protected|static|final|volatile|transient|abstract)\s+)+(?:[\w<>\[\], ?.]+\s+)?\w+\s*(?:=|;)|^\s+(?:int|long|short|byte|char|boolean|float|double|String|Object|var)\b[^\n]*[;=]/,
-	},
-	go         : {
-		repo : "golang/go",
-		ext  : ".go",
-		dirs : [],
-		decl : /^\s*[A-Za-z_]\w*\s+[\w\[\]\*\.]+(?:\s+`|\s*=|$)|^\s*(?:const|var|type)\s/,
-	},
-	rust       : {
-		repo : "rust-lang/rust",
-		ext  : ".rs",
-		dirs : ["library/core/src", "library/alloc/src", "library/std/src", "compiler/rustc_middle/src", "compiler/rustc_borrowck/src"],
-		decl : /^\s*(?:pub\s+)?(?:\w+\s*:\s*|(?:const|static|let)\s)/,
-	},
-	javascript : {
-		repo : "webpack/webpack",
-		ext  : ".js",
-		dirs : ["lib"],
-		decl : /^\s*(?:const|let|var)\s+\w+\s*=|^\s+\w+\s*=\s*[^=]/,
-	},
-	c          : {
-		repo : "ffmpeg/ffmpeg",
-		ext  : ".c",
-		dirs : ["libavcodec", "libavformat", "libavutil"],
-		decl : /^\s*(?:const\s+|static\s+|unsigned\s+|signed\s+)*\w[\w\s]*[\*\s]\w+\s*(?:;|=\s*[^=]|\[[^\]]*\])/,
-	},
-	cpp        : {
-		repo : "llvm/llvm-project",
-		ext  : ".cpp",
-		dirs : ["llvm/lib/IR", "llvm/lib/MC", "llvm/lib/Transforms/Scalar", "llvm/lib/Target/X86", "clang/lib/Sema", "clang/lib/CodeGen"],
-		decl : /^\s*(?:constexpr|static|inline|const)\s[^\n]*;|^\s*\w[\w:<>&\*\s]*\s+\w+\s*(?:;|=\s*[^=])/,
 	},
 };
 
@@ -155,13 +113,7 @@ function collectCandidates(config: LanguageConfig, target: string): readonly Can
 
 /** Syntax per corpus language, so preservation is judged by the same whitespace-only check as the engine. */
 const SYNTAX: Readonly<Record<string, CodeSyntax>> = {
-	c          : C_ALIGNER.syntax,
-	cpp        : CPP_ALIGNER.syntax,
-	go         : GO_ALIGNER.syntax,
-	java       : JAVA_ALIGNER.syntax,
-	javascript : JAVASCRIPT_ALIGNER.syntax,
 	python     : PYTHON_ALIGNER.syntax,
-	rust       : RUST_ALIGNER.syntax,
 };
 
 interface FileResult {
@@ -190,7 +142,7 @@ async function processLanguage(language: string, config: LanguageConfig): Promis
 			const source = readFileSync(candidate.absolute, "utf8");
 			writeFileSync(original, source);
 			writeFileSync(aligned, source);
-			const apply = spawnSync("bun", [alignerPath, "--file", aligned, "--write", "--enable-go"], spawnOptions);
+			const apply = spawnSync("bun", [alignerPath, "--file", aligned, "--write"], spawnOptions);
 			// Crashes also exit with code 1, so success is judged by the presence of the report header.
 			if (!(apply.stdout ?? "").startsWith("align-tables")) throw new Error(`aligner error: ${(apply.stderr ?? "").split("\n")[0]}`);
 			const edits      = Number(/edits=(\d+)/.exec(apply.stdout ?? "")?.[1] ?? 0)                        ;

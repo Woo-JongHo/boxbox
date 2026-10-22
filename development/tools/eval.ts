@@ -68,11 +68,6 @@ interface Occ {
 
 const ANCHOR_LANGS: Array<[string, string, string]> = [
 	["python", "py", "py"],
-	["go", "go", "go"],
-	["c", "c", "c"],
-	["rust", "rs", "rs"],
-	["swift", "swift", "swift"],
-	["java", "java", "java"],
 ];
 
 function cmdBuild(): void {

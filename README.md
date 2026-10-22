@@ -131,7 +131,7 @@ sources; `--copy` creates a managed copy. Development authoring hooks require se
 | --- | --- |
 | Implemented public CLI Check/Align engines | TypeScript, Python, strict JSON and YAML 1.2 (`.yaml`/`.yml`) |
 | Default preset write authorization | Two rules only: TypeScript call declarations and Python simple assignments |
-| Development alignment engines | TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift and Kotlin |
+| Development alignment engines | The same four languages; other line-engine languages were removed on 2026-10-22 |
 | TypeScript detection | TypeScript 7 AST tools and a table-kind registry |
 | JSON/YAML detection | Adjacent same-level runs of 3+ single-line scalar mapping entries |
 | Other development-language detection | A shared line engine with language-specific profiles |

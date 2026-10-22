@@ -8,7 +8,6 @@ const SYNTAX: CodeSyntax = {
 	lineComments  : ["//"]                                    ,
 	blockComments : [{ open: "/*", close: "*/" }]             ,
 	strings       : [{ open: '"', close: '"', escape: true }] ,
-	cppRaw        : false                                     ,
 };
 
 /** Minimal profiler accepting only `name : value ;` — structure from the mask, text sliced from the source. */
@@ -58,20 +57,6 @@ describe("maskSource", () => {
 		const mask   = maskSource(source, SYNTAX)        ;
 		expect(mask.commentStarts[0]).toBe(8);
 		expect(mask.text.split("\n")[1]).toBe("b : 2 ;");
-	});
-
-	test("does not mistake the Rust lifetime 'a for a string", () => {
-		const rust: CodeSyntax = { lineComments: ["//"], blockComments: [], strings: [{ open: '"', close: '"', escape: true }], rustChars: true, cppRaw: false } ;
-		const source           = `let s: &'a str = "v";`                                                                                                         ;
-		const mask             = maskSource(source, rust)                                                                                                        ;
-		expect(mask.text).toBe(`let s: &'a str = " ";`);
-	});
-
-	test("masks the whole C++ raw string R\"( )\"", () => {
-		const cpp: CodeSyntax = { lineComments: ["//"], blockComments: [{ open: "/*", close: "*/" }], strings: [{ open: '"', close: '"', escape: true }], cppRaw: true } ;
-		const source          = `const char* p = R"x(a:b=c;)x";`                                                                                                         ;
-		const mask            = maskSource(source, cpp)                                                                                                                  ;
-		expect(mask.text).toBe(`const char* p = R"x(      )x";`);
 	});
 });
 

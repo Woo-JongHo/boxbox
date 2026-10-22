@@ -35,7 +35,6 @@ export const PYTHON_SYNTAX: CodeSyntax = {
 		{ open : '"'   , close : '"'   , escape : true },
 		{ open : "'"   , close : "'"   , escape : true },
 	],
-	cppRaw        : false,
 };
 
 const INDENT = "([ \\t]*)"                                              ;

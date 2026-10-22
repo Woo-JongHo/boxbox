@@ -130,7 +130,7 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 | --- | --- |
 | 已实现的公开 CLI Check/Align 引擎 | TypeScript、Python、严格 JSON 和 YAML 1.2（`.yaml`/`.yml`） |
 | 默认预设写入授权 | 仅两条规则：TypeScript 调用声明和 Python 简单赋值 |
-| 开发版对齐引擎 | TypeScript、Python、Java、Go、Rust、JavaScript、C、C++、Swift 和 Kotlin |
+| 开发版对齐引擎 | 与上述相同的四种语言（其他行引擎语言已于 2026-10-22 移除） |
 | TypeScript 检测 | TypeScript 7 AST 工具和表格类型注册表 |
 | JSON/YAML 检测 | 同一层级中至少三个相邻的单行标量映射条目 |
 | 其他开发语言检测 | 共享的行引擎与各语言专用配置 |

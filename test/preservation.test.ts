@@ -9,7 +9,6 @@ const SYNTAX: CodeSyntax = {
 	lineComments  : ["//"]                                    ,
 	blockComments : [{ open: "/*", close: "*/" }]             ,
 	strings       : [{ open: '"', close: '"', escape: true }] ,
-	cppRaw        : false                                     ,
 };
 
 describe("changedLines", () => {
