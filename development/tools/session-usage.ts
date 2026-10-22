@@ -5,9 +5,13 @@
  * written as several lines that repeat the same `usage`, so usage is counted once per message id.
  * Tokens of tool results and hook text are estimated from their length (see `estimateTokens`); usage figures are exact.
  *
+ * A subagent writes its own record (`<session>/subagents/agent-*.jsonl`, lines marked `isSidechain`). Given a file path
+ * the tool reads those records too and reports their turns as `subagent/<step>`; through standard input, concatenate them.
+ *
  * Usage: bun development/tools/session-usage.ts <transcript.jsonl | -> [--json]   ("-" reads standard input, so a remote record need not be stored)
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { estimateTokens } from "@/common/usage.ts";
 
 export interface Totals {
@@ -19,9 +23,9 @@ export interface Totals {
 }
 
 export interface CategoryUsage extends Totals {
-	/** Tool calls in this category; a turn may make several. */
+	/** Tool calls in this category; a turn may make several, and one call may run several engine commands. */
 	readonly calls        : number ;
-	/** Estimated tokens of the results those calls returned to the model. */
+	/** Estimated tokens of the results those calls returned; a call that runs several engine commands counts its result under the first one. */
 	readonly resultTokens : number ;
 }
 
@@ -34,6 +38,8 @@ export interface HookUsage {
 export interface SessionUsage {
 	readonly session    : string | undefined                      ;
 	readonly total      : Totals                                  ;
+	/** The part of `total` spent by subagent turns. */
+	readonly subagent   : Totals                                  ;
 	readonly byModel    : Readonly<Record<string, Totals>>        ;
 	readonly byCategory : Readonly<Record<string, CategoryUsage>> ;
 	readonly hooks      : Readonly<Record<string, HookUsage>>     ;
@@ -47,21 +53,27 @@ const asRecord = (value: unknown): Json | undefined => value && typeof value ===
 const asNumber = (value: unknown): number => typeof value === "number" && Number.isFinite(value) ? value : 0                                   ;
 const asText   = (value: unknown): string => typeof value === "string" ? value : ""                                                            ;
 
-/** Commands that run the engine, in the forms the plugin launcher, the CLI entry and the aligner script appear. */
-const ENGINE_COMMAND = /\b(?:boxbox(?:\.mjs)?|entry\.ts|cli\.ts)['"]?\s+(check|guide|format|align|doctor|run|status|hook|init)\b/u ;
-const ALIGNER_SCRIPT = /06_align-tables\.ts/u                                                                                      ;
+/**
+ * Engine commands in the forms they appear: the plugin launcher, the CLI entry, and the Windows bridge
+ * `node -e "$B" -- <command>` (or the same script inline) that the generated skill uses. One shell call may run several of them.
+ */
+const ENGINE_COMMAND = /(?:\b(?:boxbox(?:\.mjs)?|entry\.ts|cli\.ts)['"]?|-e\s+"\$\w+"\s+--|-e\s+(?:"[^"]*spawnSync[^"]*"|'[^']*spawnSync[^']*')\s+--)\s+(check|guide|format|align|doctor|run|status|hook|init)\b/gu ;
+const ALIGNER_SCRIPT = /06_align-tables\.ts/u                                                                                                                                                                       ;
 
-/** Names a tool call by the BoxBox step it belongs to; everything else is `other`. */
-export function categoryOf(tool: string, input: unknown): string {
+/** Names every BoxBox step a tool call belongs to, in command order; a call that is none of them is `other`. */
+export function categoriesOf(tool: string, input: unknown): readonly string[] {
 	const fields = asRecord(input) ?? {};
-	if (tool === "Skill" && /boxbox/iu.test(asText(fields.skill)))                       return "boxbox:skill"    ;
-	if (tool === "Agent" && /readability-inspector/u.test(asText(fields.subagent_type))) return "boxbox:inspector" ;
-	if (tool !== "Bash")                                                                 return "other"           ;
-	const command = asText(fields.command)            ;
-	const engine  = ENGINE_COMMAND.exec(command)?.[1] ;
-	if (engine)                                                                          return `boxbox:${engine}` ;
-	return ALIGNER_SCRIPT.test(command) ? "boxbox:aligner" : "other";
+	if (tool === "Skill" && /boxbox/iu.test(asText(fields.skill)))                       return ["boxbox:skill"]    ;
+	if (tool === "Agent" && /readability-inspector/u.test(asText(fields.subagent_type))) return ["boxbox:inspector"] ;
+	if (tool !== "Bash")                                                                 return ["other"]           ;
+	const command = asText(fields.command)                                                   ;
+	const engine  = [...command.matchAll(ENGINE_COMMAND)].map(match => `boxbox:${match[1]}`) ;
+	if (engine.length)                                                                   return engine ;
+	return ALIGNER_SCRIPT.test(command) ? ["boxbox:aligner"] : ["other"];
 }
+
+/** The first step of a call; kept for callers that need one name. */
+export const categoryOf = (tool: string, input: unknown): string => categoriesOf(tool, input)[0]!;
 
 /** Characters of the model-facing text in a tool result or hook attachment. Text is measured, never kept. */
 function textOf(value: unknown): string {
@@ -78,12 +90,20 @@ const add = (left: Totals, right: Partial<Totals>): Totals => ({
 	output     : left.output     + (right.output     ?? 0) ,
 });
 
-interface Turn {
-	model  : string                                               ;
-	effort : string | undefined                                   ;
-	usage  : Totals                                               ;
-	tools  : { readonly id: string; readonly category: string }[] ;
+interface Call {
+	readonly id         : string            ;
+	readonly categories : readonly string[] ;
 }
+
+interface Turn {
+	model     : string             ;
+	effort    : string | undefined ;
+	sidechain : boolean            ;
+	usage     : Totals             ;
+	calls     : Call[]             ;
+}
+
+const FRESH: CategoryUsage = { ...EMPTY, calls: 0, resultTokens: 0 };
 
 export function sessionUsage(lines: Iterable<string>): SessionUsage {
 	const turns   = new Map<string, Turn>()      ;
@@ -96,20 +116,22 @@ export function sessionUsage(lines: Iterable<string>): SessionUsage {
 		try { entry = asRecord(JSON.parse(line)); } catch { continue; }
 		if (!entry) continue;
 		session ??= asText(entry.sessionId) || undefined;
-		const message = asRecord(entry.message);
+		const sidechain = entry.isSidechain === true ;
+		const message   = asRecord(entry.message)    ;
 		if (entry.type === "assistant" && message) {
 			const model = asText  (message.model) ;
 			const usage = asRecord(message.usage) ;
 			if (!usage || model === "<synthetic>") continue;
-			const id   = asText(message.id) || asText(entry.uuid)                                                                                                                                                                                                                                                       ;
-			const turn = turns.get(id) ?? { model, effort: asText(entry.effort) || undefined, tools: [], usage: { turns: 1, input: asNumber(usage.input_tokens), cacheRead: asNumber(usage.cache_read_input_tokens), cacheWrite: asNumber(usage.cache_creation_input_tokens), output: asNumber(usage.output_tokens) } } ;
+			const id   = asText(message.id) || asText(entry.uuid)                                                                                                                                                                                                                                                                  ;
+			const turn = turns.get(id) ?? { model, sidechain, effort: asText(entry.effort) || undefined, calls: [], usage: { turns: 1, input: asNumber(usage.input_tokens), cacheRead: asNumber(usage.cache_read_input_tokens), cacheWrite: asNumber(usage.cache_creation_input_tokens), output: asNumber(usage.output_tokens) } } ;
 			for (const block of Array.isArray(message.content) ? message.content : []) {
 				const part = asRecord(block);
 				if (part?.type !== "tool_use") continue;
 				const toolId = asText(part.id);
-				if (turn.tools.some(tool => tool.id === toolId)) continue;
-				turn.tools.push({ id: toolId, category: categoryOf(asText(part.name), part.input) });
-				owners.set(toolId, turn.tools[turn.tools.length - 1]!.category);
+				if (turn.calls.some(call => call.id === toolId)) continue;
+				const categories = categoriesOf(asText(part.name), part.input);
+				turn.calls.push({ id: toolId, categories });
+				owners.set(toolId, `${sidechain ? "subagent/" : ""}${categories[0]}`);
 			}
 			turns.set(id, turn);
 		}
@@ -130,35 +152,46 @@ export function sessionUsage(lines: Iterable<string>): SessionUsage {
 			hooks.set(key, { count: seen.count + 1, tokens: seen.tokens + estimateTokens(text) });
 		}
 	}
-	let total                                        = EMPTY ;
-	const byModel    : Record<string, Totals>        = {}    ;
-	const byCategory : Record<string, CategoryUsage> = {}    ;
+	let total        : Totals                        = EMPTY                                                                                       ;
+	let subagent     : Totals                        = EMPTY                                                                                       ;
+	const byModel    : Record<string, Totals>        = {}                                                                                          ;
+	const byCategory : Record<string, CategoryUsage> = {}                                                                                          ;
+	const label                                      = (turn: Turn, category: string): string => `${turn.sidechain ? "subagent/" : ""}${category}` ;
 	for (const turn of turns.values()) {
-		const label    = turn.effort ? `${turn.model}:${turn.effort}` : turn.model               ;
-		const category = turn.tools.find(tool => tool.category !== "other")?.category ?? "other" ;
-		total          = add(total, turn.usage);
-		byModel[label] = add(byModel[label] ?? EMPTY, turn.usage);
-		const seen     = byCategory[category] ?? { ...EMPTY, calls: 0, resultTokens: 0 };
-		byCategory[category] = { ...add(seen, turn.usage), calls: seen.calls, resultTokens: seen.resultTokens };
+		const model = turn.effort ? `${turn.model}:${turn.effort}` : turn.model                                                  ;
+		const step  = label(turn, turn.calls.flatMap(call => call.categories).find(category => category !== "other") ?? "other") ;
+		total          = add(total, turn.usage)                                ;
+		subagent       = turn.sidechain ? add(subagent, turn.usage) : subagent ;
+		byModel[model] = add(byModel[model] ?? EMPTY, turn.usage)              ;
+		const seen     = byCategory[step] ?? FRESH;
+		byCategory[step] = { ...add(seen, turn.usage), calls: seen.calls, resultTokens: seen.resultTokens };
 	}
 	for (const turn of turns.values()) {
-		for (const tool of turn.tools) {
-			const seen = byCategory[tool.category] ?? { ...EMPTY, calls: 0, resultTokens: 0 };
-			byCategory[tool.category] = { ...seen, calls: seen.calls + 1 };
+		for (const category of turn.calls.flatMap(call => call.categories)) {
+			const step = label(turn, category)     ;
+			const seen = byCategory[step] ?? FRESH ;
+			byCategory[step] = { ...seen, calls: seen.calls + 1 };
 		}
 	}
 	for (const [category, tokens] of results) {
-		const seen = byCategory[category] ?? { ...EMPTY, calls: 0, resultTokens: 0 };
+		const seen = byCategory[category] ?? FRESH;
 		byCategory[category] = { ...seen, resultTokens: tokens };
 	}
-	return { session, total, byModel, byCategory, hooks: Object.fromEntries(hooks) };
+	return { session, total, subagent, byModel, byCategory, hooks: Object.fromEntries(hooks) };
+}
+
+/** A session file plus the records of the subagents it started, which sit in a folder named like the session. */
+export function sessionLines(path: string): string[] {
+	const folder = join(path.replace(/\.jsonl$/u, ""), "subagents")                                                                             ;
+	const extra  = existsSync(folder) ? readdirSync(folder).filter(name => name.endsWith(".jsonl")).sort().map(name => join(folder, name)) : [] ;
+	return [path, ...extra].flatMap(file => readFileSync(file, "utf8").split("\n"));
 }
 
 export function formatUsage(usage: SessionUsage): string {
 	const number = (value: number): string => value.toLocaleString("en-US")                                                                                                                                                                                                                                                                                                                                                    ;
 	const rows   = (record: Readonly<Record<string, Totals>>): string[] => Object.entries(record).sort((left, right) => right[1].output - left[1].output).map(([name, row]) => `  ${name.padEnd(34)} turns=${number(row.turns).padStart(5)} input=${number(row.input).padStart(8)} cacheRead=${number(row.cacheRead).padStart(11)} cacheWrite=${number(row.cacheWrite).padStart(9)} output=${number(row.output).padStart(8)}`) ;
-	const lines  = [`session ${usage.session ?? "unknown"}`, "total", ...rows({ all: usage.total }), "by model:effort", ...rows(usage.byModel), "by step (a turn counts under its BoxBox call, else other)", ...rows(usage.byCategory)]                                                                                                                                                                                        ;
-	for (const [category, row] of Object.entries(usage.byCategory).filter(([name]) => name !== "other")) lines.push(`  ${category.padEnd(34)} calls=${number(row.calls).padStart(5)} resultTokens(est)=${number(row.resultTokens)}`);
+	const lines  = [`session ${usage.session ?? "unknown"}`, "total", ...rows({ all: usage.total }), ...(usage.subagent.turns ? ["of which subagents", ...rows({ subagents: usage.subagent })] : []), "by model:effort", ...rows(usage.byModel), "by step (a turn counts under its BoxBox call, else other; subagent turns are prefixed)", ...rows(usage.byCategory)]                                                          ;
+	for (const [category, row] of Object.entries(usage.byCategory).filter(([name]) => !name.endsWith("other"))) lines.push(`  ${category.padEnd(34)} calls=${number(row.calls).padStart(5)} resultTokens(est)=${number(row.resultTokens)}`);
 	for (const [event, row] of Object.entries(usage.hooks)) lines.push(`  hook ${event.padEnd(29)} count=${number(row.count).padStart(5)} tokens(est)=${number(row.tokens)}`);
 	return lines.join("\n");
 }
@@ -166,6 +199,6 @@ export function formatUsage(usage: SessionUsage): string {
 if (import.meta.main) {
 	const path = process.argv.slice(2).find(argument => argument === "-" || !argument.startsWith("--"));
 	if (!path) { console.error("Usage: bun development/tools/session-usage.ts <transcript.jsonl | -> [--json]"); process.exit(1); }
-	const usage = sessionUsage(readFileSync(path === "-" ? 0 : path, "utf8").split("\n"));
+	const usage = sessionUsage(path === "-" ? readFileSync(0, "utf8").split("\n") : sessionLines(path));
 	console.log(process.argv.includes("--json") ? JSON.stringify(usage, null, "\t") : formatUsage(usage));
 }

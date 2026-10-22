@@ -132,6 +132,22 @@ scoring needs no model and no human.
 The price table in `model-eval.md` is dated 2026-09-30 and has no `claude-sonnet-5-5` row. Update it before comparing costs,
 and do not infer prices.
 
+## Baseline measured on the inherited model
+
+Four fresh sessions on native Windows (Claude Code 2.1.280, boxbox 0.2.5, the machine default `claude-opus-5-5` at medium effort;
+[evidence](../issue-library/evidence/inspector-baseline-sessions.txt)):
+
+| Request | Turns | Output tokens | Cache-read tokens | Printed cost (USD) |
+| --- | ---: | ---: | ---: | ---: |
+| BoxBox Check on two files | 3 | 1,519 | 89,552 | 0.3171 |
+| BoxBox Write: append one line | 3 | 1,664 | 92,888 | 0.3074 |
+| BoxBox align one file | 5 | 2,069 | 184,460 | 0.3432 |
+| Inspector agent on one file | 6 (2 main, 4 subagent) | 3,026 (1,787 subagent) | 151,959 (104,170 subagent) | 0.5120 |
+
+The inspector request costs about 0.2 USD more than a check-only run, and its subagent is the larger part of it. A
+choice of model for the inspector acts on exactly that part. These are baselines on one model: no alternative has been run and
+correctness is not scored, so they do not yet say which model is enough.
+
 ## Order
 
 1. **Engine absorbs judgment (done 2026-10-22).** `guide --authoring` returns `columnSets` and `axisNotes` for TypeScript;
