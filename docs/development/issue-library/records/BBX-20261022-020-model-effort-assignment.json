@@ -37,8 +37,8 @@
       "status": "done"
     },
     {
-      "description": "Record per-step token usage from session records, usage numbers only.",
-      "status": "pending"
+      "description": "Record per-step token usage from session records (development/tools/session-usage.ts; usage numbers, model, effort, tool names and sizes only).",
+      "status": "done"
     },
     {
       "description": "Evaluate Claude and Codex inspector candidates against engine ground truth, then add product/models.json with generation and a contract test.",
@@ -83,6 +83,15 @@
         "docs/development/issue-library/evidence/engine-judgment-checks.txt"
       ],
       "result": "guide --authoring grows from 2364 to about 8.3 KB for TypeScript. The net token effect is not yet measured: it replaces reading the 32 KB readability contract only if agents follow the updated SKILL.md step 1."
+    },
+    {
+      "name": "Per-step token usage can be read from real session records without copying content",
+      "status": "passed",
+      "scope": "development/tools/session-usage.ts on two real Claude Code sessions (this macOS development session and a native Windows project session read through standard input); test/session-usage.test.ts (9 tests) pins per-message counting, step naming, model and effort split and that no text reaches the output.",
+      "evidence": [
+        "docs/development/issue-library/evidence/session-usage-measurements.txt"
+      ],
+      "result": "A message split over several lines repeats its usage; counting once per message id reduced 909 lines to 425 messages in the development session. In the Windows session BoxBox hooks injected about 1,041 estimated tokens against 85,510 output and 14.8 million cache-read tokens, and the agent made no BoxBox engine calls, so the cost of the inspector and authoring steps is still unmeasured."
     }
   ],
   "related": [
@@ -146,6 +155,15 @@
       "summary": "Added columnSets and axisNotes to guide --authoring for TypeScript (empty for other languages) and check --expect-axis with an axisExpectation block (covered, missing, unknown) that never changes the exit status. SKILL.md steps 1 and 5 and docs/user/modes.md describe both. Usage recording and the evaluation remain open.",
       "evidence": [
         "docs/development/issue-library/evidence/engine-judgment-checks.txt"
+      ]
+    },
+    {
+      "sequence": 5,
+      "date": "2026-10-22",
+      "event": "implemented",
+      "summary": "Added development/tools/session-usage.ts. Measured two real sessions: hook text is a negligible share of tokens (about 1.0K estimated tokens in the Windows session; about 6.5K across 115 injections in the development session), context re-reading dominates, and neither session exercised the inspector. The evaluation therefore needs sessions that run the guide, check and inspector steps.",
+      "evidence": [
+        "docs/development/issue-library/evidence/session-usage-measurements.txt"
       ]
     }
   ]

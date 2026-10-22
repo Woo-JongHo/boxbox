@@ -137,8 +137,10 @@ and do not infer prices.
 1. **Engine absorbs judgment (done 2026-10-22).** `guide --authoring` returns `columnSets` and `axisNotes` for TypeScript;
    `check --expect-axis` returns `axisExpectation` (`covered`, `missing`, `unknown`). The authoring response grows from
    2364 to about 8.3 KB, so the saving is real only if agents stop reading the 32 KB contract; step 2 must measure it.
-2. **Measure.** Per-step token recording from session records (`usage` numbers only, never message content), which is also
-   the data source of the proposed `-monitor` page.
+2. **Measure (tool done 2026-10-22).** `development/tools/session-usage.ts` reads a session record (`usage` numbers, model, effort,
+   tool names and sizes; never message text; usage counted once per message id) and splits turns by BoxBox step. It is
+   also the data source of the proposed `-monitor` page. Two real sessions show hook text is negligible and neither ran the
+   inspector, so the evaluation needs sessions that exercise guide, check and the inspector.
 3. **Evaluate.** Run the table above; record the evidence under `docs/development/reviews/`.
 4. **Stamp.** Add `product/models.json`, generation and contract test; ship Claude values.
 5. **Document.** Codex recommendation and any approved installer step; update the three root READMEs together.
