@@ -24,12 +24,20 @@ Read this first when resuming. It records where the 0.2.5 release stands; older 
 - `main` history was rewritten once on 2026-10-22 to remove `Co-Authored-By` trailer lines from 67 commit messages.
   Trees are unchanged; 132 hashes changed. Old-to-new map: [history-rewrite-2026-10-22.md](history-rewrite-2026-10-22.md).
   Do not add attribution trailers to new commits or PR text.
-- Issues: closed #7, #8, #11 (fixed by PR #14 with tests); open #6 (model/effort assignment, values still
-  `unevaluated-default`), #9 (Python import tables), #10 (call-valued assignments split by callee), #12 (nested-repository
-  hook baseline error), #13 (`-monitor` report proposal), #19 (comma-terminated runs not reported as unsupported).
-  Issues carry no labels and no title prefixes; the issue forms follow the Kubernetes layout and set no labels.
+- Issues: closed #7, #8, #11 (fixed by PR #14 with tests); open #6 (model/effort assignment; a pilot on 2026-10-22 did not
+  support the shipped `sonnet` default, see the model section below), #9 (Python import tables), #10 (call-valued
+  assignments split by callee), #12 (nested-repository hook baseline error), #13 (`-monitor` report proposal), #19
+  (comma-terminated runs not reported as unsupported). Issues carry no labels and no title prefixes; the issue forms follow
+  the Kubernetes layout and set no labels.
 
 ### Next steps (in order)
+
+> **Decision needed before step 1.** The tag `v0.2.5` and the draft release archive pin the Claude inspector to
+> `model: sonnet` (`product/models.json`, `selectedBy: unevaluated-default`). A pre-registered pilot did not support that
+> default (see [Model and effort assignment](#model-and-effort-assignment-and-the-usage-report-issues-6-and-13)). The
+> release is still a draft and nothing is on npm, so changing it costs a rebuild; after publication it costs a new version.
+> Options: publish as is, or remove the model line (the inspector then follows the caller's model) and rebuild before
+> publishing. The owner decides; nothing here changes the tag.
 
 1. **npm publication (user, needs login and 2FA).** Not yet done; `npm whoami` returned E401 here.
    ```text
@@ -54,6 +62,65 @@ Read this first when resuming. It records where the 0.2.5 release stands; older 
 - Hook checks report two files as not aligned: `product/engine/common/code-text.ts` (one group) and
   `test/fixtures/python/tables.aligned.py` (four groups; possibly the new `NAME : type` colon rule). They belong to the
   chacada side; the fixture is a golden file, so decide before re-aligning it.
+
+### Model and effort assignment and the usage report (issues #6 and #13)
+
+Work of 2026-10-22, all on `main`. Record: issue-library `BBX-20261022-020` (model and effort) and `BBX-20261022-021`
+(`-monitor`), proposals [model-effort-assignment](proposals/2026-10-22-model-effort-assignment.md) and
+[boxbox-monitor](proposals/2026-10-22-boxbox-monitor.md).
+
+**Built**
+
+- `product/models.json` is the one source of model and effort per AI-judgment role and host; `bun run sync:plugin` stamps
+  the Claude plugin agent and, in place, the development Claude and Codex agents (`development/tools/model-assignments.ts`).
+  Validation refuses the `author` role, an unlisted model and an unsupported effort. The Codex plugin manifest ships no
+  agents, so Codex values reach only the development definition.
+- The engine returns more of what an agent used to judge: `guide --authoring` adds `columnSets` and `axisNotes` (TypeScript),
+  and `check --expect-axis <axis>` returns `axisExpectation` (covered, missing, unknown) without changing the exit status.
+  The authoring response grew from about 2.4 KB to 8.3 KB; whether agents read less documentation because of it is unmeasured.
+- `development/tools/session-usage.ts` reads a Claude session record plus its subagent records into tokens by model,
+  effort, BoxBox step and hook event; `development/tools/score-inspector-report.ts` scores an inspector report against the
+  engine's own `check`. Both are development tools, not shipped.
+
+**Measured**
+
+- Baseline of four fresh Windows sessions on the inherited Opus (check, write, align, inspector): 0.31 to 0.34 USD each, 0.51 USD
+  for an inspector request on a three-line file. BoxBox hook text was about 1,000 estimated tokens in a 94-turn real session,
+  negligible against context re-reading.
+- Pre-registered pilot, Sonnet inspector against the inherited one, 6 runs on a 228-line file with engine ground truth
+  ([protocol](reviews/2026-10-22-inspector-model-pilot/PROTOCOL.md), [results](reviews/2026-10-22-inspector-model-pilot/RESULTS.md),
+  [log](reviews/2026-10-22-inspector-model-pilot/LOG.md)): mean printed cost 0.611 against 0.724 USD (ratio 0.84, the rule needed
+  at most 0.70, so **not met**), about twice the subagent turns and 1.7 times the wall time. The strict recall measure returned 0
+  for every run because it could not read Korean reports; it decided nothing. Three runs per condition on one file: descriptive only,
+  advice quality not graded. The six runs cost 4.0053 USD on the owner's account (5.49 USD with the baseline).
+- **Errata:** output tokens in subagent session records are lower bounds (4.3 to 8.6 times low in the pilot); input and cache
+  figures are exact. The first baseline table and the usage reader were corrected. A usage page must label that figure.
+
+**Open decisions (owner)**
+
+1. The inspector default above: keep `sonnet`, remove the model line (recommended on this evidence), or evaluate more (Haiku too).
+2. May the installer write one BoxBox-owned file under `~/.codex/agents/` so Codex gets a model and effort? Without it Codex gets
+   a documentation recommendation only.
+3. Pass criterion and budget for a larger evaluation (more files, a scorer that reads the reports, human grading of advice).
+4. `-monitor`: product command or development tool only; whether file names are hidden by default; whether a Codex page ships first.
+
+**Next steps (in order)**
+
+1. Settle decision 1 before publishing (callout above); if the model line goes, edit `product/models.json`, run
+   `bun run sync:plugin` and the focused tests, and rebuild the candidate.
+2. `-monitor` step 1: baseline v2 in `lifecycle-hook.ts` (bytes, lines and a whitespace-insensitive hash for supported files,
+   readable alongside the old string shape) and a measurement of its size; then `boxbox monitor --json`, the HTML renderer and the
+   `-monitor` skill argument. Acceptance criteria are in the proposal.
+3. Larger inspector evaluation only after decision 3. Reproduce a run with
+   `docs/development/reviews/2026-10-22-inspector-model-pilot/run-helper.ps1.txt` and `analyze_pilot.py.txt`.
+4. Codex session reader after a sanitized real rollout fixture exists (the rollout format has `token_count` events; no reader yet).
+
+**State left on chacada by this work.** `boxbox` 0.2.5 is installed for Claude Code (user scope, from CI archive `5fe739f5…`) with
+a backup of the Claude settings in `Downloads\BoxBox\0.2.5\ci-39732919128-1-5fe739f5\claude-before-install`; test folders
+`try-claude` and `inspector-pilot` under `Downloads\BoxBox\0.2.5`; raw outputs in `%TEMP%\bbx-sessions` and `%TEMP%\bbx-pilot` (the
+latter holds `agent.orig`, the installed inspector definition, which was restored and hash-checked after the pilot); the archive
+staging copy `/tmp/boxbox-0.2.5-ci-5fe739f5` in WSL. On the maintainer's Mac, `~/.claude/settings.json` still has a `statusLine`
+pointing at the removed 0.2.3 HUD script; it works only while that old version folder exists.
 
 ### chacada (company desktop, WSL2)
 
