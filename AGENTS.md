@@ -22,7 +22,7 @@ before release (M1.8 S8, done on 2026-10-07).
 
 Naming is owned by `product.json`. Its `displayName` derives the lowercase core ID, uppercase environment prefix and `98_<displayName>` repository directory through `bun run sync:product`. Its `npmName` owns the public installer package separately, because registry availability can differ from the product ID. `development/tools/product-identity.generated.json` snapshots core identity migration; the installer builder reads `npmName` directly. Known local links are updated; historical records and third-party installations are not rewritten.
 
-The confirmed product name is **BoxBox** (user decision on 2026-10-16). Core CLI, skill and plugin IDs use `boxbox`; display names use `BoxBox`; environment prefixes use `BOXBOX`. The public npm installer candidate is **`boxbox-plugin`**, selected after the user authorized an available alternative; npm returned E404 on 2026-10-16. This does not reserve the name or establish publication access.
+The confirmed product name is **BoxBox** (user decision on 2026-10-16). The GitHub repository was renamed from `Woo-JongHo/rowgrid` to `Woo-JongHo/boxbox` on 2026-10-22; GitHub redirects the old URLs, so recorded links are not rewritten. Core CLI, skill and plugin IDs use `boxbox`; display names use `BoxBox`; environment prefixes use `BOXBOX`. The public npm installer candidate is **`boxbox-plugin`**, selected after the user authorized an available alternative; npm returned E404 on 2026-10-16. This does not reserve the name or establish publication access.
 
 - `boxbox` — core CLI, private engine artifacts, source paths, plugin/skill IDs, `.boxbox/` and caches
 - `boxbox-plugin` — public npm installer candidate; intended entry `npx boxbox-plugin`

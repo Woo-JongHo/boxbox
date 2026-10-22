@@ -12,11 +12,11 @@ Ubuntu and macOS. TypeScript/shell checks and the plugin guard passed.
 
 Source `66eb97821d6b8bd81323175e071a107b2aa3f215` produced clean CI archive
 `ebfe6a7796d9d85e9cf3088c955df4fb5477e60513e8ebda97d517746d93c665` in
-[run 39646320662](https://github.com/Woo-JongHo/rowgrid/actions/runs/39646320662). This exact archive passed all
+[run 39646320662](https://github.com/Woo-JongHo/boxbox/actions/runs/39646320662). This exact archive passed all
 **six real-host core lifecycles and four supported HUD configuration cells** across macOS, native Windows and
 Linux/WSL, with independent reviews. Linux/Windows hosted engine smoke passed; hosted macOS smoke is queued for
 runner capacity, so the overall candidate workflow remains pending. The source PR verification
-[passed both platforms](https://github.com/Woo-JongHo/rowgrid/actions/runs/39646325026).
+[passed both platforms](https://github.com/Woo-JongHo/boxbox/actions/runs/39646325026).
 
 The exact archive was delivered to `C:\Users\woo\Downloads\BoxBox\0.2.4\ci-39646320662-1-ebfe6a77` on chacada,
 with matching WSL and native PowerShell hashes. The payload allowlist audit and corrected release/Windows guidance
@@ -53,9 +53,9 @@ auth and no candidate-root process. A later independently reviewed native Codex 
 648 tests with five existing parser skips, plus TypeScript/shell checks. A later whitespace-only self-layout closure
 passed 39 focused tests and TypeScript checking; it was not another full run. The scoped GLM static source review passed with no mandatory findings. The same local `2b43d24…` archive was delivered to a new chacada directory and independently passed native Windows installation, unknown-key refusal, approved TS/Python journeys and 180-input behavior. It remains a local development artifact, not CI-produced or publicly released.
 
-PR [#5](https://github.com/Woo-JongHo/rowgrid/pull/5) remains open. At frozen source head
-`35b61780ae122744f39d9cb0b935db5f8bccd14b`, [PR run 39635921495](https://github.com/Woo-JongHo/rowgrid/actions/runs/39635921495)
-passed Ubuntu and macOS with 653 tests and zero failures on each. [Candidate run 39637622755](https://github.com/Woo-JongHo/rowgrid/actions/runs/39637622755)
+PR [#5](https://github.com/Woo-JongHo/boxbox/pull/5) remains open. At frozen source head
+`35b61780ae122744f39d9cb0b935db5f8bccd14b`, [PR run 39635921495](https://github.com/Woo-JongHo/boxbox/actions/runs/39635921495)
+passed Ubuntu and macOS with 653 tests and zero failures on each. [Candidate run 39637622755](https://github.com/Woo-JongHo/boxbox/actions/runs/39637622755)
 verified the same source, built one archive with SHA-256 `bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be`,
 and exercised that downloaded archive successfully in engine-only smoke on Ubuntu, macOS and Windows. These passes
 did not reproduce the historical macOS timeout; [issue 007](issue-library/records/BBX-20261021-007-validation-timeout.json)
@@ -169,7 +169,7 @@ desktop behavior, Claude event delivery and public registry publication remain s
 ## Completed delivery — DELIVERY1
 
 The user-selected issue forms → PR verification → candidate generation pipeline is operational on private GitHub
-`Woo-JongHo/rowgrid`. PR #2 preserved main history/LICENSE and merged the current development layout. Its final
+`Woo-JongHo/boxbox` (renamed from `rowgrid` on 2026-10-22). PR #2 preserved main history/LICENSE and merged the current development layout. Its final
 Ubuntu/macOS verification passed 496 tests on each OS with zero skips/failures. Actual manual candidate run39543872402
 passed all six jobs, including same-archive Linux/macOS/Windows installed TypeScript/Python journeys.
 
@@ -185,7 +185,7 @@ DELIVERY1 is verified; the user authorized continuation on 2026-10-21. No public
 
 ## First-use formatting — 2026-10-21
 
-The user authorized the fix for [GitHub issue #1](https://github.com/Woo-JongHo/rowgrid/issues/1) and approved two exact
+The user authorized the fix for [GitHub issue #1](https://github.com/Woo-JongHo/boxbox/issues/1) and approved two exact
 recommended rules: TypeScript top-level single-call variable declarations (2+ rows, `.ts`) and Python simple assignments
 (3+ rows at the same indentation). Only the four synthetic examples were separately authorized for CC0-1.0.
 
