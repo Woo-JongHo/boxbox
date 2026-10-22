@@ -1,0 +1,5 @@
+align-tables file=test/release-workflow.test.ts groups=4 misaligned=0 edits=0 compressed=0 compressed-members=0 refused=0
+       6-11  declaration-equals rows= 6  equals=15 semicolon=117  edits=0
+      14-17  call-statements    rows= 4  subject-close-paren=42 matcher-dot=43 matcher-open-paren=48 matcher-close-paren=91 semicolon=93  edits=0
+      19-22  call-statements    rows= 4  subject-close-paren=133 matcher-dot=134 matcher-open-paren=142 matcher-close-paren=194 semicolon=196  edits=0
+      27-29  call-statements    rows= 3  subject-close-paren=42 matcher-dot=43 matcher-open-paren=56 matcher-close-paren=99 semicolon=101  edits=0

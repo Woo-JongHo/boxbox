@@ -1,0 +1,35 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/release-workflow.test.ts:
+ 9 | const upload = producer.steps.find((step: any) => step.uses?.startsWith("actions/upload-artifact@"));
+10 | const download = consumer.steps.find((step: any) => step.uses?.startsWith("actions/download-artifact@"));
+11 | const guard = consumer.steps.find((step: any) => step.name === "Require one immutable candidate artifact");
+12 | 
+13 | test("partial smoke reruns consume the producer artifact ID without guessing the current attempt", () => {
+14 | 	expect(upload.id).toBe("upload");
+                        ^
+error: expect(received).toBe(expected)
+
+Expected: "upload"
+Received: undefined
+
+      at <anonymous> (<repo>/test/release-workflow.test.ts:14:20)
+(fail) partial smoke reruns consume the producer artifact ID without guessing the current attempt [7.01ms]
+21 | 	expect(consumer.strategy.matrix.os).toEqual(["ubuntu-latest", "macos-latest", "windows-latest"]);
+22 | 	expect(consumer.steps.find((step: any) => step.run?.startsWith("node development/tools/release-smoke.mjs"))?.env.CANDIDATE_SHA256).toBe("${{ needs.package.outputs.sha256 }}");
+23 | });
+24 | 
+25 | test("the actual pre-download guard rejects missing or ambiguous identity before the action can download all artifacts", () => {
+26 | 	expect(guard).toBeDefined();
+                    ^
+error: expect(received).toBeDefined()
+
+Received: undefined
+
+      at <anonymous> (<repo>/test/release-workflow.test.ts:26:16)
+(fail) the actual pre-download guard rejects missing or ambiguous identity before the action can download all artifacts [0.78ms]
+
+ 0 pass
+ 2 fail
+ 2 expect() calls
+Ran 2 tests across 1 file. [184.00ms]
