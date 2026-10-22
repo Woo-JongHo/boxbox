@@ -1,0 +1,16 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/release-workflow.test.ts:
+(pass) partial smoke reruns consume the producer artifact ID without guessing the current attempt [0.83ms]
+(pass) the actual pre-download guard rejects missing or ambiguous identity before the action can download all artifacts [821.91ms]
+
+test/release-candidate.test.ts:
+(pass) candidate staging records the exact prebuilt bytes and commit without rebuilding [121.72ms]
+(pass) candidate staging refuses an archive for another package [47.28ms]
+(pass) smoke refuses altered archive bytes and a replaced metadata digest before installation [92.83ms]
+(pass) smoke requires a separate build digest and refuses an escaping archive filename [87.42ms]
+
+ 6 pass
+ 0 fail
+ 52 expect() calls
+Ran 6 tests across 2 files. [1263.00ms]

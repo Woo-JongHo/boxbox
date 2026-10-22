@@ -138,6 +138,22 @@ The public payload audit and corrected release/user guidance passed. See the
 No further product implementation gap was identified in the bounded first-release audit. Complete the queued CI job
 and final record reconciliation; new rule/example, artifact license, authentication and publication gates remain open.
 
+### R5 follow-up — candidate partial-rerun identity (2026-10-22)
+
+Attempt 1 of candidate run `39646320662` and docs-head PR run `39649400680` ended with
+macOS runner-acquisition cancellation before any job steps. Their failed jobs were rerun as attempt 2.
+The candidate consumer also has a separate reproducible design defect: it constructs the producer's
+artifact name from the consumer's current `github.run_attempt`. A smoke-only rerun therefore requests
+attempt 2 although the successful package job uploaded attempt 1.
+
+Bind future consumers to the upload action's immutable artifact ID through a package job output.
+Reject missing or malformed IDs and digests before downloading; flatten the one ID-selected artifact
+into the existing candidate directory. Keep all three OSes, the independent archive SHA check and
+per-attempt evidence names. Regression tests must execute the actual workflow guard and check its
+producer/consumer wiring. Independently review the change, then measure a real smoke-only rerun
+without rebuilding. Missing replayed outputs must fail closed. Source patches cannot repair old runs
+retrospectively; preserve their results and distinguish any explicitly bound recovery evidence.
+
 ### Loop and completion gate
 
 For each phase: inspect current behavior → write the smallest implementation → run meaningful targeted tests →
