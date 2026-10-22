@@ -43,6 +43,11 @@ export interface LineProfiler {
 	readonly canonicalGaps : Readonly<Record<string, string>>;
 	/** Returns the decomposition if the line is a table row, otherwise null. code is the source with the trailing comment cut; masked is the mask at the same coordinates. */
 	profile(code: string, masked: string): RowProfile | null;
+	/**
+	 * Rows whose axes are a prefix of the run's longest axes join that run (`name : type` beside `name : type = value`).
+	 * Off by default; each language opts in only where a shorter row is the same role with fewer trailing cells.
+	 */
+	readonly prefixRuns?   : boolean;
 	/** Optional outer rows by zero-based physical line. Detailed tables keep priority; every projection must reconstruct its original code exactly. */
 	project?(source: string): ReadonlyMap<number, RowProfile>;
 }
@@ -128,7 +133,19 @@ function losslessProfile(profile: RowProfile, code: string): boolean {
 		&& profile.indent + profile.slots.map((slot, position) => position === 0 ? slot.text : slot.gapBefore + slot.text).join("") === code;
 }
 
-function contiguousRuns(rows: readonly AcceptedRow[]): AcceptedRow[][] {
+/** True when one row's axes are a prefix of the other's at the same indentation. */
+function prefixRelated(left: RowProfile, right: RowProfile): boolean {
+	if (left.indent !== right.indent) return false;
+	const [short, long] = left.slots.length <= right.slots.length ? [left, right] : [right, left];
+	return short.slots.every((slot, position) => slot.axis === long.slots[position].axis);
+}
+
+/** The row with the most slots; a prefix run is judged and reported by it. */
+function longestProfile(run: readonly AcceptedRow[]): RowProfile {
+	return run.reduce((longest, row) => row.profile.slots.length > longest.slots.length ? row.profile : longest, run[0].profile);
+}
+
+function contiguousRuns(rows: readonly AcceptedRow[], prefixRuns: boolean): AcceptedRow[][] {
 	const runs  : AcceptedRow[][] = [] ;
 	let current : AcceptedRow[]   = [] ;
 	const flush = (): void => {
@@ -137,9 +154,11 @@ function contiguousRuns(rows: readonly AcceptedRow[]): AcceptedRow[][] {
 	};
 
 	for (const row of rows) {
-		const previous   = current.at(-1)                                                         ;
-		const contiguous = !previous || previous.index === row.index - 1                          ;
-		const sameShape  = previous && signatureOf(previous.profile) === signatureOf(row.profile) ;
+		const previous   = current.at(-1)                                ;
+		const contiguous = !previous || previous.index === row.index - 1 ;
+		const sameShape  = previous && (prefixRuns
+			? prefixRelated(longestProfile(current), row.profile)
+			: signatureOf(previous.profile) === signatureOf(row.profile));
 		if (contiguous && sameShape) current.push(row);
 		else { flush(); current = [row]; }
 	}
@@ -148,11 +167,21 @@ function contiguousRuns(rows: readonly AcceptedRow[]): AcceptedRow[][] {
 	return runs;
 }
 
+/** A column is as wide as its longest cell among rows that continue past it; a row's last cell is never padded. */
+function columnWidths(run: readonly AcceptedRow[]): number[] {
+	return longestProfile(run).slots.map((_, position) => {
+		const continuing = run.filter(row => position < row.profile.slots.length - 1) ;
+		const present    = run.filter(row => position < row.profile.slots.length)     ;
+		const measured   = continuing.length > 0 ? continuing : present               ;
+		return Math.max(...measured.map(row => displayWidth(row.profile.slots[position].text)));
+	});
+}
+
 /** Select one owner per row. A primary table remains reserved even if the preservation gate later refuses it. */
-function projectedRuns(primary: AcceptedRow[][], projected: readonly AcceptedRow[], minRows: number): AcceptedRow[][] {
+function projectedRuns(primary: AcceptedRow[][], projected: readonly AcceptedRow[], minRows: number, prefixRuns: boolean): AcceptedRow[][] {
 	const primaryTables  = primary.filter(run => run.length >= minRows)                                               ;
 	const reserved       = new Set(primaryTables.flatMap(run => run.map(row => row.index)))                           ;
-	const fallback       = contiguousRuns(projected.filter(row => !reserved.has(row.index)))                          ;
+	const fallback       = contiguousRuns(projected.filter(row => !reserved.has(row.index)), prefixRuns)              ;
 	const fallbackTables = fallback.filter(run => run.length >= minRows)                                              ;
 	const claimed        = new Set(fallbackTables.flatMap(run => run.map(row => row.index)))                          ;
 	const primaryPairs   = primary.filter(run => run.length < minRows && run.every(row => !claimed.has(row.index)))   ;
@@ -193,23 +222,22 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		if (projection && losslessProfile(projection, code)) projected.push({ index, profile: projection, comment });
 	});
 
-	const primary = contiguousRuns(accepted)                                                         ;
-	const runs    = projections === undefined ? primary : projectedRuns(primary, projected, minRows) ;
+	const prefixRuns = aligner.prefixRuns === true                                                                  ;
+	const primary    = contiguousRuns(accepted, prefixRuns)                                                         ;
+	const runs       = projections === undefined ? primary : projectedRuns(primary, projected, minRows, prefixRuns) ;
 
 	const candidates : DetectedTable[] = [] ;
 	const pairs      : PairGroup[]     = [] ;
 
 	for (const run of runs) {
-		const signature = signatureOf(run[0].profile);
+		const signature = signatureOf(longestProfile(run));
 		if (run.length < minRows) {
 			pairs.push({ startLine: run[0].index + 1, endLine: run[run.length - 1].index + 1, rows: run.length, signature });
 			continue;
 		}
-		const widths = run[0].profile.slots.map((_, position) =>
-			Math.max(...run.map(row => displayWidth(row.profile.slots[position].text))),
-		);
-		const alignedCodes = run.map(row => rebuildCode(aligner, row.profile, widths)) ;
-		const commentRows  = run.map(row => row.comment !== null)                      ;
+		const widths       = columnWidths(run                                             ) ;
+		const alignedCodes = run.map     (row => rebuildCode(aligner, row.profile, widths)) ;
+		const commentRows  = run.map     (row => row.comment !== null                     ) ;
 		const commentColumn = Math.max(
 			0,
 			...run.map((row, position) => commentRows[position] ? displayWidth(alignedCodes[position]) : 0),
@@ -227,13 +255,13 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 			tableEdits.push({ index: row.index, before: raw, after: withCR });
 		});
 		candidates.push({
-			startLine : run[0].index + 1                            ,
-			endLine   : run[run.length - 1].index + 1               ,
-			rows      : run.length                                  ,
-			indent    : run[0].profile.indent                       ,
-			axes      : run[0].profile.slots.map(slot => slot.axis) ,
-			widths    : widths                                      ,
-			edits     : tableEdits                                  ,
+			startLine : run[0].index + 1                                 ,
+			endLine   : run[run.length - 1].index + 1                    ,
+			rows      : run.length                                       ,
+			indent    : run[0].profile.indent                            ,
+			axes      : longestProfile(run).slots.map(slot => slot.axis) ,
+			widths    : widths                                           ,
+			edits     : tableEdits                                       ,
 		});
 	}
 

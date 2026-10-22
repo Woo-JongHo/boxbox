@@ -61,6 +61,55 @@ describe("python profile specific properties", () => {
 		expect(lines[2]).toBe("name  : str   = 'x'") ;
 	});
 
+	test("subscripted, union and quoted annotations stay in one field table", () => {
+		const source = [
+			"class Snapshot:",
+			"    target_path: Path",
+			'    scan: "ScanResult"',
+			"    last_row: int | None",
+			"    wire_keys: tuple[str, ...]",
+		].join("\n");
+		const lines = align(source).output.split("\n");
+		expect(lines.slice(1)).toEqual([
+			"    target_path : Path",
+			'    scan        : "ScanResult"',
+			"    last_row    : int | None",
+			"    wire_keys   : tuple[str, ...]",
+		]);
+	});
+
+	test("fields with and without defaults share the name and colon columns; equal follows the longest defaulted type", () => {
+		const source = [
+			"class Meta:",
+			"    source_path: str",
+			"    raw_row_count: int",
+			"    account_filter_path: str | None = None",
+			"    allowed_count: int = 0",
+		].join("\n");
+		const result = align(source);
+		expect(result.tables).toBe(1);
+		expect(result.output.split("\n").slice(1)).toEqual([
+			"    source_path         : str",
+			"    raw_row_count       : int",
+			"    account_filter_path : str | None = None",
+			"    allowed_count       : int        = 0",
+		]);
+	});
+
+	test("annotation-like rows with a top-level comma or a bracketed value are refused", () => {
+		const source = [
+			"    alpha: int,",
+			"    beta: str,",
+			"    gamma: bool,",
+			"items: list[int] = [1, 2]",
+			"names: list[str] = []",
+			"flags: list[bool] = []",
+		].join("\n");
+		const result = align(source);
+		expect(result.tables).toBe(0     );
+		expect(result.output).toBe(source);
+	});
+
 	test("attribute assignments form a table without changing Python syntax or non-whitespace tokens", () => {
 		const source = [
 			"self.a = 0",
