@@ -5,11 +5,11 @@ import      { SWIFT_ALIGNER          } from "@/swift/profile.ts"       ;
 import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
-	aligner     : SWIFT_ALIGNER,
-	fixturesDir : new URL("../test/fixtures/swift/", import.meta.url).pathname,
-	tableFile   : "tables.swift",
-	alignedFile : "tables.aligned.swift",
-	trickyFile  : "tricky.swift",
+	aligner     : SWIFT_ALIGNER                                                ,
+	fixturesDir : new URL("../test/fixtures/swift/", import.meta.url).pathname ,
+	tableFile   : "tables.swift"                                               ,
+	alignedFile : "tables.aligned.swift"                                       ,
+	trickyFile  : "tricky.swift"                                               ,
 });
 
 describe("swift profile specific properties", () => {

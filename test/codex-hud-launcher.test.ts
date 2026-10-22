@@ -28,9 +28,9 @@ function fixture() {
 	}
 	const dependencies = {
 		platform: "linux", cwd: directory, env: { PATH: bin },
-		terminal : { isTTY: true, columns: 100, rows: 30 },
-		run      : (_command: string, args: string[]) => { calls.push(args); return { status: 0, stderr: "" }; },
-		attach   : async (_command: string, args: string[]) => { calls.push(args); return 0; },
+		terminal : { isTTY: true, columns: 100, rows: 30 }                                                       ,
+		run      : (_command: string, args: string[]) => { calls.push(args); return { status: 0, stderr: "" }; } ,
+		attach   : async (_command: string, args: string[]) => { calls.push(args); return 0; }                   ,
 	};
 
 	return { directory, bin, project, calls, dependencies, options: { pluginRoot: directory, args: [] } };

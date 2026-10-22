@@ -5,11 +5,11 @@ import      { JAVA_ALIGNER           } from "@/java/profile.ts"        ;
 import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
-	aligner     : JAVA_ALIGNER,
-	fixturesDir : new URL("../test/fixtures/java/", import.meta.url).pathname,
-	tableFile   : "tables.java",
-	alignedFile : "tables.aligned.java",
-	trickyFile  : "tricky.java",
+	aligner     : JAVA_ALIGNER                                                ,
+	fixturesDir : new URL("../test/fixtures/java/", import.meta.url).pathname ,
+	tableFile   : "tables.java"                                               ,
+	alignedFile : "tables.aligned.java"                                       ,
+	trickyFile  : "tricky.java"                                               ,
 });
 
 const maskedOf = (line: string): string => maskSource(line, JAVA_ALIGNER.syntax).text;
@@ -116,8 +116,8 @@ describe("java alignment properties", () => {
 			'        {"ccc", 333, "z"},',
 			"    };",
 		].join("\n");
-		const result = alignSource(source, JAVA_ALIGNER, { minRows: 3, apply: true }) ;
-		const lines  = result.output.split("\n")                                      ;
+		const result = alignSource        (source, JAVA_ALIGNER, { minRows: 3, apply: true }) ;
+		const lines  = result.output.split("\n"                                             ) ;
 		expect(lines[1]         ).toBe('        {"alpha", 1  , "x" },') ;
 		expect(lines[2]         ).toBe('        {"b"    , 22 , "yy"},') ;
 		expect(lines[3]         ).toBe('        {"ccc"  , 333, "z" },') ;

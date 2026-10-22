@@ -11,11 +11,11 @@ import      { CPP_ALIGNER            } from "@/cpp/profile.ts"         ;
 import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
-	aligner     : CPP_ALIGNER,
-	fixturesDir : new URL("../test/fixtures/cpp/", import.meta.url).pathname,
-	tableFile   : "tables.cpp",
-	alignedFile : "tables.aligned.cpp",
-	trickyFile  : "tricky.cpp",
+	aligner     : CPP_ALIGNER                                                ,
+	fixturesDir : new URL("../test/fixtures/cpp/", import.meta.url).pathname ,
+	tableFile   : "tables.cpp"                                               ,
+	alignedFile : "tables.aligned.cpp"                                       ,
+	trickyFile  : "tricky.cpp"                                               ,
 });
 
 describe("cpp profile specific properties", () => {
@@ -98,7 +98,7 @@ describe("cpp profile specific properties", () => {
 
 	test("the 2-row groups in tables.cpp are a field-table pair and a bundle-row pair", () => {
 		const source = readFileSync(new URL("../test/fixtures/cpp/tables.cpp", import.meta.url), "utf8") ;
-		const result = align(source)                                                                     ;
+		const result = align       (source                                                             ) ;
 		expect(result.pairs.length).toBe(2);
 		expect(result.pairs.map(pair => pair.signature)).toEqual([
 			"    |type>name>equal>value>semicolon",

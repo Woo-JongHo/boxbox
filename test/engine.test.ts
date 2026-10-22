@@ -5,18 +5,18 @@ import      { alignSource              } from "@/common/table-engine.ts" ;
 import type { LineProfiler, RowProfile } from "@/common/table-engine.ts" ;
 
 const SYNTAX: CodeSyntax = {
-	lineComments  : ["//"],
-	blockComments : [{ open: "/*", close: "*/" }],
-	strings       : [{ open: '"', close: '"', escape: true }],
-	cppRaw        : false,
+	lineComments  : ["//"]                                    ,
+	blockComments : [{ open: "/*", close: "*/" }]             ,
+	strings       : [{ open: '"', close: '"', escape: true }] ,
+	cppRaw        : false                                     ,
 };
 
 /** Minimal profiler accepting only `name : value ;` — structure from the mask, text sliced from the source. */
 const TEST_ALIGNER: LineProfiler = {
-	language      : "test",
-	syntax        : SYNTAX,
-	columnAxes    : ["name", "value"],
-	canonicalGaps : { colon: " ", value: " ", semicolon: " " },
+	language      : "test"                                     ,
+	syntax        : SYNTAX                                     ,
+	columnAxes    : ["name", "value"]                          ,
+	canonicalGaps : { colon: " ", value: " ", semicolon: " " } ,
 	profile(code: string, masked: string): RowProfile | null {
 		const match   = /^([ \t]*)([A-Za-z_][A-Za-z0-9_]*)(\s*):(\s*)(.+?)(\s*);$/du.exec(masked) ;
 		const indices = match?.indices                                                            ;
@@ -90,8 +90,8 @@ describe("alignSource", () => {
 	].join("\n");
 
 	test("aligns columns at the minimum width of the actual longest cell", () => {
-		const result      = alignSource(SOURCE, TEST_ALIGNER, { minRows: 3, apply: true }) ;
-		const outputLines = result.output.split("\n")                                      ;
+		const result      = alignSource        (SOURCE, TEST_ALIGNER, { minRows: 3, apply: true }) ;
+		const outputLines = result.output.split("\n"                                             ) ;
 		expect(outputLines[0]   ).toBe("short      : 1   ;") ;
 		expect(outputLines[1]   ).toBe("longername : 22  ;") ;
 		expect(outputLines[2]   ).toBe("m          : 333 ;") ;
@@ -100,8 +100,8 @@ describe("alignSource", () => {
 	});
 
 	test("blank lines and comments break sections — a later section never shares an earlier section's width", () => {
-		const result      = alignSource(SOURCE, TEST_ALIGNER, { minRows: 3, apply: true }) ;
-		const outputLines = result.output.split("\n")                                      ;
+		const result      = alignSource        (SOURCE, TEST_ALIGNER, { minRows: 3, apply: true }) ;
+		const outputLines = result.output.split("\n"                                             ) ;
 		expect(outputLines[4]                              ).toBe   ("breaks : region ;") ;
 		expect(outputLines[5]                              ).toBe   ("a      : 1      ;") ;
 		expect(result.details.map(table => table.startLine)).toEqual([1, 5]             ) ;

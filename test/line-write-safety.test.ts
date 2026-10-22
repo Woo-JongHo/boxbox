@@ -38,10 +38,10 @@ function leftovers(target: string): readonly string[] {
 
 function run(target: string, args: readonly string[] = ["--write"], path = process.env.PATH): ReturnType<typeof Bun.spawnSync> {
 	return Bun.spawnSync([BUN, SCRIPT, "--file", target, ...args], {
-		cwd    : ROOT,
-		env    : { ...process.env, PATH: path },
-		stderr : "pipe",
-		stdout : "pipe",
+		cwd    : ROOT                           ,
+		env    : { ...process.env, PATH: path } ,
+		stderr : "pipe"                         ,
+		stdout : "pipe"                         ,
 	});
 }
 
@@ -77,10 +77,10 @@ describe("safe file replacement in the line-engine CLI", () => {
 	});
 
 	test("refuses symbolic and hard link targets while preserving the original bytes", () => {
-		const directory = workspace()                    ;
-		const source    = join(directory, "source.py")   ;
-		const symbolic  = join(directory, "symbolic.py") ;
-		const hard      = join(directory, "hard.py")     ;
+		const directory = workspace()                         ;
+		const source    = join     (directory, "source.py"  ) ;
+		const symbolic  = join     (directory, "symbolic.py") ;
+		const hard      = join     (directory, "hard.py"    ) ;
 		writeFileSync(source, FIXTURE);
 		symlinkSync(source, symbolic);
 		linkSync(source, hard);
@@ -105,10 +105,10 @@ describe("safe file replacement in the line-engine CLI", () => {
 		chmodSync(python, 0o755);
 
 		const result = Bun.spawnSync([BUN, SCRIPT, "--file", target, "--write"], {
-			cwd    : ROOT,
-			env    : { ...process.env, PATH: tools, EDIT_TARGET: target, EDIT_TEXT: external },
-			stderr : "pipe",
-			stdout : "pipe",
+			cwd    : ROOT                                                                      ,
+			env    : { ...process.env, PATH: tools, EDIT_TARGET: target, EDIT_TEXT: external } ,
+			stderr : "pipe"                                                                    ,
+			stdout : "pipe"                                                                    ,
 		});
 
 		expect(result.exitCode             ).not.toBe     (0                             ) ;

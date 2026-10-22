@@ -5,11 +5,11 @@ import      { KOTLIN_ALIGNER         } from "@/kotlin/profile.ts"      ;
 import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
-	aligner     : KOTLIN_ALIGNER,
-	fixturesDir : new URL("../test/fixtures/kotlin/", import.meta.url).pathname,
-	tableFile   : "tables.kt",
-	alignedFile : "tables.aligned.kt",
-	trickyFile  : "tricky.kt",
+	aligner     : KOTLIN_ALIGNER                                                ,
+	fixturesDir : new URL("../test/fixtures/kotlin/", import.meta.url).pathname ,
+	tableFile   : "tables.kt"                                                   ,
+	alignedFile : "tables.aligned.kt"                                           ,
+	trickyFile  : "tricky.kt"                                                   ,
 });
 
 describe("kotlin profile specific properties", () => {

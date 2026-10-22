@@ -4,11 +4,11 @@ import      { alignSource            } from "@/common/table-engine.ts" ;
 import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
-	aligner     : C_ALIGNER,
-	fixturesDir : new URL("../test/fixtures/c/", import.meta.url).pathname,
-	tableFile   : "tables.c",
-	alignedFile : "tables.aligned.c",
-	trickyFile  : "tricky.c",
+	aligner     : C_ALIGNER                                                ,
+	fixturesDir : new URL("../test/fixtures/c/", import.meta.url).pathname ,
+	tableFile   : "tables.c"                                               ,
+	alignedFile : "tables.aligned.c"                                       ,
+	trickyFile  : "tricky.c"                                               ,
 });
 
 describe("C profiler specific properties", () => {
@@ -20,8 +20,8 @@ describe("C profiler specific properties", () => {
 			"    .timeout_ms = 1500,",
 			"};",
 		].join("\n");
-		const result = alignSource(source, C_ALIGNER, { minRows: 3, apply: true }) ;
-		const lines  = result.output.split("\n")                                   ;
+		const result = alignSource        (source, C_ALIGNER, { minRows: 3, apply: true }) ;
+		const lines  = result.output.split("\n"                                          ) ;
 		expect(lines[1]         ).toBe(`    .name       = "x" ,`) ;
 		expect(lines[2]         ).toBe("    .retries    = 3   ,") ;
 		expect(lines[3]         ).toBe("    .timeout_ms = 1500,") ;
@@ -48,8 +48,8 @@ describe("C profiler specific properties", () => {
 			"    struct link *prev;",
 			"};",
 		].join("\n");
-		const result = alignSource(source, C_ALIGNER, { minRows: 3, apply: true }) ;
-		const lines  = result.output.split("\n")                                   ;
+		const result = alignSource        (source, C_ALIGNER, { minRows: 3, apply: true }) ;
+		const lines  = result.output.split("\n"                                          ) ;
 		expect(lines[1]).toBe("    char        *name;") ;
 		expect(lines[2]).toBe("    struct link *next;") ;
 		expect(lines[3]).toBe("    struct link *prev;") ;
@@ -61,8 +61,8 @@ describe("C profiler specific properties", () => {
 			"#define BACKLOG 128",
 			"#define GREETING \"hi = ;\"",
 		].join("\n");
-		const result = alignSource(source, C_ALIGNER, { minRows: 3, apply: true }) ;
-		const lines  = result.output.split("\n")                                   ;
+		const result = alignSource        (source, C_ALIGNER, { minRows: 3, apply: true }) ;
+		const lines  = result.output.split("\n"                                          ) ;
 		expect(lines[0]).toBe("#define PORT     80"      ) ;
 		expect(lines[1]).toBe("#define BACKLOG  128"     ) ;
 		expect(lines[2]).toBe(`#define GREETING "hi = ;"`) ;
@@ -76,8 +76,8 @@ describe("C profiler specific properties", () => {
 			`    {333, "ccc", 3},`,
 			"};",
 		].join("\n");
-		const result = alignSource(source, C_ALIGNER, { minRows: 3, apply: true }) ;
-		const lines  = result.output.split("\n")                                   ;
+		const result = alignSource        (source, C_ALIGNER, { minRows: 3, apply: true }) ;
+		const lines  = result.output.split("\n"                                          ) ;
 		expect(lines[1]         ).toBe(`    {1  , "alpha", 0x10 },`) ;
 		expect(lines[2]         ).toBe(`    {22 , "b"    , 0x201},`) ;
 		expect(lines[3]         ).toBe(`    {333, "ccc"  , 3    },`) ;

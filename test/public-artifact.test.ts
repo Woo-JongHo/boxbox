@@ -27,10 +27,10 @@ function workspace(): string {
 
 function run(command: string, args: readonly string[], options: { readonly cwd: string; readonly env?: NodeJS.ProcessEnv; readonly timeout?: number }) {
 	return spawnSync(command, args, {
-		cwd      : options.cwd,
-		env      : options.env,
-		encoding : "utf8",
-		timeout  : options.timeout ?? 120_000,
+		cwd      : options.cwd                ,
+		env      : options.env                ,
+		encoding : "utf8"                     ,
+		timeout  : options.timeout ?? 120_000 ,
 	});
 }
 

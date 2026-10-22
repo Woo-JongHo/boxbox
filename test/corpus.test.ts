@@ -39,7 +39,7 @@ describe("pinned corpus", () => {
 	});
 
 	test("the four TypeScript and four Python candidates from the plan are pinned", () => {
-		const sources = readSources("manifest.json")             ;
+		const sources = readSources("manifest.json"            ) ;
 		const ids     = sources.map(source => String(source.id)) ;
 		expect(ids.sort()).toEqual(["django", "fastapi", "prisma", "pydantic", "requests", "trpc", "vscode", "zod"]);
 	});
