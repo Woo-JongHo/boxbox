@@ -1,6 +1,6 @@
 # Release package licensing proposal
 
-Status: pending human decision. No package licensing metadata changes are authorized by this proposal.
+Status: approved by the user on 2026-10-22 (MIT) and implemented; this does not authorize npm publication.
 
 The repository already contains `LICENSE` with the MIT text and the author's attribution. The installer builder
 currently emits `license: "UNLICENSED"`; engine package templates do not declare a release license. The release

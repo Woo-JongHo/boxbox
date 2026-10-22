@@ -57,6 +57,7 @@ describe("public CLI local package artifact", () => {
 		expectStatus(packed, 0);
 		const packResult = JSON.parse(packed.stdout) as [{ readonly filename: string; readonly files: readonly { readonly path: string }[] }];
 		expect(packResult[0]!.files.map(file => file.path).sort()).toEqual([
+			"LICENSE",
 			"README.md",
 			"THIRD_PARTY_NOTICES",
 			"dist/cli.js",
@@ -75,9 +76,11 @@ describe("public CLI local package artifact", () => {
 		const installed  = join(project, "node_modules/boxbox")                                                                                                                                                                                ;
 		const executable = join(project, "node_modules/.bin/boxbox")                                                                                                                                                                           ;
 		const manifest   = JSON.parse(readFileSync(join(installed, "package.json"), "utf8")) as { readonly private: boolean; readonly bin: Record<string, string>; readonly dependencies: Record<string, string>; readonly exports?: unknown } ;
-		expect(manifest.private     ).toBe   (true                      ) ;
-		expect(manifest.bin         ).toEqual({ boxbox: "dist/cli.js" } ) ;
-		expect(manifest.dependencies).toEqual({ typescript: "7.0.2" }   ) ;
+		expect(manifest.private                                                         ).toBe   (true                                       ) ;
+		expect(readFileSync(join(installed, "LICENSE"), "utf8")                         ).toBe   (readFileSync(join(root, "LICENSE"), "utf8")) ;
+		expect(JSON.parse(readFileSync(join(installed, "package.json"), "utf8")).license).toBe   ("MIT"                                      ) ;
+		expect(manifest.bin                                                             ).toEqual({ boxbox: "dist/cli.js" }                  ) ;
+		expect(manifest.dependencies                                                    ).toEqual({ typescript: "7.0.2" }                    ) ;
 		expect(manifest.exports     ).toBeUndefined()               ;
 		expect(existsSync(join(installed, "dist/internal-runner.js"))).toBe(false);
 		const yamlLicense = readFileSync(join(root, "node_modules/yaml/LICENSE"), "utf8");

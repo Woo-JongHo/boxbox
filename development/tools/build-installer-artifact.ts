@@ -42,9 +42,10 @@ export function buildInstallerArtifact(): string {
 	for (const name of ["platform.mjs", "install-state.mjs", "claude-registration.mjs"]) cpSync(join(ROOT, "product/installer", name), join(payload, name));
 	cpSync(join(ROOT, "product/installer/entry.mjs"), join(output, "bin/boxbox.mjs"));
 	cpSync(join(ROOT, "product/installer/README.md"), join(output, "README.md"));
+	cpSync(join(ROOT, "LICENSE"), join(output, "LICENSE"));
 	chmodSync(join(output, "bin/boxbox.mjs"), 0o755);
 	writeFileSync(join(payload, "bundle.json"), JSON.stringify(metadata, null, "\t") + "\n");
-	writeFileSync(join(output, "package.json"), JSON.stringify({ name: product.npmName, version: manifest.version, license: "UNLICENSED", description: `${product.displayName} plugin installer for Codex and Claude Code`, type: "module", engines: { node: ">=22.22.3" }, bin: { [manifest.name]: "bin/boxbox.mjs" }, files: ["bin/boxbox.mjs", "payload/", "README.md"] }, null, "\t") + "\n");
+	writeFileSync(join(output, "package.json"), JSON.stringify({ name: product.npmName, version: manifest.version, license: "MIT", description: `${product.displayName} plugin installer for Codex and Claude Code`, type: "module", engines: { node: ">=22.22.3" }, bin: { [manifest.name]: "bin/boxbox.mjs" }, files: ["bin/boxbox.mjs", "payload/", "README.md"] }, null, "\t") + "\n");
 
 	for (const host of ["codex", "claude"]) {
 		const root            = join(payload, host)                                                                       ;

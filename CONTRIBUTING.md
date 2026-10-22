@@ -55,4 +55,4 @@ that is a safety bug — please say so loudly in the title.
 By contributing you agree that your contributions are licensed under the
 MIT License.
 
-The four bundled synthetic examples have their separately recorded CC0-1.0 license. The existing MIT LICENSE is retained from GitHub main; installer candidates still use UNLICENSED preview metadata, and this candidate pipeline does not authorize publication.
+The four bundled synthetic examples have their separately recorded CC0-1.0 license. The project is MIT licensed; the installer and engine packages declare MIT and ship the LICENSE file. The candidate pipeline itself does not publish anything.

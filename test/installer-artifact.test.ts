@@ -184,11 +184,13 @@ test("npm installer name differs from private engine and both host payloads have
 	const packageRoot = extract   ()                                                        ;
 	const payload     = join      (packageRoot, "payload"                                 ) ;
 	const manifest    = JSON.parse(readFileSync(join(packageRoot, "package.json"), "utf8")) ;
-	expect(manifest).toMatchObject({ name: NPM_NAME, version: VERSION, license: "UNLICENSED", bin: { boxbox: "bin/boxbox.mjs" }, engines: { node: ">=22.22.3" } });
+	expect(manifest).toMatchObject({ name: NPM_NAME, version: VERSION, license: "MIT", bin: { boxbox: "bin/boxbox.mjs" }, engines: { node: ">=22.22.3" } });
 	expect(manifest.private).toBeUndefined();
+	expect(readFileSync(join(packageRoot, "LICENSE"), "utf8")).toBe(readFileSync(join(ROOT, "LICENSE"), "utf8"));
+	expect(readFileSync(join(ROOT, "LICENSE"), "utf8")).toMatch(/^MIT License/u);
 	expect(manifest.dependencies).toBeUndefined();
 	expect(JSON.parse(readFileSync(join(payload, "bundle.json"), "utf8"))).toMatchObject({ name: "boxbox", npmName: NPM_NAME });
-	const expected = ["README.md", "bin/boxbox.mjs", "package.json", "payload/bundle.json", "payload/platform.mjs", "payload/install-state.mjs", "payload/claude-registration.mjs"];
+	const expected = ["LICENSE", "README.md", "bin/boxbox.mjs", "package.json", "payload/bundle.json", "payload/platform.mjs", "payload/install-state.mjs", "payload/claude-registration.mjs"];
 	for (const host of ["codex", "claude"]) {
 		const root            = join(payload, host)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ;
 		const plugin          = join(root, "plugin")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ;
@@ -214,7 +216,7 @@ test("npm installer name differs from private engine and both host payloads have
 	expectStatus(listing, 0);
 	const nestedFiles = String(listing.stdout).trim().split("\n").filter(path => !path.endsWith("/"));
 	expect(nestedFiles.sort()).toEqual([
-		"package/README.md", "package/THIRD_PARTY_NOTICES", "package/dist/cli.js", "package/package.json",
+		"package/LICENSE", "package/README.md", "package/THIRD_PARTY_NOTICES", "package/dist/cli.js", "package/package.json",
 		"package/rules/presets/recommended/conventions.jsonl",
 		"package/rules/presets/recommended/decisions.jsonl",
 		"package/rules/presets/recommended/docs/public/decisions/py-simple-assignments.md",

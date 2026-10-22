@@ -60,7 +60,7 @@ REL11, approve additional rules, license the preview package or authorize public
 
 ## Human decisions and freeze points
 
-The product name `boxbox` / `BoxBox` was confirmed on 2026-10-16. The public installer candidate is `boxbox-plugin`, selected under the user's authorization to choose an available npm name. Private engine artifacts retain the core ID `boxbox`. The existing GitHub MIT LICENSE is retained at the repository root. Installer preview metadata remains UNLICENSED; release-package licensing metadata, publication permissions and public channel still need decisions before REL11; the local implementation remains `private: true`. Local builds, packs and isolated install experiments are
+The product name `boxbox` / `BoxBox` was confirmed on 2026-10-16. The public installer candidate is `boxbox-plugin`, selected under the user's authorization to choose an available npm name. Private engine artifacts retain the core ID `boxbox`. The existing GitHub MIT LICENSE is retained at the repository root. Installer and engine package metadata declare MIT and ship the `LICENSE` (decided 2026-10-22); publication permissions and public channel still need decisions before REL11; the local implementation remains `private: true`. Local builds, packs and isolated install experiments are
 included in the continuous-progress direction. The user separately authorized development commit/push and candidate
 delivery to `chacada`; this does not authorize a release tag, registry publication or repository visibility change.
 

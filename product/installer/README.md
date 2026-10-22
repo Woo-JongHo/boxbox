@@ -1,8 +1,7 @@
 # BoxBox plugin installer for Codex and Claude Code
 
 The intended public command is **`npx boxbox-plugin`**. The npm package is `boxbox-plugin`; its single executable is `boxbox`, and
-plugin/skill identifiers remain `boxbox`. This test preview uses license `UNLICENSED` and provides no
-open-source grant. Confirm the publisher's registry release before using the public command; a supplied local tarball can be tested before publication. The unrelated npm package `boxbox` is not this installer.
+plugin/skill identifiers remain `boxbox`. The package is licensed under MIT and ships its `LICENSE`. Confirm the publisher's registry release before using the public command; a supplied local tarball can be tested before publication. The unrelated npm package `boxbox` is not this installer.
 
 ## Windows PowerShell prerequisites
 
