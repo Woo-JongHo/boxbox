@@ -103,9 +103,9 @@ Spend it once per frozen candidate.
 
 - **Tiered checks.** While editing, run only the focused tests that cover the changed files. Run the full
   `bun run check` once when freezing a candidate, and again only after the candidate's contents change. The host
-  matrix (macOS, Windows, WSL × Codex, Claude, plus HUD cells) runs against a frozen candidate only, never per fix.
+  matrix (macOS, Windows, WSL × Codex, Claude) runs against a frozen candidate only, never per fix.
 - **Impact-scoped reruns.** After a fix, rerun only the matrix cells the changed paths can affect (for example, a
-  Python engine change does not need Claude statusLine or HUD cells). State which cells you skipped and why in the
+  Python engine change does not need installer-only cells). State which cells you skipped and why in the
   evidence note.
 - **Freeze rule.** Documentation, evidence and test-only commits do not create a new candidate and do not trigger
   matrix reruns. Only a change to shipped engine, rules, plugin or installer content changes the candidate identity.

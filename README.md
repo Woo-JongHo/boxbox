@@ -93,22 +93,6 @@ npm exec --yes --package '/absolute/path/to/dist/installer/boxbox-plugin-<versio
 Replace `<version>` with the version in `package.json`, or use the exact archive path printed by `pack:installer`. This local artifact journey requires the checkout for building. The installed plugin uses its permanent Node engine.
 The public installer needs Node.js 22.22.3 or later and npm; Python formatting additionally needs `python3`.
 
-## Terminal HUD
-
-The local installer candidate supports an opt-in BoxBox HUD on macOS/Linux:
-
-```sh
-npm exec --yes --package '/absolute/path/to/dist/installer/boxbox-plugin-<version>.tgz' -- boxbox --codex --claude --hud
-~/.local/bin/boxbox-codex
-```
-
-Claude Code uses its own status line after restart. Codex uses a separate tmux pane when launched with
-`boxbox-codex`; ordinary `codex` is unchanged. Install tmux first and launch outside existing tmux sessions.
-The HUD shows engine readiness, approved-rule count and observed checks; unknown receipts stay unknown.
-Codex shows history for the pinned startup project, not proof of the current session's acceptance.
-Windows and desktop HUDs are not supported by this adapter. Setup preserves unrelated settings, refuses another
-Claude status line, and does not grant hook trust. See [HUD setup, limitations and removal](docs/user/hud.md).
-
 ## Develop BoxBox
 
 Product sources live in `product/`; development tools, research and evidence live in `development/`.

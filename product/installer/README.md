@@ -39,54 +39,28 @@ To test a local candidate before publication, use the absolute installer tarball
 npm.cmd exec --yes --package 'C:\path\to\boxbox-plugin-<version>.tgz' -- boxbox
 ```
 
-## Optional terminal HUD (macOS/Linux)
+## Removing an earlier HUD
 
-Pass `--hud` with the selected host flags to opt in. For a local candidate:
-
-```sh
-npm exec --yes --package '/absolute/path/to/boxbox-plugin-<version>.tgz' -- boxbox --codex --claude --hud
-~/.local/bin/boxbox-codex
-```
-
-Claude uses its official status line after restart. Setup preserves unrelated user settings and refuses another
-status line. Codex uses an isolated tmux server with a four-row companion pane; install tmux first and launch outside
-an existing tmux session. `BOXBOX_BIN_HOME` overrides `~/.local/bin`; no PATH or ordinary `codex` alias is changed.
-The Codex HUD follows only the starting project (including `--cd`); relaunch when switching projects/sessions.
-Remote, worktree, resume/fork startup and noninteractive subcommands are refused by this launcher. Use ordinary
-`codex` for them. Detaching closes the owned session. Windows/desktop HUDs are outside this adapter's support.
-Engine readiness and approval counts are configuration checks. Last-check receipts are labeled by scope and age;
-missing receipts stay unknown. No hook trust or approval policy is changed. Direct marketplace installation alone
-does not configure this optional installer HUD.
-
-Before deleting permanent files, disable each selected HUD using that host's installed plugin directory:
+The opt-in terminal HUD (`--hud`) was removed after 0.2.4. If an earlier installation enabled it, disable it with
+that installation's permanent plugin directory, which the new installer leaves in place:
 
 ```sh
-node '/absolute/installed/plugin/scripts/hud/setup.mjs' claude '/absolute/installed/plugin' --disable
-node '/absolute/installed/plugin/scripts/hud/setup.mjs' codex '/absolute/installed/plugin' --disable
-```
-
-Disable removes only a still-owned status-line key or launcher. Unrelated settings and later user changes are preserved.
-The initial Claude settings backup is kept in the sibling `hud/claude-settings.before-hud.json` directory.
-
-## Updating a local Codex candidate from an earlier version
-
-If the old installation enabled the Codex HUD, disable it with that installation's permanent plugin directory before
-updating. This removes an unchanged BoxBox-owned launcher and refuses a launcher edited by the user or another tool:
-
-```sh
+node '/absolute/old/installed/plugin/scripts/hud/setup.mjs' claude '/absolute/old/installed/plugin' --disable
 node '/absolute/old/installed/plugin/scripts/hud/setup.mjs' codex '/absolute/old/installed/plugin' --disable
 ```
 
-Codex rejects the same marketplace name at a different versioned installation path. After the HUD handoff, replace
-the old BoxBox marketplace registration once, then run the new installer with `--hud` when the HUD is wanted:
+Disable removes only a still-owned status-line key or launcher. Unrelated settings and later user changes are preserved.
+
+## Updating a local Codex candidate from an earlier version
+
+If the old installation enabled the Codex HUD, disable it first (see above). Codex rejects the same marketplace name
+at a different versioned installation path, so replace the old BoxBox marketplace registration once, then run the new
+installer:
 
 ```powershell
 codex.cmd plugin marketplace remove boxbox-plugins
-npm.cmd exec --yes --package 'C:\path\to\boxbox-plugin-<version>.tgz' -- boxbox --codex --hud
+npm.cmd exec --yes --package 'C:\path\to\boxbox-plugin-<version>.tgz' -- boxbox --codex
 ```
-
-Omit `--hud` on Windows, where the terminal HUD is unsupported, or when updating only the plugin. Claude's owned
-status-line state is stored in the stable HUD data directory and can be updated in place; another status line is refused.
 
 Use your installed OpenAI Codex CLI (`codex.cmd` is the standard Windows npm entry). Marketplace replacement is a
 manual, non-atomic removal/reinstall operation. The installer does not migrate Codex marketplace sources automatically.

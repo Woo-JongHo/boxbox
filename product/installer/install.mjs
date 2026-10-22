@@ -75,7 +75,6 @@ const plugin        = join(root, "plugin")                                      
 const launcher      = join(plugin, "scripts/boxbox.mjs")                                                                                                            ;
 const configuration = join(plugin, "runtime.json")                                                                                                                  ;
 const previous      = existsSync(configuration) ? JSON.parse(readFileSync(configuration, "utf8")) : {}                                                              ;
-const hudData       = resolve(root, "..", "hud")                                                                                                                    ;
 const skillCommand  = engineCommand(node, launcher, windows, metadata.host)                                                                                         ;
 const documents     = [join(plugin, "skills", metadata.name, "SKILL.md"), ...(metadata.host === "claude" ? [join(plugin, "agents/readability-inspector.md")] : [])] ;
 for (const path of documents) {
@@ -85,7 +84,7 @@ for (const path of documents) {
 		fail(error.message);
 	}
 }
-writeFileSync(configuration, JSON.stringify({ node, cli, skillCommand, hudData }, null, "\t") + "\n");
+writeFileSync(configuration, JSON.stringify({ node, cli, skillCommand }, null, "\t") + "\n");
 
 const hooksPath = join      (plugin, "hooks/hooks.json"     ) ;
 const hooks     = JSON.parse(readFileSync(hooksPath, "utf8")) ;

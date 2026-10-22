@@ -437,9 +437,9 @@ When judging current behavior, prefer this document and the running code; when d
 claims. Each needs separate evidence: `06`'s gate results, whether the convention lookup actually controls writes, and whether a real host
 accepted the wiring.
 
-## Terminal HUD candidate — 0.2.3
+## Terminal HUD — removed after 0.2.4
 
-The installer opt-in `--hud` deploys a shared read-only collector from `product/hud/`. Claude uses `statusLine`;
-Codex uses an explicit tmux companion launcher. Native macOS terminal rendering and configuration-state changes
-were measured. Windows/desktop HUD support and independent audit completion are not claimed.
-See [the HUD contract](hud.md), [user setup](../user/hud.md) and [verification record](reviews/2026-10-21-terminal-hud.md).
+The 0.2.3 and 0.2.4 installers offered an opt-in `--hud` (Claude `statusLine` and a Codex tmux companion). It was
+removed on 2026-10-22 to narrow the product to the engine, plugin and hooks. Its sources stay in git history; the
+[verification record](reviews/2026-10-21-terminal-hud.md) is kept as recorded. Earlier installations disable it with
+their own retained `scripts/hud/setup.mjs --disable` (see the [installer README](../../product/installer/README.md)).

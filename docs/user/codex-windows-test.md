@@ -43,7 +43,7 @@ npm.cmd exec --yes --package 'C:\path\to\boxbox-plugin-<version>.tgz' -- boxbox 
 ```
 
 Use your installed OpenAI Codex CLI (`codex.cmd` is the standard Windows npm entry). The installer does not migrate
-Codex marketplace sources automatically. The terminal HUD is not supported on Windows, so omit `--hud`.
+Codex marketplace sources automatically.
 
 For Claude Code, the current installer verifies the exact user-scope plugin identity and refreshes a stale recorded
 version only with `claude plugin update boxbox@boxbox-plugins --scope user`. If host registration may have changed and

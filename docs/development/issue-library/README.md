@@ -34,7 +34,7 @@ Records 001–006 are resolved within their documented support scope after the f
 run hit a 60-second child-process deadline. The underlying cause remains unconfirmed.
 Record 008 is resolved after source migration, isolated copy/bundle checks and final GLM review. Records 010 and 012
 are also resolved within their documented source scope after the post-native-fix integrated check and GLM closure.
-HUD native acceptance remains separate in records 011 and 013.
+Records 011 and 013 are deferred because the opt-in terminal HUD was removed on 2026-10-22.
 Record 014 keeps the requested TypeScript boundaries and Python calculation envelope open at the public approval layer, despite their implemented detectors.
 Record 015 resolves the bounded heterogeneous Python detector gap after source, local installed and native Windows verification; new public approval remains separate in record 014.
 Record 016 is resolved after full validation and the bounded GLM transport completed; it preserves the local disk/stream failures separately from the unresolved CI timeout.

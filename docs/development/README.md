@@ -17,7 +17,6 @@ Conversation is Korean; maintained repository documents are English.
 | Have we seen this failure before, and why did it happen? | [Issue library: categories, JSON records and template](issue-library/README.md) |
 | Where are authored and generated files? | [Repository layout](layout.md) |
 | What rules and vocabulary do we enforce? | [Charter](../../product/rules/references/charter.md), [grammar](../../product/rules/references/grammar.md), [readability contract](../../product/rules/references/readability-contract.md) |
-| How are Codex and Claude HUDs used? | [HUD](hud.md) |
 | What is the current task and what was actually verified? | [Plan](plan.md), [status](status.md), [documentation audit](reviews/2026-10-21-maintainer-docs.md) |
 | How do issues, PRs and candidate archives move? | [CI/CD](cicd.md), [release contract](release-contract.md) |
 | What is the longer-term direction? | [Design draft](design.md) |

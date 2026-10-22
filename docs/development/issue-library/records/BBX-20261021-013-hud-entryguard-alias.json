@@ -11,7 +11,7 @@
     "entrypoint",
     "native-acceptance"
   ],
-  "status": "verifying",
+  "status": "deferred",
   "symptom": "The exact local 0.2.4 candidate installed both plugins and exited successfully with --hud, but created neither the Codex launcher nor Claude statusLine; installed status.mjs exited 0 with empty output.",
   "rootCause": {
     "confidence": "confirmed",
@@ -81,29 +81,14 @@
   ],
   "related": [
     {
-      "kind": "code",
-      "path": "product/hud/status.mjs",
-      "note": "Status direct-entry guard."
-    },
-    {
-      "kind": "code",
-      "path": "product/hud/setup.mjs",
-      "note": "Installer-invoked setup guard."
-    },
-    {
-      "kind": "code",
-      "path": "product/hud/codex.mjs",
-      "note": "Codex launcher guard."
-    },
-    {
-      "kind": "test",
-      "path": "test/product-hud.test.ts",
-      "note": "Alias execution and inert import regression."
-    },
-    {
       "kind": "evidence",
       "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-entryguard-native-failure.md",
       "note": "Original local-candidate failure."
+    },
+    {
+      "kind": "contract",
+      "path": "product/installer/README.md",
+      "note": "Disable instructions for HUDs enabled by earlier installations."
     }
   ],
   "history": [
@@ -157,6 +142,13 @@
         "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/independent-review.md",
         "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/claude-isolated-auth-probe.md"
       ]
+    },
+    {
+      "sequence": 6,
+      "date": "2026-10-22",
+      "event": "deferred",
+      "summary": "User decision 2026-10-22: the opt-in terminal HUD was removed from the product after 0.2.4. Removed paths: product/hud/status.mjs, product/hud/setup.mjs, product/hud/codex.mjs, test/product-hud.test.ts. The native HUD acceptance this record tracked no longer applies to new candidates; earlier evidence stays as recorded. Reopen if a HUD returns.",
+      "evidence": []
     }
   ]
 }

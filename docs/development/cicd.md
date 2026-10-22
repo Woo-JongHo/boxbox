@@ -89,7 +89,7 @@ is uploaded as a separate smoke artifact.
 
 This matrix measures the installed engine journey on Linux, macOS, and native Windows. It does not claim that the full
 development test suite runs on Windows. `--engine-only` skips host registration and actual Codex/Claude hook events;
-host discovery, native hook-event delivery, UI/HUD acceptance, and earlier-version marketplace-source migration require
+host discovery, native hook-event delivery, UI acceptance, and earlier-version marketplace-source migration require
 separate real-host evidence. A green candidate is not a public release readiness decision.
 
 ## GitHub installation and later publication

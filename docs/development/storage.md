@@ -92,7 +92,7 @@ rewrites and call their combination atomic. Mutable corpus logs need a stated wr
 index, built by `development/tools/pattern-catalog.ts` using Bun's built-in SQLite module. Canonical catalog JSON
 flows one way into `.boxbox/cache/patterns.sqlite`; it cannot promote candidates or edit approval records. Targeted
 tests cover cross-family queries, integrity, source preservation, repeatable rebuild and invalid-input rejection.
-Corpus-wide and HUD-history indexing remain proposals; no runtime SQLite driver is selected.
+Corpus-wide indexing remains a proposal; no runtime SQLite driver is selected.
 SQLite documents local application storage and analysis as suitable uses, with one writer at a time per database file.
 See [SQLite's usage guidance](https://www.sqlite.org/whentouse.html).
 

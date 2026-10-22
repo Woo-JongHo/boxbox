@@ -86,22 +86,20 @@ function installHost(payload, destination, engineOnly) {
 }
 
 const arguments_ = process.argv.slice(2)                                                 ;
-const usage      = "Usage: boxbox [--codex] [--claude] [--hud] | --engine-only | --help" ;
+const usage      = "Usage: boxbox [--codex] [--claude] | --engine-only | --help" ;
 if (arguments_.length === 1 && arguments_[0] === "--help") {
-	console.log(`${usage}\n\nInstall BoxBox plugins for detected Codex and Claude Code CLIs.\nUse --codex or --claude to select hosts explicitly; both flags select both.\n--engine-only prepares the Codex local engine without host checks or registration.\n--hud opts into a Claude status line and a separate boxbox-codex tmux launcher on macOS/Linux.\nRestart each host afterward and review its hooks manually.`);
+	console.log(`${usage}\n\nInstall BoxBox plugins for detected Codex and Claude Code CLIs.\nUse --codex or --claude to select hosts explicitly; both flags select both.\n--engine-only prepares the Codex local engine without host checks or registration.\nRestart each host afterward and review its hooks manually.`);
 	process.exit(0);
 }
 const engineOnly = arguments_.length === 1 && arguments_[0] === "--engine-only";
-if (!engineOnly && arguments_.some(value => !["--codex", "--claude", "--hud"].includes(value))) {
+if (!engineOnly && arguments_.some(value => !["--codex", "--claude"].includes(value))) {
 	console.error(`[BoxBox] ${usage}`);
 	process.exit(1);
 }
 
 try {
 	if (!supportedNode(process.versions.node)) throw new Error(`Node.js >=22.22.3 is required; found ${process.versions.node}. Install a supported Node.js release and rerun the installer.`);
-	const hud = arguments_.includes("--hud");
-	if (hud && process.platform === "win32") throw new Error("The terminal HUD requires macOS/Linux. Install the Windows plugins without --hud.");
-	const requested = [...new Set(arguments_.filter(value => value !== "--hud").map(value => value.slice(2)))]                      ;
+	const requested = [...new Set(arguments_.map(value => value.slice(2)))]                      ;
 	const hosts     = engineOnly ? ["codex"] : requested.length ? requested : ["codex", "claude"].filter(host => findCommand(host)) ;
 	if (hosts.length === 0) throw new Error("Neither Codex nor Claude Code was found on PATH. Install at least one CLI with plugin support, open a new terminal, then rerun the BoxBox installer.");
 	if (!engineOnly) {
@@ -116,11 +114,6 @@ try {
 		const destination = installationRoot(metadata.version, host                      ) ;
 		const status      = installHost     (join(payload, host), destination, engineOnly) ;
 		if (status !== 0) process.exit(status);
-		if (hud) {
-			const setup = spawnSync(process.execPath, [join(destination, "plugin/scripts/hud/setup.mjs"), host, join(destination, "plugin")], { stdio: "inherit" });
-			if (setup.error) throw setup.error;
-			if (setup.status !== 0) throw new Error("Plugin installed, but HUD setup failed. Resolve the error above and rerun --hud.");
-		}
 	}
 } catch (error) {
 	console.error(`[BoxBox] ${error instanceof Error ? error.message : String(error)}`);

@@ -12,7 +12,7 @@
     "native-acceptance",
     "readiness1"
   ],
-  "status": "verifying",
+  "status": "deferred",
   "symptom": "Independent review found that the compact Claude statusLine and Codex HUD rendered an unqualified session PASS from a recorded hook receipt while file verification and native host acceptance remained unverified. Long sessions, user-edited launcher ownership and repeated disable also had bounded-state gaps.",
   "rootCause": {
     "confidence": "confirmed",
@@ -119,26 +119,6 @@
   ],
   "related": [
     {
-      "kind": "code",
-      "path": "product/hud/status.mjs",
-      "note": "Receipt selection and qualified compact rendering."
-    },
-    {
-      "kind": "code",
-      "path": "product/hud/setup.mjs",
-      "note": "Codex launcher ownership and Claude statusLine disable behavior."
-    },
-    {
-      "kind": "test",
-      "path": "test/product-hud.test.ts",
-      "note": "Qualified compact state and bounded long-session regressions."
-    },
-    {
-      "kind": "test",
-      "path": "test/hud-installation.test.ts",
-      "note": "Edited-launcher preservation and idempotent disable regressions."
-    },
-    {
       "kind": "review",
       "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-review-initial.md",
       "note": "Initial independent FIX_REQUIRED finding and evidence limits."
@@ -147,6 +127,11 @@
       "kind": "review",
       "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-review-closure.md",
       "note": "Independent bounded static fix verification."
+    },
+    {
+      "kind": "contract",
+      "path": "product/installer/README.md",
+      "note": "Disable instructions for HUDs enabled by earlier installations."
     }
   ],
   "history": [
@@ -240,6 +225,13 @@
         "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/windows-codex-auth-probe.md",
         "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/windows-codex-auth-probe.json"
       ]
+    },
+    {
+      "sequence": 10,
+      "date": "2026-10-22",
+      "event": "deferred",
+      "summary": "User decision 2026-10-22: the opt-in terminal HUD was removed from the product after 0.2.4. Removed paths: product/hud/status.mjs, product/hud/setup.mjs, test/product-hud.test.ts, test/hud-installation.test.ts. The native HUD acceptance this record tracked no longer applies to new candidates; earlier evidence stays as recorded. Reopen if a HUD returns.",
+      "evidence": []
     }
   ]
 }
