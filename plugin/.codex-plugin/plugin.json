@@ -1,6 +1,6 @@
 {
 	"name": "boxbox",
-	"version": "0.2.4",
+	"version": "0.2.5",
 	"description": "Guides writing and refactoring TypeScript and Python, with syntax and tabular checks for TypeScript, Python, JSON and YAML and human-approved whitespace alignment.",
 	"author": {
 		"name": "Woo-JongHo"

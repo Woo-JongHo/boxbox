@@ -7,7 +7,7 @@ Date: 2026-09-28
 Product name: **BoxBox** (confirmed by the user on 2026-10-16); display name: `BoxBox`; environment prefix: `BOXBOX`
 
 **Release target expansion (2026-10-21 user decision):** include JSON and YAML alongside TypeScript and Python,
-covering source code and structured configuration/documents used in AI workflows. The current 0.2.4 source candidate
+covering source code and structured configuration/documents used in AI workflows. The current 0.2.5 source candidate
 implements checks for TypeScript, Python, strict JSON and YAML 1.2, plus guarded JSON/YAML alignment adapters.
 The shipped preset still authorizes only the two existing TypeScript/Python rules; proposed JSON/YAML rules and
 their example licenses await separate human decisions. See [FORMAT1 in the plan](plan.md#planned-scope-expansion--format1-json-and-yaml)

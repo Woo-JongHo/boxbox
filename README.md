@@ -55,7 +55,7 @@ The public `format` command requires complete human-approval evidence. It runs a
 
 ## Write, Refactor, Align and Check
 
-The 0.2.4 source candidate separates agent workflows from engine changes:
+The 0.2.5 source candidate separates agent workflows from engine changes:
 
 - **Write:** the agent implements requested behavior using approved authoring guidance.
 - **Refactor:** the agent improves existing structure and separately verifies behavior and relevant performance.
