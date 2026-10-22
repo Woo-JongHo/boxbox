@@ -1,6 +1,0 @@
-BoxBox 0.2.4 clean CI development candidate
-GitHub Actions workflow: 39646320662 attempt 1
-Source commit: 66eb97821d6b8bd81323175e071a107b2aa3f215
-Archive SHA-256: ebfe6a7796d9d85e9cf3088c955df4fb5477e60513e8ebda97d517746d93c665
-Archive bytes: 263896
-This is an unpublished candidate, not a public release.
