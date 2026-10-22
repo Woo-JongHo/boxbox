@@ -96,14 +96,73 @@ describe("python profile specific properties", () => {
 		]);
 	});
 
-	test("annotation-like rows with a top-level comma or a bracketed value are refused", () => {
+	test("annotated statements with a bracketed value are refused", () => {
 		const source = [
-			"    alpha: int,",
-			"    beta: str,",
-			"    gamma: bool,",
 			"items: list[int] = [1, 2]",
 			"names: list[str] = []",
 			"flags: list[bool] = []",
+		].join("\n");
+		const result = align(source);
+		expect(result.tables).toBe(0     );
+		expect(result.output).toBe(source);
+	});
+
+	test("keyword-argument rows align name, equal, value and the closing comma", () => {
+		const source = [
+			"    return Result(",
+			"        source_path=local_path,",
+			"        size=len(rows),",
+			"        target_columns=(KEY,),",
+			"    )",
+		].join("\n");
+		expect(align(source).output.split("\n").slice(1, 4)).toEqual([
+			"        source_path    = local_path,",
+			"        size           = len(rows) ,",
+			"        target_columns = (KEY,)    ,",
+		]);
+	});
+
+	test("parameters with and without defaults share one table and a closing comma column", () => {
+		const source = [
+			"def find(",
+			"    search_dir: str | Path,",
+			"    file_name: str = FILE_NAME,",
+			"    recursive: bool = False,",
+			") -> Path:",
+		].join("\n");
+		const result = align(source);
+		expect(result.tables).toBe(1);
+		expect(result.output.split("\n").slice(1, 4)).toEqual([
+			"    search_dir : str | Path      ,",
+			"    file_name  : str  = FILE_NAME,",
+			"    recursive  : bool = False    ,",
+		]);
+	});
+
+	test("a keyword-only marker sits inside one parameter table", () => {
+		const source = [
+			"def resolve(",
+			"    path_arg: str | None,",
+			"    *,",
+			"    base_dir: Path,",
+			"    today: date | None = None,",
+			") -> Path:",
+		].join("\n");
+		const result = align(source);
+		expect(result.tables).toBe(1);
+		expect(result.output.split("\n").slice(1, 5)).toEqual([
+			"    path_arg : str | None        ,",
+			"    *,",
+			"    base_dir : Path              ,",
+			"    today    : date | None = None,",
+		]);
+	});
+
+	test("comma rows whose value holds a top-level comma or an open bracket are refused", () => {
+		const source = [
+			"    alpha = 1, 2,",
+			"    beta = call(,",
+			"    gamma = x if y else (z,",
 		].join("\n");
 		const result = align(source);
 		expect(result.tables).toBe(0     );
