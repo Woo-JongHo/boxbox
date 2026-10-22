@@ -118,9 +118,9 @@ sources; `--copy` creates a managed copy. Development authoring hooks require se
 | Development alignment engines | The same four languages; other line-engine languages were removed on 2026-10-22 |
 | TypeScript detection | TypeScript 7 AST tools and a table-kind registry |
 | JSON/YAML detection | Adjacent same-level runs of 3+ single-line scalar mapping entries |
-| Other development-language detection | A shared line engine with language-specific profiles |
+| Python detection | The shared line engine with a Python profile (string and comment masking, row slot rules) |
 
-The ten development engines do not imply equal release support. Write checks require the relevant parser tools. See the [implementation map](docs/development/implementation.md) for language-specific boundaries.
+The four supported languages do not have equal release support: only TypeScript and Python have default write approvals. Write checks require the relevant parser tools. See the [implementation map](docs/development/implementation.md) for language-specific boundaries.
 
 ## Project settings and rules
 
