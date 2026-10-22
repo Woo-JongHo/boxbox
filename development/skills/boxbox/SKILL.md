@@ -53,6 +53,7 @@ Decide in this order:
 
 - Even during feature work, decide and measure the `column anchors` from the [readability contract](rules/references/readability-contract.md) for every repeated block you change. Do not postpone this to a final cleanup, and do not report the whole file as done after checking only object arrays.
 - One repeated construct is one table.
+- Compose new code grid-first: before writing three or more same-role values, name their shared column set and write each as one row (one reader shape, one field per row, `.map` rows over comparable lists, a branch picked in one row). See [grid-first authoring](rules/references/readability-contract.md#grid-first-authoring) for the limits — no padding wrappers, other roles stay outside the table, behavior preserved, hot paths measured.
 - When role sections are split — `// Run`, `// List`, `// Select`, `// Write` — each section is an independent table and does not share its longest value with the others as a width basis.
 - Each same-role declaration or execution is one row.
 - Identifiers, separators, keywords, types, statements and notes are comparable columns and cells.

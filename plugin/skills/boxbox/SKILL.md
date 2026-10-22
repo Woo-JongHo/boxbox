@@ -59,7 +59,12 @@ Every check and fix goes through the bundled launcher. Resolve `<PLUGIN_ROOT>` f
 
 1. Run `guide --authoring --json` for the intended file before composing a change. For an existing file, also run
    `check --json` and read its definitions, callers and relevant tests before changing its structure.
-2. Build a boundary inventory for the requested rows: name each cell, its syntax boundary and its comparison region.
+2. Design the rows before writing. For every group of three or more same-role values you are about to write, name the
+   column set they share and compose each value as one row of it, instead of writing a convenient shape and aligning
+   afterwards: readers with one argument shape, one field per row, `.map` rows over comparable lists, a branch chosen
+   in one row. Follow [grid-first authoring](references/readability-contract.md#grid-first-authoring), including its
+   limits: no padding wrappers, keep other roles outside the table, preserve behavior, and measure hot paths.
+   Then build a boundary inventory for the requested rows: name each cell, its syntax boundary and its comparison region.
    For a member call, inspect `receiver | final . | method | ( | arguments | )`; for a guard, inspect `condition | return | value`.
    Match roles and nesting depth before matching punctuation. Function signatures, bodies and call sites have separate
    regions. For member calls, early returns or nested type members, read
@@ -106,7 +111,7 @@ Read the documents in this folder when a judgment is needed.
 
 - `references/charter.md` — principles and safety invariants
 - `references/grammar.md` — grammar units, patterns, roles, paragraphs (split with a blank line when the property differs)
-- `references/readability-contract.md` — confirmed rules, discarded rules, column-check order
+- `references/readability-contract.md` — confirmed rules, grid-first authoring, discarded rules, column-check order
 - `references/typescript-grid-template.md` — per-role TypeScript table templates
 
 ## Authoring hooks

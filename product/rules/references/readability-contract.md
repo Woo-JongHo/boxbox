@@ -158,7 +158,7 @@ Code is written **from the moment of authoring** with the axis columns below alr
 | enum-member | `=` , `,` | `//` |
 | case-clause | — | case `:` |
 | object-rows (`{i}` per property position) | property start `{i}` , `:{i}` , `value{i}` start , `,{i}` , `}` | `{` , tail `tail` (`,` `;` `)` `as const`) |
-| registration | `:` , expression start | — |
+| registration | `:` , expression start , trailing `,` | — |
 | assignments (`this.x = y;` assignment table) | `=` , `;` | `//` |
 | call-statements (`expect(…).toBe(…);` call-statement table) | `;` | subject `)` , matcher `.` , matcher `(` , matcher `)` , `//` |
 
@@ -202,6 +202,34 @@ Two-point lock:
 
 1. **Authoring time (prompt)** — when an LLM or a person writes code, they write it in the form of the table and examples above. Agent definitions use SKILL.md as their manual, so this section is the prompt.
 2. **Completion time (check)** — every changed file passes `00_normalize-imports.ts` (check mode) and `06_align-tables.ts --file` (misaligned=0). If you want a form that cannot pass both checks, change this contract first.
+
+## Grid-first authoring
+
+Alignment normalizes rows that already share a structure. When you write new code, design the structure first: before
+writing a group of three or more same-role values, name the column set they share, then write each value as one row of
+that set. Do not write them in whatever shape is convenient and hope the aligner can pair them afterwards. This is
+advisory structural guidance, not approval data: it never authorizes an automatic write, and Align stays whitespace-only.
+
+| Situation | Row form that keeps the columns shared |
+|---|---|
+| Several values read from one source (options, config, request fields) | One reader family with one argument shape, defaults passed explicitly: `name = readX(source, "key", default)`. A value with a different role (`write = flag && !other`) is derived on its own line after a blank line. |
+| An object literal with several fields | One field per row: `key : value ,`. Do not leave the whole object on one long line. |
+| The same operation over several lists | One row per list: `name = list .map(item => transform(item))`. Move the part that differs into a named transform so the rows keep one shape. |
+| A branch that picks between two implementations | Pick the function in one row (`const run = flag ? a : b;`) and let both return the same record, so the code after it is the same rows for either path. |
+| A report assembled from parts | `[name, value]` pairs or one row per section, joined once. |
+| Per-item results folded into totals | One row per fold over the same list: `runs.map(…)`, `runs.flatMap(…)`, `runs.some(…)`. |
+
+Limits — these keep grid-first from becoming padding by other means:
+
+1. A row must carry data the code needs. Do not add wrappers, parameters or helpers whose only job is to fill a column, and
+   do not merge roles that merely look alike (see the reuse rule above).
+2. A different role is a different region: derived values, guards, early returns and control flow stay outside the table.
+   Wrap a side-effecting callback in a function that returns its result so its call site reads as a row.
+3. Preserve behavior: execution order, when errors surface, and output bytes. Verify a rewrite of existing code by comparing
+   the old and new versions on the same inputs, not only by running the existing tests.
+4. Hot paths: `.map` chains and tuple arrays allocate. Use them freely for configuration, reporting, CLI glue, test data and
+   pipelines that run once per item of work; measure before using them in code that runs millions of times.
+5. Report what the grid cannot hold. A row or a region that cannot share the columns is a visible exception, not a failure.
 
 ## Discarded rules
 
