@@ -84,29 +84,36 @@ BoxBox cannot do inside a host session.
 
 ## Single source and generation
 
-Add `product/models.json`, stamped like the version:
+Implemented in `product/models.json` (2026-10-22):
 
 ```json
 {
+	"schemaVersion": 1,
+	"capabilities": { "sonnet": ["low", "medium", "high"], "gpt-5.6-terra": ["low", "medium", "high"] },
 	"roles": {
 		"inspector": {
 			"claude": { "model": "sonnet", "effort": "medium", "selectedBy": "unevaluated-default" },
 			"codex" : { "model": "gpt-5.6-terra", "effort": "medium", "selectedBy": "unevaluated-default" }
 		}
-	},
-	"ladder": {
-		"claude": ["claude-haiku-4-5", "claude-sonnet-5-5"],
-		"codex" : ["gpt-6-luna:low", "gpt-6-luna:medium", "gpt-6-sol:low"]
 	}
 }
 ```
 
-- `bun run sync:plugin` stamps `model` and `effort` into `plugin/agents/readability-inspector.md` and the Codex agent file
-  from this source; templates under `product/plugin/` carry placeholders.
-- `test/plugin-contract.test.ts` pins that generated frontmatter equals the source, and that no role names `author`.
+- `capabilities` lists the efforts each model supports, and an empty list for a model without effort control. A role may
+  use only a listed model and an effort from its list; a model that takes effort must be given one. The list grows only
+  with evidence, so an unlisted model or effort is refused rather than guessed.
+- `development/tools/model-assignments.ts` validates the file and stamps the host definitions. `bun run sync:plugin` writes
+  `model` and `effort` into `plugin/agents/readability-inspector.md` and stamps `development/agents/readability-inspector.md`
+  and `development/codex/readability-inspector.toml` in place, so the hosts cannot drift. An assignment without effort
+  removes the effort line. `sync:plugin --check` reports any file that differs.
+- The product template `product/plugin/agents/readability-inspector.md` carries no model or effort.
+- `test/model-assignments.test.ts` pins validation (the `author` role and unsupported effort are refused), stamping,
+  agreement of every generated file with the source, and that the Codex manifest declares no agents.
 - `selectedBy` holds `unevaluated-default` or the evaluation record that chose the value.
-- `development/codex/readability-inspector.toml` is generated from the same source so the two cannot drift.
-- Escalation (a role retried one rung up) is documented for the agent in `SKILL.md`; the ladder lives in this file.
+- A fallback ladder (a role retried one rung up) is deferred until escalation is implemented; it needs a consumer first.
+
+Shipping effect: the Claude inspector now pins `sonnet` instead of inheriting the caller. That changes the shipped plugin
+content, so it belongs to the next candidate and a version bump.
 
 ## Choosing the values
 

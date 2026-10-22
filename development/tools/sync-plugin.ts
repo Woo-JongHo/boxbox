@@ -7,6 +7,7 @@ import      {
               writeFileSync        ,
                                      } from "node:fs"   ;
 import      { dirname, join, resolve } from "node:path" ;
+import      { readModelConfig, stampClaudeAgent, stampCodexAgent } from "./model-assignments.ts" ;
 
 const ROOT       = resolve(import.meta.dir, "../..")                                                      ;
 const REFERENCES = ["charter.md", "grammar.md", "readability-contract.md", "typescript-grid-template.md"] ;
@@ -33,9 +34,11 @@ export function expectedPluginFiles(root = ROOT): ReadonlyMap<string, string> {
 	const cliSource = read(cliPath)                                                              ;
 	if (!/^export const CLI_VERSION = "[^"\n]+";/mu.test(cliSource)) throw new Error("Missing CLI_VERSION declaration; update version synchronization before shipping.");
 	expected.set(cliPath, cliSource.replace(/^export const CLI_VERSION = "[^"\n]+";/mu, `export const CLI_VERSION = "${version}";`));
+	const inspector = readModelConfig(root).roles.inspector;
 	for (const path of PLUGIN_FILES) {
 		const source = `product/plugin/${path}`         ;
 		let text     = versioned(read(source), version) ;
+		if (path === "agents/readability-inspector.md") text = stampClaudeAgent(text, inspector.claude);
 		if (path.endsWith("/plugin.json")) {
 			const manifest = JSON.parse(text) as Record<string, unknown>;
 			manifest.version = version;
@@ -43,6 +46,9 @@ export function expectedPluginFiles(root = ROOT): ReadonlyMap<string, string> {
 		}
 		expected.set(`plugin/${path}`, text);
 	}
+	// The development agents are stamped in place from the same source, so the two hosts cannot drift apart.
+	expected.set("development/agents/readability-inspector.md", stampClaudeAgent(read("development/agents/readability-inspector.md"), inspector.claude));
+	expected.set("development/codex/readability-inspector.toml", stampCodexAgent(read("development/codex/readability-inspector.toml"), inspector.codex));
 	for (const name of REFERENCES) expected.set(`plugin/skills/boxbox/references/${name}`, read(`product/rules/references/${name}`));
 	const marketplace = JSON.parse(read(".claude-plugin/marketplace.json")) as { plugins: Array<Record<string, unknown>> };
 	for (const entry of marketplace.plugins) entry.version = version;

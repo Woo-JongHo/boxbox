@@ -1,0 +1,20 @@
+# Focused checks for issue 020, 2026-10-22 (candidate not frozen; the full check runs once at freeze)
+# 1. bun test test/model-assignments.test.ts test/plugin-contract.test.ts
+bun test v1.4.0 (34cbb9a40)
+
+ 21 pass
+ 0 fail
+ 212 expect() calls
+Ran 21 tests across 2 files.
+
+# 2. Drift detection: product/models.json effort medium -> low, then sync:plugin --check
+drift: plugin/agents/readability-inspector.md
+drift: development/agents/readability-inspector.md
+drift: development/codex/readability-inspector.toml
+exit=1
+
+# 3. Restored source, sync:plugin --check
+exit=0
+
+# 4. bunx tsc --noEmit
+ok
