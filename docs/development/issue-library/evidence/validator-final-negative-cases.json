@@ -1,0 +1,10 @@
+{
+  "reverseFailureEvent": {
+    "rejected": true,
+    "message": "/Users/jonghoPro/woo/00_project/98_BoxBox/docs/development/issue-library/records/BBX-20261021-004-member-dot.json: failed history needs event=verification-failed"
+  },
+  "missingCanonicalId": {
+    "exitCode": 1,
+    "cleanMissingIdDiagnostic": true
+  }
+}

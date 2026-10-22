@@ -14,9 +14,17 @@
  * Refused (null) when uncertain: non-bundle rows with remaining parens, braces or brackets (calls, containers,
  * indexing, def signatures); rows ending in a continuation (\); decorator, def, class, control-flow and import
  * rows; rows whose value is empty, starts with =, or contains ; or ,; rows with trailing whitespace.
+ * A separate outer calculation projection can compare unclaimed simple assignments without decomposing their RHS.
+ * Its distinct assignment-value axis never inherits approval for the detailed value axis.
  * Refusal is safe; misrecognition is dangerous.
  */
-import type { CodeSyntax, LineProfiler, RowProfile, Slot } from "../common/table-engine.ts";
+import type {
+              CodeSyntax        ,
+              LineProfiler      ,
+              RowProfile        ,
+              Slot              ,
+                                  } from "@/common/table-engine.ts"        ;
+import      { assignmentEnvelopes } from "@/python/assignment-envelope.ts" ;
 
 export const PYTHON_SYNTAX: CodeSyntax = {
 	lineComments  : ["#"],
@@ -27,15 +35,44 @@ export const PYTHON_SYNTAX: CodeSyntax = {
 		{ open : '"'   , close : '"'   , escape : true },
 		{ open : "'"   , close : "'"   , escape : true },
 	],
-	cppRaw        : false,
 };
 
 const INDENT = "([ \\t]*)"                                              ;
 const NAME   = "([A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*)" ;
 const QUOTED = "(\"[^\"]*\"|'[^']*')"                                   ;
-const TYPE   = "([A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*)" ;
+const TYPE   = "([A-Za-z_\"'][^=(){};:\\\\]*?)"                         ;
 const GAP    = "(\\s*)"                                                 ;
 const VALUE  = "(.+?)"                                                  ;
+
+/**
+ * An annotation cell is one cell: dotted names, `[...]` subscripts, `|` unions and quoted forward references.
+ * Commas belong to it only inside brackets, so a parameter or dictionary row never parses as a field.
+ */
+function isAnnotation(masked: string): boolean {
+	let depth = 0;
+	for (const character of masked) {
+		if      (character === "[")                depth += 1;
+		else if (character === "]")                depth -= 1;
+		else if (character === "," && depth === 0) return false;
+		if (depth < 0) return false;
+	}
+	return depth === 0 && !/\s$/u.test(masked);
+}
+
+/**
+ * A value cell before a row's closing `,`: brackets balance and no comma sits outside them, so the cell is one
+ * expression such as `len(rows)` or `(KEY,)`. Continuations and statement separators are refused.
+ */
+function isValueCell(masked: string): boolean {
+	let depth = 0;
+	for (const character of masked) {
+		if      ("([{".includes(character))        depth += 1;
+		else if (")]}".includes(character))        depth -= 1;
+		else if (character === "," && depth === 0) return false;
+		if (depth < 0) return false;
+	}
+	return depth === 0 && masked.trim() !== "" && !masked.startsWith("=") && !/[;\\]/u.test(masked) && !/\s$/u.test(masked);
+}
 
 /** Statement starts that cannot be table rows — control flow, declarations, imports. match/case are soft keywords and excluded. */
 const RESERVED_START = /^(?:if|elif|else|for|while|try|except|finally|with|def|class|return|raise|import|from|pass|break|continue|lambda|yield|assert|del|global|nonlocal|async|await)\b/;
@@ -44,6 +81,11 @@ const ANNOTATED = new RegExp(`^${INDENT}${NAME}${GAP}:${GAP}${TYPE}${GAP}=${GAP}
 const DECLARED  = new RegExp(`^${INDENT}${NAME}${GAP}:${GAP}${TYPE}$`                           , "du") ;
 const DICT_ROW  = new RegExp(`^${INDENT}${QUOTED}${GAP}:${GAP}${VALUE}${GAP},$`                 , "du") ;
 const ASSIGNED  = new RegExp(`^${INDENT}${NAME}${GAP}=${GAP}${VALUE}${GAP}$`                    , "du") ;
+
+/** Rows ending in a top-level `,`: parameters `name : Type [= default],` and keyword arguments `name = value,`. */
+const PARAMETER_DEFAULT = new RegExp(`^${INDENT}${NAME}${GAP}:${GAP}${TYPE}${GAP}=${GAP}${VALUE}${GAP},$`, "du") ;
+const PARAMETER         = new RegExp(`^${INDENT}${NAME}${GAP}:${GAP}${TYPE}${GAP},$`                     , "du") ;
+const KEYWORD           = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}=${GAP}${VALUE}${GAP},$`   , "du") ;
 
 /** Bundle rows `[ cell , cell ... ] trailer` and `( cell , cell ... ) trailer` — trailer holds the following `,` verbatim. */
 const BUNDLED       = /^([ \t]*)([[(])(.*)([\])])(,?)[ \t]*$/du                                         ;
@@ -68,9 +110,9 @@ function isUnsafe(masked: string): boolean {
 function valueSlot(code: string, masked: string, match: RegExpExecArray, gapGroup: number, textGroup: number): Slot | null {
 	const gapRange  = match.indices?.[gapGroup ] ;
 	const textRange = match.indices?.[textGroup] ;
-	if (!gapRange || !textRange) return null;
+	if (!gapRange || !textRange)                               return null;
 	const text = code.slice(textRange[0], textRange[1]);
-	if (text.trim() === "" || text.startsWith("=")) return null;
+	if (text.trim() === "" || text.startsWith("="))            return null;
 	if (/[;,]/.test(masked.slice(textRange[0], textRange[1]))) return null;
 	return { axis: "value", text, gapBefore: code.slice(gapRange[0], gapRange[1]) };
 }
@@ -92,11 +134,11 @@ function bundleProfile(code: string, masked: string): RowProfile | null {
 	if ((open === "[") !== (close === "]")) return null; // mismatched bracket pair is not a bundle
 	const interior = indices[3] ;
 	const trailer  = indices[5] ;
-	if (!interior || !trailer) return null;
+	if (!interior || !trailer)                                      return null;
 	if (BUNDLE_UNSAFE.test(masked.slice(interior[0], interior[1]))) return null;
 
 	const cells = cellsIn(code, masked, interior[0], interior[1]);
-	if (!cells) return null;
+	if (!cells)                                                     return null;
 
 	const slots: Slot[] = [{ axis: open === "[" ? "open[" : "open(", text: open, gapBefore: "" }];
 	cells.forEach((cell, position) => {
@@ -124,7 +166,7 @@ function cellsIn(code: string, masked: string, start: number, end: number): Arra
 	const cells: Array<{ text: string; gap: string; commaGap: string; end: number }> = [];
 	for (const bound of bounds) {
 		const raw  = code.slice(bound.start, bound.end) ;
-		const text = raw.trim()                         ;
+		const text = raw .trim ()                       ;
 		if (text === "") return null; // empty cell from consecutive commas or after a trailing comma
 		const cellStart = bound.start + raw.indexOf(text);
 		if (text.startsWith('"') || text.startsWith("'")) {
@@ -195,30 +237,27 @@ function assignedCallProfile(code: string, masked: string): RowProfile | null {
 	return { indent: slotAt(code, match, 1), slots };
 }
 
-function profilePython(code: string, masked: string): RowProfile | null {
-	const trimmed = masked.trim();
-	if (trimmed === "" || trimmed.startsWith("@") || RESERVED_START.test(trimmed)) return null;
-	// Bundle rows keep their brackets, so decompose them before the isUnsafe check. Assigned call rows decompose
-	// into the call cell and its argument cells the same way. Non-bundle rows with remaining brackets are refused
-	// by isUnsafe below — the existing refusal rules still hold.
-	const bundle = bundleProfile(code, masked);
-	if (bundle) return bundle;
-	const assignedCall = assignedCallProfile(code, masked);
-	if (assignedCall) return assignedCall;
-	if (isUnsafe(masked)) return null;
-
+/**
+ * Annotated assignment `name : Type = value` and field `name : Type`. The annotation may hold brackets, so the
+ * call/container refusal applies to the value cell only.
+ */
+function typedProfile(code: string, masked: string): RowProfile | null {
 	const annotated = ANNOTATED.exec(masked);
 	if (annotated) {
-		if (slotAt(code, annotated, 9) !== "") return null;
+		const typeRange  = annotated.indices![5]! ;
+		const valueRange = annotated.indices![8]! ;
+		if (slotAt(code, annotated, 9) !== "")                       return null;
+		if (!isAnnotation(masked.slice(typeRange[0], typeRange[1]))) return null;
+		if (isUnsafe(masked.slice(valueRange[0], valueRange[1])))    return null;
 		const value = valueSlot(code, masked, annotated, 7, 8);
-		if (!value) return null;
+		if (!value)                                                  return null;
 		return {
 			indent : slotAt(code, annotated, 1),
 			slots  : [
-				{ axis: "name",  text: slotAt(code, annotated, 2), gapBefore: "" },
-				{ axis: "colon", text: ":", gapBefore: slotAt(code, annotated, 3) },
-				{ axis: "type",  text: slotAt(code, annotated, 5), gapBefore: slotAt(code, annotated, 4) },
-				{ axis: "equal", text: "=", gapBefore: slotAt(code, annotated, 6) },
+				{ axis : "name"  , text : slotAt(code, annotated, 2) , gapBefore : ""                         },
+				{ axis : "colon" , text : ":"                        , gapBefore : slotAt(code, annotated, 3) },
+				{ axis : "type"  , text : slotAt(code, annotated, 5) , gapBefore : slotAt(code, annotated, 4) },
+				{ axis : "equal" , text : "="                        , gapBefore : slotAt(code, annotated, 6) },
 				value,
 			],
 		};
@@ -226,6 +265,8 @@ function profilePython(code: string, masked: string): RowProfile | null {
 
 	const declared = DECLARED.exec(masked);
 	if (declared) {
+		const typeRange = declared.indices![5]!;
+		if (!isAnnotation(masked.slice(typeRange[0], typeRange[1]))) return null;
 		return {
 			indent : slotAt(code, declared, 1),
 			slots  : [
@@ -235,6 +276,72 @@ function profilePython(code: string, masked: string): RowProfile | null {
 			],
 		};
 	}
+	return null;
+}
+
+/** Parameter and keyword-argument rows. The trailing comma is the row's terminal cell. */
+function commaRowProfile(code: string, masked: string): RowProfile | null {
+	const cell  = (match: RegExpExecArray, group: number): string => masked.slice(match.indices![group]![0], match.indices![group]![1])  ;
+	const comma = (match: RegExpExecArray, gap: number): Slot     => ({ axis: "comma", text: ",", gapBefore: slotAt(code, match, gap) }) ;
+
+	const withDefault = PARAMETER_DEFAULT.exec(masked);
+	if (withDefault && isAnnotation(cell(withDefault, 5)) && isValueCell(cell(withDefault, 8))) {
+		return {
+			indent : slotAt(code, withDefault, 1),
+			slots  : [
+				{ axis : "name"  , text : slotAt(code, withDefault, 2) , gapBefore : ""                           },
+				{ axis : "colon" , text : ":"                          , gapBefore : slotAt(code, withDefault, 3) },
+				{ axis : "type"  , text : slotAt(code, withDefault, 5) , gapBefore : slotAt(code, withDefault, 4) },
+				{ axis : "equal" , text : "="                          , gapBefore : slotAt(code, withDefault, 6) },
+				{ axis : "value" , text : slotAt(code, withDefault, 8) , gapBefore : slotAt(code, withDefault, 7) },
+				comma(withDefault, 9),
+			],
+		};
+	}
+
+	const parameter = PARAMETER.exec(masked);
+	if (parameter && isAnnotation(cell(parameter, 5))) {
+		return {
+			indent : slotAt(code, parameter, 1),
+			slots  : [
+				{ axis : "name"  , text : slotAt(code, parameter, 2) , gapBefore : ""                         },
+				{ axis : "colon" , text : ":"                        , gapBefore : slotAt(code, parameter, 3) },
+				{ axis : "type"  , text : slotAt(code, parameter, 5) , gapBefore : slotAt(code, parameter, 4) },
+				comma(parameter, 6),
+			],
+		};
+	}
+
+	const keyword = KEYWORD.exec(masked);
+	if (keyword && isValueCell(cell(keyword, 5))) {
+		return {
+			indent : slotAt(code, keyword, 1),
+			slots  : [
+				{ axis : "name"  , text : slotAt(code, keyword, 2) , gapBefore : ""                       },
+				{ axis : "equal" , text : "="                      , gapBefore : slotAt(code, keyword, 3) },
+				{ axis : "value" , text : slotAt(code, keyword, 5) , gapBefore : slotAt(code, keyword, 4) },
+				comma(keyword, 6),
+			],
+		};
+	}
+	return null;
+}
+
+function profilePython(code: string, masked: string): RowProfile | null {
+	const trimmed = masked.trim();
+	if (trimmed === "" || trimmed.startsWith("@") || RESERVED_START.test(trimmed)) return null;
+	// Bundle rows keep their brackets, so decompose them before the isUnsafe check. Assigned call rows decompose
+	// into the call cell and its argument cells the same way. Non-bundle rows with remaining brackets are refused
+	// by isUnsafe below — the existing refusal rules still hold.
+	const bundle = bundleProfile(code, masked);
+	if (bundle)           return bundle;
+	const assignedCall = assignedCallProfile(code, masked);
+	if (assignedCall)     return assignedCall;
+	const commaRow = commaRowProfile(code, masked);
+	if (commaRow)         return commaRow;
+	const typed = typedProfile(code, masked);
+	if (typed)            return typed;
+	if (isUnsafe(masked)) return null;
 
 	const dictRow = DICT_ROW.exec(masked);
 	if (dictRow) {
@@ -278,9 +385,17 @@ export const PYTHON_ALIGNER: LineProfiler = {
 	syntax        : PYTHON_SYNTAX,
 	// cell/arg axes of bundle rows are followed by a comma or the close slot, so aligning them never creates trailing whitespace.
 	columnAxes    : ["name", "attribute", "chain-target", "key", "type", "value", "cell", "arg"],
-	// Python convention: colon and comma attach to the cell; equal gets one space. Bundle rows attach the
+	// Colon and equal get one space after the longest cell (`name : type = value`), matching the TypeScript tables;
+	// comma attaches to the cell. Bundle rows attach the
 	// first cell to the opening bracket and attach close too, so the closing bracket shares the last cell's width.
 	// The call layer's wrapped bundle attaches its brackets to the call the same way.
-	canonicalGaps : { name: " ", attribute: " ", "chain-target": " ", key: " ", type: " ", value: " ", colon: "", equal: " ", comma: "", cell: "", arg: " ", "open[": "", "open(": "", "open{": "", "close]": "", "close)": "", "close}": "" },
-	profile       : profilePython,
+	canonicalGaps : { name: " ", attribute: " ", "chain-target": " ", key: " ", type: " ", value: " ", colon: " ", equal: " ", comma: "", cell: "", arg: " ", "open[": "", "open(": "", "open{": "", "close]": "", "close)": "", "close}": "" },
+	// A field without a default and a field with one are the same role: `name : type` joins `name : type = value`.
+	prefixRuns : true                ,
+	// A parameter list's trailing comma closes every row; it forms its own column after the longest row.
+	terminalAxes : ["comma"]           ,
+	// `*,` and `/,` mark keyword-only and positional-only parameters inside one parameter table.
+	transparentRow : (masked: string): boolean => /^[ \t]*[*/][ \t]*,$/u.test(masked) ,
+	profile        : profilePython                                                      ,
+	project        : assignmentEnvelopes                                                ,
 };

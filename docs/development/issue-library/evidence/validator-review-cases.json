@@ -1,0 +1,17 @@
+[
+  {
+    "scenario": "canonical-id-collision",
+    "exitCode": 1,
+    "stderr": "Issue validation failed: /tmp/boxbox-issue-library/BBX-20261021-004-canonical-id-collision.json: ID BBX-20261021-004 already belongs to /Users/jonghoPro/woo/00_project/98_BoxBox/docs/development/issue-library/records/BBX-20261021-004-member-dot.json\n"
+  },
+  {
+    "scenario": "premature-resolution",
+    "exitCode": 1,
+    "stderr": "Issue validation failed: /tmp/boxbox-issue-library/BBX-20261021-008-premature-resolution.json: resolved issue has unfinished actions\n"
+  },
+  {
+    "scenario": "explicit-canonical-file",
+    "exitCode": 0,
+    "records": 1
+  }
+]

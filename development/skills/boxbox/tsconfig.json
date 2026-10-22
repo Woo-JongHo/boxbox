@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"target": "esnext",
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"strict": true,
+		"noEmit": true,
+		"skipLibCheck": true,
+		"allowImportingTsExtensions": true,
+		"types": [
+			"bun-types"
+		],
+		"paths": {
+			"@/*": [
+				"./engine/*"
+			]
+		}
+	},
+	"include": [
+		"engine/**/*.ts"
+	]
+}

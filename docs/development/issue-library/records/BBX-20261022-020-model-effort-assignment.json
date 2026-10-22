@@ -1,0 +1,206 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261022-020",
+  "title": "The shipped plugin assigns no model or effort to its AI-judgment roles on either host",
+  "category": "host-integration",
+  "tags": [
+    "model",
+    "effort",
+    "subagent",
+    "claude",
+    "codex",
+    "readability-inspector"
+  ],
+  "status": "investigating",
+  "symptom": "The Claude readability-inspector sets effort: medium and no model, so it inherits the caller. The Codex inspector pins gpt-5.6-terra/medium only in a development definition; the Codex plugin manifest declares skills and no agents, so the shipped Codex plugin assigns nothing. The few AI-judgment steps (row design, one-file inspection, boundary reconciliation) therefore run on whatever the session happens to use, and token cost per step is unmeasured.",
+  "rootCause": {
+    "confidence": "hypothesis",
+    "summary": "No single source stores model and effort per role and host, and the Codex plugin format cannot carry agent definitions. Confirming requires measured per-role usage and an engine-ground-truth evaluation; see the proposal."
+  },
+  "requestedOutcome": "Each AI-judgment role that the plugin owns has a documented model and effort per host, generated from one source, chosen by evaluation against the engine's deterministic result, with the author role left to the user's session.",
+  "decisions": [
+    "2026-10-22 user direction: put model and effort assignment per host into a design proposal and open this issue; optimize the model that each host's AI uses.",
+    "The plugin never overrides the author role's model (proposal principle 1); this is a design position pending user confirmation."
+  ],
+  "actions": [
+    {
+      "description": "Write the design proposal with host capability facts, a single-source generation scheme and an evaluation plan.",
+      "status": "done"
+    },
+    {
+      "description": "Study the open-source Gajae Code (Yeachan-Heo/gajae-code, clone e9179a1) for how it stores per-role model and effort for Codex and Claude.",
+      "status": "done"
+    },
+    {
+      "description": "Move column-set candidates (guide --authoring columnSets and axisNotes for TypeScript) and requested-boundary reconciliation (check --expect-axis axisExpectation) from agent judgment into engine output.",
+      "status": "done"
+    },
+    {
+      "description": "Record per-step token usage from session records (development/tools/session-usage.ts; usage numbers, model, effort, tool names and sizes only).",
+      "status": "done"
+    },
+    {
+      "description": "Evaluate Claude and Codex inspector candidates against engine ground truth, then add product/models.json with generation and a contract test.",
+      "status": "pending"
+    },
+    {
+      "description": "Add product/models.json, validation, in-place stamping through sync:plugin and a contract test; ship the Claude inspector model and effort from it.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Claude validator accepts model and effort in skill and agent frontmatter",
+      "status": "passed",
+      "scope": "claude plugin validate --strict on a scratch copy of plugin/ with model: sonnet in SKILL.md and the agent file, 2026-10-22.",
+      "evidence": [
+        "docs/development/issue-library/evidence/model-frontmatter-validation.txt"
+      ],
+      "result": "Validation passed. Runtime effect of the keys is not measured."
+    },
+    {
+      "name": "Selected values beat or match the incumbent on engine ground truth",
+      "status": "not-run",
+      "scope": "inspector role, Claude and Codex candidates listed in the proposal.",
+      "evidence": [],
+      "result": "No evaluation has run; all values in the proposal are unevaluated defaults."
+    },
+    {
+      "name": "Generated agents match product/models.json and drift is detected",
+      "status": "passed",
+      "scope": "test/model-assignments.test.ts (validation, stamping, agreement, no Codex agents in the manifest) plus a temporary change of effort in models.json that made sync:plugin --check report 3 drifted files and a restore that returned 0.",
+      "evidence": [
+        "docs/development/issue-library/evidence/model-assignments-focused-checks.txt"
+      ],
+      "result": "Focused tests passed on 2026-10-22; the full check is run once when the candidate freezes."
+    },
+    {
+      "name": "Engine returns column sets and requested-axis coverage",
+      "status": "passed",
+      "scope": "test/engine-judgment.test.ts (10 tests) plus authoring-modes, cli, public-artifact, plugin-contract, result-json and model-assignments suites: 66 pass, 0 fail.",
+      "evidence": [
+        "docs/development/issue-library/evidence/engine-judgment-checks.txt"
+      ],
+      "result": "guide --authoring grows from 2364 to about 8.3 KB for TypeScript. The net token effect is not yet measured: it replaces reading the 32 KB readability contract only if agents follow the updated SKILL.md step 1."
+    },
+    {
+      "name": "Per-step token usage can be read from real session records without copying content",
+      "status": "passed",
+      "scope": "development/tools/session-usage.ts on two real Claude Code sessions (this macOS development session and a native Windows project session read through standard input); test/session-usage.test.ts (9 tests) pins per-message counting, step naming, model and effort split and that no text reaches the output.",
+      "evidence": [
+        "docs/development/issue-library/evidence/session-usage-measurements.txt"
+      ],
+      "result": "A message split over several lines repeats its usage; counting once per message id reduced 909 lines to 425 messages in the development session. In the Windows session BoxBox hooks injected about 1,041 estimated tokens against 85,510 output and 14.8 million cache-read tokens, and the agent made no BoxBox engine calls, so the cost of the inspector and authoring steps is still unmeasured."
+    },
+    {
+      "name": "Baseline sessions exercising check, write, align and the inspector on the inherited model",
+      "status": "passed",
+      "scope": "Four non-interactive Claude Code 2.1.280 runs on native Windows (boxbox 0.2.5, the machine's default claude-opus-5-5 at medium effort), one new session per request, measured with development/tools/session-usage.ts including the subagent record.",
+      "evidence": [
+        "docs/development/issue-library/evidence/inspector-baseline-sessions.txt"
+      ],
+      "result": "Each run finished in 3-6 turns. Claude Code reported cost_usd 0.3171 (check), 0.3074 (write), 0.3432 (align) and 0.5120 (inspector request). In the inspector run the subagent spent 4 of 6 turns, about 2,131 of 3,370 output tokens (63%, derived from the CLI total; the subagent record alone showed 1,787, a lower bound) and 104,170 of 151,959 cache-read tokens (69%). These are baseline figures on the inherited model; no alternative model had been run and correctness was not scored. Output-token figures corrected on 2026-10-22 after the pilot found subagent records undercount output (history 7)."
+    },
+    {
+      "name": "Pilot: Sonnet inspector against the inherited model on a realistic file with engine ground truth",
+      "status": "passed",
+      "scope": "Six runs (A B A B A B) on approval-gate.ts from the repository's first commit, protocol committed before the first run; Claude Code 2.1.280 on native Windows, boxbox 0.2.5.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-inspector-model-pilot/RESULTS.md"
+      ],
+      "result": "The pilot ran and its pre-registered rule gave a result: B's mean printed cost is 0.843 of A's (0.6107 against 0.7244 USD), above the 0.70 threshold, so Sonnet is not carried forward on cost. Strict recall was uninformative (0 of 8 in every run; the scorer could not read Korean reports); the lenient measure pointed at 7.7 of 8 engine-flagged groups for Sonnet and 6.7 for the inherited model. Sonnet took about twice the subagent turns and 1.7 times the wall time. Three runs per condition on one file: descriptive only. Advice quality was not graded."
+    }
+  ],
+  "related": [
+    {
+      "kind": "contract",
+      "path": "docs/development/proposals/2026-10-22-model-effort-assignment.md",
+      "note": "Design proposal for this issue."
+    },
+    {
+      "kind": "contract",
+      "path": "docs/development/research/model-eval.md",
+      "note": "Price table, effort ladder and escalation signals reused by the proposal."
+    },
+    {
+      "kind": "contract",
+      "path": "docs/development/research/eval-protocol.md",
+      "note": "Non-inferiority evaluation protocol reused for selection."
+    },
+    {
+      "kind": "code",
+      "path": "product/plugin/agents/readability-inspector.md",
+      "note": "Claude inspector: effort set, model absent."
+    },
+    {
+      "kind": "code",
+      "path": "development/codex/readability-inspector.toml",
+      "note": "Development-only Codex inspector with a pinned model and effort."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-22",
+      "event": "reported",
+      "summary": "User asked how model distribution should be optimized per host and to record model and effort for each AI-judgment role on Claude and Codex.",
+      "evidence": []
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-22",
+      "event": "diagnosed",
+      "summary": "Measured host facts: Claude accepts model and effort frontmatter in the validator; the Codex manifest has skills only, so Codex values need documentation or an installer-written global agent file. Open-source Gajae Code stores per-role provider/model[:effort] selectors in its own ~/.gjc/agent config and never writes Codex model_reasoning_effort; it only merges managed entries into ~/.codex/hooks.json. No effort is written into Codex's own config by that project.",
+      "evidence": [
+        "docs/development/proposals/2026-10-22-model-effort-assignment.md",
+        "docs/development/issue-library/evidence/model-frontmatter-validation.txt"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-22",
+      "event": "implemented",
+      "summary": "Added product/models.json with capability-checked assignments, development/tools/model-assignments.ts, in-place stamping in sync:plugin and test/model-assignments.test.ts. The Claude inspector now ships model: sonnet with effort: medium as unevaluated defaults. The author role is refused by validation. Codex values reach only the development definition because the plugin manifest ships no agents. Fallback ladder, engine-side judgment, usage recording and evaluation remain open.",
+      "evidence": [
+        "docs/development/issue-library/evidence/model-assignments-focused-checks.txt"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-22",
+      "event": "implemented",
+      "summary": "Added columnSets and axisNotes to guide --authoring for TypeScript (empty for other languages) and check --expect-axis with an axisExpectation block (covered, missing, unknown) that never changes the exit status. SKILL.md steps 1 and 5 and docs/user/modes.md describe both. Usage recording and the evaluation remain open.",
+      "evidence": [
+        "docs/development/issue-library/evidence/engine-judgment-checks.txt"
+      ]
+    },
+    {
+      "sequence": 5,
+      "date": "2026-10-22",
+      "event": "implemented",
+      "summary": "Added development/tools/session-usage.ts. Measured two real sessions: hook text is a negligible share of tokens (about 1.0K estimated tokens in the Windows session; about 6.5K across 115 injections in the development session), context re-reading dominates, and neither session exercised the inspector. The evaluation therefore needs sessions that run the guide, check and inspector steps.",
+      "evidence": [
+        "docs/development/issue-library/evidence/session-usage-measurements.txt"
+      ]
+    },
+    {
+      "sequence": 6,
+      "date": "2026-10-22",
+      "event": "implemented",
+      "summary": "Ran four fresh non-interactive sessions on the Windows host to get a baseline for the inspector and the authoring steps. The measuring tool now reads subagent records (stored in a separate file) and recognizes the Windows skill's node -e bridge, including several engine commands in one call; before this the engine calls in Windows sessions were all classified as other. Cost figures are the ones Claude Code printed.",
+      "evidence": [
+        "docs/development/issue-library/evidence/inspector-baseline-sessions.txt"
+      ]
+    },
+    {
+      "sequence": 7,
+      "date": "2026-10-22",
+      "event": "verified",
+      "summary": "Pre-registered pilot of a Sonnet inspector against the inherited model completed (6 runs, 4.0053 USD printed cost): the cost criterion failed (ratio 0.843), the strict recall measure was uninformative, and the lenient measure favored neither condition's quality clearly. The proposal's default of sonnet for the Claude inspector is therefore not supported and needs the owner's decision. Errata: comparing the CLI's accounting with session records showed that output tokens in subagent records are lower bounds (4.3 to 8.6 times low in the pilot, 10% low for the baseline inspector run); the baseline's inspector output figures (3,026 total, 1,787 subagent) were corrected to 3,370 and about 2,131. Input and cache figures were exact. The usage reader now says so.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-inspector-model-pilot/RESULTS.md"
+      ]
+    }
+  ]
+}

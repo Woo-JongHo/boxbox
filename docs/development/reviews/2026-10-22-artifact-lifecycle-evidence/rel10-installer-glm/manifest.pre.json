@@ -1,0 +1,74 @@
+{
+  "created_at": "2026-10-21T17:33:20.788845+00:00",
+  "model": "zai/glm-5.3",
+  "mode": "text",
+  "thinking": "low",
+  "disabled": [
+    "tools",
+    "rules",
+    "mcp",
+    "lsp",
+    "session"
+  ],
+  "native_acceptance_claimed": false,
+  "files": [
+    {
+      "path": "product/installer/entry.mjs",
+      "bytes": 7645,
+      "sha256": "b55dd99b50fbc103ee56f1d1f75014bac470346ddf4757852bd96c0307caa141",
+      "frozen_manifest": true
+    },
+    {
+      "path": "product/installer/install.mjs",
+      "bytes": 7517,
+      "sha256": "ed1aaef067811388c65ea504b28a5baa7790de5d456386b9bf6717359f967fa4",
+      "frozen_manifest": true
+    },
+    {
+      "path": "product/installer/install-state.mjs",
+      "bytes": 2367,
+      "sha256": "2c127c6bc639f315dd485da08b3f293b7b086185dd376addc52b6707b69c72e7",
+      "frozen_manifest": true
+    },
+    {
+      "path": "product/installer/claude-registration.mjs",
+      "bytes": 5399,
+      "sha256": "b5bfdc71e0a451b3aed503537af5519db99cbc12a52eee182df44416c6f9b680",
+      "frozen_manifest": true
+    },
+    {
+      "path": "development/tools/build-installer-artifact.ts",
+      "bytes": 7531,
+      "sha256": "e5ced9e6b958e38d489fe5582930fad3d8f74ff8d2d079667128628e9aee98f9",
+      "frozen_manifest": true
+    },
+    {
+      "path": "test/installer-registration.test.ts",
+      "bytes": 11530,
+      "sha256": "544b1d9581cc81b6eef19f2d1bfae817fc4859f4e9b8946aaeff327f9fd6e488",
+      "frozen_manifest": true
+    },
+    {
+      "path": "test/installer-artifact.test.ts",
+      "bytes": 37001,
+      "sha256": "13489356b5b7ef0deeba6e5077f1f1a1dcd4e74888542008f65564c01c22ad8e",
+      "frozen_manifest": true
+    },
+    {
+      "path": "product/installer/README.md",
+      "bytes": 10555,
+      "sha256": "bf1c74dff0b9504b6c3bcaeaf31e508e6ec11b9a69995799e672af5fb60ffd93",
+      "frozen_manifest": true
+    },
+    {
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-claude-transition-diagnosis.md",
+      "bytes": 10189,
+      "sha256": "3f8f7e3b8eb47db8a88f2eea79070863182025acefa7446b9f6f297fd62ceeb6",
+      "frozen_manifest": false
+    }
+  ],
+  "request": {
+    "bytes": 104572,
+    "sha256": "6d3689d5984c92c9226d3391b2303772b54f1fe19b4643190bdf3f127eab33ee"
+  }
+}

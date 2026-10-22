@@ -1,0 +1,28 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/plugin-contract.test.ts:
+(pass) plugin distribution contract > package, Claude and Codex manifests and both marketplaces share name and version [1.38ms]
+(pass) plugin distribution contract > plugin components live inside the plugin folder [0.69ms]
+(pass) plugin distribution contract > the development skill lists every language; the shipped plugin introduces only the first public scope [0.98ms]
+(pass) plugin distribution contract > the plugin folder does not drift from the single source [3.75ms]
+(pass) plugin distribution contract > hooks call only the shim inside the plugin, and the shim requires an explicit local engine [0.51ms]
+(pass) plugin distribution contract > the plugin folder stays within the directory submission limits [0.89ms]
+(pass) plugin distribution contract > shipped docs never instruct running a nonexistent repository test [0.05ms]
+(pass) plugin distribution contract > every table-kind axis has a human-readable note [0.26ms]
+
+test/authoring-modes.test.ts:
+(pass) matrix authoring and alignment modes > new-file guidance includes only scoped proved rules with their exact contracts and counterexamples [114.43ms]
+(pass) matrix authoring and alignment modes > authoring guidance is read-only advice even for empty or invalid existing source [133.58ms]
+(pass) matrix authoring and alignment modes > authoring scope and project rejection override the shipped rule without falling back [329.10ms]
+(pass) matrix authoring and alignment modes > new-file guidance rejects unsafe paths, unsupported formats and disabled languages [294.71ms]
+(pass) matrix authoring and alignment modes > only authoring GUIDE accepts nonexistent files; mode and language errors stay explicit [285.22ms]
+(pass) matrix authoring and alignment modes > align previews and applies approved whitespace changes without executing a configured formatter [721.10ms]
+(pass) matrix authoring and alignment modes > align refuses a file without applicable groups rather than reporting completed authoring [107.63ms]
+
+test/public-artifact.test.ts:
+(pass) public CLI local package artifact > the isolated installed boxbox bin ships approved standalone rules and safely honors project overrides [12185.34ms]
+
+ 16 pass
+ 0 fail
+ 419 expect() calls
+Ran 16 tests across 3 files. [14.24s]

@@ -1,0 +1,17 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/harness.test.ts:
+(pass) parseBunTestOutput > parses pass, skip, fail and the Ran summary [3.86ms]
+(pass) parseBunTestOutput > returns null without a summary [0.15ms]
+(pass) validateRunRecord > accepts a record that satisfies the minimal contract [3.12ms]
+(pass) validateRunRecord > refuses schemaVersion, runId and stage entry violations [3.59ms]
+(pass) store > after append, records read back oldest first [4.64ms]
+(pass) store > latest is updated only by complete runs and reads back [0.87ms]
+(pass) store > completion counting distinguishes ran, failed and skipped [0.17ms]
+(pass) parseRelTable > reads REL0–REL12 from docs/development/plan.md in order [1.47ms]
+(pass) parseRelTable > evidence joining never changes the human verdict [0.68ms]
+
+ 9 pass
+ 0 fail
+ 16 expect() calls
+Ran 9 tests across 1 file. [177.00ms]

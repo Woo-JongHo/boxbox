@@ -1,0 +1,296 @@
+{
+  "generatedAt": "2026-10-21T15:38:24.207Z",
+  "scenarios": [
+    {
+      "id": "return-guards-positive",
+      "targetKind": "return-guards",
+      "before": "function read(value: unknown) {\n\tif (!value) return undefined;\n\tconst declared = value;\n\n\tif (declared === undefined) return undefined;\n\tobserve(declared);\n\tif (typeof declared !== 'string') return undefined;\n\treturn declared;\n}\n",
+      "expected": "function read(value: unknown) {\n\tif (!value)                       return undefined;\n\tconst declared = value;\n\n\tif (declared === undefined)       return undefined;\n\tobserve(declared);\n\tif (typeof declared !== 'string') return undefined;\n\treturn declared;\n}\n",
+      "expectedKey": "v1|typescript|Block|return-guards|guard-return",
+      "expectedTargetGroups": 1,
+      "output": "function read(value: unknown) {\n\tif (!value)                       return undefined;\n\tconst declared = value;\n\n\tif (declared === undefined)       return undefined;\n\tobserve(declared);\n\tif (typeof declared !== 'string') return undefined;\n\treturn declared;\n}\n",
+      "rawWrite": {
+        "exitCode": 0,
+        "stdout": "{\n  \"schemaVersion\": 1,\n  \"tool\": \"boxbox\",\n  \"results\": [\n    {\n      \"file\": \"sample.ts\",\n      \"language\": \"typescript\",\n      \"mode\": \"write\",\n      \"summary\": {\n        \"groups\": 1,\n        \"misaligned\": 1,\n        \"edits\": 2,\n        \"refused\": 0,\n        \"suggested\": 0\n      },\n      \"groups\": [\n        {\n          \"kind\": \"return-guards\",\n          \"startLine\": 2,\n          \"endLine\": 7,\n          \"rows\": 3,\n          \"rowLines\": [\n            2,\n            5,\n            7\n          ],\n          \"axes\": [\n            \"guard-return=38\"\n          ],\n          \"state\": \"FIXABLE\",\n          \"edits\": 2,\n          \"context\": \"Block\",\n          \"depth\": 1\n        }\n      ],\n      \"parse\": {\n        \"status\": \"ok\",\n        \"tool\": \"typescript\",\n        \"passes\": 2\n      }\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      "rawCheck": {
+        "schemaVersion": 1,
+        "tool": "boxbox",
+        "results": [
+          {
+            "file": "sample.ts",
+            "language": "typescript",
+            "mode": "check",
+            "summary": {
+              "groups": 1,
+              "misaligned": 0,
+              "edits": 0,
+              "refused": 0,
+              "suggested": 0
+            },
+            "groups": [
+              {
+                "kind": "return-guards",
+                "startLine": 2,
+                "endLine": 7,
+                "rows": 3,
+                "rowLines": [
+                  2,
+                  5,
+                  7
+                ],
+                "axes": [
+                  "guard-return=38"
+                ],
+                "state": "PASS",
+                "edits": 0,
+                "context": "Block",
+                "depth": 1
+              }
+            ],
+            "parse": {
+              "status": "not-run",
+              "tool": "typescript"
+            }
+          }
+        ]
+      },
+      "targetGroups": [
+        {
+          "kind": "return-guards",
+          "startLine": 2,
+          "endLine": 7,
+          "rows": 3,
+          "rowLines": [
+            2,
+            5,
+            7
+          ],
+          "axes": [
+            "guard-return=38"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "Block",
+          "depth": 1
+        }
+      ],
+      "lookupKeys": [
+        "v1|typescript|Block|return-guards|guard-return"
+      ],
+      "assertions": {
+        "outputExact": true,
+        "targetGroupCount": true,
+        "keyExact": true,
+        "tokenPreservation": true,
+        "idempotence": true
+      },
+      "publicFormat": {
+        "exitCode": 2,
+        "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"format\",\"ok\":false,\"error\":{\"code\":\"FORMAT_NOT_ELIGIBLE\",\"message\":\"format refused: approval denied: no matching convention\"}}\n",
+        "stderr": "",
+        "unchanged": true
+      }
+    },
+    {
+      "id": "return-guards-counterexample",
+      "targetKind": "return-guards",
+      "before": "function read(value: unknown) {\n\tif (!value) return undefined;\n\tif (!ready) return fallback;\n\t// semantic section boundary\n\tif (!other) return undefined;\n\tif (!finalValue) return fallback;\n}\n",
+      "expected": "function read(value: unknown) {\n\tif (!value) return undefined;\n\tif (!ready) return fallback;\n\t// semantic section boundary\n\tif (!other) return undefined;\n\tif (!finalValue) return fallback;\n}\n",
+      "expectedKey": null,
+      "expectedTargetGroups": 0,
+      "output": "function read(value: unknown) {\n\tif (!value) return undefined;\n\tif (!ready) return fallback;\n\t// semantic section boundary\n\tif (!other) return undefined;\n\tif (!finalValue) return fallback;\n}\n",
+      "rawWrite": {
+        "exitCode": 0,
+        "stdout": "{\n  \"schemaVersion\": 1,\n  \"tool\": \"boxbox\",\n  \"results\": [\n    {\n      \"file\": \"sample.ts\",\n      \"language\": \"typescript\",\n      \"mode\": \"write\",\n      \"summary\": {\n        \"groups\": 0,\n        \"misaligned\": 0,\n        \"edits\": 0,\n        \"refused\": 0,\n        \"suggested\": 0\n      },\n      \"groups\": [],\n      \"parse\": {\n        \"status\": \"not-run\",\n        \"tool\": \"typescript\"\n      }\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      "rawCheck": {
+        "schemaVersion": 1,
+        "tool": "boxbox",
+        "results": [
+          {
+            "file": "sample.ts",
+            "language": "typescript",
+            "mode": "check",
+            "summary": {
+              "groups": 0,
+              "misaligned": 0,
+              "edits": 0,
+              "refused": 0,
+              "suggested": 0
+            },
+            "groups": [],
+            "parse": {
+              "status": "not-run",
+              "tool": "typescript"
+            }
+          }
+        ]
+      },
+      "targetGroups": [],
+      "lookupKeys": [],
+      "assertions": {
+        "outputExact": true,
+        "targetGroupCount": true,
+        "keyExact": true,
+        "tokenPreservation": true,
+        "idempotence": true
+      },
+      "publicFormat": null
+    },
+    {
+      "id": "member-call-envelope-positive",
+      "targetKind": "declaration-call-envelope",
+      "before": "const rows = Array.from(items);\nconst over = rows.filter(isVisible);\n",
+      "expected": "const rows = Array.from  (items    ) ;\nconst over = rows .filter(isVisible) ;\n",
+      "expectedKey": "v1|typescript|SourceFile|declaration-call-envelope|equals>call-member-dot>call-envelope-open>call-envelope-close>semicolon",
+      "expectedTargetGroups": 1,
+      "output": "const rows = Array.from  (items    ) ;\nconst over = rows .filter(isVisible) ;\n",
+      "rawWrite": {
+        "exitCode": 0,
+        "stdout": "{\n  \"schemaVersion\": 1,\n  \"tool\": \"boxbox\",\n  \"results\": [\n    {\n      \"file\": \"sample.ts\",\n      \"language\": \"typescript\",\n      \"mode\": \"write\",\n      \"summary\": {\n        \"groups\": 1,\n        \"misaligned\": 1,\n        \"edits\": 5,\n        \"refused\": 0,\n        \"suggested\": 0\n      },\n      \"groups\": [\n        {\n          \"kind\": \"declaration-call-envelope\",\n          \"startLine\": 1,\n          \"endLine\": 2,\n          \"rows\": 2,\n          \"axes\": [\n            \"equals=11\",\n            \"call-member-dot=18\",\n            \"call-envelope-open=25\",\n            \"call-envelope-close=35\",\n            \"semicolon=37\"\n          ],\n          \"state\": \"FIXABLE\",\n          \"edits\": 5,\n          \"context\": \"SourceFile\",\n          \"depth\": 0\n        }\n      ],\n      \"parse\": {\n        \"status\": \"ok\",\n        \"tool\": \"typescript\",\n        \"passes\": 2\n      }\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      "rawCheck": {
+        "schemaVersion": 1,
+        "tool": "boxbox",
+        "results": [
+          {
+            "file": "sample.ts",
+            "language": "typescript",
+            "mode": "check",
+            "summary": {
+              "groups": 1,
+              "misaligned": 0,
+              "edits": 0,
+              "refused": 0,
+              "suggested": 0
+            },
+            "groups": [
+              {
+                "kind": "declaration-call-envelope",
+                "startLine": 1,
+                "endLine": 2,
+                "rows": 2,
+                "axes": [
+                  "equals=11",
+                  "call-member-dot=18",
+                  "call-envelope-open=25",
+                  "call-envelope-close=35",
+                  "semicolon=37"
+                ],
+                "state": "PASS",
+                "edits": 0,
+                "context": "SourceFile",
+                "depth": 0
+              }
+            ],
+            "parse": {
+              "status": "not-run",
+              "tool": "typescript"
+            }
+          }
+        ]
+      },
+      "targetGroups": [
+        {
+          "kind": "declaration-call-envelope",
+          "startLine": 1,
+          "endLine": 2,
+          "rows": 2,
+          "axes": [
+            "equals=11",
+            "call-member-dot=18",
+            "call-envelope-open=25",
+            "call-envelope-close=35",
+            "semicolon=37"
+          ],
+          "state": "PASS",
+          "edits": 0,
+          "context": "SourceFile",
+          "depth": 0
+        }
+      ],
+      "lookupKeys": [
+        "v1|typescript|SourceFile|declaration-call-envelope|equals>call-member-dot>call-envelope-open>call-envelope-close>semicolon"
+      ],
+      "assertions": {
+        "outputExact": true,
+        "targetGroupCount": true,
+        "keyExact": true,
+        "tokenPreservation": true,
+        "idempotence": true
+      },
+      "publicFormat": {
+        "exitCode": 2,
+        "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"format\",\"ok\":false,\"error\":{\"code\":\"FORMAT_NOT_ELIGIBLE\",\"message\":\"format refused: approval denied: no matching convention\"}}\n",
+        "stderr": "",
+        "unchanged": true
+      }
+    },
+    {
+      "id": "member-call-envelope-counterexample",
+      "targetKind": "declaration-call-envelope",
+      "before": "const aa = Array /* keep */ .from(items) ;\nconst bb = object?.filter(value)         ;\nconst cc = object[key](value)            ;\n",
+      "expected": "const aa = Array /* keep */ .from(items) ;\nconst bb = object?.filter(value)         ;\nconst cc = object[key](value)            ;\n",
+      "expectedKey": null,
+      "expectedTargetGroups": 0,
+      "output": "const aa = Array /* keep */ .from(items) ;\nconst bb = object?.filter(value)         ;\nconst cc = object[key](value)            ;\n",
+      "rawWrite": {
+        "exitCode": 0,
+        "stdout": "{\n  \"schemaVersion\": 1,\n  \"tool\": \"boxbox\",\n  \"results\": [\n    {\n      \"file\": \"sample.ts\",\n      \"language\": \"typescript\",\n      \"mode\": \"write\",\n      \"summary\": {\n        \"groups\": 1,\n        \"misaligned\": 0,\n        \"edits\": 0,\n        \"refused\": 0,\n        \"suggested\": 0\n      },\n      \"groups\": [\n        {\n          \"kind\": \"declaration-equals\",\n          \"startLine\": 1,\n          \"endLine\": 3,\n          \"rows\": 3,\n          \"axes\": [\n            \"equals=9\",\n            \"semicolon=41\"\n          ],\n          \"state\": \"PASS\",\n          \"edits\": 0,\n          \"context\": \"SourceFile\",\n          \"depth\": 0\n        }\n      ],\n      \"parse\": {\n        \"status\": \"not-run\",\n        \"tool\": \"typescript\"\n      }\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      "rawCheck": {
+        "schemaVersion": 1,
+        "tool": "boxbox",
+        "results": [
+          {
+            "file": "sample.ts",
+            "language": "typescript",
+            "mode": "check",
+            "summary": {
+              "groups": 1,
+              "misaligned": 0,
+              "edits": 0,
+              "refused": 0,
+              "suggested": 0
+            },
+            "groups": [
+              {
+                "kind": "declaration-equals",
+                "startLine": 1,
+                "endLine": 3,
+                "rows": 3,
+                "axes": [
+                  "equals=9",
+                  "semicolon=41"
+                ],
+                "state": "PASS",
+                "edits": 0,
+                "context": "SourceFile",
+                "depth": 0
+              }
+            ],
+            "parse": {
+              "status": "not-run",
+              "tool": "typescript"
+            }
+          }
+        ]
+      },
+      "targetGroups": [],
+      "lookupKeys": [],
+      "assertions": {
+        "outputExact": true,
+        "targetGroupCount": true,
+        "keyExact": true,
+        "tokenPreservation": true,
+        "idempotence": true
+      },
+      "publicFormat": null
+    }
+  ]
+}

@@ -8,10 +8,12 @@ export const RESULT_SCHEMA_VERSION = 1;
 export type GroupState = "PASS" | "FIXABLE" | "SUGGEST" | "REFUSE";
 
 export interface ResultGroup {
-	readonly kind      : string            ;
-	readonly startLine : number            ;
-	readonly endLine   : number            ;
-	readonly rows      : number            ;
+	readonly kind      : string ;
+	readonly startLine : number ;
+	readonly endLine   : number ;
+	readonly rows      : number ;
+	/** Exact 1-based row lines for noncontiguous tables; absent means the inclusive start/end span. */
+	readonly rowLines? : readonly number[] ;
 	readonly axes      : readonly string[] ;
 	readonly state     : GroupState        ;
 	readonly edits     : number            ;
@@ -19,6 +21,8 @@ export interface ResultGroup {
 	readonly context?  : string            ;
 	/** How deeply nested the table's container is (0 = top level). */
 	readonly depth?    : number            ;
+	/** Why a REFUSE group was refused (`whitespace-only`, `wide-characters`). */
+	readonly reason?   : string            ;
 }
 
 export interface ResultParse {
@@ -43,6 +47,8 @@ export interface FileResult {
 	readonly summary  : ResultSummary          ;
 	readonly groups   : readonly ResultGroup[] ;
 	readonly parse    : ResultParse            ;
+	/** Valid syntax outside automatic layout coverage; these rows remain unchanged. */
+	readonly unsupported?: readonly { readonly line: number; readonly reason: string }[];
 }
 
 export interface ResultEnvelope {
@@ -53,12 +59,13 @@ export interface ResultEnvelope {
 
 /** Builds the summary from the groups so the two can never disagree. */
 export function summarize(groups: readonly ResultGroup[]): ResultSummary {
+	const withState = (state: GroupState): readonly ResultGroup[] => groups.filter(group => group.state === state);
 	return {
-		groups     : groups.length,
-		misaligned : groups.filter(group => group.state === "FIXABLE").length,
-		edits      : groups.filter(group => group.state === "FIXABLE").reduce((count, group) => count + group.edits, 0),
-		refused    : groups.filter(group => group.state === "REFUSE").length,
-		suggested  : groups.filter(group => group.state === "SUGGEST").length,
+		groups     : groups.length                                                         ,
+		misaligned : withState("FIXABLE").length                                           ,
+		edits      : withState("FIXABLE").reduce((count, group) => count + group.edits, 0) ,
+		refused    : withState("REFUSE" ).length                                           ,
+		suggested  : withState("SUGGEST").length                                           ,
 	};
 }
 

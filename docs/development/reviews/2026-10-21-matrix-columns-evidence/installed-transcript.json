@@ -1,0 +1,249 @@
+[
+  {
+    "args": [
+      "npm",
+      "exec",
+      "--offline",
+      "--yes",
+      "--package",
+      "/Users/jonghoPro/woo/00_project/98_BoxBox/dist/installer/boxbox-plugin-0.2.4.tgz",
+      "--",
+      "boxbox",
+      "--codex",
+      "--claude"
+    ],
+    "cwd": "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/project",
+    "exitCode": 0,
+    "stdout": "10.9.8\ncodex-cli 0.163.0\nInstall a plugin from a configured or remote marketplace.\n\nPass either `PLUGIN@MARKETPLACE` or pass `PLUGIN` with `--marketplace MARKETPLACE`.\n\nUsage: codex plugin add [OPTIONS] <PLUGIN[@MARKETPLACE]>\n\nArguments:\n  <PLUGIN[@MARKETPLACE]>\n          Plugin selector to install: either PLUGIN@MARKETPLACE or PLUGIN with --marketplace\n\nOptions:\n  -c, --config <key=value>\n          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.\n          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed\n          as TOML. If it fails to parse as TOML, the raw string is used as a literal.\n          \n          Examples: - `-c model=\"o3\"` - `-c 'sandbox_permissions=[\"disk-full-read-access\"]'` - `-c\n          shell_environment_policy.inherit=all`\n\n  -m, --marketplace <MARKETPLACE>\n          Marketplace name to use when PLUGIN does not include @MARKETPLACE\n\n      --enable <FEATURE>\n          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`\n\n      --json\n          Output install result as JSON\n\n      --disable <FEATURE>\n          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`\n\n  -h, --help\n          Print help (see a summary with '-h')\n\nExamples:\n  codex plugin add sample@debug\n  codex plugin add sample --marketplace debug\n\nadded 3 packages in 726ms\n0.2.4\nAdded marketplace `boxbox-plugins` from /private/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/codex/0.2.4.\nInstalled marketplace root: /private/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/codex/0.2.4\nAdded plugin `boxbox` from marketplace `boxbox-plugins`.\nInstalled plugin root: /private/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/codex/plugins/cache/boxbox-plugins/boxbox/0.2.4\nBoxBox is installed for Codex. Restart that host and select the BoxBox skill. Review the current hooks manually before relying on them.\nPermanent installation: /private/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/codex/0.2.4/\nApproved TypeScript call declarations and Python simple assignments can format without an external formatter. Run check and guide, then format --dry-run before an explicit format request; other patterns require approval.\n10.9.8\n2.1.286 (Claude Code)\nUsage: claude plugin install|i [options] <plugin>\n\nInstall a plugin from available marketplaces (use plugin@marketplace for\nspecific marketplace)\n\nOptions:\n  --accept-command <sha256>  Accept the marketplace-declared command (a\n                             command-source install, or the headersHelper that\n                             fetches the archive) whose sha256 a previous --json\n                             run reported as shownCommand.sha256; counts as -y\n                             for exactly that command, for that plugin and\n                             marketplace catalog, and nothing else. If either\n                             changed (a refresh that moved the catalog counts),\n                             the run refuses and reports the command again, to\n                             be shown to a person again\n  --config <key=value>       Set a userConfig option declared in the plugin's\n                             manifest, or a bundled .mcpb server's own\n                             user_config field as <server>.<key>=<value> (a bare\n                             key works when only one bundled server declares\n                             it). Repeatable. Values are validated against the\n                             schema and stored via the same path as the\n                             interactive /plugin configure flow.\n  -h, --help                 Display help for command\n  --json                     Print one machine-readable result line on stdout\n                             instead of the human message (same exit codes; a\n                             marketplace-declared command is still shown and\n                             must be confirmed \u2014 pass -y when not interactive)\n  --registry <url>           For a <package>@npm install: resolve and download\n                             from this npm registry instead of the one your npm\n                             configuration selects\n  -s, --scope <scope>        Installation scope: user, project, or local\n                             (default: \"user\")\n  -y, --yes                  Accept the displayed marketplace-declared command\n                             without the confirmation prompt \u2014 a plugin\n                             installed by running a command, or one whose\n                             archive is fetched through a headersHelper command\n                             (required when stdin or stdout is not a TTY)\n\nadded 3 packages in 785ms\n0.2.4\nAdding marketplace\u2026\u2714 Successfully added marketplace: boxbox-plugins (declared in user settings)\nInstalling plugin \"boxbox@boxbox-plugins\"...\u2714 Successfully installed plugin: boxbox@boxbox-plugins (scope: user)\nBoxBox is installed for Claude Code. Restart that host and select the BoxBox skill. Review the current hooks manually before relying on them.\nPermanent installation: /private/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/claude/0.2.4/\nApproved TypeScript call declarations and Python simple assignments can format without an external formatter. Run check and guide, then format --dry-run before an explicit format request; other patterns require approval.\n",
+    "stderr": ""
+  },
+  {
+    "args": [
+      "codex",
+      "plugin",
+      "list"
+    ],
+    "cwd": "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/project",
+    "exitCode": 0,
+    "stdout": "Marketplace `boxbox-plugins`\n/private/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/codex/0.2.4/.agents/plugins/marketplace.json\n\nPLUGIN                 STATUS              VERSION  SOURCE\nboxbox@boxbox-plugins  installed, enabled  0.2.4    /private/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/codex/0.2.4/plugin\n",
+    "stderr": ""
+  },
+  {
+    "args": [
+      "claude",
+      "plugin",
+      "details",
+      "boxbox"
+    ],
+    "cwd": "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/project",
+    "exitCode": 0,
+    "stdout": "BoxBox (boxbox) 0.2.4\n  Description: Inspects TypeScript and Python files one at a time against tabular readability rules and formats only through human-approved rules, plus a read-only inspector.\n  Source: boxbox@boxbox-plugins\n\nComponent inventory\n  Skills (1)  boxbox\n  Agents (1)  readability-inspector\n  Hooks (3)  SessionStart, PostToolUse, Stop  (harness-only \u2014 no model context cost)\n  MCP servers (0)\n  LSP servers (0)\n\nProjected token cost\n  Always-on:   ~125 tok   added to every session\n\nPer-component (rounded)\n  component              always-on  on-invoke\n  boxbox                       ~50      ~2.3k\n  readability-inspector        ~80       ~340\n\n  On-invoke cost is paid each time a skill or agent fires.\n  Token counts are estimates and may differ from actual usage.\n",
+    "stderr": ""
+  },
+  {
+    "args": [
+      "node",
+      "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/codex/0.2.4/plugin/scripts/boxbox.mjs",
+      "--version"
+    ],
+    "cwd": "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/project",
+    "exitCode": 0,
+    "stdout": "0.2.4\n",
+    "stderr": ""
+  },
+  {
+    "args": [
+      "node",
+      "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/codex/0.2.4/plugin/scripts/boxbox.mjs",
+      "guide",
+      "--file",
+      "new/settings.py",
+      "--authoring",
+      "--json"
+    ],
+    "cwd": "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/project",
+    "exitCode": 0,
+    "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"guide\",\"basis\":\"authoring\",\"ok\":true,\"file\":\"new/settings.py\",\"language\":\"python\",\"verification\":\"not-run\",\"writeAuthorized\":false,\"rules\":[{\"id\":\"py-simple-assignments\",\"key\":\"v1|python|-|table|name>equal>value\",\"scope\":\"**/*.py\",\"layer\":\"preset\",\"contract\":\"# Python simple assignments\\n\\nThree or more consecutive simple-name assignments at the same indentation may be aligned when the engine detects exactly the lookup key `v1|python|-|table|name>equal>value`. The scope is `**/*.py`; the pattern is `DEFINE`. Any existing indentation depth is allowed, and indentation must be preserved. Two-row inputs, mixed-indentation runs, compound assignments, attribute targets, other axis combinations and other languages are outside this approval. Execution order and all non-whitespace tokens must be preserved.\\n\\nThe positive example `py-simple-assignments-positive` records the approved transformation at two-space indentation. In `py-simple-assignments-two-row-counterexample`, the aligned after form has verdict `bad` because automatically rewriting fewer than three rows violates the approved minimum; this is not a general style judgment about manually written whitespace. The engine must leave the before form unchanged and may report the pair as a suggestion.\\n\\nA human maintainer approved this exact scope, the positive example and the excluded boundary on 2026-10-21. The public receipt uses the anonymous role `maintainer`; it does not grant approval for additional rules. The linked short synthetic examples are provided under CC0-1.0.\\n\",\"examples\":[{\"id\":\"py-simple-assignments-positive\",\"before\":\"if enabled:\\n  alpha = 1\\n  much_longer = 22\\n  mid = 333\\n\",\"after\":\"if enabled:\\n  alpha       = 1\\n  much_longer = 22\\n  mid         = 333\\n\"}],\"counterexamples\":[{\"id\":\"py-simple-assignments-two-row-counterexample\",\"before\":\"alpha = 1\\nmuch_longer = 22\\n\",\"after\":\"alpha       = 1\\nmuch_longer = 22\\n\",\"verdict\":\"bad\"}]}],\"unavailable\":[]}\n",
+    "stderr": ""
+  },
+  {
+    "args": [
+      "node",
+      "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/codex/0.2.4/plugin/scripts/boxbox.mjs",
+      "align",
+      "--file",
+      "settings.py",
+      "--dry-run",
+      "--json"
+    ],
+    "cwd": "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/project",
+    "exitCode": 0,
+    "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"align\",\"ok\":true,\"dryRun\":true,\"formatEligible\":true,\"file\":\"settings.py\",\"formatterChanged\":false,\"boxboxChanged\":true,\"fixedPoint\":true,\"written\":false,\"formatter\":null,\"formatterExecuted\":false,\"formatMode\":\"standalone\",\"approvals\":[\"py-simple-assignments\"],\"alignmentEdits\":[{\"line\":1,\"before\":\"retry=3\",\"after\":\"retry           = 3\"},{\"line\":2,\"before\":\"timeout_seconds=30\",\"after\":\"timeout_seconds = 30\"},{\"line\":3,\"before\":\"batch_size=100\",\"after\":\"batch_size      = 100\"}],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":null},\"mode\":\"align\",\"horizontalWhitespaceOnly\":true}\n",
+    "stderr": ""
+  },
+  {
+    "args": [
+      "node",
+      "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/codex/0.2.4/plugin/scripts/boxbox.mjs",
+      "align",
+      "--file",
+      "settings.py",
+      "--json"
+    ],
+    "cwd": "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/project",
+    "exitCode": 0,
+    "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"align\",\"ok\":true,\"dryRun\":false,\"formatEligible\":true,\"file\":\"settings.py\",\"formatterChanged\":false,\"boxboxChanged\":true,\"fixedPoint\":true,\"written\":true,\"formatter\":null,\"formatterExecuted\":false,\"formatMode\":\"standalone\",\"approvals\":[\"py-simple-assignments\"],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":null},\"mode\":\"align\",\"horizontalWhitespaceOnly\":true}\n",
+    "stderr": ""
+  },
+  {
+    "args": [
+      "node",
+      "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/codex/0.2.4/plugin/scripts/boxbox.mjs",
+      "check",
+      "--file",
+      "settings.py",
+      "--json"
+    ],
+    "cwd": "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/project",
+    "exitCode": 0,
+    "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"results\":[{\"file\":\"settings.py\",\"language\":\"python\",\"mode\":\"check\",\"summary\":{\"groups\":1,\"misaligned\":0,\"edits\":0,\"refused\":0,\"suggested\":0},\"groups\":[{\"kind\":\"table\",\"startLine\":1,\"endLine\":3,\"rows\":3,\"axes\":[\"name\",\"equal\",\"value\"],\"state\":\"PASS\",\"edits\":0,\"depth\":0}],\"parse\":{\"status\":\"not-run\",\"tool\":\"\"}}],\"formatReadiness\":{\"mode\":\"standalone\",\"approvalEligible\":true,\"verification\":\"not-run\",\"reasons\":[],\"next\":\"align --dry-run verifies horizontal whitespace only; format --dry-run includes the configured formatter. Both verify parser, preservation and fixed point before writing\"}}\n",
+    "stderr": ""
+  },
+  {
+    "args": [
+      "node",
+      "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/claude/0.2.4/plugin/scripts/boxbox.mjs",
+      "--version"
+    ],
+    "cwd": "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/project",
+    "exitCode": 0,
+    "stdout": "0.2.4\n",
+    "stderr": ""
+  },
+  {
+    "args": [
+      "node",
+      "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/claude/0.2.4/plugin/scripts/boxbox.mjs",
+      "guide",
+      "--file",
+      "new/settings.py",
+      "--authoring",
+      "--json"
+    ],
+    "cwd": "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/project",
+    "exitCode": 0,
+    "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"guide\",\"basis\":\"authoring\",\"ok\":true,\"file\":\"new/settings.py\",\"language\":\"python\",\"verification\":\"not-run\",\"writeAuthorized\":false,\"rules\":[{\"id\":\"py-simple-assignments\",\"key\":\"v1|python|-|table|name>equal>value\",\"scope\":\"**/*.py\",\"layer\":\"preset\",\"contract\":\"# Python simple assignments\\n\\nThree or more consecutive simple-name assignments at the same indentation may be aligned when the engine detects exactly the lookup key `v1|python|-|table|name>equal>value`. The scope is `**/*.py`; the pattern is `DEFINE`. Any existing indentation depth is allowed, and indentation must be preserved. Two-row inputs, mixed-indentation runs, compound assignments, attribute targets, other axis combinations and other languages are outside this approval. Execution order and all non-whitespace tokens must be preserved.\\n\\nThe positive example `py-simple-assignments-positive` records the approved transformation at two-space indentation. In `py-simple-assignments-two-row-counterexample`, the aligned after form has verdict `bad` because automatically rewriting fewer than three rows violates the approved minimum; this is not a general style judgment about manually written whitespace. The engine must leave the before form unchanged and may report the pair as a suggestion.\\n\\nA human maintainer approved this exact scope, the positive example and the excluded boundary on 2026-10-21. The public receipt uses the anonymous role `maintainer`; it does not grant approval for additional rules. The linked short synthetic examples are provided under CC0-1.0.\\n\",\"examples\":[{\"id\":\"py-simple-assignments-positive\",\"before\":\"if enabled:\\n  alpha = 1\\n  much_longer = 22\\n  mid = 333\\n\",\"after\":\"if enabled:\\n  alpha       = 1\\n  much_longer = 22\\n  mid         = 333\\n\"}],\"counterexamples\":[{\"id\":\"py-simple-assignments-two-row-counterexample\",\"before\":\"alpha = 1\\nmuch_longer = 22\\n\",\"after\":\"alpha       = 1\\nmuch_longer = 22\\n\",\"verdict\":\"bad\"}]}],\"unavailable\":[]}\n",
+    "stderr": ""
+  },
+  {
+    "args": [
+      "node",
+      "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/claude/0.2.4/plugin/scripts/boxbox.mjs",
+      "align",
+      "--file",
+      "settings.py",
+      "--dry-run",
+      "--json"
+    ],
+    "cwd": "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/project",
+    "exitCode": 0,
+    "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"align\",\"ok\":true,\"dryRun\":true,\"formatEligible\":true,\"file\":\"settings.py\",\"formatterChanged\":false,\"boxboxChanged\":true,\"fixedPoint\":true,\"written\":false,\"formatter\":null,\"formatterExecuted\":false,\"formatMode\":\"standalone\",\"approvals\":[\"py-simple-assignments\"],\"alignmentEdits\":[{\"line\":1,\"before\":\"retry=3\",\"after\":\"retry           = 3\"},{\"line\":2,\"before\":\"timeout_seconds=30\",\"after\":\"timeout_seconds = 30\"},{\"line\":3,\"before\":\"batch_size=100\",\"after\":\"batch_size      = 100\"}],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":null},\"mode\":\"align\",\"horizontalWhitespaceOnly\":true}\n",
+    "stderr": ""
+  },
+  {
+    "args": [
+      "node",
+      "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/claude/0.2.4/plugin/scripts/boxbox.mjs",
+      "align",
+      "--file",
+      "settings.py",
+      "--json"
+    ],
+    "cwd": "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/project",
+    "exitCode": 0,
+    "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"align\",\"ok\":true,\"dryRun\":false,\"formatEligible\":true,\"file\":\"settings.py\",\"formatterChanged\":false,\"boxboxChanged\":true,\"fixedPoint\":true,\"written\":true,\"formatter\":null,\"formatterExecuted\":false,\"formatMode\":\"standalone\",\"approvals\":[\"py-simple-assignments\"],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":null},\"mode\":\"align\",\"horizontalWhitespaceOnly\":true}\n",
+    "stderr": ""
+  },
+  {
+    "args": [
+      "node",
+      "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/claude/0.2.4/plugin/scripts/boxbox.mjs",
+      "check",
+      "--file",
+      "settings.py",
+      "--json"
+    ],
+    "cwd": "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/project",
+    "exitCode": 0,
+    "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"results\":[{\"file\":\"settings.py\",\"language\":\"python\",\"mode\":\"check\",\"summary\":{\"groups\":1,\"misaligned\":0,\"edits\":0,\"refused\":0,\"suggested\":0},\"groups\":[{\"kind\":\"table\",\"startLine\":1,\"endLine\":3,\"rows\":3,\"axes\":[\"name\",\"equal\",\"value\"],\"state\":\"PASS\",\"edits\":0,\"depth\":0}],\"parse\":{\"status\":\"not-run\",\"tool\":\"\"}}],\"formatReadiness\":{\"mode\":\"standalone\",\"approvalEligible\":true,\"verification\":\"not-run\",\"reasons\":[],\"next\":\"align --dry-run verifies horizontal whitespace only; format --dry-run includes the configured formatter. Both verify parser, preservation and fixed point before writing\"}}\n",
+    "stderr": ""
+  },
+  {
+    "host": "codex",
+    "operation": "matrix-check",
+    "exitCode": 1,
+    "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"results\":[{\"file\":\"matrix.ts\",\"language\":\"typescript\",\"mode\":\"check\",\"summary\":{\"groups\":2,\"misaligned\":2,\"edits\":7,\"refused\":0,\"suggested\":0},\"groups\":[{\"kind\":\"declaration-call-envelope\",\"startLine\":1,\"endLine\":2,\"rows\":2,\"axes\":[\"equals=13\",\"call-envelope-open=27\",\"call-envelope-close=38\",\"semicolon=41\"],\"state\":\"FIXABLE\",\"edits\":5,\"context\":\"SourceFile\",\"depth\":0},{\"kind\":\"return-guards\",\"startLine\":4,\"endLine\":8,\"rows\":3,\"rowLines\":[4,6,8],\"axes\":[\"guard-return=15\"],\"state\":\"FIXABLE\",\"edits\":2,\"context\":\"Block\",\"depth\":1}],\"parse\":{\"status\":\"not-run\",\"tool\":\"typescript\"}}],\"formatReadiness\":{\"mode\":\"standalone\",\"approvalEligible\":false,\"verification\":\"not-run\",\"reasons\":[\"no matching convention\",\"no matching convention\"],\"next\":\"align --dry-run verifies horizontal whitespace only; format --dry-run includes the configured formatter. Both verify parser, preservation and fixed point before writing\"}}\n",
+    "stderr": ""
+  },
+  {
+    "host": "codex",
+    "operation": "matrix-align-unapproved",
+    "exitCode": 2,
+    "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"align\",\"ok\":false,\"error\":{\"code\":\"ALIGN_NOT_ELIGIBLE\",\"message\":\"align refused: approval denied: no matching convention; no matching convention\"}}\n",
+    "stderr": ""
+  },
+  {
+    "host": "codex",
+    "operation": "member-dot-check",
+    "exitCode": 1,
+    "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"results\":[{\"file\":\"matrix.ts\",\"language\":\"typescript\",\"mode\":\"check\",\"summary\":{\"groups\":1,\"misaligned\":1,\"edits\":5,\"refused\":0,\"suggested\":0},\"groups\":[{\"kind\":\"declaration-call-envelope\",\"startLine\":1,\"endLine\":2,\"rows\":2,\"axes\":[\"equals=11\",\"call-member-dot=18\",\"call-envelope-open=25\",\"call-envelope-close=35\",\"semicolon=37\"],\"state\":\"FIXABLE\",\"edits\":5,\"context\":\"SourceFile\",\"depth\":0}],\"parse\":{\"status\":\"not-run\",\"tool\":\"typescript\"}}],\"formatReadiness\":{\"mode\":\"standalone\",\"approvalEligible\":false,\"verification\":\"not-run\",\"reasons\":[\"no matching convention\"],\"next\":\"align --dry-run verifies horizontal whitespace only; format --dry-run includes the configured formatter. Both verify parser, preservation and fixed point before writing\"}}\n"
+  },
+  {
+    "args": [
+      "node",
+      "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/codex/0.2.4/plugin/scripts/boxbox.mjs",
+      "align",
+      "--file",
+      "matrix.ts",
+      "--json"
+    ],
+    "cwd": "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/project",
+    "exitCode": 0,
+    "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"align\",\"ok\":true,\"dryRun\":false,\"formatEligible\":true,\"file\":\"matrix.ts\",\"formatterChanged\":false,\"boxboxChanged\":true,\"fixedPoint\":true,\"written\":true,\"formatter\":null,\"formatterExecuted\":false,\"formatMode\":\"standalone\",\"approvals\":[\"ts-sourcefile-call-declarations\"],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":null},\"mode\":\"align\",\"horizontalWhitespaceOnly\":true}\n",
+    "stderr": ""
+  },
+  {
+    "host": "claude",
+    "operation": "matrix-check",
+    "exitCode": 1,
+    "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"results\":[{\"file\":\"matrix.ts\",\"language\":\"typescript\",\"mode\":\"check\",\"summary\":{\"groups\":2,\"misaligned\":2,\"edits\":7,\"refused\":0,\"suggested\":0},\"groups\":[{\"kind\":\"declaration-call-envelope\",\"startLine\":1,\"endLine\":2,\"rows\":2,\"axes\":[\"equals=13\",\"call-envelope-open=27\",\"call-envelope-close=38\",\"semicolon=41\"],\"state\":\"FIXABLE\",\"edits\":5,\"context\":\"SourceFile\",\"depth\":0},{\"kind\":\"return-guards\",\"startLine\":4,\"endLine\":8,\"rows\":3,\"rowLines\":[4,6,8],\"axes\":[\"guard-return=15\"],\"state\":\"FIXABLE\",\"edits\":2,\"context\":\"Block\",\"depth\":1}],\"parse\":{\"status\":\"not-run\",\"tool\":\"typescript\"}}],\"formatReadiness\":{\"mode\":\"standalone\",\"approvalEligible\":false,\"verification\":\"not-run\",\"reasons\":[\"no matching convention\",\"no matching convention\"],\"next\":\"align --dry-run verifies horizontal whitespace only; format --dry-run includes the configured formatter. Both verify parser, preservation and fixed point before writing\"}}\n",
+    "stderr": ""
+  },
+  {
+    "host": "claude",
+    "operation": "matrix-align-unapproved",
+    "exitCode": 2,
+    "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"align\",\"ok\":false,\"error\":{\"code\":\"ALIGN_NOT_ELIGIBLE\",\"message\":\"align refused: approval denied: no matching convention; no matching convention\"}}\n",
+    "stderr": ""
+  },
+  {
+    "host": "claude",
+    "operation": "member-dot-check",
+    "exitCode": 1,
+    "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"results\":[{\"file\":\"matrix.ts\",\"language\":\"typescript\",\"mode\":\"check\",\"summary\":{\"groups\":1,\"misaligned\":1,\"edits\":5,\"refused\":0,\"suggested\":0},\"groups\":[{\"kind\":\"declaration-call-envelope\",\"startLine\":1,\"endLine\":2,\"rows\":2,\"axes\":[\"equals=11\",\"call-member-dot=18\",\"call-envelope-open=25\",\"call-envelope-close=35\",\"semicolon=37\"],\"state\":\"FIXABLE\",\"edits\":5,\"context\":\"SourceFile\",\"depth\":0}],\"parse\":{\"status\":\"not-run\",\"tool\":\"typescript\"}}],\"formatReadiness\":{\"mode\":\"standalone\",\"approvalEligible\":false,\"verification\":\"not-run\",\"reasons\":[\"no matching convention\"],\"next\":\"align --dry-run verifies horizontal whitespace only; format --dry-run includes the configured formatter. Both verify parser, preservation and fixed point before writing\"}}\n"
+  },
+  {
+    "args": [
+      "node",
+      "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/data/boxbox/claude/0.2.4/plugin/scripts/boxbox.mjs",
+      "align",
+      "--file",
+      "matrix.ts",
+      "--json"
+    ],
+    "cwd": "/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-matrix-installed-soubhclz/project",
+    "exitCode": 0,
+    "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"align\",\"ok\":true,\"dryRun\":false,\"formatEligible\":true,\"file\":\"matrix.ts\",\"formatterChanged\":false,\"boxboxChanged\":true,\"fixedPoint\":true,\"written\":true,\"formatter\":null,\"formatterExecuted\":false,\"formatMode\":\"standalone\",\"approvals\":[\"ts-sourcefile-call-declarations\"],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":null},\"mode\":\"align\",\"horizontalWhitespaceOnly\":true}\n",
+    "stderr": ""
+  }
+]

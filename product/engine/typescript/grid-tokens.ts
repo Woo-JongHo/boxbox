@@ -94,9 +94,9 @@ export function commasOf(node: Node, source: SourceFile): readonly Boundary[] {
 
 /** Opening/closing boundary pair enclosing one cell. For block/object literal/array literal, the node's own start and end are the tokens. */
 export function bracketsOf(node: Node, source: SourceFile): { readonly open: Boundary; readonly close: Boundary } | undefined {
-	if (isBlock(node)) return pairAt("block-brace", source, node);
+	if (isBlock(node))                   return pairAt("block-brace", source, node);
 	if (isObjectLiteralExpression(node)) return pairAt("object-literal-brace", source, node);
-	if (isArrayLiteralExpression(node)) return pairAt("array-bracket", source, node);
+	if (isArrayLiteralExpression(node))  return pairAt("array-bracket", source, node);
 	if (isCallExpression(node)) {
 		const open  = charTokenAt(
 			"call-paren"                                     ,

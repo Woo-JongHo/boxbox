@@ -1,0 +1,7 @@
+Owned tmux socket: boxbox-hud-46601-cb269e04
+Owned PIDs observed while ready: 46601, 46608, 46609, 46614
+PASS: exact owned PIDs absent after exit.
+PASS: exact owned socket token absent after exit.
+PASS: owned malformed config absent after exit.
+PASS: project status before and after was identical: ## No commits yet on main
+Malformed config bytes SHA-256: 6a7328ea2cd43a5ad89438c3a059232521b99a0b7208ba86e9bbdf85198c400c

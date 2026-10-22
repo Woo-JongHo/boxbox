@@ -1,0 +1,9 @@
+candidate_config=/tmp/boxbox-python-native.TflF0A/codex/config.toml
+owned_project=/private/tmp/boxbox-python-native.TflF0A/project
+mode_after=600
+owned_project_header_count_after=0
+owned_project_path_count_after=0
+remaining_project_tables=0
+auth_file_present_after=no
+candidate_root_process_count_after=0
+result=PASS exact owned trust table absent; all other config bytes preserved by single exact-block replacement

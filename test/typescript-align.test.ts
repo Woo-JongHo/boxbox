@@ -148,12 +148,12 @@ describe("typescript call layer", () => {
 		]);
 	});
 
-	slowTest("keeps one layer when the callee or the arity differs", () => {
+	slowTest("shares the outer call envelope when the callee or the arity differs", () => {
 		expect(alignLines([
 			'const a = first(x, y);',
 			'const bb = second(x, y);',
 		])).toEqual([
-			'const a  = first(x, y)  ;',
+			'const a  = first (x, y) ;',
 			'const bb = second(x, y) ;',
 		]);
 		expect(alignLines([
@@ -161,7 +161,7 @@ describe("typescript call layer", () => {
 			'const bb = pick(x);',
 		])).toEqual([
 			'const a  = pick(x, yy) ;',
-			'const bb = pick(x)     ;',
+			'const bb = pick(x    ) ;',
 		]);
 	});
 });
@@ -361,13 +361,13 @@ describe("typescript list layer", () => {
 		]);
 	});
 
-	slowTest("drops the call layer and the lists inside its arguments when the callee differs", () => {
+	slowTest("keeps only the outer envelope when the callee differs", () => {
 		expect(alignLines([
 			'const a = first(["x"], y);',
 			'const bb = pick(["zz"], y);',
 		])).toEqual([
-			'const a  = first(["x"], y) ;',
-			'const bb = pick(["zz"], y) ;',
+			'const a  = first(["x"], y ) ;',
+			'const bb = pick (["zz"], y) ;',
 		]);
 	});
 

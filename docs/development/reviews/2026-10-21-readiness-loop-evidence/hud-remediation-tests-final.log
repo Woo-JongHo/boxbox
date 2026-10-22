@@ -1,0 +1,33 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/hud-installation.test.ts:
+(pass) Claude HUD opt-in preserves unrelated settings, repairs its own command and removes only its key [65.67ms]
+(pass) HUD setup refuses foreign settings, user changes, symlinks and unsupported platform without replacing them [4.34ms]
+(pass) Codex launcher keeps literal paths and argv, refuses foreign bins, and removes only its own launcher [489.67ms]
+(pass) installed hook launcher forwards exact input and protocol while recording a bounded project locator [164.87ms]
+
+test/product-hud.test.ts:
+(pass) collector uses only the explicitly installed engine and bounded doctor probe [6.96ms]
+(pass) missing manifests and malformed, oversized or symlinked runtime data fail closed [23.72ms]
+(pass) doctor errors and invalid payloads never become ready; a valid negative doctor is not-ready [5.52ms]
+(pass) session filtering never borrows a different session's PASS and project history is explicit [14.87ms]
+(pass) stale receipts are historical and invalid newer records cannot reveal a misleading PASS [10.10ms]
+(pass) receipt scanning rejects symlinks, invalid events and future dates while bounding long sessions [214.60ms]
+(pass) invalid project pointers cannot select another project or mismatching directory [22.50ms]
+(pass) receipt timestamps order checks and ambiguous ties never claim PASS [10.31ms]
+(pass) renderer strips terminal and directional controls and bounds every line [3.39ms]
+(pass) CLI supports real installed doctor, non-TTY watch once, and bounded Claude JSON input [363.25ms]
+
+test/codex-hud-launcher.test.ts:
+(pass) launcher accepts only its own options before the Codex separator [0.16ms]
+(pass) project selection follows Codex cd syntax and refuses roots that cannot be observed [2.28ms]
+(pass) unsupported hosts and nested sessions fail before creating any tmux server [1.27ms]
+(pass) launcher preserves argv and permissions, dedicates its server, and returns the main pane exit status [2.36ms]
+(pass) failed pane setup cleans only the owned server and its temporary state [1.81ms]
+(pass) attachment failure cleans the owned server and path semicolons cannot become tmux commands [2.34ms]
+(pass) real pane runner passes hostile-looking arguments literally and records executable failure [145.55ms]
+
+ 21 pass
+ 0 fail
+ 149 expect() calls
+Ran 21 tests across 3 files. [1.79s]

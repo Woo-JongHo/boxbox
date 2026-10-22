@@ -3,8 +3,8 @@ import      { existsSync, lstatSync, mkdirSync, readFileSync, writeFileSync } fr
 import      { homedir                                                       } from "node:os"     ;
 import      { dirname, isAbsolute, join, parse, relative, resolve, sep      } from "node:path"   ;
 
-export const PROJECT_CONFIG_SCHEMA_VERSION = 2                                 ;
-export const PUBLIC_LANGUAGES              = ["typescript", "python"] as const ;
+export const PROJECT_CONFIG_SCHEMA_VERSION = 2                                                 ;
+export const PUBLIC_LANGUAGES              = ["typescript", "python", "json", "yaml"] as const ;
 export const USER_DATABASE_FILES           = [
 	{ name : "conventions" , filename : "conventions.jsonl" },
 	{ name : "examples"    , filename : "examples.jsonl"    },
@@ -102,7 +102,7 @@ function languagesOf(value: unknown, where: string, required: boolean): readonly
 	if (!Array.isArray(value) || value.length === 0) throw new Error(`${where}: languages must be a non-empty array`);
 	const languages: PublicLanguage[] = [];
 	for (const language of value) {
-		if (language !== "typescript" && language !== "python") throw new Error(`${where}: unsupported language: ${String(language)}`);
+		if (!PUBLIC_LANGUAGES.includes(language as PublicLanguage)) throw new Error(`${where}: unsupported language: ${String(language)}`);
 		if (languages.includes(language)) throw new Error(`${where}: duplicate language: ${language}`);
 		languages.push(language);
 	}
@@ -202,8 +202,8 @@ function assertRealDirectory(path: string): void {
 
 /** Checks every existing component of an absolute path and creates safe directories one level at a time only when needed. */
 function prepareUserRoot(create: boolean): boolean {
-	const root   = userDataRoot() ;
-	const parsed = parse(root)    ;
+	const root   = userDataRoot()     ;
+	const parsed = parse       (root) ;
 	const components = relative(parsed.root, root)
 		.split(sep)
 		.filter(component => component !== "")          ;
@@ -236,7 +236,7 @@ function assertUserDatabaseFile(path: string): void {
 
 /** The user DB only creates empty JSONL files; it never reads or changes the bytes of existing files. */
 export function initializeUserDatabase(): UserDatabaseInitialization {
-	const root        = userDataRoot()        ;
+	const root        = userDataRoot   ()     ;
 	const createdRoot = prepareUserRoot(true) ;
 	const files       = USER_DATABASE_FILES.map(entry => {
 		const path     = join(root, entry.filename) ;
@@ -259,7 +259,7 @@ export function initializeUserDatabase(): UserDatabaseInitialization {
 
 /** Reports only the number of non-empty JSONL lines, never the record bodies. */
 export function userDatabaseStatus(): UserDatabaseStatus {
-	const root   = userDataRoot()         ;
+	const root   = userDataRoot   ()      ;
 	const exists = prepareUserRoot(false) ;
 	const files  = USER_DATABASE_FILES.map(entry => {
 		const path = join(root, entry.filename);
@@ -279,10 +279,10 @@ export function readProjectConfig(root: string): ProjectConfig | undefined {
 
 function merge(base: EffectiveConfig, layer: ProjectConfig): EffectiveConfig {
 	return {
-		schemaVersion : 2,
-		languages     : layer.languages ? [...layer.languages] : base.languages,
-		preset        : layer.preset ?? base.preset,
-		formatters    : layer.formatters ? { ...base.formatters, ...layer.formatters } : base.formatters,
+		schemaVersion : 2                                                                                ,
+		languages     : layer.languages ? [...layer.languages] : base.languages                          ,
+		preset        : layer.preset ?? base.preset                                                      ,
+		formatters    : layer.formatters ? { ...base.formatters, ...layer.formatters } : base.formatters ,
 	};
 }
 
@@ -296,11 +296,14 @@ export function resolveConfig(root: string, options: ResolveConfigOptions = {}):
 	const project                  = readConfigFile(projectPath, "project config")                                                     ;
 	let effective: EffectiveConfig = { schemaVersion: 2, languages: [...PUBLIC_LANGUAGES], preset: "recommended", formatters: {} }     ;
 	for (const layer of [BASE_CONFIG, presetConfig, user?.config, project?.config]) if (layer) effective = merge(effective, layer);
+	const embeddedSource = (layer: "base" | "preset", path: string, raw: string): ConfigSource => ({ layer, path, present: true, fingerprint: digest(raw) })                                                                                                             ;
+	const fileSource     = (layer: "user" | "project", path: string, file: ReturnType<typeof readConfigFile>): ConfigSource => ({ layer, path, present: file !== undefined, fingerprint: digest(file?.raw ?? ""), ...(file?.migrated ? { migrated: 1 as const } : {}) }) ;
+
 	const sources: ConfigSource[] = [
-		{ layer: "base", path: "embedded:base", present: true, fingerprint: digest(baseRaw) },
-		{ layer: "preset", path: "embedded:preset/recommended", present: true, fingerprint: digest(presetRaw) },
-		{ layer: "user", path: userPath, present: user !== undefined, fingerprint: digest(user?.raw ?? ""), ...(user?.migrated ? { migrated: 1 as const } : {}) },
-		{ layer: "project", path: projectPath, present: project !== undefined, fingerprint: digest(project?.raw ?? ""), ...(project?.migrated ? { migrated: 1 as const } : {}) },
+		embeddedSource("base"   , "embedded:base"              , baseRaw   ),
+		embeddedSource("preset" , "embedded:preset/recommended", presetRaw ),
+		fileSource    ("user"   , userPath                     , user      ),
+		fileSource    ("project", projectPath                  , project   ),
 	];
 	const fingerprint = digest(JSON.stringify({ sources: sources.map(source => [source.layer, source.present, source.fingerprint]), effective }));
 	return { effective, fingerprint, sources };
@@ -308,11 +311,11 @@ export function resolveConfig(root: string, options: ResolveConfigOptions = {}):
 
 /** Creates only a minimal schema 2 project config without touching existing config or user files. */
 export function initializeProjectConfig(root: string): { readonly created: boolean; readonly path: string } {
-	const absolute   = resolve(root)       ;
+	const absolute   = resolve  (root    ) ;
 	const rootStatus = lstatSync(absolute) ;
 	if (!rootStatus.isDirectory() || rootStatus.isSymbolicLink()) throw new Error(`${absolute}: project root must be a real directory, not a symlink`);
 	const path      = projectConfigPath(absolute) ;
-	const directory = dirname(path)               ;
+	const directory = dirname          (path    ) ;
 	if (!existsSync(directory)) mkdirSync(directory);
 	if (existsSync(path)) {
 		readProjectConfig(absolute);

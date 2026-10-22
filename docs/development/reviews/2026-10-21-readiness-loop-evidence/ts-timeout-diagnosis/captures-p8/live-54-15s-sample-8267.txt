@@ -1,0 +1,258 @@
+Analysis of sampling bun (pid 8267) every 1 millisecond
+Process:         bun [8267]
+Path:            /Users/USER/*/bun
+Load Address:    0x102ab4000
+Identifier:      bun
+Version:         ???
+Code Type:       ARM64
+Platform:        macOS
+Parent Process:  Python [2025]
+Target Type:     live task
+
+Date/Time:       2026-10-22 00:20:48.076 +0900
+Launch Time:     2026-10-22 00:20:32.766 +0900
+OS Version:      macOS 26.2 (25C56)
+Report Version:  7
+Analysis Tool:   /usr/bin/sample
+
+Physical footprint:         19.7M
+Physical footprint (peak):  20.7M
+Idle exit:                  untracked
+----
+
+Call graph:
+    798 Thread_14153517   DispatchQueue_1: com.apple.main-thread  (serial)
+    + 798 start  (in dyld) + 7184  [0x196f1dd54]
+    +   798 ???  (in bun)  load address 0x102ab4000 + 0x4a70  [0x102ab8a70]
+    +     798 ???  (in bun)  load address 0x102ab4000 + 0x62a8  [0x102aba2a8]
+    +       798 ???  (in bun)  load address 0x102ab4000 + 0xc120  [0x102ac0120]
+    +         798 ???  (in bun)  load address 0x102ab4000 + 0x3d3068  [0x102e87068]
+    +           798 ???  (in bun)  load address 0x102ab4000 + 0x3d7fd4  [0x102e8bfd4]
+    +             798 ???  (in bun)  load address 0x102ab4000 + 0x3d81e8  [0x102e8c1e8]
+    +               798 ???  (in bun)  load address 0x102ab4000 + 0x3d8480  [0x102e8c480]
+    +                 798 ???  (in bun)  load address 0x102ab4000 + 0x3d9668  [0x102e8d668]
+    +                   798 ???  (in bun)  load address 0x102ab4000 + 0x518648  [0x102fcc648]
+    +                     798 ???  (in bun)  load address 0x102ab4000 + 0x519eac  [0x102fcdeac]
+    +                       798 ???  (in bun)  load address 0x102ab4000 + 0x51a234  [0x102fce234]
+    +                         798 ???  (in bun)  load address 0x102ab4000 + 0x51a700  [0x102fce700]
+    +                           798 ???  (in bun)  load address 0x102ab4000 + 0x361224  [0x102e15224]
+    +                             798 ???  (in bun)  load address 0x102ab4000 + 0x36192c  [0x102e1592c]
+    +                               798 ???  (in bun)  load address 0x102ab4000 + 0x333d0b4  [0x105df10b4]
+    +                                 798 ???  (in bun)  load address 0x102ab4000 + 0x3360664  [0x105e14664]
+    +                                   797 ???  (in bun)  load address 0x102ab4000 + 0x3360664  [0x105e14664]
+    +                                   ! 796 ???  (in <unknown binary>)  [0x10b74df7c]
+    +                                   ! : 796 ???  (in bun)  load address 0x102ab4000 + 0x12176ac  [0x103ccb6ac]
+    +                                   ! :   796 ???  (in bun)  load address 0x102ab4000 + 0x15f1ed8  [0x1040a5ed8]
+    +                                   ! :     793 ???  (in bun)  load address 0x102ab4000 + 0x1304a6c  [0x103db8a6c]
+    +                                   ! :     | 793 ???  (in bun)  load address 0x102ab4000 + 0x1b1f450  [0x1045d3450]
+    +                                   ! :     |   793 ???  (in bun)  load address 0x102ab4000 + 0x3410cc  [0x102df50cc]
+    +                                   ! :     |     793 ???  (in bun)  load address 0x102ab4000 + 0x341df4  [0x102df5df4]
+    +                                   ! :     |       793 kevent64  (in libsystem_kernel.dylib) + 8  [0x1972aeb84]
+    +                                   ! :     3 ???  (in bun)  load address 0x102ab4000 + 0x1303b70  [0x103db7b70]
+    +                                   ! :       3 ???  (in bun)  load address 0x102ab4000 + 0x1efb378  [0x1049af378]
+    +                                   ! :         3 posix_spawn  (in libsystem_kernel.dylib) + 496  [0x1972aa010]
+    +                                   ! :           3 __posix_spawn  (in libsystem_kernel.dylib) + 8  [0x1972aa06c]
+    +                                   ! 1 ???  (in <unknown binary>)  [0x10b77f214]
+    +                                   !   1 ???  (in <unknown binary>)  [0x10b74f294]
+    +                                   !     1 ???  (in bun)  load address 0x102ab4000 + 0x6a88f4  [0x10315c8f4]
+    +                                   !       1 ???  (in bun)  load address 0x102ab4000 + 0x6aaca0  [0x10315eca0]
+    +                                   !         1 ???  (in bun)  load address 0x102ab4000 + 0x37fecc  [0x102e33ecc]
+    +                                   !           1 ???  (in bun)  load address 0x102ab4000 + 0x38039c  [0x102e3439c]
+    +                                   !             1 ???  (in bun)  load address 0x102ab4000 + 0x38039c  [0x102e3439c]
+    +                                   !               1 ???  (in bun)  load address 0x102ab4000 + 0x30125c  [0x102db525c]
+    +                                   1 ???  (in <unknown binary>)  [0x10b74df7c]
+    +                                     1 ???  (in bun)  load address 0x102ab4000 + 0xd7009c  [0x10382409c]
+    +                                       1 ???  (in bun)  load address 0x102ab4000 + 0x1310940  [0x103dc4940]
+    +                                         1 ???  (in bun)  load address 0x102ab4000 + 0x1454380  [0x103f08380]
+    +                                           1 ???  (in bun)  load address 0x102ab4000 + 0x165182c  [0x10410582c]
+    +                                             1 ???  (in bun)  load address 0x102ab4000 + 0x16502f0  [0x1041042f0]
+    +                                               1 unlinkat  (in libsystem_kernel.dylib) + 16  [0x1972acaa4]
+    +                                                 1 __unlinkat  (in libsystem_kernel.dylib) + 8  [0x1972acac8]
+    798 Thread_14153523: mi-scavenger
+    + 798 thread_start  (in libsystem_pthread.dylib) + 8  [0x1972e0ba8]
+    +   798 _pthread_start  (in libsystem_pthread.dylib) + 136  [0x1972e5c08]
+    +     797 ???  (in bun)  load address 0x102ab4000 + 0x49d4  [0x102ab89d4]
+    +     ! 797 __ulock_wait  (in libsystem_kernel.dylib) + 8  [0x1972a4ae4]
+    +     1 ???  (in bun)  load address 0x102ab4000 + 0x48d0  [0x102ab88d0]
+    +       1 ???  (in bun)  load address 0x102ab4000 + 0x34518c  [0x102df918c]
+    +         1 ???  (in bun)  load address 0x102ab4000 + 0x345f24  [0x102df9f24]
+    +           1 ???  (in bun)  load address 0x102ab4000 + 0x206854  [0x102cba854]
+    798 Thread_14153524: HTTP Client
+    + 798 thread_start  (in libsystem_pthread.dylib) + 8  [0x1972e0ba8]
+    +   798 _pthread_start  (in libsystem_pthread.dylib) + 136  [0x1972e5c08]
+    +     798 ???  (in bun)  load address 0x102ab4000 + 0x33dbac  [0x102df1bac]
+    +       798 ???  (in bun)  load address 0x102ab4000 + 0x33e42c  [0x102df242c]
+    +         798 ???  (in bun)  load address 0x102ab4000 + 0x34195c  [0x102df595c]
+    +           798 ???  (in bun)  load address 0x102ab4000 + 0x3410cc  [0x102df50cc]
+    +             798 ???  (in bun)  load address 0x102ab4000 + 0x341ef0  [0x102df5ef0]
+    +               798 kevent64  (in libsystem_kernel.dylib) + 8  [0x1972aeb84]
+    798 Thread_14153679: Bun Pool 0
+    + 798 thread_start  (in libsystem_pthread.dylib) + 8  [0x1972e0ba8]
+    +   798 _pthread_start  (in libsystem_pthread.dylib) + 136  [0x1972e5c08]
+    +     798 ???  (in bun)  load address 0x102ab4000 + 0x33dbac  [0x102df1bac]
+    +       798 ???  (in bun)  load address 0x102ab4000 + 0x3e1ca4  [0x102e95ca4]
+    +         798 ???  (in bun)  load address 0x102ab4000 + 0x3e20e4  [0x102e960e4]
+    +           798 ???  (in bun)  load address 0x102ab4000 + 0x3e2c6c  [0x102e96c6c]
+    +             717 ???  (in bun)  load address 0x102ab4000 + 0x3e4b24  [0x102e98b24]
+    +             ! 717 ???  (in bun)  load address 0x102ab4000 + 0x3e4bd8  [0x102e98bd8]
+    +             !   717 __ulock_wait2  (in libsystem_kernel.dylib) + 8  [0x1972b0c74]
+    +             81 ???  (in bun)  load address 0x102ab4000 + 0x3e4b54  [0x102e98b54]
+    +               81 ???  (in bun)  load address 0x102ab4000 + 0x3e4bd8  [0x102e98bd8]
+    +                 81 __ulock_wait2  (in libsystem_kernel.dylib) + 8  [0x1972b0c74]
+    798 Thread_14153680: Bun Pool 1
+    + 798 thread_start  (in libsystem_pthread.dylib) + 8  [0x1972e0ba8]
+    +   798 _pthread_start  (in libsystem_pthread.dylib) + 136  [0x1972e5c08]
+    +     798 ???  (in bun)  load address 0x102ab4000 + 0x33dbac  [0x102df1bac]
+    +       798 ???  (in bun)  load address 0x102ab4000 + 0x3e1ca4  [0x102e95ca4]
+    +         798 ???  (in bun)  load address 0x102ab4000 + 0x3e20e4  [0x102e960e4]
+    +           798 ???  (in bun)  load address 0x102ab4000 + 0x3e2c6c  [0x102e96c6c]
+    +             677 ???  (in bun)  load address 0x102ab4000 + 0x3e4b24  [0x102e98b24]
+    +             ! 677 ???  (in bun)  load address 0x102ab4000 + 0x3e4bd8  [0x102e98bd8]
+    +             !   677 __ulock_wait2  (in libsystem_kernel.dylib) + 8  [0x1972b0c74]
+    +             121 ???  (in bun)  load address 0x102ab4000 + 0x3e4b54  [0x102e98b54]
+    +               121 ???  (in bun)  load address 0x102ab4000 + 0x3e4bd8  [0x102e98bd8]
+    +                 121 __ulock_wait2  (in libsystem_kernel.dylib) + 8  [0x1972b0c74]
+    798 Thread_14153681: Bun Pool 2
+    + 798 thread_start  (in libsystem_pthread.dylib) + 8  [0x1972e0ba8]
+    +   798 _pthread_start  (in libsystem_pthread.dylib) + 136  [0x1972e5c08]
+    +     798 ???  (in bun)  load address 0x102ab4000 + 0x33dbac  [0x102df1bac]
+    +       798 ???  (in bun)  load address 0x102ab4000 + 0x3e1ca4  [0x102e95ca4]
+    +         798 ???  (in bun)  load address 0x102ab4000 + 0x3e20e4  [0x102e960e4]
+    +           798 ???  (in bun)  load address 0x102ab4000 + 0x3e2c6c  [0x102e96c6c]
+    +             798 ???  (in bun)  load address 0x102ab4000 + 0x3e4b24  [0x102e98b24]
+    +               798 ???  (in bun)  load address 0x102ab4000 + 0x3e4bd8  [0x102e98bd8]
+    +                 798 __ulock_wait2  (in libsystem_kernel.dylib) + 8  [0x1972b0c74]
+    798 Thread_14153682: JIT Worklist Helper Thread
+    + 798 thread_start  (in libsystem_pthread.dylib) + 8  [0x1972e0ba8]
+    +   798 _pthread_start  (in libsystem_pthread.dylib) + 136  [0x1972e5c08]
+    +     798 ???  (in bun)  load address 0x102ab4000 + 0x2fe124  [0x102db2124]
+    +       798 ???  (in bun)  load address 0x102ab4000 + 0x2fe1f8  [0x102db21f8]
+    +         797 ???  (in bun)  load address 0x102ab4000 + 0x2fe5cc  [0x102db25cc]
+    +         ! 797 ???  (in bun)  load address 0x102ab4000 + 0x3002d4  [0x102db42d4]
+    +         !   797 ???  (in bun)  load address 0x102ab4000 + 0x305530  [0x102db9530]
+    +         !     797 _pthread_cond_wait  (in libsystem_pthread.dylib) + 984  [0x1972e60dc]
+    +         !       797 __psynch_cvwait  (in libsystem_kernel.dylib) + 8  [0x1972a64f8]
+    +         1 ???  (in bun)  load address 0x102ab4000 + 0x2fe694  [0x102db2694]
+    +           1 ???  (in bun)  load address 0x102ab4000 + 0x381508  [0x102e35508]
+    +             1 ???  (in bun)  load address 0x102ab4000 + 0x381ba8  [0x102e35ba8]
+    +               1 ???  (in bun)  load address 0x102ab4000 + 0x6ab810  [0x10315f810]
+    +                 1 ???  (in bun)  load address 0x102ab4000 + 0x6b09bc  [0x1031649bc]
+    +                   1 ???  (in bun)  load address 0x102ab4000 + 0x6b66f8  [0x10316a6f8]
+    +                     1 ???  (in bun)  load address 0x102ab4000 + 0x6c6494  [0x10317a494]
+    +                       1 ???  (in bun)  load address 0x102ab4000 + 0x210958c  [0x104bbd58c]
+    +                         1 ???  (in bun)  load address 0x102ab4000 + 0x20952dc  [0x104b492dc]
+    798 Thread_14153688: Bun Pool 3
+    + 798 thread_start  (in libsystem_pthread.dylib) + 8  [0x1972e0ba8]
+    +   798 _pthread_start  (in libsystem_pthread.dylib) + 136  [0x1972e5c08]
+    +     798 ???  (in bun)  load address 0x102ab4000 + 0x33dbac  [0x102df1bac]
+    +       798 ???  (in bun)  load address 0x102ab4000 + 0x3e1ca4  [0x102e95ca4]
+    +         798 ???  (in bun)  load address 0x102ab4000 + 0x3e20e4  [0x102e960e4]
+    +           798 ???  (in bun)  load address 0x102ab4000 + 0x3e2c6c  [0x102e96c6c]
+    +             717 ???  (in bun)  load address 0x102ab4000 + 0x3e4b24  [0x102e98b24]
+    +             ! 717 ???  (in bun)  load address 0x102ab4000 + 0x3e4bd8  [0x102e98bd8]
+    +             !   717 __ulock_wait2  (in libsystem_kernel.dylib) + 8  [0x1972b0c74]
+    +             81 ???  (in bun)  load address 0x102ab4000 + 0x3e4b54  [0x102e98b54]
+    +               81 ???  (in bun)  load address 0x102ab4000 + 0x3e4bd8  [0x102e98bd8]
+    +                 81 __ulock_wait2  (in libsystem_kernel.dylib) + 8  [0x1972b0c74]
+    798 Thread_14153689: Bun Pool 4
+    + 798 thread_start  (in libsystem_pthread.dylib) + 8  [0x1972e0ba8]
+    +   798 _pthread_start  (in libsystem_pthread.dylib) + 136  [0x1972e5c08]
+    +     798 ???  (in bun)  load address 0x102ab4000 + 0x33dbac  [0x102df1bac]
+    +       798 ???  (in bun)  load address 0x102ab4000 + 0x3e1ca4  [0x102e95ca4]
+    +         798 ???  (in bun)  load address 0x102ab4000 + 0x3e20e4  [0x102e960e4]
+    +           798 ???  (in bun)  load address 0x102ab4000 + 0x3e2c6c  [0x102e96c6c]
+    +             752 ???  (in bun)  load address 0x102ab4000 + 0x3e4b24  [0x102e98b24]
+    +             ! 752 ???  (in bun)  load address 0x102ab4000 + 0x3e4bd8  [0x102e98bd8]
+    +             !   752 __ulock_wait2  (in libsystem_kernel.dylib) + 8  [0x1972b0c74]
+    +             46 ???  (in bun)  load address 0x102ab4000 + 0x3e4b54  [0x102e98b54]
+    +               46 ???  (in bun)  load address 0x102ab4000 + 0x3e4bd8  [0x102e98bd8]
+    +                 46 __ulock_wait2  (in libsystem_kernel.dylib) + 8  [0x1972b0c74]
+    798 Thread_14154706: JIT Worklist Helper Thread
+    + 798 thread_start  (in libsystem_pthread.dylib) + 8  [0x1972e0ba8]
+    +   798 _pthread_start  (in libsystem_pthread.dylib) + 136  [0x1972e5c08]
+    +     798 ???  (in bun)  load address 0x102ab4000 + 0x2fe124  [0x102db2124]
+    +       798 ???  (in bun)  load address 0x102ab4000 + 0x2fe1f8  [0x102db21f8]
+    +         798 ???  (in bun)  load address 0x102ab4000 + 0x2fe5cc  [0x102db25cc]
+    +           798 ???  (in bun)  load address 0x102ab4000 + 0x3002d4  [0x102db42d4]
+    +             798 ???  (in bun)  load address 0x102ab4000 + 0x305530  [0x102db9530]
+    +               798 _pthread_cond_wait  (in libsystem_pthread.dylib) + 984  [0x1972e60dc]
+    +                 798 __psynch_cvwait  (in libsystem_kernel.dylib) + 8  [0x1972a64f8]
+    195 Thread_14157990: JIT Worklist Helper Thread
+      195 thread_start  (in libsystem_pthread.dylib) + 8  [0x1972e0ba8]
+        195 _pthread_start  (in libsystem_pthread.dylib) + 136  [0x1972e5c08]
+          195 ???  (in bun)  load address 0x102ab4000 + 0x2fe124  [0x102db2124]
+            195 ???  (in bun)  load address 0x102ab4000 + 0x2fe1f8  [0x102db21f8]
+              195 ???  (in bun)  load address 0x102ab4000 + 0x2fe5cc  [0x102db25cc]
+                194 ???  (in bun)  load address 0x102ab4000 + 0x3002d4  [0x102db42d4]
+                ! 194 ???  (in bun)  load address 0x102ab4000 + 0x305530  [0x102db9530]
+                !   194 _pthread_cond_wait  (in libsystem_pthread.dylib) + 984  [0x1972e60dc]
+                !     194 __psynch_cvwait  (in libsystem_kernel.dylib) + 8  [0x1972a64f8]
+                1 ???  (in bun)  load address 0x102ab4000 + 0x300348  [0x102db4348]
+                  1 ???  (in bun)  load address 0x102ab4000 + 0x3005b8  [0x102db45b8]
+
+Total number in stack (recursive counted multiple, when >=5):
+        10       _pthread_start  (in libsystem_pthread.dylib) + 136  [0x1972e5c08]
+        10       thread_start  (in libsystem_pthread.dylib) + 8  [0x1972e0ba8]
+        9       ???  (in bun)  load address 0x102ab4000 + 0x3e4bd8  [0x102e98bd8]
+        9       __ulock_wait2  (in libsystem_kernel.dylib) + 0  [0x1972b0c6c]
+        6       ???  (in bun)  load address 0x102ab4000 + 0x33dbac  [0x102df1bac]
+        5       ???  (in bun)  load address 0x102ab4000 + 0x3e1ca4  [0x102e95ca4]
+        5       ???  (in bun)  load address 0x102ab4000 + 0x3e20e4  [0x102e960e4]
+        5       ???  (in bun)  load address 0x102ab4000 + 0x3e2c6c  [0x102e96c6c]
+        5       ???  (in bun)  load address 0x102ab4000 + 0x3e4b24  [0x102e98b24]
+
+Sort by top of stack, same collapsed (when >= 5):
+        __ulock_wait2  (in libsystem_kernel.dylib)        3990
+        __psynch_cvwait  (in libsystem_kernel.dylib)        1789
+        kevent64  (in libsystem_kernel.dylib)        1591
+        __ulock_wait  (in libsystem_kernel.dylib)        797
+
+Binary Images:
+       0x102ab4000 -        0x1065b7f57 +bun (???) <4C4C440C-5555-3144-A11D-99D1CCBEAE57> /Users/*/bun
+       0x196e90000 -        0x196ee348b  libobjc.A.dylib (951.1) <1E0A4B36-0701-3482-AA51-000F0ECC7506> /usr/lib/libobjc.A.dylib
+       0x196ee4000 -        0x196f14bcb  libdyld.dylib (1335) <3A7FDAA5-69EC-3846-AA49-DE7BDEE00285> /usr/lib/system/libdyld.dylib
+       0x196f15000 -        0x196fb3fc3  dyld (1.0.0 - 1335) <0975AFBA-C46B-364C-BD84-A75DAA9E455A> /usr/lib/dyld
+       0x196fb4000 -        0x196fb71d0  libsystem_blocks.dylib (96) <B64F976B-5966-3643-9B57-0EB17D149482> /usr/lib/system/libsystem_blocks.dylib
+       0x196fb8000 -        0x19700cf7f  libxpc.dylib (3089.60.7) <4DB07AE5-6544-3D18-B44B-DCACA4D02FB8> /usr/lib/system/libxpc.dylib
+       0x19700d000 -        0x19702d8df  libsystem_trace.dylib (1815.61.1) <16F2ABF3-27FC-3B12-AE3C-F039C083AE7B> /usr/lib/system/libsystem_trace.dylib
+       0x19702e000 -        0x1970da96f  libcorecrypto.dylib (1922.60.11) <A925150E-A21F-3273-A38D-EB304C5D2D18> /usr/lib/system/libcorecrypto.dylib
+       0x1970db000 -        0x197126bff  libsystem_malloc.dylib (792.60.6) <F68E01CC-EC92-3F25-BAC8-956A3DE42627> /usr/lib/system/libsystem_malloc.dylib
+       0x197127000 -        0x19716de5f  libdispatch.dylib (1542.0.4) <A4B349E8-DD6F-3B71-84D9-34F3B4ACD849> /usr/lib/system/libdispatch.dylib
+       0x19716e000 -        0x197170feb  libsystem_featureflags.dylib (101) <6AD11065-D06A-3212-97FC-4EEC4AC48F51> /usr/lib/system/libsystem_featureflags.dylib
+       0x197171000 -        0x1971f3047  libsystem_c.dylib (1725.40.4) <FB5569A9-CB26-36C2-AA05-E99243692B60> /usr/lib/system/libsystem_c.dylib
+       0x1971f4000 -        0x197286ea3  libc++.1.dylib (2000.67) <BEBE1F75-49D4-32E9-9978-FF8D0E799801> /usr/lib/libc++.1.dylib
+       0x197287000 -        0x1972a192f  libc++abi.dylib (2000.67) <51C9FB66-83AA-3C40-A806-99BC96BAFD7F> /usr/lib/libc++abi.dylib
+       0x1972a2000 -        0x1972de49f  libsystem_kernel.dylib (12377.61.12) <548C45C8-9733-3F0D-8EF4-C06DF1DF2AD0> /usr/lib/system/libsystem_kernel.dylib
+       0x1972df000 -        0x1972ebabb  libsystem_pthread.dylib (539) <527C4BA0-91A5-378B-B3E2-D38269CA5A66> /usr/lib/system/libsystem_pthread.dylib
+       0x1972ec000 -        0x1972f43ef  libsystem_platform.dylib (359.60.3) <4DBAF982-1576-3FFC-86BE-03A9D2C96BE5> /usr/lib/system/libsystem_platform.dylib
+       0x1972f5000 -        0x197324e23  libsystem_info.dylib (600) <363CFE03-0003-3DA6-BE41-820B917B7955> /usr/lib/system/libsystem_info.dylib
+       0x19afc6000 -        0x19b29756b  libicucore.A.dylib (76142.3.1) <04507439-76E2-350F-939C-A8E08BC4A101> /usr/lib/libicucore.A.dylib
+       0x19b298000 -        0x19b2a2397  libsystem_darwin.dylib (1725.40.4) <C25292BB-AA30-37D2-8001-E7276ADBAF1E> /usr/lib/system/libsystem_darwin.dylib
+       0x19b709000 -        0x19b71aff3  libsystem_notify.dylib (344.0.1) <DF1ED23D-F338-306D-BD06-A7F9B4534B23> /usr/lib/system/libsystem_notify.dylib
+       0x19d9e8000 -        0x19da02fdb  libsystem_networkextension.dylib (2205.60.9.0.1) <C2085EB4-0A94-3D87-94ED-D5555D3FA837> /usr/lib/system/libsystem_networkextension.dylib
+       0x19da86000 -        0x19da9dff3  libsystem_asl.dylib (406) <867E699E-8CC6-3792-AC6E-35C5769FADBA> /usr/lib/system/libsystem_asl.dylib
+       0x19f633000 -        0x19f63b3b7  libsystem_symptoms.dylib (2158.60.3) <8D869291-11B3-3D2A-BFDF-F1C1688E19F1> /usr/lib/system/libsystem_symptoms.dylib
+       0x1a35b5000 -        0x1a35ed2b7  libsystem_containermanager.dylib (725.60.4) <FA1FC4AB-E5A0-391C-8951-41EFEE847E0D> /usr/lib/system/libsystem_containermanager.dylib
+       0x1a4a03000 -        0x1a4a0766f  libsystem_configuration.dylib (1385.60.3) <11F5CF47-6E93-3FF7-8E5E-E98F69742465> /usr/lib/system/libsystem_configuration.dylib
+       0x1a4a08000 -        0x1a4a0e6a7  libsystem_sandbox.dylib (2680.60.11) <FD4A58D2-D1AB-3936-86EE-CCB6852E0761> /usr/lib/system/libsystem_sandbox.dylib
+       0x1a5f82000 -        0x1a5f851fb  libquarantine.dylib (196.40.3) <18BE2FA3-66CE-3EBF-9E13-8478DF73E146> /usr/lib/system/libquarantine.dylib
+       0x1a6705000 -        0x1a670bf4f  libsystem_coreservices.dylib (191.2.4) <0646DDBF-346D-3273-9C9B-968121293B8A> /usr/lib/system/libsystem_coreservices.dylib
+       0x1a6c58000 -        0x1a6c958b7  libsystem_m.dylib (3309) <42E15F5C-02B8-3B56-9889-5B59CADD45EB> /usr/lib/system/libsystem_m.dylib
+       0x1a6c97000 -        0x1a6c9a537  libmacho.dylib (1030.6.3) <D1DA6556-F3D8-3A33-96FF-0B8876A1F0B6> /usr/lib/system/libmacho.dylib
+       0x1a6cb4000 -        0x1a6cc161f  libcommonCrypto.dylib (600035) <87FEBA92-8FE5-32C3-8317-F6F86489CCFB> /usr/lib/system/libcommonCrypto.dylib
+       0x1a6cc2000 -        0x1a6ccbb0b  libunwind.dylib (1900.125) <33789B37-0F3B-389C-BF0A-80FB03A2FB31> /usr/lib/system/libunwind.dylib
+       0x1a6cd4000 -        0x1a6cde6ff  libcopyfile.dylib (230.0.1.0.1) <317DAF5E-A6BB-3DFF-BCA1-8053DE7A8A2C> /usr/lib/system/libcopyfile.dylib
+       0x1a6cdf000 -        0x1a6ce295f  libcompiler_rt.dylib (103.3) <E54BAD88-9E9A-3A4D-8E4A-6146B120C1EC> /usr/lib/system/libcompiler_rt.dylib
+       0x1a6ce3000 -        0x1a6ce7a1b  libsystem_collections.dylib (1725.40.4) <90FA7AF0-2D12-3FC1-A87A-C4EDE396FDC5> /usr/lib/system/libsystem_collections.dylib
+       0x1a6ce8000 -        0x1a6ceb4bf  libsystem_secinit.dylib (168.40.2) <755B9674-5B57-39CE-B247-4183C3ED6613> /usr/lib/system/libsystem_secinit.dylib
+       0x1a6cec000 -        0x1a6ceeb57  libremovefile.dylib (84) <2F92CF32-4C5F-3D57-AEBC-9655B810A23C> /usr/lib/system/libremovefile.dylib
+       0x1a6cef000 -        0x1a6ceff27  libkeymgr.dylib (31) <FBDDA038-D728-3E69-815A-333D6B00BBDF> /usr/lib/system/libkeymgr.dylib
+       0x1a6cf0000 -        0x1a6cf8f87  libsystem_dnssd.dylib (2881.60.4) <5DF6DD6A-358E-3170-97D7-EB2107F4DB89> /usr/lib/system/libsystem_dnssd.dylib
+       0x1a6cf9000 -        0x1a6cfe0b3  libcache.dylib (95) <C8B9304A-229B-3775-B353-2333D154987B> /usr/lib/system/libcache.dylib
+       0x1a6cff000 -        0x1a6d00cf3  libSystem.B.dylib (1356) <EF46521E-50DB-3B5D-A1F5-5294C83D9B25> /usr/lib/libSystem.B.dylib
+       0x1aaefb000 -        0x1aaf170a3  libresolv.9.dylib (93) <710986F6-7F55-3269-87FC-79D91BE8A213> /usr/lib/libresolv.9.dylib
+       0x2917ac000 -        0x2917b3319  libRosetta.dylib (365.3) <4B2D840F-AD4B-3A47-9749-3CB480DF3717> /usr/lib/libRosetta.dylib
+       0x292eb9000 -        0x292ebcdeb  libsystem_darwindirectory.dylib (122) <B6309151-0733-31ED-8150-92CE2BB7FEA5> /usr/lib/system/libsystem_darwindirectory.dylib
+       0x292ebd000 -        0x292ec6117  libsystem_eligibility.dylib (286.60.23) <65295E08-697D-334C-8A97-B6FE0D9797A0> /usr/lib/system/libsystem_eligibility.dylib
+       0x292ec7000 -        0x292ece873  libsystem_sanitizers.dylib (25) <D81DCFCF-61F5-3C56-ACA1-42C900E5364D> /usr/lib/system/libsystem_sanitizers.dylib
+       0x292ecf000 -        0x292ecfbb7  libsystem_trial.dylib (474.2.0.5) <820D601F-6489-32A9-9405-ECD7378C3570> /usr/lib/system/libsystem_trial.dylib

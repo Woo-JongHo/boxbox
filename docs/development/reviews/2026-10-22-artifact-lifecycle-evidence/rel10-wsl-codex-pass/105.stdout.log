@@ -1,0 +1,23 @@
+{
+  "installed": [
+    {
+      "pluginId": "boxbox@boxbox-plugins",
+      "name": "boxbox",
+      "marketplaceName": "boxbox-plugins",
+      "version": "0.2.3",
+      "installed": true,
+      "enabled": true,
+      "source": {
+        "source": "local",
+        "path": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.3/plugin"
+      },
+      "marketplaceSource": {
+        "sourceType": "local",
+        "source": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.3"
+      },
+      "installPolicy": "AVAILABLE",
+      "authPolicy": "ON_INSTALL"
+    }
+  ],
+  "available": []
+}

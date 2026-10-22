@@ -1,0 +1,21 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/typescript-matrix-boundaries.test.ts:
+(pass) matrix syntax boundaries > shares the receiver-method dot as well as outer call parentheses [1123.88ms]
+(pass) matrix syntax boundaries > matches the final method separator while preserving nested receivers and argument dots [987.41ms]
+(pass) matrix syntax boundaries > keeps member-boundary comments outside the call-envelope contract [1060.96ms]
+(pass) matrix syntax boundaries > shares return columns across declarations and blank lines without moving statements [894.22ms]
+(pass) matrix syntax boundaries > comments, unsupported guards, terminal statements and nested declarations break guard regions [677.30ms]
+(pass) matrix syntax boundaries > subjectCall-shaped guards share return columns across while, statements and multiline declarations [1346.68ms]
+(pass) matrix syntax boundaries > callLayer-shaped guards bridge a for block whose own guards have independent return columns [1573.15ms]
+(pass) matrix syntax boundaries > does not pad commented condition boundaries or span nested guard scopes [1324.83ms]
+(pass) matrix syntax boundaries > aligns different callable envelopes and preserves the trailing non-null assertion [1286.44ms]
+(pass) matrix syntax boundaries > keeps heterogeneous arguments opaque, including different arities, literals and nested calls [1287.06ms]
+(pass) matrix syntax boundaries > zero argument calls retain compact parentheses while sharing the opening column [1495.73ms]
+(pass) matrix syntax boundaries > keeps await/new/optional/type-argument/computed calls outside the new envelope contract [1468.18ms]
+(pass) matrix syntax boundaries > preserves the approved same-call key and output while new envelopes have distinct keys [2989.18ms]
+
+ 13 pass
+ 0 fail
+ 112 expect() calls
+Ran 13 tests across 1 file. [17.80s]

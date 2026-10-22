@@ -89,12 +89,12 @@ is uploaded as a separate smoke artifact.
 
 This matrix measures the installed engine journey on Linux, macOS, and native Windows. It does not claim that the full
 development test suite runs on Windows. `--engine-only` skips host registration and actual Codex/Claude hook events;
-host discovery, native hook-event delivery, UI/HUD acceptance, and earlier-version marketplace-source migration require
+host discovery, native hook-event delivery, UI acceptance, and earlier-version marketplace-source migration require
 separate real-host evidence. A green candidate is not a public release readiness decision.
 
 ## GitHub installation and later publication
 
-The local `origin` points to the self-hosted repository; the separate `github` remote points to the private repository with `main` as default branch. [PR #2](https://github.com/Woo-JongHo/rowgrid/pull/2) is merged. Its first hosted run exposed the Rust parse probe and an absent optional Python corpus directory; version 0.2.2 fixes both. [Final PR verification](https://github.com/Woo-JongHo/rowgrid/actions/runs/39543306308) passed all 496 tests with zero skips on Ubuntu and macOS. Issue forms and manual workflow dispatch are available on the default branch. The integration PR preserves GitHub main ancestry, its MIT LICENSE, and contribution/rule-proposal intake while migrating active code into the current layout. Adding these files does not itself publish a release.
+The local `origin` points to the self-hosted repository; the separate `github` remote points to the private repository with `main` as default branch. [PR #2](https://github.com/Woo-JongHo/boxbox/pull/2) is merged. Its first hosted run exposed the Rust parse probe and an absent optional Python corpus directory; version 0.2.2 fixes both. [Final PR verification](https://github.com/Woo-JongHo/boxbox/actions/runs/39543306308) passed all 496 tests with zero skips on Ubuntu and macOS. Issue forms and manual workflow dispatch are available on the default branch. The integration PR preserves GitHub main ancestry, its MIT LICENSE, and contribution/rule-proposal intake while migrating active code into the current layout. Adding these files does not itself publish a release.
 
 The first real PR run exposes `plugin-contract (ubuntu-latest)` and `plugin-contract (macos-latest)` as its check names. Configure those exact checks as required in the repository's
 branch protection/ruleset, require the intended review policy, and disable direct pushes if desired. Check the exact

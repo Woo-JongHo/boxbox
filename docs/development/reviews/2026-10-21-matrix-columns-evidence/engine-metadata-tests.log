@@ -1,0 +1,56 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/result-json.test.ts:
+(pass) shared result JSON > TypeScript aligner emits a valid envelope [116.46ms]
+(pass) shared result JSON > python aligner emits a valid envelope [19.23ms]
+(pass) shared result JSON > java aligner emits a valid envelope [18.78ms]
+(pass) shared result JSON > go aligner emits a valid envelope [19.69ms]
+(pass) shared result JSON > rust aligner emits a valid envelope [19.12ms]
+(pass) shared result JSON > javascript aligner emits a valid envelope [18.32ms]
+(pass) shared result JSON > c aligner emits a valid envelope [18.80ms]
+(pass) shared result JSON > cpp aligner emits a valid envelope [19.01ms]
+(pass) shared result JSON > write mode reports the re-parse result [75.56ms]
+
+test/typescript-matrix-boundaries.test.ts:
+(pass) matrix syntax boundaries > shares the receiver-method dot as well as outer call parentheses [290.93ms]
+(pass) matrix syntax boundaries > matches the final method separator while preserving nested receivers and argument dots [284.26ms]
+(pass) matrix syntax boundaries > keeps member-boundary comments outside the call-envelope contract [284.76ms]
+(pass) matrix syntax boundaries > shares return columns across declarations and blank lines without moving statements [289.58ms]
+(pass) matrix syntax boundaries > comments, unsupported guards, terminal statements and nested declarations break guard regions [152.95ms]
+(pass) matrix syntax boundaries > subjectCall-shaped guards share return columns across while, statements and multiline declarations [286.63ms]
+(pass) matrix syntax boundaries > callLayer-shaped guards bridge a for block whose own guards have independent return columns [297.98ms]
+(pass) matrix syntax boundaries > does not pad commented condition boundaries or span nested guard scopes [281.73ms]
+(pass) matrix syntax boundaries > aligns different callable envelopes and preserves the trailing non-null assertion [285.60ms]
+(pass) matrix syntax boundaries > keeps heterogeneous arguments opaque, including different arities, literals and nested calls [286.60ms]
+(pass) matrix syntax boundaries > zero argument calls retain compact parentheses while sharing the opening column [288.59ms]
+(pass) matrix syntax boundaries > keeps await/new/optional/type-argument/computed calls outside the new envelope contract [303.14ms]
+(pass) matrix syntax boundaries > preserves the approved same-call key and output while new envelopes have distinct keys [578.21ms]
+
+test/report.test.ts:
+(pass) check report — safety checks > the same input yields the same report [0.89ms]
+(pass) check report — safety checks > changed re-parse diagnostics fail S2 and the result fails [0.09ms]
+(pass) check report — safety checks > rechecking after a write fails S3 when edits remain and passes otherwise [0.04ms]
+(pass) check report — safety checks > two-row auto-fix is allowed only for approved kinds (S4) [0.06ms]
+(pass) check report — safety checks > call envelope pairs meet the row floor while return guard pairs do not [0.05ms]
+(pass) check report — alarms > A1: once per line outside a table, once per group inside [0.13ms]
+(pass) check report — alarms > A2: between the soft and hard limits is an allowed-range alarm [0.04ms]
+(pass) check report — alarms > A3: points at the longest row when it is much wider than the second [0.03ms]
+(pass) check report — alarms > A4 cannot decompose, A6 two-row pair and A9 large change come from group state [0.32ms]
+(pass) check report — alarms > A5 ambiguous and A8 no mapping come from the surface-form data [0.30ms]
+(pass) check report — alarms > A7: when alignment spaces far exceed the content [0.05ms]
+(pass) check report — alarms > a clean table without alarms [0.03ms]
+(pass) check report — exact noncontiguous row membership > intervening long padded preparation lines stay outside guard width and padding calculations [0.15ms]
+(pass) check report — exact noncontiguous row membership > nested groups own their rows even when an outer guard region spans the whole nested block [0.10ms]
+(pass) check report — exact noncontiguous row membership > CLI emits exact outer and inner guard lines while ordinary groups keep the legacy schema [78.02ms]
+(pass) check report — output > the description column of the safety-check lines lines up in one column by display width [0.28ms]
+(pass) check report — output > CLI: checking the Python fixture in check mode passes the safety checks with exit code 0 [35.84ms]
+(pass) check report — baseline comparison > the same file gives all existing alarms and 0 new alarms [0.14ms]
+(pass) check report — baseline comparison > pairs the same alarm even when lines shift or only whitespace changes [0.05ms]
+(pass) check report — baseline comparison > one resolved and one introduced gives 1 new and 1 resolved alarm (closes the total-count loophole) [0.04ms]
+(pass) check report — baseline comparison > several identical alarms are paired only as many times as they exist [0.04ms]
+(pass) check report — baseline comparison > CLI: with --baseline only alarms introduced by the edit are new, and with --baseline none all are new [146.31ms]
+
+ 44 pass
+ 0 fail
+ 187 expect() calls
+Ran 44 tests across 3 files. [4.62s]

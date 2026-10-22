@@ -20,9 +20,9 @@ describe("edge inputs", () => {
 	test("CRLF dict rows are no longer refused by the trailing \r", () => {
 		const source = "defaults = {\r\n    \"host\": \"localhost:8080\",\r\n    \"port\": 8080,\r\n    \"debug\": True,\r\n}\r\n" ;
 		const result = align(source)                                                                                               ;
-		expect(result.tables ).toBe     (1                                 ) ;
-		expect(result.refused).toEqual  ([]                                ) ;
-		expect(result.output ).toContain("\"host\" : \"localhost:8080\",\r") ;
+		expect(result.tables ).toBe     (1                                  ) ;
+		expect(result.refused).toEqual  ([]                                 ) ;
+		expect(result.output ).toContain("\"host\"  : \"localhost:8080\",\r") ;
 	});
 
 	test("a BOM is preserved and only the first line is excluded", () => {

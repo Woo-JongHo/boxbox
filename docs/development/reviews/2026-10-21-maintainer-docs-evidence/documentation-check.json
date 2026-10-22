@@ -1,0 +1,20 @@
+{
+  "sourceBaseline": "07f568ccec77e70dd57da9aba63f8dc7ef7fcc5a",
+  "checkedFiles": [
+    "README.md",
+    "docs/development/README.md",
+    "docs/development/architecture.md",
+    "docs/development/inspection-process.md",
+    "docs/development/storage.md",
+    "docs/development/change-patterns.md",
+    "docs/development/hud.md",
+    "docs/development/reviews/2026-10-21-maintainer-docs.md"
+  ],
+  "checks": [
+    "relative link target existence",
+    "new prose language",
+    "placeholder scan",
+    "git diff whitespace outside raw evidence"
+  ],
+  "issues": []
+}

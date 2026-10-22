@@ -1,15 +1,16 @@
 import      { describe, expect, test } from "bun:test"                 ;
+import      { fileURLToPath          } from "node:url"                 ;
 import      { alignSource            } from "@/common/table-engine.ts" ;
 import      { maskSource             } from "@/common/code-text.ts"    ;
 import      { PYTHON_ALIGNER         } from "@/python/profile.ts"      ;
 import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
-	aligner     : PYTHON_ALIGNER,
-	fixturesDir : new URL("../test/fixtures/python/", import.meta.url).pathname,
-	tableFile   : "tables.py",
-	alignedFile : "tables.aligned.py",
-	trickyFile  : "tricky.py",
+	aligner     : PYTHON_ALIGNER                                                      ,
+	fixturesDir : fileURLToPath(new URL("../test/fixtures/python/", import.meta.url)) ,
+	tableFile   : "tables.py"                                                         ,
+	alignedFile : "tables.aligned.py"                                                 ,
+	trickyFile  : "tricky.py"                                                         ,
 });
 
 describe("python profile specific properties", () => {
@@ -23,12 +24,12 @@ describe("python profile specific properties", () => {
 			`    "debug": True,`,
 			"}",
 		].join("\n");
-		const result = align(source)             ;
-		const lines  = result.output.split("\n") ;
-		expect(lines[1]     ).toBe(`    "host" : "localhost:8080",`) ;
-		expect(lines[2]     ).toBe(`    "port" : 8080            ,`) ;
-		expect(lines[3]     ).toBe(`    "debug": True            ,`) ;
-		expect(result.tables).toBe(1                               ) ;
+		const result = align              (source) ;
+		const lines  = result.output.split("\n"  ) ;
+		expect(lines[1]     ).toBe(`    "host"  : "localhost:8080",`) ;
+		expect(lines[2]     ).toBe(`    "port"  : 8080            ,`) ;
+		expect(lines[3]     ).toBe(`    "debug" : True            ,`) ;
+		expect(result.tables).toBe(1                                ) ;
 	});
 
 	test("annotated assignments align name and type columns and never pad the trailing value", () => {
@@ -39,25 +40,162 @@ describe("python profile specific properties", () => {
 			`    label: str = "x"`,
 			"    verbose: bool = True",
 		].join("\n");
-		const result = align(source)             ;
-		const lines  = result.output.split("\n") ;
-		expect(lines[2]         ).toBe("    retries: int  = 3"   ) ;
-		expect(lines[3]         ).toBe(`    label  : str  = "x"` ) ;
-		expect(lines[4]         ).toBe("    verbose: bool = True") ;
-		expect(result.misaligned).toBe(2                         ) ;
+		const result = align              (source) ;
+		const lines  = result.output.split("\n"  ) ;
+		expect(lines[2]         ).toBe("    retries : int  = 3"   ) ;
+		expect(lines[3]         ).toBe(`    label   : str  = "x"` ) ;
+		expect(lines[4]         ).toBe("    verbose : bool = True") ;
+		expect(result.misaligned).toBe(3                          ) ;
 	});
 
-	test("tightly written assignments also form a table and are fixed to conventional gaps (none after colon, spaces around equal)", () => {
+	test("tightly written assignments also form a table and are fixed to conventional gaps (one space around colon and equal)", () => {
 		const source = [
 			"ratio:float=0.5",
 			"level:int=3",
 			"name:str='x'",
 		].join("\n");
-		const result = align(source)             ;
-		const lines  = result.output.split("\n") ;
-		expect(lines[0]).toBe("ratio: float = 0.5") ;
-		expect(lines[1]).toBe("level: int   = 3"  ) ;
-		expect(lines[2]).toBe("name : str   = 'x'") ;
+		const result = align              (source) ;
+		const lines  = result.output.split("\n"  ) ;
+		expect(lines[0]).toBe("ratio : float = 0.5") ;
+		expect(lines[1]).toBe("level : int   = 3"  ) ;
+		expect(lines[2]).toBe("name  : str   = 'x'") ;
+	});
+
+	test("subscripted, union and quoted annotations stay in one field table", () => {
+		const source = [
+			"class Snapshot:",
+			"    target_path: Path",
+			'    scan: "ScanResult"',
+			"    last_row: int | None",
+			"    wire_keys: tuple[str, ...]",
+		].join("\n");
+		const lines = align(source).output.split("\n");
+		expect(lines.slice(1)).toEqual([
+			"    target_path : Path",
+			'    scan        : "ScanResult"',
+			"    last_row    : int | None",
+			"    wire_keys   : tuple[str, ...]",
+		]);
+	});
+
+	test("fields with and without defaults share the name and colon columns; equal follows the longest defaulted type", () => {
+		const source = [
+			"class Meta:",
+			"    source_path: str",
+			"    raw_row_count: int",
+			"    account_filter_path: str | None = None",
+			"    allowed_count: int = 0",
+		].join("\n");
+		const result = align(source);
+		expect(result.tables).toBe(1);
+		expect(result.output.split("\n").slice(1)).toEqual([
+			"    source_path         : str",
+			"    raw_row_count       : int",
+			"    account_filter_path : str | None = None",
+			"    allowed_count       : int        = 0",
+		]);
+	});
+
+	test("annotated statements with a bracketed value are refused", () => {
+		const source = [
+			"items: list[int] = [1, 2]",
+			"names: list[str] = []",
+			"flags: list[bool] = []",
+		].join("\n");
+		const result = align(source);
+		expect(result.tables).toBe(0     );
+		expect(result.output).toBe(source);
+	});
+
+	test("keyword-argument rows align name, equal, value and the closing comma", () => {
+		const source = [
+			"    return Result(",
+			"        source_path=local_path,",
+			"        size=len(rows),",
+			"        target_columns=(KEY,),",
+			"    )",
+		].join("\n");
+		expect(align(source).output.split("\n").slice(1, 4)).toEqual([
+			"        source_path    = local_path,",
+			"        size           = len(rows) ,",
+			"        target_columns = (KEY,)    ,",
+		]);
+	});
+
+	test("parameters with and without defaults share one table and a closing comma column", () => {
+		const source = [
+			"def find(",
+			"    search_dir: str | Path,",
+			"    file_name: str = FILE_NAME,",
+			"    recursive: bool = False,",
+			") -> Path:",
+		].join("\n");
+		const result = align(source);
+		expect(result.tables).toBe(1);
+		expect(result.output.split("\n").slice(1, 4)).toEqual([
+			"    search_dir : str | Path      ,",
+			"    file_name  : str  = FILE_NAME,",
+			"    recursive  : bool = False    ,",
+		]);
+	});
+
+	test("a keyword-only marker sits inside one parameter table", () => {
+		const source = [
+			"def resolve(",
+			"    path_arg: str | None,",
+			"    *,",
+			"    base_dir: Path,",
+			"    today: date | None = None,",
+			") -> Path:",
+		].join("\n");
+		const result = align(source);
+		expect(result.tables).toBe(1);
+		expect(result.output.split("\n").slice(1, 5)).toEqual([
+			"    path_arg : str | None        ,",
+			"    *,",
+			"    base_dir : Path              ,",
+			"    today    : date | None = None,",
+		]);
+	});
+
+	test("comma rows whose value holds a top-level comma or an open bracket are refused", () => {
+		const source = [
+			"    alpha = 1, 2,",
+			"    beta = call(,",
+			"    gamma = x if y else (z,",
+		].join("\n");
+		const result = align(source);
+		expect(result.tables).toBe(0     );
+		expect(result.output).toBe(source);
+	});
+
+	test("a table whose columns would follow wide characters is refused with a reason and left unchanged", () => {
+		const source = [
+			"row = {",
+			'    "송금번호": wire_value,', // cjk-test-data
+			'    "입금증": deposit_slip,', // cjk-test-data
+			'    "통화": currency,',       // cjk-test-data
+			"}",
+		].join("\n");
+		const result = align(source);
+		expect(result.output                             ).toBe   (source             ) ;
+		expect(result.refused.map(table => table.refusal)).toEqual(["wide-characters"]) ;
+	});
+
+	test("wide characters in a row's last cell or trailing comment do not refuse the table", () => {
+		const source = [
+			"class Row:",
+			"    deposit_date: str  # 입금일", // cjk-test-data
+			'    company: str = "한국"',        // cjk-test-data
+			"    amount: float",
+		].join("\n");
+		const result = align(source);
+		expect(result.refused).toEqual([]);
+		expect(result.output.split("\n").slice(1)).toEqual([
+			"    deposit_date : str # 입금일", // cjk-test-data
+			'    company      : str = "한국"',  // cjk-test-data
+			"    amount       : float",
+		]);
 	});
 
 	test("attribute assignments form a table without changing Python syntax or non-whitespace tokens", () => {
@@ -85,8 +223,8 @@ describe("python profile specific properties", () => {
 			"second = diagnostics(toolchain, after)",
 			"third  = diagnostics(toolchain, during)",
 		].join("\n");
-		const result = align(source)             ;
-		const lines  = result.output.split("\n") ;
+		const result = align              (source) ;
+		const lines  = result.output.split("\n"  ) ;
 		expect(lines[0]).toBe("first  = diagnostics(toolchain, before)") ;
 		expect(lines[1]).toBe("second = diagnostics(toolchain, after )") ;
 		expect(lines[2]).toBe("third  = diagnostics(toolchain, during)") ;
@@ -98,14 +236,14 @@ describe("python profile specific properties", () => {
 			`PARSES = frozenset({"ok", "changed", "skipped"})`,
 			`GONE = frozenset({"no", "off", "away"})`,
 		].join("\n");
-		const result = align(source)             ;
-		const lines  = result.output.split("\n") ;
+		const result = align              (source) ;
+		const lines  = result.output.split("\n"  ) ;
 		expect(lines[0]).toBe(`STATES = frozenset({"PASS", "FIXABLE", "SUGGEST"})`) ;
 		expect(lines[1]).toBe(`PARSES = frozenset({"ok"  , "changed", "skipped"})`) ;
 		expect(lines[2]).toBe(`GONE   = frozenset({"no"  , "off"    , "away"   })`) ;
 	});
 
-	test("calls with a different callee, a different arity, nesting or keyword arguments never share a table", () => {
+	test("heterogeneous positional calculations share only outer assignment columns; keyword arguments stay unsupported", () => {
 		for (const source of [
 			[
 				"first  = other(toolchain, before)",
@@ -129,8 +267,14 @@ describe("python profile specific properties", () => {
 			].join("\n"),
 		]) {
 			const result = align(source);
-			expect(result.tables    ).toBe(0     ) ;
-			expect(result.output    ).toBe(source) ;
+			if (source.includes("tool=1")) {
+				expect(result.tables).toBe(0);
+				expect(result.output).toBe(source);
+			} else {
+				expect(result.tables                                                           ).toBe   (1                                                                ) ;
+				expect(result.details[0]!.axes                                                 ).toEqual(["name", "equal", "assignment-value"]                            ) ;
+				expect(result.output.split("\n").map(line => line.slice(line.indexOf("=") + 1))).toEqual(source.split("\n").map(line => line.slice(line.indexOf("=") + 1))) ;
+			}
 		}
 	});
 
@@ -156,8 +300,8 @@ describe("python profile specific properties", () => {
 			`    ("delta", 4, "w"),`,
 			"]",
 		].join("\n");
-		const result = align(source)             ;
-		const lines  = result.output.split("\n") ;
+		const result = align              (source) ;
+		const lines  = result.output.split("\n"  ) ;
 		expect(lines[1]).toBe(`    ["alpha", 1  , "x"  ],`) ;
 		expect(lines[2]).toBe(`    ["b"    , 22 , "yy" ],`) ;
 		expect(lines[3]).toBe(`    ["ccc"  , 333, "zzz"],`) ;

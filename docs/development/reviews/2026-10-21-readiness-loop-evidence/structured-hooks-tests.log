@@ -1,0 +1,49 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/guarded-run.test.ts:
+{"schemaVersion":1,"tool":"boxbox","command":"run","runId":"9ca1e568-8c07-4b9e-8d47-f1e44546a9eb","root":"/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-ku5K5v","engineVersion":"test","runtime":{"node":"26.3.0","bunVersion":"1.4.0"},"startedAt":"2026-10-21T14:29:12.260Z","finishedAt":"2026-10-21T14:29:12.293Z","state":"PASS","childExitCode":0,"preflight":"PASS","validation":"PASS","errorCode":null,"before":{},"after":{"one.py":"98752ee28d5484bdc2814fb70adb6a0b2fb31f6a9b8ee7ae81fd2fc9cf300b3b"},"afterSnapshotComplete":true,"ignoredSymlinks":[],"changed":["one.py"],"checked":[{"file":"one.py","result":{"file":"one.py","language":"python","mode":"check","summary":{"groups":0,"misaligned":0,"edits":0,"refused":0,"suggested":0},"groups":[],"parse":{"status":"not-run","tool":"test"}}}],"unsupported":[],"deleted":[],"excludedDirectories":[".git",".boxbox","node_modules",".venv","venv","__pycache__","dist","build"],"symlinkDirectoriesFollowed":false,"nativeHookVerified":false,"automaticFixPerformed":false}
+(pass) distinguishes a successful check, no changes and not storing arguments [36.23ms]
+boxbox run: TOOL_ERROR; run=c846994c-af45-4775-818a-a5ef7a42a11f; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-P7X0yr/.boxbox/runs/c846994c-af45-4775-818a-a5ef7a42a11f.json
+(pass) a preflight failure ends before running and is recorded [2.07ms]
+{"schemaVersion":1,"tool":"boxbox","command":"run","runId":"8f11d7f7-f0a2-4af8-8028-e27f3283dd45","root":"/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-V0V3fd","engineVersion":"test","runtime":{"node":"26.3.0","bunVersion":"1.4.0"},"startedAt":"2026-10-21T14:29:12.297Z","finishedAt":"2026-10-21T14:29:12.336Z","state":"PASS","childExitCode":0,"preflight":"PASS","validation":"PASS","errorCode":null,"before":{},"after":{"c.yml":"b701870861d6ff0565b7078ee799ae7362323298a814d7af4d2dce6cb8d8b674","a.json":"44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a","b.yaml":"b701870861d6ff0565b7078ee799ae7362323298a814d7af4d2dce6cb8d8b674"},"afterSnapshotComplete":true,"ignoredSymlinks":[],"changed":["a.json","b.yaml","c.yml"],"checked":[{"file":"a.json","result":{"file":"a.json","language":"json","mode":"check","summary":{"groups":0,"misaligned":0,"edits":0,"refused":0,"suggested":0},"groups":[],"parse":{"status":"not-run","tool":"test"}}},{"file":"b.yaml","result":{"file":"b.yaml","language":"yaml","mode":"check","summary":{"groups":0,"misaligned":0,"edits":0,"refused":0,"suggested":0},"groups":[],"parse":{"status":"not-run","tool":"test"}}},{"file":"c.yml","result":{"file":"c.yml","language":"yaml","mode":"check","summary":{"groups":0,"misaligned":0,"edits":0,"refused":0,"suggested":0},"groups":[],"parse":{"status":"not-run","tool":"test"}}}],"unsupported":[],"deleted":[],"excludedDirectories":[".git",".boxbox","node_modules",".venv","venv","__pycache__","dist","build"],"symlinkDirectoriesFollowed":false,"nativeHookVerified":false,"automaticFixPerformed":false}
+(pass) structured document changes reach inspection and are retained in run evidence [39.80ms]
+boxbox run: CHILD_FAILED; run=08e21466-4947-48a9-8414-63095cf01b8a; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-1dwlHX/.boxbox/runs/08e21466-4947-48a9-8414-63095cf01b8a.json
+boxbox run: UNSUPPORTED; run=371af235-c30d-4268-bad6-06f388315214; checked=0; changed=1
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-4VF192/.boxbox/runs/371af235-c30d-4268-bad6-06f388315214.json
+boxbox run: NO_CHANGES; run=26a247ba-a3ea-4a96-940f-964b903d50d6; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-uN8UJZ/.boxbox/runs/26a247ba-a3ea-4a96-940f-964b903d50d6.json
+(pass) child failure, unsupported and unchanged are not PASS [142.34ms]
+boxbox run: TOOL_ERROR; run=a740b96c-4c9d-465d-ad73-4568409b0043; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-8BPfTT/.boxbox/runs/a740b96c-4c9d-465d-ad73-4568409b0043.json
+(pass) check errors and non-runnable commands leave an end record [4.93ms]
+boxbox run: TOOL_ERROR; run=3f8becb1-00fa-420f-a2ce-1eee8cfcc7ef; checked=0; changed=1
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-3zwnrA/.boxbox/runs/3f8becb1-00fa-420f-a2ce-1eee8cfcc7ef.json
+(pass) a changed symbolic code file is not approved by the check [61.14ms]
+boxbox run: NO_CHANGES; run=109190f9-3444-42ec-8497-89f2b42c0565; checked=0; changed=0
+receipt: /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-Nb1Az7/.boxbox/runs/109190f9-3444-42ec-8497-89f2b42c0565.json
+(pass) status marks changes made outside a run as STALE [48.10ms]
+(pass) status reads only bounded headers before loading the latest run [2.75ms]
+(pass) snapshot streams source files larger than the former size cap [107.40ms]
+(pass) macOS status lock canonicalizes aliases and ignores TMPDIR [3.46ms]
+(pass) direct status rejects a concurrent status process [44.26ms]
+lockf: /private/tmp/boxbox-locks-502/858ecebd6f533aa9c879b384bd09b71d/status.advisory.lock: already locked
+(pass) macOS status uses the operating system advisory lock [2034.84ms]
+(pass) macOS production status enters the uncontended lockf child [137.03ms]
+(pass) status lock does not steal a fresh partial owner and recovers an old malformed owner [4.12ms]
+(pass) status rejects a symbolic .boxbox directory before reading receipts [0.53ms]
+{"schemaVersion":1,"tool":"boxbox","command":"run","runId":"5b47568e-1aca-4e2a-8413-b39697998c65","root":"/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-QuMFrA","engineVersion":"test","runtime":{"node":"26.3.0","bunVersion":"1.4.0"},"startedAt":"2026-10-21T14:29:14.928Z","finishedAt":"2026-10-21T14:29:14.951Z","state":"FAIL","childExitCode":0,"preflight":"PASS","validation":"FAIL","errorCode":null,"before":{},"after":{"bad.py":"1f206b11c23e28cc250ded7fc0098d3823a8467a54340f1ac4e535cb8544493f"},"afterSnapshotComplete":true,"ignoredSymlinks":[],"changed":["bad.py"],"checked":[{"file":"bad.py","result":{"file":"bad.py","language":"python","mode":"check","summary":{"groups":0,"misaligned":1,"edits":0,"refused":0,"suggested":0},"groups":[],"parse":{"status":"not-run","tool":"test"}}}],"unsupported":[],"deleted":[],"excludedDirectories":[".git",".boxbox","node_modules",".venv","venv","__pycache__","dist","build"],"symlinkDirectoriesFollowed":false,"nativeHookVerified":false,"automaticFixPerformed":false}
+{"schemaVersion":1,"tool":"boxbox","command":"run","runId":"fb33942e-a706-405d-88cf-0e8044a3eac2","root":"/var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-guard-8blKxl","engineVersion":"test","runtime":{"node":"26.3.0","bunVersion":"1.4.0"},"startedAt":"2026-10-21T14:29:14.952Z","finishedAt":"2026-10-21T14:29:14.973Z","state":"TOOL_ERROR","childExitCode":0,"preflight":"PASS","validation":"NOT_RUN","errorCode":"GUARD_ERROR","before":{},"after":{"bad.py":"1f206b11c23e28cc250ded7fc0098d3823a8467a54340f1ac4e535cb8544493f"},"afterSnapshotComplete":true,"ignoredSymlinks":[],"changed":["bad.py"],"checked":[],"unsupported":[],"deleted":[],"excludedDirectories":[".git",".boxbox","node_modules",".venv","venv","__pycache__","dist","build"],"symlinkDirectoriesFollowed":false,"nativeHookVerified":false,"automaticFixPerformed":false}
+(pass) distinguishes check failures from check exceptions and preserves the child result [46.77ms]
+
+test/lifecycle-hook.test.ts:
+(pass) changes to unsupported files do not block later PostToolUse or Stop [142.50ms]
+(pass) Stop does not block again with stop_hook_active even when an alignment failure remains [386.85ms]
+(pass) plugin hooks use the cwd input and write records to the plugin data folder, not the project [126.02ms]
+(pass) hook errors never block work; they are only reported [53.15ms]
+
+ 20 pass
+ 0 fail
+ 69 expect() calls
+Ran 20 tests across 2 files. [3.54s]

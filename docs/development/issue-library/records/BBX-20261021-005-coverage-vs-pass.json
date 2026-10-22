@@ -1,0 +1,174 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261021-005",
+  "title": "Checker PASS was confused with requested-boundary coverage",
+  "category": "verification-gap",
+  "tags": [
+    "coverage",
+    "check",
+    "hook",
+    "pass",
+    "approval",
+    "manual-measurement"
+  ],
+  "status": "resolved",
+  "symptom": "A checker could report zero misaligned groups even though the requested return/dot columns or the readability of a wide nested type had not been checked.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "Check reports recognized groups and their alignment. Unrecognized shapes, below-floor groups and structural readability were not represented as completion gaps in the authoring workflow."
+  },
+  "requestedOutcome": "Report requested boundaries, supported groups, unsupported cases and independent evidence separately; completion must account for each requested boundary.",
+  "decisions": [
+    "Interpret zero detected misalignments only within the detector coverage of that exact engine version.",
+    "Separate functional tests, syntax checks, boundary measurements and automatic-write approval.",
+    "Treat installed-host and current-source results as distinct evidence when versions differ.",
+    "A local layout request is not a reusable public preset approval."
+  ],
+  "actions": [
+    {
+      "description": "Preserve earlier PASS and failure evidence with their original scope.",
+      "status": "done"
+    },
+    {
+      "description": "Require a requested-boundary inventory in the skill workflow.",
+      "status": "done"
+    },
+    {
+      "description": "Verify the strengthened workflow against the current return, call, dot and interface examples.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Final repository check",
+      "status": "passed",
+      "scope": "All current repository suites, TypeScript type checking and installer shell syntax",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log"
+      ],
+      "result": "bun run check exited 0: 571 pass, 5 existing unavailable Rust/Kotlin parser skips, 0 fail, 2799 assertions. Skipped parsers were not verified."
+    },
+    {
+      "name": "Independent review closure",
+      "status": "passed",
+      "scope": "Static review of the implemented correction and its documented limits",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet-closure.md",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet-library-closure.md"
+      ],
+      "result": "The scoped independent review passed. Prior BLOCKED reviews and corrections remain in history. Reviewers did not execute tests."
+    }
+  ],
+  "related": [
+    {
+      "kind": "contract",
+      "path": "product/plugin/skills/boxbox/SKILL.md",
+      "note": "Authoring completion and coverage requirements."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-21-self-use-boundaries.md",
+      "note": "Earlier PASS evidence explicitly limited guard coverage."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-21-self-use-refactor.md",
+      "note": "Separates functional checks, alignment findings and write approval."
+    },
+    {
+      "kind": "issue",
+      "path": "docs/development/issue-library/records/BBX-20261021-001-return-column.json",
+      "note": "Unsupported return-column request."
+    },
+    {
+      "kind": "issue",
+      "path": "docs/development/issue-library/records/BBX-20261021-004-member-dot.json",
+      "note": "Missing dot boundary."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-21",
+      "event": "reported",
+      "summary": "User repeatedly identified missing matrix boundaries after prior checks.",
+      "evidence": []
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-21",
+      "event": "diagnosed",
+      "summary": "A coverage limit was being treated as a full readability result.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-self-use-boundaries.md"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-21",
+      "event": "decision",
+      "summary": "Track requested axes and evidence scope explicitly; final workflow verification remains pending.",
+      "evidence": []
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-21",
+      "event": "implemented",
+      "summary": "Added the requested-boundary inventory, coverage reconciliation and issue-history guidance to the skill.",
+      "evidence": [
+        "product/plugin/skills/boxbox/SKILL.md"
+      ]
+    },
+    {
+      "sequence": 5,
+      "date": "2026-10-21",
+      "event": "verification-failed",
+      "summary": "FAILED ATTEMPT: Independent delta review found reconciliation occurred before final Align and issue-history writing needed explicit user/project scope.",
+      "evidence": [
+        "docs/development/issue-library/evidence/sonnet-dot-blocked.md"
+      ],
+      "status": "failed"
+    },
+    {
+      "sequence": 6,
+      "date": "2026-10-21",
+      "event": "implemented",
+      "summary": "Moved coverage reconciliation to the final post-Align check, including skipped or unsupported axes, and limited issue-history writing to explicit user/project requirements. Final correction and audit evidence will be appended separately.",
+      "evidence": [
+        "product/plugin/skills/boxbox/SKILL.md"
+      ]
+    },
+    {
+      "sequence": 7,
+      "date": "2026-10-21",
+      "event": "diagnosed",
+      "summary": "Historical coverage gap: The earlier check did not cover early-return columns; the wide interface had zero detected misalignments before restructuring. This verifies the diagnosis, not the final fix. This entry preserves diagnosis evidence, not a passing fix verification.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-self-use-boundaries.md",
+        "docs/development/issue-library/evidence/example-layout-report.md"
+      ]
+    },
+    {
+      "sequence": 8,
+      "date": "2026-10-21",
+      "event": "decision",
+      "summary": "Previous current-verification entries are preserved in the linked snapshot. The current list below records the final checked state; earlier failures remain searchable in history.",
+      "evidence": [
+        "docs/development/issue-library/evidence/records-before-final-closure.json"
+      ]
+    },
+    {
+      "sequence": 9,
+      "date": "2026-10-21",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Closed for the documented supported scope after final repository checks, applicable installed-artifact evidence and independent review. No new public preset approvals or live profile installation is implied.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet-closure.md",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet-library-closure.md"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+### package.log
+34:2026-10-21T16:51:02.1175134Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+67:2026-10-21T16:51:03.7561532Z hint: to use in all of your new repositories, which will suppress this warning,
+129:2026-10-21T16:51:07.9259629Z [command]/usr/bin/tar xz --strip 1 --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/5e716727-ae07-469c-9f9b-cece2849be3b -f /home/runner/work/_temp/39f8bc6c-51de-4790-855f-ea5e3ce78998
+165:2026-10-21T16:51:13.9050565Z $ bun development/tools/build-installer-artifact.ts
+170:2026-10-21T16:51:13.9531118Z $ bun run development/tools/build-cli-artifact.ts
+236:2026-10-21T16:51:14.6770814Z     "id": "boxbox-plugin@0.2.4",
+237:2026-10-21T16:51:14.6771709Z     "name": "boxbox-plugin",
+243:2026-10-21T16:51:14.6774847Z     "filename": "boxbox-plugin-0.2.4.tgz",
+451:2026-10-21T16:51:14.6881827Z /home/runner/work/rowgrid/rowgrid/dist/installer/boxbox-plugin-0.2.4.tgz
+465:2026-10-21T16:51:14.7940676Z 	"name": "boxbox-plugin",
+467:2026-10-21T16:51:14.7941320Z 	"filename": "boxbox-plugin-0.2.4.tgz",
+468:2026-10-21T16:51:14.7941859Z 	"sha256": "bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be",
+486:2026-10-21T16:51:14.7950942Z 		"Source identity describes the staging checkout. Only the clean CI workflow binds its preceding build to that checkout; local archive build provenance is unverified.",
+487:2026-10-21T16:51:14.7951691Z 		"Engine-only smoke does not verify native host hook-event delivery."
+490:2026-10-21T16:51:14.8029133Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+494:2026-10-21T16:51:14.8029871Z   if-no-files-found: error
+501:2026-10-21T16:51:14.9269034Z (Use `node --trace-deprecation ...` to show where the warning was created)
+505:2026-10-21T16:51:15.2100814Z Beginning upload of artifact content to blob storage
+506:2026-10-21T16:51:15.2363003Z (node:2196) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+508:2026-10-21T16:51:15.5337189Z Finished uploading artifact content to blob storage!
+509:2026-10-21T16:51:15.5338372Z SHA256 digest of uploaded artifact zip is 66648ab03ef65fc3b7a4e875a04d1d2acfb130abe1b6806b0cebdace06f9249a
+510:2026-10-21T16:51:15.5339548Z Finalizing artifact upload
+513:2026-10-21T16:51:15.7792140Z Artifact download URL: https://github.com/Woo-JongHo/rowgrid/actions/runs/39637622755/artifacts/12365225270
+529:2026-10-21T16:51:16.2327588Z Set output 'sha256'
+531:2026-10-21T16:51:16.2515349Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+### smoke-ubuntu.log
+34:2026-10-21T16:51:23.2109748Z Download action repository 'actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093' (SHA:d3f86a106a0bac45b974a628896c90dbdf5c8093)
+35:2026-10-21T16:51:23.6756155Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+36:2026-10-21T16:51:23.9392522Z Complete job name: smoke (ubuntu-latest)
+68:2026-10-21T16:51:24.1063857Z hint: to use in all of your new repositories, which will suppress this warning,
+130:2026-10-21T16:51:26.8543975Z [command]/usr/bin/tar xz --strip 1 --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/cd3d395b-a8ed-42e3-b529-0cccf0cded91 -f /home/runner/work/_temp/997fecf4-0bfb-4686-bbfe-76cc08d32005
+161:2026-10-21T16:51:31.5622367Z ##[group]Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+176:2026-10-21T16:51:31.6604001Z Downloading single artifact
+178:2026-10-21T16:51:31.6769061Z (Use `node --trace-deprecation ...` to show where the warning was created)
+179:2026-10-21T16:51:31.8490006Z Preparing to download the following artifacts:
+180:2026-10-21T16:51:31.8491199Z - boxbox-candidate-39637622755-1 (ID: 12365225270, Size: 260861, Expected Digest: sha256:66648ab03ef65fc3b7a4e875a04d1d2acfb130abe1b6806b0cebdace06f9249a)
+181:2026-10-21T16:51:32.0404455Z Redirecting to blob download url: https://productionresultssa17.blob.core.windows.net/actions-results/b1be490a-e4fe-4155-a69d-2aa86b5958f4/workflow-job-run-be3f2025-55f2-5ac3-ab0e-9af61e993444/artifacts/b241a3a0bc7f5b65a485166148ff7e3b5eb77616cfed14a249f3979b58cba577.zip
+182:2026-10-21T16:51:32.0406051Z Starting download of artifact to: /home/runner/work/rowgrid/rowgrid/dist/release-candidate
+184:2026-10-21T16:51:32.3690924Z SHA256 digest of downloaded artifact is 66648ab03ef65fc3b7a4e875a04d1d2acfb130abe1b6806b0cebdace06f9249a
+186:2026-10-21T16:51:32.3723329Z Total of 1 artifact(s) downloaded
+187:2026-10-21T16:51:32.3743026Z Download artifact has finished successfully
+188:2026-10-21T16:51:32.3894273Z ##[group]Run node development/tools/release-smoke.mjs dist/release-candidate
+189:2026-10-21T16:51:32.3894629Z [36;1mnode development/tools/release-smoke.mjs dist/release-candidate[0m
+198:2026-10-21T16:51:32.3939833Z   CANDIDATE_SHA256: bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be
+203:2026-10-21T16:51:42.2581213Z 	"sha256": "bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be",
+210:2026-10-21T16:51:42.2584766Z 			"command": "doctor",
+266:2026-10-21T16:51:42.2694203Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+268:2026-10-21T16:51:42.2694577Z   name: boxbox-smoke-Linux-39637622755-1
+269:2026-10-21T16:51:42.2694751Z   path: dist/release-candidate/smoke-Linux.json
+284:2026-10-21T16:51:42.3891709Z (Use `node --trace-deprecation ...` to show where the warning was created)
+288:2026-10-21T16:51:42.6854755Z Beginning upload of artifact content to blob storage
+289:2026-10-21T16:51:42.6970871Z (node:3141) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+291:2026-10-21T16:51:42.9164814Z Finished uploading artifact content to blob storage!
+292:2026-10-21T16:51:42.9165906Z SHA256 digest of uploaded artifact zip is 8cb6fc87698b7726207d78c0e9920343d3984404fb5250204ec7510e528e70d8
+293:2026-10-21T16:51:42.9167531Z Finalizing artifact upload
+294:2026-10-21T16:51:43.1635013Z Artifact boxbox-smoke-Linux-39637622755-1.zip successfully finalized. Artifact ID 12365080329
+295:2026-10-21T16:51:43.1635966Z Artifact boxbox-smoke-Linux-39637622755-1 has been successfully uploaded! Final size is 623 bytes. Artifact ID is 12365080329
+296:2026-10-21T16:51:43.1637092Z Artifact download URL: https://github.com/Woo-JongHo/rowgrid/actions/runs/39637622755/artifacts/12365080329
+312:2026-10-21T16:51:43.6541542Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+### smoke-macos.log
+34:2026-10-21T16:51:24.5685730Z Download action repository 'actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093' (SHA:d3f86a106a0bac45b974a628896c90dbdf5c8093)
+35:2026-10-21T16:51:25.1874610Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+36:2026-10-21T16:51:25.3883440Z Complete job name: smoke (macos-latest)
+69:2026-10-21T16:51:25.6432280Z hint: to use in all of your new repositories, which will suppress this warning,
+161:2026-10-21T16:51:32.4268640Z ##[group]Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+175:2026-10-21T16:51:32.5631090Z Downloading single artifact
+177:2026-10-21T16:51:32.5752360Z (Use `node --trace-deprecation ...` to show where the warning was created)
+178:2026-10-21T16:51:32.7823980Z Preparing to download the following artifacts:
+179:2026-10-21T16:51:32.7824760Z - boxbox-candidate-39637622755-1 (ID: 12365225270, Size: 260861, Expected Digest: sha256:66648ab03ef65fc3b7a4e875a04d1d2acfb130abe1b6806b0cebdace06f9249a)
+180:2026-10-21T16:51:32.9824920Z Redirecting to blob download url: https://productionresultssa17.blob.core.windows.net/actions-results/b1be490a-e4fe-4155-a69d-2aa86b5958f4/workflow-job-run-be3f2025-55f2-5ac3-ab0e-9af61e993444/artifacts/b241a3a0bc7f5b65a485166148ff7e3b5eb77616cfed14a249f3979b58cba577.zip
+181:2026-10-21T16:51:32.9826370Z Starting download of artifact to: /Users/runner/work/rowgrid/rowgrid/dist/release-candidate
+183:2026-10-21T16:51:33.2759440Z SHA256 digest of downloaded artifact is 66648ab03ef65fc3b7a4e875a04d1d2acfb130abe1b6806b0cebdace06f9249a
+185:2026-10-21T16:51:33.2762770Z Total of 1 artifact(s) downloaded
+186:2026-10-21T16:51:33.2770510Z Download artifact has finished successfully
+187:2026-10-21T16:51:33.2847230Z ##[group]Run node development/tools/release-smoke.mjs dist/release-candidate
+188:2026-10-21T16:51:33.2847710Z [36;1mnode development/tools/release-smoke.mjs dist/release-candidate[0m
+196:2026-10-21T16:51:33.2883480Z   CANDIDATE_SHA256: bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be
+201:2026-10-21T16:51:42.5353920Z 	"sha256": "bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be",
+208:2026-10-21T16:51:42.5355540Z 			"command": "doctor",
+264:2026-10-21T16:51:42.5430280Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+266:2026-10-21T16:51:42.5430840Z   name: boxbox-smoke-macOS-39637622755-1
+267:2026-10-21T16:51:42.5431070Z   path: dist/release-candidate/smoke-macOS.json
+281:2026-10-21T16:51:42.6696770Z (Use `node --trace-deprecation ...` to show where the warning was created)
+285:2026-10-21T16:51:42.9165860Z Beginning upload of artifact content to blob storage
+286:2026-10-21T16:51:42.9267380Z (node:1527) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+288:2026-10-21T16:51:43.1288760Z Finished uploading artifact content to blob storage!
+289:2026-10-21T16:51:43.1289530Z SHA256 digest of uploaded artifact zip is 620fccc36089b0493f161a8de896f890d91fb3f568b07a6f126d54e4761540fa
+290:2026-10-21T16:51:43.1289960Z Finalizing artifact upload
+291:2026-10-21T16:51:43.3885520Z Artifact boxbox-smoke-macOS-39637622755-1.zip successfully finalized. Artifact ID 12365205250
+292:2026-10-21T16:51:43.3886280Z Artifact boxbox-smoke-macOS-39637622755-1 has been successfully uploaded! Final size is 623 bytes. Artifact ID is 12365205250
+293:2026-10-21T16:51:43.3892460Z Artifact download URL: https://github.com/Woo-JongHo/rowgrid/actions/runs/39637622755/artifacts/12365205250
+310:2026-10-21T16:51:44.1250310Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+### smoke-windows.log
+34:2026-10-21T16:51:24.8039919Z Download action repository 'actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093' (SHA:d3f86a106a0bac45b974a628896c90dbdf5c8093)
+35:2026-10-21T16:51:25.1155497Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+36:2026-10-21T16:51:25.5221385Z Complete job name: smoke (windows-latest)
+146:2026-10-21T16:51:47.1262811Z ##[group]Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+160:2026-10-21T16:51:47.3609229Z Downloading single artifact
+162:2026-10-21T16:51:47.4009828Z (Use `node --trace-deprecation ...` to show where the warning was created)
+163:2026-10-21T16:51:47.6631696Z Preparing to download the following artifacts:
+164:2026-10-21T16:51:47.6633622Z - boxbox-candidate-39637622755-1 (ID: 12365225270, Size: 260861, Expected Digest: sha256:66648ab03ef65fc3b7a4e875a04d1d2acfb130abe1b6806b0cebdace06f9249a)
+165:2026-10-21T16:51:47.9293664Z Redirecting to blob download url: https://productionresultssa17.blob.core.windows.net/actions-results/b1be490a-e4fe-4155-a69d-2aa86b5958f4/workflow-job-run-be3f2025-55f2-5ac3-ab0e-9af61e993444/artifacts/b241a3a0bc7f5b65a485166148ff7e3b5eb77616cfed14a249f3979b58cba577.zip
+166:2026-10-21T16:51:47.9296497Z Starting download of artifact to: D:\a\rowgrid\rowgrid\dist\release-candidate
+168:2026-10-21T16:51:48.5028190Z SHA256 digest of downloaded artifact is 66648ab03ef65fc3b7a4e875a04d1d2acfb130abe1b6806b0cebdace06f9249a
+170:2026-10-21T16:51:48.5069863Z Total of 1 artifact(s) downloaded
+171:2026-10-21T16:51:48.5070752Z Download artifact has finished successfully
+172:2026-10-21T16:51:48.5399856Z ##[group]Run node development/tools/release-smoke.mjs dist/release-candidate
+173:2026-10-21T16:51:48.5400512Z [36;1mnode development/tools/release-smoke.mjs dist/release-candidate[0m
+181:2026-10-21T16:51:48.5480219Z   CANDIDATE_SHA256: bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be
+186:2026-10-21T16:52:18.8522085Z 	"sha256": "bec626435e525c2d7324d156f85d2c114427d875725abcecb42fed561b2b92be",
+193:2026-10-21T16:52:18.8565346Z 			"command": "doctor",
+249:2026-10-21T16:52:18.9818398Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+251:2026-10-21T16:52:18.9819152Z   name: boxbox-smoke-Windows-39637622755-1
+252:2026-10-21T16:52:18.9819481Z   path: dist/release-candidate/smoke-Windows.json
+266:2026-10-21T16:52:19.2447571Z (Use `node --trace-deprecation ...` to show where the warning was created)
+270:2026-10-21T16:52:19.6274134Z Beginning upload of artifact content to blob storage
+271:2026-10-21T16:52:19.6520472Z (node:6856) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+273:2026-10-21T16:52:20.0267809Z Finished uploading artifact content to blob storage!
+274:2026-10-21T16:52:20.0270707Z SHA256 digest of uploaded artifact zip is c4cf9b52c8c10c642bff1aa5e2ea2d344a46dec4eca77050abed05da5d157c59
+275:2026-10-21T16:52:20.0274165Z Finalizing artifact upload
+276:2026-10-21T16:52:20.3333014Z Artifact boxbox-smoke-Windows-39637622755-1.zip successfully finalized. Artifact ID 12364125617
+277:2026-10-21T16:52:20.3335174Z Artifact boxbox-smoke-Windows-39637622755-1 has been successfully uploaded! Final size is 627 bytes. Artifact ID is 12364125617
+278:2026-10-21T16:52:20.3345588Z Artifact download URL: https://github.com/Woo-JongHo/rowgrid/actions/runs/39637622755/artifacts/12364125617
+294:2026-10-21T16:52:23.5551911Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

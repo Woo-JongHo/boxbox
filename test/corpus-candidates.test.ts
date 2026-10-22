@@ -63,7 +63,7 @@ describe("corpus candidate builder", () => {
 		const first = generateCandidates({ inputDir: item.input, outputDir: item.output, reps: 1 });
 		expect(first).toEqual({ candidates: 1, examples: 1, verified: 1 });
 		const before  = readFileSync(join(item.output, "examples.jsonl"), "utf8") ;
-		const example = JSON.parse(before.trim())                                 ;
+		const example = JSON.parse  (before.trim()                              ) ;
 		expect(example.status                                               )    .toBe("verified"            ) ;
 		expect(example.before                                               )    .toBe(item.source.trimEnd() ) ;
 		expect(example.after                                                ).not.toBe(example.before        ) ;

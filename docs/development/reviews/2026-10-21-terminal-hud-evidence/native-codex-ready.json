@@ -1,0 +1,12 @@
+[
+  {
+    "socket": "/private/tmp/tmux-502/boxbox-hud-36616-600f5aa8",
+    "pane": "%0 19 node",
+    "screen": "\n  >_ OpenAI Codex (v0.163.0)\n     /tmp/boxbox-hud-20261021/native-project\n\n\n\n\n\n\n\n\n\n\n\n\n\u203a Ask Codex to do anything\n\n  GPT-6-Astra high fast \u00b7 /tmp/boxbox-hud-20261021/native-project\n  ? for shortcuts                                     \u26a0 2 warnings \u00b7 f2 to view\n"
+  },
+  {
+    "socket": "/private/tmp/tmux-502/boxbox-hud-36616-600f5aa8",
+    "pane": "%1 4 node",
+    "screen": "BoxBox 0.2.3 | engine ready | approved 2\nPinned project: native-project (/private/tmp/boxbox-hud-20261021/native-project)\nproject history (not current session): unknown (unknown)\n\n"
+  }
+]

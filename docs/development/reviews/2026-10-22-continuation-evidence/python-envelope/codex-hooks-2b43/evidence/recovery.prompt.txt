@@ -1,0 +1,1 @@
+Controlled BoxBox native-hook recovery test in a disposable project. Use the native apply_patch tool exactly once. In sample.py, replace only the line `  alpha = 1` with `  alpha       = 1`. Do not change any other bytes or file. After the tool result, do not call any other tool; report the result and stop.

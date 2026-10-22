@@ -1,0 +1,33 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/structured-align.test.ts:
+(pass) structured alignment > aligns json fixtures exactly and idempotently [1.40ms]
+(pass) structured alignment > aligns yaml fixtures exactly and idempotently [7.28ms]
+(pass) structured alignment > preserves JSON escapes, colons in strings, duplicate keys, CRLF, and nested ownership [0.24ms]
+(pass) structured alignment > comments and unsupported YAML constructs break groups without changing their bytes [3.64ms]
+(pass) structured alignment > uses YAML scalar ranges and preserves quoted punctuation and comments [1.24ms]
+(pass) structured alignment > rejects duplicate YAML keys and non-1.2 directives while preserving JSON duplicates [0.44ms]
+(pass) structured alignment > invalid documents are refused and stay byte-identical [0.24ms]
+(pass) structured alignment > preservation rejects content, indentation, and unverified whitespace changes [0.14ms]
+
+test/config-layers.test.ts:
+(pass) config layers > replaces arrays and per-language formatters in Base → Preset → User → Project order [1.74ms]
+(pass) config layers > schema 1 migrates only in memory and never changes the original [0.70ms]
+(pass) config layers > schema 2 init writes a minimal file that does not shadow upper-layer values [0.61ms]
+(pass) config layers > refuses unknown fields, safety overrides and future schemas fail-closed [0.11ms]
+(pass) config layers > strictly validates the formatter command contract and timeout bounds [0.13ms]
+(pass) config layers > refuses empty languages and unsupported formatter languages [0.03ms]
+(pass) config layers > missing layers keep defaults, the fingerprint is deterministic and detects raw changes [0.54ms]
+(pass) config layers > refuses project and user config symbolic links [0.85ms]
+
+test/structured-pipeline.test.ts:
+(pass) json previews, applies, preserves unsupported bytes, and reaches a fixed point [7.47ms]
+(pass) yaml previews, applies, preserves unsupported bytes, and reaches a fixed point [11.57ms]
+(pass) structured pipeline refuses missing approval without changing the source [1.47ms]
+(pass) invalid json refuses before approval and stays unchanged [1.25ms]
+(pass) invalid yaml refuses before approval and stays unchanged [1.14ms]
+
+ 21 pass
+ 0 fail
+ 96 expect() calls
+Ran 21 tests across 3 files. [201.00ms]

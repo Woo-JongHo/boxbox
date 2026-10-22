@@ -1,0 +1,54 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/structured-align.test.ts:
+(pass) structured alignment > aligns json fixtures exactly and idempotently [17.38ms]
+(pass) structured alignment > aligns yaml fixtures exactly and idempotently [12.80ms]
+(pass) structured alignment > preserves JSON escapes, colons in strings, duplicate keys, CRLF, and nested ownership [2.14ms]
+(pass) structured alignment > comments and unsupported YAML constructs break groups without changing their bytes [5.90ms]
+(pass) structured alignment > uses YAML scalar ranges and preserves quoted punctuation and comments [3.16ms]
+(pass) structured alignment > rejects duplicate YAML keys and non-1.2 directives while preserving JSON duplicates [1.00ms]
+(pass) structured alignment > invalid documents are refused and stay byte-identical [1.08ms]
+(pass) structured alignment > preservation rejects content, indentation, and unverified whitespace changes [0.64ms]
+
+test/config-layers.test.ts:
+(pass) config layers > replaces arrays and per-language formatters in Base → Preset → User → Project order [14.64ms]
+(pass) config layers > schema 1 migrates only in memory and never changes the original [1.67ms]
+(pass) config layers > schema 2 init writes a minimal file that does not shadow upper-layer values [1.78ms]
+(pass) config layers > refuses unknown fields, safety overrides and future schemas fail-closed [1.87ms]
+(pass) config layers > strictly validates the formatter command contract and timeout bounds [0.34ms]
+(pass) config layers > refuses empty languages and unsupported formatter languages [0.03ms]
+(pass) config layers > missing layers keep defaults, the fingerprint is deterministic and detects raw changes [1.98ms]
+(pass) config layers > refuses project and user config symbolic links [2.45ms]
+
+test/structured-pipeline.test.ts:
+(pass) json previews, applies, preserves unsupported bytes, and reaches a fixed point [11.93ms]
+(pass) yaml previews, applies, preserves unsupported bytes, and reaches a fixed point [14.32ms]
+(pass) structured pipeline refuses missing approval without changing the source [1.75ms]
+(pass) invalid json refuses before approval and stays unchanged [0.98ms]
+(pass) invalid yaml refuses before approval and stays unchanged [1.09ms]
+
+test/cli.test.ts:
+(pass) public CLI > help and version work through the real entry API [108.03ms]
+(pass) public CLI > init preserves existing user files and never overwrites the config when rerun [101.15ms]
+(pass) public CLI > a corrupt or unknown config fails explicitly and is preserved [119.30ms]
+(pass) public CLI > check inspects one Python file read-only without init and returns 1 when misaligned [140.29ms]
+(pass) public CLI > check validates syntax with no groups and preserves invalid TypeScript and Python byte-for-byte [863.87ms]
+(pass) public CLI > check reports missing and failed Python parsers as errors and never writes the target [338.16ms]
+(pass) public CLI > check displays effective project approval facts without claiming write verification [94.09ms]
+(pass) public CLI > check admits strict JSON and YAML syntax without inheriting existing approvals [224.99ms]
+(pass) public CLI > a clean project previews and formats with the bundled approval and no formatter [592.69ms]
+(pass) public CLI > with a verified test approval and formatter, GUIDE, dry-run and the real format use the same pipeline [824.93ms]
+(pass) public CLI > standalone CLI alignment needs approval but no external formatter [1025.77ms]
+(pass) public CLI > GUIDE uses the bundled preset but never exposes candidate overrides as guidance [236.01ms]
+(pass) public CLI > candidate, rejected, conflict and stale approvals refuse format and preserve the original [1607.69ms]
+(pass) public CLI > doctor refuses a missing Python even when the bundled approval data is present [89.84ms]
+(pass) public CLI > doctor separates runnable state, format configuration and overall release readiness [104.82ms]
+(pass) public CLI > usage errors still print exactly one JSON to stdout and refuse unknown languages and options [284.22ms]
+(pass) public CLI > refuses path escapes and symbolic links for init writes [113.15ms]
+(pass) public CLI > refuses parent-directory symbolic link escapes and languages disabled in the config [99.16ms]
+(pass) public CLI > fails when the explicit language differs from the extension and infers the language for TS files [372.03ms]
+
+ 40 pass
+ 0 fail
+ 275 expect() calls
+Ran 40 tests across 4 files. [7.68s]

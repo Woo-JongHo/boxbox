@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
-import      { runAlignCli    } from "../common/align-cli.ts" ;
-import      { PYTHON_ALIGNER } from "./profile.ts"           ;
+import      { runAlignCli    } from "@/common/align-cli.ts" ;
+import      { PYTHON_ALIGNER } from "@/python/profile.ts"   ;
 
 const result = runAlignCli(PYTHON_ALIGNER, process.argv.slice(2), { groupsOnly: true });
 console.log(result.report);

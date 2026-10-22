@@ -1,0 +1,51 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/corpus-signatures.test.ts:
+(pass) pattern signature > axis ids lose their column, fold digit runs and generalize callees [0.17ms]
+(pass) pattern signature > the identity key is language, context, kind, ordered axes and depth — never the result state [0.23ms]
+(pass) pattern signature > a table keeps its key before and after it is aligned [6.25ms]
+(pass) pattern signature > depth counts four columns per level and a tab as four columns [0.04ms]
+(pass) pattern signature > two python assignment tables of the same shape collapse into one type, depth apart [2.13ms]
+(pass) pattern signature > heterogeneous calls share an outer signature while complete arity tables retain their inner signatures [0.62ms]
+
+test/python-assignment-envelope.test.ts:
+(pass) Python assignment envelopes > the exact native quote fixture shares outer assignment columns [2.58ms]
+(pass) the native 180-case domain preserves reference behavior and positional-call evaluation order [62.47ms]
+(pass) opaque RHS bytes, CRLF, indentation and the fixed point are preserved [30.41ms]
+(pass) detailed tables retain ownership while a neighboring calculation receives its own envelope [0.98ms]
+(pass) a detailed pair inside three heterogeneous rows is replaced by one outer owner [0.13ms]
+(pass) primary preservation refusal never retries the same rows through a broader projection [0.35ms]
+(pass) projection rows must independently pass exact source reconstruction [0.11ms]
+(pass) single rows, pairs, blank lines, comments and different indentation do not become automatic tables [0.52ms]
+(pass) parenthesized keyword arguments and prior-line explicit continuation cannot become assignments [0.20ms]
+(pass) unsupported targets, values and damaged delimiters never project an outer calculation [0.15ms]
+(pass) quoted continuations are skipped and a complete ordinary docstring does not absorb following calculations [0.55ms]
+(pass) the new exact key cannot inherit the shipped simple-assignment approval [218.55ms]
+(pass) public Check and Guide expose the new group without approved write coverage [336.15ms]
+(pass) a complete synthetic test proof permits preview and apply of the new envelope without changing product approvals [460.73ms]
+(pass) inline comments keep their exact content and do not expose punctuation as calculation syntax [0.36ms]
+
+test/python-align.test.ts:
+(pass) python: alignment changes only whitespace between tokens and refuses nothing [2.43ms]
+(pass) python: the aligned table and trap files parse like their sources [66.39ms]
+(pass) python: alignment is idempotent — running twice gives the same result [1.30ms]
+(pass) python: matches the golden aligned file [0.80ms]
+(pass) python: the already aligned golden has 0 changes [0.38ms]
+(pass) python: the string/comment trap file has 0 changes [0.11ms]
+(pass) python: 2-row groups are not aligned [0.75ms]
+(pass) python profile specific properties > dictionary rows decompose into key, colon, value, comma axes and align the colon column [0.12ms]
+(pass) python profile specific properties > annotated assignments align name and type columns and never pad the trailing value [0.10ms]
+(pass) python profile specific properties > tightly written assignments also form a table and are fixed to conventional gaps (none after colon, spaces around equal) [0.07ms]
+(pass) python profile specific properties > attribute assignments form a table without changing Python syntax or non-whitespace tokens [22.47ms]
+(pass) python profile specific properties > assigned calls decompose into the call cell and argument columns [0.27ms]
+(pass) python profile specific properties > a call wrapping one flat bundle aligns the bundle cells inside the call [0.16ms]
+(pass) python profile specific properties > heterogeneous positional calculations share only outer assignment columns; keyword arguments stay unsupported [0.27ms]
+(pass) python profile specific properties > the profile refuses control-flow, call and line-continuation rows so they never form tables [0.05ms]
+(pass) python profile specific properties > bundle rows align inner cell columns, and rows with different bracket pairs split tables [0.11ms]
+(pass) python profile specific properties > the profile refuses bundle rows with nesting, indexing, assignment, empty cells or f-strings [0.29ms]
+(pass) python profile specific properties > keeps == comparisons inside values and refuses values starting with == [0.14ms]
+
+ 39 pass
+ 0 fail
+ 208 expect() calls
+Ran 39 tests across 3 files. [1470.00ms]

@@ -1,0 +1,1 @@
+No owned tmux/HUD process remained after exit.

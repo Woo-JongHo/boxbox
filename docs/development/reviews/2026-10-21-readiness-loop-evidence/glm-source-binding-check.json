@@ -1,0 +1,11 @@
+{
+  "matchedFiles": 38,
+  "changedFiles": [
+    {
+      "path": "test/hud-installation.test.ts",
+      "previous": "ff91053630955893e417680110a30eca828d9a5af59f4c86674a1c487cb55e51",
+      "current": "8cea452f6800cad1cc15502278e69f7a5e5f192777dcc056d62a072f82e4f630"
+    }
+  ],
+  "runtimeChanges": 0
+}

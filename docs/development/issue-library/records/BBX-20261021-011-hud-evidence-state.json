@@ -1,0 +1,237 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261021-011",
+  "title": "HUD receipt state could appear as native host acceptance",
+  "category": "host-integration",
+  "tags": [
+    "hud",
+    "codex",
+    "claude",
+    "receipt",
+    "native-acceptance",
+    "readiness1"
+  ],
+  "status": "deferred",
+  "symptom": "Independent review found that the compact Claude statusLine and Codex HUD rendered an unqualified session PASS from a recorded hook receipt while file verification and native host acceptance remained unverified. Long sessions, user-edited launcher ownership and repeated disable also had bounded-state gaps.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "The compact renderer omitted evidence qualifiers, receipt scanning treated more than 256 entries as an error, Codex launcher ownership trusted only a header marker, and Claude disable required retained ownership state after manual statusLine removal. Receipt presence alone cannot prove native host delivery."
+  },
+  "requestedOutcome": "Keep receipt observation, file verification and native host acceptance visibly distinct; keep long-session scanning bounded; preserve user-edited host configuration; independently verify the fixes and then capture the same frozen current candidate in real Codex and Claude terminal hosts.",
+  "decisions": [
+    "Treat recorded receipts as observation metadata, never native host-acceptance evidence.",
+    "Keep the issue in verifying state after static and focused-test closure until the frozen current candidate has native Codex and Claude evidence.",
+    "Use Sonnet for independent review and the user-selected GLM final audit instead of the earlier unexecuted Opus pass."
+  ],
+  "actions": [
+    {
+      "description": "Qualify compact HUD output, bound recent receipt selection, preserve edited Codex launchers and make absent Claude statusLine disable idempotent.",
+      "status": "done"
+    },
+    {
+      "description": "Run focused HUD tests and independent Sonnet fix verification.",
+      "status": "done"
+    },
+    {
+      "description": "Install the exact frozen current candidate in disposable profiles and capture bounded native Codex upper/HUD and Claude statusLine evidence without borrowing a historical result.",
+      "status": "done"
+    },
+    {
+      "description": "Complete remaining Claude/current Windows native hook acceptance; current-candidate macOS Codex hook delivery/control flow passed separate independent review.",
+      "status": "in-progress"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Bounded HUD static and focused-test closure",
+      "status": "passed",
+      "scope": "Current product/hud collector, renderer and setup ownership behavior plus focused HUD launcher tests; no native host claim.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-remediation-tests-final.log",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-review-closure.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-remediation-report.md"
+      ],
+      "result": "The focused suite passed 21 tests with 149 assertions and no failures; safe-mode Sonnet fix verification returned PASS with no mandatory findings. Current native host acceptance was explicitly outside this result."
+    },
+    {
+      "name": "Frozen current-candidate native HUD acceptance",
+      "status": "passed",
+      "scope": "Exact c18a7da9 candidate in native macOS Claude statusLine and Codex companion panes, ready/error/recovery and owned-resource cleanup; separate from interactive authentication or hook acceptance.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-final-report.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-current-candidate/codex-hud-pane.txt",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-current-candidate/claude-status-initial.txt",
+        "docs/development/reviews/2026-10-22-continuation-evidence/native/independent-review.md"
+      ],
+      "result": "Supplemental native captures and independent review verify both HUD transitions. Direct Codex authoring authenticated separately. A later candidate-daemon restart resolved the interactive sign-in screen to an authenticated folder-access prompt, not yet a fully ready session. Native hook acceptance and rebuilt-artifact revalidation remain separate open work."
+    },
+    {
+      "name": "GLM source audit and rebuilt artifact regression",
+      "status": "passed",
+      "scope": "HUD runtime sources, direct-entry guards and isolated installed status commands; not authenticated host event acceptance.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-final-result.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-closure-result.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-final-report.md"
+      ],
+      "result": "GLM found no mandatory defects in the prior HUD source snapshot. The rebuilt c18 candidate did not repeat the entry failure; later native HUD transition evidence is recorded separately. This audit does not cover the new Python engine implementation."
+    },
+    {
+      "name": "Local 2b43 candidate native surfaces and cleanup",
+      "status": "passed",
+      "scope": "Exact local 2b43 candidate: authenticated Codex upper prompt, qualified companion HUD, Claude statusLine ready/error/recovery and isolated candidate cleanup; no hook-delivery or release claim.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/independent-review.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/cleanup-closure.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/cleanup-proof.txt"
+      ],
+      "result": "The Codex upper pane reached the authenticated normal prompt after disposable folder trust; hooks were explicitly left untrusted. The companion and Claude outputs retained unknown/file-not-run qualifiers. An initial retained project-trust table was found, removed exactly and independently verified absent with temporary auth and candidate-root processes also absent."
+    },
+    {
+      "name": "Current 2b43 macOS Codex native hook acceptance",
+      "status": "passed",
+      "scope": "Exact installed candidate, actual native file changes and host context/control flow, isolated profile and invocation-scoped hook admission. Does not establish Claude/Windows/desktop or promote HUD hostAcceptance from receipts.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/codex-hooks-2b43/independent-review.md"
+      ],
+      "result": "Independent raw-metadata review verified SessionStart developer context, one native failing patch with PostToolUse FAIL/tool rejection, one Stop continuation followed by a second Stop receipt and task completion, then an inverse patch with PASS and no continuation. Fixture bytes restored; hooks stayed untrusted; temporary auth/project trust/owned namespaces/processes were cleaned. Initial evidence gaps were preserved and closed through a corrected two-call run and exact original-file path mapping."
+    },
+    {
+      "name": "Current isolated Claude native-hook prerequisite",
+      "status": "pending",
+      "scope": "Actual auth-status probe only; no Claude model or native-hook invocation.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/claude-isolated-auth-probe.md"
+      ],
+      "result": "The isolated candidate CLI returned loggedIn=false, authMethod=none and exit 1. A user decision about temporary isolated login is pending; native Claude hook acceptance has not run. This is distinct from prior provider/model rate limits."
+    },
+    {
+      "name": "Current isolated Windows Codex native-hook prerequisite",
+      "status": "pending",
+      "scope": "Retained isolated 2b43 Windows Codex context only; read-only version/help/login-status probe. No model or hook invocation, login, credential copy, trust/security change or live-profile claim.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/windows-codex-auth-probe.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/windows-codex-auth-probe.json"
+      ],
+      "result": "The installed CLI and enabled plugin expose the required bounded execution controls, but codex login status exited 1 with loggedIn=false and no isolated auth file. Current Windows native hook acceptance cannot run from this retained context as-is."
+    }
+  ],
+  "related": [
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-review-initial.md",
+      "note": "Initial independent FIX_REQUIRED finding and evidence limits."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-review-closure.md",
+      "note": "Independent bounded static fix verification."
+    },
+    {
+      "kind": "contract",
+      "path": "product/installer/README.md",
+      "note": "Disable instructions for HUDs enabled by earlier installations."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-21",
+      "event": "verification-failed",
+      "status": "failed",
+      "summary": "Safe-mode Sonnet review returned FIX_REQUIRED because compact receipt PASS could be mistaken for file or native host acceptance and identified related bounded-state and ownership gaps.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-review-initial.md"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-21",
+      "event": "implemented",
+      "summary": "The HUD now qualifies receipt state, bounds newest receipt validation, preserves edited launchers and makes absent statusLine disable idempotent.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-remediation-report.md"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-21",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Focused tests and independent static fix verification passed within their bounded scope; current-candidate native host acceptance remains pending.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-remediation-tests-final.log",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-review-closure.md"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Verified the rebuilt local archive entry points, qualified status and real Codex PTY rendering/cleanup. Native authenticated Codex/Claude transitions remain pending after disposable profiles reached login; the issue remains verifying.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-final-report.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-closure-result.md"
+      ]
+    },
+    {
+      "sequence": 5,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Independent retained-evidence review verified actual Claude and Codex companion HUD ready/error/recovery on exact c18 candidate, including supplementary Codex raw captures and cleanup. No interactive-login, hook-trust or native hook-acceptance claim; issue remains verifying for subsequent artifact integration.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/native/independent-review.md"
+      ]
+    },
+    {
+      "sequence": 6,
+      "date": "2026-10-22",
+      "event": "diagnosed",
+      "summary": "Read-only evidence review tied interactive sign-in to stale candidate-only daemon auth state. Official candidate-scoped restart reached an authenticated folder-access prompt with the same environment. No prompt/trust acceptance or fully ready session is claimed.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/native/independent-review.md"
+      ]
+    },
+    {
+      "sequence": 7,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "The exact local 2b43 candidate reached the authenticated Codex upper prompt and rendered qualified Codex/Claude states. The first audit found retained disposable-project trust; exact cleanup and independent closure then passed. Hook delivery remains unverified, so the issue stays verifying.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/independent-review.md"
+      ]
+    },
+    {
+      "sequence": 8,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "The current macOS Codex native hook scenario passed independent review after correcting evidence integrity/lifecycle/receipt-path gaps. Initial INCOMPLETE reports remain retained. Claude and current Windows native hook acceptance remain open; HUD receipt state is not promoted to host acceptance.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/codex-hooks-2b43/independent-review.md"
+      ]
+    },
+    {
+      "sequence": 9,
+      "date": "2026-10-22",
+      "event": "diagnosed",
+      "status": "pending",
+      "summary": "A read-only prerequisite probe found the retained isolated Windows Codex candidate context unauthenticated. CLI and plugin wiring are present, but no model or hook journey ran. Claude and Windows native hook acceptance remain open without any live-profile claim.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/windows-codex-auth-probe.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/windows-codex-auth-probe.json"
+      ]
+    },
+    {
+      "sequence": 10,
+      "date": "2026-10-22",
+      "event": "deferred",
+      "summary": "User decision 2026-10-22: the opt-in terminal HUD was removed from the product after 0.2.4. Removed paths: product/hud/status.mjs, product/hud/setup.mjs, test/product-hud.test.ts, test/hud-installation.test.ts. The native HUD acceptance this record tracked no longer applies to new candidates; earlier evidence stays as recorded. Reopen if a HUD returns.",
+      "evidence": []
+    }
+  ]
+}

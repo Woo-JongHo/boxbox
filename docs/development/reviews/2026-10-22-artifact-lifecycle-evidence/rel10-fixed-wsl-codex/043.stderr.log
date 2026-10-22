@@ -1,0 +1,2 @@
+Error: marketplace 'boxbox-plugins' is already added from a different source; remove it before adding this source
+[BoxBox] Installation may have changed host registration. Retained installation: /tmp/boxbox-rel10-linux.VfqJoi/wsl-fixed-codex-02/workspace-fHgJR8/profile/data/boxbox/codex/0.2.4. Receipt: /tmp/boxbox-rel10-linux.VfqJoi/wsl-fixed-codex-02/workspace-fHgJR8/profile/data/boxbox/codex/0.2.4/.boxbox-install-state.json. Inspect host plugin/marketplace lists, then rerun this exact installer or remove the exact registration before manual recovery.

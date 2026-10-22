@@ -1,0 +1,4 @@
+{
+  "method": "Bun.Transpiler TypeScript erasure",
+  "byteIdenticalJavaScript": true
+}

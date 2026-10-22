@@ -1,0 +1,6 @@
+Host JSON lacks an expected source path
++ actual - expected
+
++ 'undefined'
+- 'string'
+

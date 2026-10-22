@@ -1,0 +1,46 @@
+{
+  "fail": {
+    "distinctPrivateItemCount": 1,
+    "events": [
+      {
+        "ordinal": 6,
+        "eventType": "item.started",
+        "itemType": "file_change",
+        "mappedItemIdentity": "file-change-1",
+        "status": "in_progress",
+        "changeCount": 1
+      },
+      {
+        "ordinal": 7,
+        "eventType": "item.completed",
+        "itemType": "file_change",
+        "mappedItemIdentity": "file-change-1",
+        "status": "completed",
+        "changeCount": 1
+      }
+    ],
+    "completedFileChangeCount": 1
+  },
+  "recovery": {
+    "distinctPrivateItemCount": 1,
+    "events": [
+      {
+        "ordinal": 6,
+        "eventType": "item.started",
+        "itemType": "file_change",
+        "mappedItemIdentity": "file-change-1",
+        "status": "in_progress",
+        "changeCount": 1
+      },
+      {
+        "ordinal": 7,
+        "eventType": "item.completed",
+        "itemType": "file_change",
+        "mappedItemIdentity": "file-change-1",
+        "status": "completed",
+        "changeCount": 1
+      }
+    ],
+    "completedFileChangeCount": 1
+  }
+}

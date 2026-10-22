@@ -1,17 +1,11 @@
 import      { describe, expect, test        } from "bun:test"                         ;
 import      { resolve                       } from "node:path"                        ;
-import      { compareParse, parserAvailable } from "@/common/parse-check.ts"          ;
+import      { compareParse, parserAvailable, syntaxDiagnostics } from "@/common/parse-check.ts" ;
 import      { syntacticDiagnostics          } from "@/typescript/load-source-file.ts" ;
 
 /** A valid snippet and a whitespace-free break of it, per language. */
 const CASES: Readonly<Record<string, readonly [string, string]>> = {
-	python     : ["a = 1\nb = 2\n"                , "a = 1\nb = = 2\n"               ],
-	go         : ["package p\n\nvar a = 1\n"      , "package p\n\nvar a = = 1\n"     ],
-	javascript : ["const a = 1;\n"                , "const a = = 1;\n"               ],
-	c          : ["int a = 1;\n"                  , "int a = = 1;\n"                 ],
-	cpp        : ["int a = 1;\n"                  , "int a = = 1;\n"                 ],
-	java       : ["class A { int a = 1; }\n"      , "class A { int a = = 1; }\n"     ],
-	rust       : ["fn main() { let a = 1; }\n"    , "fn main() { let a = = 1; }\n"   ],
+	python     : ["a = 1\nb = 2\n"                , "a = 1\nb = = 2\n"               ] ,
 };
 
 describe("compareParse", () => {
@@ -21,6 +15,13 @@ describe("compareParse", () => {
 			expect(compareParse(language, valid, valid.replace(" = ", "   = ")).status).toBe("ok"     ) ;
 		});
 	}
+});
+
+describe("syntaxDiagnostics", () => {
+	test("parses one input even when no comparison edit exists", () => {
+		expect(syntaxDiagnostics("python", "pass\n").diagnostics).toEqual([]);
+		expect(syntaxDiagnostics("python", "if:\n").diagnostics.length).toBeGreaterThan(0);
+	});
 });
 
 describe("syntacticDiagnostics (TypeScript)", () => {

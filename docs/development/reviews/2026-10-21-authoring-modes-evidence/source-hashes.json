@@ -1,0 +1,11 @@
+{
+  "product/engine/cli.ts": "beb862b93fc2f3d5665beef543efa046ee1dd753ef650d37ee62470715e4cd1d",
+  "product/engine/common/examples.ts": "6750df71d8e6dd6c76951809e8f6c3de176c81125d9b08fbda437bab8f2fd195",
+  "product/engine/common/authoring-guide.ts": "f3abb867720bbc58036c202254efdbb14ad84535e46d28ff36fb68c01a550781",
+  "product/engine/common/alignment-only.ts": "06ca778e9e208ec6ebd66ea8bb562f648c333c82282079e8e87987ef41d28166",
+  "product/engine/common/format-pipeline.ts": "21a5753a5b34b52ba3a91cf1b945c5972621d2b4a45c10052243419ba1b01f72",
+  "product/plugin/skills/boxbox/SKILL.md": "de60237a4a7c2c94b4e21a1969cd0a71e6fb13b9b5898143a55c7073b1b10e73",
+  "test/authoring-modes.test.ts": "72ca0c21264216d288a286a1dc36781c68c35e73183c722f9e55982980059343",
+  "test/alignment-only.test.ts": "1121d23e95ded231d3129c3e7e67ba478c31dbd25760773144e4c957b8b03141",
+  "test/public-artifact.test.ts": "fcc8c8b7aeb54c61a42898ba2b96f09152ad5586eb66a76a10d1c14501cdb693"
+}

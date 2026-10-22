@@ -1,0 +1,17 @@
+{
+  "extraKnownMarketplaces": {
+    "boxbox-plugins": {
+      "source": {
+        "source": "directory",
+        "path": "/private/tmp/boxbox-python-native.TflF0A/home/data/boxbox/claude/0.2.4"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "boxbox@boxbox-plugins": true
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "'/opt/homebrew/Cellar/node@22/22.22.3/bin/node' '/tmp/boxbox-python-native.TflF0A/home/data/boxbox/claude/0.2.4/plugin/scripts/hud/status.mjs' --plugin-root '/tmp/boxbox-python-native.TflF0A/home/data/boxbox/claude/0.2.4/plugin' --host claude --claude-statusline"
+  }
+}

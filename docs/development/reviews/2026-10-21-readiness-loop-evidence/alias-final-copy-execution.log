@@ -1,0 +1,15 @@
+check file=sample.ts groups=1 misaligned=1 refused=0 suggested=0 unsupported=0
+syntax status=valid tool=typescript diagnostics=0
+format mode=standalone approval-eligible=false verification=not-run
+format: no matching convention
+align --dry-run verifies horizontal whitespace only; format --dry-run includes the configured formatter. Both verify parser, preservation and fixed point before writing
+check file=sample.json groups=0 misaligned=0 refused=0 suggested=0 unsupported=0
+syntax status=valid tool=JSON.parse diagnostics=0
+format mode=standalone approval-eligible=false verification=not-run
+format: no verified approval rule applies to this file
+align --dry-run verifies horizontal whitespace only; format --dry-run includes the configured formatter. Both verify parser, preservation and fixed point before writing
+check file=sample.yaml groups=0 misaligned=0 refused=0 suggested=0 unsupported=0
+syntax status=valid tool=yaml@2.9.1 diagnostics=0
+format mode=standalone approval-eligible=false verification=not-run
+format: no verified approval rule applies to this file
+align --dry-run verifies horizontal whitespace only; format --dry-run includes the configured formatter. Both verify parser, preservation and fixed point before writing

@@ -1,0 +1,98 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261022-021",
+  "title": "No way to see a session's token use and the code's growth against its starting point",
+  "category": "host-integration",
+  "tags": [
+    "monitor",
+    "token-usage",
+    "baseline",
+    "report",
+    "claude",
+    "codex"
+  ],
+  "status": "investigating",
+  "symptom": "Token use can be read only through a development script, and nothing records how a file changed from the session start beyond a hash: the SessionStart baseline stores one sha256 string per file, so lines, bytes and whether a change was only alignment padding cannot be reported. There is no per-host page and no /boxbox -monitor entry.",
+  "rootCause": {
+    "confidence": "hypothesis",
+    "summary": "The baseline was designed only for change detection, and session-record reading lives in a development tool. Adding sizes and a whitespace-insensitive hash to the baseline and moving the reader into the engine should allow a read-only report; the proposal lists what is measured and what remains an estimate."
+  },
+  "requestedOutcome": "/boxbox -monitor makes the agent run boxbox monitor, which writes one self-contained page per host under the plugin data folder showing token use by step, hook text, per-file lines and bytes before and after, whitespace-only versus content change, and hook results, without model calls and without copying message text.",
+  "decisions": [
+    "2026-10-22 user direction: build a /boxbox -monitor feature with a page per plugin showing token use and the increase in lines and bytes compared with before.",
+    "2026-10-22 user instruction to proceed with the recommended direction: record real inspector usage first and design the monitor meanwhile. Adopted defaults in the proposal: a product command, one page per host, current-project scope, no dollar cost."
+  ],
+  "actions": [
+    {
+      "description": "Write the design proposal with data sources, baseline v2, host differences, boundaries and acceptance criteria.",
+      "status": "done"
+    },
+    {
+      "description": "Token reader for Claude session records exists as development/tools/session-usage.ts; move it into the engine when the command is built.",
+      "status": "pending"
+    },
+    {
+      "description": "Baseline v2 in the lifecycle hook (bytes, lines, whitespace-insensitive hash for supported files) readable alongside the old shape, with its size measured.",
+      "status": "pending"
+    },
+    {
+      "description": "boxbox monitor --json, then the HTML renderer, the -monitor skill argument and docs.",
+      "status": "pending"
+    },
+    {
+      "description": "Codex reader after a sanitized real rollout fixture exists.",
+      "status": "pending"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Monitor reports volume without leaking content or changing hook behavior",
+      "status": "not-run",
+      "scope": "Acceptance criteria in the proposal.",
+      "evidence": [],
+      "result": "Not implemented."
+    }
+  ],
+  "related": [
+    {
+      "kind": "contract",
+      "path": "docs/development/proposals/2026-10-22-boxbox-monitor.md",
+      "note": "Design proposal for this issue."
+    },
+    {
+      "kind": "code",
+      "path": "development/tools/session-usage.ts",
+      "note": "Existing Claude session reader that the monitor builds on."
+    },
+    {
+      "kind": "code",
+      "path": "product/engine/common/lifecycle-hook.ts",
+      "note": "Owns the SessionStart baseline and the hook receipts."
+    },
+    {
+      "kind": "issue",
+      "path": "docs/development/issue-library/records/BBX-20261022-020-model-effort-assignment.json",
+      "note": "The model assignment evaluation needs the per-step data this report provides."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-22",
+      "event": "reported",
+      "summary": "User asked for a /boxbox -monitor page per plugin that shows token use and, against the earlier state, the increase in lines and bytes.",
+      "evidence": []
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-22",
+      "event": "diagnosed",
+      "summary": "The baseline holds only hashes, so the footprint needs a new baseline shape; session-record token reading already works on real Claude sessions (usage counted once per message id); a Codex rollout carries token_count events but has no reader yet.",
+      "evidence": [
+        "docs/development/proposals/2026-10-22-boxbox-monitor.md",
+        "docs/development/issue-library/evidence/session-usage-measurements.txt"
+      ]
+    }
+  ]
+}

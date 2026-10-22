@@ -1,0 +1,5 @@
+{
+  "exitCode": 1,
+  "stdout": "",
+  "stderr": "Issue validation failed: /tmp/boxbox-issue-library/BBX-20261021-004-invalid.json: resolved issue has unfinished actions\n"
+}

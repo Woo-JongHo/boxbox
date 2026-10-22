@@ -17,13 +17,7 @@ import      { compareParse       } from "@/common/parse-check.ts"            ;
 import      { changedLines       } from "@/common/preservation.ts"           ;
 import      { alignSource        } from "@/common/table-engine.ts"           ;
 import type { LineProfiler       } from "@/common/table-engine.ts"           ;
-import      { C_ALIGNER          } from "@/c/profile.ts"                     ;
-import      { CPP_ALIGNER        } from "@/cpp/profile.ts"                   ;
-import      { GO_ALIGNER         } from "@/go/profile.ts"                    ;
-import      { JAVA_ALIGNER       } from "@/java/profile.ts"                  ;
-import      { JAVASCRIPT_ALIGNER } from "@/javascript/profile.ts"            ;
 import      { PYTHON_ALIGNER     } from "@/python/profile.ts"                ;
-import      { RUST_ALIGNER       } from "@/rust/profile.ts"                  ;
 import      { preservesTokens    } from "@/typescript/token-preservation.ts" ;
 import      { mutate             } from "../../test/mutator.ts"              ;
 
@@ -45,12 +39,6 @@ interface Entry {
 
 const LINE_LANGUAGES: readonly (readonly [LineProfiler, string, string])[] = [
 	[PYTHON_ALIGNER    , "py"  , "#" ],
-	[JAVA_ALIGNER      , "java", "//"],
-	[GO_ALIGNER        , "go"  , "//"],
-	[RUST_ALIGNER      , "rs"  , "//"],
-	[JAVASCRIPT_ALIGNER, "js"  , "//"],
-	[C_ALIGNER         , "c"   , "//"],
-	[CPP_ALIGNER       , "cpp" , "//"],
 ];
 
 function lineEntry(aligner: LineProfiler, title: string, before: string): Entry {

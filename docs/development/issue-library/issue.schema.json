@@ -1,0 +1,269 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BoxBox issue history record",
+  "description": "Development history, not an approval or a public rule registry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "id",
+    "title",
+    "category",
+    "tags",
+    "status",
+    "symptom",
+    "rootCause",
+    "requestedOutcome",
+    "decisions",
+    "actions",
+    "verification",
+    "related",
+    "history"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "../issue.schema.json"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^BBX-\\d{8}-\\d{3}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "enum": [
+        "grouping",
+        "syntax-boundary",
+        "structural-layout",
+        "verification-gap",
+        "runtime",
+        "installation",
+        "host-integration",
+        "storage",
+        "ci-release",
+        "documentation"
+      ]
+    },
+    "tags": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "status": {
+      "enum": [
+        "open",
+        "investigating",
+        "implementing",
+        "verifying",
+        "resolved",
+        "deferred"
+      ]
+    },
+    "symptom": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rootCause": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "confidence",
+        "summary"
+      ],
+      "properties": {
+        "confidence": {
+          "enum": [
+            "hypothesis",
+            "confirmed"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "requestedOutcome": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "description",
+          "status"
+        ],
+        "properties": {
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "in-progress",
+              "done"
+            ]
+          }
+        }
+      }
+    },
+    "verification": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "status",
+          "scope",
+          "evidence",
+          "result"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "failed",
+              "pending",
+              "not-run"
+            ]
+          },
+          "scope": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 0,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "result": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "related": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "path",
+          "note"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "code",
+              "test",
+              "contract",
+              "review",
+              "issue",
+              "evidence"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "history": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sequence",
+          "date",
+          "event",
+          "summary",
+          "evidence"
+        ],
+        "properties": {
+          "sequence": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "event": {
+            "enum": [
+              "reported",
+              "diagnosed",
+              "decision",
+              "implemented",
+              "verified",
+              "reopened",
+              "deferred",
+              "verification-failed"
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 0,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "failed",
+              "pending",
+              "not-run"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

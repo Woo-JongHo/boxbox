@@ -1,0 +1,14 @@
+{
+  "syntaxFiles": [
+    "product/hud/status.mjs",
+    "product/hud/codex.mjs",
+    "product/hud/setup.mjs",
+    "product/hud/record.mjs",
+    "product/installer/entry.mjs",
+    "product/installer/install.mjs",
+    "product/installer/launcher.mjs"
+  ],
+  "readmeCodeBlocksMatch": true,
+  "readmeLinkTargetsMatch": true,
+  "changedFilesHaveNoPlaceholders": true
+}

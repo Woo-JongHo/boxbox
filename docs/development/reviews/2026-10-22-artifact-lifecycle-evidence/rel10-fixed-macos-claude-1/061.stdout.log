@@ -1,0 +1,12 @@
+[
+  {
+    "id": "boxbox@boxbox-plugins",
+    "version": "0.2.4",
+    "scope": "user",
+    "enabled": true,
+    "installPath": "/tmp/boxbox-readiness/rel10-fixed-macos-claude-1/workspace-fLMLpQ/profile/claude/plugins/cache/boxbox-plugins/boxbox/0.2.4",
+    "installedAt": "2026-10-21T17:38:46.471Z",
+    "lastUpdated": "2026-10-21T17:39:03.870Z",
+    "projectEnabled": false
+  }
+]

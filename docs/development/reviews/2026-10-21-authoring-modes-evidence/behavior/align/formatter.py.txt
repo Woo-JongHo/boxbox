@@ -1,0 +1,2 @@
+from pathlib import Path
+Path("formatter-sentinel").write_text("executed")

@@ -46,6 +46,19 @@ test("a preflight failure ends before running and is recorded", async () => {
 	expect(latest(path)).toMatchObject({ state: "TOOL_ERROR", errorCode: "PREFLIGHT_FAILED", childExitCode: null });
 });
 
+test("structured document changes reach inspection and are retained in run evidence", async () => {
+	const path           = root() ;
+	const seen: string[] = []     ;
+	const checker = async (project: string, file: string) => {
+		seen.push(file);
+		return { ...await inspect(project, file), language: file.endsWith(".json") ? "json" : "yaml" };
+	};
+	const script = "from pathlib import Path; [(Path(name).write_text(value)) for name, value in [('a.json', '{}'), ('b.yaml', 'key: value'), ('c.yml', 'key: value')]]";
+	expect(await guardedRun(["--root", path, "--json", "--", "python3", "-c", script], preflight, checker, "test")).toBe   (0                            ) ;
+	expect(seen                                                                                                   ).toEqual(["a.json", "b.yaml", "c.yml"]) ;
+	expect(latest(path).checked.map((entry: { file: string }) => entry.file)                                      ).toEqual(seen                         ) ;
+});
+
 test("child failure, unsupported and unchanged are not PASS", async () => {
 	for (const [script, state, code] of [["raise SystemExit(7)", "CHILD_FAILED", 2], ["open('one.js','w').write('x=1')", "UNSUPPORTED", 2], ["pass", "NO_CHANGES", 0]] as const) {
 		const path = root();
@@ -99,7 +112,7 @@ test("status reads only bounded headers before loading the latest run", () => {
 });
 
 test("snapshot streams source files larger than the former size cap", () => {
-	const path    = root()                         ;
+	const path    = root        ()                 ;
 	const content = Buffer.alloc(17 * 1024 * 1024) ;
 	writeFileSync(join(path, "large.py"), content);
 	expect(snapshot(path)["large.py"]).toBe(createHash("sha256").update(content).digest("hex"));
@@ -126,7 +139,7 @@ test("macOS status lock canonicalizes aliases and ignores TMPDIR", () => {
 });
 
 test("direct status rejects a concurrent status process", () => {
-	const path    = root()                                            ;
+	const path    = root              ()                              ;
 	const release = acquireProcessLock(lockDirectory(path), "status") ;
 	expect(release).not.toBeNull();
 	try {
@@ -136,7 +149,7 @@ test("direct status rejects a concurrent status process", () => {
 
 test("macOS status uses the operating system advisory lock", async () => {
 	if (process.platform !== "darwin") return;
-	const path      = root()              ;
+	const path      = root         ()     ;
 	const directory = lockDirectory(path) ;
 	mkdirSync(directory, { recursive: true });
 	const lockPath = join(directory, "status.advisory.lock")                                 ;
@@ -159,17 +172,17 @@ test("macOS status uses the operating system advisory lock", async () => {
 
 test("macOS production status enters the uncontended lockf child", () => {
 	if (process.platform !== "darwin") return;
-	const path  = root()                                                                                         ;
-	const entry = join(process.cwd(), "product/packages/cli/entry.ts")                                           ;
+	const path  = root     ()                                                                                    ;
+	const entry = join     (process.cwd(), "product/packages/cli/entry.ts"                                     ) ;
 	const child = spawnSync(process.execPath, [entry, "status", "--root", path, "--json"], { encoding: "utf8" }) ;
 	expect(child.status).toBe(0);
 	expect(JSON.parse(child.stdout)).toMatchObject({ command: "status", state: "NOT_INVOKED", root: path });
 });
 
 test("status lock does not steal a fresh partial owner and recovers an old malformed owner", () => {
-	const path      = root()                         ;
-	const directory = lockDirectory(path)            ;
-	const lock      = join(directory, "status.lock") ;
+	const path      = root         ()                         ;
+	const directory = lockDirectory(path                    ) ;
+	const lock      = join         (directory, "status.lock") ;
 	mkdirSync(lock, { recursive: true });
 	expect(acquireProcessLock(directory, "status")).toBeNull();
 	const old = new Date(Date.now() - 10_000);

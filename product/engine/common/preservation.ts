@@ -14,8 +14,8 @@
  * whitespace that was already a space, so the source is masked with its whitespace replaced by a sentinel first:
  * every blank in that mask is then a masked position.
  */
-import      { maskSource } from "./code-text.ts" ;
-import type { CodeSyntax } from "./code-text.ts" ;
+import      { maskSource } from "@/common/code-text.ts" ;
+import type { CodeSyntax } from "@/common/code-text.ts" ;
 
 const SENTINEL    = "\u0000"                 ;
 const PLACEHOLDER = "\u0001"                 ;
@@ -54,9 +54,9 @@ function normalizeCode(code: string): string {
 }
 
 function lineKeys(source: string, syntax: CodeSyntax): LineKey[] {
-	const mask        = maskSource(source.replace(/[^\S\n]/gu, SENTINEL), syntax) ;
-	const lines       = source.split("\n")                                        ;
-	const maskedLines = mask.text.split("\n")                                     ;
+	const mask        = maskSource     (source.replace(/[^\S\n]/gu, SENTINEL), syntax) ;
+	const lines       = source   .split("\n"                                         ) ;
+	const maskedLines = mask.text.split("\n"                                         ) ;
 	return lines.map((line, lineIndex) => {
 		const maskedLine   = maskedLines[lineIndex] ?? ""                                                                             ;
 		const commentStart = mask.commentStarts[lineIndex] ?? -1                                                                      ;

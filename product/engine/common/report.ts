@@ -3,15 +3,11 @@
  * builds pass/fail for safety checks S1–S4 and alarms A1–A9. It is a pure function: the same input yields the same report.
  * Alarms are not failures but "places for a human or an AI to look". Deciding (whether to fix, whether to change a rule) is not this module's job.
  */
-import      { displayWidth            } from "./display-width.ts" ;
-import type { FileResult, ResultGroup } from "./result-json.ts"   ;
-import      { patternOf               } from "./surface.ts"       ;
-import      {
-              lookup                ,
-              type ConventionDb     ,
-              type LookupResult     ,
-                                      } from "./conventions.ts"   ;
-import      { lookupKeyOf             } from "./signature.ts"     ;
+import      { displayWidth                                 } from "@/common/display-width.ts" ;
+import type { FileResult, GroupState, ResultGroup          } from "@/common/result-json.ts"   ;
+import      { patternOf                                    } from "@/common/surface.ts"       ;
+import      { lookup, type ConventionDb, type LookupResult } from "@/common/conventions.ts"   ;
+import      { lookupKeyOf                                  } from "@/common/signature.ts"     ;
 
 export const REPORT_SCHEMA_VERSION = 1;
 
@@ -46,22 +42,28 @@ export function straySemicolonPadding(lines: readonly string[], index: number): 
 	if (/^\s*(\/\/|\*|\/\*|import\b|export\s.*\bfrom\b|\}\s*from\b)/u.test(line)) return undefined;
 
 	const padding = /\S([ \t]+);\r?$/u.exec(line);
-	if (!padding) return undefined;
+	if (!padding)                                                                 return undefined;
 
 	const body = line.slice(0, padding.index + 1).replace(/^[ \t]*/u, "");
-	if (/ {2,}|\t/u.test(body)) return undefined;
+	if (/ {2,}|\t/u.test(body))                                                   return undefined;
 
 	const column    = semicolonColumn(line)                                                                                                              ;
 	const neighbors = [lines[index - 1], lines[index + 1]].filter((other): other is string => other !== undefined && indentOf(other) === indentOf(line)) ;
-	if (neighbors.some(other => semicolonColumn(other) === column)) return undefined;
+	if (neighbors.some(other => semicolonColumn(other) === column))               return undefined;
 
 	return padding[1]!.length;
 }
 
-export const DEFAULT_LIMITS: ReportLimits = { hard: 118, soft: 100, outlierGap: 20, paddingRatio: 0.5, largeEdits: 20 };
+export const DEFAULT_LIMITS: ReportLimits = {
+	hard         : 118 ,
+	soft         : 100 ,
+	outlierGap   : 20  ,
+	paddingRatio : 0.5 ,
+	largeEdits   : 20  ,
+};
 
 /** Kinds allowed to be fixed automatically from two rows (user approval, charter invariant 4) */
-const TWO_ROW_KINDS = new Set(["declaration-equals", "import-declarations"]);
+const TWO_ROW_KINDS = new Set(["declaration-equals", "declaration-call-envelope", "import-declarations"]);
 
 export type CheckStatus = "pass" | "fail" | "not-run" | "skipped";
 
@@ -135,16 +137,16 @@ export interface ReportInput {
 }
 
 const ALARM_LABELS: Readonly<Record<AlarmId, string>> = {
-	A0  : "pending alignment" ,
-	A1  : "over hard limit" ,
-	A2  : "over soft limit" ,
-	A3  : "outlier row" ,
-	A4  : "cannot decompose" ,
-	A5  : "ambiguous pattern" ,
-	A6  : "two-row pair" ,
-	A7  : "wasted padding" ,
-	A8  : "no pattern mapping" ,
-	A9  : "large change" ,
+	A0  : "pending alignment"    ,
+	A1  : "over hard limit"      ,
+	A2  : "over soft limit"      ,
+	A3  : "outlier row"          ,
+	A4  : "cannot decompose"     ,
+	A5  : "ambiguous pattern"    ,
+	A6  : "two-row pair"         ,
+	A7  : "wasted padding"       ,
+	A8  : "no pattern mapping"   ,
+	A9  : "large change"         ,
 	A12 : "out-of-table padding" ,
 };
 
@@ -154,9 +156,9 @@ function patternName(language: string, group: ResultGroup): string | undefined {
 }
 
 const PARSE_DETAIL: Readonly<Record<FileResult["parse"]["status"], (tool: string) => string>> = {
-	"ok"      : tool => `re-read with the ${tool} parser; diagnostics unchanged` ,
+	"ok"      : tool => `re-read with the ${tool} parser; diagnostics unchanged`     ,
 	"changed" : tool => `${tool} parser diagnostics changed; the write was reverted` ,
-	"skipped" : tool => `${tool} parser is not installed` ,
+	"skipped" : tool => `${tool} parser is not installed`                            ,
 	"not-run" : ()   => "check mode does not write files; checked only with --write" ,
 };
 
@@ -166,11 +168,18 @@ function checksOf(input: ReportInput): readonly ReportCheck[] {
 	const floorBreaks = result.groups.filter(group => group.state === "FIXABLE" && group.rows < 3 && !TWO_ROW_KINDS.has(group.kind)) ;
 	const parse       = result.parse.status                                                                                          ;
 	const idempotent  = recheck === undefined ? undefined : recheck.summary.edits === 0 && recheck.summary.misaligned === 0          ;
+	const details = {
+		S1 : `the engine verifies token, string and comment preservation per edit and never writes a failing edit (refused groups ${refused})`                                                 ,
+		S2 : PARSE_DETAIL[parse](result.parse.tool || result.language)                                                                                                                         ,
+		S3 : idempotent === undefined ? "checked only when rechecking after --write" : `pending edits on recheck ${recheck!.summary.edits}`                                                    ,
+		S4 : floorBreaks.length === 0 ? "two-row exceptions: declarations, call envelopes, imports" : floorBreaks.map(group => `${group.startLine}-${group.endLine} ${group.kind}`).join(", ") ,
+	};
+
 	return [
-		{ id : "S1" , label : "whitespace-only change"    , status : "pass"                                                              , detail : `the engine verifies token, string and comment preservation per edit and never writes a failing edit (refused groups ${refused})`                                                 },
-		{ id : "S2" , label : "same re-parse diagnostics" , status : parse === "ok" ? "pass" : parse === "changed" ? "fail" : parse      , detail : PARSE_DETAIL[parse](result.parse.tool || result.language)                                                                                                                         },
-		{ id : "S3" , label : "idempotent"                , status : idempotent === undefined ? "not-run" : idempotent ? "pass" : "fail" , detail : idempotent === undefined ? "checked only when rechecking after --write" : `pending edits on recheck ${recheck!.summary.edits}`                                                    },
-		{ id : "S4" , label : "auto-fix needs 3+ rows"    , status : floorBreaks.length === 0 ? "pass" : "fail"                          , detail : floorBreaks.length === 0 ? "two-row exceptions only for declaration-equals and import" : floorBreaks.map(group => `${group.startLine}-${group.endLine} ${group.kind}`).join(", ") },
+		{ id : "S1" , label : "whitespace-only change"    , status : "pass"                                                              , detail : details.S1 },
+		{ id : "S2" , label : "same re-parse diagnostics" , status : parse === "ok" ? "pass" : parse === "changed" ? "fail" : parse      , detail : details.S2 },
+		{ id : "S3" , label : "idempotent"                , status : idempotent === undefined ? "not-run" : idempotent ? "pass" : "fail" , detail : details.S3 },
+		{ id : "S4" , label : "auto-fix needs 3+ rows"    , status : floorBreaks.length === 0 ? "pass" : "fail"                          , detail : details.S4 },
 	];
 }
 
@@ -180,6 +189,11 @@ function paddingOf(line: string): { readonly padding: number; readonly content: 
 	const padding = [...body.matchAll(/ {2,}/gu)].reduce((sum, match) => sum + match[0].length - 1, 0) ;
 	const content = body.replace(/\s/gu, "").length                                                    ;
 	return { padding, content };
+}
+
+/** Noncontiguous table spans describe their extent, not ownership of every line inside that extent. */
+function rowLinesOf(group: ResultGroup): readonly number[] {
+	return group.rowLines ?? Array.from({ length: group.endLine - group.startLine + 1 }, (_, index) => group.startLine + index);
 }
 
 function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlarm[] {
@@ -192,7 +206,8 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 		alarms.push({ id, label: ALARM_LABELS[id], startLine, endLine, detail, hint, anchor });
 	};
 	const groupAt = (lineNumber: number): ResultGroup | undefined =>
-		result.groups.find(group => group.startLine <= lineNumber && lineNumber <= group.endLine);
+		result.groups.find(group => group.rowLines !== undefined
+			? group.rowLines.includes(lineNumber) : group.startLine <= lineNumber && lineNumber <= group.endLine);
 
 	// ① Screen axis: lines that cause horizontal scrolling. Lines in the same table are grouped into one alarm, noting the pattern and column count (density axis).
 	const reported = new Set<ResultGroup>();
@@ -207,9 +222,9 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 		}
 		if (reported.has(group)) continue                                                                            ;
 		reported.add(group)                                                                                          ;
-		const rows   = Array.from({ length: group.endLine - group.startLine + 1 }, (_, index) => group.startLine + index) ;
-		const over   = rows.filter(row => widthOf(row) > limits.hard)                                                     ;
-		const widest = Math.max(...over.map(widthOf))                                                                     ;
+		const rows   = rowLinesOf (group                            ) ;
+		const over   = rows.filter(row => widthOf(row) > limits.hard) ;
+		const widest = Math.max   (...over.map(widthOf)             ) ;
 		push("A1", group.startLine, group.endLine, `${over.length} row(s) over hard ${limits.hard} (max ${widest} cols) · pattern ${patternName(result.language, group) ?? "?"} · columns ${group.axes.length}`, hint);
 	}
 
@@ -222,11 +237,11 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 	}
 
 	for (const group of result.groups) {
-		const rows    = Array.from({ length: group.endLine - group.startLine + 1 }, (_, index) => group.startLine + index) ;
-		const widths  = rows.map(widthOf)                                                                                  ;
-		const widest  = Math.max(...widths)                                                                                ;
-		const pattern = patternName(result.language, group)                                                                ;
-		const span    = [group.startLine, group.endLine] as const                                                          ;
+		const rows    = rowLinesOf(group)                         ;
+		const widths  = rows.map(widthOf)                         ;
+		const widest  = Math.max(...widths)                       ;
+		const pattern = patternName(result.language, group)       ;
+		const span    = [group.startLine, group.endLine] as const ;
 
 		if (widest > limits.soft && widest <= limits.hard) push("A2", ...span, `table width ${widest} > soft ${limits.soft}`, "allowed range; check whether it can be simplified");
 
@@ -236,9 +251,15 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 			push("A3", row, row, `longest row is ${sorted[0]! - sorted[1]!} cols wider than the second`, "simplify that row's exceptional element first");
 		}
 
-		if (group.state === "FIXABLE") push("A0", ...span, `${group.kind} ${group.rows} rows, pending edits ${group.edits}`, "fixable by whitespace alignment (safe): 06_align-tables.ts --file <file> --write");
-		if (group.state === "REFUSE" ) push("A4", ...span, `${group.kind}: cannot split losslessly`, "check the row structure; if it is an engine bug, add a fixture");
-		if (group.state === "SUGGEST") push("A6", ...span, `${group.kind} ${group.rows} rows`, "a human decides whether to make it a table");
+		const byState: Readonly<Partial<Record<GroupState, readonly [AlarmId, string, string]>>> = {
+			FIXABLE : ["A0", `${group.kind} ${group.rows} rows, pending edits ${group.edits}`, "fixable by whitespace alignment (safe): 06_align-tables.ts --file <file> --write"] ,
+			REFUSE  : group.reason === "wide-characters"
+				? ["A4", `${group.kind}: a column would follow wide characters`, "move the wide text out of the compared cells, for example into a named constant"]
+				: ["A4", `${group.kind}: cannot split losslessly`              , "check the row structure; if it is an engine bug, add a fixture"                ],
+			SUGGEST : ["A6", `${group.kind} ${group.rows} rows`                              , "a human decides whether to make it a table"                                   ]    ,
+		};
+		const stateAlarm = byState[group.state];
+		if (stateAlarm) push(stateAlarm[0], ...span, stateAlarm[1], stateAlarm[2]);
 
 		if (pattern === undefined) push("A8", ...span, `${group.kind} (axes ${group.axes.map(axis => axis.split("=")[0]).join(">")})`, "add a mapping to the surface-form data");
 		else if (pattern.includes("|")) push("A5", ...span, `${pattern}`, "pattern the engine cannot distinguish; decided by verdict");
@@ -262,7 +283,7 @@ function conventionsOf(result: FileResult, db: ConventionDb): ConventionSummary 
 		if (group.kind === "pair") continue;
 
 		const key   = lookupKeyOf(result.language, group.context, group.kind, group.axes) ;
-		const found = lookup(db, key, result.file)                                        ;
+		const found = lookup     (db, key, result.file                                  ) ;
 		counts[found.status] += 1;
 		lookups.push({ startLine: group.startLine, endLine: group.endLine, kind: group.kind, key, ...found });
 	}
@@ -275,14 +296,14 @@ export function buildReport(input: ReportInput): Report {
 	const states: Record<string, number> = {}                             ;
 	for (const group of input.result.groups) states[group.state] = (states[group.state] ?? 0) + 1;
 	return {
-		schemaVersion : REPORT_SCHEMA_VERSION                 ,
-		file          : input.result.file                     ,
-		language      : input.result.language                 ,
-		mode          : input.result.mode                     ,
-		limits                                                ,
-		states                                                ,
-		checks                                                ,
-		alarms        : alarmsOf(input, limits)               ,
+		schemaVersion : REPORT_SCHEMA_VERSION                          ,
+		file          : input.result.file                              ,
+		language      : input.result.language                          ,
+		mode          : input.result.mode                              ,
+		limits        : limits                                         ,
+		states        : states                                         ,
+		checks        : checks                                         ,
+		alarms        : alarmsOf(input, limits)                        ,
 		ok            : checks.every(check => check.status !== "fail") ,
 		...(input.db ? { conventions: conventionsOf(input.result, input.db) } : {}),
 	};
@@ -293,18 +314,24 @@ const alarmKey = (alarm: ReportAlarm): string => `${alarm.id}|${alarm.anchor}`;
 /** Pairs the result's alarms one by one with the baseline's alarms by kind and target. With several identical keys, only as many as exist are paired. */
 export function compareAlarms(current: readonly ReportAlarm[], baseline: readonly ReportAlarm[]): AlarmComparison {
 	const unmatched = new Map<string, ReportAlarm[]>();
+
 	for (const alarm of baseline) {
-		const bucket = unmatched.get(alarmKey(alarm)) ?? []                             ;
-		bucket.push(alarm)                                                              ;
-		unmatched.set(alarmKey(alarm), bucket)                                          ;
+		const bucket = unmatched.get(alarmKey(alarm)) ?? [];
+
+		bucket.push(alarm);
+		unmatched.set(alarmKey(alarm), bucket);
 	}
+
 	const newAlarms      : ReportAlarm[] = [] ;
 	const existingAlarms : ReportAlarm[] = [] ;
+
 	for (const alarm of current) {
-		const match = unmatched.get(alarmKey(alarm))?.shift()                           ;
-		if (match) existingAlarms.push(alarm)                                           ;
-		else newAlarms.push(alarm)                                                      ;
+		const match = unmatched.get(alarmKey(alarm))?.shift();
+
+		if (match) existingAlarms.push(alarm);
+		else newAlarms.push(alarm);
 	}
+
 	return { newAlarms, existingAlarms, resolvedAlarms: [...unmatched.values()].flat() };
 }
 
@@ -316,7 +343,12 @@ export function withBaseline(report: Report, baseline: Report): Report {
 /** Pads on the right by display width (CJK characters take 2 columns). */
 const padDisplay = (value: string, width: number): string => value + " ".repeat(Math.max(0, width - displayWidth(value)));
 
-const STATUS_TEXT: Readonly<Record<CheckStatus, string>> = { "pass": "pass", "fail": "fail", "not-run": "not applicable", "skipped": "skipped (tool missing)" };
+const STATUS_TEXT: Readonly<Record<CheckStatus, string>> = {
+	"pass"    : "pass"                   ,
+	"fail"    : "fail"                   ,
+	"not-run" : "not applicable"         ,
+	"skipped" : "skipped (tool missing)" ,
+};
 
 /** Human-readable report. */
 export function renderReport(report: Report): string {

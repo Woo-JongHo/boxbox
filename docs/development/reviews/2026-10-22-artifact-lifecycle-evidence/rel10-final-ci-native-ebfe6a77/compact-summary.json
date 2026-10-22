@@ -1,0 +1,91 @@
+{
+  "archive": {
+    "sha256": "ebfe6a7796d9d85e9cf3088c955df4fb5477e60513e8ebda97d517746d93c665",
+    "bytes": 263896,
+    "source": "66eb97821d6b8bd81323175e071a107b2aa3f215",
+    "workflow": 39646320662,
+    "attempt": 1
+  },
+  "cells": [
+    {
+      "file": "windows-claude-lifecycle.json",
+      "ok": true,
+      "host": "claude",
+      "platform": "win32",
+      "node": "v24.12.0",
+      "hostVersion": "2.1.280 (Claude Code)",
+      "commands": 93,
+      "finishedAt": "2026-10-21T17:54:01.709Z",
+      "harnessSha256": "292b730c122612479e39d0745623d8095ea066b1c2129c71d30e0a1f8bfa5d30",
+      "currentArtifactDigests": [
+        "ebfe6a7796d9d85e9cf3088c955df4fb5477e60513e8ebda97d517746d93c665"
+      ]
+    },
+    {
+      "file": "windows-codex-lifecycle.json",
+      "ok": true,
+      "host": "codex",
+      "platform": "win32",
+      "node": "v24.12.0",
+      "hostVersion": "codex-cli 0.157.1",
+      "commands": 110,
+      "finishedAt": "2026-10-21T17:53:00.899Z",
+      "harnessSha256": "292b730c122612479e39d0745623d8095ea066b1c2129c71d30e0a1f8bfa5d30",
+      "currentArtifactDigests": [
+        "ebfe6a7796d9d85e9cf3088c955df4fb5477e60513e8ebda97d517746d93c665"
+      ]
+    },
+    {
+      "file": "wsl-claude-hud-lifecycle.json",
+      "ok": true,
+      "host": "claude",
+      "platform": "linux",
+      "node": null,
+      "hostVersion": null,
+      "commands": 8,
+      "finishedAt": "2026-10-21T17:57:48.426Z",
+      "harnessSha256": null,
+      "currentArtifactDigests": []
+    },
+    {
+      "file": "wsl-claude-lifecycle.json",
+      "ok": true,
+      "host": "claude",
+      "platform": "linux",
+      "node": "v22.22.3",
+      "hostVersion": "2.1.280 (Claude Code)",
+      "commands": 93,
+      "finishedAt": "2026-10-21T17:57:35.065Z",
+      "harnessSha256": "292b730c122612479e39d0745623d8095ea066b1c2129c71d30e0a1f8bfa5d30",
+      "currentArtifactDigests": [
+        "ebfe6a7796d9d85e9cf3088c955df4fb5477e60513e8ebda97d517746d93c665"
+      ]
+    },
+    {
+      "file": "wsl-codex-hud-lifecycle.json",
+      "ok": true,
+      "host": "codex",
+      "platform": "linux",
+      "node": null,
+      "hostVersion": null,
+      "commands": 10,
+      "finishedAt": "2026-10-21T17:52:45.408Z",
+      "harnessSha256": null,
+      "currentArtifactDigests": []
+    },
+    {
+      "file": "wsl-codex-lifecycle.json",
+      "ok": true,
+      "host": "codex",
+      "platform": "linux",
+      "node": "v22.22.3",
+      "hostVersion": "codex-cli 0.163.0",
+      "commands": 110,
+      "finishedAt": "2026-10-21T17:52:35.650Z",
+      "harnessSha256": "292b730c122612479e39d0745623d8095ea066b1c2129c71d30e0a1f8bfa5d30",
+      "currentArtifactDigests": [
+        "ebfe6a7796d9d85e9cf3088c955df4fb5477e60513e8ebda97d517746d93c665"
+      ]
+    }
+  ]
+}

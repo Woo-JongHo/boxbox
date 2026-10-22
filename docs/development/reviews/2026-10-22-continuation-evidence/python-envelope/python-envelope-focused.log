@@ -1,0 +1,101 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/preservation.test.ts:
+(pass) changedLines > accepts whitespace added or removed between tokens [1.58ms]
+(pass) changedLines > flags whitespace that joins or splits tokens [0.09ms]
+(pass) changedLines > flags any change inside strings and comments [0.09ms]
+(pass) changedLines > whitespace at the end of a line comment may go; at the end of a continuing string it may not [0.07ms]
+(pass) changedLines > flags indentation changes and line count changes [0.08ms]
+(pass) engine refusal > a table whose alignment would change a string is refused, not applied [0.83ms]
+(pass) preservesTokens (TypeScript scanner) > accepts whitespace between tokens [0.73ms]
+(pass) preservesTokens (TypeScript scanner) > flags changes inside templates, regular expressions and comments, and joined tokens [0.76ms]
+
+test/recommended-preset.test.ts:
+(pass) the approved recommended preset > ships exactly the two human-approved rules with matching dated, versioned proof records [3.74ms]
+(pass) the approved recommended preset > a prepared public package retains complete proofs and refuses changed approval documents [6.08ms]
+(pass) the approved recommended preset > both shipped approval proofs survive a CRLF document checkout [0.61ms]
+(pass) the approved recommended preset > approval lookup remains limited to the exact language, scope, container and axes [0.25ms]
+(pass) the approved recommended preset > the approved TypeScript example and two-row declaration exception use real safe writes and reach a token-preserving fixed point [1300.78ms]
+(pass) the approved recommended preset > using declarations never inherit the direct-call approval [209.92ms]
+(pass) the approved recommended preset > await using declarations never inherit the direct-call approval [199.97ms]
+(pass) the approved recommended preset > constructor initializers never inherit the direct-call approval [200.90ms]
+(pass) the approved recommended preset > awaited initializers never inherit the direct-call approval [200.87ms]
+(pass) the approved recommended preset > the approved Python example remains safe at its existing indentation [351.00ms]
+(pass) the approved recommended preset > the excluded single TypeScript row and two Python rows stay unchanged [75.67ms]
+(pass) the approved recommended preset > attribute assignment tables do not inherit the simple-name approval [0.50ms]
+(pass) the approved recommended preset > chained assignments do not inherit the single-name approval [321.27ms]
+(pass) the approved recommended preset > compound assignments and differing indentation never become approved Python tables [0.13ms]
+
+test/format-pipeline.test.ts:
+(pass) the real TypeScript pipeline writes only the approved working copy and stays fixed on rerun [1313.60ms]
+(pass) the real Python pipeline writes only the approved working copy and stays fixed on rerun [481.71ms]
+(pass) standalone typescript alignment previews and writes with the same approval and fixed-point safeguards [19261.42ms]
+(pass) standalone python alignment previews and writes with the same approval and fixed-point safeguards [553.85ms]
+(pass) the TypeScript pipeline writes the same result even with a symlink in the root path [817.62ms]
+(pass) format pipeline fails closed > dry-run returns the full verification result and bounded output without writing the original [253.83ms]
+(pass) format pipeline fails closed > on formatter abnormal exit, the original and temporary files are preserved [9.11ms]
+(pass) format pipeline fails closed > on parser failure, the original and temporary files are preserved [69.98ms]
+(pass) format pipeline fails closed > on timeout, the child process group is ended and the original is not written [106.84ms]
+(pass) format pipeline fails closed > a missing executable and an approval refusal each close before writing [114.93ms]
+(pass) format pipeline fails closed > the direct API also refuses parent-directory symlink root escapes and invalid timeouts [2.11ms]
+(pass) format pipeline fails closed > does not write when the approval rules are empty or the second full run differs [254.60ms]
+(pass) format pipeline fails closed > external edits and provenance changes are detected right before commit [359.80ms]
+
+test/python-assignment-envelope.test.ts:
+(pass) Python assignment envelopes > the real subtotal, discount and shipping calculation shares outer assignment columns [0.36ms]
+(pass) arithmetic behavior and positional-call evaluation order remain identical [46.45ms]
+(pass) opaque RHS bytes, CRLF, indentation and the fixed point are preserved [23.39ms]
+(pass) detailed tables retain ownership while a neighboring calculation receives its own envelope [0.65ms]
+(pass) a detailed pair inside three heterogeneous rows is replaced by one outer owner [0.11ms]
+(pass) primary preservation refusal never retries the same rows through a broader projection [0.09ms]
+(pass) projection rows must independently pass exact source reconstruction [0.09ms]
+(pass) single rows, pairs, blank lines, comments and different indentation do not become automatic tables [0.25ms]
+(pass) parenthesized keyword arguments and prior-line explicit continuation cannot become assignments [0.14ms]
+(pass) unsupported targets, values and damaged delimiters never project an outer calculation [0.11ms]
+(pass) quoted continuations are skipped and a complete ordinary docstring does not absorb following calculations [0.27ms]
+(pass) the new exact key cannot inherit the shipped simple-assignment approval [109.95ms]
+(pass) public Check and Guide expose the new group without approved write coverage [287.59ms]
+(pass) a complete synthetic test proof permits preview and apply of the new envelope without changing product approvals [439.24ms]
+(pass) inline comments keep their exact content and do not expose punctuation as calculation syntax [0.30ms]
+
+test/line-write-safety.test.ts:
+(pass) safe file replacement in the line-engine CLI > read mode never changes the original, and write mode keeps the mode and cleanup contract [96.60ms]
+(pass) safe file replacement in the line-engine CLI > --groups --write is exploration-only and never changes the original [19.22ms]
+(pass) safe file replacement in the line-engine CLI > refuses symbolic and hard link targets while preserving the original bytes [34.74ms]
+(pass) safe file replacement in the line-engine CLI > an external edit during the parser run keeps the external bytes and refuses the commit [521.45ms]
+
+test/surface.test.ts:
+(pass) grammar ID registry > the tables in grammar.md match the list in grammar-ids.ts [0.18ms]
+(pass) surface forms — TypeScript > every engine kind maps to a pattern [0.60ms]
+(pass) surface forms — TypeScript > an enum with values is MAP, names only is LIST [0.05ms]
+(pass) surface forms — TypeScript > declaration and assignment are different patterns and not ambiguous [0.04ms]
+(pass) surface forms — TypeScript > an unknown kind is not mapped (target of alarm A8) [0.01ms]
+(pass) surface forms — Python > every table in the fixture maps to a pattern [9.22ms]
+(pass) surface forms — Python > `a = v`, where declaration and assignment share syntax, is marked ambiguous [0.07ms]
+(pass) surface-form data validation > every shipped data file is valid [0.06ms]
+(pass) surface-form data validation > refuses IDs missing from the grammar, forms with no matcher or two, and other language names [0.36ms]
+
+test/python-align.test.ts:
+(pass) python: alignment changes only whitespace between tokens and refuses nothing [1.31ms]
+(pass) python: the aligned table and trap files parse like their sources [63.10ms]
+(pass) python: alignment is idempotent — running twice gives the same result [1.12ms]
+(pass) python: matches the golden aligned file [0.65ms]
+(pass) python: the already aligned golden has 0 changes [0.31ms]
+(pass) python: the string/comment trap file has 0 changes [0.10ms]
+(pass) python: 2-row groups are not aligned [0.68ms]
+(pass) python profile specific properties > dictionary rows decompose into key, colon, value, comma axes and align the colon column [0.11ms]
+(pass) python profile specific properties > annotated assignments align name and type columns and never pad the trailing value [0.08ms]
+(pass) python profile specific properties > tightly written assignments also form a table and are fixed to conventional gaps (none after colon, spaces around equal) [0.05ms]
+(pass) python profile specific properties > attribute assignments form a table without changing Python syntax or non-whitespace tokens [21.84ms]
+(pass) python profile specific properties > assigned calls decompose into the call cell and argument columns [0.27ms]
+(pass) python profile specific properties > a call wrapping one flat bundle aligns the bundle cells inside the call [0.14ms]
+(pass) python profile specific properties > heterogeneous positional calculations share only outer assignment columns; keyword arguments stay unsupported [0.27ms]
+(pass) python profile specific properties > the profile refuses control-flow, call and line-continuation rows so they never form tables [0.04ms]
+(pass) python profile specific properties > bundle rows align inner cell columns, and rows with different bracket pairs split tables [0.10ms]
+(pass) python profile specific properties > the profile refuses bundle rows with nesting, indexing, assignment, empty cells or f-strings [0.29ms]
+(pass) python profile specific properties > keeps == comparisons inside values and refuses values starting with == [0.10ms]
+
+ 81 pass
+ 0 fail
+ 454 expect() calls
+Ran 81 tests across 7 files. [28.36s]

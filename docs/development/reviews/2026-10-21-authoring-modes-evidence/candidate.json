@@ -1,0 +1,19 @@
+{
+  "version": "0.2.4",
+  "archive": "boxbox-plugin-0.2.4.tgz",
+  "bytes": 142346,
+  "sha256": "d621cf01d8c0b872c59e41cd2e4b44808cf6410395debfa25f4b610e25d20a0a",
+  "sourceHead": "07f568ccec77e70dd57da9aba63f8dc7ef7fcc5a",
+  "sourceState": "uncommitted worktree candidate",
+  "independentReview": "AUTHOR1 PASS: Sonnet 5.5 read-only review and GLM 5.3 final read-only audit (user-selected instead of Opus); prior HUD audit remains pending",
+  "supportedFormats": [
+    "typescript",
+    "python"
+  ],
+  "plannedFormats": [
+    "json",
+    "yaml"
+  ],
+  "priorHudReview": "unexecuted; see HUD2 record",
+  "publicRelease": false
+}

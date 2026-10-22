@@ -1,0 +1,23 @@
+{
+  "productSourcesUnchanged": true,
+  "otherTestsUnchanged": true,
+  "writeSummary": {
+    "groups": 16,
+    "misaligned": 6,
+    "edits": 18,
+    "refused": 0,
+    "suggested": 0
+  },
+  "recheckSummary": {
+    "groups": 16,
+    "misaligned": 0,
+    "edits": 0,
+    "refused": 0,
+    "suggested": 0
+  },
+  "tests": {
+    "test/corpus-signatures.test.ts": "3132f8deff559dc1426a00b9d032a508799c0fa4ea632a6518183c0562851795",
+    "test/python-assignment-envelope.test.ts": "563e9a1845699616851638155dac319440624e98dc558ab60fa1c67b5b79d1b5",
+    "test/python-align.test.ts": "20dcdbbb26cf28938970351445340428f1174a967b33fdae236503e5a02a23bf"
+  }
+}

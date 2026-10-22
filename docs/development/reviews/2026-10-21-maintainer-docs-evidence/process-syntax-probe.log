@@ -1,0 +1,2 @@
+{"schemaVersion":1,"tool":"boxbox","results":[{"file":"invalid.py","language":"python","mode":"check","summary":{"groups":0,"misaligned":0,"edits":0,"refused":0,"suggested":0},"groups":[],"parse":{"status":"not-run","tool":""}}],"formatReadiness":{"mode":"standalone","approvalEligible":false,"verification":"not-run","reasons":["no verified approval rule applies to this file"],"next":"format --dry-run verifies parser, preservation and fixed point before writing"}}
+AUDIT_EXIT 0

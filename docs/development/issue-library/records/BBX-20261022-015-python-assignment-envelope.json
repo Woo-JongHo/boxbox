@@ -1,0 +1,187 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261022-015",
+  "title": "Heterogeneous Python assignment expressions lose their shared outer columns",
+  "category": "grouping",
+  "tags": [
+    "python",
+    "assignment",
+    "outer-projection",
+    "native-authoring",
+    "approval-isolation"
+  ],
+  "status": "resolved",
+  "symptom": "Native Write and Refactor generated subtotal = unit_price * quantity, discounted = max(0, subtotal - discount), and total = discounted + shipping. Installed Check reported valid syntax but zero groups; Align refused. The common assignment role was not detected.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "The Python scalar-call profiler rejects the arithmetic call argument, and the ordinary assignment profiler rejects parentheses. Shared grouping requires contiguous accepted rows with exactly the same detailed signature."
+  },
+  "requestedOutcome": "Detect bounded consecutive plain assignments through their common outer name/equal/value columns while preserving each RHS bytewise, existing detailed groups and exact approval boundaries.",
+  "decisions": [
+    "Use an opt-in fallback projection with a distinct assignment-value axis; existing rule approvals remain unchanged.",
+    "Keep existing detailed table ownership and the Python three-row minimum; refuse continuation contexts and uncertain statements.",
+    "Resolve bounded detector implementation and safety verification only. Public rule and example-license decisions remain open in issue 014 and the Python calculation proposal."
+  ],
+  "actions": [
+    {
+      "description": "Document bounded design and reproduce the actual native fixture in a regression.",
+      "status": "done"
+    },
+    {
+      "description": "Implement projection, safety bounds and approval isolation; complete independent Codex source review.",
+      "status": "done"
+    },
+    {
+      "description": "Verify the rebuilt local artifact and prepare an independently reviewed separate rule proposal.",
+      "status": "done"
+    },
+    {
+      "description": "Verify the current archive on native Windows after the scoped GLM source audit passed.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Current-source regression and full check",
+      "status": "passed",
+      "scope": "Bounded outer projection, exact retained quote fixture/180 inputs, preservation, legacy detailed ownership and approval isolation. No new public approval.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/full-check-final.log",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/m1-independent-closure.md"
+      ],
+      "result": "Full check 648 pass, five existing missing-parser skips, zero fail, plus TypeScript/shell. Independent Codex closure verifies the exact native fixture and 180 input domains. Later horizontal-only test cleanup passed 39 focused tests plus TypeScript; runtime bytes remained unchanged. The scoped GLM static source audit subsequently passed; see its separate evidence and limits."
+    },
+    {
+      "name": "Current local installed artifact and proposal",
+      "status": "passed",
+      "scope": "Exact 2b43 archive; detection remains unapproved and no new public write authority is inferred. Native Windows and GLM remain separate.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/independent-review.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-rule-proposal-review.md"
+      ],
+      "result": "The installed unknown Python key is detected; Guide stays empty and Align refuses without modifying bytes. Existing approved TypeScript/Python workflows and independent 180-input behavior pass. Local cleanup passed after correcting the initial trust-table finding. The bounded proposal and examples are prepared; human decisions remain pending."
+    },
+    {
+      "name": "Requested GLM source audit",
+      "status": "passed",
+      "scope": "GLM-5.3 static review of complete shared table engine, complete assignment-envelope detector and registration excerpt. Detailed legacy profile, registry and tests were not in the final reduced packet and were not executed by GLM.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/python-review-glm-final-report.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/python-review-glm-final-provenance.json",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/python-review-glm-text-final.txt"
+      ],
+      "result": "PASS, no mandatory source findings. Runtime hashes match commit 1152779. Independent Codex full-source/test review and executed tests remain distinct evidence."
+    },
+    {
+      "name": "Current native Windows installed archive",
+      "status": "passed",
+      "scope": "Exact local-development 2b43 archive delivered to a new chacada directory. Native packaged engine only; no Windows hook/HUD acceptance or CI identity.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/windows-2b43/independent-review.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/windows-2b43/author-report.md"
+      ],
+      "result": "Independent review verified archive binding, installation/doctor, exact unknown Python key and no-write refusal, existing approved TS/Python preview/apply/recheck/idempotence and native 180-input behavior. Live-profile non-mutation is supported by isolated environment and command scope, not a complete external snapshot."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "product/engine/python/profile.ts",
+      "note": "Scalar-call and ordinary assignment recognition."
+    },
+    {
+      "kind": "code",
+      "path": "product/engine/common/table-engine.ts",
+      "note": "Contiguous same-signature grouping and edit preservation."
+    },
+    {
+      "kind": "contract",
+      "path": "docs/development/plan.md",
+      "note": "R2 follow-up execution and acceptance criteria."
+    },
+    {
+      "kind": "contract",
+      "path": "docs/development/proposals/2026-10-22-python-assignment-envelope.md",
+      "note": "Reviewed implementation plan; no new public approval."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-22",
+      "event": "reported",
+      "summary": "Real native Write/Refactor exposed common-column coverage missing despite correct behavior and valid syntax.",
+      "evidence": [
+        "docs/development/plan.md"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-22",
+      "event": "diagnosed",
+      "summary": "Source inspection confirmed scalar-only calls plus exact-signature grouping. Planned a bounded optional outer projection with separate approval identity.",
+      "evidence": [
+        "product/engine/python/profile.ts",
+        "product/engine/common/table-engine.ts"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-22",
+      "event": "implemented",
+      "summary": "Added opt-in outer projections with exclusive row ownership and a distinct key. Updated stale heterogeneous-call corpus expectation and strengthened regression to exact native fixture plus 180 inputs; full check passed. New rule and two example-license questions remain unanswered.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/implementation.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/full-check-final.log"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "The current local 2b43 artifact and separate rule proposal passed their scoped independent reviews. GLM and native Windows verification remain open; no rule or example-license approval is implied.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/independent-review.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-rule-proposal-review.md"
+      ]
+    },
+    {
+      "sequence": 5,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "GLM-5.3 completed the requested bounded static source audit after two incomplete transports. No mandatory defects were found. Native Windows verification and new public rule/example decisions remain separate.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/python-review-glm-final-report.md"
+      ]
+    },
+    {
+      "sequence": 6,
+      "date": "2026-10-22",
+      "event": "verification-failed",
+      "status": "failed",
+      "summary": "Preserve the initial c18 native failure before replacing the current verification with the implemented-candidate result: Both generated functions preserved behavior over 180 inputs, but final Check detected zero groups and Align returned ALIGN_NOT_ELIGIBLE.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-assignment-baseline.json",
+        "docs/development/reviews/2026-10-22-continuation-evidence/native/independent-180.json",
+        "docs/development/reviews/2026-10-22-continuation-evidence/native/write-final-check.json",
+        "docs/development/reviews/2026-10-22-continuation-evidence/native/write-final-align.json",
+        "docs/development/reviews/2026-10-22-continuation-evidence/native/refactor-final-check.json",
+        "docs/development/reviews/2026-10-22-continuation-evidence/native/refactor-final-align.json"
+      ]
+    },
+    {
+      "sequence": 7,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "The bounded detector implementation passed full/focused checks, independent source and GLM review, local native artifact verification and independent exact-archive Windows verification. Separate public-rule and license approvals remain pending in issue 014.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/windows-2b43/independent-review.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/python-review-glm-final-report.md"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "version": "0.2.3",
+  "archive": "boxbox-plugin-0.2.3.tgz",
+  "bytes": 137322,
+  "sha256": "f07df7ada9aa234c2935ed500b4fe15b1a5d53f7b7a6de7d8ec107f53c8f572c",
+  "sourceHead": "07f568ccec77e70dd57da9aba63f8dc7ef7fcc5a",
+  "sourceState": "uncommitted worktree candidate",
+  "independentReview": "blocked: Sonnet and fixed Opus provider session limit",
+  "hudPlatforms": "macOS/Linux terminal only; Windows/desktop HUD unsupported",
+  "nativeVerification": "Codex 0.163.0 tmux companion and Claude 2.1.286 official statusLine rendered on macOS"
+}

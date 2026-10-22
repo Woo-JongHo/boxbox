@@ -1,0 +1,38 @@
+[
+  {
+    "family_id": "arrays-and-records",
+    "cases": 5
+  },
+  {
+    "family_id": "branches-and-exits",
+    "cases": 5
+  },
+  {
+    "family_id": "calls-and-chains",
+    "cases": 5
+  },
+  {
+    "family_id": "declarations",
+    "cases": 5
+  },
+  {
+    "family_id": "function-signatures",
+    "cases": 5
+  },
+  {
+    "family_id": "imports",
+    "cases": 5
+  },
+  {
+    "family_id": "object-and-type-members",
+    "cases": 5
+  },
+  {
+    "family_id": "operators-and-expressions",
+    "cases": 5
+  },
+  {
+    "family_id": "structured-documents",
+    "cases": 5
+  }
+]

@@ -1,0 +1,200 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261021-007",
+  "title": "Alignment child process exceeded its deadline during concurrent validation",
+  "category": "ci-release",
+  "tags": [
+    "verification",
+    "timeout",
+    "concurrency",
+    "alignment-only",
+    "child-process"
+  ],
+  "status": "investigating",
+  "symptom": "The final repository suite reported 570 passed, 5 skipped and 1 failed. alignment-only.test.ts:178 received a null child exitCode under a fixed 20-second deadline while packaging and installation checks also ran. On 2026-10-22 KST, candidate CI macOS timed out the member-boundary-comment test after 60034 ms with one dangling process killed and first.exitCode null.",
+  "rootCause": {
+    "confidence": "hypothesis",
+    "summary": "The execution deadline was observed again in a candidate macOS CI suite, now at 60 seconds in a matrix-boundary CLI child. Concurrent validation load alone is not established as the cause. The child/server stage responsible remains under investigation."
+  },
+  "requestedOutcome": "Identify and bound the recurring CLI child-process stall with a repeatable trigger, then verify its correction without hiding failures or simply increasing the deadline.",
+  "decisions": [
+    "Retain the original timeout and full-suite failure as an observed result.",
+    "Run the unchanged targeted suite and then the full suite with expensive validation serialized.",
+    "Keep the deadline and implementation unchanged while investigating; a retry does not erase the failed attempt."
+  ],
+  "actions": [
+    {
+      "description": "Capture the failing full-suite output and run the unchanged targeted test suite.",
+      "status": "done"
+    },
+    {
+      "description": "Finish serialized full-suite validation and record its result.",
+      "status": "done"
+    },
+    {
+      "description": "Investigate the underlying deadline cause if it recurs during serialized validation; concurrent load remains an unconfirmed hypothesis.",
+      "status": "in-progress"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Final repository check",
+      "status": "passed",
+      "scope": "All current repository suites, TypeScript type checking and installer shell syntax",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log"
+      ],
+      "result": "bun run check exited 0: 571 pass, 5 existing unavailable Rust/Kotlin parser skips, 0 fail, 2799 assertions. Skipped parsers were not verified."
+    },
+    {
+      "name": "Unchanged targeted retry",
+      "status": "passed",
+      "scope": "The alignment-only suite, including the 20-second-deadline subprocess case",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/alignment-retry.log"
+      ],
+      "result": "35 tests passed in 3.32 seconds; the formerly timed-out case took about 1.45 seconds. No timeout budget or product code was changed for this retry."
+    },
+    {
+      "name": "Current candidate macOS CI timeout",
+      "status": "failed",
+      "scope": "release-candidate run 39622560954, macOS job 119299570953, commit 3811e3498f64679a1ade31de3e5703d4a65ee5b8; matrix syntax boundaries member-comment scenario.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/ci-macos-matrix-timeout.log"
+      ],
+      "result": "637 passed, one failed out of 638 tests; the first Bun.spawnSync align child did not complete by 60 seconds and returned null after runner cleanup. No alignment output mismatch was observed. Root cause is not yet established."
+    },
+    {
+      "name": "Frozen 35b6178 PR and candidate non-recurrence",
+      "status": "passed",
+      "scope": "Exact source head 35b61780ae122744f39d9cb0b935db5f8bccd14b; current Ubuntu/macOS PR and candidate verification plus engine-only macOS smoke. This is non-recurrence evidence, not a root-cause diagnosis.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/pr-run-39635921495.json",
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/candidate-run-39637622755.json",
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/smoke-macOS.json"
+      ],
+      "result": "PR run 39635921495 and candidate run 39637622755 each passed macOS with 653 tests and zero failures; the candidate macOS smoke also passed. No runtime, test deadline or timeout budget was changed to obtain these results. The historical cause remains unknown."
+    }
+  ],
+  "related": [
+    {
+      "kind": "test",
+      "path": "test/alignment-only.test.ts",
+      "note": "Child-process timeout and expected exitCode assertion."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/issue-library/evidence/parallel-suite-timeout.log",
+      "note": "Original full-suite failure."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/issue-library/evidence/alignment-timeout-retry.log",
+      "note": "Unchanged targeted retry."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/ts-timeout-diagnosis/diagnostic-report.md",
+      "note": "Bounded reproduction matrix, process capture and unresolved hypotheses; not evidence of a product fix."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-21",
+      "event": "verification-failed",
+      "status": "failed",
+      "summary": "The concurrently run full suite failed at the child-process deadline: 570 passed, 5 skipped, 1 failed.",
+      "evidence": [
+        "docs/development/issue-library/evidence/parallel-suite-timeout.log"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-21",
+      "event": "diagnosed",
+      "summary": "The deadline expiration is observed; concurrent load remains a hypothesis. No deadline or product-code change was made.",
+      "evidence": [
+        "docs/development/issue-library/evidence/parallel-suite-timeout.log"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-21",
+      "event": "diagnosed",
+      "status": "passed",
+      "summary": "The unchanged targeted retry passed 35 tests; this is narrower than the complete suite.",
+      "evidence": [
+        "docs/development/issue-library/evidence/alignment-timeout-retry.log"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-21",
+      "event": "decision",
+      "summary": "Serialize the final full-suite run and wait for its result before resolving this verification incident.",
+      "evidence": []
+    },
+    {
+      "sequence": 5,
+      "date": "2026-10-21",
+      "event": "decision",
+      "summary": "Previous current-verification entries are preserved in the linked snapshot. The current list below records the final checked state; earlier failures remain searchable in history.",
+      "evidence": [
+        "docs/development/issue-library/evidence/records-before-final-closure.json"
+      ]
+    },
+    {
+      "sequence": 6,
+      "date": "2026-10-21",
+      "event": "deferred",
+      "summary": "The unchanged targeted retry and serialized full suite passed. Root cause beyond the observed child deadline is not confirmed; investigation is deferred pending recurrence. This does not claim a product fix or prove load caused the timeout.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/alignment-retry.log",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log"
+      ]
+    },
+    {
+      "sequence": 7,
+      "date": "2026-10-22",
+      "event": "verification-failed",
+      "status": "failed",
+      "summary": "Reopened after a candidate macOS CI recurrence at a 60-second deadline. Preserve the earlier local pass; investigate with the exact member-comment CLI input and bounded repeated execution rather than increasing timeouts.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/ci-macos-matrix-timeout.log"
+      ]
+    },
+    {
+      "sequence": 8,
+      "date": "2026-10-22",
+      "event": "diagnosed",
+      "status": "pending",
+      "summary": "Direct CLI 640 runs and filtered test 200 runs did not fail. One initial full-file run exceeded a 30-second outer watchdog without stage capture; 120 captured p4 and 80 captured p8 full-file runs passed. The early stall is not proven identical to CI. Root cause remains unknown; no runtime/test/deadline changes were made. Future recurrence needs API-stage and child-reaping evidence.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/ts-timeout-diagnosis/diagnostic-report.md"
+      ]
+    },
+    {
+      "sequence": 9,
+      "date": "2026-10-22",
+      "event": "diagnosed",
+      "status": "pending",
+      "summary": "An isolated checkout with API-stage and CLI-exit breadcrumbs completed 160 p12 full-file runs, with no sustained 60-second hang. Five 30-second observations showed late active children and then completed. Synchronous trace I/O may alter timing; the original CI cause remains unknown and production source/deadlines are unchanged.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/ts-stage-diagnostic/report.md"
+      ]
+    },
+    {
+      "sequence": 10,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Exact head 35b6178 completed current PR and candidate macOS checks with 653 tests and zero failures, then passed same-archive engine smoke. The timeout did not recur, but no cause or fix was established; the issue remains investigating.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/pr-run-39635921495.json",
+        "docs/development/reviews/2026-10-22-continuation-evidence/ci-final/candidate-run-39637622755.json"
+      ]
+    }
+  ]
+}

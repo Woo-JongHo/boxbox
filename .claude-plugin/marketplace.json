@@ -7,9 +7,9 @@
 		{
 			"name": "boxbox",
 			"source": "./plugin",
-			"description": "Inspects TypeScript and Python files one at a time against tabular readability rules and formats only through human-approved rules, plus a read-only inspector.",
-			"version": "0.2.2"
+			"description": "Checks TypeScript, Python, JSON and YAML syntax and tabular readability one file at a time, with human-approved whitespace alignment and a read-only inspector.",
+			"version": "0.2.5"
 		}
 	],
-	"description": "BoxBox: tabular readability checks for TypeScript and Python"
+	"description": "BoxBox: tabular readability checks for TypeScript, Python, JSON and YAML"
 }

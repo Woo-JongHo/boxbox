@@ -52,18 +52,18 @@ function isoDate(value: string, where: string): void {
 
 function inside(root: string, path: string, where: string): string {
 	if (isAbsolute(path)) fail(where, "absolute paths are not allowed");
-	const absolute = resolve(root, path)      ;
+	const absolute = resolve (root, path    ) ;
 	const lexical  = relative(root, absolute) ;
 	if (lexical === ".." || lexical.startsWith("../") || lexical.startsWith("..\\") || isAbsolute(lexical)) fail(where, "path escapes preset root");
 	return absolute;
 }
 
 function readRegularFile(root: string, path: string, where: string): string {
-	const absolute = inside(root, path, where) ;
-	const status   = lstatSync(absolute)       ;
+	const absolute = inside   (root, path, where) ;
+	const status   = lstatSync(absolute         ) ;
 	if (!status.isFile() || status.isSymbolicLink()) fail(where, "must reference a regular file, not a symlink");
-	const physical   = realpathSync(absolute)                 ;
-	const realInside = relative(realpathSync(root), physical) ;
+	const physical   = realpathSync(absolute                    ) ;
+	const realInside = relative    (realpathSync(root), physical) ;
 	if (realInside === ".." || realInside.startsWith("../") || realInside.startsWith("..\\") || isAbsolute(realInside)) fail(where, "physical path escapes preset root");
 	return readFileSync(physical, "utf8");
 }
@@ -82,8 +82,8 @@ function readPublicDocument(root: string, path: string, where: string): string {
 		if (index === segments.length - 1 && !status.isFile()) fail(where, "public document must be a regular file");
 	}
 	const publicRoot = realpathSync(resolve(root, "docs/public")) ;
-	const physical   = realpathSync(current)                      ;
-	const within     = relative(publicRoot, physical)             ;
+	const physical   = realpathSync(current                     ) ;
+	const within     = relative    (publicRoot, physical        ) ;
 	if (within === ".." || within.startsWith("../") || within.startsWith("..\\") || isAbsolute(within)) fail(where, "public document resolves outside docs/public");
 	return readFileSync(physical, "utf8");
 }
@@ -128,13 +128,13 @@ interface PreparedDecision {
 }
 
 function publicDecisionDocument(root: string, decision: Decision): PreparedDecision {
-	const marker  = decision.ref.indexOf("#")      ;
-	const path    = decision.ref.slice(0, marker)  ;
-	const heading = decision.ref.slice(marker + 1) ;
+	const marker  = decision.ref.indexOf("#"       ) ;
+	const path    = decision.ref.slice  (0, marker ) ;
+	const heading = decision.ref.slice  (marker + 1) ;
 	if (!path.startsWith("docs/public/") || !heading) fail(decision.id, "decision ref must point to docs/public/<file>#<heading>");
 	const text = readPublicDocument(root, path, decision.id);
 	if (sectionHash(text, heading) !== decision.docHash) fail(decision.id, "decision document section hash is stale");
-	const lines = text.split("\n")                                                                                   ;
+	const lines = text .split    ("\n"                                                                             ) ;
 	const start = lines.findIndex(line => /^#+ /u.test(line) && line.replace(/^#+ /u, "").trim() === heading.trim()) ;
 	if (start < 0) fail(decision.id, "decision heading was not found");
 	const level   = /^#+/u.exec(lines[start]!)![0].length                                                                          ;

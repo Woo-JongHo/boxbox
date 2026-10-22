@@ -1,0 +1,154 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261021-013",
+  "title": "HUD entry guards skipped direct execution through a macOS path alias",
+  "category": "host-integration",
+  "tags": [
+    "hud",
+    "macos",
+    "symlink",
+    "entrypoint",
+    "native-acceptance"
+  ],
+  "status": "deferred",
+  "symptom": "The exact local 0.2.4 candidate installed both plugins and exited successfully with --hud, but created neither the Codex launcher nor Claude statusLine; installed status.mjs exited 0 with empty output.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "macOS canonicalized /tmp to /private/tmp for the imported module while process.argv[1] retained /tmp, so literal path guards silently skipped direct-entry main bodies."
+  },
+  "requestedOutcome": "Accept canonical path aliases without import-time side effects, rebuild the candidate and repeat native Codex and Claude acceptance on its exact bytes.",
+  "decisions": [
+    "Canonicalize both sides of each direct-entry comparison and retain the missing-argv guard.",
+    "Preserve the failed archive evidence and require a new digest before native rerun."
+  ],
+  "actions": [
+    {
+      "description": "Canonicalize three HUD entry guards and add alias/import regressions.",
+      "status": "done"
+    },
+    {
+      "description": "Run focused HUD tests and syntax checks.",
+      "status": "done"
+    },
+    {
+      "description": "Complete authenticated Claude interactive HUD acceptance; rebuilt entrypoints, native Codex HUD and installed Claude status-line transitions have passed within their recorded scopes.",
+      "status": "in-progress"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Canonical entrypoint regressions",
+      "status": "passed",
+      "scope": "Current HUD source through symlinked paths and import-only status evaluation.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-entryguard-remediation.md"
+      ],
+      "result": "Focused suites passed 24 tests with 159 assertions and no failures; syntax and diff checks passed."
+    },
+    {
+      "name": "Remaining authenticated Claude interactive HUD acceptance",
+      "status": "pending",
+      "scope": "Actual Claude interactive UI in an authenticated disposable profile; installed status-line execution alone does not prove this surface.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/claude-isolated-auth-probe.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/independent-review.md"
+      ],
+      "result": "The rebuilt 2b43 candidate statusLine command passed ready/error/recovery, but the isolated Claude CLI auth probe returned loggedIn=false. No authenticated Claude interactive screen was run. This remaining native UI requirement keeps the issue verifying; it is distinct from issue 011 native hook-event delivery."
+    },
+    {
+      "name": "GLM source audit and rebuilt artifact regression",
+      "status": "passed",
+      "scope": "HUD runtime sources, direct-entry guards and isolated installed status commands; not authenticated host event acceptance.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-final-result.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-closure-result.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-final-report.md"
+      ],
+      "result": "GLM found no mandatory source defects. The original silent entry failure did not recur on the rebuilt archive. The later bounded native results are recorded separately below; authenticated Claude UI remains an external prerequisite."
+    },
+    {
+      "name": "Rebuilt 2b43 Codex HUD and Claude status-line closure",
+      "status": "passed",
+      "scope": "Exact local 2b43d24eabfdde00ae8019b204aabd2cc8d04f1604a8ffd540ec3170606649f0 archive on macOS; authenticated Codex upper prompt and qualified companion, installed Claude status-line command ready/error/recovery, isolated cleanup. Not Claude interactive UI or Windows HUD.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/author-report.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/independent-review.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/cleanup-closure.md"
+      ],
+      "result": "Both installed entrypoints rendered. Native Codex reached the authenticated normal prompt with the BoxBox companion. Claude status-line execution returned ready, not-ready for invalid config, then ready while retaining host-unverified qualifiers. Independent review closed the disposable trust-cleanup finding. These passes narrow the remaining action but do not resolve authenticated Claude interactive acceptance."
+    }
+  ],
+  "related": [
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-entryguard-native-failure.md",
+      "note": "Original local-candidate failure."
+    },
+    {
+      "kind": "contract",
+      "path": "product/installer/README.md",
+      "note": "Disable instructions for HUDs enabled by earlier installations."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-21",
+      "event": "verification-failed",
+      "status": "failed",
+      "summary": "The local frozen candidate exited successfully but skipped all HUD direct-entry bodies under the /tmp alias.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-entryguard-native-failure.md"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-21",
+      "event": "implemented",
+      "summary": "All three guards now compare canonical paths and focused alias regressions cover direct invocation and import-only behavior.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-entryguard-remediation.md"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-21",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Focused source regressions passed; rebuilt native candidate verification remains pending.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/hud-entryguard-remediation.md"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Verified the rebuilt local archive entry points, qualified status and real Codex PTY rendering/cleanup. Native authenticated Codex/Claude transitions remain pending after disposable profiles reached login; the issue remains verifying.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/native-final-report.md",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-closure-result.md"
+      ]
+    },
+    {
+      "sequence": 5,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Reconciled the later independently reviewed 2b43 evidence: authenticated Codex HUD and installed Claude status-line transitions passed, including cleanup closure. Preserve the original failures and keep this issue verifying for the unexecuted authenticated Claude interactive UI; no scope was dropped.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/native-2b43/independent-review.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/claude-isolated-auth-probe.md"
+      ]
+    },
+    {
+      "sequence": 6,
+      "date": "2026-10-22",
+      "event": "deferred",
+      "summary": "User decision 2026-10-22: the opt-in terminal HUD was removed from the product after 0.2.4. Removed paths: product/hud/status.mjs, product/hud/setup.mjs, product/hud/codex.mjs, test/product-hud.test.ts. The native HUD acceptance this record tracked no longer applies to new candidates; earlier evidence stays as recorded. Reopen if a HUD returns.",
+      "evidence": []
+    }
+  ]
+}

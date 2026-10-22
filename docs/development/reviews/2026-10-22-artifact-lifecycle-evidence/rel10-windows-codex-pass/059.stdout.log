@@ -1,0 +1,49 @@
+11.6.2
+codex-cli 0.157.1
+Install a plugin from a configured or remote marketplace.
+
+Pass either `PLUGIN@MARKETPLACE` or pass `PLUGIN` with `--marketplace MARKETPLACE`.
+
+Usage: codex plugin add [OPTIONS] <PLUGIN[@MARKETPLACE]>
+
+Arguments:
+  <PLUGIN[@MARKETPLACE]>
+          Plugin selector to install: either PLUGIN@MARKETPLACE or PLUGIN with --marketplace
+
+Options:
+  -c, --config <key=value>
+          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.
+          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed
+          as TOML. If it fails to parse as TOML, the raw string is used as a literal.
+          
+          Examples: - `-c model="o3"` - `-c 'sandbox_permissions=["disk-full-read-access"]'` - `-c
+          shell_environment_policy.inherit=all`
+
+  -m, --marketplace <MARKETPLACE>
+          Marketplace name to use when PLUGIN does not include @MARKETPLACE
+
+      --enable <FEATURE>
+          Enable a feature (repeatable). Equivalent to `-c features.<name>=true`
+
+      --json
+          Output install result as JSON
+
+      --disable <FEATURE>
+          Disable a feature (repeatable). Equivalent to `-c features.<name>=false`
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+Examples:
+  codex plugin add sample@debug
+  codex plugin add sample --marketplace debug
+
+added 3 packages in 1s
+0.2.4
+Added marketplace `boxbox-plugins` from \\?\C:\Users\woo\AppData\Local\Temp\BoxBox-rel10-7b25a75cbb5446069c3e3bfa5b464a4c\win-codex-03\workspace-AOZK8p\profile\local\BoxBox\Codex\0.2.4.
+Installed marketplace root: C:\Users\woo\AppData\Local\Temp\BoxBox-rel10-7b25a75cbb5446069c3e3bfa5b464a4c\win-codex-03\workspace-AOZK8p\profile\local\BoxBox\Codex\0.2.4
+Added plugin `boxbox` from marketplace `boxbox-plugins`.
+Installed plugin root: C:\Users\woo\AppData\Local\Temp\BoxBox-rel10-7b25a75cbb5446069c3e3bfa5b464a4c\win-codex-03\workspace-AOZK8p\profile\codex\plugins\cache\boxbox-plugins\boxbox\0.2.4
+BoxBox is installed for Codex. Restart that host and select the BoxBox skill. Review the current hooks manually before relying on them.
+Permanent installation: C:\Users\woo\AppData\Local\Temp\BoxBox-rel10-7b25a75cbb5446069c3e3bfa5b464a4c\win-codex-03\workspace-AOZK8p\profile\local\BoxBox\Codex\0.2.4\
+Approved TypeScript call declarations and Python simple assignments can format without an external formatter. Run check and guide, then format --dry-run before an explicit format request; other patterns require approval.

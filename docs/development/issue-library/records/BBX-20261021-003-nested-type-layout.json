@@ -1,0 +1,146 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261021-003",
+  "title": "Inline nested interface types stretched the entire table",
+  "category": "structural-layout",
+  "tags": [
+    "typescript",
+    "interface",
+    "nested-type",
+    "Example",
+    "width",
+    "type-only"
+  ],
+  "status": "resolved",
+  "symptom": "Example.asserts and Example.source forced large padding on otherwise short interface members.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "The table shared an end column with long inline object types. A mechanically aligned table can still have poor structural readability."
+  },
+  "requestedOutcome": "Keep ordinary members compact and place exceptional nested type members below them in independent tables without changing field contracts.",
+  "decisions": [
+    "Move only the explicitly requested type-only members; preserve names, types and optional/readonly modifiers.",
+    "Expand nested members rather than adding aliases solely to shorten a row.",
+    "Preserve runtime evaluation order elsewhere; the deterministic aligner does not relocate members."
+  ],
+  "actions": [
+    {
+      "description": "Move asserts and source below the ordinary Example fields and expand their member tables.",
+      "status": "done"
+    },
+    {
+      "description": "Measure display width and compare emitted JavaScript.",
+      "status": "done"
+    },
+    {
+      "description": "Complete independent review of the final combined changes.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Final repository check",
+      "status": "passed",
+      "scope": "All current repository suites, TypeScript type checking and installer shell syntax",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log"
+      ],
+      "result": "bun run check exited 0: 571 pass, 5 existing unavailable Rust/Kotlin parser skips, 0 fail, 2799 assertions. Skipped parsers were not verified."
+    },
+    {
+      "name": "Independent review closure",
+      "status": "passed",
+      "scope": "Static review of the implemented correction and its documented limits",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet.md",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/glm-closure.md"
+      ],
+      "result": "The scoped independent review passed. Prior BLOCKED reviews and corrections remain in history. Reviewers did not execute tests."
+    },
+    {
+      "name": "Interface layout preservation",
+      "status": "passed",
+      "scope": "Example member layout, type checking and emitted JavaScript",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/example-layout.md",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/example-runtime-equivalence.json",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/example-layout-metrics.json"
+      ],
+      "result": "Types/modifiers are preserved; emitted JavaScript is unchanged. Measured maximum width decreased from 168 to 71 columns. The two-member asserts subtable was inspected manually."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "product/engine/common/examples.ts",
+      "note": "Example interface."
+    },
+    {
+      "kind": "contract",
+      "path": "product/rules/references/readability-contract.md",
+      "note": "Exceptional type-only member layout and execution-order limits."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-21-matrix-columns.md",
+      "note": "Integrated scope."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/issue-library/evidence/example-layout-report.md",
+      "note": "Recorded worker report; underlying scratch artifacts remain identified there."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-21",
+      "event": "reported",
+      "summary": "User suggested placing exceptional nested types below the normal fields.",
+      "evidence": []
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-21",
+      "event": "implemented",
+      "summary": "Separated the two nested type members while preserving the public field contract.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns.md"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-21",
+      "event": "verified",
+      "summary": "Scoped checks passed with an explicit two-row detector coverage limit.",
+      "evidence": [
+        "docs/development/issue-library/evidence/example-layout-report.md"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-21",
+      "event": "decision",
+      "summary": "Previous current-verification entries are preserved in the linked snapshot. The current list below records the final checked state; earlier failures remain searchable in history.",
+      "evidence": [
+        "docs/development/issue-library/evidence/records-before-final-closure.json"
+      ]
+    },
+    {
+      "sequence": 5,
+      "date": "2026-10-21",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Closed for the documented supported scope after final repository checks, applicable installed-artifact evidence and independent review. No new public preset approvals or live profile installation is implied.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet.md",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/glm-closure.md",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/example-layout.md",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/example-runtime-equivalence.json",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/example-layout-metrics.json"
+      ]
+    }
+  ]
+}

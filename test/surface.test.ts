@@ -7,14 +7,14 @@ import      { patternOf, surfaceOf, validateSurface              } from "@/commo
 import      { PYTHON_ALIGNER                                     } from "@/python/profile.ts"        ;
 import      { KIND_AXES                                          } from "@/typescript/grid-kinds.ts" ;
 
-const ROOT    = join(import.meta.dir, "..")                                             ;
+const ROOT    = join        (import.meta.dir, ".."                                    ) ;
 const GRAMMAR = readFileSync(join(ROOT, "product/rules/references/grammar.md"), "utf8") ;
 
 /** Reads the `ID`s in the first column of the tables in grammar.md's `## <n>.` sections, in order. */
 function idsInSection(number: number): readonly string[] {
-	const start = GRAMMAR.indexOf(`\n## ${number}. `)             ;
-	const end   = GRAMMAR.indexOf("\n## ", start + 1)             ;
-	const body  = GRAMMAR.slice(start, end < 0 ? undefined : end) ;
+	const start = GRAMMAR.indexOf(`\n## ${number}. `              ) ;
+	const end   = GRAMMAR.indexOf("\n## ", start + 1              ) ;
+	const body  = GRAMMAR.slice  (start, end < 0 ? undefined : end) ;
 	return [...body.matchAll(/^\| `([A-Z]+)` \|/gmu)].map(match => match[1]!);
 }
 

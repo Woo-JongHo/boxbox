@@ -32,29 +32,6 @@ jobs:
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: 1.4.0
-      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
-        with:
-          go-version: stable
-      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
-        with:
-          distribution: temurin
-          java-version: "21"
-      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
-        with:
-          components: rustfmt
-      - uses: swift-actions/setup-swift@7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a # v2
-        with:
-          swift-version: "6.0"
-        if: runner.os == 'Linux'
-      - name: Verify Swift parser on macOS
-        if: runner.os == 'macOS'
-        run: swift --version
-      # kotlinc for the Kotlin parse gate; a plain zip download keeps the workflow dependency-free.
-      - name: Install Kotlin parser
-        run: |
-          curl --fail --silent --show-error --location -o /tmp/kotlin.zip https://github.com/JetBrains/kotlin/releases/download/v2.0.21/kotlin-compiler-2.0.21.zip
-          sudo unzip -q /tmp/kotlin.zip -d /opt
-          echo "/opt/kotlinc/bin" >> "$GITHUB_PATH"
       - run: bun install --frozen-lockfile
       - name: Check generated plugin drift
         run: bun run sync:plugin -- --check
@@ -64,7 +41,7 @@ jobs:
           artifact_cache_seed="$(mktemp -d)"
           trap 'rm -rf "$artifact_cache_seed"' EXIT
           npm install --prefix "$artifact_cache_seed" --ignore-scripts --no-audit --no-fund typescript@7.0.2
-      # Every language parser must be present in CI: a missing parser fails instead of skipping.
+      # The Python parser must be present in CI: a missing parser fails instead of skipping.
       - run: bun run check
         env:
           BOXBOX_REQUIRE_PARSERS: "1"

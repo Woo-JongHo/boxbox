@@ -41,7 +41,7 @@ function workspace(): string {
 }
 
 test("a naming preview changes nothing; applying it updates discovery, runtime references and directory identity together", () => {
-	const root = workspace()               ;
+	const root = workspace          ()     ;
 	const plan = planProductIdentity(root) ;
 	expect(readFileSync(join(root, "plugin/scripts/beforegrid"), "utf8")).toBe("npx beforegrid@0.2.0\n");
 	const renamed = applyProductIdentity(plan);

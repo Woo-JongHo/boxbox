@@ -1,0 +1,125 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261022-014",
+  "title": "Implemented matrix detectors are not default-approved public rules",
+  "category": "verification-gap",
+  "tags": [
+    "approval",
+    "recommended-preset",
+    "return-guards",
+    "member-dot",
+    "public-align",
+    "python-assignment-envelope"
+  ],
+  "status": "open",
+  "symptom": "The development aligner handles the requested return columns and the exact two-row Array.from/rows.filter example, but public format refuses both positive scenarios with FORMAT_NOT_ELIGIBLE and no matching convention. Their exact lookup keys are absent from the two-rule recommended preset. The later Python calculation envelope is also detected by the installed local and Windows candidate but remains unknown; Guide is empty and Align refuses without modifying bytes.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "Detector support and public write authorization are separate. Existing TS/Python approvals do not cover the new return-guard and member-call-envelope keys; source-test success cannot authorize these keys. The new Python assignment-value axis likewise cannot inherit the simple-assignment approval."
+  },
+  "requestedOutcome": "After explicit bounded rule and example-license decisions, ship matching proof records and verify installed public Align preview/apply/recheck on the exact requested scenarios and counterexamples. Until then report the approval gap explicitly.",
+  "decisions": [
+    "Preserve the two existing approvals unchanged; do not infer a new rule or license from implementation success.",
+    "Use the exact two-row member-call example from the user. It uses the same envelope key as differing-arity calls; the initial proposed three-row minimum was corrected to the measured two-row policy before seeking approval."
+  ],
+  "actions": [
+    {
+      "description": "Prepare exact-key proposals with positive/counterexamples, actual output and public refusal evidence.",
+      "status": "done"
+    },
+    {
+      "description": "Independently review the exact proposed scope and examples.",
+      "status": "done"
+    },
+    {
+      "description": "Obtain explicit decisions for two TypeScript rules/four new snippets and one Python calculation rule/two new snippets.",
+      "status": "pending"
+    },
+    {
+      "description": "Only after approval, add proof records and verify installed public behavior and preservation.",
+      "status": "pending"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Current development behavior and public refusal",
+      "status": "passed",
+      "scope": "Two exact proposed TypeScript keys and four synthetic snippets on the 0.2.4 source candidate; this is not a new public approval.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/ts-matrix-proposals-evidence.json"
+      ],
+      "result": "Raw alignment matched expected bytes, preserved tokens and reached a fixed point. Public format refused both positive inputs and preserved their original bytes."
+    },
+    {
+      "name": "Approved installed public workflows",
+      "status": "not-run",
+      "scope": "Public Align with the proposed recommended rules after human decisions and proof-record preparation.",
+      "evidence": [],
+      "result": "The new rules and example licenses are not approved; no preset record was promoted."
+    }
+  ],
+  "related": [
+    {
+      "kind": "contract",
+      "path": "docs/development/proposals/2026-10-22-typescript-matrix-rules.md",
+      "note": "Candidate scope and exact before/after examples awaiting decisions."
+    },
+    {
+      "kind": "code",
+      "path": "product/rules/presets/recommended/conventions.jsonl",
+      "note": "Current two-rule approval authority."
+    },
+    {
+      "kind": "test",
+      "path": "test/typescript-matrix-boundaries.test.ts",
+      "note": "Development detector behavior; not public authorization."
+    },
+    {
+      "kind": "contract",
+      "path": "docs/development/proposals/2026-10-22-python-calculation-rule.md",
+      "note": "Separate bounded Python rule and two unlicensed synthetic examples awaiting decisions."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-22",
+      "event": "reported",
+      "summary": "Completion audit separated implemented detector behavior from the default installed plugin experience. New exact keys are unapproved.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/ts-matrix-proposals-evidence.json"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-22",
+      "event": "diagnosed",
+      "summary": "Measured the exact user two-row member-call case and corrected the proposal minimum from three to two. Both public positives remain safely refused; proposals are unapproved.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/ts-matrix-proposals-evidence.json"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Independent scope/evidence review passed after replacing an ephemeral evidence reference with a durable relative link. This verifies proposal accuracy, not rule or license approval. Separate human questions for the exact two rules and four snippets are pending.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/ts-matrix-proposals-review.md",
+        "docs/development/reviews/2026-10-22-continuation-evidence/ts-matrix-proposals-closure.md"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-22",
+      "event": "reported",
+      "summary": "Extended the same approval-coverage gap to the implemented Python calculation envelope. Local and native Windows installed candidates safely refuse this new key; implementation closure does not authorize the new rule or two example licenses.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-continuation-evidence/python-envelope/windows-2b43/independent-review.md",
+        "docs/development/proposals/2026-10-22-python-calculation-rule.md"
+      ]
+    }
+  ]
+}

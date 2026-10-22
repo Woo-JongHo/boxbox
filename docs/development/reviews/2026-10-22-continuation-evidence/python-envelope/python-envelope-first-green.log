@@ -1,0 +1,42 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/python-assignment-envelope.test.ts:
+(pass) Python assignment envelopes > the real subtotal, discount and shipping calculation shares outer assignment columns [18.62ms]
+
+test/python-align.test.ts:
+(pass) python: alignment changes only whitespace between tokens and refuses nothing [5.68ms]
+(pass) python: the aligned table and trap files parse like their sources [73.72ms]
+(pass) python: alignment is idempotent — running twice gives the same result [2.41ms]
+(pass) python: matches the golden aligned file [0.86ms]
+(pass) python: the already aligned golden has 0 changes [0.52ms]
+(pass) python: the string/comment trap file has 0 changes [0.13ms]
+(pass) python: 2-row groups are not aligned [1.12ms]
+(pass) python profile specific properties > dictionary rows decompose into key, colon, value, comma axes and align the colon column [0.19ms]
+(pass) python profile specific properties > annotated assignments align name and type columns and never pad the trailing value [0.12ms]
+(pass) python profile specific properties > tightly written assignments also form a table and are fixed to conventional gaps (none after colon, spaces around equal) [0.07ms]
+(pass) python profile specific properties > attribute assignments form a table without changing Python syntax or non-whitespace tokens [23.44ms]
+(pass) python profile specific properties > assigned calls decompose into the call cell and argument columns [0.55ms]
+(pass) python profile specific properties > a call wrapping one flat bundle aligns the bundle cells inside the call [0.12ms]
+127 | 				"second = diagnostics(toolchain, after)",
+128 | 				"third  = diagnostics(toolchain, during)",
+129 | 			].join("\n"),
+130 | 		]) {
+131 | 			const result = align(source);
+132 | 			expect(result.tables    ).toBe(0     ) ;
+                                   ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 1
+
+      at <anonymous> (/Users/jonghoPro/woo/00_project/98_BoxBox/test/python-align.test.ts:132:30)
+(fail) python profile specific properties > calls with a different callee, a different arity, nesting or keyword arguments never share a table [4.67ms]
+(pass) python profile specific properties > the profile refuses control-flow, call and line-continuation rows so they never form tables [0.10ms]
+(pass) python profile specific properties > bundle rows align inner cell columns, and rows with different bracket pairs split tables [0.13ms]
+(pass) python profile specific properties > the profile refuses bundle rows with nesting, indexing, assignment, empty cells or f-strings [0.23ms]
+(pass) python profile specific properties > keeps == comparisons inside values and refuses values starting with == [0.14ms]
+
+ 18 pass
+ 1 fail
+ 66 expect() calls
+Ran 19 tests across 2 files. [334.00ms]

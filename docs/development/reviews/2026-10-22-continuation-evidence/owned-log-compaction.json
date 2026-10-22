@@ -1,0 +1,58 @@
+[
+  {
+    "original": "/tmp/boxbox-readiness/glm-final-stream.jsonl",
+    "archive": "/tmp/boxbox-readiness/glm-final-stream.jsonl.gz",
+    "sha256": "a0b0344caac91a4085d52a28e94435c119235ba5530a2db496bd639015e4ef84",
+    "originalBytes": 954322496,
+    "archiveBytes": 250791991,
+    "decompressedBytesVerified": true
+  },
+  {
+    "original": "/tmp/boxbox-readiness/glm-closure-stream.jsonl",
+    "archive": "/tmp/boxbox-readiness/glm-closure-stream.jsonl.gz",
+    "sha256": "e3af6b855ce432e8dfcdcb9cc4b91582c6a6fd8d3315e9e19ce1b1408555302f",
+    "originalBytes": 118206735,
+    "archiveBytes": 1700897,
+    "decompressedBytesVerified": true
+  },
+  {
+    "original": "/tmp/boxbox-matrix-main/glm.jsonl",
+    "archive": "/tmp/boxbox-matrix-main/glm.jsonl.gz",
+    "sha256": "62bb5f4af38b49640810f77b6a524e3c0f27eac147fa126c0630aa8d915ef078",
+    "originalBytes": 575157993,
+    "archiveBytes": 12838136,
+    "decompressedBytesVerified": true
+  },
+  {
+    "original": "/tmp/boxbox-matrix-main/glm-closure.jsonl",
+    "archive": "/tmp/boxbox-matrix-main/glm-closure.jsonl.gz",
+    "sha256": "4c3f9d45188fe4160533ce2197cca0256063b5ab5d872d1f609d1bb384ef569c",
+    "originalBytes": 522275669,
+    "archiveBytes": 86457586,
+    "decompressedBytesVerified": true
+  },
+  {
+    "original": "/tmp/boxbox-pattern-review/glm.jsonl",
+    "archive": "/tmp/boxbox-pattern-review/glm.jsonl.gz",
+    "sha256": "a8c319941f706e107138484b7ec6869588908ac3c38f016a3014d5b1633880e6",
+    "originalBytes": 212034740,
+    "archiveBytes": 7644659,
+    "decompressedBytesVerified": true
+  },
+  {
+    "original": "/tmp/boxbox-modes-glm.jsonl",
+    "archive": "/tmp/boxbox-modes-glm.jsonl.gz",
+    "sha256": "f73de627ee0527fd3a780fe0f2b7107bb25e2322c5e11f6ed8fc914fce19e781",
+    "originalBytes": 378465335,
+    "archiveBytes": 3719524,
+    "decompressedBytesVerified": true
+  },
+  {
+    "original": "/tmp/boxbox-alias-glm.jsonl",
+    "archive": "/tmp/boxbox-alias-glm.jsonl.gz",
+    "sha256": "3c2737c6e252d942d249e0cf632c39b56d117184b0fe702c2ffaabcabcd25a09",
+    "originalBytes": 81753677,
+    "archiveBytes": 710111,
+    "decompressedBytesVerified": true
+  }
+]

@@ -11,7 +11,7 @@ import      {
                                                            } from "node:fs"                              ;
 import      { tmpdir                                       } from "node:os"                              ;
 import      { join, resolve                                } from "node:path"                            ;
-import      { layoutViolations                             } from "../development/tools/check-layout.ts" ;
+import      { containedRelative, layoutViolations          } from "../development/tools/check-layout.ts" ;
 import      { expectedPluginFiles, pluginDrift, syncPlugin } from "../development/tools/sync-plugin.ts"  ;
 
 const ROOT                = resolve(import.meta.dir, "..") ;
@@ -27,9 +27,16 @@ function workspace(): string {
 	return path;
 }
 
+test("relative containment handles Windows separators and cross-drive paths", () => {
+	expect(containedRelative("common\\table-engine.ts"       )).toBe(true ) ;
+	expect(containedRelative("..\\outside.ts"                )).toBe(false) ;
+	expect(containedRelative("nested\\..\\..\\outside.ts" )   ).toBe(false) ;
+	expect(containedRelative("D:\\outside.ts", true          )).toBe(false) ;
+});
+
 test("a version bump stamps generated manifests without modifying product templates", () => {
 	const root = workspace();
-	for (const path of ["product", "package.json", ".claude-plugin"]) cpSync(join(ROOT, path), join(root, path), { recursive: true });
+	for (const path of ["product", "package.json", ".claude-plugin", "development/agents", "development/codex"]) cpSync(join(ROOT, path), join(root, path), { recursive: true });
 	const paths     = ["product/plugin/.claude-plugin/plugin.json", "product/plugin/.codex-plugin/plugin.json", "product/packages/cli/package.json", "product/packages/node/package.json"] ;
 	const originals = paths.map(path => readFileSync(join(root, path), "utf8"))                                                                                                            ;
 	const manifest  = JSON.parse(readFileSync(join(root, "package.json"), "utf8"))                                                                                                         ;
@@ -37,13 +44,14 @@ test("a version bump stamps generated manifests without modifying product templa
 	writeFileSync(join(root, "package.json"), JSON.stringify(manifest));
 	syncPlugin(root);
 	for (const path of ["plugin/.claude-plugin/plugin.json", "plugin/.codex-plugin/plugin.json"]) expect(JSON.parse(readFileSync(join(root, path), "utf8")).version).toBe("9.8.7");
-	expect(paths.map(path => readFileSync(join(root, path), "utf8"))).toEqual(originals);
-	expect(pluginDrift(root)).toEqual([]);
+	expect(paths.map(path => readFileSync(join(root, path), "utf8"))).toEqual  (originals                            ) ;
+	expect(readFileSync(join(root, "product/engine/cli.ts"), "utf8")).toContain('export const CLI_VERSION = "9.8.7";') ;
+	expect(pluginDrift(root)                                        ).toEqual  ([]                                   ) ;
 });
 
 test("dangling output links never create external files or directories", () => {
 	const root = workspace();
-	for (const path of ["product", "package.json", ".claude-plugin"]) cpSync(join(ROOT, path), join(root, path), { recursive: true });
+	for (const path of ["product", "package.json", ".claude-plugin", "development/agents", "development/codex"]) cpSync(join(ROOT, path), join(root, path), { recursive: true });
 	syncPlugin(root);
 	const outsideFile = join(root, "external-file");
 	rmSync(join(root, "plugin/README.md"));
@@ -59,22 +67,46 @@ test("dangling output links never create external files or directories", () => {
 	expect(existsSync(outsideDirectory)).toBe     (false                              ) ;
 });
 
-test("product dependencies exclude development and repository import aliases", () => {
+test("product dependencies allow mapped engine aliases and reject escapes", () => {
 	expect(layoutViolations()).toEqual([]);
 	const root = workspace();
 	mkdirSync(join(root, "product/engine"), { recursive: true });
+	mkdirSync(join(root, "product/engine/common"), { recursive: true });
+	writeFileSync(join(root, "product/engine/common/table-engine.ts"), "export const table = true;\n");
 	writeFileSync(join(root, "product/engine/leak.ts"), 'export { tool } from "../../development/tools/private.ts";\nconst module = import("@/common/table-engine.ts");\n');
-	expect(layoutViolations(root)).toEqual([
-		"product/engine/leak.ts: product dependency escapes product/: ../../development/tools/private.ts",
-		"product/engine/leak.ts: repository alias @/common/table-engine.ts",
-	]);
+	expect(layoutViolations(root)).toEqual(["product/engine/leak.ts: engine relative module outside alias root: ../../development/tools/private.ts"]);
 	writeFileSync(join(root, "product/engine/leak.ts"), 'import type { Data } from "../../development/private.ts";\n');
-	expect(layoutViolations(root)).toEqual(["product/engine/leak.ts: product dependency escapes product/: ../../development/private.ts"]);
+	expect(layoutViolations(root)).toEqual(["product/engine/leak.ts: engine relative module outside alias root: ../../development/private.ts"]);
+	writeFileSync(join(root, "product/engine/leak.ts"), 'import "./common/table-engine.ts";\n');
+	expect(layoutViolations(root)).toEqual(["product/engine/leak.ts: engine module must use @/ alias: ./common/table-engine.ts"]);
+	mkdirSync(join(root, "product/engine/typescript"), { recursive: true });
+	mkdirSync(join(root, "product/rules/base"), { recursive: true });
+	writeFileSync(join(root, "product/rules/base/typescript-layout.json"), "{}\n");
+	writeFileSync(join(root, "product/engine/typescript/layout-policy.ts"), 'import data from "../../rules/base/typescript-layout.json" with { type: "json" };\n');
+	writeFileSync(join(root, "product/engine/leak.ts"), 'import "@/common/table-engine.ts";\n');
+	expect(layoutViolations(root)).toEqual([]);
+});
+
+test("engine aliases reject missing targets, escapes and symbolic paths", () => {
+	const root = workspace();
+	mkdirSync(join(root, "product/engine/common"), { recursive: true });
+	writeFileSync(join(root, "product/private.ts"), "export const privateValue = true;\n");
+	writeFileSync(join(root, "product/engine/leak.ts"), 'import "@/missing.ts";\nimport "@/../private.ts";\nconst missing = import("@/dynamic-missing.ts");\n');
+	expect(layoutViolations(root)).toEqual([
+		"product/engine/leak.ts: invalid engine alias @/missing.ts",
+		"product/engine/leak.ts: invalid engine alias @/../private.ts",
+		"product/engine/leak.ts: invalid engine alias @/dynamic-missing.ts",
+	]);
+	const outside = join(root, "outside.ts");
+	writeFileSync(outside, "export const outside = true;\n");
+	symlinkSync(outside, join(root, "product/engine/common/linked.ts"));
+	writeFileSync(join(root, "product/engine/leak.ts"), 'import "@/common/linked.ts";\n');
+	expect(layoutViolations(root)).toContain("product/engine/leak.ts: invalid engine alias @/common/linked.ts");
 });
 
 test("the entire marketplace plugin regenerates from product sources and detects manual changes", () => {
 	const root = workspace();
-	for (const path of ["product", "package.json", ".claude-plugin"]) cpSync(join(ROOT, path), join(root, path), { recursive: true });
+	for (const path of ["product", "package.json", ".claude-plugin", "development/agents", "development/codex"]) cpSync(join(ROOT, path), join(root, path), { recursive: true });
 	expect(existsSync(join(root, "plugin"))).toBe           (false) ;
 	expect(syncPlugin(root)                ).toBeGreaterThan(0    ) ;
 	expect(pluginDrift(root)               ).toEqual        ([]   ) ;

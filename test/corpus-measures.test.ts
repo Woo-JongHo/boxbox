@@ -31,9 +31,9 @@ describe("corpus measures", () => {
 			JSON.stringify({ schemaVersion: 1, signature: TS, verdict: "different-role", judge: "user", date: "2026-09-29", note: "" }),
 			JSON.stringify({ schemaVersion: 1, signature: PY, verdict: "correct", judge: "user", date: "2026-09-29", note: "" }),
 		]);
-		const measures = measuresOf(types, verdicts) ;
-		const ts       = measures.get("typescript")! ;
-		const py       = measures.get("python")!     ;
+		const measures = measuresOf  (types, verdicts)  ;
+		const ts       = measures.get("typescript"   )! ;
+		const py       = measures.get("python"       )! ;
 
 		expect(ts.types        ).toBe       (2   ) ;
 		expect(ts.judgedTypes  ).toBe       (1   ) ;

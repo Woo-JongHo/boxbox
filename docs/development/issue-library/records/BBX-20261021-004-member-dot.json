@@ -1,0 +1,188 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261021-004",
+  "title": "Member-access dot was missing from the shared columns",
+  "category": "syntax-boundary",
+  "tags": [
+    "typescript",
+    "member-access",
+    "dot",
+    "call-member-dot",
+    "Array.from",
+    "rows.filter"
+  ],
+  "status": "resolved",
+  "symptom": "Array.from and rows.filter could receive call-parenthesis alignment while their member-access dots stayed in different columns.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "The first call-envelope implementation treated the complete callee as one opaque cell. It declared opening and closing parentheses but no member-access dot axis."
+  },
+  "requestedOutcome": "For supported member calls, expose the terminal member-access dot as a shared boundary, as in Array.from and rows .filter, and explain unsupported cases in the skill contract.",
+  "decisions": [
+    "A callee can contain meaningful syntax boundaries before its outer parentheses.",
+    "Scope the initial dot rule to supported terminal member access; optional/computed chains and comments need explicit exclusions.",
+    "Record unsupported coverage separately from a passing checker result."
+  ],
+  "actions": [
+    {
+      "description": "Add call-member-dot detection and regression tests.",
+      "status": "done"
+    },
+    {
+      "description": "Strengthen the skill and reference contract with a boundary inventory and coverage reporting.",
+      "status": "done"
+    },
+    {
+      "description": "Run final current-source, packaged-host and independent review checks.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Final repository check",
+      "status": "passed",
+      "scope": "All current repository suites, TypeScript type checking and installer shell syntax",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log"
+      ],
+      "result": "bun run check exited 0: 571 pass, 5 existing unavailable Rust/Kotlin parser skips, 0 fail, 2799 assertions. Skipped parsers were not verified."
+    },
+    {
+      "name": "Independent review closure",
+      "status": "passed",
+      "scope": "Static review of the implemented correction and its documented limits",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet-closure.md",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/glm-closure.md"
+      ],
+      "result": "The scoped independent review passed. Prior BLOCKED reviews and corrections remain in history. Reviewers did not execute tests."
+    },
+    {
+      "name": "Installed host compatibility",
+      "status": "passed",
+      "scope": "Isolated Codex and Claude registrations and bundled launchers",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/installed.json",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/installed-transcript.json",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/archive-source-match.json"
+      ],
+      "result": "Both installations expose the new axes/row membership, preserve legacy approved TS/Python writes and refuse unapproved new groups without source changes. Final source rebuild is byte-identical to the tested installer. Live profiles and native model sessions were not changed."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "product/engine/typescript/grid-kinds.ts",
+      "note": "Call envelope boundary inventory."
+    },
+    {
+      "kind": "test",
+      "path": "test/typescript-matrix-boundaries.test.ts",
+      "note": "Member-dot regression cases and supported boundary shapes."
+    },
+    {
+      "kind": "contract",
+      "path": "product/plugin/skills/boxbox/SKILL.md",
+      "note": "Canonical agent workflow being strengthened."
+    },
+    {
+      "kind": "contract",
+      "path": "product/rules/references/readability-contract.md",
+      "note": "Syntax-column coverage contract."
+    },
+    {
+      "kind": "issue",
+      "path": "docs/development/issue-library/records/BBX-20261021-002-call-envelope.json",
+      "note": "Earlier envelope change that exposed this missing boundary."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-21",
+      "event": "reported",
+      "summary": "User clarified that the dot in Array.from and rows.filter must itself be a column boundary.",
+      "evidence": []
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-21",
+      "event": "diagnosed",
+      "summary": "The call envelope modeled parentheses but left the callee opaque.",
+      "evidence": []
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-21",
+      "event": "decision",
+      "summary": "Extend the boundary model and skill together; retain pending status until current evidence is recorded.",
+      "evidence": []
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-21",
+      "event": "implemented",
+      "summary": "Added terminal member-dot support and strengthened the skill boundary inventory and coverage reconciliation.",
+      "evidence": [
+        "product/engine/typescript/grid-kinds.ts",
+        "product/plugin/skills/boxbox/SKILL.md"
+      ]
+    },
+    {
+      "sequence": 5,
+      "date": "2026-10-21",
+      "event": "verified",
+      "summary": "Reproduction failed before the fix; targeted TypeScript suites then passed 38 tests with 175 assertions.",
+      "evidence": [
+        "docs/development/issue-library/evidence/dot-red.log",
+        "docs/development/issue-library/evidence/dot-targeted.log"
+      ]
+    },
+    {
+      "sequence": 6,
+      "date": "2026-10-21",
+      "event": "verification-failed",
+      "summary": "FAILED ATTEMPT: Independent delta review found a missing call-member-dot AXIS_NOTES entry; the integrated suite failed the axis-note contract test.",
+      "evidence": [
+        "docs/development/issue-library/evidence/sonnet-dot-blocked.md",
+        "docs/development/issue-library/evidence/check-before-audit-corrections.log"
+      ],
+      "status": "failed"
+    },
+    {
+      "sequence": 7,
+      "date": "2026-10-21",
+      "event": "implemented",
+      "summary": "Added the axis note, moved reconciliation to the final post-Align check including skipped or unsupported axes, and limited issue-history writing to explicit user/project requirements. Final correction and audit evidence will be appended separately.",
+      "evidence": [
+        "product/engine/typescript/grid-kinds.ts",
+        "product/plugin/skills/boxbox/SKILL.md"
+      ]
+    },
+    {
+      "sequence": 8,
+      "date": "2026-10-21",
+      "event": "decision",
+      "summary": "Previous current-verification entries are preserved in the linked snapshot. The current list below records the final checked state; earlier failures remain searchable in history.",
+      "evidence": [
+        "docs/development/issue-library/evidence/records-before-final-closure.json"
+      ]
+    },
+    {
+      "sequence": 9,
+      "date": "2026-10-21",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Closed for the documented supported scope after final repository checks, applicable installed-artifact evidence and independent review. No new public preset approvals or live profile installation is implied.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet-closure.md",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/glm-closure.md",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/installed.json",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/installed-transcript.json",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/archive-source-match.json"
+      ]
+    }
+  ]
+}

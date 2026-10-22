@@ -1,0 +1,44 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/alignment-only.test.ts:
+(pass) typescript alignment permits code gaps while preserving strings and physical layout [3.06ms]
+(pass) typescript alignment refuses inserted newline [0.81ms]
+(pass) typescript alignment refuses CRLF normalization
+(pass) typescript alignment refuses removed final newline
+(pass) typescript alignment refuses BOM removal
+(pass) typescript alignment refuses indentation change
+(pass) typescript alignment refuses indentation after BOM
+(pass) typescript alignment refuses trailing whitespace removal
+(pass) typescript alignment refuses blank line whitespace [0.02ms]
+(pass) typescript alignment refuses string space change [0.04ms]
+(pass) typescript alignment refuses value change
+(pass) typescript alignment refuses non-horizontal whitespace
+(pass) python alignment permits code gaps while preserving strings and physical layout [3.93ms]
+(pass) python alignment refuses inserted newline [0.02ms]
+(pass) python alignment refuses CRLF normalization
+(pass) python alignment refuses removed final newline
+(pass) python alignment refuses BOM removal
+(pass) python alignment refuses indentation change
+(pass) python alignment refuses indentation after BOM
+(pass) python alignment refuses trailing whitespace removal
+(pass) python alignment refuses blank line whitespace
+(pass) python alignment refuses string space change [0.05ms]
+(pass) python alignment refuses value change
+(pass) python alignment refuses non-horizontal whitespace
+(pass) typescript alignment preserves protected text: const x=1; // a b [0.64ms]
+(pass) typescript alignment preserves protected text: const x=/a b/; [0.15ms]
+(pass) typescript alignment preserves protected text: const x=`a b`; [0.09ms]
+(pass) python alignment preserves protected text: x=1 # a b [0.10ms]
+(pass) python alignment preserves protected text: x="""a b
+c d""" [0.03ms]
+(pass) alignment refuses invalid UTF-8 rather than hiding changed bytes [0.03ms]
+(pass) typescript Align previews, applies and reaches a fixed point through the real pipeline [972.30ms]
+(pass) python Align previews, applies and reaches a fixed point through the real pipeline [486.24ms]
+(pass) Align rejects a supplied formatter before it can produce side effects [0.85ms]
+(pass) Align retains approval, parser and commit-time configuration safeguards [282.99ms]
+(pass) real vertical candidates are refused by Align preview and apply, while legacy format retains its behavior [1452.31ms]
+
+ 35 pass
+ 0 fail
+ 81 expect() calls
+Ran 35 tests across 1 file. [3.32s]

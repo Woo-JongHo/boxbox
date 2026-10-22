@@ -1,0 +1,28 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/public-preset.test.ts:
+(pass) public preset release policy > approved synthetic rules are prepared together with the public documents they reference [3.63ms]
+(pass) public preset release policy > extracts only the referenced approved section and never ships other sections of the same source document [1.27ms]
+(pass) public preset release policy > refuses arbitrary unregistered fields inside asserts [1.94ms]
+(pass) public preset release policy > drops an earlier private value of a duplicate JSON key from the normalized release JSONL [1.37ms]
+(pass) public preset release policy > example.rules must be an array of short rule IDs [1.04ms]
+(pass) public preset release policy > also refuses arbitrary fields inside versions [1.15ms]
+(pass) public preset release policy > refuses source paths and unauthorized license values regardless of the approved synthetic label [1.55ms]
+(pass) public preset release policy > refuses a parent symlink on the docs/public path even when it points inside the preset [1.71ms]
+(pass) public preset release policy > refuses paths that normalize outside docs/public [1.12ms]
+
+test/surface.test.ts:
+(pass) grammar ID registry > the tables in grammar.md match the list in grammar-ids.ts [0.61ms]
+(pass) surface forms — TypeScript > every engine kind maps to a pattern [0.45ms]
+(pass) surface forms — TypeScript > an enum with values is MAP, names only is LIST [0.03ms]
+(pass) surface forms — TypeScript > declaration and assignment are different patterns and not ambiguous [0.02ms]
+(pass) surface forms — TypeScript > an unknown kind is not mapped (target of alarm A8) [0.01ms]
+(pass) surface forms — Python > every table in the fixture maps to a pattern [13.21ms]
+(pass) surface forms — Python > `a = v`, where declaration and assignment share syntax, is marked ambiguous [0.08ms]
+(pass) surface-form data validation > every shipped data file is valid [0.31ms]
+(pass) surface-form data validation > refuses IDs missing from the grammar, forms with no matcher or two, and other language names [0.18ms]
+
+ 18 pass
+ 0 fail
+ 85 expect() calls
+Ran 18 tests across 2 files. [95.00ms]

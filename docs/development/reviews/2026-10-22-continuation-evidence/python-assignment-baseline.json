@@ -1,0 +1,59 @@
+{
+  "source": "def calculate(unit_price, quantity, discount, shipping):\n    subtotal = unit_price * quantity\n    discounted = max(0, subtotal - discount)\n    total = discounted + shipping\n    return total\n",
+  "profiles": [
+    null,
+    {
+      "indent": "    ",
+      "slots": [
+        {
+          "axis": "name",
+          "text": "subtotal",
+          "gapBefore": ""
+        },
+        {
+          "axis": "equal",
+          "text": "=",
+          "gapBefore": " "
+        },
+        {
+          "axis": "value",
+          "text": "unit_price * quantity",
+          "gapBefore": " "
+        }
+      ]
+    },
+    null,
+    {
+      "indent": "    ",
+      "slots": [
+        {
+          "axis": "name",
+          "text": "total",
+          "gapBefore": ""
+        },
+        {
+          "axis": "equal",
+          "text": "=",
+          "gapBefore": " "
+        },
+        {
+          "axis": "value",
+          "text": "discounted + shipping",
+          "gapBefore": " "
+        }
+      ]
+    },
+    null,
+    null
+  ],
+  "result": {
+    "output": "def calculate(unit_price, quantity, discount, shipping):\n    subtotal = unit_price * quantity\n    discounted = max(0, subtotal - discount)\n    total = discounted + shipping\n    return total\n",
+    "groups": 0,
+    "tables": 0,
+    "misaligned": 0,
+    "edits": 0,
+    "details": [],
+    "pairs": [],
+    "refused": []
+  }
+}

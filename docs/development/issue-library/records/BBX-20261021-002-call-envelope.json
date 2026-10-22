@@ -1,0 +1,158 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261021-002",
+  "title": "Different callees did not share call parentheses",
+  "category": "syntax-boundary",
+  "tags": [
+    "typescript",
+    "call",
+    "parentheses",
+    "call-envelope",
+    "non-null",
+    "arity"
+  ],
+  "status": "resolved",
+  "symptom": "decision and document declarations aligned equals signs but registry.decisions.get and resolveDocument did not share opening and closing call columns.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "The original inner-call layer required identical callee signatures and arity. Heterogeneous calls therefore lacked a shared outer-call envelope."
+  },
+  "requestedOutcome": "Share outer parentheses for compatible call-valued declarations while retaining opaque argument lists and trailing non-null assertions.",
+  "decisions": [
+    "Introduce declaration-call-envelope with a two-row minimum and a distinct lookup key.",
+    "Preserve legacy compatible direct-call keys; keep heterogeneous argument lists opaque.",
+    "Retain compact empty calls and exclude unsupported optional, computed, generic or comment-bearing boundaries."
+  ],
+  "actions": [
+    {
+      "description": "Add envelope axes, preservation and fixed-point regression cases.",
+      "status": "done"
+    },
+    {
+      "description": "Apply the decision/document example in authoring-guide.ts.",
+      "status": "done"
+    },
+    {
+      "description": "Recheck interaction with the subsequent member-dot axis.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Final repository check",
+      "status": "passed",
+      "scope": "All current repository suites, TypeScript type checking and installer shell syntax",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log"
+      ],
+      "result": "bun run check exited 0: 571 pass, 5 existing unavailable Rust/Kotlin parser skips, 0 fail, 2799 assertions. Skipped parsers were not verified."
+    },
+    {
+      "name": "Independent review closure",
+      "status": "passed",
+      "scope": "Static review of the implemented correction and its documented limits",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet.md",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/glm-closure.md"
+      ],
+      "result": "The scoped independent review passed. Prior BLOCKED reviews and corrections remain in history. Reviewers did not execute tests."
+    },
+    {
+      "name": "Installed host compatibility",
+      "status": "passed",
+      "scope": "Isolated Codex and Claude registrations and bundled launchers",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/installed.json",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/installed-transcript.json",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/archive-source-match.json"
+      ],
+      "result": "Both installations expose the new axes/row membership, preserve legacy approved TS/Python writes and refuse unapproved new groups without source changes. Final source rebuild is byte-identical to the tested installer. Live profiles and native model sessions were not changed."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "product/engine/typescript/grid-kinds.ts",
+      "note": "Call envelope and declaration grouping."
+    },
+    {
+      "kind": "code",
+      "path": "product/engine/common/authoring-guide.ts",
+      "note": "Actual decision/document pair."
+    },
+    {
+      "kind": "test",
+      "path": "test/typescript-matrix-boundaries.test.ts",
+      "note": "Different arities, suffixes, exclusions and legacy key preservation."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-21-matrix-columns.md",
+      "note": "Outer-call implementation evidence."
+    },
+    {
+      "kind": "issue",
+      "path": "docs/development/issue-library/records/BBX-20261021-004-member-dot.json",
+      "note": "The next correction adds the member-access boundary inside the callee."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-21",
+      "event": "reported",
+      "summary": "User supplied decision/document as a shared-call-column example.",
+      "evidence": []
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-21",
+      "event": "diagnosed",
+      "summary": "Signature-based inner layers did not provide a heterogeneous outer envelope.",
+      "evidence": []
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-21",
+      "event": "implemented",
+      "summary": "Added the envelope kind and updated the actual example.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns.md"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-21",
+      "event": "verified",
+      "summary": "Pre-dot suite passed; dot-axis integration requires a later verification entry.",
+      "evidence": [
+        "docs/development/issue-library/evidence/pre-dot-check.txt"
+      ]
+    },
+    {
+      "sequence": 5,
+      "date": "2026-10-21",
+      "event": "decision",
+      "summary": "Previous current-verification entries are preserved in the linked snapshot. The current list below records the final checked state; earlier failures remain searchable in history.",
+      "evidence": [
+        "docs/development/issue-library/evidence/records-before-final-closure.json"
+      ]
+    },
+    {
+      "sequence": 6,
+      "date": "2026-10-21",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Closed for the documented supported scope after final repository checks, applicable installed-artifact evidence and independent review. No new public preset approvals or live profile installation is implied.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet.md",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/glm-closure.md",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/installed.json",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/installed-transcript.json",
+        "docs/development/reviews/2026-10-21-matrix-columns-evidence/archive-source-match.json"
+      ]
+    }
+  ]
+}

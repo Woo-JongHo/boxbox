@@ -1,0 +1,2 @@
+{"timestampMs":1792598541278,"processPid":58566,"event":"shutdown_requested","details":{"pid":58210}}
+{"status":"stopped","backend":"pid","managedCodexPath":"/private/tmp/boxbox-native-fixed.Shl97G/codex/packages/app-server-daemon/current/bin/codex","managedCodexVersion":"0.163.0","socketPath":"/private/tmp/boxbox-native-fixed.Shl97G/codex/app-server-control/app-server-control.sock","cliVersion":"0.163.0"}

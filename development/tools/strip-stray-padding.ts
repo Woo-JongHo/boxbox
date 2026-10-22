@@ -27,15 +27,15 @@ function realign(file: string): void {
 }
 
 function main(): void {
-	const args  = process.argv.slice(2)                 ;
-	const write = args.includes("--write")              ;
-	const files = args.filter(arg => arg !== "--write") ;
+	const args  = process.argv.slice   (2                       ) ;
+	const write = args        .includes("--write"               ) ;
+	const files = args        .filter  (arg => arg !== "--write") ;
 
 	let changedFiles = 0 ;
 	let changedLines = 0 ;
 	for (const file of files) {
-		const before   = readFileSync(file, "utf8")    ;
-		const stripped = stripSemicolonPadding(before) ;
+		const before   = readFileSync         (file, "utf8") ;
+		const stripped = stripSemicolonPadding(before      ) ;
 		if (stripped === before) continue;
 
 		writeFileSync(file, stripped);

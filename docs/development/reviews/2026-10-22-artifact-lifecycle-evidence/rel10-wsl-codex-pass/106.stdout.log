@@ -1,0 +1,12 @@
+{
+  "marketplaces": [
+    {
+      "name": "boxbox-plugins",
+      "root": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.3",
+      "marketplaceSource": {
+        "sourceType": "local",
+        "source": "/tmp/boxbox-rel10-linux.VfqJoi/wsl-codex-02/workspace-yXiiru/profile/data/boxbox/codex/0.2.3"
+      }
+    }
+  ]
+}

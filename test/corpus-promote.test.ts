@@ -22,7 +22,7 @@ describe("verdict promotion", () => {
 	});
 
 	test("the promotion gate passes a consistent fixture and flags a drifted golden", () => {
-		const dir     = join(FIXTURES, "python", "corpus", "099-gateprobe-1234abcd")                     ;
+		const dir     = join(FIXTURES, "python", "corpus", "099-gateprobe-1234abcd"                    ) ;
 		const aligner = join(import.meta.dir, "..", "product", "engine", "python", "06_align-tables.ts") ;
 		workspaces.push(dir)                                                                                  ;
 		mkdirSync(dir, { recursive: true })                                                                   ;

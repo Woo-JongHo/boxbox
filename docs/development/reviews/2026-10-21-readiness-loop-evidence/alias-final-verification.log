@@ -1,0 +1,22 @@
+product dependencies: PASS
+bun test v1.4.0 (34cbb9a40)
+
+test/alias-portability.test.ts:
+(pass) a copied development skill resolves engine aliases and its TypeScript runtime in isolation [1799.59ms]
+(pass) copy installation leaves no partial target when pinned dependencies are absent [116.35ms]
+(pass) stale markers never authorize replacing or uninstalling a user-owned directory [124.43ms]
+(pass) foreign symlinks survive install and uninstall [49.23ms]
+(pass) a managed copy refreshes only while its directory identity matches [1449.03ms]
+(pass) an edited managed file copy survives refresh and uninstall [1316.24ms]
+
+test/layout.test.ts:
+(pass) a version bump stamps generated manifests without modifying product templates [23.31ms]
+(pass) dangling output links never create external files or directories [22.88ms]
+(pass) product dependencies allow mapped engine aliases and reject escapes [33.54ms]
+(pass) engine aliases reject missing targets, escapes and symbolic paths [1.72ms]
+(pass) the entire marketplace plugin regenerates from product sources and detects manual changes [29.79ms]
+
+ 11 pass
+ 0 fail
+ 69 expect() calls
+Ran 11 tests across 2 files. [5.04s]
