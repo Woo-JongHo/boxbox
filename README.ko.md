@@ -130,7 +130,7 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 
 ## 개발 현황
 
-현재는 개발 중이며 공개 배포가 완료된 상태가 아닙니다. 로컬 CLI 패키지와 스킬 어댑터는 구현되어 있지만, 공개 배포·호스트 네이티브 이벤트 수용·배포 패키지의 라이선스 메타데이터 작업은 남아 있습니다. 기본 `plugin/` 실행 연결 스크립트에는 명시적인 로컬 엔진 설정이 필요합니다. Windows Codex 시험에는 포함된 엔진을 영구 로컬 디렉터리에 설치하는 [npm 설치 프로그램](docs/user/codex-windows-test.md)을 사용하세요. 선택된 npm 설치 패키지 이름은 `boxbox-plugin`이며, 게시는 아직 대기 중입니다.
+현재는 개발 중이며 공개 배포가 완료된 상태가 아닙니다. 로컬 CLI 패키지와 스킬 어댑터는 구현되어 있지만, 공개 배포와 호스트 네이티브 이벤트 수용 작업은 남아 있습니다. 기본 `plugin/` 실행 연결 스크립트에는 명시적인 로컬 엔진 설정이 필요합니다. Windows Codex 시험에는 포함된 엔진을 영구 로컬 디렉터리에 설치하는 [npm 설치 프로그램](docs/user/codex-windows-test.md)을 사용하세요. 선택된 npm 설치 패키지 이름은 `boxbox-plugin`이며, 게시는 아직 대기 중입니다.
 
 검증된 동작과 남은 작업은 [배포 준비 상태](docs/development/status.md), [배포 계약](docs/development/release-contract.md), [계획](docs/development/plan.md)을 참고하세요. 이름 변경과 구조 이전의 과거 기록은 [이름 변경 기록](docs/development/reviews/2026-10-16-boxbox-rename.md)에 있습니다.
 
@@ -143,6 +143,6 @@ bun install
 bun run check
 ```
 
-`check`는 제품 식별 정보와 의존 관계 검사, 테스트, TypeScript 타입 검사, 개발용 설치 스크립트의 셸 문법 검사를 실행합니다. 기여와 저작 규칙은 [AGENTS.md](AGENTS.md)를 따릅니다. GitHub main의 기존 [MIT LICENSE](LICENSE)는 유지됩니다. 설치 패키지 후보는 여전히 UNLICENSED 미리보기 메타데이터를 사용하며, 게시와 배포 패키지 메타데이터는 별도의 결정 사항입니다. 합성 프리셋 예제 4개에는 별도로 CC0-1.0이 표시되어 있습니다.
+`check`는 제품 식별 정보와 의존 관계 검사, 테스트, TypeScript 타입 검사, 개발용 설치 스크립트의 셸 문법 검사를 실행합니다. 기여와 저작 규칙은 [AGENTS.md](AGENTS.md)를 따릅니다. BoxBox는 [MIT 라이선스](LICENSE)로 배포되며, 설치 패키지와 엔진 패키지도 `MIT`를 선언하고 라이선스 파일을 포함합니다. 합성 프리셋 예제 4개에는 별도로 CC0-1.0이 표시되어 있습니다.
 
 제품 이름은 [`product.json`](product.json)에서 관리합니다. [이름 변경 절차와 코드 길이 기준](docs/development/product-identity.md)을 참고하세요.

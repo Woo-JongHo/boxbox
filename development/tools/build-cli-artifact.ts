@@ -13,6 +13,7 @@ rmSync(output, { recursive: true, force: true });
 mkdirSync(resolve(output, "dist"), { recursive: true });
 
 cpSync(resolve(template, "README.md"), resolve(output, "README.md"));
+cpSync(resolve(root, "LICENSE"), resolve(output, "LICENSE"));
 const yamlManifest = await Bun.file(resolve(root, "node_modules/yaml/package.json")).json() as { readonly version: string; readonly license: string };
 if (yamlManifest.version !== "2.9.1" || yamlManifest.license !== "ISC") throw new Error(`unexpected bundled yaml license identity: ${yamlManifest.version} ${yamlManifest.license}`);
 const yamlLicense = await Bun.file(resolve(root, "node_modules/yaml/LICENSE")).text();

@@ -2,7 +2,7 @@
 
 The current pipeline builds a reviewable release candidate. It does not publish to npm, push a tag, or install
 plugins into a contributor's active host. When a maintainer pushes a `v*` tag, it also creates a **draft** GitHub
-release (see [Draft release from a tag](#draft-release-from-a-tag)); it never publishes that draft.
+pre-release (see [Draft release from a tag](#draft-release-from-a-tag)); it never publishes that draft.
 
 ```text
 Issue with reproduction or acceptance criteria
@@ -83,7 +83,7 @@ never creates the tag itself.
    (`bun development/tools/release-notes.ts <version>`).
 4. The `candidate` job is the same `release-candidate` workflow, including verification and the three-OS archive smoke.
 5. The `draft` job re-checks the archive against the independent build digest and runs
-   `gh release create --draft --verify-tag` with the archive, `SHA256SUMS`, `candidate.json` and the changelog section.
+   `gh release create --draft --prerelease --verify-tag` with the archive, `SHA256SUMS`, `candidate.json` and the changelog section.
    Only this job has `contents: write`.
 
 A maintainer reviews the draft and publishes it by hand. The workflow uses no npm token and does not publish to npm;

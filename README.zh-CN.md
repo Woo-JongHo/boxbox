@@ -129,7 +129,7 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 
 ## 开发状态
 
-本项目仍处于开发阶段，尚未完成公开发布。本地 CLI 构建产物和技能适配器已经实现；公开分发、原生宿主事件的接纳，以及发布包的许可证元数据仍有待完成。标准 `plugin/` 启动脚本需要显式指定本地引擎。在 Windows 上试用 Codex 时，请使用 [npm 安装器](docs/user/codex-windows-test.md)，它会将随附引擎安装到永久的本地目录。选定的 npm 安装器包名为 `boxbox-plugin`；发布仍待进行。
+本项目仍处于开发阶段，尚未完成公开发布。本地 CLI 构建产物和技能适配器已经实现；公开分发和原生宿主事件的接纳仍有待完成。标准 `plugin/` 启动脚本需要显式指定本地引擎。在 Windows 上试用 Codex 时，请使用 [npm 安装器](docs/user/codex-windows-test.md)，它会将随附引擎安装到永久的本地目录。选定的 npm 安装器包名为 `boxbox-plugin`；发布仍待进行。
 
 已验证的行为和剩余工作请参阅[发布准备状态](docs/development/status.md)、[发布契约](docs/development/release-contract.md)和[计划](docs/development/plan.md)。历史命名及迁移详情见[命名记录](docs/development/reviews/2026-10-16-boxbox-rename.md)。
 
@@ -142,6 +142,6 @@ bun install
 bun run check
 ```
 
-`check` 会运行产品标识与依赖检查、测试套件、TypeScript 类型检查，以及开发安装器的 Shell 语法检查。贡献和创作规则请遵循 [AGENTS.md](AGENTS.md)。现有的 [MIT LICENSE](LICENSE) 保留自 GitHub main 分支。安装器候选包仍使用 UNLICENSED 预览元数据；发布与发布包元数据仍需分别决定。四个合成预设示例单独标记为 CC0-1.0。
+`check` 会运行产品标识与依赖检查、测试套件、TypeScript 类型检查，以及开发安装器的 Shell 语法检查。贡献和创作规则请遵循 [AGENTS.md](AGENTS.md)。BoxBox 以 [MIT 许可证](LICENSE)发布；安装器包和引擎包也声明 `MIT` 并随附许可证文件。四个合成预设示例单独标记为 CC0-1.0。
 
 产品命名由 [`product.json`](product.json) 管理；请参阅[重命名流程与代码长度边界](docs/development/product-identity.md)。

@@ -83,4 +83,4 @@ jobs:
         run: |
           bun development/tools/release-notes.ts "$VERSION" > "$RUNNER_TEMP/notes.md"
           gh release create "$TAG" dist/release-candidate/boxbox-plugin-*.tgz dist/release-candidate/SHA256SUMS dist/release-candidate/candidate.json \
-            --draft --verify-tag --title "BoxBox $VERSION" --notes-file "$RUNNER_TEMP/notes.md"
+            --draft --prerelease --verify-tag --title "BoxBox $VERSION" --notes-file "$RUNNER_TEMP/notes.md"

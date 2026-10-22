@@ -1,10 +1,12 @@
 # Changelog
 
 All notable changes to this project are documented here. The format follows
-[Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the project has not
-reached its first public release yet, so everything below is unreleased.
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the first release, 0.2.5,
+is published as a pre-release.
 
 ## [Unreleased]
+
+## [0.2.5] - 2026-10-22
 
 ### Added
 
@@ -31,6 +33,8 @@ reached its first public release yet, so everything below is unreleased.
 
 ### Changed
 
+- The installer and engine packages declare the `MIT` license and ship the `LICENSE` file; the installer
+  previously declared `UNLICENSED`.
 - Python tables: the `:` column now keeps one space after the longest cell
   (`NAME : type`), the same as the `=` column (issue #7).
 - Python field tables stay whole across string annotations, unions and default
@@ -61,7 +65,7 @@ reached its first public release yet, so everything below is unreleased.
 - Separate product sources, development tools and generated distributions.
 - Issue/PR intake, required-parser verification, and manually generated same-archive release candidates.
 - A `release` workflow: a pushed `v*` tag on `main` builds and smoke-tests the archive once and creates a
-  draft GitHub release with the archive, `SHA256SUMS`, `candidate.json` and the matching changelog section.
+  draft GitHub pre-release with the archive, `SHA256SUMS`, `candidate.json` and the matching changelog section.
   It never publishes; a maintainer publishes the draft by hand.
 - Candidate smoke reruns consume the producer's artifact by ID instead of guessing the run attempt.
 - An on-request installed-plugin status panel for Codex in the development checkout.

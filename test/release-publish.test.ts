@@ -25,6 +25,7 @@ test("the release reuses the candidate workflow and only ever creates a draft", 
 	const create = workflow.jobs.draft.steps.find((step: any) => step.name === "Create the draft release").run as string;
 	expect(create)    .toContain("--draft"                               ) ;
 	expect(create)    .toContain("--verify-tag"                          ) ;
+	expect(create)    .toContain("--prerelease"                          ) ;
 	expect(source).not.toMatch  (/npm publish|--latest|prerelease=false/u) ;
 	expect(source).not.toContain("NODE_AUTH_TOKEN"                       ) ;
 });

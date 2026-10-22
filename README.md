@@ -130,7 +130,7 @@ The recommended preset contains two approved conventions, four synthetic example
 
 ## Development status
 
-This is a development project, not a completed public release. Local CLI artifacts and skill adapters are implemented; public distribution, native host-event acceptance and release-package licensing metadata remain open. The standard `plugin/` shim requires an explicit local engine. For the Windows Codex trial, use the [npm installer](docs/user/codex-windows-test.md), which installs its included engine into a permanent local directory. The selected npm installer name is `boxbox-plugin`; publication remains pending.
+This is a development project, not a completed public release. Local CLI artifacts and skill adapters are implemented; public distribution and native host-event acceptance remain open. The standard `plugin/` shim requires an explicit local engine. For the Windows Codex trial, use the [npm installer](docs/user/codex-windows-test.md), which installs its included engine into a permanent local directory. The selected npm installer name is `boxbox-plugin`; publication remains pending.
 
 For verified behavior and remaining work, read [release readiness](docs/development/status.md), the [release contract](docs/development/release-contract.md) and the [plan](docs/development/plan.md). Historical naming and migration details are in the [naming record](docs/development/reviews/2026-10-16-boxbox-rename.md).
 
@@ -143,6 +143,6 @@ bun install
 bun run check
 ```
 
-`check` runs identity and dependency checks, test suites, TypeScript type checking and development installer shell syntax checks. Follow [AGENTS.md](AGENTS.md) for contribution and authoring rules. The existing [MIT LICENSE](LICENSE) is retained from GitHub main. Installer candidates still carry UNLICENSED preview metadata; publication and release-package metadata remain separate decisions. The four synthetic preset examples are separately marked CC0-1.0.
+`check` runs identity and dependency checks, test suites, TypeScript type checking and development installer shell syntax checks. Follow [AGENTS.md](AGENTS.md) for contribution and authoring rules. BoxBox is released under the [MIT License](LICENSE); the installer and engine packages declare `MIT` and ship the license file. The four synthetic preset examples are separately marked CC0-1.0.
 
 Product naming is managed from [`product.json`](product.json); see the [rename procedure and code-length boundaries](docs/development/product-identity.md).
