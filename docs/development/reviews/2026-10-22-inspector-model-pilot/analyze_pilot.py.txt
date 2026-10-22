@@ -1,0 +1,30 @@
+# Copy of the analysis script used for this pilot; local paths replaced by <repo> and <user>. Run from a repository checkout.
+import json, subprocess, sys, os, re
+REPO = '<repo>'
+SCR  = os.path.dirname(os.path.abspath(__file__))
+PROJ = '/mnt/c/Users/<user>/.claude/projects/C--Users-<user>-Downloads-BoxBox-0-2-5-inspector-pilot'
+TEMP = '/mnt/c/Users/<user>/AppData/Local/Temp/bbx-pilot'
+RUNS = [('run1_A','A'),('run2_B','B'),('run3_A','A'),('run4_B','B'),('run5_A','A'),('run6_B','B')]
+def ssh(cmd, text=True):
+    return subprocess.run(['ssh','-o','ConnectTimeout=10','chacada',cmd],capture_output=True,text=text,check=True).stdout
+def sanitize(s): return s  # the original replaced the Windows user name by <user>; set NAME and add replacements before reuse
+out = {}
+os.makedirs(f'{SCR}/pilot', exist_ok=True)
+for label, cond in RUNS:
+    try: raw = ssh(f'cat {TEMP}/{label}.json')
+    except subprocess.CalledProcessError: continue
+    r = json.loads(raw.lstrip('\ufeff'))
+    sid = r['session_id']
+    subs = [l for l in ssh(f'ls {PROJ}/{sid}/subagents 2>/dev/null || true').split() if l.endswith('.jsonl')]
+    main = ssh(f'cat {PROJ}/{sid}.jsonl')
+    sub  = ''.join(ssh(f'cat {PROJ}/{sid}/subagents/{f}') for f in subs)
+    usage = json.loads(subprocess.run(['bun',f'{REPO}/development/tools/session-usage.ts','-','--json'],input=main+sub,capture_output=True,text=True,check=True,cwd=REPO).stdout)
+    open(f'{SCR}/pilot/{label}.report.txt','w',encoding='utf-8').write(r['result'])
+    sc = json.loads(subprocess.run(['bun',f'{REPO}/development/tools/score-inspector-report.ts',f'{REPO}/docs/development/reviews/2026-10-22-inspector-model-pilot/ground-truth-check.json',f'{SCR}/pilot/{label}.report.txt'],capture_output=True,text=True,check=True,cwd=REPO,env={**os.environ,'FILE_LINES':'228'}).stdout)
+    models = sorted({m.split(':')[0] for m in usage['byModel']})
+    out[label] = dict(cond=cond, session=sid, turns=r['num_turns'], cost=r['total_cost_usd'], dur_s=round(r['duration_ms']/1000), api_s=round(r.get('duration_api_ms',0)/1000), error=r['is_error'], models=list(r.get('modelUsage',{}).keys()), record_models=models, subagent_files=len(subs), total=usage['total'], subagent=usage['subagent'], byModel=usage['byModel'], byCategory=usage['byCategory'], hooks=usage['hooks'], report_chars=len(r['result']), score=sc)
+    open(f'{SCR}/pilot/{label}.raw.json','w',encoding='utf-8').write(sanitize(raw.lstrip('\ufeff')))
+json.dump(out, open(f'{SCR}/pilot/analysis.json','w'), indent=1)
+for k,v in out.items():
+    t=v['total']; s=v['subagent']; sc=v['score']
+    print(f"{k} {v['cond']} cost={v['cost']:.4f} turns={v['turns']} dur={v['dur_s']}s | out={t['output']} cr={t['cacheRead']} cw={t['cacheWrite']} | sub out={s['output']} cr={s['cacheRead']} | models={v['record_models']} | strict={sc['citedStrict']}/{sc['fixable']} lenient={sc['citedLenient']} passCited={sc['passGroupsCited']} claimed={sc['claimedMisaligned']} outside={sc['outOfFileCitations']}")

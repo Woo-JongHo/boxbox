@@ -121,6 +121,14 @@ describe("sessionUsage", () => {
 		expect(result.byCategory["subagent/boxbox:guide"]   ).toMatchObject({ turns: 0, calls: 1 }                                            ) ;
 	});
 
+	test("warns that subagent output tokens are lower bounds, and only when a subagent ran", () => {
+		const child  = JSON.stringify({ type: "assistant", isSidechain: true, agentId: "x", sessionId: "s1", uuid: "c1", message: { id: "c1", model: "claude-sonnet-5-5", content: [], usage: usage(1, 1, 1, 1) } }) ;
+		const withIt = sessionUsage  ([assistant("p1", [], usage(1, 1, 1, 1)), child]                                                                                                                              ) ;
+		expect(withIt.notes.join(" ")                                      ).toContain("lower bounds"                                          ) ;
+		expect(formatUsage(withIt)                                         ).toContain("note: Output tokens of subagent turns are lower bounds") ;
+		expect(sessionUsage([assistant("p1", [], usage(1, 1, 1, 1))]).notes).toEqual  ([]                                                      ) ;
+	});
+
 	test("a call that runs several engine commands is one turn but one call per command", () => {
 		const result = sessionUsage([assistant("m1", [toolUse("t1", "Bash", { command: bridge("check", "guide") })], usage(1, 0, 0, 7))]);
 		expect(result.total.turns               ).toBe         (1                                ) ;

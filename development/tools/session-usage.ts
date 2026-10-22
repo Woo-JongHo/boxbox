@@ -5,6 +5,10 @@
  * written as several lines that repeat the same `usage`, so usage is counted once per message id.
  * Tokens of tool results and hook text are estimated from their length (see `estimateTokens`); usage figures are exact.
  *
+ * Known limit: input, cache-read and cache-write figures match Claude Code's own accounting exactly (ten runs compared on
+ * 2026-10-22), and so do output tokens of a session without subagents. Output tokens in a subagent's record were 4 to 9 times
+ * below that accounting, so they are lower bounds and the result says so in `notes`. The authoritative total for a
+ * non-interactive run is the `modelUsage` in `claude -p --output-format json`.
  * A subagent writes its own record (`<session>/subagents/agent-*.jsonl`, lines marked `isSidechain`). Given a file path
  * the tool reads those records too and reports their turns as `subagent/<step>`; through standard input, concatenate them.
  *
@@ -43,6 +47,8 @@ export interface SessionUsage {
 	readonly byModel    : Readonly<Record<string, Totals>>        ;
 	readonly byCategory : Readonly<Record<string, CategoryUsage>> ;
 	readonly hooks      : Readonly<Record<string, HookUsage>>     ;
+	/** Limits of the figures above that apply to this record. */
+	readonly notes      : readonly string[]                       ;
 }
 
 type Json = Record<string, unknown>;
@@ -177,7 +183,8 @@ export function sessionUsage(lines: Iterable<string>): SessionUsage {
 		const seen = byCategory[category] ?? FRESH;
 		byCategory[category] = { ...seen, resultTokens: tokens };
 	}
-	return { session, total, subagent, byModel, byCategory, hooks: Object.fromEntries(hooks) };
+	const notes = subagent.turns ? ["Output tokens of subagent turns are lower bounds: subagent records were observed 4 to 9 times below Claude Code's own accounting. Input, cache-read and cache-write figures are exact."] : [];
+	return { session, total, subagent, byModel, byCategory, hooks: Object.fromEntries(hooks), notes };
 }
 
 /** A session file plus the records of the subagents it started, which sit in a folder named like the session. */
@@ -193,6 +200,7 @@ export function formatUsage(usage: SessionUsage): string {
 	const lines  = [`session ${usage.session ?? "unknown"}`, "total", ...rows({ all: usage.total }), ...(usage.subagent.turns ? ["of which subagents", ...rows({ subagents: usage.subagent })] : []), "by model:effort", ...rows(usage.byModel), "by step (a turn counts under its BoxBox call, else other; subagent turns are prefixed)", ...rows(usage.byCategory)]                                                          ;
 	for (const [category, row] of Object.entries(usage.byCategory).filter(([name]) => !name.endsWith("other"))) lines.push(`  ${category.padEnd(34)} calls=${number(row.calls).padStart(5)} resultTokens(est)=${number(row.resultTokens)}`);
 	for (const [event, row] of Object.entries(usage.hooks)) lines.push(`  hook ${event.padEnd(29)} count=${number(row.count).padStart(5)} tokens(est)=${number(row.tokens)}`);
+	for (const note of usage.notes) lines.push(`note: ${note}`);
 	return lines.join("\n");
 }
 
