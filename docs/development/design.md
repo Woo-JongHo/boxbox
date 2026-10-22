@@ -144,7 +144,9 @@ Base      <plugin>/base/                  language grammar knowledge, no taste
 ### 3.4 Engines
 
 - **TypeScript:** AST (TypeScript compiler API) + LSP.
-- **JavaScript, Python, Java, Go, Rust, C, C++:** a shared line engine with string/comment masking plus a per-language profile.
+- **Python:** a shared line engine with string/comment masking plus a per-language profile. JSON and YAML use a structured adapter.
+  Line-engine profiles for JavaScript, Java, Go, Rust, C, C++, Swift and Kotlin were removed on 2026-10-22; other languages
+  return only through a new scope decision.
 - Both engines must produce the same `Result` model.
 
 ### 3.5 Formatter coexistence — BoxBox runs last
@@ -402,9 +404,8 @@ The author's convention is a preset, not the law. Users customize without touchi
 | Type uncertainty | `02_audit-type-uncertainty.ts`, `03_audit-optional-types.ts` | Exists (TS) |
 | Token-stream preservation | `common/preservation.ts` (line engine, mask-based: indentation, string/comment bytes, token joins) and `typescript/token-preservation.ts` (TypeScript scanner); unsafe tables are refused and reported as `refused=` | Exists (M1 T2) |
 | Mutation tests | `test/mutator.ts`, `test/mutation.test.ts`: seeded variants (re-spacing with tabs, separators/CJK/emoji inside strings and comments, inserted comments) per line-engine language; TypeScript through the CLI. Checks whitespace-only output, no refusal, idempotence and sampled re-parse; failures are minimized | Exists (M1 T3.5) |
-| Output re-parse | `common/parse-check.ts` (python3 `ast`, `gofmt -e`, `node --check`, `clang`/`clang++ -fsyntax-only`, `javac`, `rustfmt`) gates every line-engine `--write`; `06_align-tables.ts` compares TypeScript 7 syntactic diagnostics before and after writing and restores on mismatch. Missing parsers report `skipped`; CI sets `BOXBOX_REQUIRE_PARSERS=1` | Exists (M1 T3) |
+| Output re-parse | `common/parse-check.ts` (python3 `ast`) gates every line-engine `--write`; `06_align-tables.ts` compares TypeScript 7 syntactic diagnostics before and after writing and restores on mismatch. Missing parsers report `skipped`; CI sets `BOXBOX_REQUIRE_PARSERS=1` | Exists (M1 T3) |
 | Row floors for fixes | 3 rows; user-confirmed 2-row exceptions: TypeScript `=` declaration tables and imports (`grid-kinds.ts` `minRows`, `table-engine.ts` raises lower values to 3) | Exists (M1 T4) |
-| Go gofmt stability | Go alignment is report-only by default; `--enable-go` opts in (M1 T5). A gofmt-stable subset is still to be built | Partial |
 | Preset `recommended` | `references/readability-contract.md` | Mixed with Base |
 | GUIDE | Handwritten contract sections | Manual |
 | LEARN | `development/tools/stress-corpus.ts` (measurement only) | Missing |

@@ -132,18 +132,11 @@ The real engine is [`typescript/align.ts`](../../product/engine/typescript/align
 |---|---|---|---|
 | TypeScript | AST kind registry: declarations, type/interface/class/enum, case, assignment, call, guard, object, registration | bundled TypeScript 7 | [`typescript/06_align-tables.ts`](../../product/engine/typescript/06_align-tables.ts) |
 | Python | annotation/plain assignment, dataclass field, quoted dict row, bundle, assigned call | `python3` | [`python/06_align-tables.ts`](../../product/engine/python/06_align-tables.ts) |
-| Java | field, constant, enum and brace-initializer rows | `javac` | [`java/06_align-tables.ts`](../../product/engine/java/06_align-tables.ts) |
-| Go | declarations, fields, maps etc.; report-only by default | `gofmt` | [`go/06_align-tables.ts`](../../product/engine/go/06_align-tables.ts) |
-| Rust | let/const/field/variant and other profile patterns | `rustfmt` | [`rust/06_align-tables.ts`](../../product/engine/rust/06_align-tables.ts) |
-| JavaScript | declarations, objects and other profile patterns | `node --check` | [`javascript/06_align-tables.ts`](../../product/engine/javascript/06_align-tables.ts) |
-| C | declarations, defines, initializers and other profile patterns | `clang` | [`c/06_align-tables.ts`](../../product/engine/c/06_align-tables.ts) |
-| C++ | declarations, using, initializers and other profile patterns | `clang++` | [`cpp/06_align-tables.ts`](../../product/engine/cpp/06_align-tables.ts) |
-| Swift | typed/plain `let`/`var`, assignment, quoted dictionary row | `swiftc` | [`swift/06_align-tables.ts`](../../product/engine/swift/06_align-tables.ts) |
-| Kotlin | typed/plain `val`/`var`, assignment, quoted map row | `kotlinc` | [`kotlin/06_align-tables.ts`](../../product/engine/kotlin/06_align-tables.ts) |
 
 A line profile is not a language parser. Nested expressions, closures, compound calls, continuations and control statements
 not in the support table are mostly excluded from candidates. The real allowed scope is set by each language's
-[`profile.ts`](../../product/engine/swift/profile.ts) `profile` function and `columnAxes`.
+[`profile.ts`](../../product/engine/python/profile.ts) `profile` function and `columnAxes`. Line-engine profiles for
+Java, Go, Rust, JavaScript, C, C++, Swift and Kotlin were removed on 2026-10-22 to match the four public languages.
 
 Read-only examples:
 
@@ -154,10 +147,6 @@ bun product/engine/typescript/06_align-tables.ts \
 
 bun product/engine/python/06_align-tables.ts \
   --file test/fixtures/python/tables.aligned.py --json
-
-# Go is report-only without --enable-go and always exits 0
-bun product/engine/go/06_align-tables.ts \
-  --file test/fixtures/go/tables.go --json
 
 # the report currently accepts only TypeScript and Python
 bun product/engine/report.ts \
@@ -179,7 +168,6 @@ Exit meanings differ per implementation.
 
 - Shared CLI: 2 without `--file`, 1 for a safe pending edit in check or `parse=changed` in write,
   otherwise 0. It can be 0 with only `REFUSE` and no pending edit.
-- Go: without `--enable-go` it is 0 regardless of pending edits, and `--write` is dropped too.
 - TypeScript: 1 for pending edits in check, compressed members, gate/parse/convergence and argument errors.
   A successful write ends with 0 even if the JSON contains the pre-fix `FIXABLE` groups.
 - Report: 1 if any safety check fails. Alarms alone do not fail.
@@ -210,9 +198,6 @@ The lock only coordinates writers using this helper and does not mean a full ker
 Symlinks in ancestor directories, preserving ACLs and extended attributes, and recovery from power loss were not verified.
 Files are checked and written one by one, so several files are not rolled back as one transaction.
 The [REL2a verification record](reviews/2026-10-04-parser-fail-closed.md) keeps the real runs before and after the change.
-
-Go is report-only by default because a fixed point with gofmt is not proven. `--enable-go --write` is an explicit
-opt-in, and only then do the shared CLI's write and exit codes come alive.
 
 ### Boundaries of other write tools
 

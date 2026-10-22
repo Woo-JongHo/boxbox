@@ -16,7 +16,7 @@ before release (M1.8 S8, done on 2026-10-07).
 - Recorded evidence (`development/harness/evidence/`, `docs/development/reviews/*-evidence/`) is machine output kept as recorded and is not rewritten.
 - Outside the localized root README set, keep new repository prose in English; preserve CJK fixture data and recorded evidence.
 
-`test/plugin-contract.test.ts` pins the discovery text `TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, and Kotlin`. Change it together with the manifests and the `SKILL.md` frontmatter.
+`test/plugin-contract.test.ts` pins the discovery text `TypeScript, Python, JSON, and YAML`. Change it together with the manifests and the `SKILL.md` frontmatter.
 
 ## Product name
 
@@ -45,7 +45,7 @@ The core value is conservatism: a row whose structure cannot be decomposed lossl
 Supported languages:
 
 - **TypeScript** — AST + LSP tooling (TypeScript 7), table-kind registry in `grid-kinds.ts`.
-- **Python, Java, Go, Rust, JavaScript, C, C++, Swift, Kotlin** — a shared line engine plus a small per-language profile (string/comment masking + row slot rules).
+- **Python** — the shared line engine plus a per-language profile (string/comment masking + row slot rules). Line-engine profiles for Java, Go, Rust, JavaScript, C, C++, Swift and Kotlin were removed on 2026-10-22 because they were not ready; the scope is the four public languages.
 - **JSON and YAML** — strict document validation and bounded scalar-mapping candidates in `product/engine/structured`; source ranges, unsupported reasons and horizontal-only preservation feed the same public approval/write pipeline. Public preset approval is separate from adapter support.
 
 ## Structure map
@@ -55,7 +55,7 @@ product/                         canonical product sources
   engine/                        CLI, shared engine, language profiles and inspection runners
     common/                      preservation, parsers, safe writes, config, approvals, hooks
     typescript/                  TypeScript 7 AST/LSP pipeline and kind registry
-    <lang>/                      shared line-engine profiles and thin runners
+    python/                      shared line-engine profile and thin runners
     structured/                  JSON/YAML parser-backed scalar mapping adapter
     rule-data.ts                 rule paths shared by source and bundled engines
   rules/
@@ -93,7 +93,7 @@ dist/                            generated engine packages and npm installer; gi
 - **Host adapters are thin.** Only discovery location and manifest differ per host (see `docs/development/agent-portability.md`).
 - **Roles.** The read-only inspector investigates one product file; the main agent authors and verifies product changes within the authorized plan. READINESS1 permits continued work without per-file feedback; parallel workers must have disjoint ownership.
 - **Subagent briefing.** Spawn prompts follow `docs/development/subagent-brief.md`: the task, owned and excluded paths, acceptance commands and the few applicable facts are written into the brief. A worker never reads `plan.md` or `status.md` in full; it reads only the section the brief cites (everything below the active phase table in `plan.md` is history). General read and re-run discipline lives in the global coding guidelines.
-- **Adding a language:** create `product/engine/<lang>/profile.ts` exporting a `LineProfiler`, add `01_group-regions.ts` / `06_align-tables.ts` wrappers, add `test/fixtures/<lang>/{tables,tables.aligned,tricky}.*`, add `test/<lang>-align.test.ts` using `lang-harness.ts`, then update the language list in manifests, `SKILL.md` and `plugin-contract.test.ts`.
+- **Adding a language** (needs a scope decision first; the public scope is four languages): create `product/engine/<lang>/profile.ts` exporting a `LineProfiler`, add `01_group-regions.ts` / `06_align-tables.ts` wrappers, add `test/fixtures/<lang>/{tables,tables.aligned,tricky}.*`, add `test/<lang>-align.test.ts` using `lang-harness.ts`, then update the language list in manifests, `SKILL.md` and `plugin-contract.test.ts`.
 - **Adding a TypeScript table kind:** register its detector in `grid-kinds.ts`, its descriptive axes in `rules/base/typescript-layout.json` and implemented-kind validation in `layout-policy.ts`; add fixtures and tests. Only declaration grouping gap/minimum-row policy is currently data-executed; row boundary extraction stays code-owned.
 
 ## Verification budget

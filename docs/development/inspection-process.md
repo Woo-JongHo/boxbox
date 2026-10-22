@@ -80,14 +80,6 @@ behavior and relevant performance verification; see [the workflow contract](../u
 | Python | Shared line engine + profile | `python3` / `ast.parse` | Yes, approved scope |
 | JSON | Strict structured adapter | `JSON.parse` | Engine support; no default approved write rule |
 | YAML | Guarded structured adapter, YAML 1.2 core | `yaml@2.9.1` strict parse | Engine support; no default approved write rule |
-| JavaScript | Shared line engine + profile | `node --check` | No |
-| Java | Shared line engine + profile | `javac -proc:none -Xlint:none` | No |
-| Go | Shared line engine + profile | `gofmt -e -l` | No; raw writes require `--enable-go` in the [Go wrapper](../../product/engine/go/06_align-tables.ts) |
-| Rust | Shared line engine + profile | `rustfmt --edition 2021 --emit stdout` | No |
-| C | Shared line engine + profile | `clang -fsyntax-only` | No |
-| C++ | Shared line engine + profile | `clang++ -std=c++20 -fsyntax-only` | No |
-| Swift | Shared line engine + profile | `swiftc -parse` | No |
-| Kotlin | Shared line engine + profile | `kotlinc` | No |
 
 Exact commands and diagnostic normalization are owned by [parse-check.ts](../../product/engine/common/parse-check.ts).
 External-tool comparison runs isolated temporary files, not a full project build with its dependencies. Raw write gates
@@ -119,8 +111,8 @@ The implemented common lifecycle is **resolve → validate syntax → inspect th
 approval policy → verify a write candidate → commit or report**. Check stops before candidate verification and commit.
 The format pipeline performs two complete working-copy cycles and commits once after fixed-point and provenance checks.
 
-1. Cover all ten code-language adapters in the common result contract suite. It currently enumerates only seven line-engine
-   languages plus TypeScript; Swift/Kotlin have their own aligner tests but are absent from that common list.
+1. Cover all four public language adapters in the common result contract suite. It currently enumerates TypeScript and
+   Python; the JSON/YAML adapter has its own structured tests. The other line-engine languages were removed on 2026-10-22.
 2. Keep parser outcomes explicit: passed, syntax rejected, unavailable, execution failure, not run.
    Avoid interpreting the current generic availability error as proof that an executable is missing; its probe also
    has a five-second timeout. A versioned result change needs caller/hook/HUD compatibility tests.

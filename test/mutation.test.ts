@@ -11,16 +11,8 @@ import      { describe, expect, test                           } from "bun:test"
 import      { compareParse, parserAvailable                    } from "@/common/parse-check.ts"            ;
 import      { changedLines                                     } from "@/common/preservation.ts"           ;
 import      { alignSource                                      } from "@/common/table-engine.ts"           ;
-import type { LineProfiler                                     } from "@/common/table-engine.ts"           ;
-import      { C_ALIGNER                                        } from "@/c/profile.ts"                     ;
-import      { CPP_ALIGNER                                      } from "@/cpp/profile.ts"                   ;
-import      { GO_ALIGNER                                       } from "@/go/profile.ts"                    ;
-import      { JAVA_ALIGNER                                     } from "@/java/profile.ts"                  ;
-import      { JAVASCRIPT_ALIGNER                               } from "@/javascript/profile.ts"            ;
+import type { CodeSyntax, LineProfiler                         } from "@/common/table-engine.ts"           ;
 import      { PYTHON_ALIGNER                                   } from "@/python/profile.ts"                ;
-import      { RUST_ALIGNER                                     } from "@/rust/profile.ts"                  ;
-import      { SWIFT_ALIGNER                                    } from "@/swift/profile.ts"                 ;
-import      { KOTLIN_ALIGNER                                   } from "@/kotlin/profile.ts"                ;
 import      { minimize, mutate                                 } from "./mutator.ts"                       ;
 
 const VARIANTS     = Number(process.env.BOXBOX_MUTATIONS ?? 1000)           ;
@@ -35,15 +27,18 @@ interface Language {
 
 const LANGUAGES: readonly Language[] = [
 	{ aligner : PYTHON_ALIGNER     , extension : "py"    , comment : "#"  },
-	{ aligner : JAVA_ALIGNER       , extension : "java"  , comment : "//" },
-	{ aligner : GO_ALIGNER         , extension : "go"    , comment : "//" },
-	{ aligner : RUST_ALIGNER       , extension : "rs"    , comment : "//" },
-	{ aligner : JAVASCRIPT_ALIGNER , extension : "js"    , comment : "//" },
-	{ aligner : C_ALIGNER          , extension : "c"     , comment : "//" },
-	{ aligner : CPP_ALIGNER        , extension : "cpp"   , comment : "//" },
-	{ aligner : SWIFT_ALIGNER      , extension : "swift" , comment : "//" },
-	{ aligner : KOTLIN_ALIGNER     , extension : "kt"    , comment : "//" },
 ];
+
+/** Masking syntax for the TypeScript variants: comments plus the three string quotes, so mutations never land inside them. */
+const TYPESCRIPT_MASK: CodeSyntax = {
+	lineComments  : ["//"],
+	blockComments : [{ open: "/*", close: "*/" }],
+	strings       : [
+		{ open : '"' , close : '"' , escape : true },
+		{ open : "'" , close : "'" , escape : true },
+		{ open : "`" , close : "`" , escape : true },
+	],
+};
 
 const align = (source: string, aligner: LineProfiler): string => alignSource(source, aligner, { minRows: 3, apply: true }).output;
 
@@ -97,13 +92,13 @@ describe("mutation invariants (TypeScript aligner)", () => {
 		const workspace = mkdtempSync(join(import.meta.dir, "mutation-ts-"));
 		try {
 			for (let seed = 1; seed <= TS_VARIANTS; seed += 1) {
-				const variant = mutate(source, { syntax: JAVASCRIPT_ALIGNER.syntax, comment: "//" }, seed) ;
-				const target  = join(workspace, `variant-${seed}.ts`)                                      ;
+				const variant = mutate(source, { syntax: TYPESCRIPT_MASK, comment: "//" }, seed) ;
+				const target  = join  (workspace, `variant-${seed}.ts`                         ) ;
 				writeFileSync(target, variant);
-				const file  = relative(root, target)                                                                                   ;
+				const file  = relative     (root, target                                                                             ) ;
 				const first = Bun.spawnSync(["bun", script, "--file", file, "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" }) ;
-				const again = Bun.spawnSync(["bun", script, "--file", file], { cwd: root, stderr: "pipe", stdout: "pipe" })            ;
-				const out   = readFileSync(target, "utf8")                                                                             ;
+				const again = Bun.spawnSync(["bun", script, "--file", file], { cwd: root, stderr: "pipe", stdout: "pipe" }           ) ;
+				const out   = readFileSync (target, "utf8"                                                                           ) ;
 				expect({ seed, exit: first.exitCode, refused: /refused=0/u.test(first.stdout.toString()), tokens: preservesTokens(variant, out), again: again.exitCode })
 					.toEqual({ seed, exit: 0, refused: true, tokens: true, again: 0 });
 			}

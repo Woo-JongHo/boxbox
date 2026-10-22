@@ -39,7 +39,7 @@ function run(script: string, args: readonly string[]): ResultEnvelope {
 	return JSON.parse(result.stdout.toString()) as ResultEnvelope;
 }
 
-const LINE_ENGINE = [["python", "py"], ["java", "java"], ["go", "go"], ["rust", "rs"], ["javascript", "js"], ["c", "c"], ["cpp", "cpp"]] as const;
+const LINE_ENGINE = [["python", "py"]] as const;
 
 describe("shared result JSON", () => {
 	test("TypeScript aligner emits a valid envelope", () => {

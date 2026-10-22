@@ -131,7 +131,7 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 | --- | --- |
 | 구현된 공개 CLI Check/Align 엔진 | TypeScript, Python, 엄격한 JSON, YAML 1.2 (`.yaml`/`.yml`) |
 | 기본 프리셋 쓰기 승인 | TypeScript 호출 선언과 Python 단순 대입, 두 규칙만 승인 |
-| 개발용 정렬 엔진 | TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, Kotlin |
+| 개발용 정렬 엔진 | 위와 같은 4개 언어(그 밖의 라인 엔진 언어는 2026-10-22에 제거) |
 | TypeScript 탐지 | TypeScript 7 AST 도구와 표 종류 레지스트리 |
 | JSON/YAML 탐지 | 같은 단계에서 인접한 단일 행 스칼라 매핑 항목 3개 이상 |
 | 기타 개발 언어 탐지 | 언어별 프로필을 사용하는 공통 줄 단위 엔진 |
