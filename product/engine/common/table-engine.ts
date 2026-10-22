@@ -12,10 +12,10 @@
  * 4. The candidate output is compared with the source by changedLines (preservation.ts). A table whose edits change
  *    anything but horizontal whitespace between tokens is refused as a whole and reported in `refused`.
  */
-import      { changedLines } from "@/common/preservation.ts"  ;
-import      { displayWidth } from "@/common/display-width.ts" ;
-import      { maskSource   } from "@/common/code-text.ts"     ;
-import type { CodeSyntax   } from "@/common/code-text.ts"     ;
+import      { changedLines                    } from "@/common/preservation.ts"  ;
+import      { displayWidth, hasWideCharacters } from "@/common/display-width.ts" ;
+import      { maskSource                      } from "@/common/code-text.ts"     ;
+import type { CodeSyntax                      } from "@/common/code-text.ts"     ;
 
 /** Re-exported so profilers can import CodeSyntax directly from table-engine. */
 export type { CodeSyntax };
@@ -67,6 +67,8 @@ export interface DetectedTable {
 	readonly axes   : readonly string[]    ;
 	readonly widths : readonly number[]    ;
 	readonly edits  : readonly TableEdit[] ;
+	/** Why a refused table was refused: its edits changed more than whitespace, or a column would follow wide characters. */
+	readonly refusal? : "whitespace-only" | "wide-characters";
 }
 
 export interface PairGroup {
@@ -88,7 +90,7 @@ export interface AlignResult {
 	readonly edits   : number                   ;
 	readonly details : readonly DetectedTable[] ;
 	readonly pairs   : readonly PairGroup[]     ;
-	/** Tables whose edits failed the whitespace-only check; never applied. */
+	/** Tables whose edits failed the whitespace-only check or whose columns would follow wide characters; never applied. */
 	readonly refused : readonly DetectedTable[];
 }
 
@@ -167,6 +169,12 @@ function contiguousRuns(rows: readonly AcceptedRow[], prefixRuns: boolean): Acce
 	return runs;
 }
 
+/** A row's cells before its last one, and every cell when a trailing comment follows, decide later columns. */
+function columnsFollowWideText(row: AcceptedRow): boolean {
+	const last = row.profile.slots.length - 1;
+	return row.profile.slots.some((slot, position) => (position < last || row.comment !== null) && hasWideCharacters(slot.text));
+}
+
 /** A column is as wide as its longest cell among rows that continue past it; a row's last cell is never padded. */
 function columnWidths(run: readonly AcceptedRow[]): number[] {
 	return longestProfile(run).slots.map((_, position) => {
@@ -226,13 +234,27 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 	const primary    = contiguousRuns(accepted, prefixRuns)                                                         ;
 	const runs       = projections === undefined ? primary : projectedRuns(primary, projected, minRows, prefixRuns) ;
 
-	const candidates : DetectedTable[] = [] ;
-	const pairs      : PairGroup[]     = [] ;
+	const candidates  : DetectedTable[] = [] ;
+	const wideRefused : DetectedTable[] = [] ;
+	const pairs       : PairGroup[]     = [] ;
 
 	for (const run of runs) {
 		const signature = signatureOf(longestProfile(run));
 		if (run.length < minRows) {
 			pairs.push({ startLine: run[0].index + 1, endLine: run[run.length - 1].index + 1, rows: run.length, signature });
+			continue;
+		}
+		if (run.some(row => columnsFollowWideText(row))) {
+			wideRefused.push({
+				startLine : run[0].index + 1                                 ,
+				endLine   : run[run.length - 1].index + 1                    ,
+				rows      : run.length                                       ,
+				indent    : run[0].profile.indent                            ,
+				axes      : longestProfile(run).slots.map(slot => slot.axis) ,
+				widths    : columnWidths(run)                                ,
+				edits     : []                                               ,
+				refusal   : "wide-characters"                                ,
+			});
 			continue;
 		}
 		const widths       = columnWidths(run                                             ) ;
@@ -272,14 +294,14 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		: source;
 	const misaligned = new Set(details.flatMap(table => table.edits.map(edit => edit.index))).size;
 	return {
-		output     : output                         ,
-		groups     : runs.length                    ,
-		tables     : details.length                 ,
-		misaligned : misaligned                     ,
-		edits      : options.apply ? misaligned : 0 ,
-		details    : details                        ,
-		pairs      : pairs                          ,
-		refused    : refused                        ,
+		output     : output                                                                               ,
+		groups     : runs.length                                                                          ,
+		tables     : details.length                                                                       ,
+		misaligned : misaligned                                                                           ,
+		edits      : options.apply ? misaligned : 0                                                       ,
+		details    : details                                                                              ,
+		pairs      : pairs                                                                                ,
+		refused    : [...refused, ...wideRefused].sort((left, right) => left.startLine - right.startLine) ,
 	};
 }
 
@@ -299,7 +321,7 @@ function refuseUnsafeTables(source: string, lines: readonly string[], tables: re
 		if (changed.size === 0) break;
 		const culprits = kept.filter(table => table.edits.some(edit => changed.has(edit.index)))                ;
 		const drop     = new Set(culprits.length > 0 ? culprits : kept.filter(table => table.edits.length > 0)) ;
-		refused.push(...drop);
+		refused.push(...[...drop].map(table => ({ ...table, refusal: "whitespace-only" as const })));
 		kept = kept.filter(table => !drop.has(table));
 	}
 	return { details: kept, refused };
