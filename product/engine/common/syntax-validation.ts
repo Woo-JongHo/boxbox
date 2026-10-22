@@ -28,21 +28,19 @@ const messageOf = (value: unknown): string => value instanceof Error ? value.mes
 
 /** Validates one public input with its real parser. Parser failures are explicit error results, never skips. */
 export async function validateSyntax(input: SyntaxValidationInput, dependencies: SyntaxValidationDependencies = {}): Promise<SyntaxValidation> {
-	const absolute = resolve(input.root, input.file) ;
-	const tool = {
-		typescript : "typescript",
-		python     : "python3",
-		json       : "JSON.parse",
-		yaml       : "yaml@2.9.1",
+	const absolute              = resolve(input.root, input.file)                             ;
+	const typescriptDiagnostics = dependencies.typeScriptDiagnostics ?? typeScriptDiagnostics ;
+	const { tool, diagnose } = {
+		typescript : { tool: "typescript", diagnose: (source: string) => typescriptDiagnostics(input.root, absolute, source) } ,
+		python     : { tool: "python3"   , diagnose: (source: string) => syntaxDiagnostics("python", source).diagnostics     } ,
+		json       : { tool: "JSON.parse", diagnose: (source: string) => structuredDiagnostics(source, "json")              }  ,
+		yaml       : { tool: "yaml@2.9.1", diagnose: (source: string) => structuredDiagnostics(source, "yaml")              }  ,
 	}[input.language];
 	try {
 		const raw    = readFileSync(absolute) ;
 		const source = raw.toString("utf8"  ) ;
 		if (!raw.equals(Buffer.from(source, "utf8"))) throw new Error("input is not valid UTF-8");
-		let diagnostics: readonly string[];
-		if (input.language === "typescript") diagnostics = await (dependencies.typeScriptDiagnostics ?? typeScriptDiagnostics)(input.root, absolute, source);
-		else if (input.language === "python") diagnostics = syntaxDiagnostics("python", source).diagnostics;
-		else diagnostics = structuredDiagnostics(source, input.language);
+		const diagnostics = await diagnose(source);
 		return { status: diagnostics.length === 0 ? "valid" : "invalid", tool, diagnostics };
 	} catch (error) {
 		return { status: "error", tool, diagnostics: [messageOf(error)] };

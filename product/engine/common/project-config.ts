@@ -279,10 +279,10 @@ export function readProjectConfig(root: string): ProjectConfig | undefined {
 
 function merge(base: EffectiveConfig, layer: ProjectConfig): EffectiveConfig {
 	return {
-		schemaVersion : 2,
-		languages     : layer.languages ? [...layer.languages] : base.languages,
-		preset        : layer.preset ?? base.preset,
-		formatters    : layer.formatters ? { ...base.formatters, ...layer.formatters } : base.formatters,
+		schemaVersion : 2                                                                                ,
+		languages     : layer.languages ? [...layer.languages] : base.languages                          ,
+		preset        : layer.preset ?? base.preset                                                      ,
+		formatters    : layer.formatters ? { ...base.formatters, ...layer.formatters } : base.formatters ,
 	};
 }
 
@@ -296,11 +296,14 @@ export function resolveConfig(root: string, options: ResolveConfigOptions = {}):
 	const project                  = readConfigFile(projectPath, "project config")                                                     ;
 	let effective: EffectiveConfig = { schemaVersion: 2, languages: [...PUBLIC_LANGUAGES], preset: "recommended", formatters: {} }     ;
 	for (const layer of [BASE_CONFIG, presetConfig, user?.config, project?.config]) if (layer) effective = merge(effective, layer);
+	const embeddedSource = (layer: "base" | "preset", path: string, raw: string): ConfigSource => ({ layer, path, present: true, fingerprint: digest(raw) })                                                                                                             ;
+	const fileSource     = (layer: "user" | "project", path: string, file: ReturnType<typeof readConfigFile>): ConfigSource => ({ layer, path, present: file !== undefined, fingerprint: digest(file?.raw ?? ""), ...(file?.migrated ? { migrated: 1 as const } : {}) }) ;
+
 	const sources: ConfigSource[] = [
-		{ layer: "base", path: "embedded:base", present: true, fingerprint: digest(baseRaw) },
-		{ layer: "preset", path: "embedded:preset/recommended", present: true, fingerprint: digest(presetRaw) },
-		{ layer: "user", path: userPath, present: user !== undefined, fingerprint: digest(user?.raw ?? ""), ...(user?.migrated ? { migrated: 1 as const } : {}) },
-		{ layer: "project", path: projectPath, present: project !== undefined, fingerprint: digest(project?.raw ?? ""), ...(project?.migrated ? { migrated: 1 as const } : {}) },
+		embeddedSource("base"   , "embedded:base"              , baseRaw   ),
+		embeddedSource("preset" , "embedded:preset/recommended", presetRaw ),
+		fileSource    ("user"   , userPath                     , user      ),
+		fileSource    ("project", projectPath                  , project   ),
 	];
 	const fingerprint = digest(JSON.stringify({ sources: sources.map(source => [source.layer, source.present, source.fingerprint]), effective }));
 	return { effective, fingerprint, sources };

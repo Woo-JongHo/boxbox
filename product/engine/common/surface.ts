@@ -38,11 +38,13 @@ export function validateSurface(value: unknown, language: string): SurfaceData {
 	if (data.language !== language) throw new Error(`surface ${language}: language field is ${String(data.language)}`);
 	if (!Array.isArray(data.forms) || data.forms.length === 0) throw new Error(`surface ${language}: forms must be a non-empty array`);
 	for (const [index, form] of data.forms.entries()) {
-		const where = `surface ${language} form ${index}`                                                                              ;
-		if (!isPattern(form.pattern)) throw new Error(`${where}: unknown pattern ${String(form.pattern)}`)                             ;
+		const where = `surface ${language} form ${index}`;
+
+		if (!isPattern(form.pattern)) throw new Error(`${where}: unknown pattern ${String(form.pattern)}`);
 		for (const alternative of form.alternatives ?? []) {
 			if (!isPattern(alternative)) throw new Error(`${where}: unknown alternative ${String(alternative)}`);
 		}
+
 		const byKind = typeof form.kind === "string"                                ;
 		const byAxes = Array.isArray(form.axesPrefix) && form.axesPrefix.length > 0 ;
 		if (byKind === byAxes) throw new Error(`${where}: exactly one of kind or axesPrefix is required`);
@@ -54,17 +56,19 @@ const loaded = new Map<string, SurfaceData>();
 
 /** Reads `product/rules/base/<language>.json`. undefined for a language without data. */
 export function surfaceOf(language: string): SurfaceData | undefined {
-	const cached = loaded.get(language)                                                   ;
-	if (cached) return cached                                                             ;
-	let text: string                                                                      ;
+	const cached = loaded.get(language);
+	if (cached) return cached;
+
+	let text: string;
 	try {
 		text = readFileSync(ruleData(`base/${language}.json`), "utf8");
 	} catch {
 		return undefined;
 	}
-	const data = validateSurface(JSON.parse(text), language)                              ;
-	loaded.set(language, data)                                                            ;
-	return data                                                                           ;
+
+	const data = validateSurface(JSON.parse(text), language);
+	loaded.set(language, data);
+	return data;
 }
 
 /** Strips the column position (`=17`) from an axis id. */
@@ -72,13 +76,14 @@ const bareAxis = (axis: string): string => axis.split("=")[0]!;
 
 /** The pattern of one table. The first matching form wins. undefined if none matches (target of alarm A8). */
 export function patternOf(language: string, table: { readonly kind?: string; readonly axes: readonly string[] }): PatternMatch | undefined {
-	const data = surfaceOf(language)                                                                                    ;
-	if (!data) return undefined                                                                                         ;
-	const axes = table.axes.map(bareAxis)                                                                               ;
+	const data = surfaceOf(language);
+	if (!data) return undefined;
+
+	const axes = table.axes.map(bareAxis);
 	for (const form of data.forms) {
 		if (form.kind !== undefined) {
-			if (form.kind !== table.kind) continue                                                                      ;
-			if (form.hasAxis !== undefined && !axes.includes(form.hasAxis)) continue                                    ;
+			if (form.kind !== table.kind) continue;
+			if (form.hasAxis !== undefined && !axes.includes(form.hasAxis)) continue;
 		} else if (!form.axesPrefix!.every((axis, index) => axes[index] === axis)) continue;
 		return { pattern: form.pattern, alternatives: form.alternatives ?? [] };
 	}

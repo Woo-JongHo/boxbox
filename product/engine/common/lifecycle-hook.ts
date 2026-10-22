@@ -9,6 +9,13 @@ import      { extname, isAbsolute, join, relative, resolve } from "node:path" ;
 import      { snapshot, changed, supported } from "@/common/guarded-run.ts" ;
 import type { Inspection                   } from "@/common/guarded-run.ts" ;
 
+/** The host event each hook mode answers; one table so the dispatcher and the installer cannot disagree. */
+const HOOK_EVENTS: readonly (readonly [event: string, mode: string])[] = [
+	["SessionStart", "session"],
+	["PostToolUse" , "post"   ],
+	["Stop"        , "stop"   ],
+];
+
 function rootOf(args: readonly string[]): string {
 	if (args.length !== 2 || args[0] !== "--root" || !isAbsolute(args[1] ?? "")) throw new Error("Expected --root <absolute-path>");
 	return args[1]!;
@@ -34,10 +41,10 @@ function snapshotExclusions(root: string): ReadonlySet<string> {
 }
 
 export async function lifecycleHook(args: readonly string[], inspect: Inspection): Promise<number> {
-	const mode = args[0];
-	if (!["session", "post", "stop"].includes(mode ?? "")) throw new Error("Expected session|post|stop");
-	const given = args.length > 1 ? rootOf(args.slice(1)) : undefined                            ;
-	const event = mode === "session" ? "SessionStart" : mode === "post" ? "PostToolUse" : "Stop" ;
+	const mode  = args[0]                                            ;
+	const event = HOOK_EVENTS.find(([, name]) => name === mode)?.[0] ;
+	if (event === undefined) throw new Error("Expected session|post|stop");
+	const given = args.length > 1 ? rootOf(args.slice(1)) : undefined;
 	try {
 		const input = JSON.parse(readFileSync(0, "utf8"));
 		if (!input.session_id) throw new Error("Missing session_id");
@@ -99,11 +106,11 @@ export function installHooks(args: readonly string[]): number {
 	const entry    = process.argv[1]!                                                ;
 	const prefix   = `${quote(process.execPath)} ${quote(entry)}`                    ;
 	document.hooks ??= {};
-	for (const [event, mode] of [["SessionStart", "session"], ["PostToolUse", "post"], ["Stop", "stop"]]) {
-		const list    = document.hooks[event!] ?? []                   ;
+	for (const [event, mode] of HOOK_EVENTS) {
+		const list    = document.hooks[event] ?? []                    ;
 		const command = `${prefix} hook ${mode} --root ${quote(root)}` ;
 		if (!list.some((item: any) => item.hooks?.some((hook: any) => hook.command === command))) list.push({ ...(event === "PostToolUse" ? { matcher: ".*" } : {}), hooks: [{ type: "command", command, timeout: 120 }] });
-		document.hooks[event!] = list;
+		document.hooks[event] = list;
 	}
 	mkdirSync(folder, { recursive: true });
 	writeFileSync(path, JSON.stringify(document, null, 2) + "\n");

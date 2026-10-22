@@ -28,11 +28,13 @@ export function assertAlignmentOnly(before: Buffer, after: Buffer, language: Pub
 		if (source.match(/[ \t]*$/u)![0] !== output.match(/[ \t]*$/u)![0]) refuse();
 	}
 	// The layout check cannot distinguish code gaps from spaces inside strings, regexes or comments.
-	const preserved = language === "typescript"
-		? preservesTokens(original, candidate)
-		: language === "python"
-			? changedLines(original, candidate, PYTHON_SYNTAX).length === 0
-			: preservesStructured(original, candidate, language);
+	const preservedBy = {
+		typescript : () => preservesTokens(original, candidate)                          ,
+		python     : () => changedLines(original, candidate, PYTHON_SYNTAX).length === 0 ,
+		json       : () => preservesStructured(original, candidate, "json")              ,
+		yaml       : () => preservesStructured(original, candidate, "yaml")              ,
+	}[language];
+	const preserved = preservedBy();
 
 	if (!preserved) refuse();
 }

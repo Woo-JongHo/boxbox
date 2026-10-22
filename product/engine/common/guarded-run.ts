@@ -39,8 +39,8 @@ const receiptHeaderBytes  = 64 * 1024        ;
 const maximumReceiptBytes = 64 * 1024 * 1024 ;
 
 const runReceiptIO: RunReceiptIO = {
-	list: directory => readdirSync(directory),
-	isSafeFile: path => { const entry = lstatSync(path); return entry.isFile() && !entry.isSymbolicLink(); },
+	list: directory => readdirSync(directory)                                                          ,
+	isSafeFile: path => { const entry = lstatSync(path); return entry.isFile() && !entry.isSymbolicLink(); } ,
 	readHeader: path => {
 		const descriptor = openSync(path, "r");
 		try {
@@ -89,8 +89,8 @@ function advisoryStatusLock(args: readonly string[], root: string, json: boolean
 	const entry = process.argv[1];
 	if (!entry) throw new Error("Missing CLI entry path");
 	const child = spawnSync("/usr/bin/lockf", ["-k", "-t", "0", path, process.execPath, entry, "status", ...args], {
-		env: { ...process.env, BOXBOX_STATUS_LOCK_PATH: path },
-		stdio: "inherit",
+		env: { ...process.env, BOXBOX_STATUS_LOCK_PATH: path } ,
+		stdio: "inherit"                                         ,
 	});
 	if (child.error) throw child.error;
 	if (child.status === 75) {
@@ -198,14 +198,32 @@ export async function guardedRun(args: readonly string[], preflight: Preflight, 
 	const directory = runDirectory(root) ;
 	const id        = randomUUID  ()     ;
 	const record = {
-		schemaVersion: 1, tool: "boxbox", command: "run", runId: id, root, engineVersion,
-		runtime: { node: process.versions.node, bunVersion: process.versions.bun ?? null },
-		startedAt: new Date().toISOString(), finishedAt: null as string | null,
-		state: "RUNNING", childExitCode: null as number | null,
-		preflight: "NOT_RUN", validation: "NOT_RUN", errorCode: null as string | null,
-		before: {} as Snapshot, after: {} as Snapshot, afterSnapshotComplete: false, ignoredSymlinks: [] as string[], changed: [] as string[],
-		checked: [] as { file: string; result: FileResult }[], unsupported: [] as string[], deleted: [] as string[],
-		excludedDirectories: [...excluded], symlinkDirectoriesFollowed: false, nativeHookVerified: false, automaticFixPerformed: false,
+		schemaVersion              : 1                                                                         ,
+		tool                       : "boxbox"                                                                  ,
+		command                    : "run"                                                                     ,
+		runId                      : id                                                                        ,
+		root                       : root                                                                      ,
+		engineVersion              : engineVersion                                                             ,
+		runtime                    : { node: process.versions.node, bunVersion: process.versions.bun ?? null } ,
+		startedAt                  : new Date().toISOString()                                                  ,
+		finishedAt                 : null as string | null                                                     ,
+		state                      : "RUNNING"                                                                 ,
+		childExitCode              : null as number | null                                                     ,
+		preflight                  : "NOT_RUN"                                                                 ,
+		validation                 : "NOT_RUN"                                                                 ,
+		errorCode                  : null as string | null                                                     ,
+		before                     : {} as Snapshot                                                            ,
+		after                      : {} as Snapshot                                                            ,
+		afterSnapshotComplete      : false                                                                     ,
+		ignoredSymlinks            : [] as string[]                                                            ,
+		changed                    : [] as string[]                                                            ,
+		checked                    : [] as { file: string; result: FileResult }[]                              ,
+		unsupported                : [] as string[]                                                            ,
+		deleted                    : [] as string[]                                                            ,
+		excludedDirectories        : [...excluded]                                                             ,
+		symlinkDirectoriesFollowed : false                                                                     ,
+		nativeHookVerified         : false                                                                     ,
+		automaticFixPerformed      : false                                                                     ,
 	};
 	persist(directory, record, id);
 	let exitCode = 2;

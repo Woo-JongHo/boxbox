@@ -8,6 +8,7 @@ import { ruleData } from "@/rule-data.ts";
  */
 import      { existsSync, readFileSync } from "node:fs"                               ;
 import      { join                     } from "node:path"                             ;
+import      { parseRecords             } from "@/common/examples.ts"                  ;
 import      { isPattern, type Pattern  } from "@/common/grammar-ids.ts"               ;
 import      {
               runtimeNumberRecord    ,
@@ -70,22 +71,7 @@ export function validateConvention(value: unknown, where: string): Convention {
 
 /** Reads a JSONL body. Blank lines are skipped; a duplicate id within the same layer is an error. */
 export function parseConventions(text: string, layer: ConventionLayer, where: string): readonly LoadedConvention[] {
-	const records: LoadedConvention[] = []                ;
-	const ids                         = new Set<string>() ;
-
-	for (const [index, line] of text.split("\n").entries()) {
-		if (line.trim() === "") continue;
-
-		let value: unknown;
-		try { value = JSON.parse(line); }
-		catch (error) { throw new Error(`${where}:${index + 1}: malformed JSON: ${error instanceof Error ? error.message : String(error)}`); }
-		const record = validateConvention(value, `${where}:${index + 1}`);
-		if (ids.has(record.id)) throw new Error(`${where}:${index + 1}: duplicate id ${record.id}`);
-
-		ids.add(record.id);
-		records.push({ ...record, layer });
-	}
-	return records;
+	return parseRecords(text, where, validateConvention).map(record => ({ ...record, layer }));
 }
 
 /** Lookup DB: (key → records). Records whose key version is not current are not looked up and are counted as stale. */

@@ -39,16 +39,25 @@ interface PreparedUpdate extends StagedFile {
 	readonly originalIdentity : FileIdentity ;
 }
 
+const IDENTITY_FIELDS = ["dev", "ino", "mode", "size", "mtimeMs", "ctimeMs"] as const;
+
 function identity(path: string): FileIdentity {
 	const value = lstatSync(path);
 	if (value.isSymbolicLink()) throw new Error(`refusing to replace symbolic link: ${path}`);
 	if (!value.isFile()) throw new Error(`refusing to replace non-regular file: ${path}`);
 	if (value.nlink !== 1) throw new Error(`refusing to replace multiply-linked file: ${path}`);
-	return { dev: value.dev, ino: value.ino, mode: value.mode, size: value.size, mtimeMs: value.mtimeMs, ctimeMs: value.ctimeMs };
+	return {
+		dev     : value.dev     ,
+		ino     : value.ino     ,
+		mode    : value.mode    ,
+		size    : value.size    ,
+		mtimeMs : value.mtimeMs ,
+		ctimeMs : value.ctimeMs ,
+	};
 }
 
 function sameIdentity(left: FileIdentity, right: FileIdentity): boolean {
-	return left.dev === right.dev && left.ino === right.ino && left.mode === right.mode && left.size === right.size && left.mtimeMs === right.mtimeMs && left.ctimeMs === right.ctimeMs;
+	return IDENTITY_FIELDS.every(field => left[field] === right[field]);
 }
 
 function prepareUpdate(target: string): PreparedUpdate {
@@ -66,9 +75,9 @@ function prepareUpdate(target: string): PreparedUpdate {
 	}
 
 	try {
-		const originalIdentity = identity(target)                                                                                             ;
-		const initial          = readFileSync(target)                                                                                         ;
-		const descriptor       = openSync(working, constants.O_CREAT | constants.O_EXCL | constants.O_WRONLY, originalIdentity.mode & 0o7777) ;
+		const originalIdentity = identity    (target                                                                                            ) ;
+		const initial          = readFileSync(target                                                                                            ) ;
+		const descriptor       = openSync    (working, constants.O_CREAT | constants.O_EXCL | constants.O_WRONLY, originalIdentity.mode & 0o7777) ;
 		try { writeFileSync(descriptor, initial); }
 		finally { closeSync(descriptor); }
 		chmodSync(working, originalIdentity.mode & 0o7777);

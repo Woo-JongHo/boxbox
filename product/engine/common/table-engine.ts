@@ -227,13 +227,13 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 			tableEdits.push({ index: row.index, before: raw, after: withCR });
 		});
 		candidates.push({
-			startLine : run[0].index + 1,
-			endLine   : run[run.length - 1].index + 1,
-			rows      : run.length,
-			indent    : run[0].profile.indent,
-			axes      : run[0].profile.slots.map(slot => slot.axis),
-			widths,
-			edits     : tableEdits,
+			startLine : run[0].index + 1                            ,
+			endLine   : run[run.length - 1].index + 1               ,
+			rows      : run.length                                  ,
+			indent    : run[0].profile.indent                       ,
+			axes      : run[0].profile.slots.map(slot => slot.axis) ,
+			widths    : widths                                      ,
+			edits     : tableEdits                                  ,
 		});
 	}
 
@@ -244,14 +244,14 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		: source;
 	const misaligned = new Set(details.flatMap(table => table.edits.map(edit => edit.index))).size;
 	return {
-		output,
-		groups: runs.length,
-		tables: details.length,
-		misaligned,
-		edits: options.apply ? misaligned : 0,
-		details,
-		pairs,
-		refused,
+		output     : output                         ,
+		groups     : runs.length                    ,
+		tables     : details.length                 ,
+		misaligned : misaligned                     ,
+		edits      : options.apply ? misaligned : 0 ,
+		details    : details                        ,
+		pairs      : pairs                          ,
+		refused    : refused                        ,
 	};
 }
 

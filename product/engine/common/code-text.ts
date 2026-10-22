@@ -54,6 +54,10 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 	let blockDepth                  = 0                                                   ;
 	let index                       = 0                                                   ;
 
+	const blank = (from: number, length: number): void => {
+		for (let offset = 0; offset < length; offset += 1) masked[from + offset] = " ";
+	};
+
 	while (index < source.length) {
 		const character = source[index];
 		if (character === "\n") {
@@ -69,13 +73,13 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 		if (inBlock) {
 			// Nested-capable blocks (Swift, Kotlin) swallow inner opens and close only at depth zero.
 			if (blockNested && source.startsWith(blockOpenToken, index)) {
-				for (let k = 0; k < blockOpenToken.length; k += 1) masked[index + k] = " ";
+				blank(index, blockOpenToken.length);
 				blockDepth += 1;
 				index += blockOpenToken.length;
 				continue;
 			}
 			if (source.startsWith(blockClose, index)) {
-				for (let k = 0; k < blockClose.length; k += 1) masked[index + k] = " ";
+				blank(index, blockClose.length);
 				if (blockNested && blockDepth > 0) {
 					blockDepth -= 1;
 					index += blockClose.length;
@@ -93,7 +97,7 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 		const blockOpen = syntax.blockComments.find(spec => source.startsWith(spec.open, index));
 		if (blockOpen) {
 			if (commentStarts[line] < 0) commentStarts[line] = index - lineStart;
-			for (let k = 0; k < blockOpen.open.length; k += 1) masked[index + k] = " ";
+			blank(index, blockOpen.open.length);
 			inBlock        = true                      ;
 			blockClose     = blockOpen.close           ;
 			blockOpenToken = blockOpen.open            ;
