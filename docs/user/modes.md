@@ -44,6 +44,12 @@ per row, or `.map` rows over comparable lists), instead of aligning an arbitrary
 not approval, and it carries limits: no wrappers added only to fill a column, other roles stay outside the table,
 behavior is preserved, and hot paths are measured. See [grid-first authoring](../../product/rules/references/readability-contract.md#grid-first-authoring).
 
+For TypeScript the same response lists `columnSets` (each registered row kind with its ordered columns, marking the
+kinds an approved rule covers) and `axisNotes` (what each column means). It is row-design vocabulary, not approval. After
+writing, `boxbox check --file <file> --expect-axis <axis> --json` reports which of the axes you meant are carried by a
+detected group (`covered`), which are not (`missing`) and which are not axis names (`unknown`); it does not change the
+exit status.
+
 The agent identifies a comparison purpose before choosing axes. Function signatures, bodies and calls are separate
 regions. Necessary differences remain visible. A long expression can justify inspecting responsibility and data flow,
 but does not automatically justify extraction, parameter changes or new wrappers.

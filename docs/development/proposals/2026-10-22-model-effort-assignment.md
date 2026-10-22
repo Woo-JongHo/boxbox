@@ -134,8 +134,9 @@ and do not infer prices.
 
 ## Order
 
-1. **Engine absorbs judgment.** `guide --authoring` returns column-set candidates; `check` returns unverified requested
-   boundaries. Tests per the existing result-JSON contract.
+1. **Engine absorbs judgment (done 2026-10-22).** `guide --authoring` returns `columnSets` and `axisNotes` for TypeScript;
+   `check --expect-axis` returns `axisExpectation` (`covered`, `missing`, `unknown`). The authoring response grows from
+   2364 to about 8.3 KB, so the saving is real only if agents stop reading the 32 KB contract; step 2 must measure it.
 2. **Measure.** Per-step token recording from session records (`usage` numbers only, never message content), which is also
    the data source of the proposed `-monitor` page.
 3. **Evaluate.** Run the table above; record the evidence under `docs/development/reviews/`.

@@ -33,8 +33,8 @@
       "status": "done"
     },
     {
-      "description": "Move column-set candidates and unverified-boundary listing from agent judgment into engine output (guide --authoring, check).",
-      "status": "pending"
+      "description": "Move column-set candidates (guide --authoring columnSets and axisNotes for TypeScript) and requested-boundary reconciliation (check --expect-axis axisExpectation) from agent judgment into engine output.",
+      "status": "done"
     },
     {
       "description": "Record per-step token usage from session records, usage numbers only.",
@@ -74,6 +74,15 @@
         "docs/development/issue-library/evidence/model-assignments-focused-checks.txt"
       ],
       "result": "Focused tests passed on 2026-10-22; the full check is run once when the candidate freezes."
+    },
+    {
+      "name": "Engine returns column sets and requested-axis coverage",
+      "status": "passed",
+      "scope": "test/engine-judgment.test.ts (10 tests) plus authoring-modes, cli, public-artifact, plugin-contract, result-json and model-assignments suites: 66 pass, 0 fail.",
+      "evidence": [
+        "docs/development/issue-library/evidence/engine-judgment-checks.txt"
+      ],
+      "result": "guide --authoring grows from 2364 to about 8.3 KB for TypeScript. The net token effect is not yet measured: it replaces reading the 32 KB readability contract only if agents follow the updated SKILL.md step 1."
     }
   ],
   "related": [
@@ -128,6 +137,15 @@
       "summary": "Added product/models.json with capability-checked assignments, development/tools/model-assignments.ts, in-place stamping in sync:plugin and test/model-assignments.test.ts. The Claude inspector now ships model: sonnet with effort: medium as unevaluated defaults. The author role is refused by validation. Codex values reach only the development definition because the plugin manifest ships no agents. Fallback ladder, engine-side judgment, usage recording and evaluation remain open.",
       "evidence": [
         "docs/development/issue-library/evidence/model-assignments-focused-checks.txt"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-22",
+      "event": "implemented",
+      "summary": "Added columnSets and axisNotes to guide --authoring for TypeScript (empty for other languages) and check --expect-axis with an axisExpectation block (covered, missing, unknown) that never changes the exit status. SKILL.md steps 1 and 5 and docs/user/modes.md describe both. Usage recording and the evaluation remain open.",
+      "evidence": [
+        "docs/development/issue-library/evidence/engine-judgment-checks.txt"
       ]
     }
   ]

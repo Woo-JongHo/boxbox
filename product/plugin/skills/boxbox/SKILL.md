@@ -57,7 +57,11 @@ Every check and fix goes through the bundled launcher. Resolve `<PLUGIN_ROOT>` f
 
 ## Write and Refactor
 
-1. Run `guide --authoring --json` for the intended file before composing a change. For an existing file, also run
+1. Run `guide --authoring --json` for the intended file before composing a change. For TypeScript it also returns
+   `columnSets` (every registered kind with its ordered columns; `approved` marks kinds an approved rule covers; `{i}`
+   is a per-position column) and `axisNotes` (what each column means). Use them as the vocabulary for naming cells
+   instead of reading the whole readability contract; open the contract sections cited below only for a judgment the
+   vocabulary cannot settle. They are vocabulary, not approval. For an existing file, also run
    `check --json` and read its definitions, callers and relevant tests before changing its structure.
 2. Design the rows before writing. For every group of three or more same-role values you are about to write, name the
    column set they share and compose each value as one row of it, instead of writing a convenient shape and aligning
@@ -85,9 +89,12 @@ Every check and fix goes through the bundled launcher. Resolve `<PLUGIN_ROOT>` f
 4. For preview, show the proposed diff and distinguish checks run on a proposal from checks run on the target. For an
    authorized application, inspect the diff, run relevant syntax/type and behavior checks, and assess performance-sensitive
    changes with appropriate evidence. Alignment cannot prove behavioral equivalence or performance.
-5. Where approved and requested, use Align below for final whitespace. Then run the final `check --json` and reconcile
-   every requested boundary with its returned group axes. Account for missing axes, including unsupported or single-row
-   boundaries. Inspect their actual columns and record manual verification or an unresolved coverage gap. Completion requires
+5. Where approved and requested, use Align below for final whitespace. Then run the final `check --json`, passing each
+   boundary you named in step 2 as `--expect-axis <axis>` (repeatable). The engine returns `axisExpectation`: `covered`
+   (axis, group count, start lines), `missing` (no group carries it) and `unknown` (not an axis name; fix the spelling).
+   It never changes the exit status and shows only that a group carries the axis, not that its columns are right.
+   Account for every `missing` axis, including unsupported or single-row boundaries. Inspect their actual columns and
+   record manual verification or an unresolved coverage gap. Completion requires
    each requested boundary to be verified or explicitly reported unresolved, alongside remaining findings and checks not run.
    When the user or project instructions require issue-history records, use that schema within the authorized scope to
    retain the reproduction, cause, decision and verification evidence, including failed attempts and unresolved work.

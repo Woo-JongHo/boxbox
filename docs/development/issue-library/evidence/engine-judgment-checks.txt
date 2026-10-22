@@ -1,0 +1,16 @@
+# Engine-side judgment checks for issue 020, 2026-10-22 (candidate not frozen)
+# 1. bun test (7 files)
+bun test v1.4.0 (34cbb9a40)
+
+ 66 pass
+ 0 fail
+ 869 expect() calls
+Ran 66 tests across 7 files. [23.56s]
+
+# 2. guide --authoring --json size for src/new.ts (TypeScript), bytes
+before: 2364 (measured at commit eebfbb4)
+after: 8289
+reference documents the agent was told to read: readability-contract.md    31813 bytes, grammar.md    13737, typescript-grid-template.md    12396
+
+# 3. check --expect-axis sample (call-open-paren covered, guard-return missing, colum unknown)
+expect-axis requested=call-open-paren,guard-return,colum covered=call-open-parenx1 missing=guard-return unknown=colum

@@ -10,7 +10,8 @@ import type { ApprovalRegistry, DocumentResolver, RegistrySource       } from "@
 import      { runAlignCli                                              } from "@/common/align-cli.ts"         ;
 import      { resolveFormatterExecutable                               } from "@/common/formatter-process.ts" ;
 import      { runFormatPipeline                                        } from "@/common/format-pipeline.ts"   ;
-import      { authoringGuide                                           } from "@/common/authoring-guide.ts"   ;
+import      { authoringGuide, columnSetGuide                           } from "@/common/authoring-guide.ts"   ;
+import      { axisExpectation, baseAxis                                } from "@/common/axis-expectations.ts" ;
 import      { validateSyntax                                           } from "@/common/syntax-validation.ts" ;
 import type { SyntaxValidation                                         } from "@/common/syntax-validation.ts" ;
 import      {
@@ -24,6 +25,7 @@ import type { FileResult, ResultEnvelope                               } from "@
 import      { PYTHON_ALIGNER                                           } from "@/python/profile.ts"           ;
 import      { analyzeStructured                                        } from "@/structured/index.ts"         ;
 import      { runTypeScriptAlign                                       } from "@/typescript/align.ts"         ;
+import      { AXIS_NOTES, KIND_AXES                                    } from "@/typescript/grid-kinds.ts"    ;
 
 import      { guardedRun, guardStatus                                  } from "@/common/guarded-run.ts"       ;
 
@@ -32,7 +34,7 @@ export const CLI_VERSION = "0.2.5";
 const HELP = `Usage: boxbox <command> [options]
 
 Commands:
-  check   --file <path> [--language typescript|python|json|yaml] [--json]
+  check   --file <path> [--language typescript|python|json|yaml] [--expect-axis <axis>]... [--json]
   align   --file <path> [--language typescript|python|json|yaml] [--dry-run] [--json]
   format  --file <path> [--language typescript|python|json|yaml] [--dry-run] [--json]
   guide   --file <path> [--language typescript|python|json|yaml] [--authoring] [--json]
@@ -53,15 +55,18 @@ The first public stage accepts exactly one TypeScript, Python, JSON or YAML file
 complete human-approval proof passes the fixed-point safety pipeline. An optional configured
 formatter runs before BoxBox; without it BoxBox aligns approved tables directly.
 align preserves line breaks and indentation and never runs the configured formatter.
-guide --authoring provides scoped approved guidance before a file exists; it does not write or verify code.
+guide --authoring provides scoped approved guidance before a file exists; it does not write or verify code. For TypeScript it also lists
+the registered column sets and what each axis means, as row-design vocabulary, not approval.
+check --expect-axis reports which requested axes the detected groups cover, miss, or do not recognize; it never changes the exit code.
 Write and Refactor are agent skill workflows, not automatic CLI rewrites.`;
 
 interface ParsedFileCommand {
-	readonly file      : string         ;
-	readonly language  : PublicLanguage ;
-	readonly json      : boolean        ;
-	readonly dryRun    : boolean        ;
-	readonly authoring : boolean        ;
+	readonly file       : string            ;
+	readonly language   : PublicLanguage    ;
+	readonly json       : boolean           ;
+	readonly dryRun     : boolean           ;
+	readonly authoring  : boolean           ;
+	readonly expectAxes : readonly string[] ;
 }
 
 interface CliErrorEnvelope {
@@ -135,12 +140,13 @@ function inferredLanguage(file: string): PublicLanguage | undefined {
 	return undefined;
 }
 
-function parseFileCommand(args: readonly string[], allowDryRun: boolean, root: string, allowAuthoring = false): ParsedFileCommand {
-	let file     : string | undefined         ;
-	let language : PublicLanguage | undefined ;
-	let json      = false                     ;
-	let dryRun    = false                     ;
-	let authoring = false                     ;
+function parseFileCommand(args: readonly string[], allowDryRun: boolean, root: string, allowAuthoring = false, allowExpect = false): ParsedFileCommand {
+	let file         : string | undefined         ;
+	let language     : PublicLanguage | undefined ;
+	let json                    = false           ;
+	let dryRun                  = false           ;
+	let authoring               = false           ;
+	const expectAxes : string[] = []              ;
 	for (let index = 0; index < args.length; index += 1) {
 		const argument = args[index]!;
 		if (argument === "--json") { json = true; continue; }
@@ -148,6 +154,13 @@ function parseFileCommand(args: readonly string[], allowDryRun: boolean, root: s
 		if (argument === "--authoring" && allowAuthoring) {
 			if (authoring) throw new CliError("DUPLICATE_OPTION", "--authoring may be provided only once");
 			authoring = true;
+			continue;
+		}
+		if (argument === "--expect-axis" && allowExpect) {
+			const value = args[index + 1];
+			if (!value || !/^[a-z][a-z0-9{}-]*(=\d+)?$/u.test(value)) throw new CliError("MISSING_VALUE", "--expect-axis requires an axis name such as call-open-paren");
+			index += 1;
+			expectAxes.push(value);
 			continue;
 		}
 		if (argument === "--file" || argument === "--language") {
@@ -171,7 +184,7 @@ function parseFileCommand(args: readonly string[], allowDryRun: boolean, root: s
 	const inferred = inferredLanguage(absolute             ) ;
 	if (!inferred) throw new CliError("UNSUPPORTED_LANGUAGE", `cannot infer a supported language from: ${file}`);
 	if (language && language !== inferred) throw new CliError("LANGUAGE_MISMATCH", `--language ${language} does not match ${file}`);
-	return { file: relative(root, absolute), language: language ?? inferred, json, dryRun, authoring };
+	return { file: relative(root, absolute), language: language ?? inferred, json, dryRun, authoring, expectAxes };
 }
 
 function jsonRequested(args: readonly string[]): boolean {
@@ -365,8 +378,10 @@ async function check(parsed: ParsedFileCommand, root: string): Promise<number> {
 	const result = syntax.status === "valid"
 		? await inspectFile(parsed, root, syntax)
 		: { file: parsed.file, language: parsed.language, mode: "check" as const, summary: { groups: 0, misaligned: 0, edits: 0, refused: 0, suggested: 0 }, groups: [], parse: { status: "not-run" as const, tool: "" } };
-	const readiness = formatReadiness(parsed, root, result, syntax);
-	if (parsed.json) emitJson({ schemaVersion: 1, tool: "boxbox", results: [result], syntax, formatReadiness: readiness });
+	const readiness   = formatReadiness(parsed, root, result, syntax)                                                   ;
+	const known       = parsed.language === "typescript" ? new Set(Object.keys(AXIS_NOTES).map(baseAxis)) : undefined   ;
+	const expectation = parsed.expectAxes.length ? axisExpectation(result.groups, parsed.expectAxes, known) : undefined ;
+	if (parsed.json) emitJson({ schemaVersion: 1, tool: "boxbox", results: [result], syntax, formatReadiness: readiness, ...(expectation ? { axisExpectation: expectation } : {}) });
 	else {
 		console.log(`check file=${result.file} groups=${result.summary.groups} misaligned=${result.summary.misaligned} refused=${result.summary.refused} suggested=${result.summary.suggested} unsupported=${result.unsupported?.length ?? 0}`);
 		for (const unsupported of result.unsupported ?? []) console.log(`unsupported line=${unsupported.line}: ${unsupported.reason}`);
@@ -375,6 +390,9 @@ async function check(parsed: ParsedFileCommand, root: string): Promise<number> {
 		console.log(`format mode=${readiness.mode} approval-eligible=${readiness.approvalEligible} verification=${readiness.verification}`);
 		for (const reason of readiness.reasons) console.log(`format: ${reason}`);
 		console.log(readiness.next);
+		if (expectation) {
+			console.log(`expect-axis requested=${expectation.requested.join(",")} covered=${expectation.covered.map(entry => `${entry.axis}x${entry.groups}`).join(",")} missing=${expectation.missing.join(",")} unknown=${expectation.unknown.join(",")}`);
+		}
 	}
 	return syntax.status !== "valid" || result.summary.refused > 0 ? 2 : result.summary.misaligned > 0 ? 1 : 0;
 }
@@ -386,9 +404,10 @@ async function guide(parsed: ParsedFileCommand, root: string): Promise<number> {
 		const context = approvalContext(root                                                                   ) ;
 		const advice  = authoringGuide (context.registry, parsed.file, parsed.language, context.resolveDocument) ;
 		if (approvalContext(root).fingerprint !== context.fingerprint) throw new Error("configuration or approval data changed while preparing guidance");
+		const sets   = parsed.language === "typescript" ? columnSetGuide(KIND_AXES, AXIS_NOTES, advice.rules.map(rule => rule.key)) : { columnSets: [], axisNotes: {} } ;
 		const output = {
 			schemaVersion: 1, tool: "boxbox", command: "guide", basis: "authoring", ok: advice.rules.length > 0,
-			file: parsed.file, language: parsed.language, verification: "not-run", writeAuthorized: false, ...advice,
+			file: parsed.file, language: parsed.language, verification: "not-run", writeAuthorized: false, ...advice, ...sets,
 		};
 		if (parsed.json) emitJson(output);
 		else {
@@ -399,6 +418,7 @@ async function guide(parsed: ParsedFileCommand, root: string): Promise<number> {
 				for (const example of rule.counterexamples) console.log(`[${example.id}] counterexample: preserve the before form\n${example.before}`);
 			}
 			for (const item of advice.unavailable) console.log(`unavailable ${item.key}: ${item.reasons.join("; ")}`);
+			for (const set of sets.columnSets) console.log(`column-set ${set.kind} approved=${set.approved}: ${set.columns.join(" | ")}`);
 		}
 		return output.ok ? 0 : 1;
 	}
@@ -494,7 +514,7 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 			return doctor(project, json);
 		}
 		const project = assertRoot(root);
-		if (command === "check")  return await check(parseFileCommand(tail, false, project), project);
+		if (command === "check")  return await check(parseFileCommand(tail, false, project, false, true), project);
 		if (command === "guide")  return await guide(parseFileCommand(tail, false, project, true), project);
 		if (command === "align")  return await format(parseFileCommand(tail, true, project), project, true);
 		if (command === "format") return await format(parseFileCommand(tail, true, project), project);
