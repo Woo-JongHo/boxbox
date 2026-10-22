@@ -1,6 +1,6 @@
 /**
  * Mutation tests: thousands of seeded variants of every line-engine fixture must keep the safety invariants —
- * whitespace-only output (T2), no refused table, idempotence, and an unchanged parse (T3, sampled because
+ * whitespace-only output (T2), no preservation-refused table, idempotence, and an unchanged parse (T3, sampled because
  * parsers are slow).
  * BOXBOX_MUTATIONS scales the variant count per language (default 1000); a failure prints its seed and a minimized input.
  */
@@ -48,8 +48,10 @@ function violation(variant: string, aligner: LineProfiler): string | undefined {
 	const result = alignSource(variant, aligner, { minRows: 3, apply: true }) ;
 	const once   = result.output                                              ;
 	if (changedLines(variant, once, aligner.syntax).length > 0) return "changed more than whitespace between tokens";
-	// A refusal is safe, but here it means a profiler and the preservation check disagree — a bug to find.
-	if (result.refused.length > 0) return `refused ${result.refused.length} table(s)`;
+	// A preservation refusal is safe, but here it means a profiler and the preservation check disagree — a bug to find.
+	// A wide-character refusal is policy: injected Hangul, Han or Kana makes the column width viewer-dependent.
+	const unsafe = result.refused.filter(table => table.refusal !== "wide-characters");
+	if (unsafe.length > 0) return `refused ${unsafe.length} table(s)`;
 	if (align(once, aligner) !== once) return "not idempotent";
 	return undefined;
 }

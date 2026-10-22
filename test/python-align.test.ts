@@ -110,6 +110,35 @@ describe("python profile specific properties", () => {
 		expect(result.output).toBe(source);
 	});
 
+	test("a table whose columns would follow wide characters is refused with a reason and left unchanged", () => {
+		const source = [
+			"row = {",
+			'    "송금번호": wire_value,', // cjk-test-data
+			'    "입금증": deposit_slip,', // cjk-test-data
+			'    "통화": currency,',       // cjk-test-data
+			"}",
+		].join("\n");
+		const result = align(source);
+		expect(result.output                             ).toBe   (source             ) ;
+		expect(result.refused.map(table => table.refusal)).toEqual(["wide-characters"]) ;
+	});
+
+	test("wide characters in a row's last cell or trailing comment do not refuse the table", () => {
+		const source = [
+			"class Row:",
+			"    deposit_date: str  # 입금일", // cjk-test-data
+			'    company: str = "한국"',        // cjk-test-data
+			"    amount: float",
+		].join("\n");
+		const result = align(source);
+		expect(result.refused).toEqual([]);
+		expect(result.output.split("\n").slice(1)).toEqual([
+			"    deposit_date : str # 입금일", // cjk-test-data
+			'    company      : str = "한국"',  // cjk-test-data
+			"    amount       : float",
+		]);
+	});
+
 	test("attribute assignments form a table without changing Python syntax or non-whitespace tokens", () => {
 		const source = [
 			"self.a = 0",

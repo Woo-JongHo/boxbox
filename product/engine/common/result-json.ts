@@ -21,6 +21,8 @@ export interface ResultGroup {
 	readonly context?  : string            ;
 	/** How deeply nested the table's container is (0 = top level). */
 	readonly depth?    : number            ;
+	/** Why a REFUSE group was refused (`whitespace-only`, `wide-characters`). */
+	readonly reason?   : string            ;
 }
 
 export interface ResultParse {
