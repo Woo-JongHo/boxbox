@@ -58,6 +58,7 @@ product/                         canonical product sources
     python/                      shared line-engine profile and thin runners
     structured/                  JSON/YAML parser-backed scalar mapping adapter
     rule-data.ts                 rule paths shared by source and bundled engines
+  models.json                    model and effort per AI-judgment role and host; sync:plugin stamps the agent definitions
   rules/
     patterns/                    advisory nine-family catalog; never approval authority
     base/                        language surface-form data
@@ -91,6 +92,7 @@ dist/                            generated engine packages and npm installer; gi
 - **Single source.** Edit product code in `product/engine`, rules in `product/rules`, and plugin templates in `product/plugin`. `bun run sync:plugin` regenerates the complete `plugin/` payload. The marketplaces keep their `./plugin` discovery path. See [layout.md](docs/development/layout.md) for the dependency and generation contracts.
 - **There are two release artifacts.** The engine CLI package (`development/tools/build-cli-artifact.ts` → `product/packages/cli` → `dist/boxbox-<version>.tgz`) and the thin agent plugin (`plugin/`: `SKILL.md`, read-only inspector, manifests, hook adapter) share one set of engine and rule data. The public CLI bundle does not include the raw write runners or auxiliary writers (`docs/development/release-contract.md`).
 - **Host adapters are thin.** Only discovery location and manifest differ per host (see `docs/development/agent-portability.md`).
+- **Model and effort.** `product/models.json` is the only place a model or effort for the plugin's agent roles is written; `bun run sync:plugin` stamps the Claude and Codex agent definitions from it (`development/tools/model-assignments.ts`). Never hand-edit those fields, and never assign the `author` role. Values are `unevaluated-default` until an evaluation selects them ([proposal](docs/development/proposals/2026-10-22-model-effort-assignment.md)).
 - **Roles.** The read-only inspector investigates one product file; the main agent authors and verifies product changes within the authorized plan. READINESS1 permits continued work without per-file feedback; parallel workers must have disjoint ownership.
 - **Subagent briefing.** Spawn prompts follow `docs/development/subagent-brief.md`: the task, owned and excluded paths, acceptance commands and the few applicable facts are written into the brief. A worker never reads `plan.md` or `status.md` in full; it reads only the section the brief cites (everything below the active phase table in `plan.md` is history). General read and re-run discipline lives in the global coding guidelines.
 - **Adding a language** (needs a scope decision first; the public scope is four languages): create `product/engine/<lang>/profile.ts` exporting a `LineProfiler`, add `01_group-regions.ts` / `06_align-tables.ts` wrappers, add `test/fixtures/<lang>/{tables,tables.aligned,tricky}.*`, add `test/<lang>-align.test.ts` using `lang-harness.ts`, then update the language list in manifests, `SKILL.md` and `plugin-contract.test.ts`.

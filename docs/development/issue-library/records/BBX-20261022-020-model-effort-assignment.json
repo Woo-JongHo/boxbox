@@ -43,6 +43,10 @@
     {
       "description": "Evaluate Claude and Codex inspector candidates against engine ground truth, then add product/models.json with generation and a contract test.",
       "status": "pending"
+    },
+    {
+      "description": "Add product/models.json, validation, in-place stamping through sync:plugin and a contract test; ship the Claude inspector model and effort from it.",
+      "status": "done"
     }
   ],
   "verification": [
@@ -61,6 +65,15 @@
       "scope": "inspector role, Claude and Codex candidates listed in the proposal.",
       "evidence": [],
       "result": "No evaluation has run; all values in the proposal are unevaluated defaults."
+    },
+    {
+      "name": "Generated agents match product/models.json and drift is detected",
+      "status": "passed",
+      "scope": "test/model-assignments.test.ts (validation, stamping, agreement, no Codex agents in the manifest) plus a temporary change of effort in models.json that made sync:plugin --check report 3 drifted files and a restore that returned 0.",
+      "evidence": [
+        "docs/development/issue-library/evidence/model-assignments-focused-checks.txt"
+      ],
+      "result": "Focused tests passed on 2026-10-22; the full check is run once when the candidate freezes."
     }
   ],
   "related": [
@@ -106,6 +119,15 @@
       "evidence": [
         "docs/development/proposals/2026-10-22-model-effort-assignment.md",
         "docs/development/issue-library/evidence/model-frontmatter-validation.txt"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-22",
+      "event": "implemented",
+      "summary": "Added product/models.json with capability-checked assignments, development/tools/model-assignments.ts, in-place stamping in sync:plugin and test/model-assignments.test.ts. The Claude inspector now ships model: sonnet with effort: medium as unevaluated defaults. The author role is refused by validation. Codex values reach only the development definition because the plugin manifest ships no agents. Fallback ladder, engine-side judgment, usage recording and evaluation remain open.",
+      "evidence": [
+        "docs/development/issue-library/evidence/model-assignments-focused-checks.txt"
       ]
     }
   ]
