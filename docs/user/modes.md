@@ -97,4 +97,4 @@ groups is not a whole-file style certificate. The agent reports refused and unsu
 checks not run. Structural changes require behavior verification and performance evidence when the changed work warrants it.
 
 Plugin hooks perform read-only checks after edits and at session boundaries; they never automatically fix code. For
-installation and host-specific status display, see [the main README](../../README.md) and [HUD](hud.md).
+installation, see [the main README](../../README.md).

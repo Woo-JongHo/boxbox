@@ -9,7 +9,7 @@ map to today's modules. Parser/detector expansion, new rule approval and runtime
 
 Every change description should identify: affected command, input case, expected result/refusal, side effects,
 source owner, regression evidence and current support scope. A design proposal must identify its compatibility
-impact before changing JSON versions, exit codes, hook decisions or HUD interpretation.
+impact before changing JSON versions, exit codes or hook decisions.
 
 ## Process
 
@@ -43,7 +43,7 @@ reviews hold detailed evidence; the library is the searchable entry point, not a
    or commit logic in each language wrapper.
 3. Test success and a meaningful refusal: invalid syntax with zero tables, missing/faulting parser, unapproved table,
    formatter failure, provenance change or external edit as applicable.
-4. Verify output states and exit behavior in the public CLI. For a shared result change, check hook and HUD consumers.
+4. Verify output states and exit behavior in the public CLI. For a shared result change, check hook consumers.
    Missing verification must remain visible rather than becoming a green status.
 
 ### Change data storage
@@ -65,8 +65,7 @@ Canonical source ownership:
 | Rule vocabulary and approved data | `product/rules/` | Surface, proof and public-preset validation |
 | Host plugin | `product/plugin/` | `bun run sync:plugin`; generated `plugin/`; strict host validation |
 | Installer | `product/installer/` | Isolated installed-artifact journey |
-| Installed terminal HUD | `product/hud/`, installer projection | Collector/setup/launcher tests and actual native rendering |
-| Corpus or development HUD | `development/` | Development-only tests; artifact exclusion |
+| Corpus or development tools | `development/` | Development-only tests; artifact exclusion |
 | Explanation of current behavior | Owning development document | Source links, commands and dated evidence |
 
 Within `product/engine/`, TypeScript module imports use the engine-root `@/` alias. Do not translate the rules-owned
@@ -86,7 +85,7 @@ as recorded; add an interpretation when a raw summary overstates what was measur
 | Next | Complete all-code-language shared result coverage; consolidate duplicated inspection dispatch where useful | Ten adapter result shapes and explicit capabilities; existing behavior preserved |
 | 4 | Harden mutable data writers according to their stated writer model | Actual interruption/concurrency reproduction and recovery tests |
 | Implemented development slice | Rebuildable SQLite pattern index | Nine families and 45 advisory cases; integrity, ownership and canonical-source checks |
-| Later decision | Evaluate any runtime SQLite or HUD-history use | Measured need, migration and installed-platform evidence |
+| Later decision | Evaluate any runtime SQLite use | Measured need, migration and installed-platform evidence |
 
 Closed rows record work implemented after the dated documentation audit; the remaining rows are not completion claims.
 Use [plan.md](plan.md) for the single active execution task.

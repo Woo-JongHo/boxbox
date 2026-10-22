@@ -23,7 +23,7 @@ not inferred from that minimum. The corrected local archive `1f1343e9…` and th
 lifecycle matrix. Their measured hosts are Codex 0.163.0 and Claude 2.1.286 on macOS, Codex 0.163.0 and Claude 2.1.280 on
 Linux/WSL, and Codex 0.157.1 and Claude 2.1.280 on native Windows. The
 [lifecycle record](proposals/2026-10-22-artifact-lifecycle.md) separates initial failures, corrected passes and final
-CI-byte verification. HUD configuration ownership is tested only on macOS/WSL; Windows HUD is unsupported.
+CI-byte verification. The HUD configuration cells recorded there belong to 0.2.4; the HUD was removed afterwards.
 These results do not establish authenticated host UI/hook acceptance or a final release support matrix.
 
 ## Public command boundary

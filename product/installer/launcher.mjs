@@ -2,7 +2,6 @@ import      { spawnSync                } from "node:child_process" ;
 import      { existsSync, readFileSync, readSync } from "node:fs"            ;
 import      { isAbsolute, resolve      } from "node:path"          ;
 import      { fileURLToPath            } from "node:url"           ;
-import      { recordHookLocation       } from "./hud/record.mjs"    ;
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const configuration = resolve(root, "runtime.json");
@@ -36,9 +35,6 @@ try {
 	const child = spawnSync(runtime.node, [runtime.cli, ...process.argv.slice(2)], { stdio: input ? ["pipe", "inherit", "inherit"] : "inherit", input, env });
 	if (child.error) throw child.error;
 	if (child.signal) throw new Error(`Engine terminated by ${child.signal}`);
-	if (child.status === 0 && input && data && process.argv.length === 4) {
-		try { recordHookLocation(runtime, JSON.parse(input.toString("utf8")), data); } catch { /* Engine owns invalid-input reporting. */ }
-	}
 	process.exitCode = child.status ?? 1;
 } catch (error) {
 	console.error(`[BoxBox] ${error instanceof Error ? error.message : String(error)}`);

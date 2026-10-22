@@ -92,22 +92,6 @@ npm exec --yes --package '/absolute/path/to/dist/installer/boxbox-plugin-<versio
 将 `<version>` 替换为 `package.json` 中的版本号，或使用 `pack:installer` 输出的完整压缩包路径。此本地构建产物的使用流程需要检出仓库进行构建。安装后的插件使用其永久安装的 Node 引擎。
 公开安装器需要 Node.js 22.22.3 或更高版本以及 npm；Python 格式化还需要 `python3`。
 
-## 终端 HUD
-
-本地安装候选包支持在 macOS/Linux 上选择启用 BoxBox HUD：
-
-```sh
-npm exec --yes --package '/absolute/path/to/dist/installer/boxbox-plugin-<version>.tgz' -- boxbox --codex --claude --hud
-~/.local/bin/boxbox-codex
-```
-
-Claude Code 重启后使用自身的状态栏。通过 `boxbox-codex` 启动 Codex 时，HUD 显示在独立的 tmux 窗格中；
-普通 `codex` 命令保持不变。请先安装 tmux，并在现有 tmux 会话之外启动。
-HUD 显示引擎就绪状态、已批准规则数量和已观测的检查结果；缺少记录时显示未知。
-Codex 显示启动时固定项目的历史记录，不代表当前会话已接受检查结果。
-此适配器不支持 Windows 或桌面应用 HUD。设置过程保留无关配置，拒绝覆盖其他 Claude 状态栏，
-也不会授予钩子信任。参见 [HUD 设置、限制与移除](docs/user/hud.md)。
-
 ## 开发 BoxBox
 
 产品源码位于 `product/`；开发工具、研究和证据位于 `development/`。

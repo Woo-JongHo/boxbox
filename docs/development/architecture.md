@@ -53,7 +53,6 @@ flowchart TD
     Gate --> Write[One atomic replacement of target]
     Result --> Report[Report or hook feedback]
     Report --> Receipt[Local receipt]
-    Receipt --> HUD[Installed terminal HUD / development panel]
 ```
 
 This is an ownership map, not an assertion that every branch executes every stage. Public `check` does not execute
@@ -72,8 +71,7 @@ the format pipeline. The format pipeline orchestrates repeated inspection and wo
 | Data | Surface forms, references and approved preset | [product/rules/](../../product/rules/) |
 | Advisory pattern catalog | Nine-family design inventory and rebuildable development SQLite index; never runtime approval | [patterns/catalog.json](../../product/rules/patterns/catalog.json), [pattern-catalog.ts](../../development/tools/pattern-catalog.ts) |
 | Distribution | Host templates, launcher and installer | [product/plugin/](../../product/plugin/), [product/installer/](../../product/installer/) |
-| HUD | Installed read-only collector, Claude statusLine and Codex tmux companion | [product/hud/](../../product/hud/) |
-| Development | Corpus learning, builds, tests, conversation status panel and release evidence | [development/](../../development/) |
+| Development | Corpus learning, builds, tests and release evidence | [development/](../../development/) |
 
 ## Data and invariants
 

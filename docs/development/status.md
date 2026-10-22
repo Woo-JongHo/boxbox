@@ -28,6 +28,10 @@ license alignment, authenticated Claude/current Windows hooks and applicable UI 
 approval/access. No new approval data, public package, live-profile installation, persistent trust or visibility
 change was made. Existing native hook/UI evidence remains bound to its earlier exact local candidate.
 
+Scope change (2026-10-22, user decisions): the line-engine profiles other than Python and the opt-in terminal HUD
+(`--hud`, Claude statusLine and the Codex tmux companion) were removed. The HUD cells and HUD qualifiers recorded
+in this file belong to 0.2.4 and earlier candidates; the next candidate has no HUD and needs its own lifecycle run.
+
 ## Earlier READINESS1 checkpoints
 
 The following checkpoints retain their original artifact identities and test counts. The leading checkpoint above

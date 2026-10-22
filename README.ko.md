@@ -93,22 +93,6 @@ npm exec --yes --package '/absolute/path/to/dist/installer/boxbox-plugin-<versio
 `<version>`을 `package.json`의 버전으로 바꾸거나, `pack:installer`가 출력한 정확한 아카이브 경로를 사용하세요. 로컬 패키지를 빌드하려면 저장소 체크아웃이 필요합니다. 설치된 플러그인은 영구 설치된 자체 Node 엔진을 사용합니다.
 공개 설치 프로그램에는 Node.js 22.22.3 이상과 npm이 필요하며, Python 포맷에는 `python3`가 추가로 필요합니다.
 
-## 터미널 HUD
-
-로컬 설치 후보에서 macOS/Linux용 BoxBox HUD를 선택적으로 켤 수 있습니다.
-
-```sh
-npm exec --yes --package '/absolute/path/to/dist/installer/boxbox-plugin-<version>.tgz' -- boxbox --codex --claude --hud
-~/.local/bin/boxbox-codex
-```
-
-Claude Code는 재시작 후 자체 상태줄을 사용합니다. Codex는 `boxbox-codex`로 실행하면 별도의 tmux 영역에
-표시하며, 일반 `codex` 명령은 바뀌지 않습니다. tmux를 먼저 설치하고 기존 tmux 세션 밖에서 실행하세요.
-HUD에는 엔진 준비 상태, 승인 규칙 수, 관측한 검사 결과가 나옵니다. 기록이 없으면 알 수 없음으로 표시합니다.
-Codex는 시작할 때 고정한 프로젝트의 이력을 보여주며, 현재 세션의 결과 수용을 증명하지 않습니다.
-이 어댑터는 Windows와 데스크톱 앱 HUD를 지원하지 않습니다. 설치는 관련 없는 설정을 보존하고, 다른 Claude
-상태줄이 있으면 덮어쓰지 않으며, 훅 신뢰를 부여하지 않습니다. [HUD 설정·제약·해제](docs/user/hud.md)를 참고하세요.
-
 ## BoxBox 개발
 
 제품 소스는 `product/`에, 개발 도구·연구·증거는 `development/`에 있습니다.

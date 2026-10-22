@@ -66,11 +66,6 @@
       "kind": "evidence",
       "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-full-check-closure.log",
       "note": "Successful complete rerun after the evidence-only storage correction."
-    },
-    {
-      "kind": "test",
-      "path": "test/release-hud-lifecycle.test.ts",
-      "note": "The actual active HUD lifecycle suite remained present and unchanged by the evidence storage correction."
     }
   ],
   "history": [
@@ -103,6 +98,13 @@
       "evidence": [
         "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-full-check-closure.log"
       ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-22",
+      "event": "decision",
+      "summary": "The opt-in terminal HUD was removed on 2026-10-22 (user decision). Related test test/release-hud-lifecycle.test.ts was deleted with it; this resolution and its evidence are unchanged.",
+      "evidence": []
     }
   ]
 }

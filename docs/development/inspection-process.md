@@ -115,7 +115,7 @@ The format pipeline performs two complete working-copy cycles and commits once a
    Python; the JSON/YAML adapter has its own structured tests. The other line-engine languages were removed on 2026-10-22.
 2. Keep parser outcomes explicit: passed, syntax rejected, unavailable, execution failure, not run.
    Avoid interpreting the current generic availability error as proof that an executable is missing; its probe also
-   has a five-second timeout. A versioned result change needs caller/hook/HUD compatibility tests.
+   has a five-second timeout. A versioned result change needs caller/hook compatibility tests.
 3. Keep language-specific syntax and row policies behind existing adapters. Expand write approval one rule at a
    time only after approval, parser, preservation, fixed-point and installed-artifact coverage is present.
 
@@ -128,7 +128,7 @@ block scalars and multiline or non-scalar values are unsupported rather than nor
 Existing focused commands (run from the repository root):
 
 ```bash
-bun test --timeout 60000 test/parse-check.test.ts test/parser-fault.test.ts test/line-write-safety.test.ts test/typescript-write-safety.test.ts test/format-pipeline.test.ts test/result-json.test.ts test/hud.test.ts
+bun test --timeout 60000 test/parse-check.test.ts test/parser-fault.test.ts test/line-write-safety.test.ts test/typescript-write-safety.test.ts test/format-pipeline.test.ts test/result-json.test.ts
 bun test --timeout 60000 test/surface.test.ts test/recommended-preset.test.ts
 ```
 

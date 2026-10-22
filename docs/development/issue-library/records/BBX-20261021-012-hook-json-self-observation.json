@@ -78,11 +78,6 @@
       "note": "Covers self-receipts, ordinary JSON and unrelated plugin-data hook JSON."
     },
     {
-      "kind": "test",
-      "path": "test/hud.test.ts",
-      "note": "Original real hook writer regression remains unchanged."
-    },
-    {
       "kind": "review",
       "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-initial.log",
       "note": "Initial integrated failure evidence."
@@ -130,6 +125,13 @@
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-final-result.md",
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-closure-result.md"
       ]
+    },
+    {
+      "sequence": 5,
+      "date": "2026-10-22",
+      "event": "decision",
+      "summary": "The opt-in terminal HUD was removed on 2026-10-22 (user decision). Related test test/hud.test.ts was deleted with it; this resolution and its evidence are unchanged.",
+      "evidence": []
     }
   ]
 }
