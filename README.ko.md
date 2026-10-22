@@ -118,9 +118,9 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 | 개발용 정렬 엔진 | 위와 같은 4개 언어(그 밖의 라인 엔진 언어는 2026-10-22에 제거) |
 | TypeScript 탐지 | TypeScript 7 AST 도구와 표 종류 레지스트리 |
 | JSON/YAML 탐지 | 같은 단계에서 인접한 단일 행 스칼라 매핑 항목 3개 이상 |
-| 기타 개발 언어 탐지 | 언어별 프로필을 사용하는 공통 줄 단위 엔진 |
+| Python 탐지 | Python 프로필(문자열·주석 마스킹, 행 슬롯 규칙)을 사용하는 공통 줄 단위 엔진 |
 
-개발용 엔진이 10개 언어를 다룬다고 해서 배포 지원 수준이 모두 같다는 뜻은 아닙니다. 쓰기 검증에는 해당 언어의 파서 도구가 필요합니다. 언어별 한계는 [구현 현황](docs/development/implementation.md)을 참고하세요.
+지원하는 4개 언어의 배포 지원 수준이 모두 같지는 않습니다. 기본 프리셋의 쓰기 승인은 TypeScript와 Python에만 있습니다. 쓰기 검증에는 해당 언어의 파서 도구가 필요합니다. 언어별 한계는 [구현 현황](docs/development/implementation.md)을 참고하세요.
 
 ## 프로젝트 설정과 규칙
 

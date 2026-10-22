@@ -117,9 +117,9 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 | 开发版对齐引擎 | 与上述相同的四种语言（其他行引擎语言已于 2026-10-22 移除） |
 | TypeScript 检测 | TypeScript 7 AST 工具和表格类型注册表 |
 | JSON/YAML 检测 | 同一层级中至少三个相邻的单行标量映射条目 |
-| 其他开发语言检测 | 共享的行引擎与各语言专用配置 |
+| Python 检测 | 共享的行引擎与 Python 专用配置（字符串和注释屏蔽、行槽位规则） |
 
-拥有十种语言的开发引擎，并不意味着它们具有相同的发布支持程度。写入前的检查需要相应的解析器工具。各语言的具体边界请参阅[实现映射](docs/development/implementation.md)。
+所支持的四种语言并不具有相同的发布支持程度：默认预设的写入授权仅覆盖 TypeScript 和 Python。写入前的检查需要相应的解析器工具。各语言的具体边界请参阅[实现映射](docs/development/implementation.md)。
 
 ## 项目设置与规则
 
