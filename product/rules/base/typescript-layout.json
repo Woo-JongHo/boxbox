@@ -29,6 +29,6 @@
 		"assignments": { "gap": ["equals", "semicolon"], "insert": ["comment"] },
 		"call-statements": { "gap": ["call-arg{i}", "list-arg{i}-comma{i}", "list-arg{i}-el{i}", "list-matcher-arg{i}-comma{i}", "list-matcher-arg{i}-el{i}", "semicolon"], "insert": ["call-open-paren", "call-comma{i}", "call-close-paren", "list-arg{i}-open", "list-arg{i}-close", "list-matcher-arg{i}-open", "list-matcher-arg{i}-close", "subject-close-paren", "matcher-dot", "matcher-open-paren", "matcher-close-paren", "comment"] },
 		"object-rows": { "gap": ["property{i}", "colon{i}", "value{i}", "comma{i}", "close-brace"], "insert": ["open-brace", "tail"] },
-		"registration": { "gap": ["colon", "value"], "insert": [] }
+		"registration": { "gap": ["colon", "value", "comma"], "insert": [] }
 	}
 }
