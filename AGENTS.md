@@ -92,8 +92,28 @@ dist/                            generated engine packages and npm installer; gi
 - **There are two release artifacts.** The engine CLI package (`development/tools/build-cli-artifact.ts` → `product/packages/cli` → `dist/boxbox-<version>.tgz`) and the thin agent plugin (`plugin/`: `SKILL.md`, read-only inspector, manifests, hook adapter) share one set of engine and rule data. The public CLI bundle does not include the raw write runners or auxiliary writers (`docs/development/release-contract.md`).
 - **Host adapters are thin.** Only discovery location and manifest differ per host (see `docs/development/agent-portability.md`).
 - **Roles.** The read-only inspector investigates one product file; the main agent authors and verifies product changes within the authorized plan. READINESS1 permits continued work without per-file feedback; parallel workers must have disjoint ownership.
+- **Subagent briefing.** Spawn prompts follow `docs/development/subagent-brief.md`: the task, owned and excluded paths, acceptance commands and the few applicable facts are written into the brief. A worker never reads `plan.md` or `status.md` in full; it reads only the section the brief cites (everything below the active phase table in `plan.md` is history). General read and re-run discipline lives in the global coding guidelines.
 - **Adding a language:** create `product/engine/<lang>/profile.ts` exporting a `LineProfiler`, add `01_group-regions.ts` / `06_align-tables.ts` wrappers, add `test/fixtures/<lang>/{tables,tables.aligned,tricky}.*`, add `test/<lang>-align.test.ts` using `lang-harness.ts`, then update the language list in manifests, `SKILL.md` and `plugin-contract.test.ts`.
 - **Adding a TypeScript table kind:** register its detector in `grid-kinds.ts`, its descriptive axes in `rules/base/typescript-layout.json` and implemented-kind validation in `layout-policy.ts`; add fixtures and tests. Only declaration grouping gap/minimum-row policy is currently data-executed; row boundary extraction stays code-owned.
+
+## Verification budget
+
+Verification repeated per change, not missing verification, was the largest cost of the 2026-10-21 overnight loop.
+Spend it once per frozen candidate.
+
+- **Tiered checks.** While editing, run only the focused tests that cover the changed files. Run the full
+  `bun run check` once when freezing a candidate, and again only after the candidate's contents change. The host
+  matrix (macOS, Windows, WSL × Codex, Claude, plus HUD cells) runs against a frozen candidate only, never per fix.
+- **Impact-scoped reruns.** After a fix, rerun only the matrix cells the changed paths can affect (for example, a
+  Python engine change does not need Claude statusLine or HUD cells). State which cells you skipped and why in the
+  evidence note.
+- **Freeze rule.** Documentation, evidence and test-only commits do not create a new candidate and do not trigger
+  matrix reruns. Only a change to shipped engine, rules, plugin or installer content changes the candidate identity.
+- **Review budget.** Request an independent review at phase boundaries, not at every checkpoint. Give the reviewer
+  the diff and a checklist, not the repository. A fix-verification review covers only the findings it closes.
+- **Stop condition.** If the same candidate has been re-verified three times for one cause, stop and record the
+  diagnosis before another run. State a credit or turn budget at the start of an autonomous loop and report when it
+  is reached instead of continuing.
 
 ## Commands
 
@@ -114,6 +134,7 @@ bun run development/tools/stress-corpus.ts   # optional; clones OSS repos into /
 - Runtime is Bun (TypeScript scripts run directly); `05_inspect-hover.mjs` runs on Node.
 - Code in this repo is itself held to the skill's rules: aligned import/declaration tables, tabs for indentation. Run the relevant `06_align-tables.ts` on files you change.
 - **When the property differs, split with a blank line** (`product/rules/references/grammar.md` section 1 paragraph rule). The property is the pattern (`DEFINE`, `WHEN`, `EXIT`, `DO` …) and, for a definition, the declaration kind (`type`/`interface` erased after compilation versus declarations that remain at run time). Examples: a `const` group and an `expect` group; a definition, a check (`if … throw`) and a result (`return`). Build alignment tables only within one property, and never hand-align columns across lines with different properties. Exception: a guard that checks a name defined just above stays attached to the definition. `export` and `const`/`let` are not mandatory criteria (grouping them is nice but not enforced). **Apply retroactively only to files you touch** (do not change untouched files).
+- **Compose grid-first.** When you write or restructure code here, design the rows before writing: for each group of three or more same-role values, name the shared column set and write every value as one row of it (one reader shape for several options, one `key : value ,` field per row, `.map` rows over comparable lists, a branch picked in one row such as `const run = flag ? a : b;`). Limits, from [grid-first authoring](product/rules/references/readability-contract.md#grid-first-authoring): no wrapper or parameter whose only job is to fill a column; derived values, guards and control flow stay outside the table; behavior, order and output bytes are preserved and a rewrite is compared old versus new on the same inputs; measure before using `.map` chains in hot paths. Like the other conventions it applies to files you touch, and it is guidance, not rule approval.
 - **Keep statements in their original execution order.** Do not reorder declarations to look nicer (for example, sorting by argument count can use a `const` before its declaration and break). Group only by inserting blank lines within already consecutive statements.
 - **`product/engine/`, `test/` and `development/tools/` import engine modules with `@/`** (`tsconfig.json` `paths`: `@/*` = `product/engine/*`). The copied development skill carries its own resolver (`@/*` = `./engine/*`) and pinned dependencies; public Node bundles resolve aliases at build time. Keep the engine-external layout JSON import and runtime `new URL(..., import.meta.url)` paths relative: they locate files, not engine module aliases. `check:layout` rejects unintended relative engine module imports and invalid alias targets.
 - `package.json` owns the release version. Product manifest templates use `@BOXBOX_VERSION@`; `bun run sync:plugin` and package builders stamp generated output without modifying product templates. Change the version in `package.json`, regenerate and build (`test/plugin-contract.test.ts` catches output drift). Validate the release plugin with `claude plugin validate --strict ./plugin` and `claude plugin validate --strict .`.

@@ -38,6 +38,12 @@ This read-only request returns approved guidance for the file's language and sco
 not exist yet. The examples are composition guidance, not approval to rewrite arbitrary code. Ordinary `guide --file`
 remains based on groups found in an existing file. Missing guidance is reported; it is not replaced with invented approval.
 
+When writing new code the agent also designs the rows first: for each group of three or more same-role values it names
+the shared columns and writes every value as one row of them (for example one reader shape for several options, one field
+per row, or `.map` rows over comparable lists), instead of aligning an arbitrary shape afterwards. This is guidance,
+not approval, and it carries limits: no wrappers added only to fill a column, other roles stay outside the table,
+behavior is preserved, and hot paths are measured. See [grid-first authoring](../../product/rules/references/readability-contract.md#grid-first-authoring).
+
 The agent identifies a comparison purpose before choosing axes. Function signatures, bodies and calls are separate
 regions. Necessary differences remain visible. A long expression can justify inspecting responsibility and data flow,
 but does not automatically justify extraction, parameter changes or new wrappers.
