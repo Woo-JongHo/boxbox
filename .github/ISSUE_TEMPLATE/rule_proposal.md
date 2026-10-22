@@ -2,7 +2,6 @@
 name: Rule proposal
 about: Propose a table kind or alignment rule for the approved preset
 title: ''
-labels: rule-proposal
 assignees: ''
 ---
 
