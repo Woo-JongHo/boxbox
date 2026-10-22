@@ -3,7 +3,7 @@
 The selected public npm name is **`boxbox-plugin`**. The product remains **BoxBox**; plugin, skill and private engine IDs remain `boxbox`.
 The user authorized an available package name, and npm returned E404 for `boxbox-plugin` on 2026-10-16. That does not reserve the name.
 `box-box` was considered first, then rejected because npm's unscoped similarity rules compare punctuation variants of existing names. `boxbox-plugin` and its punctuation-free form both returned E404; registry publication remains the final name-acceptance check.
-The current 0.2.4 candidate has not been published, so registry installation and publisher authentication remain unverified.
+The current 0.2.5 candidate has not been published, so registry installation and publisher authentication remain unverified.
 
 ## Target commands after publication
 
@@ -60,7 +60,7 @@ remain ineligible until approved. Python formatting requires `python3`. `check -
 non-dry-run Align writes approved horizontal-whitespace alignment only; explicit Format writes through the broader
 formatter-plus-alignment pipeline.
 An earlier candidate passed isolated installation and explicit TypeScript/Python formatting with native Windows
-Node 24.12.0, Python 3.14.0 and Codex 0.157.1 on 2026-10-21. That historical result does not verify the current 0.2.4
+Node 24.12.0, Python 3.14.0 and Codex 0.157.1 on 2026-10-21. That historical result does not verify the current 0.2.5
 archive. Native host hook event delivery also remains unverified; installation and direct CLI checks do not prove it.
 
 Official contracts: [Codex plugin packaging](https://developers.openai.com/plugins/build/plugins), [Codex hook trust](https://learn.chatgpt.com/docs/hooks), [Claude plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces), [Claude hook exec form](https://code.claude.com/docs/en/hooks#command-hook-fields).

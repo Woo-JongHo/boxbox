@@ -37,7 +37,7 @@ These results do not establish authenticated host UI/hook acceptance or a final 
 - `init`: creates a versioned project config without overwriting existing user files.
 - `doctor`: reports the availability of the runtime, parsers, config, approval data and release files. It never reports something unimplemented as healthy.
 
-CLI arguments, exit codes and error JSON are pinned by implementation and tests in REL4. The product version 0.2.4 is development metadata,
+CLI arguments, exit codes and error JSON are pinned by implementation and tests in REL4. The product version 0.2.5 is development metadata,
 and the release version is undecided. Changes to the Result/config schemas must come with a version change and a migration policy.
 
 ## Write surface inventory
