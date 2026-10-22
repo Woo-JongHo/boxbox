@@ -5,11 +5,11 @@ import      { PYTHON_ALIGNER         } from "@/python/profile.ts"      ;
 import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
-	aligner     : PYTHON_ALIGNER,
-	fixturesDir : new URL("../test/fixtures/python/", import.meta.url).pathname,
-	tableFile   : "tables.py",
-	alignedFile : "tables.aligned.py",
-	trickyFile  : "tricky.py",
+	aligner     : PYTHON_ALIGNER                                                ,
+	fixturesDir : new URL("../test/fixtures/python/", import.meta.url).pathname ,
+	tableFile   : "tables.py"                                                   ,
+	alignedFile : "tables.aligned.py"                                           ,
+	trickyFile  : "tricky.py"                                                   ,
 });
 
 describe("python profile specific properties", () => {

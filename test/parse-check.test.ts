@@ -5,13 +5,13 @@ import      { syntacticDiagnostics          } from "@/typescript/load-source-fil
 
 /** A valid snippet and a whitespace-free break of it, per language. */
 const CASES: Readonly<Record<string, readonly [string, string]>> = {
-	python     : ["a = 1\nb = 2\n"                , "a = 1\nb = = 2\n"               ],
-	go         : ["package p\n\nvar a = 1\n"      , "package p\n\nvar a = = 1\n"     ],
-	javascript : ["const a = 1;\n"                , "const a = = 1;\n"               ],
-	c          : ["int a = 1;\n"                  , "int a = = 1;\n"                 ],
-	cpp        : ["int a = 1;\n"                  , "int a = = 1;\n"                 ],
-	java       : ["class A { int a = 1; }\n"      , "class A { int a = = 1; }\n"     ],
-	rust       : ["fn main() { let a = 1; }\n"    , "fn main() { let a = = 1; }\n"   ],
+	python     : ["a = 1\nb = 2\n"                , "a = 1\nb = = 2\n"               ] ,
+	go         : ["package p\n\nvar a = 1\n"      , "package p\n\nvar a = = 1\n"     ] ,
+	javascript : ["const a = 1;\n"                , "const a = = 1;\n"               ] ,
+	c          : ["int a = 1;\n"                  , "int a = = 1;\n"                 ] ,
+	cpp        : ["int a = 1;\n"                  , "int a = = 1;\n"                 ] ,
+	java       : ["class A { int a = 1; }\n"      , "class A { int a = = 1; }\n"     ] ,
+	rust       : ["fn main() { let a = 1; }\n"    , "fn main() { let a = = 1; }\n"   ] ,
 };
 
 describe("compareParse", () => {

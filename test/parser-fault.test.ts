@@ -40,18 +40,18 @@ function runCompare(mode: string, timeoutMs = 60_000, language = "python", tool 
 	const path    = fakePath(mode, tool)                                                                                                                                                                                                                                                          ;
 	const program = `import { compareParse } from ${JSON.stringify(MODULE)};\ntry { compareParse(${JSON.stringify(language)}, "a = 1\\n", "a  = 1\\n", { timeoutMs: ${timeoutMs} }); } catch (error) { console.error(error instanceof Error ? error.message : String(error)); process.exit(7); }` ;
 	return Bun.spawnSync([BUN, "-e", program], {
-		env    : { ...process.env, FAKE_MODE: mode, PATH: path, BOXBOX_REQUIRE_PARSERS: "0" },
-		stderr : "pipe",
-		stdout : "pipe",
+		env    : { ...process.env, FAKE_MODE: mode, PATH: path, BOXBOX_REQUIRE_PARSERS: "0" } ,
+		stderr : "pipe"                                                                       ,
+		stdout : "pipe"                                                                       ,
 	});
 }
 
 function runCli(path: string, target: string): ReturnType<typeof Bun.spawnSync> {
 	return Bun.spawnSync([BUN, SCRIPT, "--file", target, "--write"], {
-		cwd    : ROOT,
-		env    : { ...process.env, FAKE_MODE: "failure", PATH: path, BOXBOX_REQUIRE_PARSERS: "0" },
-		stderr : "pipe",
-		stdout : "pipe",
+		cwd    : ROOT                                                                              ,
+		env    : { ...process.env, FAKE_MODE: "failure", PATH: path, BOXBOX_REQUIRE_PARSERS: "0" } ,
+		stderr : "pipe"                                                                            ,
+		stdout : "pipe"                                                                            ,
 	});
 }
 

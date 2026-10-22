@@ -32,8 +32,8 @@ afterEach(() => {
 describe("matrix authoring and alignment modes", () => {
 	test("new-file guidance includes only scoped proved rules with their exact contracts and counterexamples", () => {
 		for (const [file, language, id] of [["new/deep/code.ts", "typescript", "ts-sourcefile-call-declarations"], ["new/deep/code.py", "python", "py-simple-assignments"]]) {
-			const root   = workspace()                                                       ;
-			const result = invoke(root, ["guide", "--file", file!, "--authoring", "--json"]) ;
+			const root   = workspace()                                                          ;
+			const result = invoke   (root, ["guide", "--file", file!, "--authoring", "--json"]) ;
 
 			expect(result.code                                     ).toBe         (0                                                                                ) ;
 			expect(result.value                                    ).toMatchObject({ basis: "authoring", language, verification: "not-run", writeAuthorized: false }) ;

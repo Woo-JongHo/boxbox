@@ -5,11 +5,11 @@ import      { defineLanguageSuite                   } from "./lang-harness.ts"  
 import      { JAVASCRIPT_ALIGNER, JAVASCRIPT_SYNTAX } from "@/javascript/profile.ts"  ;
 
 defineLanguageSuite({
-	aligner     : JAVASCRIPT_ALIGNER,
-	fixturesDir : new URL("../test/fixtures/javascript/", import.meta.url).pathname,
-	tableFile   : "tables.js",
-	alignedFile : "tables.aligned.js",
-	trickyFile  : "tricky.js",
+	aligner     : JAVASCRIPT_ALIGNER                                                ,
+	fixturesDir : new URL("../test/fixtures/javascript/", import.meta.url).pathname ,
+	tableFile   : "tables.js"                                                       ,
+	alignedFile : "tables.aligned.js"                                               ,
+	trickyFile  : "tricky.js"                                                       ,
 });
 
 describe("javascript profile specific properties", () => {
@@ -41,8 +41,8 @@ describe("javascript profile specific properties", () => {
 			'wideKey: "e=f",',
 			"tiny: 1,",
 		].join("\n");
-		const result = align(source)             ;
-		const lines  = result.output.split("\n") ;
+		const result = align              (source) ;
+		const lines  = result.output.split("\n"  ) ;
 		expect(lines[0]).toBe('mid    : "a:b=c;d",') ;
 		expect(lines[1]).toBe('wideKey: "e=f"    ,') ;
 		expect(lines[2]).toBe("tiny   : 1        ,") ;

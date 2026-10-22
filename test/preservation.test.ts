@@ -6,10 +6,10 @@ import      { preservesTokens        } from "@/typescript/token-preservation.ts"
 import type { LineProfiler           } from "@/common/table-engine.ts"           ;
 
 const SYNTAX: CodeSyntax = {
-	lineComments  : ["//"],
-	blockComments : [{ open: "/*", close: "*/" }],
-	strings       : [{ open: '"', close: '"', escape: true }],
-	cppRaw        : false,
+	lineComments  : ["//"]                                    ,
+	blockComments : [{ open: "/*", close: "*/" }]             ,
+	strings       : [{ open: '"', close: '"', escape: true }] ,
+	cppRaw        : false                                     ,
 };
 
 describe("changedLines", () => {
@@ -41,10 +41,10 @@ describe("changedLines", () => {
 
 /** Deliberately wrong profiler: it splits the value at whitespace without looking at the mask, so a gap can fall inside a string. */
 const NAIVE: LineProfiler = {
-	language      : "naive",
-	syntax        : SYNTAX,
-	columnAxes    : ["name", "head"],
-	canonicalGaps : { colon: " ", head: " ", tail: " ", semicolon: " " },
+	language      : "naive"                                              ,
+	syntax        : SYNTAX                                               ,
+	columnAxes    : ["name", "head"]                                     ,
+	canonicalGaps : { colon: " ", head: " ", tail: " ", semicolon: " " } ,
 	profile(code: string): ReturnType<LineProfiler["profile"]> {
 		const match   = /^(\w+)(\s*):(\s*)(\S+)(\s+)(\S+)(\s*);$/du.exec(code) ;
 		const indices = match?.indices                                         ;

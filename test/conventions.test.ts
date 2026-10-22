@@ -19,7 +19,7 @@ import      {
 import      { buildReport             } from "@/common/report.ts"      ;
 import      { lookupKeyOf             } from "@/common/signature.ts"   ;
 
-const ROOT = join(import.meta.dir, "..")                                                             ;
+const ROOT = join       (import.meta.dir, ".."                                                     ) ;
 const KEY  = lookupKeyOf("typescript", "Block", "declaration-equals", ["equals=12", "semicolon=40"]) ;
 
 function record(partial: Partial<LoadedConvention> & Pick<LoadedConvention, "id">): LoadedConvention {
