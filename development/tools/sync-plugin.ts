@@ -51,7 +51,7 @@ export function expectedPluginFiles(root = ROOT): ReadonlyMap<string, string> {
 }
 
 function pluginFiles(root: string, directory = "plugin"): string[] {
-	const absolute = resolve(root, directory)                       ;
+	const absolute = resolve  (root, directory                    ) ;
 	const stat     = lstatSync(absolute, { throwIfNoEntry: false }) ;
 	if (!stat) return [];
 	if (stat.isSymbolicLink() || !stat.isDirectory()) return [directory];
@@ -64,7 +64,7 @@ function pluginFiles(root: string, directory = "plugin"): string[] {
 export function pluginDrift(root = ROOT): readonly string[] {
 	const expected = expectedPluginFiles(root);
 	const drift = [...expected].filter(([path, text]) => {
-		const absolute = resolve(root, path)                            ;
+		const absolute = resolve  (root, path                         ) ;
 		const stat     = lstatSync(absolute, { throwIfNoEntry: false }) ;
 		return !stat || !stat.isFile() || readFileSync(absolute, "utf8") !== text || (path === "plugin/scripts/boxbox" && (stat.mode & 0o111) === 0);
 	}).map(([path]) => path);
@@ -79,7 +79,7 @@ export function syncPlugin(root = ROOT): number {
 	const drift = pluginDrift(root);
 	for (const path of drift) {
 		const absolute = resolve(root, path) ;
-		let parent     = dirname(absolute)   ;
+		let parent     = dirname(absolute  ) ;
 		while (parent !== resolve(root)) {
 			if (lstatSync(parent, { throwIfNoEntry: false })?.isSymbolicLink()) throw new Error(`Refusing symbolic output directory: ${parent}`);
 			parent = dirname(parent);

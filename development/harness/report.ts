@@ -20,7 +20,7 @@ import      {
                                        } from "./db.ts"   ;
 
 const root        = resolve(import.meta.dir, ".."      , "..") ;
-const evidenceDir = resolve(import.meta.dir, "evidence")       ;
+const evidenceDir = resolve(import.meta.dir, "evidence"      ) ;
 
 export interface BunTestCounts {
 	readonly pass      : number        ;
@@ -70,19 +70,19 @@ export function parseRelTable(planMarkdown: string): RelRow[] {
 
 /** Which harness stages back each REL as evidence (for reference — not a verdict). */
 const REL_EVIDENCE_STAGES: Readonly<Record<string, readonly string[]>> = {
-	REL0  : [],
-	REL1  : [],
-	REL2  : ["self-align", "check"],
-	REL3  : ["pack", "artifact-journey"],
-	REL4  : ["check", "artifact-journey"],
-	REL5  : ["check"],
-	REL6  : [],
-	REL7  : ["check"],
-	REL8  : ["check", "artifact-journey"],
-	REL9  : ["artifact-journey"],
-	REL10 : ["artifact-journey"],
-	REL11 : ["pack"],
-	REL12 : [],
+	REL0  : []                            ,
+	REL1  : []                            ,
+	REL2  : ["self-align", "check"]       ,
+	REL3  : ["pack", "artifact-journey"]  ,
+	REL4  : ["check", "artifact-journey"] ,
+	REL5  : ["check"]                     ,
+	REL6  : []                            ,
+	REL7  : ["check"]                     ,
+	REL8  : ["check", "artifact-journey"] ,
+	REL9  : ["artifact-journey"]          ,
+	REL10 : ["artifact-journey"]          ,
+	REL11 : ["pack"]                      ,
+	REL12 : []                            ,
 };
 
 export function relEvidence(rel: RelRow, run: RunRecord | null): string {

@@ -111,9 +111,9 @@ export function planProductIdentity(root: string): ProductPlan {
 		if (!existsSync(directory)) continue;
 		for (const entry of readdirSync(directory, { withFileTypes: true })) {
 			if (!entry.isSymbolicLink()) continue;
-			const from     = join(directory, entry.name) ;
-			const target   = readlinkSync(from)          ;
-			const absolute = resolve(directory, target)  ;
+			const from     = join        (directory, entry.name) ;
+			const target   = readlinkSync(from                 ) ;
+			const absolute = resolve     (directory, target    ) ;
 			if (absolute !== root && !absolute.startsWith(root + sep)) continue;
 			const suffix        = relative(root, absolute).replaceAll(previous.id, identity.id)                            ;
 			const nextAbsolute  = join(nextRoot, suffix)                                                                   ;

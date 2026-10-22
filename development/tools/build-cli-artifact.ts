@@ -3,11 +3,11 @@ import      { resolve                              } from "node:path"          ;
 
 import      { preparePublicPreset                  } from "./public-preset.ts" ;
 
-const root         = resolve(import.meta.dir, ".."                              , "..")  ;
-const template     = resolve(root           , "product/packages/cli"                   ) ;
-const output       = resolve(root           , "dist/cli"                        )        ;
-const preset       = resolve(root           , "product/rules/presets/recommended"  )     ;
-const publicPreset = preparePublicPreset(preset)                                         ;
+const root         = resolve            (import.meta.dir, ".."                              , "..") ;
+const template     = resolve            (root           , "product/packages/cli"                  ) ;
+const output       = resolve            (root           , "dist/cli"                              ) ;
+const preset       = resolve            (root           , "product/rules/presets/recommended"     ) ;
+const publicPreset = preparePublicPreset(preset                                                   ) ;
 
 rmSync(output, { recursive: true, force: true });
 mkdirSync(resolve(output, "dist"), { recursive: true });
@@ -29,14 +29,14 @@ for (const file of publicPreset) {
 }
 
 const build = await Bun.build({
-	entrypoints : [resolve(template, "entry.ts")],
-	outdir      : resolve(output, "dist"),
-	target      : "node",
-	format      : "esm",
-	external    : ["typescript", "typescript/*"],
-	minify      : false,
-	sourcemap   : "none",
-	naming      : "cli.js",
+	entrypoints : [resolve(template, "entry.ts")] ,
+	outdir      : resolve(output, "dist")         ,
+	target      : "node"                          ,
+	format      : "esm"                           ,
+	external    : ["typescript", "typescript/*"]  ,
+	minify      : false                           ,
+	sourcemap   : "none"                          ,
+	naming      : "cli.js"                        ,
 });
 if (!build.success) throw new Error(build.logs.map(log => log.message).join("\n"));
 

@@ -112,7 +112,7 @@ function main(): void {
 	}
 
 	const work   = mkdtempSync(join(tmpdir(), "boxbox-triage-")) ;
-	const prompt = join(work, "prompt.md")                       ;
+	const prompt = join       (work, "prompt.md"               ) ;
 	writeFileSync(prompt, `${INSTRUCTIONS}\n${blocks.join("\n\n")}\n`)      ;
 	console.error(`corpus-triage types=${blocks.length} prompt=${prompt}`)  ;
 	if (args.includes("--dry-run")) return;
