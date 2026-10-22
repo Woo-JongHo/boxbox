@@ -1,6 +1,5 @@
 name: Release candidate
 description: Track candidate evidence and remaining release decisions.
-title: "[Release] "
 body:
   - type: input
     id: version
