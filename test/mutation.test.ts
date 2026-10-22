@@ -6,6 +6,7 @@
  */
 import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                            ;
 import      { join, relative                                   } from "node:path"                          ;
+import      { fileURLToPath                                    } from "node:url"                           ;
 import      { preservesTokens                                  } from "@/typescript/token-preservation.ts" ;
 import      { describe, expect, test                           } from "bun:test"                           ;
 import      { compareParse, parserAvailable                    } from "@/common/parse-check.ts"            ;
@@ -15,9 +16,9 @@ import type { CodeSyntax, LineProfiler                         } from "@/common/
 import      { PYTHON_ALIGNER                                   } from "@/python/profile.ts"                ;
 import      { minimize, mutate                                 } from "./mutator.ts"                       ;
 
-const VARIANTS     = Number(process.env.BOXBOX_MUTATIONS ?? 1000)           ;
-const PARSE_SAMPLE = Math.max(3, Math.floor(VARIANTS / 200))                ;
-const FIXTURES     = new URL("../test/fixtures/", import.meta.url).pathname ;
+const VARIANTS     = Number       (process.env.BOXBOX_MUTATIONS ?? 1000         ) ;
+const PARSE_SAMPLE = Math.max     (3, Math.floor(VARIANTS / 200)                ) ;
+const FIXTURES     = fileURLToPath(new URL("../test/fixtures/", import.meta.url)) ;
 
 interface Language {
 	readonly aligner   : LineProfiler ;
@@ -84,7 +85,7 @@ describe("mutation invariants", () => {
 
 describe("mutation invariants (TypeScript aligner)", () => {
 	const TS_VARIANTS = Number(process.env.BOXBOX_TS_MUTATIONS ?? 5)          ;
-	const root        = new URL("..", import.meta.url).pathname               ;
+	const root        = fileURLToPath(new URL("..", import.meta.url))         ;
 	const script      = `${root}product/engine/typescript/06_align-tables.ts` ;
 	const source      = readFileSync(`${FIXTURES}table-kinds.ts`, "utf8")     ;
 
