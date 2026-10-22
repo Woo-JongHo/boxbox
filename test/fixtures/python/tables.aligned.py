@@ -5,21 +5,21 @@ from dataclasses import dataclass
 
 @dataclass
 class CacheConfig:
-    retries: int   = 3
-    label  : str   = "default:cache" # colon inside a string
-    verbose: bool  = True
-    ratio  : float = 0.5
+    retries : int   = 3
+    label   : str   = "default:cache" # colon inside a string
+    verbose : bool  = True
+    ratio   : float = 0.5
 
 
 @dataclass
 class Limits:
-    small  : int
-    total  : float
-    enabled: bool
+    small   : int
+    total   : float
+    enabled : bool
     # A comment breaks the section — tables before and after do not share widths
-    refId: str
-    tag  : str
-    mode : bytes
+    refId : str
+    tag   : str
+    mode  : bytes
 
 
 DEFAULT_RETRIES      = 3
@@ -35,10 +35,10 @@ VERBOSE_LABEL = "x=y#z"
 RETRY_LIMIT   = 30 # upper bound
 
 defaults = {
-    "host" : "localhost:8080",
-    "port" : 8080            ,
-    "debug": True            ,
-    "tag"  : "a=b#c"         , # = and # inside a string
+    "host"  : "localhost:8080",
+    "port"  : 8080            ,
+    "debug" : True            ,
+    "tag"   : "a=b#c"         , # = and # inside a string
 }
 
 hosts = {

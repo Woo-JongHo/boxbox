@@ -95,7 +95,16 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 		if (openToken) {
 			const spec  = syntax.strings.find(candidate => candidate.open === openToken) ;
 			const spec0 = spec as StringSpec                                             ;
-			index = consumeString(source, masked, index, index + openToken.length, spec0.close, spec0.escape);
+			const end   = consumeString(source, masked, index, index + openToken.length, spec0.close, spec0.escape) ;
+			// A string may span lines (triple quotes, backslash-newline). Its newlines still start lines, or every later
+			// line's commentStarts and opensInBlock would shift by one.
+			for (let newline = source.indexOf("\n", index); newline >= 0 && newline < end; newline = source.indexOf("\n", newline + 1)) {
+				line += 1;
+				lineStart           = newline + 1 ;
+				opensInBlock[line]  = inBlock     ;
+				commentStarts[line] = -1          ;
+			}
+			index = end;
 			continue;
 		}
 

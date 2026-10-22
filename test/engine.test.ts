@@ -3,6 +3,7 @@ import      { maskSource               } from "@/common/code-text.ts"    ;
 import type { CodeSyntax               } from "@/common/code-text.ts"    ;
 import      { alignSource              } from "@/common/table-engine.ts" ;
 import type { LineProfiler, RowProfile } from "@/common/table-engine.ts" ;
+import      { PYTHON_SYNTAX            } from "@/python/profile.ts"      ;
 
 const SYNTAX: CodeSyntax = {
 	lineComments  : ["//"]                                    ,
@@ -57,6 +58,13 @@ describe("maskSource", () => {
 		const mask   = maskSource(source, SYNTAX)        ;
 		expect(mask.commentStarts[0]).toBe(8);
 		expect(mask.text.split("\n")[1]).toBe("b : 2 ;");
+	});
+
+	test("a string spanning lines keeps every later line's comment position on that line", () => {
+		const source = 'x = """a\nb\n"""\n# note\ny = 1 # tail' ;
+		const mask   = maskSource(source, PYTHON_SYNTAX)        ;
+		expect(mask.commentStarts).toEqual([-1, -1, -1, 0, 6]                ) ;
+		expect(mask.opensInBlock ).toEqual([false, false, false, false, false]) ;
 	});
 });
 
