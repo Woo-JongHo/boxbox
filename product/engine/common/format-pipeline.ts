@@ -1,9 +1,9 @@
 import      { readFileSync, realpathSync, writeFileSync                     } from "node:fs"                          ;
-import      { isAbsolute, relative, resolve                                 } from "node:path"                        ;
+import      { relative, resolve                                             } from "node:path"                        ;
 import      { resolveFormatterExecutable, runFormatterProcess               } from "@/common/formatter-process.ts"    ;
 import type { PipelineProcessResult                                         } from "@/common/formatter-process.ts"    ;
 
-import      { evaluateApproval                                              } from "@/common/approval-gate.ts"        ;
+import      { escapesRoot, evaluateApproval                                 } from "@/common/approval-gate.ts"        ;
 import type { ApprovalRegistry, DocumentResolver                            } from "@/common/approval-gate.ts"        ;
 import type { FormatterConfig, PublicLanguage                               } from "@/common/project-config.ts"       ;
 import type { FileResult, ResultEnvelope, ResultGroup                       } from "@/common/result-json.ts"          ;
@@ -59,55 +59,10 @@ function targetOf(root: string, file: string): { readonly absolute: string; read
 	const absoluteRoot = realpathSync(resolve(root))                            ;
 	const absolute     = resolve(absoluteRoot, file)                            ;
 	const display      = relative(absoluteRoot, absolute).replaceAll("\\", "/") ;
-	if (display === "" || display === ".." || display.startsWith("../") || isAbsolute(display)) throw new Error(`file escapes project root: ${file}`);
+	if (display === "" || escapesRoot(display)) throw new Error(`file escapes project root: ${file}`);
 	const physical = relative(absoluteRoot, realpathSync(absolute)).replaceAll("\\", "/");
-	if (physical === ".." || physical.startsWith("../") || isAbsolute(physical)) throw new Error(`file resolves outside project root: ${file}`);
+	if (escapesRoot(physical)) throw new Error(`file resolves outside project root: ${file}`);
 	return { absolute, display };
-}
-
-async function checkFile(root: string, file: string, language: PublicLanguage): Promise<FileResult> {
-	if (language === "json" || language === "yaml") return analyzeStructured(readStructuredUtf8(file), language, file).result;
-	if (language === "python") {
-		const result = runAlignCli(PYTHON_ALIGNER, ["--file", file, "--json"]);
-		return (JSON.parse(result.report) as ResultEnvelope).results[0]!;
-	}
-	let report = "";
-	await runTypeScriptAlign(["--file", file, "--json"], { root, emit: value => { report = value; } });
-	return (JSON.parse(report) as ResultEnvelope).results[0]!;
-}
-
-async function assertParses(root: string, file: string, language: PublicLanguage): Promise<void> {
-	const text = language === "json" || language === "yaml" ? readStructuredUtf8(file) : readFileSync(file, "utf8");
-	if (language === "json" || language === "yaml") {
-		const diagnostics = structuredDiagnostics(text, language);
-		if (diagnostics.length > 0) throw new Error(`formatter output does not parse: ${diagnostics.join(",")}`);
-		return;
-	}
-	if (language === "typescript") {
-		const diagnostics = await syntacticDiagnostics(root, file, text);
-		if (diagnostics.length > 0) throw new Error(`formatter output does not parse: ${diagnostics.join(",")}`);
-		return;
-	}
-	const parsed = compareParse("python", "pass\n", text);
-	if (parsed.status !== "ok") throw new Error(`formatter output does not parse: ${parsed.delta.join(",")}`);
-}
-
-async function writeFileWithEngine(root: string, file: string, language: PublicLanguage): Promise<void> {
-	if (language === "json" || language === "yaml") {
-		const before   = readStructuredUtf8(file                  ) ;
-		const analyzed = analyzeStructured (before, language, file) ;
-		if (analyzed.result.summary.refused > 0) throw new Error(`BoxBox alignment failed: ${analyzed.refusals.map(refusal => refusal.reason).join(",")}`);
-		if (!preservesStructured(before, analyzed.output, language)) throw new Error("BoxBox alignment failed: structured preservation refusal");
-		if (analyzed.output !== before) writeFileSync(file, analyzed.output);
-		return;
-	}
-	if (language === "python") {
-		const result = runAlignCli(PYTHON_ALIGNER, ["--file", file, "--write", "--json"]);
-		if (result.code !== 0) throw new Error(`BoxBox alignment failed: ${result.report}`);
-		return;
-	}
-	const code = await runTypeScriptAlign(["--file", file, "--write", "--json"], { root, emit: () => {} });
-	if (code !== 0) throw new Error(`BoxBox alignment failed with exit code ${code}`);
 }
 
 function readStructuredUtf8(file: string): string {
@@ -117,13 +72,73 @@ function readStructuredUtf8(file: string): string {
 	return text;
 }
 
+/** What the pipeline needs from each language: its current groups, a parse gate for formatter output, and the engine's own write. */
+interface LanguageEngine {
+	readonly check : (root: string, file: string) => Promise<FileResult> ;
+	readonly parse : (root: string, file: string) => Promise<void>       ;
+	readonly write : (root: string, file: string) => Promise<void>       ;
+}
+
+const structuredEngine = (language: "json" | "yaml"): LanguageEngine => ({
+	check: async (_root, file) => analyzeStructured(readStructuredUtf8(file), language, file).result,
+	parse: async (_root, file) => {
+		const diagnostics = structuredDiagnostics(readStructuredUtf8(file), language);
+		if (diagnostics.length > 0) throw new Error(`formatter output does not parse: ${diagnostics.join(",")}`);
+	},
+	write: async (_root, file) => {
+		const before   = readStructuredUtf8(file                  ) ;
+		const analyzed = analyzeStructured (before, language, file) ;
+		if (analyzed.result.summary.refused > 0) throw new Error(`BoxBox alignment failed: ${analyzed.refusals.map(refusal => refusal.reason).join(",")}`);
+		if (!preservesStructured(before, analyzed.output, language)) throw new Error("BoxBox alignment failed: structured preservation refusal");
+		if (analyzed.output !== before) writeFileSync(file, analyzed.output);
+	},
+});
+
+const pythonEngine: LanguageEngine = {
+	check: async (_root, file) => {
+		const result = runAlignCli(PYTHON_ALIGNER, ["--file", file, "--json"]);
+		return (JSON.parse(result.report) as ResultEnvelope).results[0]!;
+	},
+	parse: async (_root, file) => {
+		const parsed = compareParse("python", "pass\n", readFileSync(file, "utf8"));
+		if (parsed.status !== "ok") throw new Error(`formatter output does not parse: ${parsed.delta.join(",")}`);
+	},
+	write: async (_root, file) => {
+		const result = runAlignCli(PYTHON_ALIGNER, ["--file", file, "--write", "--json"]);
+		if (result.code !== 0) throw new Error(`BoxBox alignment failed: ${result.report}`);
+	},
+};
+
+const typescriptEngine: LanguageEngine = {
+	check: async (root, file) => {
+		let report = "";
+		await runTypeScriptAlign(["--file", file, "--json"], { root, emit: value => { report = value; } });
+		return (JSON.parse(report) as ResultEnvelope).results[0]!;
+	},
+	parse: async (root, file) => {
+		const diagnostics = await syntacticDiagnostics(root, file, readFileSync(file, "utf8"));
+		if (diagnostics.length > 0) throw new Error(`formatter output does not parse: ${diagnostics.join(",")}`);
+	},
+	write: async (root, file) => {
+		const code = await runTypeScriptAlign(["--file", file, "--write", "--json"], { root, emit: () => {} });
+		if (code !== 0) throw new Error(`BoxBox alignment failed with exit code ${code}`);
+	},
+};
+
+const ENGINES: Readonly<Record<PublicLanguage, LanguageEngine>> = {
+	typescript : typescriptEngine         ,
+	python     : pythonEngine             ,
+	json       : structuredEngine("json") ,
+	yaml       : structuredEngine("yaml") ,
+};
+
 function approvedGroups(result: FileResult, registry: ApprovalRegistry, resolveDocument: DocumentResolver, originalPath: string): readonly string[] {
 	const candidates = result.groups.filter(group => group.state === "PASS" || group.state === "FIXABLE");
 	if (result.groups.some(group => group.state === "REFUSE")) throw new Error("BoxBox safety refusal prevents formatting");
 	if (candidates.length === 0) throw new Error("no verified approval rule applies to this file");
 	const approvals = candidates.map((group: ResultGroup) => evaluateApproval(registry, {
-		key  : lookupKeyOf(result.language, group.context, group.kind, group.axes),
-		file : originalPath,
+		key  : lookupKeyOf(result.language, group.context, group.kind, group.axes) ,
+		file : originalPath                                                        ,
 	}, resolveDocument));
 	const denied = approvals.filter(approval => !approval.writable || approval.status !== "approved");
 	if (denied.length > 0) throw new Error(`approval denied: ${denied.flatMap(approval => approval.reasons).join("; ")}`);
@@ -142,14 +157,14 @@ async function cycle(options: FormatPipelineOptions, working: string, display: s
 		if (resolveFormatterExecutable(options.formatter.command, options.root).fingerprint !== executable.fingerprint) throw new Error("formatter executable changed during operation");
 	}
 	const afterFormatter = readFileSync(working);
-	await assertParses(options.root, working, options.language);
-	const checked   = await checkFile(options.root, working, options.language)                    ;
+	await ENGINES[options.language].parse(options.root, working);
+	const checked   = await ENGINES[options.language].check(options.root, working)                ;
 	const approvals = approvedGroups(checked, options.registry, options.resolveDocument, display) ;
-	await writeFileWithEngine(options.root, working, options.language);
+	await ENGINES[options.language].write(options.root, working);
 	return {
 		formatter,
-		formatterChanged: !beforeFormatter.equals(afterFormatter),
-		boxboxChanged: !afterFormatter.equals(readFileSync(working)),
+		formatterChanged: !beforeFormatter.equals(afterFormatter)       ,
+		boxboxChanged: !afterFormatter.equals(readFileSync(working)) ,
 		approvals,
 	};
 }
@@ -188,15 +203,15 @@ export async function runFormatPipeline(given: FormatPipelineOptions): Promise<F
 		},
 	});
 	return {
-		file             : display,
-		formatterChanged : first.formatterChanged,
-		boxboxChanged    : first.boxboxChanged,
-		fixedPoint       : true,
+		file             : display                ,
+		formatterChanged : first.formatterChanged ,
+		boxboxChanged    : first.boxboxChanged    ,
+		fixedPoint       : true                   ,
 		written,
-		formatter         : first.formatter,
-		formatterExecuted : first.formatter !== null,
-		formatMode        : options.formatter ? "formatter" : "standalone",
-		approvals         : first.approvals,
+		formatter         : first.formatter                                ,
+		formatterExecuted : first.formatter !== null                       ,
+		formatMode        : options.formatter ? "formatter" : "standalone" ,
+		approvals         : first.approvals                                ,
 		...(alignmentEdits === undefined ? {} : { alignmentEdits }),
 		safety            : { atomic: true, approvalChecked: true, parserChecked: true, executableStable: options.formatter ? true : null },
 	};

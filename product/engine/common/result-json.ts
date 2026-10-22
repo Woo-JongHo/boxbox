@@ -57,12 +57,13 @@ export interface ResultEnvelope {
 
 /** Builds the summary from the groups so the two can never disagree. */
 export function summarize(groups: readonly ResultGroup[]): ResultSummary {
+	const withState = (state: GroupState): readonly ResultGroup[] => groups.filter(group => group.state === state);
 	return {
-		groups     : groups.length,
-		misaligned : groups.filter(group => group.state === "FIXABLE").length,
-		edits      : groups.filter(group => group.state === "FIXABLE").reduce((count, group) => count + group.edits, 0),
-		refused    : groups.filter(group => group.state === "REFUSE").length,
-		suggested  : groups.filter(group => group.state === "SUGGEST").length,
+		groups     : groups.length                                                         ,
+		misaligned : withState("FIXABLE").length                                           ,
+		edits      : withState("FIXABLE").reduce((count, group) => count + group.edits, 0) ,
+		refused    : withState("REFUSE" ).length                                           ,
+		suggested  : withState("SUGGEST").length                                           ,
 	};
 }
 

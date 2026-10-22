@@ -119,12 +119,12 @@ export function validateExample(value: unknown, where: string): Example {
 	if (!VERDICTS.includes(example.verdict as string)) throw new Error(`${where}: unknown verdict ${String(example.verdict)}`);
 	const asserts = runtimeRecord(example.asserts, `${where}.asserts`);
 	if (asserts.before !== undefined) validateAlarmAssert(asserts.before, `${where}.asserts.before`);
-	if (asserts.after !== undefined) validateAlarmAssert(asserts.after, `${where}.asserts.after`);
+	if (asserts.after  !== undefined) validateAlarmAssert(asserts.after , `${where}.asserts.after` );
 	const source = runtimeRecord(example.source, `${where}.source`);
 	if (!SOURCES.includes(source.kind as string)) throw new Error(`${where}.source.kind: must be own-code, synthetic or public-corpus`);
 	runtimeString(source.license, `${where}.source.license`, true);
 	if (source.commit !== undefined) runtimeString(source.commit, `${where}.source.commit`, true);
-	if (source.path !== undefined) runtimeString(source.path, `${where}.source.path`, true);
+	if (source.path   !== undefined) runtimeString(source.path  , `${where}.source.path`  , true);
 	if (example.contentHash !== contentHashOf(before, after)) throw new Error(`${where}: contentHash does not match before/after`);
 	if (example.verdict !== "taste" && asserts.before === undefined && asserts.after === undefined) throw new Error(`${where}: asserts are required unless the verdict is taste`);
 	if (example.supersedes !== undefined) runtimeString(example.supersedes, `${where}.supersedes`);

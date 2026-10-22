@@ -22,10 +22,10 @@ import      {
 import      { LOOKUP_KEY_VERSION, lookupKeyOf                   } from "@/common/signature.ts"   ;
 
 export const APPROVAL_VERSIONS = {
-	lookupKey        : LOOKUP_KEY_VERSION         ,
+	lookupKey        : LOOKUP_KEY_VERSION        ,
 	conventionSchema : CONVENTION_SCHEMA_VERSION ,
-	exampleSchema    : EXAMPLE_SCHEMA_VERSION     ,
-	decisionSchema   : DECISION_SCHEMA_VERSION    ,
+	exampleSchema    : EXAMPLE_SCHEMA_VERSION    ,
+	decisionSchema   : DECISION_SCHEMA_VERSION   ,
 } as const;
 
 export interface RegistrySource {
@@ -81,19 +81,22 @@ export type DocumentRoots = string | Readonly<Partial<Record<ConventionLayer, st
 
 const LAYER_ORDER: readonly ConventionLayer[] = ["project", "user", "preset"];
 
+/** A relative path leaves its base when it is `..`, starts with `../` or `..\\`, or is absolute. */
+export const escapesRoot = (relativePath: string): boolean => relativePath === ".." || relativePath.startsWith("../") || relativePath.startsWith("..\\") || isAbsolute(relativePath);
+
 const specificity = (scope: string): number => scope.replace(/[*?]/gu, "").length;
 
 function readOptional(root: string, name: string | undefined, fallback: string): { readonly text: string; readonly where: string } {
 	const physicalRoot = realpathSync(root                          ) ;
 	const where        = resolve     (physicalRoot, name ?? fallback) ;
 	const lexical      = relative    (physicalRoot, where           ) ;
-	if (lexical === ".." || lexical.startsWith("../") || lexical.startsWith("..\\") || isAbsolute(lexical)) throw new Error(`registry file escapes root: ${where}`);
+	if (escapesRoot(lexical)) throw new Error(`registry file escapes root: ${where}`);
 	if (!existsSync(where)) return { text: "", where };
 	const metadata = lstatSync(where);
 	if (metadata.isSymbolicLink() || !metadata.isFile()) throw new Error(`registry file must be a regular non-symbolic file: ${where}`);
 	const physical = realpathSync(where                 ) ;
 	const inside   = relative    (physicalRoot, physical) ;
-	if (inside === ".." || inside.startsWith("../") || inside.startsWith("..\\") || isAbsolute(inside)) throw new Error(`registry file escapes root: ${where}`);
+	if (escapesRoot(inside)) throw new Error(`registry file escapes root: ${where}`);
 	return { text: readFileSync(physical, "utf8"), where: physical };
 }
 
@@ -134,7 +137,7 @@ export function documentResolver(roots: DocumentRoots): DocumentResolver {
 
 		const physical = realpathSync(resolve(physicalRoot, path)) ;
 		const inside   = relative    (physicalRoot, physical     ) ;
-		if (inside === ".." || inside.startsWith("../") || inside.startsWith("..\\") || isAbsolute(inside)) throw new Error(`document ref escapes root: ${ref}`);
+		if (escapesRoot(inside)) throw new Error(`document ref escapes root: ${ref}`);
 		return { document: readFileSync(physical, "utf8"), heading };
 	};
 }
@@ -165,10 +168,13 @@ function verifyProof(registry: ApprovalRegistry, convention: LoadedConvention, r
 	const reasons: string[] = []                                    ;
 	const decision          = registry.decisions.get(convention.id) ;
 	if (!decision) return { reasons: ["matching decision is missing"], guide: [] };
-	if (decision.id !== convention.id) reasons.push("decision id does not match convention id");
-	if (!((decision.kind === "rule" || decision.kind === "exception") && decision.layer === "convention")) reasons.push("decision kind/layer is not an approved convention rule");
-	if (convention.approvedBy.trim() === "" || convention.date.trim() === "" || decision.approvedBy.trim() === "" || decision.date.trim() === "") reasons.push("human approval receipt is missing");
-	if (!versionsMatch(convention.versions)) reasons.push("convention versions are unsupported");
+	const problems: readonly (readonly [failed: boolean, message: string])[] = [
+		[decision.id !== convention.id                                                                                                            , "decision id does not match convention id"               ],
+		[!((decision.kind === "rule" || decision.kind === "exception") && decision.layer === "convention")                                        , "decision kind/layer is not an approved convention rule" ],
+		[convention.approvedBy.trim() === "" || convention.date.trim() === "" || decision.approvedBy.trim() === "" || decision.date.trim() === "" , "human approval receipt is missing"                      ],
+		[!versionsMatch(convention.versions)                                                                                                      , "convention versions are unsupported"                    ],
+	];
+	reasons.push(...problems.filter(([failed]) => failed).map(([, message]) => message));
 
 	try {
 		const resolved = resolveDocument(decision.ref, convention.layer);
@@ -189,11 +195,14 @@ function verifyProof(registry: ApprovalRegistry, convention: LoadedConvention, r
 		const example = registry.examples.get(id);
 		if (!example) { reasons.push(`linked example is missing: ${id}`); continue; }
 		linked.push(example);
-		if (example.status !== "approved") reasons.push(`example is not approved: ${id}`);
-		if (example.approvedBy.trim() === "" || example.date.trim() === "") reasons.push(`example human approval receipt is missing: ${id}`);
-		if (!versionsMatch(example.versions)) reasons.push(`example versions are unsupported: ${id}`);
-		if (example.contentHash !== contentHashOf(example.before, example.after)) reasons.push(`example content hash is stale: ${id}`);
-		if (example.language !== keyLanguage || !example.patterns.includes(convention.pattern) || !example.rules.includes(convention.id)) reasons.push(`example is not relevant to convention: ${id}`);
+		const exampleProblems: readonly (readonly [failed: boolean, message: string])[] = [
+			[example.status !== "approved"                                                                                                , `example is not approved: ${id}`                   ],
+			[example.approvedBy.trim() === "" || example.date.trim() === ""                                                               , `example human approval receipt is missing: ${id}` ],
+			[!versionsMatch(example.versions)                                                                                             , `example versions are unsupported: ${id}`          ],
+			[example.contentHash !== contentHashOf(example.before, example.after)                                                         , `example content hash is stale: ${id}`             ],
+			[example.language !== keyLanguage || !example.patterns.includes(convention.pattern) || !example.rules.includes(convention.id) , `example is not relevant to convention: ${id}`     ],
+		];
+		reasons.push(...exampleProblems.filter(([failed]) => failed).map(([, message]) => message));
 	}
 
 	const positives = linked.filter(example => example.status === "approved" && example.verdict === "after-better" && example.rules.includes(convention.id))                                 ;
