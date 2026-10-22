@@ -1,0 +1,39 @@
+# Per-step token usage from two real Claude Code session records, 2026-10-22
+# Tool: bun development/tools/session-usage.ts (usage numbers, model, effort, tool names and sizes only; no message text)
+# Usage counts once per message id. Hook and result tokens are estimates (1 per 4 ASCII characters); usage figures are exact.
+
+## A. This development session (macOS), 0.2.3 plugin, heavy engine development
+session 28c5f933-d1cd-45af-b572-b062f09ef2c3
+total
+  all                                turns=  432 input=     868 cacheRead=124,333,295 cacheWrite=  976,791 output= 423,016
+by model:effort
+  claude-sonnet-5-5:high             turns=  237 input=     476 cacheRead= 72,264,477 cacheWrite=  614,060 output= 270,262
+  claude-opus-5-5:high               turns=  140 input=     282 cacheRead= 45,702,181 cacheWrite=  240,029 output=  95,702
+  claude-sonnet-5-5:low              turns=   55 input=     110 cacheRead=  6,366,637 cacheWrite=  122,702 output=  57,052
+by step (a turn counts under its BoxBox call, else other)
+  other                              turns=  349 input=     702 cacheRead= 96,885,283 cacheWrite=  794,369 output= 327,619
+  boxbox:aligner                     turns=   73 input=     146 cacheRead= 24,978,616 cacheWrite=  162,736 output=  84,512
+  boxbox:guide                       turns=    5 input=      10 cacheRead=  1,351,796 cacheWrite=    7,858 output=   4,727
+  boxbox:format                      turns=    1 input=       2 cacheRead=    314,180 cacheWrite=    6,656 output=   3,912
+  boxbox:check                       turns=    3 input=       6 cacheRead=    544,192 cacheWrite=    3,418 output=   1,953
+  boxbox:skill                       turns=    1 input=       2 cacheRead=    259,228 cacheWrite=    1,754 output=     293
+  boxbox:aligner                     calls=   73 resultTokens(est)=13,726
+  boxbox:skill                       calls=    1 resultTokens(est)=8
+  boxbox:check                       calls=    3 resultTokens(est)=923
+  boxbox:guide                       calls=    5 resultTokens(est)=2,714
+  boxbox:format                      calls=    1 resultTokens(est)=95
+  hook SessionStart                  count=    2 tokens(est)=180
+  hook Stop                          count=  100 tokens(est)=5,475
+  hook PostToolUse                   count=   13 tokens(est)=831
+
+## B. A real project session on native Windows (Claude Code 2.1.280, boxbox 0.2.5 installed from CI archive 5fe739f5), read over ssh through standard input and not stored
+session e1d8f298-1079-4c11-899e-a67f9bb07787
+total
+  all                                turns=   96 input=     194 cacheRead= 15,305,331 cacheWrite=  213,824 output=  86,305
+by model:effort
+  claude-opus-5-5:medium             turns=   96 input=     194 cacheRead= 15,305,331 cacheWrite=  213,824 output=  86,305
+by step (a turn counts under its BoxBox call, else other)
+  other                              turns=   96 input=     194 cacheRead= 15,305,331 cacheWrite=  213,824 output=  86,305
+  hook SessionStart                  count=    1 tokens(est)=91
+  hook Stop                          count=   12 tokens(est)=499
+  hook PostToolUse                   count=   11 tokens(est)=451
