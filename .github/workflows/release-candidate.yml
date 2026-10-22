@@ -20,6 +20,7 @@ jobs:
     timeout-minutes: 15
     outputs:
       sha256: ${{ steps.candidate.outputs.sha256 }}
+      artifact-id: ${{ steps.upload.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -44,6 +45,7 @@ jobs:
         id: candidate
         run: bun development/tools/release-candidate.ts
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        id: upload
         with:
           name: boxbox-candidate-${{ github.run_id }}-${{ github.run_attempt }}
           path: dist/release-candidate/
@@ -71,9 +73,21 @@ jobs:
           python-version: "3.13"
       - name: Verify required parser command
         run: python3 --version
+      - name: Require one immutable candidate artifact
+        env:
+          CANDIDATE_ARTIFACT_ID: ${{ needs.package.outputs.artifact-id }}
+          CANDIDATE_SHA256: ${{ needs.package.outputs.sha256 }}
+        run: >-
+          node -e 'const id = process.env.CANDIDATE_ARTIFACT_ID || "";
+          const sha = process.env.CANDIDATE_SHA256 || "";
+          if (!/^[1-9][0-9]*$/.test(id) || !Number.isSafeInteger(Number(id)) || id !== String(Number(id)))
+          throw new Error("One valid candidate artifact ID is required");
+          if (sha.length !== 64 || /[^a-f0-9]/.test(sha))
+          throw new Error("An independent candidate SHA-256 is required");'
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          name: boxbox-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          artifact-ids: ${{ needs.package.outputs.artifact-id }}
+          merge-multiple: true
           path: dist/release-candidate/
       - name: Verify digest and exercise the downloaded archive
         env:

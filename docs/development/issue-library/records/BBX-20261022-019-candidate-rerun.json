@@ -1,0 +1,140 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261022-019",
+  "title": "Partial candidate reruns select an artifact from the wrong attempt",
+  "category": "ci-release",
+  "tags": [
+    "github-actions",
+    "partial-rerun",
+    "artifact-id",
+    "runner-capacity",
+    "READINESS1"
+  ],
+  "status": "verifying",
+  "symptom": "Candidate run 39646320662 attempt 1 ended after macOS runner acquisition failed before any steps. Rerunning only the failed smoke job increments run_attempt while leaving the successful package job and its attempt-1 artifact intact. The original download name is computed from the consumer attempt and therefore selects an absent attempt-2 artifact. The actual hosted lookup result is still pending; the source wiring defect is reproduced locally.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "The workflow incorrectly treats the consumer run_attempt as the producer artifact identity. Runner acquisition failure is an independent GitHub infrastructure condition, not a product or test failure."
+  },
+  "requestedOutcome": "A smoke-only rerun consumes exactly the original successful producer artifact and independent archive SHA without rebuilding. Missing identity must fail before download-all fallback. Preserve original failed/cancelled evidence.",
+  "decisions": [
+    "Use upload artifact-id as a package output and needs input instead of reconstructing the name from run_attempt.",
+    "Require one positive safe-integer ID and one lowercase SHA-256 before invoking download-artifact; merge the one ID-selected artifact into the existing directory.",
+    "Keep all three hosted OSes and the existing archive verification. A future workflow patch cannot retroactively repair historical run source."
+  ],
+  "actions": [
+    {
+      "description": "Record infrastructure cancellation separately from the confirmed producer/consumer naming defect.",
+      "status": "done"
+    },
+    {
+      "description": "Implement immutable ID wiring and executable guard regressions; run focused tests, alignment and TypeScript checks.",
+      "status": "done"
+    },
+    {
+      "description": "Complete independent source and GLM review, then prove real smoke-only rerun without rebuilding.",
+      "status": "in-progress"
+    },
+    {
+      "description": "Reconcile historical exact-archive hosted smoke and current documentation after measured outcomes.",
+      "status": "pending"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Old workflow regression reproduction",
+      "status": "failed",
+      "scope": "Original workflow before immutable ID repair; two new workflow regression tests.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-ci-rerun-evidence/workflow-red.log"
+      ],
+      "result": "Both tests fail because upload ID output wiring and the pre-download guard are missing."
+    },
+    {
+      "name": "Workflow and archive regression closure",
+      "status": "passed",
+      "scope": "Actual updated workflow guard, ID wiring, all three OS entries and existing archive safety tests; TypeScript and BoxBox layout checks.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-ci-rerun-evidence/workflow-green.log",
+        "docs/development/reviews/2026-10-22-ci-rerun-evidence/tsc.log",
+        "docs/development/reviews/2026-10-22-ci-rerun-evidence/alignment-check.log"
+      ],
+      "result": "Six tests and 52 assertions pass. TypeScript and touched-file layout checks exit zero. This is local static/guard evidence, not hosted rerun acceptance."
+    },
+    {
+      "name": "Hosted smoke-only rerun",
+      "status": "not-run",
+      "scope": "New workflow source, unchanged successful package artifact ID and SHA across a consumer-only rerun.",
+      "evidence": [],
+      "result": "Requires a pushed reviewed workflow and actual GitHub execution; no output replay behavior is assumed."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": ".github/workflows/release-candidate.yml",
+      "note": "Producer upload output and three-OS smoke consumer."
+    },
+    {
+      "kind": "test",
+      "path": "test/release-workflow.test.ts",
+      "note": "Executes the actual pre-download guard and checks workflow dependency wiring."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-10-22-ci-rerun-evidence/rerun-design-review.md",
+      "note": "Read-only pinned action interface/source review and original artifact ID."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-22",
+      "event": "reported",
+      "summary": "Candidate and docs-head macOS jobs were cancelled without steps because hosted runners were not acquired. Failed-job-only reruns were requested after terminal cancellation.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-ci-rerun-evidence/candidate-macos-annotations.json",
+        "docs/development/reviews/2026-10-22-ci-rerun-evidence/docs-macos-annotations.json"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-22",
+      "event": "diagnosed",
+      "summary": "Consumer attempt is not producer identity. Pinned download action also requires merge-multiple for ID selection and empty input falls back to all artifacts.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-ci-rerun-evidence/rerun-design-review.md"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-22",
+      "event": "verification-failed",
+      "status": "failed",
+      "summary": "Two new regressions fail against the original workflow.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-ci-rerun-evidence/workflow-red.log"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-22",
+      "event": "implemented",
+      "summary": "Added upload ID output, strict pre-download identity guard and one-ID flattened download; archive SHA and OS matrix retained.",
+      "evidence": []
+    },
+    {
+      "sequence": 5,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Six focused tests, 52 assertions, TypeScript and touched-file layout checks pass; hosted verification remains separate.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-ci-rerun-evidence/workflow-green.log",
+        "docs/development/reviews/2026-10-22-ci-rerun-evidence/tsc.log",
+        "docs/development/reviews/2026-10-22-ci-rerun-evidence/alignment-check.log"
+      ]
+    }
+  ]
+}
