@@ -1,11 +1,12 @@
 /**
  * Mutation tests: thousands of seeded variants of every line-engine fixture must keep the safety invariants —
- * whitespace-only output (T2), no refused table, idempotence, and an unchanged parse (T3, sampled because
+ * whitespace-only output (T2), no preservation-refused table, idempotence, and an unchanged parse (T3, sampled because
  * parsers are slow).
  * BOXBOX_MUTATIONS scales the variant count per language (default 1000); a failure prints its seed and a minimized input.
  */
 import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                            ;
 import      { join, relative                                   } from "node:path"                          ;
+import      { fileURLToPath                                    } from "node:url"                           ;
 import      { preservesTokens                                  } from "@/typescript/token-preservation.ts" ;
 import      { describe, expect, test                           } from "bun:test"                           ;
 import      { compareParse, parserAvailable                    } from "@/common/parse-check.ts"            ;
@@ -15,9 +16,9 @@ import type { CodeSyntax, LineProfiler                         } from "@/common/
 import      { PYTHON_ALIGNER                                   } from "@/python/profile.ts"                ;
 import      { minimize, mutate                                 } from "./mutator.ts"                       ;
 
-const VARIANTS     = Number(process.env.BOXBOX_MUTATIONS ?? 1000)           ;
-const PARSE_SAMPLE = Math.max(3, Math.floor(VARIANTS / 200))                ;
-const FIXTURES     = new URL("../test/fixtures/", import.meta.url).pathname ;
+const VARIANTS     = Number       (process.env.BOXBOX_MUTATIONS ?? 1000         ) ;
+const PARSE_SAMPLE = Math.max     (3, Math.floor(VARIANTS / 200)                ) ;
+const FIXTURES     = fileURLToPath(new URL("../test/fixtures/", import.meta.url)) ;
 
 interface Language {
 	readonly aligner   : LineProfiler ;
@@ -47,8 +48,10 @@ function violation(variant: string, aligner: LineProfiler): string | undefined {
 	const result = alignSource(variant, aligner, { minRows: 3, apply: true }) ;
 	const once   = result.output                                              ;
 	if (changedLines(variant, once, aligner.syntax).length > 0) return "changed more than whitespace between tokens";
-	// A refusal is safe, but here it means a profiler and the preservation check disagree — a bug to find.
-	if (result.refused.length > 0) return `refused ${result.refused.length} table(s)`;
+	// A preservation refusal is safe, but here it means a profiler and the preservation check disagree — a bug to find.
+	// A wide-character refusal is policy: injected Hangul, Han or Kana makes the column width viewer-dependent.
+	const unsafe = result.refused.filter(table => table.refusal !== "wide-characters");
+	if (unsafe.length > 0) return `refused ${unsafe.length} table(s)`;
 	if (align(once, aligner) !== once) return "not idempotent";
 	return undefined;
 }
@@ -84,7 +87,7 @@ describe("mutation invariants", () => {
 
 describe("mutation invariants (TypeScript aligner)", () => {
 	const TS_VARIANTS = Number(process.env.BOXBOX_TS_MUTATIONS ?? 5)          ;
-	const root        = new URL("..", import.meta.url).pathname               ;
+	const root        = fileURLToPath(new URL("..", import.meta.url))         ;
 	const script      = `${root}product/engine/typescript/06_align-tables.ts` ;
 	const source      = readFileSync(`${FIXTURES}table-kinds.ts`, "utf8")     ;
 

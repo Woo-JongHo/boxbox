@@ -3,15 +3,11 @@
  * builds pass/fail for safety checks S1–S4 and alarms A1–A9. It is a pure function: the same input yields the same report.
  * Alarms are not failures but "places for a human or an AI to look". Deciding (whether to fix, whether to change a rule) is not this module's job.
  */
-import      { displayWidth            } from "@/common/display-width.ts" ;
-import type { FileResult, GroupState, ResultGroup } from "@/common/result-json.ts"   ;
-import      { patternOf               } from "@/common/surface.ts"       ;
-import      {
-              lookup                ,
-              type ConventionDb     ,
-              type LookupResult     ,
-                                      } from "@/common/conventions.ts"   ;
-import      { lookupKeyOf             } from "@/common/signature.ts"     ;
+import      { displayWidth                                 } from "@/common/display-width.ts" ;
+import type { FileResult, GroupState, ResultGroup          } from "@/common/result-json.ts"   ;
+import      { patternOf                                    } from "@/common/surface.ts"       ;
+import      { lookup, type ConventionDb, type LookupResult } from "@/common/conventions.ts"   ;
+import      { lookupKeyOf                                  } from "@/common/signature.ts"     ;
 
 export const REPORT_SCHEMA_VERSION = 1;
 
@@ -257,7 +253,9 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 
 		const byState: Readonly<Partial<Record<GroupState, readonly [AlarmId, string, string]>>> = {
 			FIXABLE : ["A0", `${group.kind} ${group.rows} rows, pending edits ${group.edits}`, "fixable by whitespace alignment (safe): 06_align-tables.ts --file <file> --write"] ,
-			REFUSE  : ["A4", `${group.kind}: cannot split losslessly`                       , "check the row structure; if it is an engine bug, add a fixture"                ]    ,
+			REFUSE  : group.reason === "wide-characters"
+				? ["A4", `${group.kind}: a column would follow wide characters`, "move the wide text out of the compared cells, for example into a named constant"]
+				: ["A4", `${group.kind}: cannot split losslessly`              , "check the row structure; if it is an engine bug, add a fixture"                ],
 			SUGGEST : ["A6", `${group.kind} ${group.rows} rows`                              , "a human decides whether to make it a table"                                   ]    ,
 		};
 		const stateAlarm = byState[group.state];

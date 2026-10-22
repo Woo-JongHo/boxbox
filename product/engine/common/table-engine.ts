@@ -12,10 +12,10 @@
  * 4. The candidate output is compared with the source by changedLines (preservation.ts). A table whose edits change
  *    anything but horizontal whitespace between tokens is refused as a whole and reported in `refused`.
  */
-import      { changedLines } from "@/common/preservation.ts"  ;
-import      { displayWidth } from "@/common/display-width.ts" ;
-import      { maskSource   } from "@/common/code-text.ts"     ;
-import type { CodeSyntax   } from "@/common/code-text.ts"     ;
+import      { changedLines                    } from "@/common/preservation.ts"  ;
+import      { displayWidth, hasWideCharacters } from "@/common/display-width.ts" ;
+import      { maskSource                      } from "@/common/code-text.ts"     ;
+import type { CodeSyntax                      } from "@/common/code-text.ts"     ;
 
 /** Re-exported so profilers can import CodeSyntax directly from table-engine. */
 export type { CodeSyntax };
@@ -43,6 +43,18 @@ export interface LineProfiler {
 	readonly canonicalGaps : Readonly<Record<string, string>>;
 	/** Returns the decomposition if the line is a table row, otherwise null. code is the source with the trailing comment cut; masked is the mask at the same coordinates. */
 	profile(code: string, masked: string): RowProfile | null;
+	/**
+	 * Rows whose axes are a prefix of the run's longest axes join that run (`name : type` beside `name : type = value`).
+	 * Off by default; each language opts in only where a shorter row is the same role with fewer trailing cells.
+	 */
+	readonly prefixRuns?   : boolean;
+	/**
+	 * Axes that close a row (a parameter list's `,`). In a prefix run whose rows all end with the same terminal axis,
+	 * prefixes are compared without it and it forms its own column after the longest row, like a trailing comment.
+	 */
+	readonly terminalAxes? : readonly string[];
+	/** Marker lines that sit inside a table without cells of their own (a parameter list's `*,`); they do not break a run. */
+	transparentRow?(masked: string): boolean;
 	/** Optional outer rows by zero-based physical line. Detailed tables keep priority; every projection must reconstruct its original code exactly. */
 	project?(source: string): ReadonlyMap<number, RowProfile>;
 }
@@ -62,6 +74,8 @@ export interface DetectedTable {
 	readonly axes   : readonly string[]    ;
 	readonly widths : readonly number[]    ;
 	readonly edits  : readonly TableEdit[] ;
+	/** Why a refused table was refused: its edits changed more than whitespace, or a column would follow wide characters. */
+	readonly refusal? : "whitespace-only" | "wide-characters";
 }
 
 export interface PairGroup {
@@ -83,7 +97,7 @@ export interface AlignResult {
 	readonly edits   : number                   ;
 	readonly details : readonly DetectedTable[] ;
 	readonly pairs   : readonly PairGroup[]     ;
-	/** Tables whose edits failed the whitespace-only check; never applied. */
+	/** Tables whose edits failed the whitespace-only check or whose columns would follow wide characters; never applied. */
 	readonly refused : readonly DetectedTable[];
 }
 
@@ -128,7 +142,36 @@ function losslessProfile(profile: RowProfile, code: string): boolean {
 		&& profile.indent + profile.slots.map((slot, position) => position === 0 ? slot.text : slot.gapBefore + slot.text).join("") === code;
 }
 
-function contiguousRuns(rows: readonly AcceptedRow[]): AcceptedRow[][] {
+/** The row without its terminal cell when that cell's axis is listed as terminal. */
+function withoutTerminal(profile: RowProfile, terminalAxes: readonly string[]): RowProfile {
+	const last = profile.slots.at(-1);
+	return last && terminalAxes.includes(last.axis) ? { indent: profile.indent, slots: profile.slots.slice(0, -1) } : profile;
+}
+
+/** True when one row's axes are a prefix of the other's at the same indentation; a terminal cell must match on both. */
+function prefixRelated(left: RowProfile, right: RowProfile, terminalAxes: readonly string[]): boolean {
+	if (left.indent !== right.indent) return false;
+	const leftEnd  = left.slots.at(-1)?.axis ?? ""                                     ;
+	const rightEnd = right.slots.at(-1)?.axis ?? ""                                    ;
+	const terminal = terminalAxes.includes(leftEnd) || terminalAxes.includes(rightEnd) ;
+	if (terminal && leftEnd !== rightEnd) return false;
+	const bodies         = [withoutTerminal(left, terminalAxes), withoutTerminal(right, terminalAxes)] ;
+	const [short, long]  = bodies[0].slots.length <= bodies[1].slots.length ? bodies : [bodies[1], bodies[0]] ;
+	return short.slots.every((slot, position) => slot.axis === long.slots[position].axis);
+}
+
+/** True when only transparent marker lines sit between two rows. */
+function adjacent(previous: number, next: number, transparent: ReadonlySet<number>): boolean {
+	for (let index = previous + 1; index < next; index += 1) if (!transparent.has(index)) return false;
+	return true;
+}
+
+/** The row with the most slots; a prefix run is judged and reported by it. */
+function longestProfile(run: readonly AcceptedRow[]): RowProfile {
+	return run.reduce((longest, row) => row.profile.slots.length > longest.slots.length ? row.profile : longest, run[0].profile);
+}
+
+function contiguousRuns(rows: readonly AcceptedRow[], prefixRuns: boolean, terminalAxes: readonly string[], transparent: ReadonlySet<number>): AcceptedRow[][] {
 	const runs  : AcceptedRow[][] = [] ;
 	let current : AcceptedRow[]   = [] ;
 	const flush = (): void => {
@@ -137,9 +180,11 @@ function contiguousRuns(rows: readonly AcceptedRow[]): AcceptedRow[][] {
 	};
 
 	for (const row of rows) {
-		const previous   = current.at(-1)                                                         ;
-		const contiguous = !previous || previous.index === row.index - 1                          ;
-		const sameShape  = previous && signatureOf(previous.profile) === signatureOf(row.profile) ;
+		const previous   = current.at(-1)                                                ;
+		const contiguous = !previous || adjacent(previous.index, row.index, transparent) ;
+		const sameShape  = previous && (prefixRuns
+			? prefixRelated(longestProfile(current), row.profile, terminalAxes)
+			: signatureOf(previous.profile) === signatureOf(row.profile));
 		if (contiguous && sameShape) current.push(row);
 		else { flush(); current = [row]; }
 	}
@@ -148,16 +193,54 @@ function contiguousRuns(rows: readonly AcceptedRow[]): AcceptedRow[][] {
 	return runs;
 }
 
+/**
+ * Rebuilds a run's code. Rows of one length align cell by cell. A prefix run whose rows all end with the same terminal
+ * cell aligns without it and places it in its own column after the longest row (the canonical gap attaches it there).
+ */
+function alignRun(aligner: LineProfiler, run: readonly AcceptedRow[], terminalAxes: readonly string[]): string[] {
+	const lengths  = new Set(run.map(row => row.profile.slots.length))                                                ;
+	const terminal = run[0].profile.slots.at(-1)?.axis ?? ""                                                          ;
+	const shared   = terminalAxes.includes(terminal) && run.every(row => row.profile.slots.at(-1)?.axis === terminal) ;
+	if (lengths.size === 1 || !shared) {
+		const widths = columnWidths(run);
+		return run.map(row => rebuildCode(aligner, row.profile, widths));
+	}
+	const bodies = run   .map  (row => ({ ...row, profile: withoutTerminal(row.profile, terminalAxes) })) ;
+	const widths = columnWidths(bodies                                                                  ) ;
+	const codes  = bodies.map  (row => rebuildCode(aligner, row.profile, widths)                        ) ;
+	const column = Math  .max  (...codes.map(code => displayWidth(code))                                ) ;
+	return codes.map((code, position) => {
+		const cell = run[position].profile.slots.at(-1)!;
+		return code + " ".repeat(column - displayWidth(code)) + canonicalGap(aligner, cell.axis) + cell.text;
+	});
+}
+
+/** A row's cells before its last one, and every cell when a trailing comment follows, decide later columns. */
+function columnsFollowWideText(row: AcceptedRow): boolean {
+	const last = row.profile.slots.length - 1;
+	return row.profile.slots.some((slot, position) => (position < last || row.comment !== null) && hasWideCharacters(slot.text));
+}
+
+/** A column is as wide as its longest cell among rows that continue past it; a row's last cell is never padded. */
+function columnWidths(run: readonly AcceptedRow[]): number[] {
+	return longestProfile(run).slots.map((_, position) => {
+		const continuing = run.filter(row => position < row.profile.slots.length - 1) ;
+		const present    = run.filter(row => position < row.profile.slots.length)     ;
+		const measured   = continuing.length > 0 ? continuing : present               ;
+		return Math.max(...measured.map(row => displayWidth(row.profile.slots[position].text)));
+	});
+}
+
 /** Select one owner per row. A primary table remains reserved even if the preservation gate later refuses it. */
-function projectedRuns(primary: AcceptedRow[][], projected: readonly AcceptedRow[], minRows: number): AcceptedRow[][] {
-	const primaryTables  = primary.filter(run => run.length >= minRows)                                               ;
-	const reserved       = new Set(primaryTables.flatMap(run => run.map(row => row.index)))                           ;
-	const fallback       = contiguousRuns(projected.filter(row => !reserved.has(row.index)))                          ;
-	const fallbackTables = fallback.filter(run => run.length >= minRows)                                              ;
-	const claimed        = new Set(fallbackTables.flatMap(run => run.map(row => row.index)))                          ;
-	const primaryPairs   = primary.filter(run => run.length < minRows && run.every(row => !claimed.has(row.index)))   ;
-	const pairRows       = new Set(primaryPairs.flatMap(run => run.map(row => row.index)))                            ;
-	const fallbackPairs  = fallback.filter(run => run.length < minRows && run.every(row => !pairRows.has(row.index))) ;
+function projectedRuns(primary: AcceptedRow[][], projected: readonly AcceptedRow[], minRows: number, prefixRuns: boolean, terminalAxes: readonly string[], transparent: ReadonlySet<number>): AcceptedRow[][] {
+	const primaryTables  = primary.filter(run => run.length >= minRows)                                                             ;
+	const reserved       = new Set(primaryTables.flatMap(run => run.map(row => row.index)))                                         ;
+	const fallback       = contiguousRuns(projected.filter(row => !reserved.has(row.index)), prefixRuns, terminalAxes, transparent) ;
+	const fallbackTables = fallback.filter(run => run.length >= minRows)                                                            ;
+	const claimed        = new Set(fallbackTables.flatMap(run => run.map(row => row.index)))                                        ;
+	const primaryPairs   = primary.filter(run => run.length < minRows && run.every(row => !claimed.has(row.index)))                 ;
+	const pairRows       = new Set(primaryPairs.flatMap(run => run.map(row => row.index)))                                          ;
+	const fallbackPairs  = fallback.filter(run => run.length < minRows && run.every(row => !pairRows.has(row.index)))               ;
 
 	return [...primaryTables, ...fallbackTables, ...primaryPairs, ...fallbackPairs].sort((left, right) => left[0].index - right[0].index);
 }
@@ -170,6 +253,7 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 
 	const projections               = aligner.project?.(source) ;
 	const accepted  : AcceptedRow[] = []                        ;
+	const transparent               = new Set<number>()         ;
 	const projected : AcceptedRow[] = []                        ;
 
 	lines.forEach((raw, index) => {
@@ -188,28 +272,43 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		if (maskedCode.trim() === "") return;
 		const profile = aligner.profile(code, maskedCode);
 		if (profile && losslessProfile(profile, code)) accepted.push({ index, profile, comment });
+		else if (comment === null && aligner.transparentRow?.(maskedCode)) transparent.add(index);
 
 		const projection = projections?.get(index);
 		if (projection && losslessProfile(projection, code)) projected.push({ index, profile: projection, comment });
 	});
 
-	const primary = contiguousRuns(accepted)                                                         ;
-	const runs    = projections === undefined ? primary : projectedRuns(primary, projected, minRows) ;
+	const terminalAxes = aligner.terminalAxes ?? []                                                                                              ;
+	const prefixRuns   = aligner.prefixRuns === true                                                                                             ;
+	const primary      = contiguousRuns(accepted, prefixRuns, terminalAxes, transparent)                                                         ;
+	const runs         = projections === undefined ? primary : projectedRuns(primary, projected, minRows, prefixRuns, terminalAxes, transparent) ;
 
-	const candidates : DetectedTable[] = [] ;
-	const pairs      : PairGroup[]     = [] ;
+	const candidates  : DetectedTable[] = [] ;
+	const wideRefused : DetectedTable[] = [] ;
+	const pairs       : PairGroup[]     = [] ;
 
 	for (const run of runs) {
-		const signature = signatureOf(run[0].profile);
+		const signature = signatureOf(longestProfile(run));
 		if (run.length < minRows) {
 			pairs.push({ startLine: run[0].index + 1, endLine: run[run.length - 1].index + 1, rows: run.length, signature });
 			continue;
 		}
-		const widths = run[0].profile.slots.map((_, position) =>
-			Math.max(...run.map(row => displayWidth(row.profile.slots[position].text))),
-		);
-		const alignedCodes = run.map(row => rebuildCode(aligner, row.profile, widths)) ;
-		const commentRows  = run.map(row => row.comment !== null)                      ;
+		if (run.some(row => columnsFollowWideText(row))) {
+			wideRefused.push({
+				startLine : run[0].index + 1                                 ,
+				endLine   : run[run.length - 1].index + 1                    ,
+				rows      : run.length                                       ,
+				indent    : run[0].profile.indent                            ,
+				axes      : longestProfile(run).slots.map(slot => slot.axis) ,
+				widths    : columnWidths(run)                                ,
+				edits     : []                                               ,
+				refusal   : "wide-characters"                                ,
+			});
+			continue;
+		}
+		const widths       = columnWidths(run                        ) ;
+		const alignedCodes = alignRun    (aligner, run, terminalAxes ) ;
+		const commentRows  = run.map     (row => row.comment !== null) ;
 		const commentColumn = Math.max(
 			0,
 			...run.map((row, position) => commentRows[position] ? displayWidth(alignedCodes[position]) : 0),
@@ -227,13 +326,13 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 			tableEdits.push({ index: row.index, before: raw, after: withCR });
 		});
 		candidates.push({
-			startLine : run[0].index + 1                            ,
-			endLine   : run[run.length - 1].index + 1               ,
-			rows      : run.length                                  ,
-			indent    : run[0].profile.indent                       ,
-			axes      : run[0].profile.slots.map(slot => slot.axis) ,
-			widths    : widths                                      ,
-			edits     : tableEdits                                  ,
+			startLine : run[0].index + 1                                 ,
+			endLine   : run[run.length - 1].index + 1                    ,
+			rows      : run.length                                       ,
+			indent    : run[0].profile.indent                            ,
+			axes      : longestProfile(run).slots.map(slot => slot.axis) ,
+			widths    : widths                                           ,
+			edits     : tableEdits                                       ,
 		});
 	}
 
@@ -244,14 +343,14 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		: source;
 	const misaligned = new Set(details.flatMap(table => table.edits.map(edit => edit.index))).size;
 	return {
-		output     : output                         ,
-		groups     : runs.length                    ,
-		tables     : details.length                 ,
-		misaligned : misaligned                     ,
-		edits      : options.apply ? misaligned : 0 ,
-		details    : details                        ,
-		pairs      : pairs                          ,
-		refused    : refused                        ,
+		output     : output                                                                               ,
+		groups     : runs.length                                                                          ,
+		tables     : details.length                                                                       ,
+		misaligned : misaligned                                                                           ,
+		edits      : options.apply ? misaligned : 0                                                       ,
+		details    : details                                                                              ,
+		pairs      : pairs                                                                                ,
+		refused    : [...refused, ...wideRefused].sort((left, right) => left.startLine - right.startLine) ,
 	};
 }
 
@@ -271,7 +370,7 @@ function refuseUnsafeTables(source: string, lines: readonly string[], tables: re
 		if (changed.size === 0) break;
 		const culprits = kept.filter(table => table.edits.some(edit => changed.has(edit.index)))                ;
 		const drop     = new Set(culprits.length > 0 ? culprits : kept.filter(table => table.edits.length > 0)) ;
-		refused.push(...drop);
+		refused.push(...[...drop].map(table => ({ ...table, refusal: "whitespace-only" as const })));
 		kept = kept.filter(table => !drop.has(table));
 	}
 	return { details: kept, refused };

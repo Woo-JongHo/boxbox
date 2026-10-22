@@ -5,15 +5,15 @@
  * Fails with exit code 1 when anything is misaligned and --write is absent. --json prints the shared versioned
  * result (result-json.ts) instead of the text report.
  */
-import      { readFileSync, writeFileSync          } from "node:fs"                  ;
-import      { relative, resolve                    } from "node:path"                ;
-import      { compareParse                         } from "@/common/parse-check.ts"  ;
-import      { updateFileAtomicallySync             } from "@/common/safe-file.ts"    ;
-import      { alignSource                          } from "@/common/table-engine.ts" ;
+import      { readFileSync, writeFileSync                         } from "node:fs"                  ;
+import      { relative, resolve                                   } from "node:path"                ;
+import      { compareParse                                        } from "@/common/parse-check.ts"  ;
+import      { updateFileAtomicallySync                            } from "@/common/safe-file.ts"    ;
+import      { alignSource                                         } from "@/common/table-engine.ts" ;
 import type { AlignResult, DetectedTable, LineProfiler, PairGroup } from "@/common/table-engine.ts" ;
-import      { envelope, summarize                  } from "@/common/result-json.ts"  ;
-import      { indentDepth                          } from "@/common/signature.ts"    ;
-import type { FileResult, GroupState, ResultGroup, ResultParse } from "@/common/result-json.ts"  ;
+import      { envelope, summarize                                 } from "@/common/result-json.ts"  ;
+import      { indentDepth                                         } from "@/common/signature.ts"    ;
+import type { FileResult, GroupState, ResultGroup, ResultParse    } from "@/common/result-json.ts"  ;
 
 /** Re-exported so CodeSyntax can also be imported from this module. */
 export type { CodeSyntax } from "@/common/code-text.ts";
@@ -143,6 +143,7 @@ function toTableGroup(table: DetectedTable, state: GroupState): ResultGroup {
 		state     : state                     ,
 		edits     : table.edits.length        ,
 		depth     : indentDepth(table.indent) ,
+		...(table.refusal ? { reason: table.refusal } : {}),
 	};
 }
 
@@ -175,6 +176,12 @@ function toFileResult(aligner: LineProfiler, file: string, write: boolean, resul
 	};
 }
 
+function refusalText(table: DetectedTable): string {
+	return table.refusal === "wide-characters"
+		? "a column would follow Hangul, Han or Kana text, whose display width differs between viewers"
+		: "the edit would change more than whitespace between tokens";
+}
+
 function formatFileReport(aligner: LineProfiler, label: string, source: string, result: AlignResult, groupsOnly: boolean): string {
 	const command = groupsOnly ? "group-regions" : "align-tables";
 
@@ -193,7 +200,7 @@ function formatFileReport(aligner: LineProfiler, label: string, source: string, 
 
 	const detailLines  = result.details.map(table => `${rowHead(table)} ${detail(table)}`                                                                                    ) ;
 	const pairLines    = result.pairs  .map(pair  => `${rowHead(pair)} pair — ${pair.rows} rows are promoted to a table only when the user confirms the comparison is useful`) ;
-	const refusedLines = result.refused.map(table => `${rowHead(table)} refused — the edit would change more than whitespace between tokens`                                 ) ;
+	const refusedLines = result.refused.map(table => `${rowHead(table)} refused — ${refusalText(table)}`                                                                     ) ;
 
 	const sourceLines = source.split("\n").length;
 	return [head, ...detailLines, ...pairLines, ...refusedLines, `  lines=${sourceLines} language=${aligner.language}`].join("\n");
