@@ -59,6 +59,21 @@ function isAnnotation(masked: string): boolean {
 	return depth === 0 && !/\s$/u.test(masked);
 }
 
+/**
+ * A value cell before a row's closing `,`: brackets balance and no comma sits outside them, so the cell is one
+ * expression such as `len(rows)` or `(KEY,)`. Continuations and statement separators are refused.
+ */
+function isValueCell(masked: string): boolean {
+	let depth = 0;
+	for (const character of masked) {
+		if      ("([{".includes(character))        depth += 1;
+		else if (")]}".includes(character))        depth -= 1;
+		else if (character === "," && depth === 0) return false;
+		if (depth < 0) return false;
+	}
+	return depth === 0 && masked.trim() !== "" && !masked.startsWith("=") && !/[;\\]/u.test(masked) && !/\s$/u.test(masked);
+}
+
 /** Statement starts that cannot be table rows — control flow, declarations, imports. match/case are soft keywords and excluded. */
 const RESERVED_START = /^(?:if|elif|else|for|while|try|except|finally|with|def|class|return|raise|import|from|pass|break|continue|lambda|yield|assert|del|global|nonlocal|async|await)\b/;
 
@@ -66,6 +81,11 @@ const ANNOTATED = new RegExp(`^${INDENT}${NAME}${GAP}:${GAP}${TYPE}${GAP}=${GAP}
 const DECLARED  = new RegExp(`^${INDENT}${NAME}${GAP}:${GAP}${TYPE}$`                           , "du") ;
 const DICT_ROW  = new RegExp(`^${INDENT}${QUOTED}${GAP}:${GAP}${VALUE}${GAP},$`                 , "du") ;
 const ASSIGNED  = new RegExp(`^${INDENT}${NAME}${GAP}=${GAP}${VALUE}${GAP}$`                    , "du") ;
+
+/** Rows ending in a top-level `,`: parameters `name : Type [= default],` and keyword arguments `name = value,`. */
+const PARAMETER_DEFAULT = new RegExp(`^${INDENT}${NAME}${GAP}:${GAP}${TYPE}${GAP}=${GAP}${VALUE}${GAP},$`, "du") ;
+const PARAMETER         = new RegExp(`^${INDENT}${NAME}${GAP}:${GAP}${TYPE}${GAP},$`                     , "du") ;
+const KEYWORD           = new RegExp(`^${INDENT}([A-Za-z_][A-Za-z0-9_]*)${GAP}=${GAP}${VALUE}${GAP},$`   , "du") ;
 
 /** Bundle rows `[ cell , cell ... ] trailer` and `( cell , cell ... ) trailer` — trailer holds the following `,` verbatim. */
 const BUNDLED       = /^([ \t]*)([[(])(.*)([\])])(,?)[ \t]*$/du                                         ;
@@ -259,6 +279,54 @@ function typedProfile(code: string, masked: string): RowProfile | null {
 	return null;
 }
 
+/** Parameter and keyword-argument rows. The trailing comma is the row's terminal cell. */
+function commaRowProfile(code: string, masked: string): RowProfile | null {
+	const cell  = (match: RegExpExecArray, group: number): string => masked.slice(match.indices![group]![0], match.indices![group]![1])  ;
+	const comma = (match: RegExpExecArray, gap: number): Slot     => ({ axis: "comma", text: ",", gapBefore: slotAt(code, match, gap) }) ;
+
+	const withDefault = PARAMETER_DEFAULT.exec(masked);
+	if (withDefault && isAnnotation(cell(withDefault, 5)) && isValueCell(cell(withDefault, 8))) {
+		return {
+			indent : slotAt(code, withDefault, 1),
+			slots  : [
+				{ axis : "name"  , text : slotAt(code, withDefault, 2) , gapBefore : ""                           },
+				{ axis : "colon" , text : ":"                          , gapBefore : slotAt(code, withDefault, 3) },
+				{ axis : "type"  , text : slotAt(code, withDefault, 5) , gapBefore : slotAt(code, withDefault, 4) },
+				{ axis : "equal" , text : "="                          , gapBefore : slotAt(code, withDefault, 6) },
+				{ axis : "value" , text : slotAt(code, withDefault, 8) , gapBefore : slotAt(code, withDefault, 7) },
+				comma(withDefault, 9),
+			],
+		};
+	}
+
+	const parameter = PARAMETER.exec(masked);
+	if (parameter && isAnnotation(cell(parameter, 5))) {
+		return {
+			indent : slotAt(code, parameter, 1),
+			slots  : [
+				{ axis : "name"  , text : slotAt(code, parameter, 2) , gapBefore : ""                         },
+				{ axis : "colon" , text : ":"                        , gapBefore : slotAt(code, parameter, 3) },
+				{ axis : "type"  , text : slotAt(code, parameter, 5) , gapBefore : slotAt(code, parameter, 4) },
+				comma(parameter, 6),
+			],
+		};
+	}
+
+	const keyword = KEYWORD.exec(masked);
+	if (keyword && isValueCell(cell(keyword, 5))) {
+		return {
+			indent : slotAt(code, keyword, 1),
+			slots  : [
+				{ axis : "name"  , text : slotAt(code, keyword, 2) , gapBefore : ""                       },
+				{ axis : "equal" , text : "="                      , gapBefore : slotAt(code, keyword, 3) },
+				{ axis : "value" , text : slotAt(code, keyword, 5) , gapBefore : slotAt(code, keyword, 4) },
+				comma(keyword, 6),
+			],
+		};
+	}
+	return null;
+}
+
 function profilePython(code: string, masked: string): RowProfile | null {
 	const trimmed = masked.trim();
 	if (trimmed === "" || trimmed.startsWith("@") || RESERVED_START.test(trimmed)) return null;
@@ -269,6 +337,8 @@ function profilePython(code: string, masked: string): RowProfile | null {
 	if (bundle)           return bundle;
 	const assignedCall = assignedCallProfile(code, masked);
 	if (assignedCall)     return assignedCall;
+	const commaRow = commaRowProfile(code, masked);
+	if (commaRow)         return commaRow;
 	const typed = typedProfile(code, masked);
 	if (typed)            return typed;
 	if (isUnsafe(masked)) return null;
@@ -322,6 +392,10 @@ export const PYTHON_ALIGNER: LineProfiler = {
 	canonicalGaps : { name: " ", attribute: " ", "chain-target": " ", key: " ", type: " ", value: " ", colon: " ", equal: " ", comma: "", cell: "", arg: " ", "open[": "", "open(": "", "open{": "", "close]": "", "close)": "", "close}": "" },
 	// A field without a default and a field with one are the same role: `name : type` joins `name : type = value`.
 	prefixRuns : true                ,
-	profile    : profilePython       ,
-	project    : assignmentEnvelopes ,
+	// A parameter list's trailing comma closes every row; it forms its own column after the longest row.
+	terminalAxes : ["comma"]           ,
+	// `*,` and `/,` mark keyword-only and positional-only parameters inside one parameter table.
+	transparentRow : (masked: string): boolean => /^[ \t]*[*/][ \t]*,$/u.test(masked) ,
+	profile        : profilePython                                                      ,
+	project        : assignmentEnvelopes                                                ,
 };
