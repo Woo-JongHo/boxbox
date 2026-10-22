@@ -631,6 +631,9 @@ function detectRegistrationRow(source: SourceFile, node: Node): readonly RowBoun
 	if (spacesOnly(source, colon + 1, node.initializer.getStart())) {
 		boundaries.push({ axis: "value", from: colon + 1, at: node.initializer.getStart() });
 	}
+	// A row without a trailing comma (the last property) simply has no comma cell; the other rows still align theirs.
+	const comma = tokenAfter(source, node.initializer.getEnd(), ",");
+	if (comma) boundaries.push({ axis: "comma", from: node.initializer.getEnd(), at: comma });
 	return boundaries;
 }
 
@@ -761,7 +764,7 @@ export const AXIS_NOTES: Readonly<Record<string, string>> = {
 	"colon"                  : "`:` separating a name or identifier from its type or expression",
 	"equals"                 : "`=` of a declaration, alias or enum member",
 	"semicolon"              : "statement-terminating `;`",
-	"comma"                  : "row-separating `,`",
+	"comma"                  : "row-separating `,` of an enum member or object property (a last row without one is left out of the column)",
 	"comment"                : "start column of a trailing `//` note",
 	"open-paren"             : "parameter-opening `(` (after the name width)",
 	"close-paren"            : "parameter-closing `)` (after the minimum inner width)",
