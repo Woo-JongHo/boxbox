@@ -13,9 +13,9 @@
 import      { spawnSync                                } from "node:child_process"      ;
 import      { existsSync, readFileSync                 } from "node:fs"                 ;
 import      { fileURLToPath                            } from "node:url"                ;
-import      { buildReport, compareAlarms, renderReport } from "./common/report.ts"      ;
-import      { loadConventions                          } from "./common/conventions.ts" ;
-import type { FileResult, ResultEnvelope               } from "./common/result-json.ts" ;
+import      { buildReport, compareAlarms, renderReport } from "@/common/report.ts"      ;
+import      { loadConventions                          } from "@/common/conventions.ts" ;
+import type { FileResult, ResultEnvelope               } from "@/common/result-json.ts" ;
 
 const LANGUAGES: readonly (readonly [RegExp, string])[] = [
 	[/\.[cm]?ts$/u, "typescript"],

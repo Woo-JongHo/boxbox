@@ -1,0 +1,96 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261021-009",
+  "title": "A stale install ownership marker can delete a user-owned replacement directory",
+  "category": "installation",
+  "tags": [
+    "uninstall",
+    "ownership",
+    "stale-marker",
+    "copy-install",
+    "readiness1"
+  ],
+  "status": "resolved",
+  "symptom": "Independent review found that --uninstall treats an existing sibling .boxbox-managed marker as permission to remove a directory, even when the directory is a user-owned replacement.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "The installer trusts marker existence without binding the marker to the current installed object; its existing user-directory test exercised install but not uninstall."
+  },
+  "requestedOutcome": "Preserve unowned directories and foreign symlinks during install/update/uninstall; remove only positively identified managed installs and avoid partial copies on dependency failure.",
+  "decisions": [
+    "Use matched installation identity rather than marker existence alone.",
+    "Add regression evidence before calling installation preservation verified."
+  ],
+  "actions": [
+    {
+      "description": "Implement ownership identity and safe preflight/refresh behavior.",
+      "status": "done"
+    },
+    {
+      "description": "Run stale-marker, foreign-link, missing-dependency and managed-refresh tests; independently review closure.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Installer ownership closure",
+      "status": "passed",
+      "scope": "Development install/copy/update/uninstall; public npm installer is a separate surface.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/alias-remediation-tests.log",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/r1-closure.md"
+      ],
+      "result": "14 focused tests passed; read-only Sonnet closure found no mandatory findings. Source review and executed tests are separate evidence."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "development/install.sh",
+      "note": "Installer ownership and deletion branch."
+    },
+    {
+      "kind": "test",
+      "path": "test/alias-portability.test.ts",
+      "note": "Regression scenarios extend copy isolation coverage."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-10-21-readiness-loop-evidence/r1-review-initial.md",
+      "note": "Full independent finding and related observations."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-21",
+      "event": "reported",
+      "summary": "Sonnet found the stale-marker uninstall data-loss path while reviewing READINESS1 alias infrastructure.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/r1-review-initial.md"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-21",
+      "event": "verification-failed",
+      "status": "failed",
+      "summary": "Independent R1 review returned BLOCKED; installer preservation was not established for uninstall.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/r1-review-initial.md"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-21",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Bound ownership identities, dependency preflight and preservation regressions passed; independent review closed the mandatory finding.",
+      "evidence": [
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/alias-remediation-tests.log",
+        "docs/development/reviews/2026-10-21-readiness-loop-evidence/r1-closure.md"
+      ]
+    }
+  ]
+}

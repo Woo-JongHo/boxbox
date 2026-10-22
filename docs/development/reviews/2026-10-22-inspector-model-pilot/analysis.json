@@ -1,0 +1,725 @@
+{
+ "run1_A": {
+  "cond": "A",
+  "session": "366ad5e2-0b38-481b-b221-023093d6e6f1",
+  "turns": 3,
+  "cost": 0.7111616,
+  "dur_s": 92,
+  "api_s": 90,
+  "error": false,
+  "models": [
+   "claude-opus-5-5"
+  ],
+  "record_models": [
+   "claude-opus-5-5"
+  ],
+  "subagent_files": 1,
+  "total": {
+   "turns": 7,
+   "input": 14,
+   "cacheRead": 191193,
+   "cacheWrite": 79703,
+   "output": 1855
+  },
+  "subagent": {
+   "turns": 4,
+   "input": 8,
+   "cacheRead": 105916,
+   "cacheWrite": 49619,
+   "output": 129
+  },
+  "byModel": {
+   "claude-opus-5-5:medium": {
+    "turns": 7,
+    "input": 14,
+    "cacheRead": 191193,
+    "cacheWrite": 79703,
+    "output": 1855
+   }
+  },
+  "byCategory": {
+   "other": {
+    "turns": 2,
+    "input": 4,
+    "cacheRead": 53662,
+    "cacheWrite": 21492,
+    "output": 1458,
+    "calls": 1,
+    "resultTokens": 4
+   },
+   "boxbox:inspector": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 31615,
+    "cacheWrite": 8592,
+    "output": 268,
+    "calls": 1,
+    "resultTokens": 1970
+   },
+   "subagent/other": {
+    "turns": 3,
+    "input": 6,
+    "cacheRead": 71495,
+    "cacheWrite": 43757,
+    "output": 109,
+    "calls": 3,
+    "resultTokens": 7174
+   },
+   "subagent/boxbox:check": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 34421,
+    "cacheWrite": 5862,
+    "output": 20,
+    "calls": 1,
+    "resultTokens": 1566
+   },
+   "subagent/boxbox:guide": {
+    "turns": 0,
+    "input": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "output": 0,
+    "calls": 1,
+    "resultTokens": 39
+   }
+  },
+  "hooks": {
+   "SessionStart": {
+    "count": 1,
+    "tokens": 91
+   },
+   "Stop": {
+    "count": 2,
+    "tokens": 122
+   }
+  },
+  "report_chars": 1471,
+  "score": {
+   "fixable": 8,
+   "citedStrict": 0,
+   "citedLenient": 7,
+   "recallStrict": 0,
+   "recallLenient": 0.875,
+   "passGroupsCited": 0,
+   "claimedMisaligned": [],
+   "outOfFileCitations": 0
+  }
+ },
+ "run2_B": {
+  "cond": "B",
+  "session": "37da0d44-997b-4370-a311-b85488d755f1",
+  "turns": 3,
+  "cost": 0.5187023,
+  "dur_s": 115,
+  "api_s": 109,
+  "error": false,
+  "models": [
+   "claude-opus-5-5",
+   "claude-sonnet-5"
+  ],
+  "record_models": [
+   "claude-opus-5-5",
+   "claude-sonnet-5"
+  ],
+  "subagent_files": 1,
+  "total": {
+   "turns": 9,
+   "input": 18,
+   "cacheRead": 308419,
+   "cacheWrite": 78664,
+   "output": 2201
+  },
+  "subagent": {
+   "turns": 6,
+   "input": 12,
+   "cacheRead": 219803,
+   "cacheWrite": 53193,
+   "output": 485
+  },
+  "byModel": {
+   "claude-opus-5-5:medium": {
+    "turns": 3,
+    "input": 6,
+    "cacheRead": 88616,
+    "cacheWrite": 25471,
+    "output": 1716
+   },
+   "claude-sonnet-5:medium": {
+    "turns": 6,
+    "input": 12,
+    "cacheRead": 219803,
+    "cacheWrite": 53193,
+    "output": 485
+   }
+  },
+  "byCategory": {
+   "other": {
+    "turns": 2,
+    "input": 4,
+    "cacheRead": 56997,
+    "cacheWrite": 16877,
+    "output": 1432,
+    "calls": 1,
+    "resultTokens": 4
+   },
+   "boxbox:inspector": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 31619,
+    "cacheWrite": 8594,
+    "output": 284,
+    "calls": 1,
+    "resultTokens": 1162
+   },
+   "subagent/boxbox:skill": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 0,
+    "cacheWrite": 33915,
+    "output": 78,
+    "calls": 1,
+    "resultTokens": 8
+   },
+   "subagent/boxbox:check": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 33915,
+    "cacheWrite": 8485,
+    "output": 2,
+    "calls": 1,
+    "resultTokens": 1566
+   },
+   "subagent/boxbox:guide": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 42400,
+    "cacheWrite": 3186,
+    "output": 383,
+    "calls": 1,
+    "resultTokens": 39
+   },
+   "subagent/other": {
+    "turns": 3,
+    "input": 6,
+    "cacheRead": 143488,
+    "cacheWrite": 7607,
+    "output": 22,
+    "calls": 2,
+    "resultTokens": 4079
+   }
+  },
+  "hooks": {
+   "SessionStart": {
+    "count": 1,
+    "tokens": 91
+   },
+   "Stop": {
+    "count": 2,
+    "tokens": 122
+   }
+  },
+  "report_chars": 1561,
+  "score": {
+   "fixable": 8,
+   "citedStrict": 0,
+   "citedLenient": 7,
+   "recallStrict": 0,
+   "recallLenient": 0.875,
+   "passGroupsCited": 0,
+   "claimedMisaligned": [],
+   "outOfFileCitations": 0
+  }
+ },
+ "run3_A": {
+  "cond": "A",
+  "session": "c0e9eb53-af23-4c3c-a56b-87be504df749",
+  "turns": 3,
+  "cost": 0.6552840000000001,
+  "dur_s": 86,
+  "api_s": 81,
+  "error": false,
+  "models": [
+   "claude-opus-5-5"
+  ],
+  "record_models": [
+   "claude-opus-5-5"
+  ],
+  "subagent_files": 1,
+  "total": {
+   "turns": 6,
+   "input": 12,
+   "cacheRead": 159575,
+   "cacheWrite": 75375,
+   "output": 1922
+  },
+  "subagent": {
+   "turns": 3,
+   "input": 6,
+   "cacheRead": 70896,
+   "cacheWrite": 49033,
+   "output": 113
+  },
+  "byModel": {
+   "claude-opus-5-5:medium": {
+    "turns": 6,
+    "input": 12,
+    "cacheRead": 159575,
+    "cacheWrite": 75375,
+    "output": 1922
+   }
+  },
+  "byCategory": {
+   "other": {
+    "turns": 2,
+    "input": 4,
+    "cacheRead": 57061,
+    "cacheWrite": 17683,
+    "output": 1530,
+    "calls": 1,
+    "resultTokens": 4
+   },
+   "boxbox:inspector": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 31618,
+    "cacheWrite": 8659,
+    "output": 279,
+    "calls": 1,
+    "resultTokens": 1613
+   },
+   "subagent/boxbox:skill": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 0,
+    "cacheWrite": 31223,
+    "output": 90,
+    "calls": 1,
+    "resultTokens": 8
+   },
+   "subagent/boxbox:check": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 31223,
+    "cacheWrite": 8450,
+    "output": 16,
+    "calls": 1,
+    "resultTokens": 1565
+   },
+   "subagent/other": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 39673,
+    "cacheWrite": 9360,
+    "output": 7,
+    "calls": 1,
+    "resultTokens": 3693
+   },
+   "subagent/boxbox:guide": {
+    "turns": 0,
+    "input": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "output": 0,
+    "calls": 1,
+    "resultTokens": 38
+   }
+  },
+  "hooks": {
+   "SessionStart": {
+    "count": 1,
+    "tokens": 91
+   },
+   "Stop": {
+    "count": 2,
+    "tokens": 122
+   }
+  },
+  "report_chars": 1566,
+  "score": {
+   "fixable": 8,
+   "citedStrict": 0,
+   "citedLenient": 8,
+   "recallStrict": 0,
+   "recallLenient": 1,
+   "passGroupsCited": 0,
+   "claimedMisaligned": [],
+   "outOfFileCitations": 0
+  }
+ },
+ "run4_B": {
+  "cond": "B",
+  "session": "a92da897-42d3-4b99-b63d-3ea522459071",
+  "turns": 3,
+  "cost": 0.4839116,
+  "dur_s": 110,
+  "api_s": 104,
+  "error": false,
+  "models": [
+   "claude-opus-5-5",
+   "claude-sonnet-5"
+  ],
+  "record_models": [
+   "claude-opus-5-5",
+   "claude-sonnet-5"
+  ],
+  "subagent_files": 1,
+  "total": {
+   "turns": 8,
+   "input": 16,
+   "cacheRead": 257058,
+   "cacheWrite": 77346,
+   "output": 1939
+  },
+  "subagent": {
+   "turns": 5,
+   "input": 10,
+   "cacheRead": 168386,
+   "cacheWrite": 51904,
+   "output": 395
+  },
+  "byModel": {
+   "claude-opus-5-5:medium": {
+    "turns": 3,
+    "input": 6,
+    "cacheRead": 88672,
+    "cacheWrite": 25442,
+    "output": 1544
+   },
+   "claude-sonnet-5:medium": {
+    "turns": 5,
+    "input": 10,
+    "cacheRead": 168386,
+    "cacheWrite": 51904,
+    "output": 395
+   }
+  },
+  "byCategory": {
+   "other": {
+    "turns": 2,
+    "input": 4,
+    "cacheRead": 57056,
+    "cacheWrite": 16786,
+    "output": 1264,
+    "calls": 1,
+    "resultTokens": 4
+   },
+   "boxbox:inspector": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 31616,
+    "cacheWrite": 8656,
+    "output": 280,
+    "calls": 1,
+    "resultTokens": 1102
+   },
+   "subagent/boxbox:skill": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 0,
+    "cacheWrite": 33911,
+    "output": 2,
+    "calls": 1,
+    "resultTokens": 8
+   },
+   "subagent/boxbox:check": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 33911,
+    "cacheWrite": 8622,
+    "output": 3,
+    "calls": 1,
+    "resultTokens": 1566
+   },
+   "subagent/boxbox:guide": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 42533,
+    "cacheWrite": 3185,
+    "output": 383,
+    "calls": 1,
+    "resultTokens": 39
+   },
+   "subagent/other": {
+    "turns": 2,
+    "input": 4,
+    "cacheRead": 91942,
+    "cacheWrite": 6186,
+    "output": 7,
+    "calls": 1,
+    "resultTokens": 3693
+   }
+  },
+  "hooks": {
+   "SessionStart": {
+    "count": 1,
+    "tokens": 91
+   },
+   "Stop": {
+    "count": 2,
+    "tokens": 122
+   }
+  },
+  "report_chars": 1196,
+  "score": {
+   "fixable": 8,
+   "citedStrict": 0,
+   "citedLenient": 8,
+   "recallStrict": 0,
+   "recallLenient": 1,
+   "passGroupsCited": 0,
+   "claimedMisaligned": [],
+   "outOfFileCitations": 0
+  }
+ },
+ "run5_A": {
+  "cond": "A",
+  "session": "01edf372-2f10-4727-b317-3fe31a750a7a",
+  "turns": 3,
+  "cost": 0.8068917999999999,
+  "dur_s": 144,
+  "api_s": 137,
+  "error": false,
+  "models": [
+   "claude-opus-5-5"
+  ],
+  "record_models": [
+   "claude-opus-5-5"
+  ],
+  "subagent_files": 1,
+  "total": {
+   "turns": 9,
+   "input": 18,
+   "cacheRead": 331544,
+   "cacheWrite": 83100,
+   "output": 2278
+  },
+  "subagent": {
+   "turns": 6,
+   "input": 12,
+   "cacheRead": 242898,
+   "cacheWrite": 55883,
+   "output": 279
+  },
+  "byModel": {
+   "claude-opus-5-5:medium": {
+    "turns": 9,
+    "input": 18,
+    "cacheRead": 331544,
+    "cacheWrite": 83100,
+    "output": 2278
+   }
+  },
+  "byCategory": {
+   "other": {
+    "turns": 2,
+    "input": 4,
+    "cacheRead": 57024,
+    "cacheWrite": 18599,
+    "output": 1693,
+    "calls": 1,
+    "resultTokens": 4
+   },
+   "boxbox:inspector": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 31622,
+    "cacheWrite": 8618,
+    "output": 306,
+    "calls": 1,
+    "resultTokens": 2188
+   },
+   "subagent/boxbox:skill": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 10874,
+    "cacheWrite": 20376,
+    "output": 108,
+    "calls": 1,
+    "resultTokens": 8
+   },
+   "subagent/boxbox:check": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 31250,
+    "cacheWrite": 8468,
+    "output": 16,
+    "calls": 1,
+    "resultTokens": 1603
+   },
+   "subagent/other": {
+    "turns": 4,
+    "input": 8,
+    "cacheRead": 200774,
+    "cacheWrite": 27039,
+    "output": 155,
+    "calls": 4,
+    "resultTokens": 12478
+   },
+   "subagent/boxbox:guide": {
+    "turns": 0,
+    "input": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "output": 0,
+    "calls": 1,
+    "resultTokens": 0
+   }
+  },
+  "hooks": {
+   "SessionStart": {
+    "count": 1,
+    "tokens": 91
+   },
+   "Stop": {
+    "count": 2,
+    "tokens": 122
+   }
+  },
+  "report_chars": 1730,
+  "score": {
+   "fixable": 8,
+   "citedStrict": 0,
+   "citedLenient": 5,
+   "recallStrict": 0,
+   "recallLenient": 0.625,
+   "passGroupsCited": 0,
+   "claimedMisaligned": [],
+   "outOfFileCitations": 0
+  }
+ },
+ "run6_B": {
+  "cond": "B",
+  "session": "3dab4766-c228-4a6f-9232-0bf01ffa6a1b",
+  "turns": 3,
+  "cost": 0.8293453999999999,
+  "dur_s": 306,
+  "api_s": 294,
+  "error": false,
+  "models": [
+   "claude-opus-5-5",
+   "claude-sonnet-5"
+  ],
+  "record_models": [
+   "claude-opus-5-5",
+   "claude-sonnet-5"
+  ],
+  "subagent_files": 1,
+  "total": {
+   "turns": 18,
+   "input": 36,
+   "cacheRead": 948182,
+   "cacheWrite": 94208,
+   "output": 2720
+  },
+  "subagent": {
+   "turns": 15,
+   "input": 30,
+   "cacheRead": 859528,
+   "cacheWrite": 67058,
+   "output": 611
+  },
+  "byModel": {
+   "claude-opus-5-5:medium": {
+    "turns": 3,
+    "input": 6,
+    "cacheRead": 88654,
+    "cacheWrite": 27150,
+    "output": 2109
+   },
+   "claude-sonnet-5:medium": {
+    "turns": 15,
+    "input": 30,
+    "cacheRead": 859528,
+    "cacheWrite": 67058,
+    "output": 611
+   }
+  },
+  "byCategory": {
+   "other": {
+    "turns": 2,
+    "input": 4,
+    "cacheRead": 57034,
+    "cacheWrite": 18520,
+    "output": 1816,
+    "calls": 1,
+    "resultTokens": 4
+   },
+   "boxbox:inspector": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 31620,
+    "cacheWrite": 8630,
+    "output": 293,
+    "calls": 1,
+    "resultTokens": 2059
+   },
+   "subagent/boxbox:skill": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 14266,
+    "cacheWrite": 19658,
+    "output": 95,
+    "calls": 1,
+    "resultTokens": 8
+   },
+   "subagent/boxbox:check": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 33924,
+    "cacheWrite": 8502,
+    "output": 2,
+    "calls": 1,
+    "resultTokens": 1566
+   },
+   "subagent/boxbox:guide": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 42426,
+    "cacheWrite": 3185,
+    "output": 383,
+    "calls": 1,
+    "resultTokens": 39
+   },
+   "subagent/other": {
+    "turns": 11,
+    "input": 22,
+    "cacheRead": 700548,
+    "cacheWrite": 34220,
+    "output": 128,
+    "calls": 10,
+    "resultTokens": 12673
+   },
+   "subagent/boxbox:align": {
+    "turns": 1,
+    "input": 2,
+    "cacheRead": 68364,
+    "cacheWrite": 1493,
+    "output": 3,
+    "calls": 1,
+    "resultTokens": 160
+   }
+  },
+  "hooks": {
+   "SessionStart": {
+    "count": 1,
+    "tokens": 91
+   },
+   "Stop": {
+    "count": 2,
+    "tokens": 122
+   }
+  },
+  "report_chars": 1834,
+  "score": {
+   "fixable": 8,
+   "citedStrict": 0,
+   "citedLenient": 8,
+   "recallStrict": 0,
+   "recallLenient": 1,
+   "passGroupsCited": 0,
+   "claimedMisaligned": [],
+   "outOfFileCitations": 0
+  }
+ }
+}

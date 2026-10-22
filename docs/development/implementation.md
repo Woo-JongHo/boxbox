@@ -1,6 +1,28 @@
 # Current implementation
 
+For a structured entry point and maintenance recipes, start with the [maintainer index](README.md). The [inspection contract](inspection-process.md) distinguishes current check, format and raw engine behavior; the [storage contract](storage.md) records current validation gaps and proposed hardening.
+
 > Snapshot: 2026-10-04 · base commit `8338798` · including the then-uncommitted `development/tools/eval.ts` in the working tree. The 2026-10-07 plugin structure (`plugin/`, lifecycle hooks) is noted where it changes a statement.
+
+> Current-state addendum (2026-10-21): later READINESS1 work added public Check inspection for TypeScript, Python,
+> strict JSON and guarded YAML, with a separate top-level syntax result (`valid`, `invalid` or `error`). The
+> `FileResult.parse` field remains write-gate evidence and is `not-run` in read-only Check. All four adapters enter
+> the common inspection/approval lifecycle, while AST, line-profile and structured-document candidate extraction
+> remain separate. JSON/YAML engine support does not authorize writes: the default public preset still contains only
+> the two existing TypeScript/Python rules, evaluated through the effective layered registry and exposed as
+> `approvalFacts`. YAML uses strict 1.2 core parsing and only aligns runs of at least three adjacent, same-parent,
+> same-indent single-line scalar mappings; directives, markers, complex keys, flow/sequence forms, anchors, aliases,
+> tags, block scalars and multiline/non-scalar values are unsupported.
+>
+> READINESS1 also added complete runtime shape validation for convention, example and decision-reference/receipt
+> records, a versioned TypeScript
+> layout-policy slice, and a nine-family/45-case advisory pattern catalog. Its SQLite index is rebuildable development
+> output under `.boxbox/cache/`; runtime selection and approval continue to use canonical records. All 169
+> engine-internal module specifiers now use the engine-root `@/` alias. Copied-skill TypeScript/JSON/YAML execution,
+> isolated Node bundle resolution, public and installer artifacts, Windows-safe path containment and the final
+> repository check passed with 632 passes, five pre-existing parser-toolchain skips and zero failures. Three
+> pre-existing non-whitespace alignment refusals in the Kotlin, Rust and Swift profiles remain unchanged. GLM final
+> source audit and supplementary closure passed; authenticated native host acceptance remains pending.
 
 This document describes the code that runs today, not the target design. The target state and roadmap follow
 [`design.md`](design.md), and the work order and completion verdicts follow [`plan.md`](plan.md).
@@ -110,18 +132,11 @@ The real engine is [`typescript/align.ts`](../../product/engine/typescript/align
 |---|---|---|---|
 | TypeScript | AST kind registry: declarations, type/interface/class/enum, case, assignment, call, guard, object, registration | bundled TypeScript 7 | [`typescript/06_align-tables.ts`](../../product/engine/typescript/06_align-tables.ts) |
 | Python | annotation/plain assignment, dataclass field, quoted dict row, bundle, assigned call | `python3` | [`python/06_align-tables.ts`](../../product/engine/python/06_align-tables.ts) |
-| Java | field, constant, enum and brace-initializer rows | `javac` | [`java/06_align-tables.ts`](../../product/engine/java/06_align-tables.ts) |
-| Go | declarations, fields, maps etc.; report-only by default | `gofmt` | [`go/06_align-tables.ts`](../../product/engine/go/06_align-tables.ts) |
-| Rust | let/const/field/variant and other profile patterns | `rustfmt` | [`rust/06_align-tables.ts`](../../product/engine/rust/06_align-tables.ts) |
-| JavaScript | declarations, objects and other profile patterns | `node --check` | [`javascript/06_align-tables.ts`](../../product/engine/javascript/06_align-tables.ts) |
-| C | declarations, defines, initializers and other profile patterns | `clang` | [`c/06_align-tables.ts`](../../product/engine/c/06_align-tables.ts) |
-| C++ | declarations, using, initializers and other profile patterns | `clang++` | [`cpp/06_align-tables.ts`](../../product/engine/cpp/06_align-tables.ts) |
-| Swift | typed/plain `let`/`var`, assignment, quoted dictionary row | `swiftc` | [`swift/06_align-tables.ts`](../../product/engine/swift/06_align-tables.ts) |
-| Kotlin | typed/plain `val`/`var`, assignment, quoted map row | `kotlinc` | [`kotlin/06_align-tables.ts`](../../product/engine/kotlin/06_align-tables.ts) |
 
 A line profile is not a language parser. Nested expressions, closures, compound calls, continuations and control statements
 not in the support table are mostly excluded from candidates. The real allowed scope is set by each language's
-[`profile.ts`](../../product/engine/swift/profile.ts) `profile` function and `columnAxes`.
+[`profile.ts`](../../product/engine/python/profile.ts) `profile` function and `columnAxes`. Line-engine profiles for
+Java, Go, Rust, JavaScript, C, C++, Swift and Kotlin were removed on 2026-10-22 to match the four public languages.
 
 Read-only examples:
 
@@ -132,10 +147,6 @@ bun product/engine/typescript/06_align-tables.ts \
 
 bun product/engine/python/06_align-tables.ts \
   --file test/fixtures/python/tables.aligned.py --json
-
-# Go is report-only without --enable-go and always exits 0
-bun product/engine/go/06_align-tables.ts \
-  --file test/fixtures/go/tables.go --json
 
 # the report currently accepts only TypeScript and Python
 bun product/engine/report.ts \
@@ -157,7 +168,6 @@ Exit meanings differ per implementation.
 
 - Shared CLI: 2 without `--file`, 1 for a safe pending edit in check or `parse=changed` in write,
   otherwise 0. It can be 0 with only `REFUSE` and no pending edit.
-- Go: without `--enable-go` it is 0 regardless of pending edits, and `--write` is dropped too.
 - TypeScript: 1 for pending edits in check, compressed members, gate/parse/convergence and argument errors.
   A successful write ends with 0 even if the JSON contains the pre-fix `FIXABLE` groups.
 - Report: 1 if any safety check fails. Alarms alone do not fail.
@@ -188,9 +198,6 @@ The lock only coordinates writers using this helper and does not mean a full ker
 Symlinks in ancestor directories, preserving ACLs and extended attributes, and recovery from power loss were not verified.
 Files are checked and written one by one, so several files are not rolled back as one transaction.
 The [REL2a verification record](reviews/2026-10-04-parser-fail-closed.md) keeps the real runs before and after the change.
-
-Go is report-only by default because a fixed point with gofmt is not proven. `--enable-go --write` is an explicit
-opt-in, and only then do the shared CLI's write and exit codes come alive.
 
 ### Boundaries of other write tools
 
@@ -319,14 +326,18 @@ It places `~/.claude/skills/boxbox` and `~/.claude/agents/readability-inspector.
 `~/.agents/skills/boxbox` for ZCode, `~/.codex/skills/boxbox` and
 `~/.codex/agents/readability-inspector.toml` for Codex, and `$PWD/.pi/skills/boxbox` for Pi.
 
-A `--copy` install contains only the skill folder, so the shipped engine does not depend on the `@/` alias of `tsconfig.json`
-and uses relative imports. The install script only installs dependencies and places the skill and agent; it does not create formatters,
-the project `.boxbox/`, hook settings or an integrated CLI executable.
+A `--copy` install contains the skill folder with a local `tsconfig.json` mapping `@/*` to `engine/*`. It dereferences
+the engine and rules links and copies the exact pinned runtime dependencies plus the installed TypeScript platform
+package after preflight. Matched directory identities, file hashes and link targets protect refresh and uninstall from
+stale markers or user-owned replacements. The install script does not create formatters, the project `.boxbox/`, hook
+settings or an integrated CLI executable.
 
-Dependencies are installed in the source repository, and a copied skill does not include the source `node_modules`.
-So a copy or marketplace install alone cannot be considered to resolve the TypeScript dependency.
+Engine-internal TypeScript imports use `@/`. The rules JSON import in `typescript/layout-policy.ts` stays relative
+because its target is outside `product/engine/`; three `new URL(..., import.meta.url)` runtime paths likewise retain
+file-relative semantics. Copied-skill checks executed TypeScript, JSON and YAML outside repository ancestry.
 The separate `dist/cli` Node package was run outside the repository after npm pack/offline install, with a PATH without Bun.
-This is evidence for local macOS arm64 with a prepared npm cache. Real host acceptance, other OSes and installs without a cache remain.
+The public and installer artifact isolation suites also passed after migration. This remains local macOS arm64 evidence;
+native Windows execution and installs without the prepared dependency inputs remain separate support evidence.
 
 | Data | Current location |
 |---|---|
@@ -425,3 +436,10 @@ When judging current behavior, prefer this document and the running code; when d
 `design.md` and `plan.md`. In particular, "proven safe", "approved rule" and "installed in the host" are different
 claims. Each needs separate evidence: `06`'s gate results, whether the convention lookup actually controls writes, and whether a real host
 accepted the wiring.
+
+## Terminal HUD — removed after 0.2.4
+
+The 0.2.3 and 0.2.4 installers offered an opt-in `--hud` (Claude `statusLine` and a Codex tmux companion). It was
+removed on 2026-10-22 to narrow the product to the engine, plugin and hooks. Its sources stay in git history; the
+[verification record](reviews/2026-10-21-terminal-hud.md) is kept as recorded. Earlier installations disable it with
+their own retained `scripts/hud/setup.mjs --disable` (see the [installer README](../../product/installer/README.md)).

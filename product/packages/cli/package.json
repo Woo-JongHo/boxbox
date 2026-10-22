@@ -2,7 +2,7 @@
 	"name": "boxbox",
 	"version": "@BOXBOX_VERSION@",
 	"private": true,
-	"description": "Development candidate for the BoxBox TypeScript and Python command-line engine",
+	"description": "Development candidate for the BoxBox TypeScript, Python, JSON and YAML command-line engine",
 	"type": "module",
 	"engines": {
 		"node": ">=22.22.3"
@@ -13,6 +13,7 @@
 		"rules/presets/recommended/examples.jsonl",
 		"rules/presets/recommended/decisions.jsonl",
 		"rules/presets/recommended/docs/public",
+		"THIRD_PARTY_NOTICES",
 		"README.md"
 	],
 	"bin": {

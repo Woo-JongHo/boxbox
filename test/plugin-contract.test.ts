@@ -8,7 +8,7 @@ import      { pluginDrift                        } from "../development/tools/sy
 const ROOT                    = resolve(import.meta.dir, "..")                                                               ;
 const read                    = (path: string): string => readFileSync(resolve(ROOT, path), "utf8")                          ;
 const parseJson               = (path: string): Record<string, unknown> => JSON.parse(read(path)) as Record<string, unknown> ;
-const LANGUAGE_DISCOVERY_TEXT = "TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, and Kotlin"                  ;
+const LANGUAGE_DISCOVERY_TEXT = "TypeScript, Python, JSON, and YAML"                                                         ;
 
 describe("plugin distribution contract", () => {
 	test("package, Claude and Codex manifests and both marketplaces share name and version", () => {
@@ -39,7 +39,7 @@ describe("plugin distribution contract", () => {
 		expect(existsSync(resolve(ROOT, "development/codex/readability-inspector.toml"))   )    .toBe(true) ;
 	});
 
-	test("the development skill lists every language; the shipped plugin introduces only the first public scope", () => {
+	test("the development skill and the shipped plugin introduce the same four public languages", () => {
 		for (const description of [String(parseJson("package.json").description), read("development/skills/boxbox/SKILL.md").split("---", 3)[1] ?? ""]) {
 			expect(description).toContain(LANGUAGE_DISCOVERY_TEXT);
 		}
@@ -49,7 +49,7 @@ describe("plugin distribution contract", () => {
 			String((parseJson(".claude-plugin/marketplace.json").plugins as Array<Record<string, unknown>>)[0]!.description),
 			read("plugin/skills/boxbox/SKILL.md").split("---", 3)[1] ?? "",
 		];
-		for (const description of published) expect(description).toContain("TypeScript and Python");
+		for (const description of published) for (const language of ["TypeScript", "Python", "JSON", "YAML"]) expect(description).toContain(language);
 	});
 
 	test("the plugin folder does not drift from the single source", () => {

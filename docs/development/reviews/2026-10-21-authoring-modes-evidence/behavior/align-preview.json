@@ -1,0 +1,15 @@
+{
+  "cwd": "/tmp/boxbox-mode-behavior-m7RwTv/align",
+  "command": [
+    "bun",
+    "/tmp/boxbox-mode-behavior-m7RwTv/cli.ts",
+    "align",
+    "--file",
+    "settings.py",
+    "--dry-run",
+    "--json"
+  ],
+  "code": 0,
+  "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"align\",\"ok\":true,\"dryRun\":true,\"formatEligible\":true,\"file\":\"settings.py\",\"formatterChanged\":false,\"boxboxChanged\":true,\"fixedPoint\":true,\"written\":false,\"formatter\":null,\"formatterExecuted\":false,\"formatMode\":\"standalone\",\"approvals\":[\"py-simple-assignments\"],\"alignmentEdits\":[{\"line\":1,\"before\":\"retry = 3\",\"after\":\"retry           = 3\"},{\"line\":3,\"before\":\"batch_size = 100\",\"after\":\"batch_size      = 100\"}],\"safety\":{\"atomic\":true,\"approvalChecked\":true,\"parserChecked\":true,\"executableStable\":null},\"mode\":\"align\",\"horizontalWhitespaceOnly\":true}\n",
+  "stderr": ""
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "archive": "local",
+    "hostEngineArchivesIdentical": true,
+    "innerSha256": "a727612311a744773e8e01c35e53fc486b4e5237da32571ba37645c671b5e87b"
+  },
+  {
+    "archive": "ci",
+    "hostEngineArchivesIdentical": true,
+    "innerSha256": "b1c385587ec427ef517277b48df3ffb107e7daca377e5ffb1a9b93115890cf07"
+  }
+]

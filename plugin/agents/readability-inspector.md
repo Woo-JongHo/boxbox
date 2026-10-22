@@ -2,6 +2,7 @@
 name: readability-inspector
 description: Dedicated read-only inspector for the boxbox skill. Investigates one TypeScript or Python file against the tabular readability rules. Delegate only while the boxbox skill is in progress and the next candidate file needs inspection. Do not use for general code review or file edit requests.
 disallowedTools: Write, Edit, NotebookEdit, Agent, ExitPlanMode
+model: sonnet
 effort: medium
 ---
 

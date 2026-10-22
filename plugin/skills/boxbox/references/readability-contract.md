@@ -32,6 +32,38 @@ Therefore the longest code is not always the alignment basis. First decide wheth
 - **Sub-table**: an inner grid re-decomposed into name, separator and type when a repeated structure such as `:` appears again inside a cell.
 - **Alignment policy**: align contiguous repeated blocks of three or more comparable rows at minimum width. User-confirmed exceptions: `=` declaration tables and imports align from two rows. Other two-row groups are reported as pairs and never fixed automatically. Methods of a public Port split by JSDoc or different lifecycle responsibilities are not merged into one table. Preserve the `import`, `:`, `=>` and `case` axes of a reference file accepted by the user. The inner width of `( )` in a repeated function table is set by the actual longest argument, not by existing spaces; only short values are centered within that minimum width.
 
+## Column-sharing regions
+
+The matrix is defined by comparable syntax boundaries, not by whole-line length. A condition and a callee can have
+different widths while their corresponding `return` or call parentheses share a column. Scope the comparison first,
+then compute minimum widths from the cells in that region. A different expression is not automatically a different role.
+
+- **Early-return guards:** treat the start of `return` in `if (condition) return value;` as the `guard-return` gap axis.
+  In one immediate block, three or more supported guards can share that column across ordinary statements, including
+  declarations and loops, and blank lines. Preserve every statement in place. Only immediate sibling guards contribute
+  to the column width; a nested block owns its own widths. Comments between statements, unsupported guards (including
+  `else`), unconditional return/throw/break/continue and function/class declarations separate regions. A trailing
+  comment also separates that statement from the next guard region. The final
+  unconditional return is a different role.
+- **Different callees:** consecutive supported call-valued declarations can share their outer `(` and `)` columns even
+  when callee names or arities differ. The argument list is one cell in this outer table; compatible same-call rows can
+  additionally share inner argument columns. A trailing non-null assertion stays attached after `)`. Empty `()` stays
+  attached and unsupported wrappers keep their own shape. `declaration-call-envelope` has the declaration two-row floor.
+- **Member-call boundary:** split a supported property callee into `receiver | . | method`, then its call parentheses.
+  `call-member-dot` aligns the final receiver/method separator when at least two rows have that role. For example,
+  `Array.from` and `rows.filter` share the dot column as well as the parentheses. In `registry.rows.filter`, the receiver
+  is `registry.rows`; its inner dot remains inside that cell. A bare function has no member-dot cell. Decimal points,
+  string contents, optional chains and dots inside arguments are different syntax and are not matched to this axis.
+- **Exceptional type shapes:** in an authorized Refactor, keep ordinary interface properties in a compact table and
+  put nested object type members in their own paragraphs, below the ordinary fields when the type contract permits it.
+  Expand their nested properties into independent tables. Preserve names, readonly/optional modifiers and member types.
+  Runtime declarations and object initializers retain their evaluation order; separate a dependent exceptional expression
+  in place instead of moving it below its consumers. A new type alias needs a domain reason beyond shortening a column.
+
+The return-guard region is an explicit exception to contiguous-row grouping. Other kinds keep their existing grouping
+rules. These authoring choices and engine detection do not create public write approval: new group/axis lookup keys
+still require their own proof. Report checked columns and unsupported regions separately.
+
 ## Confirmed rules
 
 1. Modify only one product file at a time.
@@ -108,20 +140,25 @@ Code is written **from the moment of authoring** with the axis columns below alr
 
 - **Gap axis** — leave at least one space before the token. Within a table, pad with spaces up to the actual longest value to align the column.
 - **Insert axis** — preserve existing TypeScript conventions. Do not pry apart attached tokens (`)`, `):`, `":`); padding goes outside.
-- A table exists only for three or more contiguous same-role rows. Blank lines, comments and JSDoc break a table. Conditional-type `:`, `for` header `;`, empty statements and one-line execution blocks are not alignment targets.
+- A table normally needs three or more contiguous same-role rows, with the documented declaration/import pair exceptions.
+  The scoped return-guard exception is defined in [column-sharing regions](#column-sharing-regions). Other kinds still
+  stop at blank lines, comments and JSDoc. Conditional-type `:`, `for` header `;`, empty statements and unsupported one-line
+  execution blocks are not alignment targets.
 - Axis names use the checker registry identifiers verbatim: `colon` (`:` after a name), `equals` (`=`), `semicolon` (`;`), `comma` (`,`), `comment` (trailing `//`), `open-paren` (`(`), `close-paren` (`)`), `case-colon` (case label `:`), `call-paren` (first call `(` in a case row), `subject-close-paren` (call-statement subject `)`), `matcher-dot` (right-hand matcher `.`), `matcher-open-paren` / `matcher-close-paren` (matcher argument cell), `return-tail` (start of a bare `return;`), `value` (expression start), `open-brace` / `close-brace` (object row `{ }`).
 
 | Kind | Gap axes | Insert axes |
 |---|---|---|
 | declaration | `:` , `;` | `//` |
 | declaration-equals (declaration table with `=`) | `:` , `=` , `;` | `//` |
+| declaration-call-envelope | `colon`, `equals`, `semicolon` | `call-member-dot`, `call-envelope-open`, `call-envelope-close`, `comment` |
+| return-guards | `guard-return` | — |
 | type-alias | `=` , `;` | `//` |
 | method-signature · class-method | — | `(` , `)` , return `:` , `//` |
 | interface-members · class-members · type-members (`type X = { ... }`) | `:` , `=` , `;` | `//` |
 | enum-member | `=` , `,` | `//` |
 | case-clause | — | case `:` |
 | object-rows (`{i}` per property position) | property start `{i}` , `:{i}` , `value{i}` start , `,{i}` , `}` | `{` , tail `tail` (`,` `;` `)` `as const`) |
-| registration | `:` , expression start | — |
+| registration | `:` , expression start , trailing `,` | — |
 | assignments (`this.x = y;` assignment table) | `=` , `;` | `//` |
 | call-statements (`expect(…).toBe(…);` call-statement table) | `;` | subject `)` , matcher `.` , matcher `(` , matcher `)` , `//` |
 
@@ -165,6 +202,34 @@ Two-point lock:
 
 1. **Authoring time (prompt)** — when an LLM or a person writes code, they write it in the form of the table and examples above. Agent definitions use SKILL.md as their manual, so this section is the prompt.
 2. **Completion time (check)** — every changed file passes `00_normalize-imports.ts` (check mode) and `06_align-tables.ts --file` (misaligned=0). If you want a form that cannot pass both checks, change this contract first.
+
+## Grid-first authoring
+
+Alignment normalizes rows that already share a structure. When you write new code, design the structure first: before
+writing a group of three or more same-role values, name the column set they share, then write each value as one row of
+that set. Do not write them in whatever shape is convenient and hope the aligner can pair them afterwards. This is
+advisory structural guidance, not approval data: it never authorizes an automatic write, and Align stays whitespace-only.
+
+| Situation | Row form that keeps the columns shared |
+|---|---|
+| Several values read from one source (options, config, request fields) | One reader family with one argument shape, defaults passed explicitly: `name = readX(source, "key", default)`. A value with a different role (`write = flag && !other`) is derived on its own line after a blank line. |
+| An object literal with several fields | One field per row: `key : value ,`. Do not leave the whole object on one long line. |
+| The same operation over several lists | One row per list: `name = list .map(item => transform(item))`. Move the part that differs into a named transform so the rows keep one shape. |
+| A branch that picks between two implementations | Pick the function in one row (`const run = flag ? a : b;`) and let both return the same record, so the code after it is the same rows for either path. |
+| A report assembled from parts | `[name, value]` pairs or one row per section, joined once. |
+| Per-item results folded into totals | One row per fold over the same list: `runs.map(…)`, `runs.flatMap(…)`, `runs.some(…)`. |
+
+Limits — these keep grid-first from becoming padding by other means:
+
+1. A row must carry data the code needs. Do not add wrappers, parameters or helpers whose only job is to fill a column, and
+   do not merge roles that merely look alike (see the reuse rule above).
+2. A different role is a different region: derived values, guards, early returns and control flow stay outside the table.
+   Wrap a side-effecting callback in a function that returns its result so its call site reads as a row.
+3. Preserve behavior: execution order, when errors surface, and output bytes. Verify a rewrite of existing code by comparing
+   the old and new versions on the same inputs, not only by running the existing tests.
+4. Hot paths: `.map` chains and tuple arrays allocate. Use them freely for configuration, reporting, CLI glue, test data and
+   pipelines that run once per item of work; measure before using them in code that runs millions of times.
+5. Report what the grid cannot hold. A row or a region that cannot share the columns is a visible exception, not a failure.
 
 ## Discarded rules
 

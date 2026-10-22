@@ -1,0 +1,12 @@
+[
+  {
+    "id": "boxbox@boxbox-plugins",
+    "version": "0.2.3",
+    "scope": "user",
+    "enabled": true,
+    "installPath": "/tmp/boxbox-readiness/rel10-ci-macos-claude/workspace-DcMEbC/profile/claude/plugins/cache/boxbox-plugins/boxbox/0.2.3",
+    "installedAt": "2026-10-21T17:50:42.213Z",
+    "lastUpdated": "2026-10-21T17:50:42.213Z",
+    "projectEnabled": false
+  }
+]

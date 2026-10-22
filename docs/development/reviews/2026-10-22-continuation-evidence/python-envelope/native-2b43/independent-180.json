@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "sourceSHA256": "bcaa36507954fe1d1933c5e44dbb939bc7540f63377b985c4d38575cb8aa802b",
+  "domains": {
+    "unit_price": [
+      0,
+      1,
+      7,
+      25,
+      100
+    ],
+    "quantity": [
+      0,
+      1,
+      4,
+      7
+    ],
+    "discount": [
+      0,
+      7,
+      100
+    ],
+    "shipping": [
+      0,
+      2,
+      11
+    ]
+  },
+  "cases": 180,
+  "allMatchReference": true,
+  "function": "quote",
+  "arguments": [
+    "unit_price",
+    "quantity",
+    "discount",
+    "shipping"
+  ],
+  "body": [
+    "Assign",
+    "Assign",
+    "Assign",
+    "Return"
+  ]
+}

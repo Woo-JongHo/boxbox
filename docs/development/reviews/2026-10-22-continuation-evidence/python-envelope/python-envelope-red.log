@@ -1,0 +1,22 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/python-assignment-envelope.test.ts:
+24 | 
+25 | describe("Python assignment envelopes", () => {
+26 | 	test("the real subtotal, discount and shipping calculation shares outer assignment columns", () => {
+27 | 		const result = align(SOURCE);
+28 | 
+29 | 		expect(result.tables).toBe(1);
+                             ^
+error: expect(received).toBe(expected)
+
+Expected: 1
+Received: 0
+
+      at <anonymous> (/Users/jonghoPro/woo/00_project/98_BoxBox/test/python-assignment-envelope.test.ts:29:25)
+(fail) Python assignment envelopes > the real subtotal, discount and shipping calculation shares outer assignment columns [22.27ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [104.00ms]

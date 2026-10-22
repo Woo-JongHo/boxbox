@@ -1,0 +1,16 @@
+doctor=0
+python-approved-align-apply=0
+python-approved-align-preview=0
+python-approved-align-second=0
+python-approved-check-after=0
+python-approved-check-before=1
+typescript-approved-align-apply=0
+typescript-approved-align-preview=0
+typescript-approved-align-second=0
+typescript-approved-check-after=0
+typescript-approved-check-before=1
+unknown-align-apply=2
+unknown-align-preview=2
+unknown-check-final=1
+unknown-check=1
+unknown-guide=1

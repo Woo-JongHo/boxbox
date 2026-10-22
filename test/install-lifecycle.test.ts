@@ -73,8 +73,8 @@ describe("install.sh lifecycle", () => {
 	});
 
 	test("never overwrites a regular file owned by the user", () => {
-		const home   = temporaryHome()                    ;
-		const target = join(home, ".codex/skills/boxbox") ;
+		const home   = temporaryHome()                             ;
+		const target = join         (home, ".codex/skills/boxbox") ;
 		mkdirSync(target, { recursive: true });
 		writeFileSync(join(target, "owner.txt"), "keep\n");
 

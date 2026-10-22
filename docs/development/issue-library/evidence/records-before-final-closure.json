@@ -1,0 +1,941 @@
+{
+  "BBX-20261021-001-return-column.json": {
+    "$schema": "../issue.schema.json",
+    "schemaVersion": 1,
+    "id": "BBX-20261021-001",
+    "title": "Early-return boundary was interpreted as a paragraph break",
+    "category": "grouping",
+    "tags": [
+      "typescript",
+      "return",
+      "guard-return",
+      "paragraph",
+      "noncontiguous-region"
+    ],
+    "status": "verifying",
+    "symptom": "The user requested a shared return column in subscriptPartsOf, subjectCall and callLayer; the preceding correction inserted blank lines instead.",
+    "rootCause": {
+      "confidence": "confirmed",
+      "summary": "The author interpreted boundary as paragraph separation. The existing contiguous grouping and guard-statements detector did not model unbraced early returns across intervening statements."
+    },
+    "requestedOutcome": "Align sibling one-line guard return tokens in one immediate block, preserving execution order and independently sizing nested blocks.",
+    "decisions": [
+      "Treat a column-sharing region separately from a contiguous paragraph.",
+      "Use a distinct return-guards kind with a three-row minimum; barriers and nested scope remain explicit.",
+      "Local user-directed layout changes do not create public preset approval."
+    ],
+    "actions": [
+      {
+        "description": "Add guard-return detection and scoped regions with positive and negative regression cases.",
+        "status": "done"
+      },
+      {
+        "description": "Apply the engine proposals to the actual reported helper functions.",
+        "status": "done"
+      },
+      {
+        "description": "Complete the final integrated review after all boundary follow-ups.",
+        "status": "pending"
+      }
+    ],
+    "verification": [
+      {
+        "name": "Repository suite before member-dot follow-up",
+        "status": "passed",
+        "scope": "Return guards, call envelopes and Example layout before the subsequent dot-axis edits",
+        "evidence": [
+          "docs/development/issue-library/evidence/pre-dot-check.txt"
+        ],
+        "result": "565 passed, 5 existing parser-dependent skips, 0 failed; this snapshot does not verify later edits."
+      },
+      {
+        "name": "Final integrated review",
+        "status": "pending",
+        "scope": "Current source after the member-dot follow-up",
+        "evidence": [],
+        "result": "Final current-source checks and independent Sonnet/GLM reviews have not been recorded in this issue snapshot."
+      }
+    ],
+    "related": [
+      {
+        "kind": "code",
+        "path": "product/engine/typescript/grid-kinds.ts",
+        "note": "Return-guard detection and region construction."
+      },
+      {
+        "kind": "test",
+        "path": "test/typescript-matrix-boundaries.test.ts",
+        "note": "Guard alignment across statements, loops and scope barriers."
+      },
+      {
+        "kind": "contract",
+        "path": "product/rules/references/readability-contract.md",
+        "note": "Column-sharing regions."
+      },
+      {
+        "kind": "review",
+        "path": "docs/development/reviews/2026-10-21-self-use-boundaries.md",
+        "note": "Retains the earlier paragraph interpretation and its limited checks."
+      },
+      {
+        "kind": "review",
+        "path": "docs/development/reviews/2026-10-21-matrix-columns.md",
+        "note": "Corrected matrix implementation and scope."
+      }
+    ],
+    "history": [
+      {
+        "sequence": 1,
+        "date": "2026-10-21",
+        "event": "reported",
+        "summary": "User clarified that the return tokens themselves must share a column.",
+        "evidence": []
+      },
+      {
+        "sequence": 2,
+        "date": "2026-10-21",
+        "event": "diagnosed",
+        "summary": "Paragraph-only changes did not implement the requested axis.",
+        "evidence": [
+          "docs/development/reviews/2026-10-21-self-use-boundaries.md"
+        ]
+      },
+      {
+        "sequence": 3,
+        "date": "2026-10-21",
+        "event": "implemented",
+        "summary": "Added same-block guard regions and applied them to the reported functions.",
+        "evidence": [
+          "docs/development/reviews/2026-10-21-matrix-columns.md"
+        ]
+      },
+      {
+        "sequence": 4,
+        "date": "2026-10-21",
+        "event": "verified",
+        "summary": "Pre-dot suite passed; final integrated audit remains pending.",
+        "evidence": [
+          "docs/development/issue-library/evidence/pre-dot-check.txt"
+        ]
+      }
+    ]
+  },
+  "BBX-20261021-002-call-envelope.json": {
+    "$schema": "../issue.schema.json",
+    "schemaVersion": 1,
+    "id": "BBX-20261021-002",
+    "title": "Different callees did not share call parentheses",
+    "category": "syntax-boundary",
+    "tags": [
+      "typescript",
+      "call",
+      "parentheses",
+      "call-envelope",
+      "non-null",
+      "arity"
+    ],
+    "status": "verifying",
+    "symptom": "decision and document declarations aligned equals signs but registry.decisions.get and resolveDocument did not share opening and closing call columns.",
+    "rootCause": {
+      "confidence": "confirmed",
+      "summary": "The original inner-call layer required identical callee signatures and arity. Heterogeneous calls therefore lacked a shared outer-call envelope."
+    },
+    "requestedOutcome": "Share outer parentheses for compatible call-valued declarations while retaining opaque argument lists and trailing non-null assertions.",
+    "decisions": [
+      "Introduce declaration-call-envelope with a two-row minimum and a distinct lookup key.",
+      "Preserve legacy compatible direct-call keys; keep heterogeneous argument lists opaque.",
+      "Retain compact empty calls and exclude unsupported optional, computed, generic or comment-bearing boundaries."
+    ],
+    "actions": [
+      {
+        "description": "Add envelope axes, preservation and fixed-point regression cases.",
+        "status": "done"
+      },
+      {
+        "description": "Apply the decision/document example in authoring-guide.ts.",
+        "status": "done"
+      },
+      {
+        "description": "Recheck interaction with the subsequent member-dot axis.",
+        "status": "pending"
+      }
+    ],
+    "verification": [
+      {
+        "name": "Repository suite before member-dot follow-up",
+        "status": "passed",
+        "scope": "Return guards, call envelopes and Example layout before the subsequent dot-axis edits",
+        "evidence": [
+          "docs/development/issue-library/evidence/pre-dot-check.txt"
+        ],
+        "result": "565 passed, 5 existing parser-dependent skips, 0 failed; this snapshot does not verify later edits."
+      },
+      {
+        "name": "Final integrated review",
+        "status": "pending",
+        "scope": "Current source after the member-dot follow-up",
+        "evidence": [],
+        "result": "Final current-source checks and independent Sonnet/GLM reviews have not been recorded in this issue snapshot."
+      }
+    ],
+    "related": [
+      {
+        "kind": "code",
+        "path": "product/engine/typescript/grid-kinds.ts",
+        "note": "Call envelope and declaration grouping."
+      },
+      {
+        "kind": "code",
+        "path": "product/engine/common/authoring-guide.ts",
+        "note": "Actual decision/document pair."
+      },
+      {
+        "kind": "test",
+        "path": "test/typescript-matrix-boundaries.test.ts",
+        "note": "Different arities, suffixes, exclusions and legacy key preservation."
+      },
+      {
+        "kind": "review",
+        "path": "docs/development/reviews/2026-10-21-matrix-columns.md",
+        "note": "Outer-call implementation evidence."
+      },
+      {
+        "kind": "issue",
+        "path": "docs/development/issue-library/records/BBX-20261021-004-member-dot.json",
+        "note": "The next correction adds the member-access boundary inside the callee."
+      }
+    ],
+    "history": [
+      {
+        "sequence": 1,
+        "date": "2026-10-21",
+        "event": "reported",
+        "summary": "User supplied decision/document as a shared-call-column example.",
+        "evidence": []
+      },
+      {
+        "sequence": 2,
+        "date": "2026-10-21",
+        "event": "diagnosed",
+        "summary": "Signature-based inner layers did not provide a heterogeneous outer envelope.",
+        "evidence": []
+      },
+      {
+        "sequence": 3,
+        "date": "2026-10-21",
+        "event": "implemented",
+        "summary": "Added the envelope kind and updated the actual example.",
+        "evidence": [
+          "docs/development/reviews/2026-10-21-matrix-columns.md"
+        ]
+      },
+      {
+        "sequence": 4,
+        "date": "2026-10-21",
+        "event": "verified",
+        "summary": "Pre-dot suite passed; dot-axis integration requires a later verification entry.",
+        "evidence": [
+          "docs/development/issue-library/evidence/pre-dot-check.txt"
+        ]
+      }
+    ]
+  },
+  "BBX-20261021-003-nested-type-layout.json": {
+    "$schema": "../issue.schema.json",
+    "schemaVersion": 1,
+    "id": "BBX-20261021-003",
+    "title": "Inline nested interface types stretched the entire table",
+    "category": "structural-layout",
+    "tags": [
+      "typescript",
+      "interface",
+      "nested-type",
+      "Example",
+      "width",
+      "type-only"
+    ],
+    "status": "verifying",
+    "symptom": "Example.asserts and Example.source forced large padding on otherwise short interface members.",
+    "rootCause": {
+      "confidence": "confirmed",
+      "summary": "The table shared an end column with long inline object types. A mechanically aligned table can still have poor structural readability."
+    },
+    "requestedOutcome": "Keep ordinary members compact and place exceptional nested type members below them in independent tables without changing field contracts.",
+    "decisions": [
+      "Move only the explicitly requested type-only members; preserve names, types and optional/readonly modifiers.",
+      "Expand nested members rather than adding aliases solely to shorten a row.",
+      "Preserve runtime evaluation order elsewhere; the deterministic aligner does not relocate members."
+    ],
+    "actions": [
+      {
+        "description": "Move asserts and source below the ordinary Example fields and expand their member tables.",
+        "status": "done"
+      },
+      {
+        "description": "Measure display width and compare emitted JavaScript.",
+        "status": "done"
+      },
+      {
+        "description": "Complete independent review of the final combined changes.",
+        "status": "pending"
+      }
+    ],
+    "verification": [
+      {
+        "name": "Scoped layout and behavior checks",
+        "status": "passed",
+        "scope": "Example interface edit only",
+        "evidence": [
+          "docs/development/issue-library/evidence/example-layout-report.md"
+        ],
+        "result": "Width 168 to 71 columns at tab width 4; 22 scoped tests passed; typecheck passed; emitted JavaScript identical. The two-field asserts table remains below the detector floor."
+      },
+      {
+        "name": "Repository suite before member-dot follow-up",
+        "status": "passed",
+        "scope": "Return guards, call envelopes and Example layout before the subsequent dot-axis edits",
+        "evidence": [
+          "docs/development/issue-library/evidence/pre-dot-check.txt"
+        ],
+        "result": "565 passed, 5 existing parser-dependent skips, 0 failed; this snapshot does not verify later edits."
+      },
+      {
+        "name": "Final integrated review",
+        "status": "pending",
+        "scope": "Current source after the member-dot follow-up",
+        "evidence": [],
+        "result": "Final current-source checks and independent Sonnet/GLM reviews have not been recorded in this issue snapshot."
+      }
+    ],
+    "related": [
+      {
+        "kind": "code",
+        "path": "product/engine/common/examples.ts",
+        "note": "Example interface."
+      },
+      {
+        "kind": "contract",
+        "path": "product/rules/references/readability-contract.md",
+        "note": "Exceptional type-only member layout and execution-order limits."
+      },
+      {
+        "kind": "review",
+        "path": "docs/development/reviews/2026-10-21-matrix-columns.md",
+        "note": "Integrated scope."
+      },
+      {
+        "kind": "evidence",
+        "path": "docs/development/issue-library/evidence/example-layout-report.md",
+        "note": "Recorded worker report; underlying scratch artifacts remain identified there."
+      }
+    ],
+    "history": [
+      {
+        "sequence": 1,
+        "date": "2026-10-21",
+        "event": "reported",
+        "summary": "User suggested placing exceptional nested types below the normal fields.",
+        "evidence": []
+      },
+      {
+        "sequence": 2,
+        "date": "2026-10-21",
+        "event": "implemented",
+        "summary": "Separated the two nested type members while preserving the public field contract.",
+        "evidence": [
+          "docs/development/reviews/2026-10-21-matrix-columns.md"
+        ]
+      },
+      {
+        "sequence": 3,
+        "date": "2026-10-21",
+        "event": "verified",
+        "summary": "Scoped checks passed with an explicit two-row detector coverage limit.",
+        "evidence": [
+          "docs/development/issue-library/evidence/example-layout-report.md"
+        ]
+      }
+    ]
+  },
+  "BBX-20261021-004-member-dot.json": {
+    "$schema": "../issue.schema.json",
+    "schemaVersion": 1,
+    "id": "BBX-20261021-004",
+    "title": "Member-access dot was missing from the shared columns",
+    "category": "syntax-boundary",
+    "tags": [
+      "typescript",
+      "member-access",
+      "dot",
+      "call-member-dot",
+      "Array.from",
+      "rows.filter"
+    ],
+    "status": "verifying",
+    "symptom": "Array.from and rows.filter could receive call-parenthesis alignment while their member-access dots stayed in different columns.",
+    "rootCause": {
+      "confidence": "confirmed",
+      "summary": "The first call-envelope implementation treated the complete callee as one opaque cell. It declared opening and closing parentheses but no member-access dot axis."
+    },
+    "requestedOutcome": "For supported member calls, expose the terminal member-access dot as a shared boundary, as in Array.from and rows .filter, and explain unsupported cases in the skill contract.",
+    "decisions": [
+      "A callee can contain meaningful syntax boundaries before its outer parentheses.",
+      "Scope the initial dot rule to supported terminal member access; optional/computed chains and comments need explicit exclusions.",
+      "Record unsupported coverage separately from a passing checker result."
+    ],
+    "actions": [
+      {
+        "description": "Add call-member-dot detection and regression tests.",
+        "status": "done"
+      },
+      {
+        "description": "Strengthen the skill and reference contract with a boundary inventory and coverage reporting.",
+        "status": "done"
+      },
+      {
+        "description": "Run final current-source, packaged-host and independent review checks.",
+        "status": "pending"
+      }
+    ],
+    "verification": [
+      {
+        "name": "Initial dot delta review and integrated contract test",
+        "status": "failed",
+        "scope": "Dot implementation before axis-note registration and skill reconciliation corrections",
+        "evidence": [
+          "docs/development/issue-library/evidence/sonnet-dot-blocked.md",
+          "docs/development/issue-library/evidence/check-before-audit-corrections.log"
+        ],
+        "result": "Independent review was BLOCKED and the integrated axis-note test failed. Corrections are implemented; final correction verification remains pending."
+      },
+      {
+        "name": "Member-dot reproduction and targeted TypeScript tests",
+        "status": "passed",
+        "scope": "Dot-axis implementation and the two targeted TypeScript suites",
+        "evidence": [
+          "docs/development/issue-library/evidence/dot-red.log",
+          "docs/development/issue-library/evidence/dot-targeted.log"
+        ],
+        "result": "The reproduction failed before the fix. After implementation, 38 tests passed, 0 failed, with 175 assertions. Full repository, installed-host and final delta audits remain pending."
+      },
+      {
+        "name": "Dot-boundary final verification",
+        "status": "pending",
+        "scope": "Member-dot implementation, regression tests and skill changes",
+        "evidence": [],
+        "result": "The implementation and targeted tests are complete; full repository, installed-host and independent delta reviews remain pending."
+      },
+      {
+        "name": "Previous suite applicability",
+        "status": "not-run",
+        "scope": "Dot-axis changes",
+        "evidence": [
+          "docs/development/issue-library/evidence/pre-dot-check.txt"
+        ],
+        "result": "The 565-pass snapshot predates this correction and is not evidence for it."
+      },
+      {
+        "name": "Final integrated review",
+        "status": "pending",
+        "scope": "Current source after the member-dot follow-up",
+        "evidence": [],
+        "result": "Final current-source checks and independent Sonnet/GLM reviews have not been recorded in this issue snapshot."
+      }
+    ],
+    "related": [
+      {
+        "kind": "code",
+        "path": "product/engine/typescript/grid-kinds.ts",
+        "note": "Call envelope boundary inventory."
+      },
+      {
+        "kind": "test",
+        "path": "test/typescript-matrix-boundaries.test.ts",
+        "note": "Member-dot regression cases and supported boundary shapes."
+      },
+      {
+        "kind": "contract",
+        "path": "product/plugin/skills/boxbox/SKILL.md",
+        "note": "Canonical agent workflow being strengthened."
+      },
+      {
+        "kind": "contract",
+        "path": "product/rules/references/readability-contract.md",
+        "note": "Syntax-column coverage contract."
+      },
+      {
+        "kind": "issue",
+        "path": "docs/development/issue-library/records/BBX-20261021-002-call-envelope.json",
+        "note": "Earlier envelope change that exposed this missing boundary."
+      }
+    ],
+    "history": [
+      {
+        "sequence": 1,
+        "date": "2026-10-21",
+        "event": "reported",
+        "summary": "User clarified that the dot in Array.from and rows.filter must itself be a column boundary.",
+        "evidence": []
+      },
+      {
+        "sequence": 2,
+        "date": "2026-10-21",
+        "event": "diagnosed",
+        "summary": "The call envelope modeled parentheses but left the callee opaque.",
+        "evidence": []
+      },
+      {
+        "sequence": 3,
+        "date": "2026-10-21",
+        "event": "decision",
+        "summary": "Extend the boundary model and skill together; retain pending status until current evidence is recorded.",
+        "evidence": []
+      },
+      {
+        "sequence": 4,
+        "date": "2026-10-21",
+        "event": "implemented",
+        "summary": "Added terminal member-dot support and strengthened the skill boundary inventory and coverage reconciliation.",
+        "evidence": [
+          "product/engine/typescript/grid-kinds.ts",
+          "product/plugin/skills/boxbox/SKILL.md"
+        ]
+      },
+      {
+        "sequence": 5,
+        "date": "2026-10-21",
+        "event": "verified",
+        "summary": "Reproduction failed before the fix; targeted TypeScript suites then passed 38 tests with 175 assertions.",
+        "evidence": [
+          "docs/development/issue-library/evidence/dot-red.log",
+          "docs/development/issue-library/evidence/dot-targeted.log"
+        ]
+      },
+      {
+        "sequence": 6,
+        "date": "2026-10-21",
+        "event": "verification-failed",
+        "summary": "FAILED ATTEMPT: Independent delta review found a missing call-member-dot AXIS_NOTES entry; the integrated suite failed the axis-note contract test.",
+        "evidence": [
+          "docs/development/issue-library/evidence/sonnet-dot-blocked.md",
+          "docs/development/issue-library/evidence/check-before-audit-corrections.log"
+        ],
+        "status": "failed"
+      },
+      {
+        "sequence": 7,
+        "date": "2026-10-21",
+        "event": "implemented",
+        "summary": "Added the axis note, moved reconciliation to the final post-Align check including skipped or unsupported axes, and limited issue-history writing to explicit user/project requirements. Final correction and audit evidence will be appended separately.",
+        "evidence": [
+          "product/engine/typescript/grid-kinds.ts",
+          "product/plugin/skills/boxbox/SKILL.md"
+        ]
+      }
+    ]
+  },
+  "BBX-20261021-005-coverage-vs-pass.json": {
+    "$schema": "../issue.schema.json",
+    "schemaVersion": 1,
+    "id": "BBX-20261021-005",
+    "title": "Checker PASS was confused with requested-boundary coverage",
+    "category": "verification-gap",
+    "tags": [
+      "coverage",
+      "check",
+      "hook",
+      "pass",
+      "approval",
+      "manual-measurement"
+    ],
+    "status": "verifying",
+    "symptom": "A checker could report zero misaligned groups even though the requested return/dot columns or the readability of a wide nested type had not been checked.",
+    "rootCause": {
+      "confidence": "confirmed",
+      "summary": "Check reports recognized groups and their alignment. Unrecognized shapes, below-floor groups and structural readability were not represented as completion gaps in the authoring workflow."
+    },
+    "requestedOutcome": "Report requested boundaries, supported groups, unsupported cases and independent evidence separately; completion must account for each requested boundary.",
+    "decisions": [
+      "Interpret zero detected misalignments only within the detector coverage of that exact engine version.",
+      "Separate functional tests, syntax checks, boundary measurements and automatic-write approval.",
+      "Treat installed-host and current-source results as distinct evidence when versions differ.",
+      "A local layout request is not a reusable public preset approval."
+    ],
+    "actions": [
+      {
+        "description": "Preserve earlier PASS and failure evidence with their original scope.",
+        "status": "done"
+      },
+      {
+        "description": "Require a requested-boundary inventory in the skill workflow.",
+        "status": "done"
+      },
+      {
+        "description": "Verify the strengthened workflow against the current return, call, dot and interface examples.",
+        "status": "pending"
+      }
+    ],
+    "verification": [
+      {
+        "name": "Final integrated review",
+        "status": "pending",
+        "scope": "Current source after the member-dot follow-up",
+        "evidence": [],
+        "result": "Final current-source checks and independent Sonnet/GLM reviews have not been recorded in this issue snapshot."
+      }
+    ],
+    "related": [
+      {
+        "kind": "contract",
+        "path": "product/plugin/skills/boxbox/SKILL.md",
+        "note": "Authoring completion and coverage requirements."
+      },
+      {
+        "kind": "review",
+        "path": "docs/development/reviews/2026-10-21-self-use-boundaries.md",
+        "note": "Earlier PASS evidence explicitly limited guard coverage."
+      },
+      {
+        "kind": "review",
+        "path": "docs/development/reviews/2026-10-21-self-use-refactor.md",
+        "note": "Separates functional checks, alignment findings and write approval."
+      },
+      {
+        "kind": "issue",
+        "path": "docs/development/issue-library/records/BBX-20261021-001-return-column.json",
+        "note": "Unsupported return-column request."
+      },
+      {
+        "kind": "issue",
+        "path": "docs/development/issue-library/records/BBX-20261021-004-member-dot.json",
+        "note": "Missing dot boundary."
+      }
+    ],
+    "history": [
+      {
+        "sequence": 1,
+        "date": "2026-10-21",
+        "event": "reported",
+        "summary": "User repeatedly identified missing matrix boundaries after prior checks.",
+        "evidence": []
+      },
+      {
+        "sequence": 2,
+        "date": "2026-10-21",
+        "event": "diagnosed",
+        "summary": "A coverage limit was being treated as a full readability result.",
+        "evidence": [
+          "docs/development/reviews/2026-10-21-self-use-boundaries.md"
+        ]
+      },
+      {
+        "sequence": 3,
+        "date": "2026-10-21",
+        "event": "decision",
+        "summary": "Track requested axes and evidence scope explicitly; final workflow verification remains pending.",
+        "evidence": []
+      },
+      {
+        "sequence": 4,
+        "date": "2026-10-21",
+        "event": "implemented",
+        "summary": "Added the requested-boundary inventory, coverage reconciliation and issue-history guidance to the skill.",
+        "evidence": [
+          "product/plugin/skills/boxbox/SKILL.md"
+        ]
+      },
+      {
+        "sequence": 5,
+        "date": "2026-10-21",
+        "event": "verification-failed",
+        "summary": "FAILED ATTEMPT: Independent delta review found reconciliation occurred before final Align and issue-history writing needed explicit user/project scope.",
+        "evidence": [
+          "docs/development/issue-library/evidence/sonnet-dot-blocked.md"
+        ],
+        "status": "failed"
+      },
+      {
+        "sequence": 6,
+        "date": "2026-10-21",
+        "event": "implemented",
+        "summary": "Moved coverage reconciliation to the final post-Align check, including skipped or unsupported axes, and limited issue-history writing to explicit user/project requirements. Final correction and audit evidence will be appended separately.",
+        "evidence": [
+          "product/plugin/skills/boxbox/SKILL.md"
+        ]
+      },
+      {
+        "sequence": 7,
+        "date": "2026-10-21",
+        "event": "diagnosed",
+        "summary": "Historical coverage gap: The earlier check did not cover early-return columns; the wide interface had zero detected misalignments before restructuring. This verifies the diagnosis, not the final fix. This entry preserves diagnosis evidence, not a passing fix verification.",
+        "evidence": [
+          "docs/development/reviews/2026-10-21-self-use-boundaries.md",
+          "docs/development/issue-library/evidence/example-layout-report.md"
+        ]
+      }
+    ]
+  },
+  "BBX-20261021-006-report-row-membership.json": {
+    "$schema": "../issue.schema.json",
+    "schemaVersion": 1,
+    "id": "BBX-20261021-006",
+    "title": "Report treated every line inside a guard region as a table row",
+    "category": "verification-gap",
+    "tags": [
+      "typescript",
+      "return-guards",
+      "rowLines",
+      "report",
+      "alarms",
+      "span",
+      "nested-scope"
+    ],
+    "status": "verifying",
+    "symptom": "A noncontiguous guard group could make report alarms count bridged statements or nested rows as guard-table members, and could hide stray semicolon padding between actual guard rows.",
+    "rootCause": {
+      "confidence": "confirmed",
+      "summary": "The new detector allowed noncontiguous regions, while the report still inferred membership from the inclusive startLine/endLine span. A bounding range is not an exact row set."
+    },
+    "requestedOutcome": "Carry exact row membership into report width, outlier and group-at-line checks while retaining range metadata for display.",
+    "decisions": [
+      "Add optional rowLines metadata for exact noncontiguous membership and retain the contiguous fallback for older results.",
+      "Measure advisory alarms over actual member rows; nested and bridged statements keep their own reporting context.",
+      "Keep the initial review finding as history even after the advisory defect is corrected."
+    ],
+    "actions": [
+      {
+        "description": "Propagate exact rowLines from TypeScript groups into result metadata and reporting.",
+        "status": "done"
+      },
+      {
+        "description": "Add regression tests for false width/outlier alarms and suppressed stray-padding alarms.",
+        "status": "done"
+      },
+      {
+        "description": "Complete integrated tests and independent delta audit.",
+        "status": "pending"
+      }
+    ],
+    "verification": [
+      {
+        "name": "Exact-membership regression verification",
+        "status": "passed",
+        "scope": "rowLines propagation and report alarms",
+        "evidence": [
+          "docs/development/issue-library/evidence/report-membership-tests.log"
+        ],
+        "result": "44 targeted tests passed, 0 failed, with 187 assertions. Final full-suite, installed-host and independent delta verification remain pending."
+      },
+      {
+        "name": "Final integrated review",
+        "status": "pending",
+        "scope": "Current source after the member-dot follow-up",
+        "evidence": [],
+        "result": "Final current-source checks and independent Sonnet/GLM reviews have not been recorded in this issue snapshot."
+      }
+    ],
+    "related": [
+      {
+        "kind": "code",
+        "path": "product/engine/common/report.ts",
+        "note": "rowLinesOf and group-at-line membership."
+      },
+      {
+        "kind": "code",
+        "path": "product/engine/common/result-json.ts",
+        "note": "Optional exact row membership in result metadata."
+      },
+      {
+        "kind": "code",
+        "path": "product/engine/typescript/align.ts",
+        "note": "Group construction."
+      },
+      {
+        "kind": "test",
+        "path": "test/report.test.ts",
+        "note": "Report alarm regression cases."
+      },
+      {
+        "kind": "issue",
+        "path": "docs/development/issue-library/records/BBX-20261021-001-return-column.json",
+        "note": "Noncontiguous grouping that exposed the contiguous-report assumption."
+      },
+      {
+        "kind": "evidence",
+        "path": "docs/development/issue-library/evidence/initial-sonnet-review.md",
+        "note": "Original independent advisory finding."
+      }
+    ],
+    "history": [
+      {
+        "sequence": 1,
+        "date": "2026-10-21",
+        "event": "reported",
+        "summary": "Initial Sonnet review identified false table membership from a broad return-guard span.",
+        "evidence": [
+          "docs/development/issue-library/evidence/initial-sonnet-review.md"
+        ]
+      },
+      {
+        "sequence": 2,
+        "date": "2026-10-21",
+        "event": "diagnosed",
+        "summary": "Report consumers assumed every line in a range belonged to the table.",
+        "evidence": []
+      },
+      {
+        "sequence": 3,
+        "date": "2026-10-21",
+        "event": "decision",
+        "summary": "Carry exact rowLines and retain the range only as a location envelope; verification remains pending.",
+        "evidence": []
+      },
+      {
+        "sequence": 4,
+        "date": "2026-10-21",
+        "event": "implemented",
+        "summary": "Propagated exact rowLines through group results and used them for advisory-alarm membership; contiguous fallback remains.",
+        "evidence": [
+          "product/engine/common/result-json.ts",
+          "product/engine/common/report.ts"
+        ]
+      },
+      {
+        "sequence": 5,
+        "date": "2026-10-21",
+        "event": "verified",
+        "summary": "Targeted report and TypeScript suites passed 44 tests with 187 assertions. Final integrated evidence is still pending.",
+        "evidence": [
+          "docs/development/issue-library/evidence/report-membership-tests.log"
+        ]
+      },
+      {
+        "sequence": 6,
+        "date": "2026-10-21",
+        "event": "diagnosed",
+        "summary": "Independent initial diagnosis: Sonnet reported no blocking defects and identified the report-range overlap as an advisory defect. It did not execute tests or review the later fix. This entry preserves diagnosis evidence, not a passing fix verification.",
+        "evidence": [
+          "docs/development/issue-library/evidence/initial-sonnet-review.md"
+        ]
+      }
+    ]
+  },
+  "BBX-20261021-007-validation-timeout.json": {
+    "$schema": "../issue.schema.json",
+    "schemaVersion": 1,
+    "id": "BBX-20261021-007",
+    "title": "Alignment child process exceeded its deadline during concurrent validation",
+    "category": "ci-release",
+    "tags": [
+      "verification",
+      "timeout",
+      "concurrency",
+      "alignment-only",
+      "child-process"
+    ],
+    "status": "verifying",
+    "symptom": "The final repository suite reported 570 passed, 5 skipped and 1 failed. alignment-only.test.ts:178 received a null child exitCode under a fixed 20-second deadline while packaging and installation checks also ran.",
+    "rootCause": {
+      "confidence": "confirmed",
+      "summary": "The child process exceeded the configured 20-second execution deadline; the unchanged test subsequently passed in a targeted retry. Concurrent load is a hypothesis for the slowdown, not an established root cause."
+    },
+    "requestedOutcome": "Establish whether the unchanged test and complete suite pass when expensive validation runs are serialized, preserving both the original failure and the retry evidence.",
+    "decisions": [
+      "Retain the original timeout and full-suite failure as an observed result.",
+      "Run the unchanged targeted suite and then the full suite with expensive validation serialized.",
+      "Keep the deadline and implementation unchanged while investigating; a retry does not erase the failed attempt."
+    ],
+    "actions": [
+      {
+        "description": "Capture the failing full-suite output and run the unchanged targeted test suite.",
+        "status": "done"
+      },
+      {
+        "description": "Finish serialized full-suite validation and record its result.",
+        "status": "pending"
+      }
+    ],
+    "verification": [
+      {
+        "name": "Concurrent full-suite attempt",
+        "status": "failed",
+        "scope": "Repository suite while packaging and installation validation ran concurrently",
+        "evidence": [
+          "docs/development/issue-library/evidence/parallel-suite-timeout.log"
+        ],
+        "result": "570 passed, 5 skipped, 1 failed; the alignment-only child exitCode was null after its deadline. This is the original failed attempt, not a diagnosis of the underlying load cause."
+      },
+      {
+        "name": "Unchanged targeted retry",
+        "status": "passed",
+        "scope": "Targeted suite after the timeout; no implementation or deadline change",
+        "evidence": [
+          "docs/development/issue-library/evidence/alignment-timeout-retry.log"
+        ],
+        "result": "35 passed, 0 failed in approximately 3.32 seconds; the previously failing case took approximately 1.45 seconds. This does not establish full-suite success."
+      },
+      {
+        "name": "Serialized full-suite verification",
+        "status": "pending",
+        "scope": "The full repository suite with expensive packaging/install work serialized",
+        "evidence": [],
+        "result": "The run is in progress at capture. The parent will append its actual completion evidence."
+      }
+    ],
+    "related": [
+      {
+        "kind": "test",
+        "path": "test/alignment-only.test.ts",
+        "note": "Child-process timeout and expected exitCode assertion."
+      },
+      {
+        "kind": "evidence",
+        "path": "docs/development/issue-library/evidence/parallel-suite-timeout.log",
+        "note": "Original full-suite failure."
+      },
+      {
+        "kind": "evidence",
+        "path": "docs/development/issue-library/evidence/alignment-timeout-retry.log",
+        "note": "Unchanged targeted retry."
+      }
+    ],
+    "history": [
+      {
+        "sequence": 1,
+        "date": "2026-10-21",
+        "event": "verification-failed",
+        "status": "failed",
+        "summary": "The concurrently run full suite failed at the child-process deadline: 570 passed, 5 skipped, 1 failed.",
+        "evidence": [
+          "docs/development/issue-library/evidence/parallel-suite-timeout.log"
+        ]
+      },
+      {
+        "sequence": 2,
+        "date": "2026-10-21",
+        "event": "diagnosed",
+        "summary": "The deadline expiration is observed; concurrent load remains a hypothesis. No deadline or product-code change was made.",
+        "evidence": [
+          "docs/development/issue-library/evidence/parallel-suite-timeout.log"
+        ]
+      },
+      {
+        "sequence": 3,
+        "date": "2026-10-21",
+        "event": "verified",
+        "status": "passed",
+        "summary": "The unchanged targeted retry passed 35 tests; this is narrower than the complete suite.",
+        "evidence": [
+          "docs/development/issue-library/evidence/alignment-timeout-retry.log"
+        ]
+      },
+      {
+        "sequence": 4,
+        "date": "2026-10-21",
+        "event": "decision",
+        "summary": "Serialize the final full-suite run and wait for its result before resolving this verification incident.",
+        "evidence": []
+      }
+    ]
+  }
+}

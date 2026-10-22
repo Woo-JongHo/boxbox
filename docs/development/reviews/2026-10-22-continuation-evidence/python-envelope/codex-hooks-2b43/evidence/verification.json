@@ -1,0 +1,11 @@
+{
+  "failDistinctFileChangeItems": 1,
+  "failCompletedFileChanges": 1,
+  "recoveryDistinctFileChangeItems": 1,
+  "recoveryCompletedFileChanges": 1,
+  "failHookPromptCount": 1,
+  "failTaskCompleteCount": 1,
+  "failStopReceiptCount": 2,
+  "recoveryHookPromptCount": 0,
+  "finalEqualsInitial": true
+}

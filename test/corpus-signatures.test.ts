@@ -58,7 +58,7 @@ describe("pattern signature", () => {
 		expect(align(nested)[0]    ).toMatch  (/\|d1$/u                                  ) ;
 	});
 
-	test("different callees and arities are different types even when the row text looks alike", () => {
+	test("heterogeneous calls share an outer signature while complete arity tables retain their inner signatures", () => {
 		const align = (source: string): readonly string[] =>
 			alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: false }).details.map(table =>
 				signatureOf("python", "", "table", table.axes, 0));
@@ -75,7 +75,15 @@ describe("pattern signature", () => {
 			"EPSI  = first(5, 88, 99)",
 			"ZETA  = first(6, 12, 23)",
 		].join("\n");
-		expect(align(callees).length).toBe(0) ; // rows calling a different callee never group, so nothing is detected
-		expect(new Set(align(arities)).size).toBe(2) ; // the arity-2 and arity-3 tables are two types
+		const aligned = alignSource(callees, PYTHON_ALIGNER, { minRows: 3, apply: true }).output                                             ;
+		const rhs     = (source: string): readonly string[] => source.split("\n").map(line => line.slice(line.indexOf("=") + 1).trimStart()) ;
+
+		expect(align(callees)).toEqual(["python||table|name>equal>assignment-value|d0"]) ;
+		expect(align(aligned)).toEqual(align(callees)                                  ) ;
+		expect(rhs(aligned)  ).toEqual(rhs(callees)                                    ) ;
+		expect(align(arities)).toEqual([
+			"python||table|name>equal>call:*>open(>cell>comma>arg>close)|d0",
+			"python||table|name>equal>call:*>open(>cell>comma>arg>comma>arg>close)|d0",
+		]);
 	});
 });

@@ -1,0 +1,15 @@
+{
+  "cwd": "/tmp/boxbox-mode-behavior-m7RwTv/write",
+  "command": [
+    "bun",
+    "/tmp/boxbox-mode-behavior-m7RwTv/cli.ts",
+    "guide",
+    "--file",
+    "settings.py",
+    "--authoring",
+    "--json"
+  ],
+  "code": 0,
+  "stdout": "{\"schemaVersion\":1,\"tool\":\"boxbox\",\"command\":\"guide\",\"basis\":\"authoring\",\"ok\":true,\"file\":\"settings.py\",\"language\":\"python\",\"verification\":\"not-run\",\"writeAuthorized\":false,\"rules\":[{\"id\":\"py-simple-assignments\",\"key\":\"v1|python|-|table|name>equal>value\",\"scope\":\"**/*.py\",\"layer\":\"preset\",\"contract\":\"# Python simple assignments\\n\\nThree or more consecutive simple-name assignments at the same indentation may be aligned when the engine detects exactly the lookup key `v1|python|-|table|name>equal>value`. The scope is `**/*.py`; the pattern is `DEFINE`. Any existing indentation depth is allowed, and indentation must be preserved. Two-row inputs, mixed-indentation runs, compound assignments, attribute targets, other axis combinations and other languages are outside this approval. Execution order and all non-whitespace tokens must be preserved.\\n\\nThe positive example `py-simple-assignments-positive` records the approved transformation at two-space indentation. In `py-simple-assignments-two-row-counterexample`, the aligned after form has verdict `bad` because automatically rewriting fewer than three rows violates the approved minimum; this is not a general style judgment about manually written whitespace. The engine must leave the before form unchanged and may report the pair as a suggestion.\\n\\nA human maintainer approved this exact scope, the positive example and the excluded boundary on 2026-10-21. The public receipt uses the anonymous role `maintainer`; it does not grant approval for additional rules. The linked short synthetic examples are provided under CC0-1.0.\\n\",\"examples\":[{\"id\":\"py-simple-assignments-positive\",\"before\":\"if enabled:\\n  alpha = 1\\n  much_longer = 22\\n  mid = 333\\n\",\"after\":\"if enabled:\\n  alpha       = 1\\n  much_longer = 22\\n  mid         = 333\\n\"}],\"counterexamples\":[{\"id\":\"py-simple-assignments-two-row-counterexample\",\"before\":\"alpha = 1\\nmuch_longer = 22\\n\",\"after\":\"alpha       = 1\\nmuch_longer = 22\\n\",\"verdict\":\"bad\"}]}],\"unavailable\":[]}\n",
+  "stderr": ""
+}

@@ -1,11 +1,11 @@
 {
 	"name": "boxbox",
-	"version": "0.2.2",
+	"version": "0.2.5",
 	"private": true,
-	"description": "Multi-agent skill plugin that checks tabular readability in TypeScript, Python, Java, Go, Rust, JavaScript, C, C++, Swift, and Kotlin",
+	"description": "Multi-agent skill plugin that checks tabular readability in TypeScript, Python, JSON, and YAML",
 	"scripts": {
 		"test": "bun test --timeout 60000",
-		"check": "bun development/tools/sync-product.ts --check && bun run check:layout && bun test --timeout 60000 && bunx tsc --noEmit && bash -n development/install.sh",
+		"check": "python3 docs/development/issue-library/validate.py && bun development/tools/pattern-catalog.ts check && bun development/tools/sync-product.ts --check && bun run check:layout && bun test --timeout 60000 && bunx tsc --noEmit && bash -n development/install.sh",
 		"build:cli": "bun run development/tools/build-cli-artifact.ts",
 		"pack:cli": "bun run build:cli && npm pack ./dist/cli --pack-destination ./dist --json",
 		"build:node-artifact": "bun run development/tools/build-node-artifact.ts",
@@ -15,11 +15,11 @@
 		"harness:report": "bun development/harness/report.ts",
 		"sync:product": "bun development/tools/sync-product.ts --write && bun development/tools/sync-plugin.ts",
 		"pack:installer": "bun development/tools/build-installer-artifact.ts",
-		"check:layout": "bun development/tools/check-layout.ts",
-		"hud": "node development/tools/hud.mjs"
+		"check:layout": "bun development/tools/check-layout.ts"
 	},
 	"dependencies": {
-		"typescript": "7.0.2"
+		"typescript": "7.0.2",
+		"yaml": "2.9.1"
 	},
 	"devDependencies": {
 		"@types/bun": "^1.4.2"

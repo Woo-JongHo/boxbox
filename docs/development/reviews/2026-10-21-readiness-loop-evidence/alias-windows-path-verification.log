@@ -1,0 +1,15 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/layout.test.ts:
+(pass) relative containment handles Windows separators and cross-drive paths [0.32ms]
+(pass) a version bump stamps generated manifests without modifying product templates [44.04ms]
+(pass) dangling output links never create external files or directories [31.88ms]
+(pass) product dependencies allow mapped engine aliases and reject escapes [137.54ms]
+(pass) engine aliases reject missing targets, escapes and symbolic paths [4.85ms]
+(pass) the entire marketplace plugin regenerates from product sources and detects manual changes [42.65ms]
+
+ 6 pass
+ 0 fail
+ 43 expect() calls
+Ran 6 tests across 1 file. [346.00ms]
+product dependencies: PASS

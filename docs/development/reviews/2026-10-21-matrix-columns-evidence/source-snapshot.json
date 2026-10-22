@@ -1,0 +1,13 @@
+{
+  "product/engine/typescript/grid-kinds.ts": "9c6e6f8109d17b87b43710ab69cb5ebe53cd70ac84a2ecfe80246730311d94d4",
+  "product/engine/typescript/align.ts": "2edf2d19df56331f58dbdfe83beaf9d0fdaae95821c38fe23b1cccf9343274a4",
+  "product/engine/common/result-json.ts": "f1dd27bcf816a52f3f8b04fa20951e93d7b5dbd9902dbbcaac58a3f0d20b6015",
+  "product/engine/common/report.ts": "d7b17f94323eae9a85cbdf1d4fdb3530adf6ce64b1dbb91bf44b839d46434a48",
+  "product/engine/common/authoring-guide.ts": "d3df706c72499855d1775711270b072e35c97639322d5e0b96fb3571dd11d06a",
+  "product/engine/common/examples.ts": "2a1671f5e8407c8861baef136942587b90deaaaffdc29170ba1c6e86d81aa7db",
+  "test/typescript-matrix-boundaries.test.ts": "a3782c74e76e029e2448a1b6fb685e8ae33dadf80766efee074d49bb4bbf4199",
+  "test/report.test.ts": "faeb0f4e026665618e85355ab762c249f41318a5654d8d7e98519c6a48bb852b",
+  "product/plugin/skills/boxbox/SKILL.md": "cdfb7908745f37e33911a845d454b9cd00fe676a53e885afeb9867ede066053b",
+  "product/rules/references/readability-contract.md": "4362b28e0d23ce7f1fbf3a19b2bf3bc56d704f4f2788a45f7224cda6db04f24b",
+  "docs/development/issue-library/validate.py": "98a76fb21f13784140f4e6254ad1cf590d1eeb3561702103d190e813870222bf"
+}

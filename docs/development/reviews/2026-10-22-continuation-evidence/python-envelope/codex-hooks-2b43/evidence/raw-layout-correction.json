@@ -1,0 +1,35 @@
+{
+  "cause": "raw-source-binding used logical root names while exact originals were retained in per-run receipt subdirectories under native filenames",
+  "method": "byte-for-byte copy from retained originals after size and SHA-256 match; originals preserved",
+  "restoredCount": 7,
+  "entries": {
+    "fail.receipt-1.json": {
+      "sourceMatchedBinding": true,
+      "copiedMatchedBinding": true
+    },
+    "fail.receipt-2.json": {
+      "sourceMatchedBinding": true,
+      "copiedMatchedBinding": true
+    },
+    "fail.receipt-3.json": {
+      "sourceMatchedBinding": true,
+      "copiedMatchedBinding": true
+    },
+    "fail.baseline.json": {
+      "sourceMatchedBinding": true,
+      "copiedMatchedBinding": true
+    },
+    "recovery.receipt-1.json": {
+      "sourceMatchedBinding": true,
+      "copiedMatchedBinding": true
+    },
+    "recovery.receipt-2.json": {
+      "sourceMatchedBinding": true,
+      "copiedMatchedBinding": true
+    },
+    "recovery.baseline.json": {
+      "sourceMatchedBinding": true,
+      "copiedMatchedBinding": true
+    }
+  }
+}

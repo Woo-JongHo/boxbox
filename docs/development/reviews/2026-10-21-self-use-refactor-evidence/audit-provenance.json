@@ -1,0 +1,12 @@
+{
+  "provider": "zai",
+  "model": "glm-5.3",
+  "toolScope": [
+    "read",
+    "search",
+    "find"
+  ],
+  "fullTranscript": "/tmp/boxbox-self-use-20261021/glm.jsonl",
+  "sha256": "f0472478072a8d3d978c204845a472a917bf41c54c95a4c601f56f8e38c6358e",
+  "sourceSha256": "c02557e81a66b6964b99c0b924ca2a0dbda80f8e239a3087cc75c7b770379d59"
+}

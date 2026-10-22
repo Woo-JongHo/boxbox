@@ -1,0 +1,2 @@
+runs=40 tests=520 bad=1 min_ms=5959 p50_ms=6754 p95_ms=7403 max_ms=30010
+(21, 30009.632500004955, 'TIMEOUT', '', "Command '['bun', 'test', 'test/typescript-matrix-boundaries.test.ts', '--timeout', '60000']' timed out after 30 seconds")

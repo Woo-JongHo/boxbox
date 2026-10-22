@@ -3,20 +3,20 @@ import      { maskSource               } from "@/common/code-text.ts"    ;
 import type { CodeSyntax               } from "@/common/code-text.ts"    ;
 import      { alignSource              } from "@/common/table-engine.ts" ;
 import type { LineProfiler, RowProfile } from "@/common/table-engine.ts" ;
+import      { PYTHON_SYNTAX            } from "@/python/profile.ts"      ;
 
 const SYNTAX: CodeSyntax = {
-	lineComments  : ["//"],
-	blockComments : [{ open: "/*", close: "*/" }],
-	strings       : [{ open: '"', close: '"', escape: true }],
-	cppRaw        : false,
+	lineComments  : ["//"]                                    ,
+	blockComments : [{ open: "/*", close: "*/" }]             ,
+	strings       : [{ open: '"', close: '"', escape: true }] ,
 };
 
 /** Minimal profiler accepting only `name : value ;` — structure from the mask, text sliced from the source. */
 const TEST_ALIGNER: LineProfiler = {
-	language      : "test",
-	syntax        : SYNTAX,
-	columnAxes    : ["name", "value"],
-	canonicalGaps : { colon: " ", value: " ", semicolon: " " },
+	language      : "test"                                     ,
+	syntax        : SYNTAX                                     ,
+	columnAxes    : ["name", "value"]                          ,
+	canonicalGaps : { colon: " ", value: " ", semicolon: " " } ,
 	profile(code: string, masked: string): RowProfile | null {
 		const match   = /^([ \t]*)([A-Za-z_][A-Za-z0-9_]*)(\s*):(\s*)(.+?)(\s*);$/du.exec(masked) ;
 		const indices = match?.indices                                                            ;
@@ -60,18 +60,11 @@ describe("maskSource", () => {
 		expect(mask.text.split("\n")[1]).toBe("b : 2 ;");
 	});
 
-	test("does not mistake the Rust lifetime 'a for a string", () => {
-		const rust: CodeSyntax = { lineComments: ["//"], blockComments: [], strings: [{ open: '"', close: '"', escape: true }], rustChars: true, cppRaw: false } ;
-		const source           = `let s: &'a str = "v";`                                                                                                         ;
-		const mask             = maskSource(source, rust)                                                                                                        ;
-		expect(mask.text).toBe(`let s: &'a str = " ";`);
-	});
-
-	test("masks the whole C++ raw string R\"( )\"", () => {
-		const cpp: CodeSyntax = { lineComments: ["//"], blockComments: [{ open: "/*", close: "*/" }], strings: [{ open: '"', close: '"', escape: true }], cppRaw: true } ;
-		const source          = `const char* p = R"x(a:b=c;)x";`                                                                                                         ;
-		const mask            = maskSource(source, cpp)                                                                                                                  ;
-		expect(mask.text).toBe(`const char* p = R"x(      )x";`);
+	test("a string spanning lines keeps every later line's comment position on that line", () => {
+		const source = 'x = """a\nb\n"""\n# note\ny = 1 # tail' ;
+		const mask   = maskSource(source, PYTHON_SYNTAX)        ;
+		expect(mask.commentStarts).toEqual([-1, -1, -1, 0, 6]                ) ;
+		expect(mask.opensInBlock ).toEqual([false, false, false, false, false]) ;
 	});
 });
 
@@ -90,8 +83,8 @@ describe("alignSource", () => {
 	].join("\n");
 
 	test("aligns columns at the minimum width of the actual longest cell", () => {
-		const result      = alignSource(SOURCE, TEST_ALIGNER, { minRows: 3, apply: true }) ;
-		const outputLines = result.output.split("\n")                                      ;
+		const result      = alignSource        (SOURCE, TEST_ALIGNER, { minRows: 3, apply: true }) ;
+		const outputLines = result.output.split("\n"                                             ) ;
 		expect(outputLines[0]   ).toBe("short      : 1   ;") ;
 		expect(outputLines[1]   ).toBe("longername : 22  ;") ;
 		expect(outputLines[2]   ).toBe("m          : 333 ;") ;
@@ -100,8 +93,8 @@ describe("alignSource", () => {
 	});
 
 	test("blank lines and comments break sections — a later section never shares an earlier section's width", () => {
-		const result      = alignSource(SOURCE, TEST_ALIGNER, { minRows: 3, apply: true }) ;
-		const outputLines = result.output.split("\n")                                      ;
+		const result      = alignSource        (SOURCE, TEST_ALIGNER, { minRows: 3, apply: true }) ;
+		const outputLines = result.output.split("\n"                                             ) ;
 		expect(outputLines[4]                              ).toBe   ("breaks : region ;") ;
 		expect(outputLines[5]                              ).toBe   ("a      : 1      ;") ;
 		expect(result.details.map(table => table.startLine)).toEqual([1, 5]             ) ;

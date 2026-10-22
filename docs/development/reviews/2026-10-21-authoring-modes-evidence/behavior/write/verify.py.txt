@@ -1,0 +1,9 @@
+from pathlib import Path
+import ast
+source = Path("settings.py").read_text()
+ast.parse(source)
+namespace = {}
+exec(compile(source, "settings.py", "exec"), namespace)
+assert namespace["get_settings"]() == (3, 30, 100)
+assert all(type(namespace[name]) is int for name in ("retry", "timeout_seconds", "batch_size"))
+print("PASS: syntax and requested numeric settings tuple")

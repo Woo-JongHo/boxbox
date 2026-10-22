@@ -1,0 +1,3 @@
+{"name":"convention missing versions","validatorAccepted":true}
+{"name":"example missing rules/language/versions/approvedBy/date","validatorAccepted":true}
+{"name":"decision missing examples/approvedBy/date","validatorAccepted":true}

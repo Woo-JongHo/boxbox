@@ -1,16 +1,16 @@
 /**
  * STEP6: Detects contiguous rows per registered table kind (grid-kinds.ts), checks the axis columns
  * (`:`, `;`, `=`, `(`, `)`, `,`, `}`, `//`), and aligns them at minimum width with --write. Conditional-type `:`,
- * for-header `;`, empty statements, one-line execution blocks, and rows split by JSDoc or blank lines are not
- * row candidates and are never aligned. --explain <line> reports which kind the line was detected as and its axes.
+ * for-header `;`, empty statements and one-line execution blocks are not row candidates. Comments split all
+ * tables; blank lines split ordinary tables, while return guards can bridge statements within one block region. --explain <line> reports which kind the line was detected as and its axes.
  * Every table's edits must pass the scanner-based whitespace-only check (token-preservation.ts); a table that does
  * not is refused and reported, never written. A declaration row whose call argument is the outlier of its column
  * (import rule B) takes the vertical form instead: its arguments one per line under the opening `(`, which only
  * inserts line breaks, so such a group passes the break-preserving variant of the token check.
  */
-import      { isInterfaceDeclaration                     } from "typescript/unstable/ast"  ;
-import type { Node, SourceFile                           } from "typescript/unstable/ast"  ;
-import      { writeFileSync                              } from "node:fs"                  ;
+import      { isInterfaceDeclaration                     } from "typescript/unstable/ast"            ;
+import type { Node, SourceFile                           } from "typescript/unstable/ast"            ;
+import      { writeFileSync                              } from "node:fs"                            ;
 
 import      {
               ROW_KINDS                                ,
@@ -18,13 +18,13 @@ import      {
               runsOf                                   ,
               syntaxKindName                           ,
               verticalCallText                         ,
-                                                         } from "./grid-kinds.ts"          ;
-import type { DetectedRow                                } from "./grid-kinds.ts"          ;
-import      { loadSourceFile, syntacticDiagnostics       } from "./load-source-file.ts"    ;
-import      { envelope, summarize                        } from "../common/result-json.ts" ;
-import type { ResultGroup, ResultParse                   } from "../common/result-json.ts" ;
-import      { updateFileAtomically                       } from "../common/safe-file.ts"   ;
-import      { preservesTokens, preservesTokensWithBreaks } from "./token-preservation.ts"  ;
+                                                         } from "@/typescript/grid-kinds.ts"         ;
+import type { DetectedRow                                } from "@/typescript/grid-kinds.ts"         ;
+import      { loadSourceFile, syntacticDiagnostics       } from "@/typescript/load-source-file.ts"   ;
+import      { envelope, summarize                        } from "@/common/result-json.ts"            ;
+import type { ResultGroup, ResultParse                   } from "@/common/result-json.ts"            ;
+import      { updateFileAtomically                       } from "@/common/safe-file.ts"              ;
+import      { preservesTokens, preservesTokensWithBreaks } from "@/typescript/token-preservation.ts" ;
 
 interface Edit {
 	readonly start : number ;
@@ -37,6 +37,8 @@ interface TableGroup {
 	readonly startLine : number ;
 	readonly endLine   : number ;
 	readonly rowCount  : number ;
+	/** Exact row membership for noncontiguous guard regions. */
+	readonly rowLines? : readonly number[];
 	/** Rows rendered as the declaration vertical form; their edits replace the whole row and may insert line breaks. */
 	readonly vertical : number            ;
 	readonly axes     : readonly string[] ;
@@ -108,15 +110,15 @@ function alignRows(source: SourceFile, rows: readonly DetectedRow[]): { axes: re
 function buildGroup(source: SourceFile, kindName: string, groupName: string, run: readonly DetectedRow[], context: string, depth: number): TableGroup {
 	const straight = run.filter(row => row.vertical === undefined) ;
 	const marked   = run.filter(row => row.vertical !== undefined) ;
-	const aligned  = alignRows(source, straight)                   ;
+	const aligned  = alignRows (source, straight                 ) ;
 	// The vertical rows take the table's `=` column; with no aligned equals axis, the widest anchor of the run sets it.
 	const equalsRows   = run.filter(row => row.boundaries.some(boundary => boundary.axis === "equals"))                                                                                    ;
 	const equalsTarget = aligned.targets.get("equals") ?? Math.max(...equalsRows.map(row => displayColumn(source, row.boundaries.find(boundary => boundary.axis === "equals")!.from))) + 1 ;
 	const newline      = source.text.includes("\r\n") ? "\r\n" : "\n"                                                                                                                      ;
 	// The render carries the statement's own indentation, so the edit replaces the whole line's code, from its start.
 	const verticalEdits = marked.map(row => {
-		const start     = row.node.getStart(source)                                                                 ;
-		const lineStart = source.getPositionOfLineAndCharacter(source.getLineAndCharacterOfPosition(start).line, 0) ;
+		const start     = row.node.getStart                     (source                                             ) ;
+		const lineStart = source  .getPositionOfLineAndCharacter(source.getLineAndCharacterOfPosition(start).line, 0) ;
 		return { start: lineStart, end: row.node.getEnd(), text: verticalCallText(source, row, equalsTarget, newline) };
 	})                                                                                                                                                                                      ;
 	const edits         = [...aligned.edits, ...verticalEdits]                                                                                                                              ;
@@ -130,15 +132,16 @@ function buildGroup(source: SourceFile, kindName: string, groupName: string, run
 	const first = run[0]!.node     ;
 	const last  = run.at(-1)!.node ;
 	return {
-		kind      : groupName,
-		startLine : source.getLineAndCharacterOfPosition(first.getStart(source)).line + 1,
-		endLine   : source.getLineAndCharacterOfPosition(last.getEnd() - 1).line + 1,
-		rowCount  : run.length,
-		vertical  : marked.length,
-		context   : context,
-		depth     : depth,
-		axes      : aligned.axes,
-		skipped   : aligned.skipped,
+		kind      : groupName                                                             ,
+		startLine : source.getLineAndCharacterOfPosition(first.getStart(source)).line + 1 ,
+		endLine   : source.getLineAndCharacterOfPosition(last.getEnd() - 1).line + 1      ,
+		rowCount  : run.length                                                            ,
+		...(kindName === "return-guards" ? { rowLines: run.map(row => source.getLineAndCharacterOfPosition(row.node.getStart(source)).line + 1) } : {}),
+		vertical : marked.length   ,
+		context  : context         ,
+		depth    : depth           ,
+		axes     : aligned.axes    ,
+		skipped  : aligned.skipped ,
 		edits,
 	};
 }
@@ -333,8 +336,8 @@ export async function runTypeScriptAlign(args: readonly string[], options: TypeS
 	const report = (parse: ResultParse): void => {
 		if (!json) return;
 		const resultGroups: ResultGroup[] = [
-			...groups.map(group => ({ kind: group.kind, startLine: group.startLine, endLine: group.endLine, rows: group.rowCount, axes: group.axes, state: group.edits.length > 0 ? "FIXABLE" as const : "PASS" as const, edits: group.edits.length, context: group.context, depth: group.depth })),
-			...refused.map(group => ({ kind: group.kind, startLine: group.startLine, endLine: group.endLine, rows: group.rowCount, axes: group.axes, state: "REFUSE" as const, edits: group.edits.length, context: group.context, depth: group.depth })),
+			...groups.map(group => ({ kind: group.kind, startLine: group.startLine, endLine: group.endLine, rows: group.rowCount, rowLines: group.rowLines, axes: group.axes, state: group.edits.length > 0 ? "FIXABLE" as const : "PASS" as const, edits: group.edits.length, context: group.context, depth: group.depth })),
+			...refused.map(group => ({ kind: group.kind, startLine: group.startLine, endLine: group.endLine, rows: group.rowCount, rowLines: group.rowLines, axes: group.axes, state: "REFUSE" as const, edits: group.edits.length, context: group.context, depth: group.depth })),
 			...result.compressed.map(entry => ({ kind: "interface-members-compressed", startLine: entry.line, endLine: entry.line, rows: entry.members, axes: [], state: "SUGGEST" as const, edits: 0 })),
 		].sort((left, right) => left.startLine - right.startLine);
 		emit(JSON.stringify(envelope([{ file: relative, language: "typescript", mode: write ? "write" : "check", summary: summarize(resultGroups), groups: resultGroups, parse }]), null, 2));

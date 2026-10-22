@@ -1,0 +1,6 @@
+Independent post-run observation:
+- temporary candidate auth copy: absent
+- source auth hashes: equal before/after (hash values intentionally not retained)
+- exact disposable-root processes after excluding the observing shell: absent
+- candidate project trust entry: PRESENT in disposable CODEX_HOME config.toml
+- live Codex profile inspected or modified by reviewer: no

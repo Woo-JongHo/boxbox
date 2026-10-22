@@ -1,8 +1,8 @@
 {
 	"name": "boxbox",
 	"displayName": "BoxBox",
-	"version": "0.2.2",
-	"description": "Inspects TypeScript and Python files one at a time against tabular readability rules and formats only through human-approved rules, plus a read-only inspector.",
+	"version": "0.2.5",
+	"description": "Guides writing and refactoring TypeScript and Python, with syntax and tabular checks for TypeScript, Python, JSON and YAML and human-approved whitespace alignment.",
 	"author": {
 		"name": "Woo-JongHo"
 	},
@@ -11,6 +11,8 @@
 		"typescript",
 		"python",
 		"code-style",
-		"align"
+		"align",
+		"json",
+		"yaml"
 	]
 }

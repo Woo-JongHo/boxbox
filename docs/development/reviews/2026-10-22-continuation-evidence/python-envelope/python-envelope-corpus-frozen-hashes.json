@@ -1,0 +1,8 @@
+{
+  "sourceUnchanged": true,
+  "tests": {
+    "test/corpus-signatures.test.ts": "3132f8deff559dc1426a00b9d032a508799c0fa4ea632a6518183c0562851795",
+    "test/python-assignment-envelope.test.ts": "563e9a1845699616851638155dac319440624e98dc558ab60fa1c67b5b79d1b5",
+    "test/python-align.test.ts": "e2055746f2a5489d2ff8810a7ea278cb41a9b139319973041a862392c9a0654d"
+  }
+}

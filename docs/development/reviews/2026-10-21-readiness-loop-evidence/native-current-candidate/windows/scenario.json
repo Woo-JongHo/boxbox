@@ -1,0 +1,15 @@
+{
+    "candidate":  "C:\\Users\\woo\\Downloads\\BoxBox\\0.2.4\\native-final-fixed-20261021T2357KST\\boxbox-plugin-0.2.4.tgz",
+    "sha256":  "c18a7da980cfcbd42bd4cfef4c1676b13a9c12759a3d4c9fc2689b0d7af0fb84",
+    "project":  "C:\\Users\\woo\\AppData\\Local\\Temp\\boxbox-native-cd5d3a686c8946e7872cb82f57fd5db3\\project",
+    "fixture":  "C:\\Users\\woo\\AppData\\Local\\Temp\\boxbox-native-cd5d3a686c8946e7872cb82f57fd5db3\\project\\fixture.ts",
+    "fixtureBefore":  "317BA0F0E2744CCD99C98934BF2537C248164FE6645A6CEB507556D90C3BE2C3",
+    "required":  [
+                     "SessionStart delivery",
+                     "effective writable turn_context",
+                     "PostToolUse FAIL",
+                     "one Stop continuation",
+                     "recovery PASS"
+                 ],
+    "limitation":  "Persistent HUD is unsupported on native Windows; this scenario verifies plugin hooks only."
+}

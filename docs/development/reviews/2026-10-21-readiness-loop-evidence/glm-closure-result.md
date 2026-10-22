@@ -1,0 +1,13 @@
+**Verdict: PASS** — the hash condition is closed at attestation level; remaining limits are unchanged and honestly labeled. No mandatory defects.
+
+**1. Changed-file source review (performed by me, no execution).** I reviewed the supplied `test/hud-installation.test.ts` line-by-line. The new upgrade test is sound and tests the right property: a second plugin root cannot silently replace an owned launcher (`toThrow` on enable), explicit disable of the old installation unblocks the new one, the new launcher actually points at `nextPluginRoot` (the upgrade takes effect, not just succeeds), and a failed disable of a user-edited launcher leaves the file in place — the final `existsSync(oldLauncher.path)` holds because old and new launchers share `BOXBOX_BIN_HOME`, so it correctly catches a wrongful deletion. Cleanup covers `nextPluginRoot` (inside the registered root). The pre-existing tests remain substantively unchanged: literal argv forwarding with shell metacharacters (`$(touch nope); `), foreign/symlink/platform refusal without replacing targets, user-edit ownership, the 1 MiB input bound with non-zero exit and stderr message, and symlinked-entry acceptance (the entryguard-fix regression). No correctness, isolation-leak, or vacuous-assertion defect found.
+
+**2. Process claims are consistent and correctly non-aggregated.** 632/5/0 full run plus a separate focused 6/31 run is acceptable evidence labeling; I treat them as distinct runs, not a combined total. One ambiguity: it is not stated whether `tsc --noEmit` executed against the post-append test file (the focused bun run executes it but is not a full type-check). Advisory only: record one `tsc --noEmit` exit 0 on the current tree.
+
+**3. Hash condition.** The prior PASS was conditional on manifest currency. The author's recomputation (39 files, single diff matching the supplied file, no runtime change) closes that condition as an attestation; this audit did not recompute hashes (read-only, no tools), so closure rests on that attestation plus my review of the full changed file.
+
+**4. Artifact and scope.** The rebuilt digest `c18a7d…fb84` properly supersedes failed `13e099…0177`, which is retained only as failure evidence. Native Codex/Claude/SSH acceptance, two rule approvals, four CC0 examples, and the MIT metadata decision remain open and are not claimed — consistent with the prior audit's explicit exclusions.
+
+**5. Prior advisories remain open, non-blocking:** `jsonFile` lstat→open TOCTOU where `O_NOFOLLOW` is undefined; tmux embedded-metacharacter behavior pending the native rerun; control characters in record fields; the node-required-for-bun message.
+
+Mandatory defects: none.

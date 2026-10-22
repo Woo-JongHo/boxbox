@@ -1,0 +1,1 @@
+-rw------- /tmp/boxbox-native-fixed.Shl97G/codex/auth.json

@@ -33,25 +33,25 @@ export function stageCandidate(root = ROOT) {
 	const bytes  = readFileSync(archive)                            ;
 	const sha256 = createHash("sha256").update(bytes).digest("hex") ;
 	const metadata = {
-		schemaVersion : 1,
-		name          : manifest.name,
-		version       : manifest.version,
+		schemaVersion : 1                ,
+		name          : manifest.name    ,
+		version       : manifest.version ,
 		filename,
 		sha256,
 		bytes: bytes.byteLength,
 		source: {
-			scope      : "staging-checkout",
-			commit     : command(root, "git", ["rev-parse", "HEAD"]),
-			ref        : process.env.GITHUB_REF ?? command(root, "git", ["rev-parse", "--abbrev-ref", "HEAD"]),
-			repository : process.env.GITHUB_REPOSITORY ?? null,
-			dirty      : command(root, "git", ["status", "--porcelain"]).length > 0,
+			scope      : "staging-checkout"                                                                    ,
+			commit     : command(root, "git", ["rev-parse", "HEAD"])                                           ,
+			ref        : process.env.GITHUB_REF ?? command(root, "git", ["rev-parse", "--abbrev-ref", "HEAD"]) ,
+			repository : process.env.GITHUB_REPOSITORY ?? null                                                 ,
+			dirty      : command(root, "git", ["status", "--porcelain"]).length > 0                            ,
 		},
 		build: {
-			createdAt  : new Date().toISOString(),
-			node       : command(root, "node", ["--version"]),
-			bun        : Bun.version,
-			runId      : process.env.GITHUB_RUN_ID ?? null,
-			runAttempt : process.env.GITHUB_RUN_ATTEMPT ?? null,
+			createdAt  : new Date().toISOString()               ,
+			node       : command(root, "node", ["--version"])   ,
+			bun        : Bun.version                            ,
+			runId      : process.env.GITHUB_RUN_ID ?? null      ,
+			runAttempt : process.env.GITHUB_RUN_ATTEMPT ?? null ,
 		},
 		limitations: ["Candidate only; no registry publication.", "Source identity describes the staging checkout. Only the clean CI workflow binds its preceding build to that checkout; local archive build provenance is unverified.", "Engine-only smoke does not verify native host hook-event delivery."],
 	};

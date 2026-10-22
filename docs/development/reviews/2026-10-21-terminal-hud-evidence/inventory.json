@@ -1,0 +1,157 @@
+[
+  {
+    "file": "boxbox-claude-hud-surface-20261021.md",
+    "bytes": 7412,
+    "sha256": "31691475b4910945fed696356fd0ad6fba88294049e293962005dbfaa269ebe9"
+  },
+  {
+    "file": "boxbox-codex-hud-impl-20261021.md",
+    "bytes": 3949,
+    "sha256": "1ecb1264ea29569ffb9609d0e0ad2fec45f3e5d6712645274cd0f7893ca9af63"
+  },
+  {
+    "file": "boxbox-codex-hud-surface-20261021.md",
+    "bytes": 8358,
+    "sha256": "0b366b47fe4277ab27d609d4fe43327d5cde8594f7839063ad361cca26af4b54"
+  },
+  {
+    "file": "boxbox-codex-hud-tmux-smoke-20261021.json",
+    "bytes": 2790,
+    "sha256": "cd4cdae1edb8d4209267c8ac69ca4c3e1439ca7ebde0efd9b027eb4a036b0a0e"
+  },
+  {
+    "file": "boxbox-hud-status-impl-20261021.md",
+    "bytes": 4652,
+    "sha256": "3dcc9e3f910951a369db91ed9abdbc6fb2e4934266983b68d028ea90eae76a3e"
+  },
+  {
+    "file": "boxbox-hud-tty-20261021.json",
+    "bytes": 214,
+    "sha256": "0e3004020e1bfb4590bcb4134beea3567a2cd3891985bcc2340c8e431b8e9f35"
+  },
+  {
+    "file": "candidate.json",
+    "bytes": 548,
+    "sha256": "1cb2402dbfc9f4739115def55825e8c7a21d92d6c708ea2980cea3645eb15001"
+  },
+  {
+    "file": "check-final.log",
+    "bytes": 61410,
+    "sha256": "3307c1d437967f82ba6e633f305c2ef9605b6ebce112c2a42bbd85a69cc74bd7"
+  },
+  {
+    "file": "check.log",
+    "bytes": 62814,
+    "sha256": "3bed004361d3aafcf03263ac4e31f2fb1992eab181a29a0bc6aaea03a8f90026"
+  },
+  {
+    "file": "final-checks.json",
+    "bytes": 129,
+    "sha256": "5b6fb7247ebabf2f873e2a1297358f0c005ede1b7b7dd2e6d643ae8ea449da94"
+  },
+  {
+    "file": "installed-verification.json",
+    "bytes": 335,
+    "sha256": "908ead91c81bbfc1a64f6640f6dccd530ed32f744e3f0a7c25a6e32d1c1d65d8"
+  },
+  {
+    "file": "installer-test.log",
+    "bytes": 953,
+    "sha256": "a87e33848e898a819ff75cbd57e14da9c631ea857427862516470dfe59cdfd75"
+  },
+  {
+    "file": "local-install.log",
+    "bytes": 5687,
+    "sha256": "4a16a247ac2e5ec4f7693d42e26cf7c49db52c25a85f356d07bb8f3eaa514221"
+  },
+  {
+    "file": "local-repair.log",
+    "bytes": 5856,
+    "sha256": "9ffdd4e339be0d3eac572613a937a39f22f88654f9b65033228d780a1fbd721c"
+  },
+  {
+    "file": "native-claude-invalid-config.txt",
+    "bytes": 1090,
+    "sha256": "c1436dcabbf16a4d84caf16f1ab9f1d2b123feab9b6826a939987c2c31371bb3"
+  },
+  {
+    "file": "native-claude-recovered.txt",
+    "bytes": 1086,
+    "sha256": "c3c681a28b69d81adf9b0f7754479b5f98090bb054ea5b2901e2b8b26a24adde"
+  },
+  {
+    "file": "native-claude-screen.txt",
+    "bytes": 1179,
+    "sha256": "02268aedf559650c9b0c46e9a0fad09c45f6d4660a5a9d4a268a99e1c8224604"
+  },
+  {
+    "file": "native-codex-invalid-config.json",
+    "bytes": 281,
+    "sha256": "cedbb02d6e71dde113f7ebfa02f04ecb647e405d0a154da5d5dc27206145d93a"
+  },
+  {
+    "file": "native-codex-pane.json",
+    "bytes": 982,
+    "sha256": "b81ca82d6729d345f70a5978316fce30c729961a393640382da4f185d4e2ffee"
+  },
+  {
+    "file": "native-codex-ready.json",
+    "bytes": 719,
+    "sha256": "89e1bebcc2787eabbb8eb30955ec05917e9d59da8e23992960be66eec7596599"
+  },
+  {
+    "file": "native-codex-recovered.json",
+    "bytes": 277,
+    "sha256": "2588e213c5ea39ad1c2fe3a238e7f78b4e235af847c96f57e16a94a39dc3cbb1"
+  },
+  {
+    "file": "opus-result.md",
+    "bytes": 93,
+    "sha256": "c01ce419097c63d8b57e042e5c43e0c6c801e18110513a26228cf78c3a00e934"
+  },
+  {
+    "file": "opus.json",
+    "bytes": 1222,
+    "sha256": "0b3afe4e33f793410002205bcf0c34774ece60d71255b9e9f1e001328194af3b"
+  },
+  {
+    "file": "opus.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "file": "plugin-guard.log",
+    "bytes": 703,
+    "sha256": "7f9c27359b602646f69c201e1b11f4be507a86d741e4db7b0cda6082cb31660f"
+  },
+  {
+    "file": "remote-sha256.txt",
+    "bytes": 151,
+    "sha256": "495f93b1040c1a7cfc5f6af3b2eaa7ddc766d883286dd88c471cbf159cee6d1a"
+  },
+  {
+    "file": "sonnet-result.md",
+    "bytes": 93,
+    "sha256": "c01ce419097c63d8b57e042e5c43e0c6c801e18110513a26228cf78c3a00e934"
+  },
+  {
+    "file": "sonnet.json",
+    "bytes": 1221,
+    "sha256": "31ca9ca6fb94e80a41b6ba4a33507001909ce8ff82c5dc81d8a121a37c3ff4ac"
+  },
+  {
+    "file": "sonnet.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "file": "static-checks.json",
+    "bytes": 362,
+    "sha256": "80579e817041fe9919e8460f0684a25eac238e6bd5b17d5a9747e70db1c7b5a0"
+  },
+  {
+    "file": "version-sync-tests.log",
+    "bytes": 1462,
+    "sha256": "aeb8ae7ac045b36c5867fb67c0b66f562d295e57086d4feef2d4b314c6167c76"
+  }
+]

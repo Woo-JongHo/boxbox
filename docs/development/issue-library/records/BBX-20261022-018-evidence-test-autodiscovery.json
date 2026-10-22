@@ -1,0 +1,110 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261022-018",
+  "title": "Executable evidence snapshot entered Bun test discovery",
+  "category": "ci-release",
+  "tags": [
+    "bun-test",
+    "test-discovery",
+    "evidence-storage",
+    "archived-source",
+    "REL10"
+  ],
+  "status": "resolved",
+  "symptom": "The REL10 full check discovered a historical HUD verifier snapshot stored under the durable review evidence tree as `release-hud-lifecycle.test.ts`. Bun executed it as a 75th test file, and its historical relative import resolved from the evidence directory instead of the repository source location. The run ended with 672 passes, 5 intentional parser skips, 1 failure and 1 unhandled module-resolution error.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "Bun recursively discovers filenames ending in `.test.ts` outside the active `test/` tree. A byte-for-byte historical source snapshot retained its executable test suffix inside documentation evidence, so evidence storage accidentally expanded the runnable suite. The active test and product code were not defective."
+  },
+  "requestedOutcome": "Keep the historical HUD source bytes and their original names/digests auditable without making archived evidence executable or discoverable as an active test, then pass the complete repository check with the active suite unchanged.",
+  "decisions": [
+    "Store executable source snapshots in durable evidence with an additional `.txt` suffix and a machine-readable mapping back to each original filename and SHA-256.",
+    "Preserve the original digest list and explain the storage transformation; do not delete the snapshot, skip a test, narrow test discovery or reinterpret the failed run.",
+    "Treat the first full-check failure as evidence-storage auto-discovery, while preserving the five optional parser skips as skips rather than passes."
+  ],
+  "actions": [
+    {
+      "description": "Rename the two historical HUD source snapshots to `.mjs.txt` and `.test.ts.txt` while preserving their bytes and original SHA-256 values.",
+      "status": "done"
+    },
+    {
+      "description": "Add a storage map and README that bind stored names to original names/digests and state that no active test was skipped or removed.",
+      "status": "done"
+    },
+    {
+      "description": "Rerun the complete repository check and retain both the original failure and closure output.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Evidence snapshot storage and full-check closure",
+      "status": "passed",
+      "scope": "Byte identity of the two archived HUD source snapshots, exclusion of the archived `.test.ts` suffix from Bun discovery, and the complete repository check including issue validation, generated-data checks, layout checks, Bun tests, TypeScript and shell syntax.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-hud-pre-current-digest/storage-map.json",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-hud-pre-current-digest/README.md",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-hud-pre-current-digest/SHA256SUMS",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-full-check-closure.log"
+      ],
+      "result": "The stored `.txt` snapshots match the original SHA-256 values recorded in `SHA256SUMS` and `storage-map.json`. The complete rerun exited zero with 672 passes, 5 intentional parser skips, 0 failures, 3,613 assertions and 74 active test files in 140.57 seconds; the trailing TypeScript and shell checks also completed as part of the successful chained command."
+    }
+  ],
+  "related": [
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-full-check.log",
+      "note": "Original full-check output retaining the 75th discovered evidence test, relative-import error, 672 passes, 5 skips, 1 failure and exit 1."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-hud-pre-current-digest/storage-map.json",
+      "note": "Machine-readable original-to-stored filename map with byte digests for both historical snapshots."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-full-check-closure.log",
+      "note": "Successful complete rerun after the evidence-only storage correction."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-22",
+      "event": "verification-failed",
+      "status": "failed",
+      "summary": "The first REL10 full check auto-discovered the historical evidence file `release-hud-lifecycle.test.ts`; its source-relative import was invalid from the evidence directory, producing 672 passes, 5 skips, 1 failure, 1 error and command exit 1.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-full-check.log"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-22",
+      "event": "diagnosed",
+      "summary": "The failure was traced to Bun filename discovery of a historical evidence snapshot, not to the active HUD verifier or product runtime. The source snapshots were stored under additional `.txt` suffixes with byte-identical digest mapping.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-hud-pre-current-digest/storage-map.json",
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-hud-pre-current-digest/README.md"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-10-22",
+      "event": "verified",
+      "status": "passed",
+      "summary": "The unchanged active suite and complete chained check passed after the evidence-only rename: 672 passes, 5 skips, 0 failures, 3,613 assertions and 74 files. No active test was removed or skipped.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-artifact-lifecycle-evidence/rel10-full-check-closure.log"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-10-22",
+      "event": "decision",
+      "summary": "The opt-in terminal HUD was removed on 2026-10-22 (user decision). Related test test/release-hud-lifecycle.test.ts was deleted with it; this resolution and its evidence are unchanged.",
+      "evidence": []
+    }
+  ]
+}

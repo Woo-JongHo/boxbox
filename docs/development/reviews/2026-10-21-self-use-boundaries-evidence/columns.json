@@ -1,0 +1,107 @@
+{
+  "coordinateSystem": "one-based columns; tabs expanded to four-column stops",
+  "imports": [
+    {
+      "line": 1,
+      "axes": {
+        "{": 13,
+        "}": 50,
+        "from": 52,
+        ";": 79
+      }
+    },
+    {
+      "line": 2,
+      "axes": {
+        "{": 13,
+        "}": 50,
+        "from": 52,
+        ";": 79
+      }
+    },
+    {
+      "line": 3,
+      "axes": {
+        "{": 13,
+        "}": 50,
+        "from": 52,
+        ";": 79
+      }
+    },
+    {
+      "line": 4,
+      "axes": {
+        "{": 13,
+        "}": 50,
+        "from": 52,
+        ";": 79
+      }
+    },
+    {
+      "line": 5,
+      "axes": {
+        "{": 13,
+        "}": 50,
+        "from": 52,
+        ";": 79
+      }
+    },
+    {
+      "line": 6,
+      "axes": {
+        "{": 13,
+        "}": 50,
+        "from": 52,
+        ";": 79
+      }
+    }
+  ],
+  "counterexampleProperties": [
+    {
+      "line": 44,
+      "colonColumn": 25
+    },
+    {
+      "line": 45,
+      "colonColumn": 25
+    },
+    {
+      "line": 46,
+      "colonColumn": 25
+    },
+    {
+      "line": 47,
+      "colonColumn": 25
+    }
+  ],
+  "guideProperties": [
+    {
+      "line": 51,
+      "colonColumn": 29
+    },
+    {
+      "line": 52,
+      "colonColumn": 29
+    },
+    {
+      "line": 53,
+      "colonColumn": 29
+    },
+    {
+      "line": 54,
+      "colonColumn": 29
+    },
+    {
+      "line": 55,
+      "colonColumn": 29
+    },
+    {
+      "line": 56,
+      "colonColumn": 29
+    },
+    {
+      "line": 57,
+      "colonColumn": 29
+    }
+  ]
+}

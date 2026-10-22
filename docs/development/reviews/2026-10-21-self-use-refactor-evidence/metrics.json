@@ -1,0 +1,22 @@
+{
+  "before": {
+    "sha256": "f3abb867720bbc58036c202254efdbb14ad84535e46d28ff36fb68c01a550781",
+    "lines": 37,
+    "maximumColumnAtTabWidth4": 153,
+    "linesOver120": [
+      9,
+      12,
+      23,
+      24,
+      25,
+      26,
+      29
+    ]
+  },
+  "after": {
+    "sha256": "c02557e81a66b6964b99c0b924ca2a0dbda80f8e239a3087cc75c7b770379d59",
+    "lines": 62,
+    "maximumColumnAtTabWidth4": 111,
+    "linesOver120": []
+  }
+}

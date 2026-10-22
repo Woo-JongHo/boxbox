@@ -65,6 +65,10 @@ export function smokeCandidate(directory, expectedSha256) {
 			? join(environment.LOCALAPPDATA, "BoxBox", "Codex", metadata.version)
 			: join(environment.XDG_DATA_HOME, "boxbox", "codex", metadata.version);
 		const launcher = join(installation, "plugin/scripts/boxbox.mjs");
+		const engine = join(installation, "runtime/node_modules/boxbox");
+		const notice = readFileSync(join(engine, "THIRD_PARTY_NOTICES"), "utf8");
+		assert.match(notice, /^yaml 2\.9\.1 \(ISC\)\n\nCopyright Eemeli Aro/u, "Bundled yaml license notice is missing");
+		assert.equal(lstatSync(join(engine, "node_modules/yaml"), { throwIfNoEntry: false }), undefined, "The statically bundled yaml parser unexpectedly remained a runtime package dependency");
 		const cli = (args, statuses = [0]) => JSON.parse(run(process.execPath, [launcher, ...args, "--json"], options, statuses));
 		const python = run("python3", ["--version"], options);
 
@@ -115,6 +119,40 @@ export function smokeCandidate(directory, expectedSha256) {
 				report.checks.push({ file: filename, previewPreserved: true, approvedOutput: true, recheck: true, idempotent: true });
 			}
 		}
+
+		const structured = [
+			{ file: "mapping.json", source: "{\n  \"a\":1,\n  \"longer\" : 2,\n  \"x\"  :3\n}\n", language: "json", tool: "JSON.parse" },
+			{ file: "mapping.yaml", source: "a: 1\nlonger : 2\nx:  3\nblock: |2\n    keep:  exact\n", language: "yaml", tool: "yaml@2.9.1" },
+		];
+		for (const example of structured) {
+			const path = join(project, example.file);
+			writeFileSync(path, example.source);
+			const checked = cli(["check", "--file", example.file], [1]);
+			assert.equal(checked.syntax.status, "valid", `${example.language} syntax was not accepted`);
+			assert.equal(checked.syntax.tool, example.tool, `${example.language} parser identity differs`);
+			assert.ok(checked.results[0].summary.misaligned > 0, `${example.language} input did not expose an alignment candidate`);
+			if (checked.formatReadiness.approvalEligible) {
+				const preview = cli(["format", "--file", example.file, "--dry-run"]);
+				assert.equal(preview.written, false, `${example.language} preview wrote the file`);
+			} else {
+				const refused = cli(["align", "--file", example.file, "--dry-run"], [2]);
+				assert.equal(refused.error.code, "ALIGN_NOT_ELIGIBLE", `${example.language} missing approval was not explicit`);
+			}
+			assert.equal(readFileSync(path, "utf8"), example.source, `${example.language} check/refusal changed the source`);
+			report.checks.push({ file: example.file, syntax: true, candidate: true, approvalEligible: checked.formatReadiness.approvalEligible, sourcePreserved: true });
+		}
+
+		writeFileSync(join(project, "invalid.json"), '{"a":1,}\n');
+		const invalidJson = cli(["check", "--file", "invalid.json"], [2]);
+		assert.equal(invalidJson.syntax.status, "invalid", "Invalid JSON was accepted");
+		writeFileSync(join(project, "invalid.yaml"), "a: one\na: two\n");
+		const invalidYaml = cli(["check", "--file", "invalid.yaml"], [2]);
+		assert.equal(invalidYaml.syntax.status, "invalid", "Invalid YAML was accepted");
+		writeFileSync(join(project, "unsupported.yaml"), "block: |2\n    keep:  exact\nflow: { a: 1 }\n");
+		const unsupportedYaml = cli(["check", "--file", "unsupported.yaml"]);
+		assert.equal(unsupportedYaml.syntax.status, "valid", "Valid unsupported YAML was classified as invalid syntax");
+		assert.equal(unsupportedYaml.results[0].summary.misaligned, 0, "Unsupported YAML was treated as an alignment candidate");
+		report.checks.push({ structuredInvalidSyntaxRefused: true, unsupportedYamlPreserved: true });
 
 		report.ok = true;
 		return report;

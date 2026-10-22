@@ -1,0 +1,1 @@
+{"status":"notRunning","managedCodexPath":"/private/tmp/boxbox-python-native.TflF0A/codex/packages/app-server-daemon/current/bin/codex","managedCodexVersion":"0.163.0","socketPath":"/private/tmp/boxbox-python-native.TflF0A/codex/app-server-control/app-server-control.sock","cliVersion":"0.163.0"}

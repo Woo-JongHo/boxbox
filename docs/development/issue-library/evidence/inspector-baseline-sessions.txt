@@ -1,0 +1,85 @@
+# ERRATUM (added later on 2026-10-22): output tokens of subagent records below are lower bounds. For s4 the CLI reports 3,370 output tokens in total (not 3,026); the subagent share is about 2,131 (derived), not 1,787. Everything else here is unaffected. See docs/development/reviews/2026-10-22-inspector-model-pilot/RESULTS.md (Errata).
+# Baseline sessions for the model assignment evaluation (issue 020), 2026-10-22
+# Host: Claude Code 2.1.280 on native Windows, boxbox 0.2.5 (CI archive 5fe739f5), model chosen by that machine's settings (claude-opus-5-5, effort medium).
+# Run non-interactively by the assistant: claude -p --dangerously-skip-permissions --max-turns 15, one new session per request, in the prepared test folder.
+# cost_usd is the figure Claude Code printed for the run; it is not derived here. Token figures come from development/tools/session-usage.ts (subagent records included).
+# s1 check      session 57ca51f8  turns=4 cost_usd=0.3171  prompt: Use BoxBox Check on calls.ts and unapproved.ts. Report only.
+# s2 write      session 7661c251  turns=4 cost_usd=0.3074  prompt: Use BoxBox Write: append the line const x = make(4); at the end of calls.ts.
+# s3 align      session 97ff0042  turns=6 cost_usd=0.3432  prompt: Use BoxBox to align calls.ts.
+# s4 inspector  session 1c1ed073  turns=2 cost_usd=0.5120  prompt: Use the readability-inspector agent to inspect only calls.ts.
+# sum of the four runs: cost_usd=1.4797
+# A shell call that runs several engine commands counts as one turn and one call per command; its result tokens are counted under the first command, so the later commands show resultTokens=0.
+# Steps are attributed by turn, and each turn includes the context it re-reads: compare turns within a run, not across runs.
+
+######## s1_check
+session 57ca51f8-47ed-4463-a79d-8c760991c9e1
+total
+  all                                turns=    3 input=       6 cacheRead=     89,552 cacheWrite=   33,603 output=   1,519
+by model:effort
+  claude-opus-5-5:medium             turns=    3 input=       6 cacheRead=     89,552 cacheWrite=   33,603 output=   1,519
+by step (a turn counts under its BoxBox call, else other; subagent turns are prefixed)
+  other                              turns=    1 input=       2 cacheRead=     45,080 cacheWrite=    1,978 output=     889
+  boxbox:check                       turns=    1 input=       2 cacheRead=     31,017 cacheWrite=   14,063 output=     527
+  boxbox:skill                       turns=    1 input=       2 cacheRead=     13,455 cacheWrite=   17,562 output=     103
+  boxbox:guide                       turns=    0 input=       0 cacheRead=          0 cacheWrite=        0 output=       0
+  boxbox:skill                       calls=    1 resultTokens(est)=8
+  boxbox:check                       calls=    1 resultTokens(est)=810
+  boxbox:guide                       calls=    1 resultTokens(est)=0
+  hook SessionStart                  count=    1 tokens(est)=91
+  hook Stop                          count=    2 tokens(est)=122
+
+######## s2_write
+session 7661c251-0455-46d9-9d31-a2ed86f2f85f
+total
+  all                                turns=    3 input=       6 cacheRead=     92,888 cacheWrite=   31,935 output=   1,664
+by model:effort
+  claude-opus-5-5:medium             turns=    3 input=       6 cacheRead=     92,888 cacheWrite=   31,935 output=   1,664
+by step (a turn counts under its BoxBox call, else other; subagent turns are prefixed)
+  other                              turns=    1 input=       2 cacheRead=     45,094 cacheWrite=    1,975 output=   1,026
+  boxbox:guide                       turns=    1 input=       2 cacheRead=     32,660 cacheWrite=   12,434 output=     512
+  boxbox:skill                       turns=    1 input=       2 cacheRead=     15,134 cacheWrite=   17,526 output=     126
+  boxbox:check                       turns=    0 input=       0 cacheRead=          0 cacheWrite=        0 output=       0
+  boxbox:skill                       calls=    1 resultTokens(est)=8
+  boxbox:guide                       calls=    1 resultTokens(est)=893
+  boxbox:check                       calls=    1 resultTokens(est)=0
+  hook SessionStart                  count=    1 tokens(est)=91
+  hook Stop                          count=    2 tokens(est)=122
+
+######## s3_align
+session 97ff0042-61a3-4ac1-83da-9ad795719b25
+total
+  all                                turns=    5 input=      10 cacheRead=    184,460 cacheWrite=   33,110 output=   2,069
+by model:effort
+  claude-opus-5-5:medium             turns=    5 input=      10 cacheRead=    184,460 cacheWrite=   33,110 output=   2,069
+by step (a turn counts under its BoxBox call, else other; subagent turns are prefixed)
+  boxbox:align                       turns=    2 input=       4 cacheRead=     91,317 cacheWrite=    1,978 output=     885
+  other                              turns=    1 input=       2 cacheRead=     47,004 cacheWrite=    1,240 output=     616
+  boxbox:check                       turns=    1 input=       2 cacheRead=     31,005 cacheWrite=   14,021 output=     486
+  boxbox:skill                       turns=    1 input=       2 cacheRead=     15,134 cacheWrite=   15,871 output=      82
+  boxbox:guide                       turns=    0 input=       0 cacheRead=          0 cacheWrite=        0 output=       0
+  boxbox:skill                       calls=    1 resultTokens(est)=8
+  boxbox:check                       calls=    2 resultTokens(est)=414
+  boxbox:align                       calls=    2 resultTokens(est)=562
+  boxbox:guide                       calls=    1 resultTokens(est)=0
+  hook SessionStart                  count=    1 tokens(est)=91
+  hook Stop                          count=    2 tokens(est)=118
+
+######## s4_inspector (main record + subagent record)
+session 1c1ed073-094d-42d8-996b-31efa32fd33d
+total
+  all                                turns=    6 input=      12 cacheRead=    151,959 cacheWrite=   67,239 output=   3,026
+of which subagents
+  subagents                          turns=    4 input=       8 cacheRead=    104,170 cacheWrite=   41,244 output=   1,787
+by model:effort
+  claude-opus-5-5:medium             turns=    6 input=      12 cacheRead=    151,959 cacheWrite=   67,239 output=   3,026
+by step (a turn counts under its BoxBox call, else other; subagent turns are prefixed)
+  subagent/other                     turns=    3 input=       6 cacheRead=     70,425 cacheWrite=   35,164 output=   1,050
+  subagent/boxbox:check              turns=    1 input=       2 cacheRead=     33,745 cacheWrite=    6,080 output=     737
+  other                              turns=    1 input=       2 cacheRead=     32,655 cacheWrite=    8,474 output=     730
+  boxbox:inspector                   turns=    1 input=       2 cacheRead=     15,134 cacheWrite=   17,521 output=     509
+  subagent/boxbox:guide              turns=    0 input=       0 cacheRead=          0 cacheWrite=        0 output=       0
+  boxbox:inspector                   calls=    1 resultTokens(est)=753
+  subagent/boxbox:check              calls=    1 resultTokens(est)=365
+  subagent/boxbox:guide              calls=    1 resultTokens(est)=0
+  hook SessionStart                  count=    1 tokens(est)=91
+  hook Stop                          count=    2 tokens(est)=122

@@ -1,0 +1,6 @@
+retry           = 3
+timeout_seconds = 30
+batch_size      = 100
+
+def get_settings():
+    return retry, timeout_seconds, batch_size

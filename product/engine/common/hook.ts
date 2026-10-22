@@ -3,7 +3,7 @@
  * and builds the text returned to the agent. It never touches files or processes — that is `product/engine/hook.ts`'s job.
  * The first scope is read-only: it never fixes files and reports only new alarms.
  */
-import type { Report, ReportAlarm } from "./report.ts";
+import type { Report, ReportAlarm } from "@/common/report.ts";
 
 /** Fields used from the input the host passes to the hook (Claude Code PreToolUse / PostToolUse). */
 export interface HookInput {

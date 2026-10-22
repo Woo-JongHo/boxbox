@@ -1,0 +1,34 @@
+import os,json,subprocess,tempfile,hashlib
+from pathlib import Path
+root=Path(tempfile.mkdtemp(prefix='boxbox-modes-installed-'))
+project=root/'project'; project.mkdir()
+for name in ['codex','claude','data','config']:(root/name).mkdir()
+env={**os.environ,'CODEX_HOME':str(root/'codex'),'CLAUDE_CONFIG_DIR':str(root/'claude'),'XDG_DATA_HOME':str(root/'data'),'XDG_CONFIG_HOME':str(root/'config'),'npm_config_offline':'true','CLAUDE_PLUGIN_ROOT':'','CLAUDE_PLUGIN_DATA':'','PLUGIN_ROOT':'','PLUGIN_DATA':''}
+archive=Path('dist/installer/boxbox-plugin-0.2.4.tgz').resolve()
+results=[]
+def run(args,cwd=project):
+ p=subprocess.run(args,cwd=cwd,env=env,text=True,capture_output=True,timeout=120)
+ row={'args':args,'cwd':str(cwd),'exitCode':p.returncode,'stdout':p.stdout,'stderr':p.stderr};results.append(row)
+ (root/'transcript.json').write_text(json.dumps(results,indent=2)+'\n')
+ if p.returncode:raise RuntimeError(str(row))
+ return p.stdout
+run(['npm','exec','--offline','--yes','--package',str(archive),'--','boxbox','--codex','--claude'])
+run(['codex','plugin','list']);run(['claude','plugin','details','boxbox'])
+for host in ['codex','claude']:
+ plugin=root/'data'/'boxbox'/host/'0.2.4'/'plugin'
+ launcher=['node',str(plugin/'scripts/boxbox.mjs')]
+ assert run(launcher+['--version']).strip()=='0.2.4'
+ advice=json.loads(run(launcher+['guide','--file','new/settings.py','--authoring','--json']))
+ assert advice['writeAuthorized'] is False and len(advice['rules'])==1
+ assert not (project/'new').exists()
+ target=project/'settings.py';source='retry=3\ntimeout_seconds=30\nbatch_size=100\n';target.write_text(source)
+ preview=json.loads(run(launcher+['align','--file','settings.py','--dry-run','--json']))
+ assert preview['formatterExecuted'] is False and preview['written'] is False
+ assert len(preview['alignmentEdits'])>0 and target.read_text()==source
+ applied=json.loads(run(launcher+['align','--file','settings.py','--json']))
+ assert applied['written'] is True
+ checked=json.loads(run(launcher+['check','--file','settings.py','--json']))
+ assert checked['results'][0]['summary']['misaligned']==0
+summary={'root':str(root),'archive':str(archive),'sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),'bothNativeRegistrations':True,'bothInstalledLaunchersGuidePreviewApplyCheck':True,'liveProfilesModified':False,'nativeModelExecution':False}
+Path('/tmp/boxbox-modes-installed.json').write_text(json.dumps(summary,indent=2)+'\n')
+print(json.dumps(summary))

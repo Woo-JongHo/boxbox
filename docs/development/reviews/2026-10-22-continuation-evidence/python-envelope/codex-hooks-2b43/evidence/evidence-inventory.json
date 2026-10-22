@@ -1,0 +1,62 @@
+{
+  "candidate-binding.txt": {
+    "bytes": 292,
+    "sha256": "33a4aea81d236ff375ce8c08bc172e5f08314cd0e83a0771045ad9909f9e385a"
+  },
+  "cleanup.json": {
+    "bytes": 297,
+    "sha256": "5d0525f0047426e26bc483d6969e45fe49a64e57bfc3a665d4361d472bc94d8a"
+  },
+  "daemon-stop.txt": {
+    "bytes": 297,
+    "sha256": "9874a96cae57791be4446d11671d93196262e344b09f367fad3fe2841929987b"
+  },
+  "execution.json": {
+    "bytes": 336,
+    "sha256": "15ee3dbc7fd3cd798ccc5ddc84f516e65dee67e9dbf4ee56e0f7ced0cf02eefa"
+  },
+  "fail.prompt.txt": {
+    "bytes": 350,
+    "sha256": "c9a5fd3a331ef2ca630dc86d3b6d73e158044e7a70d60c09f2ccd9a5aeb3d017"
+  },
+  "fixture-aligned.py": {
+    "bytes": 69,
+    "sha256": "02bcd0267d69a76892826327e78e55c70f3fd6960b73ccd6cb7446c48927daf3"
+  },
+  "fixture-final.py": {
+    "bytes": 69,
+    "sha256": "02bcd0267d69a76892826327e78e55c70f3fd6960b73ccd6cb7446c48927daf3"
+  },
+  "hygiene.json": {
+    "bytes": 63,
+    "sha256": "36ba73073b46c84a6c7a90c8bff3150456d22825d72387ce8ee2948443ea7235"
+  },
+  "ordered-native-events.json": {
+    "bytes": 5055,
+    "sha256": "0e565167d029a0dfe5cdfdf63bef7459b60df39231f51b8f6f786a7cf5295731"
+  },
+  "public-tool-lifecycle.json": {
+    "bytes": 1087,
+    "sha256": "6d373a9f3c6df2b3e4cca379a368f305790e48366e25f55771efe686c77236f3"
+  },
+  "raw-layout-correction.json": {
+    "bytes": 1061,
+    "sha256": "3f476b9a8f66ccb73a8a5614a55f4311afee4058b86f7718c20993bef7074358"
+  },
+  "raw-source-binding.json": {
+    "bytes": 2097,
+    "sha256": "6aecff182ca2983cac560bd3441024dc18983b7de7cb41223752df17ef115180"
+  },
+  "receipt-chronology.json": {
+    "bytes": 968,
+    "sha256": "c6606c7a31566a16a8e2d3f8a8e9208881d719e61da6f54bb244256c37d239c3"
+  },
+  "recovery.prompt.txt": {
+    "bytes": 309,
+    "sha256": "94fda0440861eb01fb7794638775925799241bef8fea80e3f4dfa2e97abb7d7d"
+  },
+  "verification.json": {
+    "bytes": 298,
+    "sha256": "7a1446b38fc84640d66a5af3c62978707f511e8b9f7d3909352f8d2bd7a26712"
+  }
+}

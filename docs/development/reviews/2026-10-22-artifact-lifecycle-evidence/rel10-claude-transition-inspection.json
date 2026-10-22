@@ -1,0 +1,192 @@
+{
+  "reportSummary": {
+    "ok": false,
+    "error": "AssertionError [ERR_ASSERTION]: Host retained the wrong plugin version\n\n'0.2.3' !== '0.2.4'\n\n    at registered (file:///Users/jonghoPro/woo/00_project/98_BoxBox/development/tools/release-lifecycle.mjs:234:11)\n    at acceptInstalled (file:///Users/jonghoPro/woo/00_project/98_BoxBox/development/tools/release-lifecycle.mjs:291:27)\n    at transition (file:///Users/jonghoPro/woo/00_project/98_BoxBox/development/tools/release-lifecycle.mjs:323:5)\n    at lifecycle (file:///Users/jonghoPro/woo/00_project/98_BoxBox/development/tools/release-lifecycle.mjs:363:3)\n    at async file:///Users/jonghoPro/woo/00_project/98_BoxBox/development/tools/release-lifecycle.mjs:392:19",
+    "steps": [
+      {
+        "label": "fresh-previous",
+        "ok": true,
+        "version": "0.2.3",
+        "installation": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.3",
+        "registeredRoot": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/claude/plugins/cache/boxbox-plugins/boxbox/0.2.3"
+      },
+      {
+        "label": "cold-cache-offline",
+        "ok": true,
+        "expectedFailure": "ENOTCACHED",
+        "priorRegistrationAndEnginePreserved": true,
+        "dependencyOfflineOnly": true
+      },
+      {
+        "label": "warm-cache-previous-repair",
+        "ok": true,
+        "version": "0.2.3",
+        "installation": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.3",
+        "registeredRoot": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/claude/plugins/cache/boxbox-plugins/boxbox/0.2.3"
+      }
+    ],
+    "hostVersion": "2.1.286 (Claude Code)",
+    "commands": [
+      {
+        "label": "upgrade-direct-attempt",
+        "executable": "/opt/homebrew/bin/npm",
+        "args": [
+          "exec",
+          "--yes",
+          "--package",
+          "/tmp/boxbox-readiness/ci-candidate-39637622755-1/boxbox-plugin-0.2.4.tgz",
+          "--",
+          "boxbox",
+          "--claude"
+        ],
+        "cwd": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project",
+        "environmentOverrides": {},
+        "startedAt": "2026-10-21T17:17:29.415Z",
+        "state": "observed",
+        "stdout": "043.stdout.log",
+        "stderr": "043.stderr.log",
+        "pid": 5548,
+        "durationMs": 2749,
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "label": "upgrade-direct-accepted-plugins",
+        "executable": "/opt/homebrew/bin/claude",
+        "args": [
+          "plugin",
+          "list",
+          "--json"
+        ],
+        "cwd": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project",
+        "environmentOverrides": {},
+        "startedAt": "2026-10-21T17:17:32.165Z",
+        "state": "passed",
+        "stdout": "044.stdout.log",
+        "stderr": "044.stderr.log",
+        "pid": 5614,
+        "durationMs": 147,
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "label": "upgrade-direct-accepted-marketplaces",
+        "executable": "/opt/homebrew/bin/claude",
+        "args": [
+          "plugin",
+          "marketplace",
+          "list",
+          "--json"
+        ],
+        "cwd": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/project",
+        "environmentOverrides": {},
+        "startedAt": "2026-10-21T17:17:32.312Z",
+        "state": "passed",
+        "stdout": "045.stdout.log",
+        "stderr": "045.stderr.log",
+        "pid": 5621,
+        "durationMs": 126,
+        "exitCode": 0,
+        "signal": null
+      }
+    ]
+  },
+  "details": [
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/claude/plugins/cache/boxbox-plugins/boxbox/0.2.3",
+      "isSymlink": false,
+      "link": null,
+      "realpath": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/claude/plugins/cache/boxbox-plugins/boxbox/0.2.3",
+      "manifest": {
+        "name": "boxbox",
+        "displayName": "BoxBox",
+        "version": "0.2.3",
+        "description": "Inspects TypeScript and Python files one at a time against tabular readability rules and formats only through human-approved rules, plus a read-only inspector.",
+        "author": {
+          "name": "Woo-JongHo"
+        },
+        "keywords": [
+          "readability",
+          "typescript",
+          "python",
+          "code-style",
+          "align"
+        ]
+      },
+      "runtime": {
+        "node": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node",
+        "cli": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.3/runtime/node_modules/boxbox/dist/cli.js",
+        "skillCommand": "'/opt/homebrew/Cellar/node@22/22.22.3/bin/node' '/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.3/plugin/scripts/boxbox.mjs'",
+        "hudData": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/hud"
+      }
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.3/plugin",
+      "isSymlink": false,
+      "link": null,
+      "realpath": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.3/plugin",
+      "manifest": {
+        "name": "boxbox",
+        "displayName": "BoxBox",
+        "version": "0.2.3",
+        "description": "Inspects TypeScript and Python files one at a time against tabular readability rules and formats only through human-approved rules, plus a read-only inspector.",
+        "author": {
+          "name": "Woo-JongHo"
+        },
+        "keywords": [
+          "readability",
+          "typescript",
+          "python",
+          "code-style",
+          "align"
+        ]
+      },
+      "runtime": {
+        "node": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node",
+        "cli": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.3/runtime/node_modules/boxbox/dist/cli.js",
+        "skillCommand": "'/opt/homebrew/Cellar/node@22/22.22.3/bin/node' '/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.3/plugin/scripts/boxbox.mjs'",
+        "hudData": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/hud"
+      }
+    },
+    {
+      "path": "/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.4/plugin",
+      "isSymlink": false,
+      "link": null,
+      "realpath": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.4/plugin",
+      "manifest": {
+        "name": "boxbox",
+        "displayName": "BoxBox",
+        "version": "0.2.4",
+        "description": "Guides writing and refactoring TypeScript and Python, with syntax and tabular checks for TypeScript, Python, JSON and YAML and human-approved whitespace alignment.",
+        "author": {
+          "name": "Woo-JongHo"
+        },
+        "keywords": [
+          "readability",
+          "typescript",
+          "python",
+          "code-style",
+          "align",
+          "json",
+          "yaml"
+        ]
+      },
+      "runtime": {
+        "node": "/opt/homebrew/Cellar/node@22/22.22.3/bin/node",
+        "cli": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.4/runtime/node_modules/boxbox/dist/cli.js",
+        "skillCommand": "'/opt/homebrew/Cellar/node@22/22.22.3/bin/node' '/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/0.2.4/plugin/scripts/boxbox.mjs'",
+        "hudData": "/private/tmp/boxbox-readiness/rel10-macos-claude-1/workspace-eVXmyp/profile/data/boxbox/claude/hud"
+      }
+    }
+  ],
+  "updateHelp": {
+    "args": [
+      "plugin",
+      "update",
+      "--help"
+    ],
+    "status": 0,
+    "stdout": "Usage: claude plugin update [options] <plugin>\n\nUpdate a plugin to the latest version (restart required to apply)\n\nOptions:\n  --accept-command <sha256>  Accept the marketplace-declared command (a\n                             command-source install, or the headersHelper that\n                             fetches the archive) whose sha256 a previous --json\n                             run reported as shownCommand.sha256; counts as -y\n                             for exactly that command, for that plugin and\n                             marketplace catalog, and nothing else. If either\n                             changed (a refresh that moved the catalog counts),\n                             the run refuses and reports the command again, to\n                             be shown to a person again\n  -h, --help                 Display help for command\n  --json                     Print one machine-readable result line on stdout\n                             instead of the human message (same exit codes; a\n                             marketplace-declared command is still shown and\n                             must be confirmed — pass -y when not interactive)\n  -s, --scope <scope>        Installation scope: user, project, local, managed\n                             (default: auto-detect)\n  -y, --yes                  Accept the displayed marketplace-declared command\n                             without the confirmation prompt — a changed install\n                             command, or the headersHelper command that fetches\n                             its archive (required when stdin or stdout is not a\n                             TTY)\n",
+    "stderr": ""
+  }
+}

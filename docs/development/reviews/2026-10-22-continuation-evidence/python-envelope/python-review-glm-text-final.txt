@@ -1,0 +1,28 @@
+**PASS**
+
+No mandatory defect found in the frozen packet (`table-engine.ts`, `assignment-envelope.ts`, `profile.ts` registration) against the stated invariants. Verdict is a static-source judgment only: I did not execute anything, the test suite is not in this packet (so the reported 648-pass/3396-assertion and 180-case evidence is unverified here), and the three hashes cannot be confirmed without running a hasher.
+
+**Invariant checks (file/function → conclusion)**
+
+1. *Absent callback unchanged* — `alignSource`: `const runs = projections === undefined ? primary : projectedRuns(...)`; with no `project`, `projected` stays empty and the path is byte-equivalent to the primary-only flow (same `contiguousRuns`, same `refuseUnsafeTables`). ✔
+2. *No key inheritance* — `assignment()` emits axes `name>equal>assignment-value`; the detailed profiler's axes (`...>value`) are distinct, so `signatureOf` can never equate them and no run can mix keys; the registry key `v1|python|-|table|name>equal>assignment-value` is textually disjoint from the approved `name>equal>value`. ✔
+3. *Reserved primary rows* — `projectedRuns` computes `reserved` from primary runs ≥ minRows **before** any preservation refusal; `refuseUnsafeTables` runs afterward and never re-runs selection, so refused primary rows cannot be retried by fallback. ✔
+4. *No overlap/duplicate counts* — `reserved` excludes primary-table rows from fallback; `claimed` (fallback tables) excludes primary pairs; `pairRows` excludes fallback pairs. The four returned lists are index-disjoint; `groups`/`tables`/`pairs`/`misaligned` count each row once; single filtered rows are dropped, not double-reported. Fallback runs are computed **after** filtering, so contiguity never bridges a reserved line. ✔
+5. *Contiguous/same-indent/axes for projections* — `contiguousRuns` enforces `previous.index === row.index - 1` and identical `signatureOf` (indent + axes). ✔
+6. *Fail-closed lexing* — `assignmentEnvelopes`: unterminated quote → `quote !== ""`; bracket mismatch or stray close → permanent `uncertain`; prefixed strings (`f"…"`, `rb"…"`) → permanent `uncertain`; backslash EOL → `continued`; escaped quotes skipped; `#` only outside quotes. Every divergence path suppresses projection. In `alignSource`, any mask/envelope comment-position divergence fails `losslessProfile(projection, code)` and drops the row. ✔
+7. *Detector not syntax authority / whitespace-only edits* — `rebuildCode` emits verbatim `indent`/slot texts with canonical gaps; `refuseUnsafeTables` re-validates the whole candidate with `changedLines` and drops owning tables (or all editing tables when no edited line explains the change) until clean; loop provably terminates (each pass drops ≥1 table while edits exist). ✔
+8. *Simple ASCII target, opaque RHS, gaps around `=` only* — target regex `[A-Za-z_][A-Za-z0-9_]*` minus keywords; augmented (`+=`), annotated, multi-target, attribute/subscript targets, walrus, semicolons, `=`-bearing/ternary/keyword/hex/underscore-literal RHS all fail the regex or `calculation`'s token-join/grammar (verified case by case: `x == 1`, `x = y = 1`, `x += 1`, `x: int = 1`, `x, y = 1`, `a.b = 1`, `a[0] = 1`, `x = a[1]`, `x = 1;`, `x = 1 if y else 2`, `x = 0x1F`, `x = 1_000`, `x = "#"`). `assignment-value` is last and absent from `columnAxes`, so the RHS is never padded; only `name` padding and `=`-gap normalization occur, both collapsed identically by `normalizeCode` (WORD↔OPERATOR runs are not joinable). ✔
+9. *Unsupported Python outside projection* — continuation lines, bracket-open lines, in-string lines, and `uncertain` files produce no projections; the detailed profiler path is untouched. ✔
+
+CRLF handling is consistent (strip on profile, re-append on rebuild; `\r` survives in `mask.text` geometry). Widths use `displayWidth` but names are ASCII, so padding arithmetic is exact.
+
+**Limits of this verdict**: the detailed `profilePython` body, `PYTHON_SYNTAX` string specs, the registry/key-derivation code, and all tests are omitted from the packet; conclusions about them rest on the registration excerpt's claims. Invariant 2 is verified at the axis/signature level, not by inspecting registry key matching.
+
+**Optional hardening (non-blocking)**
+
+- `assignment-envelope.ts`, quote branch: any `r/u/b/f`-prefixed string (e.g. a single `f"…"` for a log message) latches `uncertain` for the rest of the file, silently zeroing all later projections. Since quote state is already tracked, you could clear `uncertain` when the prefixed string closes cleanly and brackets balance, keeping the latch only for genuine anomalies. Safe as-is (refusal is safe), but a large capability loss in typical Python.
+- `projectedRuns`: a primary *pair* fully absorbed by a fallback table (e.g. primary pair rows 1–2 inside projected run 1–4) silently disappears from reporting; consider recording the absorption so audit trails explain the missing pair.
+- `calculation`: `\d+(?:\.\d*)?` rejects `1_000`/`0x1F`; intentional conservatism, but worth a comment so future edits don't "fix" it into syntax-authority territory.
+- A line ending `\` + trailing spaces (invalid Python) is treated as non-continuation; harmless because edits are whitespace-only and preservation-gated, but a `\\[ \t]*$` check would make the intent explicit.
+
+**PASS**

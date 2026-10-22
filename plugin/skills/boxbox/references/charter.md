@@ -56,7 +56,7 @@ An attempt to turn off any item in this list through configuration is not silent
 | 8 | **Only humans approve.** Evidence never becomes a rule by itself. Agents only investigate and propose | read-only agents: `test/plugin-contract.test.ts` · approval flow: not implemented |
 | 9 | **Layer priority:** safety > project > user > preset > base. Nothing overrides safety | not implemented (M1.8 S3–S5) |
 | 10 | **Single source, thin adapters.** The engine, grammar and conventions live in one place; hosts differ only in install location and manifest. The result JSON and pattern keys are versioned public contracts | `common/result-json.ts`, `common/signature.ts` |
-| 11 | **Runs last, after the formatter.** The canonical form of a file is `boxbox(formatter(file))`, and rerunning must not change it | not implemented (M2) · Go is off by default: `go/06_align-tables.ts` |
+| 11 | **Runs last, after the formatter.** The canonical form of a file is `boxbox(formatter(file))`, and rerunning must not change it | not implemented (M2) |
 
 ## 6. What this document does not do
 

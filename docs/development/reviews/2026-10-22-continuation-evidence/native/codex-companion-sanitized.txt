@@ -1,0 +1,4 @@
+Companion pane observed: BoxBox 0.2.4 | engine ready | approved 2.
+Pinned project: project (/private/tmp/boxbox-native-fixed.Shl97G/project).
+Receipt/file state: project history (not current session) receipt unknown; file not run; host unverified.
+The upper interactive Codex pane remained at the sign-in menu. The authenticated Write and Refactor workflows used direct `codex exec`, not that upper interactive pane.

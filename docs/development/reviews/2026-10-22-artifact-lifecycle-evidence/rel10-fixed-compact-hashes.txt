@@ -1,0 +1,12 @@
+e07c23bd12ee31a0503240eb4f24eb970378023d27c59fada98524c240c50257  /tmp/boxbox-readiness/rel10-fixed-wsl-codex/lifecycle.json
+0f1ba78bd522cd3225ec347f3295c8e91dd4031457a8d6bc95e2a84d4a780145  /tmp/boxbox-readiness/rel10-fixed-wsl-codex/summary.json
+363769e05fac09482fd79767ce8e2d270b31edcdb3b8ce307bb6dffa11c28acc  /tmp/boxbox-readiness/rel10-fixed-wsl-claude/lifecycle.json
+39cb6f2c68b9d11f5764fa1207024ce0934d72557b501d4e12a0976f25ea6be2  /tmp/boxbox-readiness/rel10-fixed-wsl-claude/summary.json
+b1ad704006b16fb0cbc0e634fa8455965781317b58c9461c98b032ba29741d12  /tmp/boxbox-readiness/rel10-fixed-windows-codex/lifecycle.json
+5d7467e49e7c21a7bd500e1662ba0dade5436bc7b14e8a22f509d95ff635f154  /tmp/boxbox-readiness/rel10-fixed-windows-codex/summary.json
+5131941e857f08a47a6db37844702de8c10b4babd52c6102c76417e0359a6a00  /tmp/boxbox-readiness/rel10-fixed-windows-claude/lifecycle.json
+57028928451604af76973a551d5f2f900ff7e3eb8dba39876206dd8a8e3f9df6  /tmp/boxbox-readiness/rel10-fixed-windows-claude/summary.json
+53fcaa53b3ec569239de8a0227c8e6d226c71da90c0f3dd0b558b50baf8eda0f  /tmp/boxbox-readiness/rel10-fixed-wsl-hud-codex/hud-lifecycle.json
+cbdf795cf699f5e3e41291957ef57fb01b234d5edc3d5a722610e1c31b979994  /tmp/boxbox-readiness/rel10-fixed-wsl-hud-codex/summary.json
+61d7a2ae9f2ec832dfec24faa8678bd8609dc6cdb8be469dd8c6bec422423369  /tmp/boxbox-readiness/rel10-fixed-wsl-hud-claude/hud-lifecycle.json
+97c0940919c8d62a3ddbc216141e2c14cd4c3cd64c778ee08d94cb25e039b6e2  /tmp/boxbox-readiness/rel10-fixed-wsl-hud-claude/summary.json

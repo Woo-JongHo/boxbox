@@ -48,8 +48,8 @@ describe("formatter process execution", () => {
 	});
 
 	test("detects replacement of a resolved formatter", () => {
-		const root = workspace()                                             ;
-		const file = script(root, "#!/usr/bin/env node\nprocess.exit(0);\n") ;
+		const root = workspace()                                                ;
+		const file = script   (root, "#!/usr/bin/env node\nprocess.exit(0);\n") ;
 		chmodSync(file, 0o755);
 
 		const first = resolveFormatterExecutable(file, root);
@@ -120,8 +120,8 @@ if (process.platform === "win32") {
 		});
 
 		test("refuses batch shims with an actionable alternative", () => {
-			const root  = workspace()                                                               ;
-			const entry = script(root, "@echo off\r\necho should-not-execute\r\n", "formatter.cmd") ;
+			const root  = workspace()                                                                  ;
+			const entry = script   (root, "@echo off\r\necho should-not-execute\r\n", "formatter.cmd") ;
 			process.env.PATH = root;
 			process.env.PATHEXT = ".CMD;.EXE";
 

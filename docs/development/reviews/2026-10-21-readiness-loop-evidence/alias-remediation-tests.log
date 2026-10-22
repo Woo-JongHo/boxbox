@@ -1,0 +1,26 @@
+bun test v1.4.0 (34cbb9a40)
+
+test/install-lifecycle.test.ts:
+(pass) install.sh lifecycle > links the same skill source into Claude, ZCode and Codex and survives a rerun [101.86ms]
+(pass) install.sh lifecycle > copy install creates an independent copy and uninstall removes only installed targets [676.24ms]
+(pass) install.sh lifecycle > never overwrites a regular file owned by the user [11.30ms]
+
+test/alias-portability.test.ts:
+(pass) a copied development skill resolves engine aliases and its TypeScript runtime in isolation [1119.84ms]
+(pass) copy installation leaves no partial target when pinned dependencies are absent [63.91ms]
+(pass) stale markers never authorize replacing or uninstalling a user-owned directory [68.69ms]
+(pass) foreign symlinks survive install and uninstall [14.47ms]
+(pass) a managed copy refreshes only while its directory identity matches [1036.29ms]
+(pass) an edited managed file copy survives refresh and uninstall [1119.28ms]
+
+test/layout.test.ts:
+(pass) a version bump stamps generated manifests without modifying product templates [21.06ms]
+(pass) dangling output links never create external files or directories [20.75ms]
+(pass) product dependencies allow mapped engine aliases and reject escapes [33.15ms]
+(pass) engine aliases reject missing targets, escapes and symbolic paths [1.79ms]
+(pass) the entire marketplace plugin regenerates from product sources and detects manual changes [30.17ms]
+
+ 14 pass
+ 0 fail
+ 90 expect() calls
+Ran 14 tests across 3 files. [4.47s]

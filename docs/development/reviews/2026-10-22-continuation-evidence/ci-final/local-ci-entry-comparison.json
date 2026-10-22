@@ -1,0 +1,16 @@
+{
+  "localEntries": 40,
+  "ciEntries": 40,
+  "different": [
+    {
+      "path": "package/payload/claude/packages/boxbox-0.2.4.tgz",
+      "localBytes": 105257,
+      "ciBytes": 105704
+    },
+    {
+      "path": "package/payload/codex/packages/boxbox-0.2.4.tgz",
+      "localBytes": 105257,
+      "ciBytes": 105704
+    }
+  ]
+}

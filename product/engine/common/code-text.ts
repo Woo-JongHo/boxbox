@@ -11,20 +11,14 @@ export interface StringSpec {
 }
 
 export interface BlockCommentSpec {
-	readonly open    : string;
-	readonly close   : string;
-	/** Swallow nested opens (`/* … /* … * / … * /`) and close only when the depth reaches zero — Swift and Kotlin nest block comments. */
-	readonly nested? : boolean;
+	readonly open  : string;
+	readonly close : string;
 }
 
 export interface CodeSyntax {
 	readonly lineComments  : readonly string[]           ;
 	readonly blockComments : readonly BlockCommentSpec[] ;
 	readonly strings       : readonly StringSpec[]       ;
-	/** Treat only Rust char literals `'a'` as strings; leave lifetimes `'a` as code. */
-	readonly rustChars?    : boolean;
-	/** Recognize C++ raw strings `R"delim( ... )delim"`. */
-	readonly cppRaw?       : boolean;
 }
 
 export interface MaskedSource {
@@ -49,10 +43,11 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 	let lineStart                   = 0                                                   ;
 	let inBlock                     = false                                               ;
 	let blockClose                  = ""                                                  ;
-	let blockOpenToken              = ""                                                  ;
-	let blockNested                 = false                                               ;
-	let blockDepth                  = 0                                                   ;
 	let index                       = 0                                                   ;
+
+	const blank = (from: number, length: number): void => {
+		for (let offset = 0; offset < length; offset += 1) masked[from + offset] = " ";
+	};
 
 	while (index < source.length) {
 		const character = source[index];
@@ -67,20 +62,8 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 		if (commentStarts[line] === undefined) commentStarts[line] = -1;
 
 		if (inBlock) {
-			// Nested-capable blocks (Swift, Kotlin) swallow inner opens and close only at depth zero.
-			if (blockNested && source.startsWith(blockOpenToken, index)) {
-				for (let k = 0; k < blockOpenToken.length; k += 1) masked[index + k] = " ";
-				blockDepth += 1;
-				index += blockOpenToken.length;
-				continue;
-			}
 			if (source.startsWith(blockClose, index)) {
-				for (let k = 0; k < blockClose.length; k += 1) masked[index + k] = " ";
-				if (blockNested && blockDepth > 0) {
-					blockDepth -= 1;
-					index += blockClose.length;
-					continue;
-				}
+				blank(index, blockClose.length);
 				inBlock = false;
 				index += blockClose.length;
 				continue;
@@ -93,12 +76,9 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 		const blockOpen = syntax.blockComments.find(spec => source.startsWith(spec.open, index));
 		if (blockOpen) {
 			if (commentStarts[line] < 0) commentStarts[line] = index - lineStart;
-			for (let k = 0; k < blockOpen.open.length; k += 1) masked[index + k] = " ";
-			inBlock        = true                      ;
-			blockClose     = blockOpen.close           ;
-			blockOpenToken = blockOpen.open            ;
-			blockNested    = blockOpen.nested === true ;
-			blockDepth     = 0                         ;
+			blank(index, blockOpen.open.length);
+			inBlock    = true            ;
+			blockClose = blockOpen.close ;
 			index += blockOpen.open.length;
 			continue;
 		}
@@ -111,27 +91,20 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 			continue;
 		}
 
-		if (syntax.cppRaw && character === "R" && source[index + 1] === '"') {
-			let cursor    = index + 2 ;
-			let delimiter = ""        ;
-			while (cursor < source.length && source[cursor] !== "(" && source[cursor] !== "\n" && delimiter.length < 16) { delimiter += source[cursor]; cursor += 1; }
-			if (source[cursor] === "(") {
-				const close = `)${delimiter}"`;
-				index = consumeString(source, masked, index, cursor + 1, close, false);
-				continue;
-			}
-		}
-
-		if (syntax.rustChars && character === "'") {
-			const match = /^'(\\.|[^\\'])'/.exec(source.slice(index));
-			if (match) { index = consumeString(source, masked, index, index + 1, "'", true); continue; }
-		}
-
 		const openToken = strings.find(token => source.startsWith(token, index));
 		if (openToken) {
 			const spec  = syntax.strings.find(candidate => candidate.open === openToken) ;
 			const spec0 = spec as StringSpec                                             ;
-			index = consumeString(source, masked, index, index + openToken.length, spec0.close, spec0.escape);
+			const end   = consumeString(source, masked, index, index + openToken.length, spec0.close, spec0.escape) ;
+			// A string may span lines (triple quotes, backslash-newline). Its newlines still start lines, or every later
+			// line's commentStarts and opensInBlock would shift by one.
+			for (let newline = source.indexOf("\n", index); newline >= 0 && newline < end; newline = source.indexOf("\n", newline + 1)) {
+				line += 1;
+				lineStart           = newline + 1 ;
+				opensInBlock[line]  = inBlock     ;
+				commentStarts[line] = -1          ;
+			}
+			index = end;
 			continue;
 		}
 

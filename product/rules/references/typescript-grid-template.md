@@ -46,6 +46,17 @@ expect(preservesTokens(text        , text.replace("c  d", "c d"))).toBe(false) ;
 expect(preservesTokens("let x = 1;", "letx = 1;"                )).toBe(false) ;
 ```
 
+**Outer call envelope.** Different simple callees or arities can share outer parentheses in a declaration table.
+The whole argument list is one cell; inner commas keep their original layout. One trailing `!` stays attached.
+Empty calls keep `()` and share only the opening column. Optional, computed, awaited, constructor and generic calls,
+call-produced receivers, trailing commas and comments on the editable boundaries are outside this form.
+The new `declaration-call-envelope` kind uses its own lookup key, so existing same-call preset approval is not reused.
+
+```ts
+const decision = registry.decisions.get(convention.id                 )! ;
+const document = resolveDocument       (decision.ref, convention.layer)  ;
+```
+
 **List layer.** A literal list inside the table is a nested table of its own: the declaration value itself (`const STATES = [...] ;`), an argument of the layered call, or a matcher argument (`expect(x).toEqual([...])`). `[` / `{` keep one column, each item `,` sits right after the widest item in its column, the next item starts one space later, and `]` / `}` sits right after the widest last item. A slot is kept only when every row has the same list shape there (same arity, or the same object property names) and every item is a string, number or boolean literal; lists with identifiers or calls (argv-like), lists with a trailing comma or a multi-line form, and lists where one item is 20 or more columns wider than the second widest in its column stay compact. Dropping the call layer drops the list slots inside its arguments.
 
 ```ts
@@ -78,6 +89,33 @@ const next  = chars[index + 1]  ;
 ```ts
 if (value === "/" && next === "/") { state = "line"    ; chars[index] = chars[index + 1] = " "; index += 1; continue; }
 if (value === "`"                ) { state = "template"; chars[index] = " ";                                continue; }
+```
+
+**Member calls.** The final property separator is its own column: `receiver | . | method | ( | arguments | )`.
+Nested receiver expressions stay in the receiver cell. Bare function calls have no member separator; punctuation
+inside argument expressions has its own role and is not part of this dot column.
+
+```ts
+const rows = Array.from  (items    ) ;
+const over = rows .filter(isVisible) ;
+```
+
+**Return guards.** `return-guards` aligns the start of `return`, leaving the condition's spelling unchanged.
+Three or more supported guards in one immediate block form a scoped comparison region; see
+[column-sharing regions](readability-contract.md#column-sharing-regions) for region boundaries. Intervening
+statements stay in place, and a final unconditional return keeps its own role. This is a column boundary,
+not an instruction to insert blank lines or move guards above the values they inspect.
+
+```ts
+function read(value: unknown) {
+	if (!value)                        return undefined;
+	const declared = value;
+
+	if (declared === undefined)        return undefined;
+	const unwrapped = declared;
+	if (typeof unwrapped !== 'string') return undefined;
+	return unwrapped;
+}
 ```
 
 ## Registration objects · enum members · case rows

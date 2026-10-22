@@ -124,11 +124,11 @@ export function completionOf(requestedStages: readonly string[], stages: readonl
 	const executed = stages.filter(stage => !stage.skipped) ;
 	const skipped  = stages.filter(stage => stage.skipped ) ;
 	return {
-		complete  : executed.length + skipped.length === requestedStages.length,
-		requested : requestedStages.length,
-		succeeded : executed.filter(stage => stage.ok).length,
-		failed    : executed.filter(stage => !stage.ok).length,
-		skipped   : skipped.length,
+		complete  : executed.length + skipped.length === requestedStages.length ,
+		requested : requestedStages.length                                      ,
+		succeeded : executed.filter(stage => stage.ok).length                   ,
+		failed    : executed.filter(stage => !stage.ok).length                  ,
+		skipped   : skipped.length                                              ,
 	};
 }
 

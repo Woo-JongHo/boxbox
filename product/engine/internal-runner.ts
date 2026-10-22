@@ -1,8 +1,8 @@
 import      { fileURLToPath      } from "node:url"              ;
 
-import      { runAlignCli        } from "./common/align-cli.ts" ;
-import      { PYTHON_ALIGNER     } from "./python/profile.ts"   ;
-import      { runTypeScriptAlign } from "./typescript/align.ts" ;
+import      { runAlignCli        } from "@/common/align-cli.ts" ;
+import      { PYTHON_ALIGNER     } from "@/python/profile.ts"   ;
+import      { runTypeScriptAlign } from "@/typescript/align.ts" ;
 
 export async function runInternal(args: readonly string[]): Promise<number> {
 	const [language, ...alignArgs] = args;

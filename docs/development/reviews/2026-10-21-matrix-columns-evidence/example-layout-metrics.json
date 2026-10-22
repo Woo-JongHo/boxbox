@@ -1,0 +1,11 @@
+{
+  "tabStop": 4,
+  "before": {
+    "lines": 20,
+    "maxColumns": 168
+  },
+  "after": {
+    "lines": 30,
+    "maxColumns": 71
+  }
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "socket": "/private/tmp/tmux-502/boxbox-hud-36616-600f5aa8",
+    "pane": "%0 19 node",
+    "screen": "\n  Folder access\n  /tmp/boxbox-hud-20261021/native-project\n\n  Note: You\u2019re in a subdirectory of a Git project. Trusting will apply to the\n  repository root:\n  /private/tmp/boxbox-hud-20261021/native-project\n\n  Trust this folder? Codex can read, edit, and run files here, subject to your\n  permission settings. Folder settings can run code automatically, even\n  without a model request. Continue only if you trust these files. Your trust\n  decision will be saved.\n\n\u203a 1. Trust and continue\n  2. Quit\n\n  enter continue \u00b7 esc quit\n\n\n"
+  },
+  {
+    "socket": "/private/tmp/tmux-502/boxbox-hud-36616-600f5aa8",
+    "pane": "%1 4 node",
+    "screen": "BoxBox 0.2.3 | engine ready | approved 2\nPinned project: native-project (/private/tmp/boxbox-hud-20261021/native-project)\nproject history (not current session): unknown (unknown)\n\n"
+  }
+]

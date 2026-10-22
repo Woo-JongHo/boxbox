@@ -38,9 +38,9 @@ const black    = { command: "python3", args: ["-m", "black", "{file}"], timeoutM
 
 describe("config layers", () => {
 	test("replaces arrays and per-language formatters in Base → Preset → User → Project order", () => {
-		const root     = workspace()                             ;
-		const userRoot = workspace()                             ;
-		const user     = join(userRoot, "boxbox", "config.json") ;
+		const root     = workspace()                                  ;
+		const userRoot = workspace()                                  ;
+		const user     = join     (userRoot, "boxbox", "config.json") ;
 		writeConfig(user, { schemaVersion: 2, languages: ["python"], formatters: { typescript: prettier, python: black } });
 		writeConfig(join(root, ".boxbox", "config.json"), { schemaVersion: 2, languages: ["typescript"], formatters: { typescript: { command: "biome", args: ["format", "--write", "{file}"], timeoutMs: 1000 } } });
 		const resolved = resolveConfig(root, {
@@ -55,12 +55,12 @@ describe("config layers", () => {
 	});
 
 	test("schema 1 migrates only in memory and never changes the original", () => {
-		const root = workspace()                          ;
-		const path = join(root, ".boxbox", "config.json") ;
+		const root = workspace()                               ;
+		const path = join     (root, ".boxbox", "config.json") ;
 		writeConfig(path, { schemaVersion: 1, languages: ["python"] });
-		const before   = readFileSync(path, "utf8")                                               ;
-		const direct   = readProjectConfig(root)!                                                 ;
-		const resolved = resolveConfig(root, { userConfigPath: join(root, "missing-user.json") }) ;
+		const before   = readFileSync     (path, "utf8"                                             )  ;
+		const direct   = readProjectConfig(root                                                     )! ;
+		const resolved = resolveConfig    (root, { userConfigPath: join(root, "missing-user.json") })  ;
 		expect(direct.schemaVersion                                                 ).toBe   (2         ) ;
 		expect(direct.languages                                                     ).toEqual(["python"]) ;
 		expect(resolved.sources.find(source => source.layer === "project")?.migrated).toBe   (1         ) ;
@@ -68,7 +68,7 @@ describe("config layers", () => {
 	});
 
 	test("schema 2 init writes a minimal file that does not shadow upper-layer values", () => {
-		const root   = workspace()                   ;
+		const root   = workspace              ()     ;
 		const result = initializeProjectConfig(root) ;
 		expect(result.created).toBe(true);
 		expect(JSON.parse(readFileSync(result.path, "utf8"))).toEqual({ schemaVersion: 2 });
@@ -100,11 +100,11 @@ describe("config layers", () => {
 	});
 
 	test("missing layers keep defaults, the fingerprint is deterministic and detects raw changes", () => {
-		const root   = workspace()                                   ;
-		const user   = join(root, "missing", "config.json")          ;
+		const root   = workspace    ()                               ;
+		const user   = join         (root, "missing", "config.json") ;
 		const first  = resolveConfig(root, { userConfigPath: user }) ;
 		const second = resolveConfig(root, { userConfigPath: user }) ;
-		expect(first.effective.languages).toEqual(["typescript", "python"]);
+		expect(first.effective.languages).toEqual(["typescript", "python", "json", "yaml"]);
 		expect(first.fingerprint).toBe(second.fingerprint);
 		const path = join(root, ".boxbox", "config.json");
 		writeConfig(path, { schemaVersion: 2 });

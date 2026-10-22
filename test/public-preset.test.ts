@@ -103,12 +103,12 @@ describe("public preset release policy", () => {
 		const { root, examples } = fixture();
 		const invalid = { ...examples[0]!, rules: "synthetic-rule" };
 		replaceExamples(root, [invalid, examples[1]!]);
-		expect(() => preparePublicPreset(root)).toThrow("rules must be an array");
+		expect(() => preparePublicPreset(root)).toThrow("examples.jsonl:1.rules: must be an array of strings");
 	});
 
 	test("also refuses arbitrary fields inside versions", () => {
 		const { root, examples } = fixture();
-		const leaked = { ...examples[0]!, versions: { ...APPROVAL_VERSIONS, privateRepository: "internal" } };
+		const leaked = { ...examples[0]!, versions: { ...APPROVAL_VERSIONS, privateRepository: 1 } };
 		replaceExamples(root, [leaked, examples[1]!]);
 		expect(() => preparePublicPreset(root)).toThrow("unexpected fields: privateRepository");
 	});

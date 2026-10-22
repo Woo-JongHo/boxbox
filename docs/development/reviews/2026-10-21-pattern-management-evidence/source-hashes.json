@@ -1,0 +1,9 @@
+{
+  "product/engine/common/conventions.ts": "6323f9f7aef398d9550b33b96444aa8aa864cc650e060721aa3eb2d4f59e081e",
+  "product/engine/common/approval-gate.ts": "6df6d87b96ce7070dc806ee6db4f3b7f2a0d01854c4b338242f1cb59b133a60b",
+  "product/engine/common/authoring-guide.ts": "d3df706c72499855d1775711270b072e35c97639322d5e0b96fb3571dd11d06a",
+  "product/engine/common/signature.ts": "958a206fa54e709a735c3305726b49e2811ad5074c78e12208766e5087067e4d",
+  "product/engine/typescript/grid-kinds.ts": "9c6e6f8109d17b87b43710ab69cb5ebe53cd70ac84a2ecfe80246730311d94d4",
+  "product/rules/presets/recommended/conventions.jsonl": "e9ed8c2fc41ebfced18658027786c4ae2c174a8710f9c64dc68f934304708a54",
+  "docs/development/storage.md": "3c8ed2067bacaffa39c82fa3ca095395bfd4d2321b872ba87523ba7c7b28857e"
+}

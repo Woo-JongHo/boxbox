@@ -39,7 +39,7 @@ function run(script: string, args: readonly string[]): ResultEnvelope {
 	return JSON.parse(result.stdout.toString()) as ResultEnvelope;
 }
 
-const LINE_ENGINE = [["python", "py"], ["java", "java"], ["go", "go"], ["rust", "rs"], ["javascript", "js"], ["c", "c"], ["cpp", "cpp"]] as const;
+const LINE_ENGINE = [["python", "py"]] as const;
 
 describe("shared result JSON", () => {
 	test("TypeScript aligner emits a valid envelope", () => {
@@ -59,7 +59,7 @@ describe("shared result JSON", () => {
 
 	test("write mode reports the re-parse result", () => {
 		const workspace = mkdtempSync(join(import.meta.dir, "result-json-")) ;
-		const target    = join(workspace, "tables.py")                       ;
+		const target    = join       (workspace, "tables.py"               ) ;
 		workspaces.push(workspace);
 		copyFileSync(resolve(root, "test/fixtures/python/tables.py"), target);
 		const value = run("product/engine/python/06_align-tables.ts", ["--file", relative(root, target), "--write"]);

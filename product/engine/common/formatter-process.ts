@@ -1,9 +1,9 @@
-import      { spawn                                         } from "node:child_process"  ;
-import      { createHash                                    } from "node:crypto"         ;
-import      { constants, realpathSync, statSync             } from "node:fs"             ;
-import      { delimiter, extname, isAbsolute, join, resolve } from "node:path"           ;
+import      { spawn                                         } from "node:child_process"         ;
+import      { createHash                                    } from "node:crypto"                ;
+import      { constants, realpathSync, statSync             } from "node:fs"                    ;
+import      { delimiter, extname, isAbsolute, join, resolve } from "node:path"                  ;
 
-import type { FormatterConfig                               } from "./project-config.ts" ;
+import type { FormatterConfig                               } from "@/common/project-config.ts" ;
 
 const OUTPUT_LIMIT = 64 * 1024;
 
@@ -22,8 +22,8 @@ export interface ExecutableIdentity {
 }
 
 function identityOf(file: string): readonly unknown[] {
-	const physical = realpathSync(file) ;
-	const status   = statSync(physical) ;
+	const physical = realpathSync(file    ) ;
+	const status   = statSync    (physical) ;
 	if (!status.isFile() || (process.platform !== "win32" && (status.mode & constants.S_IXUSR) === 0)) throw new Error("not an executable file");
 
 	return [physical, status.dev, status.ino, status.mode, status.size, status.mtimeMs, status.ctimeMs];
@@ -107,55 +107,50 @@ export async function runFormatterProcess(executable: string, config: FormatterC
 		const child = spawn(script ? process.execPath : executable, script ? [executable, ...args] : args, {
 			cwd: root, detached: !windows, shell: false, windowsHide: true, stdio: ["ignore", "pipe", "pipe"],
 		});
-		const stdout     : Buffer[] = []             ;
-		const stderr     : Buffer[] = []             ;
-		let stdoutSize              = 0              ;
-		let stderrSize              = 0              ;
-		let truncated               = false          ;
-		let timedOut                = false          ;
+		const sinks = {
+			stdout : { chunks: [] as Buffer[], size: 0 } ,
+			stderr : { chunks: [] as Buffer[], size: 0 } ,
+		};
+		let truncated = false                        ;
+		let timedOut  = false                        ;
 		let cleanup      : Promise<void> | undefined ;
 		let cleanupError : unknown                   ;
+
+		const abandon = (error: unknown): void => {
+			cleanupError = error;
+			child.kill();
+			child.stdout.destroy();
+			child.stderr.destroy();
+		};
 
 		const timeout = setTimeout(() => {
 			timedOut = true;
 			if (child.pid === undefined) return;
 
 			if (killer) {
-				cleanup = terminateWindowsTree(killer, child.pid).catch(error => {
-					cleanupError = error;
-					child.kill();
-					child.stdout.destroy();
-					child.stderr.destroy();
-				});
+				cleanup = terminateWindowsTree(killer, child.pid).catch(abandon);
 			} else {
 				// One immediate group kill avoids a delayed signal against a subsequently reused PID.
 				try { process.kill(-child.pid, "SIGKILL"); } catch (error) {
-					if ((error as NodeJS.ErrnoException).code !== "ESRCH") {
-						cleanupError = error;
-						child.kill();
-						child.stdout.destroy();
-						child.stderr.destroy();
-					}
+					if ((error as NodeJS.ErrnoException).code !== "ESRCH") abandon(error);
 				}
 			}
 		}, config.timeoutMs);
 
-		child.stdout.on("data", (value: Buffer) => {
-			const next = appendBounded(stdout, stdoutSize, value);
-			stdoutSize = next.size;
-			truncated ||= next.truncated;
-		});
-		child.stderr.on("data", (value: Buffer) => {
-			const next = appendBounded(stderr, stderrSize, value);
-			stderrSize = next.size;
-			truncated ||= next.truncated;
-		});
+		for (const name of ["stdout", "stderr"] as const) {
+			child[name].on("data", (value: Buffer) => {
+				const sink = sinks[name]                                  ;
+				const next = appendBounded(sink.chunks, sink.size, value) ;
+				sink.size = next.size;
+				truncated ||= next.truncated;
+			});
+		}
 		child.once("error", error => { clearTimeout(timeout); reject(error); });
 		child.once("close", async (exitCode, signal) => {
 			clearTimeout(timeout);
 			await cleanup;
 			if (cleanupError) reject(cleanupError);
-			else accept({ exitCode, signal, timedOut, stdout: Buffer.concat(stdout).toString("utf8"), stderr: Buffer.concat(stderr).toString("utf8"), truncated });
+			else accept({ exitCode, signal, timedOut, stdout: Buffer.concat(sinks.stdout.chunks).toString("utf8"), stderr: Buffer.concat(sinks.stderr.chunks).toString("utf8"), truncated });
 		});
 	});
 }

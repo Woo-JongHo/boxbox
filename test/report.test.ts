@@ -1,11 +1,11 @@
 import      { describe, expect, test                                   } from "bun:test"                  ;
 import      { spawnSync                                                } from "node:child_process"        ;
-import      { mkdtempSync, readFileSync, writeFileSync                 } from "node:fs"                   ;
+import      { mkdtempSync, readFileSync, rmSync, writeFileSync         } from "node:fs"                   ;
 import      { tmpdir                                                   } from "node:os"                   ;
 import      { join                                                     } from "node:path"                 ;
 import      { displayWidth                                             } from "@/common/display-width.ts" ;
 import      { buildReport, compareAlarms, DEFAULT_LIMITS, renderReport } from "@/common/report.ts"        ;
-import type { FileResult, ResultGroup                                  } from "@/common/result-json.ts"   ;
+import type { FileResult, ResultEnvelope, ResultGroup                  } from "@/common/result-json.ts"   ;
 
 const ROOT = join(import.meta.dir, "..");
 
@@ -57,6 +57,17 @@ describe("check report — safety checks", () => {
 		expect(allowed.checks[3]?.status ).toBe("pass") ;
 		expect(breaking.checks[3]?.status).toBe("fail") ;
 		expect(breaking.ok               ).toBe(false ) ;
+	});
+
+	test("call envelope pairs meet the row floor while return guard pairs do not", () => {
+		for (const [kind, expected] of [["declaration-call-envelope", "pass"], ["return-guards", "fail"]] as const) {
+			const report = buildReport({
+				result: fileResult([group({ startLine: 1, endLine: 2, state: "FIXABLE", kind })]),
+				text: "",
+			});
+
+			expect(report.checks.find(check => check.id === "S4")?.status).toBe(expected);
+		}
 	});
 });
 
@@ -116,6 +127,76 @@ describe("check report — alarms", () => {
 	});
 });
 
+describe("check report — exact noncontiguous row membership", () => {
+	test("intervening long padded preparation lines stay outside guard width and padding calculations", () => {
+		const guards      = group({ kind: "return-guards", startLine: 1, endLine: 5, rows: 3, rowLines: [1, 3, 5], axes: ["guard-return=12"] }) ;
+		const preparation = `prepare()${" ".repeat(200)};`                                                                                      ;
+		const report = buildReport({
+			result: fileResult([guards]),
+			text: text("if (a) return;", preparation, "if (b) return;", "const value = 1;", "if (c) return;"),
+		});
+		const hard  = report.alarms.filter(alarm => alarm.id === "A1" ) ;
+		const stray = report.alarms.filter(alarm => alarm.id === "A12") ;
+
+		expect(hard.map(alarm => [alarm.startLine, alarm.endLine]))    .toEqual  ([[2, 2]]       ) ;
+		expect(hard[0]!.detail                                    )    .toContain("outside table") ;
+		expect(stray.map(alarm => alarm.startLine)                )    .toEqual  ([2]            ) ;
+		expect(ids(report)                                        ).not.toContain("A2"           ) ;
+		expect(ids(report)                                        ).not.toContain("A3"           ) ;
+		expect(ids(report)                                        ).not.toContain("A7"           ) ;
+	});
+
+	test("nested groups own their rows even when an outer guard region spans the whole nested block", () => {
+		const outer = group({ kind: "return-guards", startLine: 1, endLine: 9, rows: 3, rowLines: [1, 7, 9], axes: ["guard-return=12"]}) ;
+		const inner = group({ kind: "return-guards", startLine: 3, endLine: 5, rows: 3, rowLines: [3, 4, 5], axes: ["guard-return=12"]}) ;
+		const report = buildReport({
+			result: fileResult([outer, inner]),
+			text: text("if (a) return;", "for (;;) {", "  if (b) return;", `  if (c) return "${"x".repeat(140)}";`, "  if (d) return;", "}", "if (e) return;", "observe();", "if (f) return;"),
+		});
+		const hard    = report.alarms.filter(alarm => alarm.id === "A1") ;
+		const outlier = report.alarms.filter(alarm => alarm.id === "A3") ;
+
+		expect(hard.map(alarm => [alarm.startLine, alarm.endLine])).toEqual  ([[3, 5]]            ) ;
+		expect(hard[0]!.detail                                    ).toContain("1 row(s) over hard") ;
+		expect(outlier.map(alarm => alarm.startLine)              ).toEqual  ([4]                 ) ;
+	});
+
+	test("CLI emits exact outer and inner guard lines while ordinary groups keep the legacy schema", () => {
+		const root = mkdtempSync(join(tmpdir(), "boxbox-row-lines-"));
+		const lines = [
+			"function inspect() {",
+			"  if (a) return undefined;",
+			"  for (;;) {",
+			"    if (x) return undefined;",
+			"    if (yyyy) return undefined;",
+			"    if (z) return undefined;",
+			"  }",
+			"  if (longer) return undefined;",
+			"  const a = 1;",
+			"  const bb = 2;",
+			"  if (b) return undefined;",
+			"}",
+		];
+
+		try {
+			writeFileSync(join(root, "sample.ts"), `${lines.join("\n")}\n`);
+
+			const run    = spawnSync(process.execPath, [join(ROOT, "product/engine/typescript/06_align-tables.ts"), "--file", "sample.ts", "--json"], { cwd: root, encoding: "utf8" }) ;
+			const result = JSON.parse(run.stdout) as ResultEnvelope                                                                                                                    ;
+			const groups = result.results[0]!.groups                                                                                                                                   ;
+			const guards = groups.filter(entry => entry.kind === "return-guards")                                                                                                      ;
+
+			expect(run.status                                                                                   ).toBe   (1                      ) ;
+			expect(result.schemaVersion                                                                         ).toBe   (1                      ) ;
+			expect(guards.map(entry => entry.rowLines)                                                          ).toEqual([[2, 8, 11], [4, 5, 6]]) ;
+			expect(groups.some(entry => entry.kind === "declaration-equals")                                    ).toBe   (true                   ) ;
+			expect(groups.filter(entry => entry.kind !== "return-guards").every(entry => !("rowLines" in entry))).toBe   (true                   ) ;
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
+	}, 60_000);
+});
+
 describe("check report — output", () => {
 	test("the description column of the safety-check lines lines up in one column by display width", () => {
 		const rendered = renderReport(buildReport({ result: fileResult([]), text: "" })).split("\n").filter(line => /^  S\d /u.test(line)) ;
@@ -169,7 +250,7 @@ describe("check report — baseline comparison", () => {
 	});
 
 	test("CLI: with --baseline only alarms introduced by the edit are new, and with --baseline none all are new", () => {
-		const dir     = mkdtempSync(join(tmpdir(), "boxbox-report-"))                      ;
+		const dir     = mkdtempSync (join(tmpdir(), "boxbox-report-")                    ) ;
 		const fixture = readFileSync(join(ROOT, "test/fixtures/python/tables.py"), "utf8") ;
 		writeFileSync(join(dir, "base.py"), fixture);
 		writeFileSync(join(dir, "cur.py" ), fixture.replace('    "port": 8080,', `    "port": 8080,\n    "description": "${"x".repeat(120)}",`)) ;

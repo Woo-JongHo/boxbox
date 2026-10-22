@@ -7,6 +7,7 @@ import      {
               writeFileSync        ,
                                      } from "node:fs"   ;
 import      { dirname, join, resolve } from "node:path" ;
+import      { readModelConfig, stampClaudeAgent, stampCodexAgent } from "./model-assignments.ts" ;
 
 const ROOT       = resolve(import.meta.dir, "../..")                                                      ;
 const REFERENCES = ["charter.md", "grammar.md", "readability-contract.md", "typescript-grid-template.md"] ;
@@ -26,12 +27,18 @@ function versioned(text: string, version: string): string {
 
 /** Every shipped file comes from product/. This also reconstructs a missing plugin/ folder. */
 export function expectedPluginFiles(root = ROOT): ReadonlyMap<string, string> {
-	const read     = (path: string): string => readFileSync(resolve(root, path), "utf8")        ;
-	const version  = String((JSON.parse(read("package.json")) as { version: unknown }).version) ;
-	const expected = new Map<string, string>()                                                  ;
+	const read      = (path: string): string => readFileSync(resolve(root, path), "utf8")        ;
+	const version   = String((JSON.parse(read("package.json")) as { version: unknown }).version) ;
+	const expected  = new Map<string, string>()                                                  ;
+	const cliPath   = "product/engine/cli.ts"                                                    ;
+	const cliSource = read(cliPath)                                                              ;
+	if (!/^export const CLI_VERSION = "[^"\n]+";/mu.test(cliSource)) throw new Error("Missing CLI_VERSION declaration; update version synchronization before shipping.");
+	expected.set(cliPath, cliSource.replace(/^export const CLI_VERSION = "[^"\n]+";/mu, `export const CLI_VERSION = "${version}";`));
+	const inspector = readModelConfig(root).roles.inspector;
 	for (const path of PLUGIN_FILES) {
 		const source = `product/plugin/${path}`         ;
 		let text     = versioned(read(source), version) ;
+		if (path === "agents/readability-inspector.md") text = stampClaudeAgent(text, inspector.claude);
 		if (path.endsWith("/plugin.json")) {
 			const manifest = JSON.parse(text) as Record<string, unknown>;
 			manifest.version = version;
@@ -39,6 +46,9 @@ export function expectedPluginFiles(root = ROOT): ReadonlyMap<string, string> {
 		}
 		expected.set(`plugin/${path}`, text);
 	}
+	// The development agents are stamped in place from the same source, so the two hosts cannot drift apart.
+	expected.set("development/agents/readability-inspector.md", stampClaudeAgent(read("development/agents/readability-inspector.md"), inspector.claude));
+	expected.set("development/codex/readability-inspector.toml", stampCodexAgent(read("development/codex/readability-inspector.toml"), inspector.codex));
 	for (const name of REFERENCES) expected.set(`plugin/skills/boxbox/references/${name}`, read(`product/rules/references/${name}`));
 	const marketplace = JSON.parse(read(".claude-plugin/marketplace.json")) as { plugins: Array<Record<string, unknown>> };
 	for (const entry of marketplace.plugins) entry.version = version;
@@ -47,7 +57,7 @@ export function expectedPluginFiles(root = ROOT): ReadonlyMap<string, string> {
 }
 
 function pluginFiles(root: string, directory = "plugin"): string[] {
-	const absolute = resolve(root, directory)                       ;
+	const absolute = resolve  (root, directory                    ) ;
 	const stat     = lstatSync(absolute, { throwIfNoEntry: false }) ;
 	if (!stat) return [];
 	if (stat.isSymbolicLink() || !stat.isDirectory()) return [directory];
@@ -60,7 +70,7 @@ function pluginFiles(root: string, directory = "plugin"): string[] {
 export function pluginDrift(root = ROOT): readonly string[] {
 	const expected = expectedPluginFiles(root);
 	const drift = [...expected].filter(([path, text]) => {
-		const absolute = resolve(root, path)                            ;
+		const absolute = resolve  (root, path                         ) ;
 		const stat     = lstatSync(absolute, { throwIfNoEntry: false }) ;
 		return !stat || !stat.isFile() || readFileSync(absolute, "utf8") !== text || (path === "plugin/scripts/boxbox" && (stat.mode & 0o111) === 0);
 	}).map(([path]) => path);
@@ -75,7 +85,7 @@ export function syncPlugin(root = ROOT): number {
 	const drift = pluginDrift(root);
 	for (const path of drift) {
 		const absolute = resolve(root, path) ;
-		let parent     = dirname(absolute)   ;
+		let parent     = dirname(absolute  ) ;
 		while (parent !== resolve(root)) {
 			if (lstatSync(parent, { throwIfNoEntry: false })?.isSymbolicLink()) throw new Error(`Refusing symbolic output directory: ${parent}`);
 			parent = dirname(parent);

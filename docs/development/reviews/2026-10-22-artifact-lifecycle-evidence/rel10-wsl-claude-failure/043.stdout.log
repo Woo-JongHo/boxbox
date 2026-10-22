@@ -1,0 +1,44 @@
+10.9.8
+2.1.280 (Claude Code)
+Usage: claude plugin install|i [options] <plugin>
+
+Install a plugin from available marketplaces (use plugin@marketplace for
+specific marketplace)
+
+Options:
+  --accept-command <sha256>  Accept the marketplace-declared command (a
+                             command-source install, or the headersHelper that
+                             fetches the archive) whose sha256 a previous --json
+                             run reported as shownCommand.sha256; counts as -y
+                             for exactly that command, for that plugin and
+                             marketplace catalog, and nothing else. If either
+                             changed (a refresh that moved the catalog counts),
+                             the run refuses and reports the command again, to
+                             be shown to a person again
+  --config <key=value>       Set a userConfig option declared in the plugin's
+                             manifest (repeatable). Values are validated against
+                             the schema and stored via the same path as the
+                             interactive /plugin configure flow.
+  -h, --help                 Display help for command
+  --json                     Print one machine-readable result line on stdout
+                             instead of the human message (same exit codes; a
+                             marketplace-declared command is still shown and
+                             must be confirmed — pass -y when not interactive)
+  --registry <url>           For a <package>@npm install: resolve and download
+                             from this npm registry instead of the one your npm
+                             configuration selects
+  -s, --scope <scope>        Installation scope: user, project, or local
+                             (default: "user")
+  -y, --yes                  Accept the displayed marketplace-declared command
+                             without the confirmation prompt — a plugin
+                             installed by running a command, or one whose
+                             archive is fetched through a headersHelper command
+                             (required when stdin or stdout is not a TTY)
+
+added 3 packages in 343ms
+0.2.4
+Adding marketplace…✔ Successfully added marketplace: boxbox-plugins (declared in user settings)
+Installing plugin "boxbox@boxbox-plugins"...✔ Plugin "boxbox@boxbox-plugins" is already installed (scope: user) — it loads in place from /tmp/boxbox-rel10-linux.VfqJoi/wsl-claude-01/workspace-UlYxg5/profile/data/boxbox/claude/0.2.4/plugin, so edits there take effect at the next session start or /reload-plugins; `claude plugin update boxbox@boxbox-plugins` re-records its version, 0.2.3 to 0.2.4
+BoxBox is installed for Claude Code. Restart that host and select the BoxBox skill. Review the current hooks manually before relying on them.
+Permanent installation: /tmp/boxbox-rel10-linux.VfqJoi/wsl-claude-01/workspace-UlYxg5/profile/data/boxbox/claude/0.2.4/
+Approved TypeScript call declarations and Python simple assignments can format without an external formatter. Run check and guide, then format --dry-run before an explicit format request; other patterns require approval.

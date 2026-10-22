@@ -1,0 +1,4 @@
+58193     1 /opt/homebrew/bin/tmux -L boxbox-hud-58184-5e4d8c5e -f /dev/null new-session -d -s boxbox -x 80 -y 24 -c /Users/jonghoPro/woo/00_project/98_BoxBox /opt/homebrew/Cellar/node@22/22.22.3/bin/node /private/tmp/boxbox-native-fixed.Shl97G/home/data/boxbox/codex/0.2.4/plugin/scripts/hud/codex.mjs --pane /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-codex-hud-U80pv0/state.json
+58199 58184 /opt/homebrew/bin/tmux -L boxbox-hud-58184-5e4d8c5e -f /dev/null attach-session -t boxbox
+58194 58193 /opt/homebrew/Cellar/node@22/22.22.3/bin/node /private/tmp/boxbox-native-fixed.Shl97G/home/data/boxbox/codex/0.2.4/plugin/scripts/hud/codex.mjs --pane /var/folders/mg/06v1fkqx341gsjxv_l0l3kcw0000gp/T/boxbox-codex-hud-U80pv0/state.json
+58200 58194 node /Users/jonghoPro/.local/bin/codex -C /tmp/boxbox-native-fixed.Shl97G/project

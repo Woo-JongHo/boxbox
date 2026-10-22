@@ -1,0 +1,10 @@
+{
+  "product/installer/install-state.mjs": "2c127c6bc639f315dd485da08b3f293b7b086185dd376addc52b6707b69c72e7",
+  "product/installer/claude-registration.mjs": "b5bfdc71e0a451b3aed503537af5519db99cbc12a52eee182df44416c6f9b680",
+  "product/installer/install.mjs": "ed1aaef067811388c65ea504b28a5baa7790de5d456386b9bf6717359f967fa4",
+  "product/installer/entry.mjs": "b55dd99b50fbc103ee56f1d1f75014bac470346ddf4757852bd96c0307caa141",
+  "product/installer/README.md": "bf1c74dff0b9504b6c3bcaeaf31e508e6ec11b9a69995799e672af5fb60ffd93",
+  "development/tools/build-installer-artifact.ts": "e5ced9e6b958e38d489fe5582930fad3d8f74ff8d2d079667128628e9aee98f9",
+  "test/installer-registration.test.ts": "544b1d9581cc81b6eef19f2d1bfae817fc4859f4e9b8946aaeff327f9fd6e488",
+  "test/installer-artifact.test.ts": "13489356b5b7ef0deeba6e5077f1f1a1dcd4e74888542008f65564c01c22ad8e"
+}
