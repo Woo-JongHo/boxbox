@@ -36,7 +36,7 @@ test("relative containment handles Windows separators and cross-drive paths", ()
 
 test("a version bump stamps generated manifests without modifying product templates", () => {
 	const root = workspace();
-	for (const path of ["product", "package.json", ".claude-plugin"]) cpSync(join(ROOT, path), join(root, path), { recursive: true });
+	for (const path of ["product", "package.json", ".claude-plugin", "development/agents", "development/codex"]) cpSync(join(ROOT, path), join(root, path), { recursive: true });
 	const paths     = ["product/plugin/.claude-plugin/plugin.json", "product/plugin/.codex-plugin/plugin.json", "product/packages/cli/package.json", "product/packages/node/package.json"] ;
 	const originals = paths.map(path => readFileSync(join(root, path), "utf8"))                                                                                                            ;
 	const manifest  = JSON.parse(readFileSync(join(root, "package.json"), "utf8"))                                                                                                         ;
@@ -51,7 +51,7 @@ test("a version bump stamps generated manifests without modifying product templa
 
 test("dangling output links never create external files or directories", () => {
 	const root = workspace();
-	for (const path of ["product", "package.json", ".claude-plugin"]) cpSync(join(ROOT, path), join(root, path), { recursive: true });
+	for (const path of ["product", "package.json", ".claude-plugin", "development/agents", "development/codex"]) cpSync(join(ROOT, path), join(root, path), { recursive: true });
 	syncPlugin(root);
 	const outsideFile = join(root, "external-file");
 	rmSync(join(root, "plugin/README.md"));
@@ -106,7 +106,7 @@ test("engine aliases reject missing targets, escapes and symbolic paths", () => 
 
 test("the entire marketplace plugin regenerates from product sources and detects manual changes", () => {
 	const root = workspace();
-	for (const path of ["product", "package.json", ".claude-plugin"]) cpSync(join(ROOT, path), join(root, path), { recursive: true });
+	for (const path of ["product", "package.json", ".claude-plugin", "development/agents", "development/codex"]) cpSync(join(ROOT, path), join(root, path), { recursive: true });
 	expect(existsSync(join(root, "plugin"))).toBe           (false) ;
 	expect(syncPlugin(root)                ).toBeGreaterThan(0    ) ;
 	expect(pluginDrift(root)               ).toEqual        ([]   ) ;
