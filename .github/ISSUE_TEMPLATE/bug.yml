@@ -1,6 +1,5 @@
 name: Bug report
 description: Report an installation, check, format, or preservation failure
-labels: bug
 body:
   - type: markdown
     attributes:
