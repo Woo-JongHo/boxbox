@@ -285,10 +285,11 @@ export const PYTHON_ALIGNER: LineProfiler = {
 	syntax        : PYTHON_SYNTAX,
 	// cell/arg axes of bundle rows are followed by a comma or the close slot, so aligning them never creates trailing whitespace.
 	columnAxes    : ["name", "attribute", "chain-target", "key", "type", "value", "cell", "arg"],
-	// Python convention: colon and comma attach to the cell; equal gets one space. Bundle rows attach the
+	// Colon and equal get one space after the longest cell (`name : type = value`), matching the TypeScript tables;
+	// comma attaches to the cell. Bundle rows attach the
 	// first cell to the opening bracket and attach close too, so the closing bracket shares the last cell's width.
 	// The call layer's wrapped bundle attaches its brackets to the call the same way.
-	canonicalGaps : { name: " ", attribute: " ", "chain-target": " ", key: " ", type: " ", value: " ", colon: "", equal: " ", comma: "", cell: "", arg: " ", "open[": "", "open(": "", "open{": "", "close]": "", "close)": "", "close}": "" },
+	canonicalGaps : { name: " ", attribute: " ", "chain-target": " ", key: " ", type: " ", value: " ", colon: " ", equal: " ", comma: "", cell: "", arg: " ", "open[": "", "open(": "", "open{": "", "close]": "", "close)": "", "close}": "" },
 	profile       : profilePython,
 	project       : assignmentEnvelopes,
 };
