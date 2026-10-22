@@ -1,0 +1,112 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261022-020",
+  "title": "The shipped plugin assigns no model or effort to its AI-judgment roles on either host",
+  "category": "host-integration",
+  "tags": [
+    "model",
+    "effort",
+    "subagent",
+    "claude",
+    "codex",
+    "readability-inspector"
+  ],
+  "status": "investigating",
+  "symptom": "The Claude readability-inspector sets effort: medium and no model, so it inherits the caller. The Codex inspector pins gpt-5.6-terra/medium only in a development definition; the Codex plugin manifest declares skills and no agents, so the shipped Codex plugin assigns nothing. The few AI-judgment steps (row design, one-file inspection, boundary reconciliation) therefore run on whatever the session happens to use, and token cost per step is unmeasured.",
+  "rootCause": {
+    "confidence": "hypothesis",
+    "summary": "No single source stores model and effort per role and host, and the Codex plugin format cannot carry agent definitions. Confirming requires measured per-role usage and an engine-ground-truth evaluation; see the proposal."
+  },
+  "requestedOutcome": "Each AI-judgment role that the plugin owns has a documented model and effort per host, generated from one source, chosen by evaluation against the engine's deterministic result, with the author role left to the user's session.",
+  "decisions": [
+    "2026-10-22 user direction: put model and effort assignment per host into a design proposal and open this issue; optimize the model that each host's AI uses.",
+    "The plugin never overrides the author role's model (proposal principle 1); this is a design position pending user confirmation."
+  ],
+  "actions": [
+    {
+      "description": "Write the design proposal with host capability facts, a single-source generation scheme and an evaluation plan.",
+      "status": "done"
+    },
+    {
+      "description": "Study the open-source Gajae Code (Yeachan-Heo/gajae-code, clone e9179a1) for how it stores per-role model and effort for Codex and Claude.",
+      "status": "done"
+    },
+    {
+      "description": "Move column-set candidates and unverified-boundary listing from agent judgment into engine output (guide --authoring, check).",
+      "status": "pending"
+    },
+    {
+      "description": "Record per-step token usage from session records, usage numbers only.",
+      "status": "pending"
+    },
+    {
+      "description": "Evaluate Claude and Codex inspector candidates against engine ground truth, then add product/models.json with generation and a contract test.",
+      "status": "pending"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Claude validator accepts model and effort in skill and agent frontmatter",
+      "status": "passed",
+      "scope": "claude plugin validate --strict on a scratch copy of plugin/ with model: sonnet in SKILL.md and the agent file, 2026-10-22.",
+      "evidence": [
+        "docs/development/issue-library/evidence/model-frontmatter-validation.txt"
+      ],
+      "result": "Validation passed. Runtime effect of the keys is not measured."
+    },
+    {
+      "name": "Selected values beat or match the incumbent on engine ground truth",
+      "status": "not-run",
+      "scope": "inspector role, Claude and Codex candidates listed in the proposal.",
+      "evidence": [],
+      "result": "No evaluation has run; all values in the proposal are unevaluated defaults."
+    }
+  ],
+  "related": [
+    {
+      "kind": "contract",
+      "path": "docs/development/proposals/2026-10-22-model-effort-assignment.md",
+      "note": "Design proposal for this issue."
+    },
+    {
+      "kind": "contract",
+      "path": "docs/development/research/model-eval.md",
+      "note": "Price table, effort ladder and escalation signals reused by the proposal."
+    },
+    {
+      "kind": "contract",
+      "path": "docs/development/research/eval-protocol.md",
+      "note": "Non-inferiority evaluation protocol reused for selection."
+    },
+    {
+      "kind": "code",
+      "path": "product/plugin/agents/readability-inspector.md",
+      "note": "Claude inspector: effort set, model absent."
+    },
+    {
+      "kind": "code",
+      "path": "development/codex/readability-inspector.toml",
+      "note": "Development-only Codex inspector with a pinned model and effort."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-10-22",
+      "event": "reported",
+      "summary": "User asked how model distribution should be optimized per host and to record model and effort for each AI-judgment role on Claude and Codex.",
+      "evidence": []
+    },
+    {
+      "sequence": 2,
+      "date": "2026-10-22",
+      "event": "diagnosed",
+      "summary": "Measured host facts: Claude accepts model and effort frontmatter in the validator; the Codex manifest has skills only, so Codex values need documentation or an installer-written global agent file. Open-source Gajae Code stores per-role provider/model[:effort] selectors in its own ~/.gjc/agent config and never writes Codex model_reasoning_effort; it only merges managed entries into ~/.codex/hooks.json. No effort is written into Codex's own config by that project.",
+      "evidence": [
+        "docs/development/proposals/2026-10-22-model-effort-assignment.md",
+        "docs/development/issue-library/evidence/model-frontmatter-validation.txt"
+      ]
+    }
+  ]
+}

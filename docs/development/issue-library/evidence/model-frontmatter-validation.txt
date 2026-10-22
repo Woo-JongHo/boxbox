@@ -1,0 +1,23 @@
+# claude plugin validate --strict on a scratch copy of plugin/ (2026-10-22, Claude Code 2.1.286 (Claude Code))
+# skills/boxbox/SKILL.md frontmatter gained: model: sonnet, effort: low
+# agents/readability-inspector.md frontmatter gained: model: sonnet (effort: medium kept)
+# The scratch copy is not committed; only the validator accepting the keys is recorded. Runtime effect is not measured.
+
+---
+name: boxbox
+model: sonnet
+effort: low
+description: Write or refactor TypeScript/Python, or align or check TypeScript, 
+---
+...
+---
+name: readability-inspector
+description: Dedicated read-only inspector for the boxbox skill. Investigates on
+disallowedTools: Write, Edit, NotebookEdit, Agent, ExitPlanMode
+model: sonnet
+effort: medium
+---
+
+Validating plugin manifest: <scratch>/pv/.claude-plugin/plugin.json
+
+✔ Validation passed
