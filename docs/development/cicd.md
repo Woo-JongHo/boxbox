@@ -1,7 +1,8 @@
 # Issue, pull request, and candidate pipeline
 
-The current pipeline builds a reviewable release candidate. It does not publish to npm, create a GitHub release,
-push a tag, or install plugins into a contributor's active host.
+The current pipeline builds a reviewable release candidate. It does not publish to npm, push a tag, or install
+plugins into a contributor's active host. When a maintainer pushes a `v*` tag, it also creates a **draft** GitHub
+release (see [Draft release from a tag](#draft-release-from-a-tag)); it never publishes that draft.
 
 ```text
 Issue with reproduction or acceptance criteria
@@ -68,6 +69,26 @@ are not the delivery archive.
 The workflow stores the candidate artifact for 14 days. Download it from that workflow run, retain the source commit,
 version, and digest in the release issue, and link the three smoke reports. A successful package upload alone does not
 mean candidate acceptance: the entire workflow, including every smoke matrix entry, must pass.
+
+## Draft release from a tag
+
+`.github/workflows/release.yml` runs when a `v*` tag is pushed. A maintainer decides to cut a release; the workflow
+never creates the tag itself.
+
+1. Rename `[Unreleased]` in `CHANGELOG.md` to the version being released (for example `## [0.2.5] - 2026-10-22`) and
+   merge that change to `main` through a pull request.
+2. Tag that `main` commit as `v<version>` and push the tag.
+3. The `guard` job requires the tag to equal `v` plus the `package.json` version, requires the tagged commit to be
+   reachable from `main`, and requires a non-empty matching `CHANGELOG.md` section
+   (`bun development/tools/release-notes.ts <version>`).
+4. The `candidate` job is the same `release-candidate` workflow, including verification and the three-OS archive smoke.
+5. The `draft` job re-checks the archive against the independent build digest and runs
+   `gh release create --draft --verify-tag` with the archive, `SHA256SUMS`, `candidate.json` and the changelog section.
+   Only this job has `contents: write`.
+
+A maintainer reviews the draft and publishes it by hand. The workflow uses no npm token and does not publish to npm;
+registry publication, package ownership and licensing metadata remain separate decisions. Deleting a draft and
+re-pushing the same tag is the way to retry.
 
 ## Native archive smoke
 
