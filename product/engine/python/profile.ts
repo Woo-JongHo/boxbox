@@ -40,9 +40,24 @@ export const PYTHON_SYNTAX: CodeSyntax = {
 const INDENT = "([ \\t]*)"                                              ;
 const NAME   = "([A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*)" ;
 const QUOTED = "(\"[^\"]*\"|'[^']*')"                                   ;
-const TYPE   = "([A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*)" ;
+const TYPE   = "([A-Za-z_\"'][^=(){};:\\\\]*?)"                         ;
 const GAP    = "(\\s*)"                                                 ;
 const VALUE  = "(.+?)"                                                  ;
+
+/**
+ * An annotation cell is one cell: dotted names, `[...]` subscripts, `|` unions and quoted forward references.
+ * Commas belong to it only inside brackets, so a parameter or dictionary row never parses as a field.
+ */
+function isAnnotation(masked: string): boolean {
+	let depth = 0;
+	for (const character of masked) {
+		if      (character === "[")                depth += 1;
+		else if (character === "]")                depth -= 1;
+		else if (character === "," && depth === 0) return false;
+		if (depth < 0) return false;
+	}
+	return depth === 0 && !/\s$/u.test(masked);
+}
 
 /** Statement starts that cannot be table rows — control flow, declarations, imports. match/case are soft keywords and excluded. */
 const RESERVED_START = /^(?:if|elif|else|for|while|try|except|finally|with|def|class|return|raise|import|from|pass|break|continue|lambda|yield|assert|del|global|nonlocal|async|await)\b/;
@@ -202,6 +217,48 @@ function assignedCallProfile(code: string, masked: string): RowProfile | null {
 	return { indent: slotAt(code, match, 1), slots };
 }
 
+/**
+ * Annotated assignment `name : Type = value` and field `name : Type`. The annotation may hold brackets, so the
+ * call/container refusal applies to the value cell only.
+ */
+function typedProfile(code: string, masked: string): RowProfile | null {
+	const annotated = ANNOTATED.exec(masked);
+	if (annotated) {
+		const typeRange  = annotated.indices![5]! ;
+		const valueRange = annotated.indices![8]! ;
+		if (slotAt(code, annotated, 9) !== "")                       return null;
+		if (!isAnnotation(masked.slice(typeRange[0], typeRange[1]))) return null;
+		if (isUnsafe(masked.slice(valueRange[0], valueRange[1])))    return null;
+		const value = valueSlot(code, masked, annotated, 7, 8);
+		if (!value)                                                  return null;
+		return {
+			indent : slotAt(code, annotated, 1),
+			slots  : [
+				{ axis : "name"  , text : slotAt(code, annotated, 2) , gapBefore : ""                         },
+				{ axis : "colon" , text : ":"                        , gapBefore : slotAt(code, annotated, 3) },
+				{ axis : "type"  , text : slotAt(code, annotated, 5) , gapBefore : slotAt(code, annotated, 4) },
+				{ axis : "equal" , text : "="                        , gapBefore : slotAt(code, annotated, 6) },
+				value,
+			],
+		};
+	}
+
+	const declared = DECLARED.exec(masked);
+	if (declared) {
+		const typeRange = declared.indices![5]!;
+		if (!isAnnotation(masked.slice(typeRange[0], typeRange[1]))) return null;
+		return {
+			indent : slotAt(code, declared, 1),
+			slots  : [
+				{ axis : "name"  , text : slotAt(code, declared, 2) , gapBefore : ""                        },
+				{ axis : "colon" , text : ":"                       , gapBefore : slotAt(code, declared, 3) },
+				{ axis : "type"  , text : slotAt(code, declared, 5) , gapBefore : slotAt(code, declared, 4) },
+			],
+		};
+	}
+	return null;
+}
+
 function profilePython(code: string, masked: string): RowProfile | null {
 	const trimmed = masked.trim();
 	if (trimmed === "" || trimmed.startsWith("@") || RESERVED_START.test(trimmed)) return null;
@@ -212,36 +269,9 @@ function profilePython(code: string, masked: string): RowProfile | null {
 	if (bundle)           return bundle;
 	const assignedCall = assignedCallProfile(code, masked);
 	if (assignedCall)     return assignedCall;
+	const typed = typedProfile(code, masked);
+	if (typed)            return typed;
 	if (isUnsafe(masked)) return null;
-
-	const annotated = ANNOTATED.exec(masked);
-	if (annotated) {
-		if (slotAt(code, annotated, 9) !== "") return null;
-		const value = valueSlot(code, masked, annotated, 7, 8);
-		if (!value) return null;
-		return {
-			indent : slotAt(code, annotated, 1),
-			slots  : [
-				{ axis: "name",  text: slotAt(code, annotated, 2), gapBefore: "" },
-				{ axis: "colon", text: ":", gapBefore: slotAt(code, annotated, 3) },
-				{ axis: "type",  text: slotAt(code, annotated, 5), gapBefore: slotAt(code, annotated, 4) },
-				{ axis: "equal", text: "=", gapBefore: slotAt(code, annotated, 6) },
-				value,
-			],
-		};
-	}
-
-	const declared = DECLARED.exec(masked);
-	if (declared) {
-		return {
-			indent : slotAt(code, declared, 1),
-			slots  : [
-				{ axis : "name"  , text : slotAt(code, declared, 2) , gapBefore : ""                        },
-				{ axis : "colon" , text : ":"                       , gapBefore : slotAt(code, declared, 3) },
-				{ axis : "type"  , text : slotAt(code, declared, 5) , gapBefore : slotAt(code, declared, 4) },
-			],
-		};
-	}
 
 	const dictRow = DICT_ROW.exec(masked);
 	if (dictRow) {
@@ -290,6 +320,8 @@ export const PYTHON_ALIGNER: LineProfiler = {
 	// first cell to the opening bracket and attach close too, so the closing bracket shares the last cell's width.
 	// The call layer's wrapped bundle attaches its brackets to the call the same way.
 	canonicalGaps : { name: " ", attribute: " ", "chain-target": " ", key: " ", type: " ", value: " ", colon: " ", equal: " ", comma: "", cell: "", arg: " ", "open[": "", "open(": "", "open{": "", "close]": "", "close)": "", "close}": "" },
-	profile       : profilePython,
-	project       : assignmentEnvelopes,
+	// A field without a default and a field with one are the same role: `name : type` joins `name : type = value`.
+	prefixRuns : true                ,
+	profile    : profilePython       ,
+	project    : assignmentEnvelopes ,
 };
