@@ -142,11 +142,34 @@ Four fresh sessions on native Windows (Claude Code 2.1.280, boxbox 0.2.5, the ma
 | BoxBox Check on two files | 3 | 1,519 | 89,552 | 0.3171 |
 | BoxBox Write: append one line | 3 | 1,664 | 92,888 | 0.3074 |
 | BoxBox align one file | 5 | 2,069 | 184,460 | 0.3432 |
-| Inspector agent on one file | 6 (2 main, 4 subagent) | 3,026 (1,787 subagent) | 151,959 (104,170 subagent) | 0.5120 |
+| Inspector agent on one file | 6 (2 main, 4 subagent) | 3,370 (about 2,131 subagent, derived) | 151,959 (104,170 subagent) | 0.5120 |
 
-The inspector request costs about 0.2 USD more than a check-only run, and its subagent is the larger part of it. A
+The inspector request costs about 0.2 USD more than a check-only run, and its subagent is the larger part of it. Output tokens in
+subagent records were found to be lower bounds (the first version of this table used them: 3,026 and 1,787); the figures above
+are corrected from the CLI's own accounting, see the pilot's [errata](../reviews/2026-10-22-inspector-model-pilot/RESULTS.md#errata-for-earlier-records). A
 choice of model for the inspector acts on exactly that part. These are baselines on one model: no alternative has been run and
 correctness is not scored, so they do not yet say which model is enough.
+
+## Pilot on a realistic file (Sonnet inspector)
+
+A pre-registered pilot ran the inspector on a 228-line file whose misaligned groups the engine knows (6 runs, 3 per condition;
+[protocol](../reviews/2026-10-22-inspector-model-pilot/PROTOCOL.md), [results](../reviews/2026-10-22-inspector-model-pilot/RESULTS.md)).
+
+| | Inherited Opus | `model: sonnet` |
+| --- | ---: | ---: |
+| Printed cost per request, mean (range) | 0.724 (0.655 to 0.807) | 0.611 (0.484 to 0.829) |
+| Wall time, mean (s) | 107 | 177 |
+| Subagent turns, mean | 4.3 | 8.7 |
+| Engine-flagged groups the report points at, mean of 8 | 6.7 | 7.7 |
+
+Under the pre-registered rule (B's mean cost at most 70% of A's) the cost criterion fails: the ratio is 0.84. The strict recall
+measure returned 0 for every run because it could not read Korean reports, so it decided nothing. The saving is bounded because
+about 0.26 USD of every request is the main Opus session, which the plugin cannot assign, and Sonnet took about twice the turns.
+With three runs per condition this is a reason not to ship Sonnet on cost grounds yet, not a proof that it is worse.
+
+**Consequence for this proposal's default.** `product/models.json` currently names `sonnet` for the Claude inspector as an
+`unevaluated-default`. The pilot does not support shipping it. Keeping the inherited model (no model line) until a larger
+evaluation is the consistent choice; this needs the owner's decision before the next candidate.
 
 ## Order
 
@@ -157,7 +180,8 @@ correctness is not scored, so they do not yet say which model is enough.
    tool names and sizes; never message text; usage counted once per message id) and splits turns by BoxBox step. It is
    also the data source of the proposed `-monitor` page. Two real sessions show hook text is negligible and neither ran the
    inspector, so the evaluation needs sessions that exercise guide, check and the inspector.
-3. **Evaluate.** Run the table above; record the evidence under `docs/development/reviews/`.
+3. **Evaluate.** A first pilot on one file ran on 2026-10-22 (above); a larger evaluation with a scorer that reads the reports
+   and a human grading of the advice is still needed before any model is chosen on evidence.
 4. **Stamp.** Add `product/models.json`, generation and contract test; ship Claude values.
 5. **Document.** Codex recommendation and any approved installer step; update the three root READMEs together.
 

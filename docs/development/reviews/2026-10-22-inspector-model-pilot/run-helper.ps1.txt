@@ -1,0 +1,33 @@
+[Console]::OutputEncoding = [Text.Encoding]::UTF8
+$ErrorActionPreference = "Continue"
+$work    = Join-Path $env:TEMP "bbx-pilot"
+$agent   = "$env:LOCALAPPDATA\BoxBox\Claude\0.2.5\plugin\agents\readability-inspector.md"
+$folder  = "$env:USERPROFILE\Downloads\BoxBox\0.2.5\inspector-pilot"
+$origSha = "6baf37d743491c8ae10468d30b8649540fd56af514b43da3dcee23d6dcddb55e"
+$fileSha = "6df6d87b96ce7070dc806ee6db4f3b7f2a0d01854c4b338242f1cb59b133a60b"
+$prompt  = "Use the readability-inspector agent to inspect only approval-gate.ts and report its findings."
+New-Item -ItemType Directory -Force $work | Out-Null
+function Sha($p) { (Get-FileHash $p -Algorithm SHA256).Hash.ToLower() }
+function SetCondition($c) {
+  Copy-Item "$work\agent.orig" $agent -Force
+  if ($c -eq "B") {
+    $t = [IO.File]::ReadAllText($agent)
+    $n = [regex]::Replace($t, '(?m)^effort: medium(\r?\n)', { param($m) "effort: medium" + $m.Groups[1].Value + "model: sonnet" + $m.Groups[1].Value }, 1)
+    if ($n -eq $t) { throw "could not insert model line" }
+    [IO.File]::WriteAllText($agent, $n, (New-Object Text.UTF8Encoding $false))
+  }
+}
+function RunOne($label, $c) {
+  SetCondition $c
+  $agentSha = Sha $agent
+  $start = Get-Date
+  Set-Location $folder
+  $prompt | & claude.cmd -p --dangerously-skip-permissions --max-turns 15 --output-format json 2>"$work\$label.err" | Out-File -Encoding utf8 "$work\$label.json"
+  $code = $LASTEXITCODE
+  $secs = ((Get-Date) - $start).TotalSeconds
+  $j = Get-Content "$work\$label.json" -Raw -Encoding UTF8
+  $r = $null; try { $r = $j | ConvertFrom-Json } catch {}
+  $after = Sha "$folder\approval-gate.ts"
+  Write-Host ("{0} cond={1} start={2:HH:mm:ss} exit={3} secs={4:N0} agentSha={5} fileUnchanged={6} session={7} turns={8} cost={9} error={10}" -f $label, $c, $start, $code, $secs, $agentSha.Substring(0,12), ($after -eq $fileSha), $r.session_id, $r.num_turns, $r.total_cost_usd, $r.is_error)
+  return [double]$r.total_cost_usd
+}

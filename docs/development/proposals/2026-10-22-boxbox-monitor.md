@@ -17,11 +17,16 @@ a status line or a tmux pane.
 
 | Section | Content | Source | Exactness |
 | --- | --- | --- | --- |
-| Tokens | Totals, by `model:effort`, by BoxBox step (guide, check, format, align, skill, inspector, other), per session | Session record `usage` | Exact; result and hook text are labelled estimated |
+| Tokens | Totals, by `model:effort`, by BoxBox step (guide, check, format, align, skill, inspector, other), per session | Session record `usage` | Input, cache-read and cache-write exact; output exact for the main session but a **lower bound for subagents** (shown as such); result and hook text are labelled estimated |
 | Hook text | Count and estimated tokens injected per hook event | Session record hook messages | Estimated (1 token per 4 ASCII characters) |
 | Change footprint | Per file and total: lines before/after, bytes before/after | Baseline v2 (below) plus the current file | Exact |
 | Whitespace versus content | Per file: whitespace-only change (padding added by alignment) or content changed | Baseline v2 `squeezed` hash | Exact for the classification; bytes of content change are not split further |
 | Hook results | PASS, FAIL, UNSUPPORTED, NO_CHANGES per event and over time | Hook receipts | Exact |
+
+Correction (2026-10-22): the first version of this table called all token figures exact. Comparing session records with Claude Code's own
+accounting on ten runs showed that only the output tokens of subagent records fall short (4.3 to 8.6 times in the model pilot); see the
+[pilot errata](../reviews/2026-10-22-inspector-model-pilot/RESULTS.md#errata-for-earlier-records). A page must label that figure a lower
+bound, and for a non-interactive run the CLI result's `modelUsage` is the authoritative total.
 
 Estimated tokens of the whitespace growth are shown next to its bytes, labelled estimated, so the cost of alignment padding
 is a visible number instead of a worry. Dollar cost is not shown (**adopted default**); tokens do not go stale when prices

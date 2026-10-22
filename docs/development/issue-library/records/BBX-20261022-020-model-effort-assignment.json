@@ -100,7 +100,16 @@
       "evidence": [
         "docs/development/issue-library/evidence/inspector-baseline-sessions.txt"
       ],
-      "result": "Each run finished in 3-6 turns. Claude Code reported cost_usd 0.3171 (check), 0.3074 (write), 0.3432 (align) and 0.5120 (inspector request). In the inspector run the subagent spent 4 of 6 turns, 1,787 of 3,026 output tokens and 104,170 of 151,959 cache-read tokens. These are baseline figures on the inherited model; no alternative model has been run and correctness was not scored."
+      "result": "Each run finished in 3-6 turns. Claude Code reported cost_usd 0.3171 (check), 0.3074 (write), 0.3432 (align) and 0.5120 (inspector request). In the inspector run the subagent spent 4 of 6 turns, about 2,131 of 3,370 output tokens (63%, derived from the CLI total; the subagent record alone showed 1,787, a lower bound) and 104,170 of 151,959 cache-read tokens (69%). These are baseline figures on the inherited model; no alternative model had been run and correctness was not scored. Output-token figures corrected on 2026-10-22 after the pilot found subagent records undercount output (history 7)."
+    },
+    {
+      "name": "Pilot: Sonnet inspector against the inherited model on a realistic file with engine ground truth",
+      "status": "passed",
+      "scope": "Six runs (A B A B A B) on approval-gate.ts from the repository's first commit, protocol committed before the first run; Claude Code 2.1.280 on native Windows, boxbox 0.2.5.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-inspector-model-pilot/RESULTS.md"
+      ],
+      "result": "The pilot ran and its pre-registered rule gave a result: B's mean printed cost is 0.843 of A's (0.6107 against 0.7244 USD), above the 0.70 threshold, so Sonnet is not carried forward on cost. Strict recall was uninformative (0 of 8 in every run; the scorer could not read Korean reports); the lenient measure pointed at 7.7 of 8 engine-flagged groups for Sonnet and 6.7 for the inherited model. Sonnet took about twice the subagent turns and 1.7 times the wall time. Three runs per condition on one file: descriptive only. Advice quality was not graded."
     }
   ],
   "related": [
@@ -182,6 +191,15 @@
       "summary": "Ran four fresh non-interactive sessions on the Windows host to get a baseline for the inspector and the authoring steps. The measuring tool now reads subagent records (stored in a separate file) and recognizes the Windows skill's node -e bridge, including several engine commands in one call; before this the engine calls in Windows sessions were all classified as other. Cost figures are the ones Claude Code printed.",
       "evidence": [
         "docs/development/issue-library/evidence/inspector-baseline-sessions.txt"
+      ]
+    },
+    {
+      "sequence": 7,
+      "date": "2026-10-22",
+      "event": "verified",
+      "summary": "Pre-registered pilot of a Sonnet inspector against the inherited model completed (6 runs, 4.0053 USD printed cost): the cost criterion failed (ratio 0.843), the strict recall measure was uninformative, and the lenient measure favored neither condition's quality clearly. The proposal's default of sonnet for the Claude inspector is therefore not supported and needs the owner's decision. Errata: comparing the CLI's accounting with session records showed that output tokens in subagent records are lower bounds (4.3 to 8.6 times low in the pilot, 10% low for the baseline inspector run); the baseline's inspector output figures (3,026 total, 1,787 subagent) were corrected to 3,370 and about 2,131. Input and cache figures were exact. The usage reader now says so.",
+      "evidence": [
+        "docs/development/reviews/2026-10-22-inspector-model-pilot/RESULTS.md"
       ]
     }
   ]

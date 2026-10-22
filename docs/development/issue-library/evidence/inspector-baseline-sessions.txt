@@ -1,3 +1,4 @@
+# ERRATUM (added later on 2026-10-22): output tokens of subagent records below are lower bounds. For s4 the CLI reports 3,370 output tokens in total (not 3,026); the subagent share is about 2,131 (derived), not 1,787. Everything else here is unaffected. See docs/development/reviews/2026-10-22-inspector-model-pilot/RESULTS.md (Errata).
 # Baseline sessions for the model assignment evaluation (issue 020), 2026-10-22
 # Host: Claude Code 2.1.280 on native Windows, boxbox 0.2.5 (CI archive 5fe739f5), model chosen by that machine's settings (claude-opus-5-5, effort medium).
 # Run non-interactively by the assistant: claude -p --dangerously-skip-permissions --max-turns 15, one new session per request, in the prepared test folder.
