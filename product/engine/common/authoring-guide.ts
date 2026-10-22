@@ -42,20 +42,20 @@ export function authoringGuide(
 			.map(id => registry.examples.get(id)!)
 			.filter(example => example.verdict === "bad" || example.verdict === "before-better")
 			.map(example => ({
-				id      : example.id,
-				before  : example.before,
-				after   : example.after,
+				id      : example.id     ,
+				before  : example.before ,
+				after   : example.after  ,
 				verdict : example.verdict
 			}));
 
 		rules.push({
-			id              : convention.id,
-			key             : key,
-			scope           : convention.scope,
-			layer           : convention.layer,
-			contract        : sectionText(document.document, document.heading),
-			examples        : result.guide,
-			counterexamples : counterexamples,
+			id              : convention.id                                    ,
+			key             : key                                              ,
+			scope           : convention.scope                                 ,
+			layer           : convention.layer                                 ,
+			contract        : sectionText(document.document, document.heading) ,
+			examples        : result.guide                                     ,
+			counterexamples : counterexamples                                  ,
 		});
 	}
 

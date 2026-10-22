@@ -21,10 +21,10 @@ import type {
                              } from "@/common/table-engine.ts" ;
 
 export const JAVA_SYNTAX: CodeSyntax = {
-	lineComments  : ["//"],
-	blockComments : [{ open: "/*", close: "*/" }],
-	strings       : [{ open: '"', close: '"', escape: true }],
-	cppRaw        : false,
+	lineComments  : ["//"]                                    ,
+	blockComments : [{ open: "/*", close: "*/" }]             ,
+	strings       : [{ open: '"', close: '"', escape: true }] ,
+	cppRaw        : false                                     ,
 };
 
 const IDENTIFIER = "[A-Za-z_$][A-Za-z0-9_$]*"                                     ;
@@ -208,18 +208,18 @@ export const JAVA_ALIGNER: LineProfiler = {
 	canonicalGaps : {
 		// Java convention: semicolons and commas attach to the cell; other separators get one space.
 		// Bundle rows attach the first cell to the opening brace and attach close too, so the closing brace shares the cell width.
-		modifiers : " ",
-		type      : " ",
-		name      : " ",
-		value     : " ",
-		parenArgs : "",
-		equal     : " ",
-		semicolon : "",
-		comma     : "",
-		open      : "",
-		cell      : "",
-		arg       : " ",
-		close     : "",
+		modifiers : " " ,
+		type      : " " ,
+		name      : " " ,
+		value     : " " ,
+		parenArgs : ""  ,
+		equal     : " " ,
+		semicolon : ""  ,
+		comma     : ""  ,
+		open      : ""  ,
+		cell      : ""  ,
+		arg       : " " ,
+		close     : ""  ,
 	},
 	profile    : profileJava,
 };

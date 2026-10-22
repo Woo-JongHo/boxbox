@@ -62,10 +62,10 @@ const SCALAR_CELL = /^(?:[+-]?(?:0[xX][0-9A-Fa-f]+[uUlL]*|[0-9]+(?:\.[0-9]+)?[fF
 const GROUP_UNSAFE = /[{}()[\]=>]/u;
 
 export const C_SYNTAX: CodeSyntax = {
-	lineComments  : ["//"],
-	blockComments : [{ open: "/*", close: "*/" }],
-	strings       : [{ open: '"', close: '"', escape: true }, { open: "'", close: "'", escape: true }],
-	cppRaw        : false,
+	lineComments  : ["//"]                                                                             ,
+	blockComments : [{ open: "/*", close: "*/" }]                                                      ,
+	strings       : [{ open: '"', close: '"', escape: true }, { open: "'", close: "'", escape: true }] ,
+	cppRaw        : false                                                                              ,
 };
 
 function macroProfile(code: string, masked: string): RowProfile | null {

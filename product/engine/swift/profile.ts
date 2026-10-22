@@ -135,9 +135,9 @@ function profileSwift(code: string, masked: string): RowProfile | null {
 }
 
 export const SWIFT_ALIGNER: LineProfiler = {
-	language   : "swift",
-	syntax     : SWIFT_SYNTAX,
-	columnAxes : ["name", "key", "type", "value"],
+	language   : "swift"                          ,
+	syntax     : SWIFT_SYNTAX                     ,
+	columnAxes : ["name", "key", "type", "value"] ,
 	// Swift convention: colon and comma attach to the cell; keyword and equal get one space.
 	canonicalGaps : { keyword: " ", name: " ", key: " ", type: " ", value: " ", colon: "", equal: " ", comma: "" },
 	profile       : profileSwift,

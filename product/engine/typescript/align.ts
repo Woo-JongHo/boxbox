@@ -132,16 +132,16 @@ function buildGroup(source: SourceFile, kindName: string, groupName: string, run
 	const first = run[0]!.node     ;
 	const last  = run.at(-1)!.node ;
 	return {
-		kind      : groupName,
-		startLine : source.getLineAndCharacterOfPosition(first.getStart(source)).line + 1,
-		endLine   : source.getLineAndCharacterOfPosition(last.getEnd() - 1).line + 1,
-		rowCount  : run.length,
+		kind      : groupName                                                             ,
+		startLine : source.getLineAndCharacterOfPosition(first.getStart(source)).line + 1 ,
+		endLine   : source.getLineAndCharacterOfPosition(last.getEnd() - 1).line + 1      ,
+		rowCount  : run.length                                                            ,
 		...(kindName === "return-guards" ? { rowLines: run.map(row => source.getLineAndCharacterOfPosition(row.node.getStart(source)).line + 1) } : {}),
-		vertical : marked.length,
-		context  : context,
-		depth    : depth,
-		axes     : aligned.axes,
-		skipped  : aligned.skipped,
+		vertical : marked.length   ,
+		context  : context         ,
+		depth    : depth           ,
+		axes     : aligned.axes    ,
+		skipped  : aligned.skipped ,
 		edits,
 	};
 }

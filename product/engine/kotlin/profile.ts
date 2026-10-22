@@ -132,9 +132,9 @@ function profileKotlin(code: string, masked: string): RowProfile | null {
 }
 
 export const KOTLIN_ALIGNER: LineProfiler = {
-	language   : "kotlin",
-	syntax     : KOTLIN_SYNTAX,
-	columnAxes : ["name", "key", "type", "value"],
+	language   : "kotlin"                         ,
+	syntax     : KOTLIN_SYNTAX                    ,
+	columnAxes : ["name", "key", "type", "value"] ,
 	// Kotlin convention: colon and comma attach to the cell; keyword and equal get one space.
 	canonicalGaps : { keyword: " ", name: " ", key: " ", type: " ", value: " ", colon: "", equal: " ", comma: "" },
 	profile       : profileKotlin,

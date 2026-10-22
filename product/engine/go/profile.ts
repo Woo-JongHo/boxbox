@@ -167,13 +167,13 @@ export const GO_ALIGNER: LineProfiler = {
 	canonicalGaps : {
 		// Go convention: colon and comma attach to the cell; equal gets one space. Other axes use the default gap " ".
 		// Bundle rows attach the first cell to the opening brace and attach close too, so the closing brace shares the cell width.
-		colon : "",
-		comma : "",
-		equal : " ",
-		open  : "",
-		cell  : "",
-		arg   : " ",
-		close : "",
+		colon : ""  ,
+		comma : ""  ,
+		equal : " " ,
+		open  : ""  ,
+		cell  : ""  ,
+		arg   : " " ,
+		close : ""  ,
 	},
 	profile(code: string, masked: string): RowProfile | null {
 		const tail = code.trimEnd();

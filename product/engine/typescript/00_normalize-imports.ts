@@ -148,10 +148,10 @@ function parseImportRow(row: string): ParsedImport | undefined {
 	return {
 		head        : `${match[1]} `,
 		before,
-		entries    : (match[3] ?? "").split(",").map(value => value.trim()).filter(Boolean),
-		module     : match[4] ?? "",
-		attributes : (match[5] ?? "").replace(/[ \t\r\n]+$/u, "") || undefined,
-		terminator : (match[6] ?? "") === ";" ? ";" : "",
+		entries    : (match[3] ?? "").split(",").map(value => value.trim()).filter(Boolean) ,
+		module     : match[4] ?? ""                                                         ,
+		attributes : (match[5] ?? "").replace(/[ \t\r\n]+$/u, "") || undefined              ,
+		terminator : (match[6] ?? "") === ";" ? ";" : ""                                    ,
 		suffix,
 	};
 }
@@ -188,11 +188,11 @@ function tableImport(row: string, file: string): TableImport | string {
 		return row;
 	}
 	return {
-		head       : `${parsed.head}${parsed.before}`.trimEnd(),
-		entries    : parsed.entries,
-		module     : parsed.module,
-		terminator : parsed.terminator,
-		suffix     : parsed.suffix,
+		head       : `${parsed.head}${parsed.before}`.trimEnd() ,
+		entries    : parsed.entries                             ,
+		module     : parsed.module                              ,
+		terminator : parsed.terminator                          ,
+		suffix     : parsed.suffix                              ,
 	};
 }
 
