@@ -61,3 +61,30 @@ export function authoringGuide(
 
 	return { rules, unavailable };
 }
+
+export interface ColumnSet {
+	readonly kind     : string            ;
+	readonly columns  : readonly string[] ;
+	readonly approved : boolean           ;
+}
+
+/**
+ * Column-set candidates for the row designer: every registered kind with its ordered columns, marked approved when
+ * an approved rule for the file is keyed to that kind. Axis notes are included only for axes some kind uses.
+ * `{i}` marks a per-position column. This is vocabulary for designing rows, never approval to write them.
+ */
+export function columnSetGuide(
+	kinds: Readonly<Record<string, { readonly gap: readonly string[]; readonly insert: readonly string[] }>>,
+	notes: Readonly<Record<string, string>>,
+	approvedKeys: readonly string[]
+) {
+	const approvedKinds = new Set(approvedKeys.map(key => key.split("|")[3]));
+	const columnSets: ColumnSet[] = Object.entries(kinds).map(([kind, axes]) => ({
+		kind     : kind                          ,
+		columns  : [...axes.gap, ...axes.insert] ,
+		approved : approvedKinds.has(kind)       ,
+	}));
+	const used      = new Set(columnSets.flatMap(set => set.columns.map(column => column.replaceAll("{i}", "")))) ;
+	const axisNotes = Object.fromEntries(Object.entries(notes).filter(([axis]) => used.has(axis)))                ;
+	return { columnSets, axisNotes };
+}
