@@ -8,6 +8,8 @@ Describe the concrete trigger, previous behavior, and resulting behavior.
 
 - [ ] Added or updated meaningful regression coverage for changed behavior.
 - [ ] Ran `bun run check` and recorded the result below.
+- [ ] Ran `bun run lint:changed` (or recorded an explicit `--base`) and checked the JSON report, including unsupported ranges and files with no recognized groups.
+- [ ] Requested review for any change to `.github/boxbox-lint.json` or the lint workflow; the checker baseline is never automatically upgraded.
 - [ ] Ran `bun run sync:plugin -- --check` when product/plugin templates or rule references changed.
 - [ ] Checked preservation, failure behavior, and idempotence for changes that can write source files.
 - [ ] Completed required independent review; recorded limitations and unexecuted checks accurately.

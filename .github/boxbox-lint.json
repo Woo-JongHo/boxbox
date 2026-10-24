@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 1,
+	"checker": {
+		"version": "0.2.5",
+		"commit": "9a0406e27fb43241d71f9e5a8815da7e4301e1b1"
+	},
+	"exclude": [
+		"plugin/**",
+		"dist/**",
+		"**/node_modules/**",
+		"test/fixtures/**",
+		"development/harness/evidence/**",
+		"docs/development/reviews/*-evidence/**",
+		".boxbox/cache/**",
+		".boxbox/runs/**",
+		".boxbox/hooks/**",
+		"stress/**",
+		"eval/**",
+		"TEST_COMPLETED/**"
+	]
+}

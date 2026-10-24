@@ -39,6 +39,47 @@ full commit pins for external actions. Superseded runs of the same PR/ref verifi
 for the same ref keep the running job and at most the newest pending run; a newer dispatch replaces an older pending
 run. No workflow runs with `pull_request_target` or publishing secrets.
 
+### Changed-file readability gate
+
+The required `plugin-contract` jobs also run `bun run lint:changed -- --ci`, independently of the functional checks.
+The same development harness runs locally as `bun run lint:changed`. It builds the public `check --file … --json`
+entry from the source commit and version in `.github/boxbox-lint.json`: initially `v0.2.5`,
+`9a0406e27fb43241d71f9e5a8815da7e4301e1b1`. The public CLI is unchanged. No AI model or published BoxBox npm
+package is involved. The pinned Git tree is extracted into a fresh cache workspace and built with its frozen lockfile;
+the source version and built CLI version must agree. Updating the baseline or its workflow requires human review.
+Changes to the current engine do not change the lint baseline; ordinary regression tests verify the changed engine.
+
+```bash
+bun run lint:changed
+bun run lint:changed -- --base <commit>
+bun run lint:changed -- --base <commit> --target <commit>
+```
+
+The local default base is the merge base of `origin/main` and `HEAD`. Local mode includes later commits, staged and
+unstaged changes, and nonignored untracked files. `--base` replaces that base explicitly. `--target` selects an immutable
+Git comparison and reads the target's blobs, ignoring local edits. CI fetches full history: pull requests compare the
+event base SHA with GitHub's merge commit, and `main` pushes compare the event's before/after SHAs. Candidate calls
+without a PR comparison use the pinned checker commit as their base. Missing history or event metadata fails closed.
+
+The harness checks **whole changed files**, including pre-existing violations: `.ts`, `.tsx`, `.mts`, `.cts`, `.py`,
+`.json`, `.yaml` and `.yml`. Renames use the new path; deletions are recorded without inspection. Explicit exclusions in
+the configuration cover generated plugin/distribution files, dependencies, intentional fixtures and retained original
+evidence. Ordinary test code and development tools are checked. The report lists excluded and unsupported-language
+files separately. Symlinks and other unsafe targets are errors.
+
+Each file is copied byte-for-byte into an isolated inspection directory with no project configuration. The checker
+uses an empty XDG configuration directory, its pinned defaults and no inherited runtime injection variables. Input
+and source SHA-256 hashes are compared before and after inspection; the harness never invokes a write command.
+Alignment violations exit `1`; syntax errors, safety refusals, preparation/process failures and invalid result JSON
+exit `2`. Unsupported ranges produce warnings. Exit `0` means no violations were found **within detected groups**;
+zero targets, zero recognized groups and unsupported ranges have distinct report counts and do not certify full coverage.
+
+The ignored `.boxbox/cache/lint-changed/report.json` contains checker/build identity, configuration digest, base/target
+commits, the local uncommitted-change digest, selected/excluded/deleted paths, hashes and file results. The latest report
+replaces the previous one atomically; temporary build/input directories are removed. CI adds a job summary
+and uploads the JSON even when lint fails. No per-run Markdown document is added to the repository. These checks do
+not publish, merge, bump a version or replace required human review.
+
 ## Creating and inspecting a candidate
 
 After these files are available on GitHub's default branch, use **Actions → release-candidate → Run workflow** and

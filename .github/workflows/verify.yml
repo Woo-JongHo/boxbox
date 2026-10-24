@@ -25,6 +25,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: "22.22.3"
@@ -45,3 +46,15 @@ jobs:
       - run: bun run check
         env:
           BOXBOX_REQUIRE_PARSERS: "1"
+      - name: Check changed files with the pinned BoxBox baseline
+        if: ${{ !cancelled() }}
+        run: bun run lint:changed -- --ci
+      - name: Preserve changed-file inspection results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name                : boxbox-lint-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path                : .boxbox/cache/lint-changed/report.json
+          include-hidden-files: true
+          if-no-files-found   : error
+          retention-days      : 14
