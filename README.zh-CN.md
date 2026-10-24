@@ -22,7 +22,7 @@ const timeoutMs = 1000     ;
 
 上面的对齐示例是 TypeScript 引擎的实际输出。名称、值和执行顺序保持不变；对应的语法元素变得更容易比较。
 
-产品名称是 **BoxBox**；核心 CLI、技能和插件的 ID 为 `boxbox`（于 2026-10-16 确认）。npm 安装器的候选包名是 `boxbox-plugin`，检查时尚未被注册。目标命令为 `npx boxbox-plugin`；发布需要有效的 npm 身份验证和最终发布决定。请参阅 [Windows 插件安装指南](docs/user/codex-windows-test.md)。
+产品名称是 **BoxBox**；核心 CLI、技能和插件的 ID 为 `boxbox`（于 2026-10-16 确认）。npm 安装器的候选包名是 `boxbox-plugin`，检查时尚未被注册。目标命令为 `npx boxbox-plugin`；发布需要有效的 npm 身份验证和最终发布决定。请参阅 [Windows 插件安装指南](product/installer/README.md)。
 
 ## 为什么将代码组织成网格？
 
@@ -79,7 +79,7 @@ JSON/YAML 写入需要完整的本地批准证据或未来单独批准的预设�
 
 公开的 npm 安装器正以 `boxbox-plugin` 为包名进行准备；尚未发布到注册表。
 它会为 Codex 和 Claude Code 安装插件及其本地 Node 引擎。当前预览状态和宿主要求请参阅
-[安装指南](docs/user/codex-windows-test.md)。
+[安装指南](product/installer/README.md)。
 
 如需试用本地构建的安装器：
 
@@ -96,6 +96,7 @@ npm exec --yes --package '/absolute/path/to/dist/installer/boxbox-plugin-<versio
 
 产品源码位于 `product/`；开发工具、研究和证据位于 `development/`。
 `plugin/` 由产品模板生成，`dist/` 存放生成的包。
+`docs/` 保存公开的用户和贡献者文档。测试、构建工具及这些文档即使不包含在安装包中，也应保留在源码仓库里；个人工作记录单独管理。
 请参阅[开发指南](development/README.md)和[目录布局契约](docs/development/layout.md)。
 
 ```sh
@@ -129,7 +130,7 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 
 ## 开发状态
 
-本项目仍处于开发阶段，尚未完成公开发布。本地 CLI 构建产物和技能适配器已经实现；公开分发和原生宿主事件的接纳仍有待完成。标准 `plugin/` 启动脚本需要显式指定本地引擎。在 Windows 上试用 Codex 时，请使用 [npm 安装器](docs/user/codex-windows-test.md)，它会将随附引擎安装到永久的本地目录。选定的 npm 安装器包名为 `boxbox-plugin`；发布仍待进行。
+本项目仍处于开发阶段，尚未完成公开发布。本地 CLI 构建产物和技能适配器已经实现；公开分发和原生宿主事件的接纳仍有待完成。标准 `plugin/` 启动脚本需要显式指定本地引擎。在 Windows 上试用 Codex 时，请使用 [npm 安装器](product/installer/README.md)，它会将随附引擎安装到永久的本地目录。选定的 npm 安装器包名为 `boxbox-plugin`；发布仍待进行。
 
 已验证的行为和剩余工作请参阅[发布准备状态](docs/development/status.md)、[发布契约](docs/development/release-contract.md)和[计划](docs/development/plan.md)。历史命名及迁移详情见[命名记录](docs/development/reviews/2026-10-16-boxbox-rename.md)。
 

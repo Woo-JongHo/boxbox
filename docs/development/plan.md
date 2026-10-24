@@ -1,5 +1,9 @@
 # Plan
 
+**Task selection:** this document retains historical plans, session handoffs and the REL table used by the release
+harness. Dated active markers describe their recorded scope; follow the current request or issue to select work,
+honoring prior user authorization that still applies. Use the [maintainer guide](README.md) for current contracts.
+
 BoxBox's product direction is owned by [`design.md`](design.md), current implementation facts by
 [`implementation.md`](implementation.md), the short resume screen by [`status.md`](status.md), and the work order and
 completion verdicts up to release by this document.

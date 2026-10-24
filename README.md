@@ -22,7 +22,7 @@ const timeoutMs = 1000     ;
 
 The aligned example above is actual TypeScript engine output. Names, values and execution order stay the same; corresponding syntax becomes easier to compare.
 
-The product is **BoxBox**; core CLI, skill and plugin IDs are `boxbox` (confirmed on 2026-10-16). The npm installer candidate is `boxbox-plugin`, which was unregistered when checked. Its target command is `npx boxbox-plugin`; publication requires valid npm authentication and a final release decision. See the [Windows plugin installation guide](docs/user/codex-windows-test.md).
+The product is **BoxBox**; core CLI, skill and plugin IDs are `boxbox` (confirmed on 2026-10-16). The npm installer candidate is `boxbox-plugin`, which was unregistered when checked. Its target command is `npx boxbox-plugin`; publication requires valid npm authentication and a final release decision. See the [Windows plugin installation guide](product/installer/README.md).
 
 ## Why a code grid?
 
@@ -80,7 +80,7 @@ their own complete local or future preset approval proof.
 
 The public npm installer is being prepared as `boxbox-plugin`; registry publication is pending.
 It installs the plugin and its local Node engine for Codex and Claude Code. See the
-[installation guide](docs/user/codex-windows-test.md) for the current preview status and host requirements.
+[installation guide](product/installer/README.md) for the current preview status and host requirements.
 
 To try a locally built installer:
 
@@ -97,6 +97,8 @@ The public installer needs Node.js 22.22.3 or later and npm; Python formatting a
 
 Product sources live in `product/`; development tools, research and evidence live in `development/`.
 `plugin/` is generated from product templates, and `dist/` contains generated packages.
+`docs/` contains public user and contributor documentation. Tests, build tools and these documents belong in the
+source repository even when they are excluded from installed packages; personal task records are kept separately.
 See [the development guide](development/README.md) and [the layout contract](docs/development/layout.md).
 
 ```sh
@@ -130,7 +132,7 @@ The recommended preset contains two approved conventions, four synthetic example
 
 ## Development status
 
-This is a development project, not a completed public release. Local CLI artifacts and skill adapters are implemented; public distribution and native host-event acceptance remain open. The standard `plugin/` shim requires an explicit local engine. For the Windows Codex trial, use the [npm installer](docs/user/codex-windows-test.md), which installs its included engine into a permanent local directory. The selected npm installer name is `boxbox-plugin`; publication remains pending.
+This is a development project, not a completed public release. Local CLI artifacts and skill adapters are implemented; public distribution and native host-event acceptance remain open. The standard `plugin/` shim requires an explicit local engine. For the Windows Codex trial, use the [npm installer](product/installer/README.md), which installs its included engine into a permanent local directory. The selected npm installer name is `boxbox-plugin`; publication remains pending.
 
 For verified behavior and remaining work, read [release readiness](docs/development/status.md), the [release contract](docs/development/release-contract.md) and the [plan](docs/development/plan.md). Historical naming and migration details are in the [naming record](docs/development/reviews/2026-10-16-boxbox-rename.md).
 
