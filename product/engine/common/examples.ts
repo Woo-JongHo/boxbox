@@ -178,7 +178,13 @@ export function selectGuideExamples(examples: readonly Example[], want: { readon
 	const overlap = (example: Example): number => example.patterns.filter(pattern => want.patterns.includes(pattern)).length;
 
 	return examples
-		.filter(example => example.status === "approved" && example.verdict === "after-better" && example.language === want.language && example.regime === want.regime && overlap(example) > 0)
+		.filter(example =>
+               example.status   === "approved"
+            && example.verdict  === "after-better"
+            && example.language === want.language
+            && example.regime   === want.regime
+            && overlap(example) > 0
+		)
 		.sort((left, right) => overlap(right) - overlap(left) || right.date.localeCompare(left.date) || left.id.localeCompare(right.id))
 		.slice(0, limit);
 }

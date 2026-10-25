@@ -1,9 +1,11 @@
 #!/usr/bin/env bun
-import      { readFileSync, writeFileSync } from "node:fs"                          ;
-import      { relative                    } from "node:path"                        ;
+import      { readFileSync, writeFileSync } from "node:fs"                             ;
+import      { relative                    } from "node:path"                           ;
 
-import      { displayWidth                } from "@/common/display-width.ts"        ;
-import      { repositoryFile              } from "@/typescript/load-source-file.ts" ;
+import      { displayWidth                } from "@/common/display-width.ts"           ;
+import      { updateFileAtomically        } from "@/common/safe-file.ts"               ;
+import      { compareTypeScriptLayout     } from "@/typescript/layout-preservation.ts" ;
+import      { repositoryFile              } from "@/typescript/load-source-file.ts"    ;
 
 interface ImportRow {
 	readonly text  : string ;
@@ -15,13 +17,14 @@ interface ImportRow {
 }
 
 interface ParsedImport {
-	readonly head       : string             ;
-	readonly before     : string             ;
-	readonly entries    : readonly string[]  ;
-	readonly module     : string             ;
-	readonly attributes : string | undefined ;
-	readonly terminator : string             ;
-	readonly suffix     : string             ;
+	readonly head          : string             ;
+	readonly before        : string             ;
+	readonly entries       : readonly string[]  ;
+	readonly trailingComma : boolean            ;
+	readonly module        : string             ;
+	readonly attributes    : string | undefined ;
+	readonly terminator    : string             ;
+	readonly suffix        : string             ;
 }
 
 function lexicalMask(source: string): string {
@@ -31,7 +34,7 @@ function lexicalMask(source: string): string {
 	for (let index = 0; index < chars.length; index += 1) {
 		const value = chars[index    ]! ;
 		const next  = chars[index + 1]  ;
-		if (state === "code") {
+		if (state === "code"    ) {
 			if (value === "/" && next === "/") { state = "line"    ; chars[index] = chars[index + 1] = " "; index += 1; continue; }
 			if (value === "/" && next === "*") { state = "block"   ; chars[index] = chars[index + 1] = " "; index += 1; continue; }
 			if (value === "`"                ) { state = "template"; chars[index] = " ";                                continue; }
@@ -39,12 +42,12 @@ function lexicalMask(source: string): string {
 			if (value === '"'                ) { state = "double"  ;                                                    continue; }
 			continue;
 		}
-		if (state === "line") {
+		if (state === "line"    ) {
 			if (value === "\n") state = "code";
 			else chars[index] = " ";
 			continue;
 		}
-		if (state === "block") {
+		if (state === "block"   ) {
 			if (value === "*" && next === "/") { chars[index] = chars[index + 1] = " "; index += 1; state = "code"; }
 			else if (value !== "\n") chars[index] = " ";
 			continue;
@@ -144,25 +147,28 @@ function parseImportRow(row: string): ParsedImport | undefined {
 	const suffix = at < 0 ? "" : row.slice(at)                                                                                                                                                 ;
 	const match  = /^(import(?:[ \t]+type)?)[ \t]+([^{}'"]*?)\{([^{}]*)\}[ \t\r\n]*from[ \t]+(["'][^"'\n]+["'])([ \t]+(?:with|assert)[ \t\r\n]*\{[^{}]*\})?[ \t\r\n]*(;?)[ \t]*$/su.exec(core) ;
 	if (!match) return undefined;
-	const before = (match[2] ?? "").replace(/[ \t]+$/u, "").length > 0 ? `${(match[2] ?? "").replace(/[ \t]+$/u, "")} ` : "";
+	const before = (match[2] ?? "").replace(/[ \t]+$/u, "").length > 0 ? `${(match[2] ?? "").replace(/[ \t]+$/u, "")} ` : "" ;
+	const named  = match[3] ?? ""                                                                                            ;
 	return {
-		head        : `${match[1]} `,
-		before,
-		entries    : (match[3] ?? "").split(",").map(value => value.trim()).filter(Boolean) ,
-		module     : match[4] ?? ""                                                         ,
-		attributes : (match[5] ?? "").replace(/[ \t\r\n]+$/u, "") || undefined              ,
-		terminator : (match[6] ?? "") === ";" ? ";" : ""                                    ,
-		suffix,
+		head          : `${match[1]} ` ,
+		before                         ,
+		entries       : named.split(",").map(value => value.trim()).filter(Boolean) ,
+		trailingComma : /,[ \t\r\n]*$/u.test(named)                                 ,
+		module        : match[4] ?? ""                                              ,
+		attributes    : (match[5] ?? "").replace(/[ \t\r\n]+$/u, "") || undefined   ,
+		terminator    : (match[6] ?? "") === ";" ? ";" : ""                         ,
+		suffix                         ,
 	};
 }
 
 /** A brace import ready for the table: head cell, names, module, terminator and trailing comment. */
 interface TableImport {
-	readonly head       : string            ;
-	readonly entries    : readonly string[] ;
-	readonly module     : string            ;
-	readonly terminator : string            ;
-	readonly suffix     : string            ;
+	readonly head          : string            ;
+	readonly entries       : readonly string[] ;
+	readonly trailingComma : boolean           ;
+	readonly module        : string            ;
+	readonly terminator    : string            ;
+	readonly suffix        : string            ;
 }
 
 /** Width the head cell always reserves, so `{` sits in one column whether or not a section has a type import. */
@@ -183,21 +189,25 @@ function tableImport(row: string, file: string): TableImport | string {
 	}
 	if (parsed.entries.some(value => /[\/\n]/u.test(value))) throw new Error(`imports with comments are not fixed automatically: ${file}`);
 	if (parsed.attributes) {
-		const oneLine = `${parsed.head}${parsed.before}{ ${parsed.entries.join(", ")} } from ${parsed.module} ${parsed.attributes}${parsed.terminator}`;
+		const names   = `${parsed.entries.join(", ")}${parsed.trailingComma ? "," : ""}`                                           ;
+		const oneLine = `${parsed.head}${parsed.before}{ ${names} } from ${parsed.module}${parsed.attributes}${parsed.terminator}` ;
 		if (oneLine !== row) throw new Error(`imports with attributes are not fixed automatically: ${file}`);
 		return row;
 	}
 	return {
-		head       : `${parsed.head}${parsed.before}`.trimEnd() ,
-		entries    : parsed.entries                             ,
-		module     : parsed.module                              ,
-		terminator : parsed.terminator                          ,
-		suffix     : parsed.suffix                              ,
+		head          : `${parsed.head}${parsed.before}`.trimEnd() ,
+		entries       : parsed.entries                             ,
+		trailingComma : parsed.trailingComma                       ,
+		module        : parsed.module                              ,
+		terminator    : parsed.terminator                          ,
+		suffix        : parsed.suffix                              ,
 	};
 }
 
+const renderedEntries = (row: TableImport): string => `${row.entries.join(", ")}${row.trailingComma ? "," : ""}`;
+
 const compactLine = (row: TableImport): string =>
-	`${row.head} { ${row.entries.join(", ")} } from ${row.module}${row.terminator}${row.suffix ? ` ${row.suffix}` : ""}`;
+	`${row.head} { ${renderedEntries(row)} } from ${row.module}${row.terminator}${row.suffix ? ` ${row.suffix}` : ""}`;
 
 /**
  * Renders the brace imports of one section as one table (contract rules 8 and 35). Every row reserves the
@@ -216,10 +226,15 @@ function renderSection(rows: readonly TableImport[], newline: string): readonly 
 	}
 	const vertical = new Set<number>();
 	rows.forEach((row, index) => { if (row.entries.length > 1 && displayWidth(compactLine(row)) > MAX_WIDTH) vertical.add(index); });
-	const widths = rows.map((row, index) => vertical.has(index) ? -1 : displayWidth(row.entries.join(", ")))                                          ;
+	const widths = rows.map((row, index) => vertical.has(index) ? -1 : displayWidth(renderedEntries(row)))                                            ;
 	const order  = widths.map((width, index) => ({ width, index })).filter(entry => entry.width >= 0).sort((left, right) => right.width - left.width) ;
 	const [first, second] = order;
-	if (first && second && first.width - second.width >= OUTLIER_GAP && rows[first.index]!.entries.length > 1) vertical.add(first.index);
+	if (
+           first
+        && second
+        && first.width - second.width >= OUTLIER_GAP
+        && rows[first.index]!.entries.length > 1
+	) vertical.add(first.index);
 	for (;;) {
 		if (Math.max(...renderTable(rows, vertical, newline).flatMap(text => text.split(newline)).map(line => displayWidth(line))) <= MAX_WIDTH) break;
 		const widest = rows
@@ -235,19 +250,24 @@ function renderTable(rows: readonly TableImport[], vertical: ReadonlySet<number>
 	const headWidth   = Math.max(HEAD_WIDTH, ...rows.map(row => displayWidth(row.head)));
 	const namesWidth  = Math.max(...rows.map((row, index) => vertical.has(index)
 		? Math.max(...row.entries.map(entry => displayWidth(entry))) + 2
-		: displayWidth(row.entries.join(", "))));
+		: displayWidth(renderedEntries(row))));
 	const moduleWidth = Math.max(...rows.map(row => displayWidth(row.module))) ;
 	const namesColumn = headWidth + 3                                          ;
 	return rows.map((row, index) => {
 		const tail   = row.terminator ? `${pad(row.module, moduleWidth)} ;` : row.module ;
 		const suffix = row.suffix ? ` ${row.suffix}` : ""                                ;
-		if (!vertical.has(index)) return `${pad(row.head, headWidth)} { ${pad(row.entries.join(", "), namesWidth)} } from ${tail}${suffix}`;
-		const names = row.entries.map(entry => `${" ".repeat(namesColumn)}${pad(entry, namesWidth - 2)} ,`);
+		if (!vertical.has(index)) return `${pad(row.head, headWidth)} { ${pad(renderedEntries(row), namesWidth)} } from ${tail}${suffix}`;
+		const names = row.entries.map((entry, entryIndex) => {
+			const comma = entryIndex < row.entries.length - 1 || row.trailingComma;
+			return `${" ".repeat(namesColumn)}${comma ? `${pad(entry, namesWidth - 2)} ,` : entry}`;
+		});
 		return [`${pad(row.head, headWidth)} {`, ...names, `${" ".repeat(namesColumn + namesWidth + 1)}} from ${tail}${suffix}`].join(newline);
 	});
 }
 
-function normalizeOnce(source: string, file: string): string {
+type NormalizeMode = "full" | "layout-only";
+
+function normalizeOnce(source: string, file: string, mode: NormalizeMode): string {
 	const rows = importRows(source, file);
 	if (rows.length === 0) return source;
 	const newline     = source.includes("\r\n") ? "\r\n" : "\n" ;
@@ -262,10 +282,16 @@ function normalizeOnce(source: string, file: string): string {
 		if (styles.size > 1) throw new Error(`mixed terminator styles in the same import section: ${file}`);
 	}
 	for (const row of rows) if (/\s(?:with|assert)\s*\{/u.test(row.text) && /\btype\s+[A-Za-z_$]/u.test(row.text)) throw new Error(`mixed imports with attributes are not fixed automatically: ${file}`);
-	const split  = rows .map (row => splitNamedImport(row.text, file).map(text => ({ text, section: row.section }))) ;
-	const flat   = split.flat()                                                                                      ;
-	const parsed = flat .map (row => tableImport(row.text, file)                                                   ) ;
-	const output = flat .map ((row, index) => typeof parsed[index] === "string" ? parsed[index] : row.text         ) ;
+	const split  = rows .map (row => {
+		const normalized = splitNamedImport(row.text, file);
+		if (mode === "layout-only" && (normalized.length !== 1 || normalized[0] !== row.text)) {
+			throw new Error(`layout-only refuses token-changing import normalization: ${file}`);
+		}
+		return normalized.map(text => ({ text, section: row.section }));
+	})                                                                                                               ;
+	const flat   = split.flat()                                                                             ;
+	const parsed = flat .map (row => tableImport(row.text, file)                                          ) ;
+	const output = flat .map ((row, index) => typeof parsed[index] === "string" ? parsed[index] : row.text) ;
 	for (const section of new Set(flat.map(row => row.section))) {
 		const members = flat.flatMap((row, index) => row.section === section && typeof parsed[index] !== "string" ? [index] : []);
 		if (members.length === 0) continue;
@@ -284,30 +310,46 @@ function normalizeOnce(source: string, file: string): string {
 	return result;
 }
 
-function normalize(source: string, file: string): string {
-	const first = normalizeOnce(source, file);
-	return normalizeOnce(first, file);
+function normalize(source: string, file: string, mode: NormalizeMode): string {
+	const first = normalizeOnce(source, file, mode);
+	return normalizeOnce(first, file, mode);
 }
 
 function targetArguments(root: string): readonly string[] {
-	const values = process.argv.slice(2).filter(value => value !== "--write");
-	if (values.length === 0) throw new Error("usage: 00_normalize-imports.ts [--write] <TypeScript file>...");
+	const values = process.argv.slice(2).filter(value => value !== "--write" && value !== "--layout-only");
+	if (values.length === 0) throw new Error("usage: 00_normalize-imports.ts [--write] [--layout-only] <TypeScript file>...");
 	return values.map(value => repositoryFile(root, value).absolute);
 }
 
-const root    = process.cwd()                    ;
-const write   = process.argv.includes("--write") ;
-const targets = targetArguments(root)            ;
-let changed   = 0                                ;
-let errors    = 0                                ;
+const root    = process.cwd()                                                   ;
+const write   = process.argv.includes("--write")                                ;
+const mode    = process.argv.includes("--layout-only") ? "layout-only" : "full" ;
+const targets = targetArguments(root)                                           ;
+let changed   = 0                                                               ;
+let errors    = 0                                                               ;
 for (const absolute of targets) {
 	try {
-		const before = readFileSync(absolute, "utf8") ;
-		const after  = normalize   (before, absolute) ;
+		const before = readFileSync(absolute, "utf8"      ) ;
+		const after  = normalize   (before, absolute, mode) ;
 		if (after === before) continue;
 		changed += 1;
-		console.log(`${write ? "fixed" : "invalid"} ${relative(root, absolute)}`);
-		if (write) writeFileSync(absolute, after);
+		if (!write && mode === "layout-only") {
+			const preservation = await compareTypeScriptLayout(root, absolute, before, after);
+			if (preservation.status !== "preserved") throw new Error(`layout-only ${preservation.status}: ${preservation.reason}`);
+		}
+		if (!write) {
+			console.log(`invalid ${relative(root, absolute)}`);
+			continue;
+		}
+		if (mode === "layout-only") {
+			await updateFileAtomically(absolute, async ({ initial, working }) => {
+				if (!initial.equals(Buffer.from(before, "utf8"))) throw new Error(`target changed before staged layout write: ${absolute}`);
+				const preservation = await compareTypeScriptLayout(root, working, before, after);
+				if (preservation.status !== "preserved") throw new Error(`layout-only ${preservation.status}: ${preservation.reason}`);
+				writeFileSync(working, after);
+			});
+		} else writeFileSync(absolute, after);
+		console.log(`fixed ${relative(root, absolute)}`);
 	} catch (error) {
 		errors += 1;
 		console.error(`error ${relative(root, absolute)}: ${error instanceof Error ? error.message : String(error)}`);

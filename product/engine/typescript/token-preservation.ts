@@ -59,9 +59,9 @@ export function preservesTokens(before: string, after: string): boolean {
 }
 
 /**
- * Like `preservesTokens`, but line breaks may move: every token and comment must be identical while breaks are
- * inserted, never removed. The declaration vertical form uses it: its edit ranges are single-line rows by
- * construction, so any break in the output is an inserted one.
+ * Like `preservesTokens`, but line breaks may move, be inserted or be removed while every other token and comment
+ * remains identical. Callers use a parser or a narrower edit contract to prove that the changed line structure is
+ * safe for their operation.
  */
 export function preservesTokensWithBreaks(before: string, after: string): boolean {
 	const dropBreaks = (tokens: readonly string[]): readonly string[] => tokens.filter(token => !token.startsWith(`${String(SyntaxKind.NewLineTrivia)}:`)) ;

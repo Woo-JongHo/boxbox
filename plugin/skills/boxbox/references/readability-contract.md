@@ -32,6 +32,11 @@ Therefore the longest code is not always the alignment basis. First decide wheth
 - **Sub-table**: an inner grid re-decomposed into name, separator and type when a repeated structure such as `:` appears again inside a cell.
 - **Alignment policy**: align contiguous repeated blocks of three or more comparable rows at minimum width. User-confirmed exceptions: `=` declaration tables and imports align from two rows. Other two-row groups are reported as pairs and never fixed automatically. Methods of a public Port split by JSDoc or different lifecycle responsibilities are not merged into one table. Preserve the `import`, `:`, `=>` and `case` axes of a reference file accepted by the user. The inner width of `( )` in a repeated function table is set by the actual longest argument, not by existing spaces; only short values are centered within that minimum width.
 
+The public B-layout Align path changes horizontal layout only. It preserves non-whitespace tokens, comments, identifiers, their
+order, leading indentation, physical line count and the structural TypeScript AST. It may align an existing function
+call, but it never introduces a function or performs a C-level structural refactor. Authoring may choose line breaks or
+move a leading logical operator before this path; those changes require their own token/comment and structural-AST checks.
+
 ## Column-sharing regions
 
 The matrix is defined by comparable syntax boundaries, not by whole-line length. A condition and a callee can have
@@ -54,6 +59,31 @@ then compute minimum widths from the cells in that region. A different expressio
   `Array.from` and `rows.filter` share the dot column as well as the parentheses. In `registry.rows.filter`, the receiver
   is `registry.rows`; its inner dot remains inside that cell. A bare function has no member-dot cell. Decimal points,
   string contents, optional chains and dots inside arguments are different syntax and are not matched to this axis.
+- **Property rows:** a property header keeps its `name | :` comparison when its value continues on later lines.
+  Shorthand properties participate in the same property run without inventing a `:` boundary.
+  A multiline value's terminal punctuation belongs to that value; it does not widen a comma column on unrelated
+  one-line properties. Within the retained region, each consecutive run of at least three ordinary one-line explicit
+  properties computes its own minimum-width colon, value-start and comma columns. Remaining explicit and multiline
+  headers share a fallback family; shorthand contributes only its existing comma gap and never gains a colon or a
+  missing comma. Families are ordered by source: the first uses unsuffixed axes and later families use suffixes `2`,
+  `3`, and so on. Only a three-or-more ordinary one-line explicit family exposes `property-value`. Blank lines and
+  interstitial comments split the comparison region.
+- **Logical chains:** an existing multiline homogeneous `||` or `&&` chain uses `operator | one space | optional ! |
+  operand`. The operator cell is two characters and the negation cell is either one `!` or empty. `!=` and `!==` are
+  indivisible comparison operators, and `!!value` stays opaque. A virtual first-row operator/negation prefix is an
+  authoring aid only; public Align never inserts it or moves an operator across lines.
+- **Conditional call arguments:** declarations with the same callee and arity may align a compatible comparison or
+  conditional expression at the same argument position. This nested layer has the declaration two-row floor; ordinary
+  kinds still need three rows. Callee, arity, argument position and expression shape must match. An incompatible nested
+  expression drops the layer rather than broadening the parent table. Inside a larger heterogeneous declaration group,
+  recursively detected disjoint runs of two or more adjacent compatible declarations form local
+  `declaration-call-expressions` subgroups. The outer `declaration-equals` group keeps its `equals`/`semicolon` axes and
+  legacy approval identity; each local subgroup owns only its call and comparison/conditional axes. A wholly compatible
+  declaration group keeps the existing whole-group path. Local subgroup detection is not approval, so an unknown subgroup
+  remains blocked from public writes.
+- **Adjacent `if` headers:** three or more adjacent same-family headers may align even when a one-line condition has a
+  multiline body. Blank lines and interstitial comments split the run. Braced rows align `)` and `{`; unbraced-return
+  rows align `)` and `return`. The two forms are separate families, and alignment never inserts braces.
 - **Exceptional type shapes:** in an authorized Refactor, keep ordinary interface properties in a compact table and
   put nested object type members in their own paragraphs, below the ordinary fields when the type contract permits it.
   Expand their nested properties into independent tables. Preserve names, readonly/optional modifiers and member types.
@@ -68,7 +98,7 @@ still require their own proof. Report checked columns and unsupported regions se
 
 1. Modify only one product file at a time.
    Files the user designated as close to canonical are excluded from modification and read only as a comparison basis.
-2. Imports separate runtime and type roles, and paths inside `src` use the `@/` alias. Do not mix values and `type` specifiers in one named import; split into separate `import` and `import type` declarations. A single named specifier always stays on one line; two or more fold onto one line when the completed line's display width is 120 or less. Only above 120 do they break into one item per line, with the closing `}` and `from` on the same line. All brace imports of an import section (groups separated only by blank lines) form one table: the head cell always reserves the `import type` width, so `{` sits in one column; the fixed-width `{ }` cell (names left-aligned one space after `{`), `from`, the module specifier and the terminating `;` share columns across every group. An import goes vertical — one name per line on the names column, aligned commas, a trailing comma, and the closing `}` on the table's `}` column — when (A) its one-line form exceeds 120 columns, (B) its names are 20+ columns wider than the second-widest names, or (C) the aligned table still exceeds 120 columns, taking the widest names first. Imports without braces (default only, namespace, `defer`, side-effect, `import x = require`) and imports with attributes stay as written without breaking the table; a lone brace import stays compact. Files without semicolons get no `;` column. When applying the alias to a new boundary, also verify the architecture import graph.
+2. Imports separate runtime and type roles, and paths inside `src` use the `@/` alias. Splitting a named import that mixes values and `type` specifiers into `import` and `import type` declarations changes tokens and belongs to a separate Write/Refactor normalization path; the layout-only import authoring path refuses and reports it. A single named specifier always stays on one line; two or more fold onto one line when the completed line's display width is 120 or less. Only above 120 do they break into one item per line, with the closing `}` and `from` on the same line. All brace imports of an import section (groups separated only by blank lines) form one table: the head cell always reserves the `import type` width, so `{` sits in one column; the fixed-width `{ }` cell (names left-aligned one space after `{`), `from`, the module specifier and the terminating `;` share columns across every group. An import goes vertical — one name per line on the names column, aligned commas, and the closing `}` on the table's `}` column — when (A) its one-line form exceeds 120 columns, (B) its names are 20+ columns wider than the second-widest names, or (C) the aligned table still exceeds 120 columns, taking the widest names first. Preserve whether the original final named specifier has a trailing comma in both compact and vertical form. Imports without braces (default only, namespace, `defer`, side-effect, `import x = require`) and imports with attributes stay as written without breaking the table; a lone brace import stays compact. Files without semicolons get no `;` column. When applying the alias to a new boundary, also verify the architecture import graph.
 3. Split a table block into cells by syntax units: identifier, `:`, `( )`, `=>`, `{ }`, `< >`, `= await`, `from`, trailing `//`.
 4. Unify each cell at the minimum width required by the longest actual content in the same block. Left-align feature/function identifiers and execution cells. Never create an arbitrary column farther than the actual longest row.
 5. Parentheses, braces and angle brackets are each independent outer boundaries. In the same comparison block, align both opening and closing symbols. The inner width is set by the longest actual single-line content; short and empty values sit inside that fixed width.
@@ -106,8 +136,8 @@ still require their own proof. Report checked columns and unsupported regions se
 35. The terminating `;` is no longer attached as an exception. Within a table, align its column to the actual longest value like any other column. One-line execution blocks where `}` immediately follows `;` (rule 9) remain a separate case and are not overridden by this rule.
 36. A standalone statement with no rows to compare against (fewer than three same-role repetitions, so no table forms) is not split vertically for alignment. Short flows originally read as one line, such as `if (condition) run() return`, prefer the compressed one-line form.
 37. In interface and class member declarations, one member owns one physical row. Do not chain several property or method declarations on the same row with `;`, hiding the table's row boundaries. Short public contracts are no exception.
-38. When a guard or validation line has more than three conditions or exceeds column 120, split it into a multi-line `if` block with early returns, with operators (`||`, `&&`) at line start. Extract repeated check bundles into named predicates (`isInScope`, `isAuthorized`) to keep the call site in reading order.
-39. Do not inline feature slots (approvalPreview, reconciliation, execute, ...) inside anonymous ternaries or conditional spreads. Extract each slot into one named local function so it reads top to bottom, and leave the assembly point in the minimal form `...(write ? { approvalPreview, reconciliation } : {})`.
+38. In authoring, a homogeneous guard or validation chain with at least four operands may be split into a multiline condition with `||` or `&&` at line start. Column 120 is an authoring consideration, not a generic wrapping trigger, and an accepted canonical grid stays intact. Mixed operators, `!!`, comments and other unsupported shapes are reported for manual judgment. This layout rule does not create predicates, functions or wrappers; any such refactor is a separately authorized structural change.
+39. In a separately authorized Refactor, do not inline feature slots (approvalPreview, reconciliation, execute, ...) inside anonymous ternaries or conditional spreads. Extract each slot into one named local function so it reads top to bottom, and leave the assembly point in the minimal form `...(write ? { approvalPreview, reconciliation } : {})`. B-layout only reports this structural opportunity.
 
 ## Column anchors
 
@@ -138,26 +168,36 @@ Proceed to the next step only after the current one passes. Do not adjust a late
 
 Code is written **from the moment of authoring** with the axis columns below already aligned. Before completion, the checker applies a second lock. This table maps 1:1 to the `KIND_AXES` registry in `grid-kinds.ts`; when document examples and checker output differ, **the checker wins**.
 
+Each newly supported shape or axis set has a new kind and suppresses any overlapping legacy region. Detection never
+widens an older approval key: approval remains exact to kind and ordered axes. Public whole-file writes are denied when
+an applicable changed group lacks approval, even when a legacy kind covering nearby syntax was approved.
+
 - **Gap axis** — leave at least one space before the token. Within a table, pad with spaces up to the actual longest value to align the column.
 - **Insert axis** — preserve existing TypeScript conventions. Do not pry apart attached tokens (`)`, `):`, `":`); padding goes outside.
 - A table normally needs three or more contiguous same-role rows, with the documented declaration/import pair exceptions.
   The scoped return-guard exception is defined in [column-sharing regions](#column-sharing-regions). Other kinds still
   stop at blank lines, comments and JSDoc. Conditional-type `:`, `for` header `;`, empty statements and unsupported one-line
   execution blocks are not alignment targets.
-- Axis names use the checker registry identifiers verbatim: `colon` (`:` after a name), `equals` (`=`), `semicolon` (`;`), `comma` (`,`), `comment` (trailing `//`), `open-paren` (`(`), `close-paren` (`)`), `case-colon` (case label `:`), `call-paren` (first call `(` in a case row), `subject-close-paren` (call-statement subject `)`), `matcher-dot` (right-hand matcher `.`), `matcher-open-paren` / `matcher-close-paren` (matcher argument cell), `return-tail` (start of a bare `return;`), `value` (expression start), `open-brace` / `close-brace` (object row `{ }`).
+- Axis names use the checker registry identifiers verbatim. Core names include `colon` (`:` after a name), `equals` (`=`), `semicolon` (`;`), `comma` (`,`), `comment` (trailing `//`), `open-paren` (`(`), `close-paren` (`)`), `case-colon` (case label `:`), `call-paren` (first call `(` in a case row), `subject-close-paren` (call-statement subject `)`), `matcher-dot` (right-hand matcher `.`), `matcher-open-paren` / `matcher-close-paren` (matcher argument cell), `return-tail` (start of a bare `return;`), `value` (expression start), and `open-brace` / `close-brace` (object row `{ }`). New-kind identifiers appear verbatim in the table below.
 
 | Kind | Gap axes | Insert axes |
 |---|---|---|
 | declaration | `:` , `;` | `//` |
 | declaration-equals (declaration table with `=`) | `:` , `=` , `;` | `//` |
 | declaration-call-envelope | `colon`, `equals`, `semicolon` | `call-member-dot`, `call-envelope-open`, `call-envelope-close`, `comment` |
+| declaration-call-expressions | `colon`, `equals`, `call-arg{i}`, `list-value-comma{i}`, `list-value-el{i}`, `list-arg{i}-comma{i}`, `list-arg{i}-el{i}`, `comparison-operator{i}`, `comparison-right{i}`, `conditional-question{i}`, `conditional-true{i}`, `conditional-colon{i}`, `conditional-false{i}`, `semicolon` | `call-open-paren`, `call-comma{i}`, `call-close-paren`, `list-value-open`, `list-value-close`, `list-arg{i}-open`, `list-arg{i}-close`, `subscript-close`, `comment` |
 | return-guards | `guard-return` | — |
+| if-headers-braced | `if-open-brace` | `if-close-paren` |
+| if-headers-return | `if-return` | `if-close-paren` |
+| logical-chains | `comparison-operator{i}`, `comparison-right{i}` | `logical-operator`, `logical-not`, `logical-operand` |
+| vertical-call-arguments | — | `vertical-call-comma` |
 | type-alias | `=` , `;` | `//` |
 | method-signature · class-method | — | `(` , `)` , return `:` , `//` |
 | interface-members · class-members · type-members (`type X = { ... }`) | `:` , `=` , `;` | `//` |
 | enum-member | `=` , `,` | `//` |
 | case-clause | — | case `:` |
 | object-rows (`{i}` per property position) | property start `{i}` , `:{i}` , `value{i}` start , `,{i}` , `}` | `{` , tail `tail` (`,` `;` `)` `as const`) |
+| object-properties | `property-colon`, `property-value`, `property-comma`, `property-colon{i}`, `property-value{i}`, `property-comma{i}` | — |
 | registration | `:` , expression start , trailing `,` | — |
 | assignments (`this.x = y;` assignment table) | `=` , `;` | `//` |
 | call-statements (`expect(…).toBe(…);` call-statement table) | `;` | subject `)` , matcher `.` , matcher `(` , matcher `)` , `//` |
@@ -201,7 +241,9 @@ Insert-axis conventions — things the checker never reverts, however the code i
 Two-point lock:
 
 1. **Authoring time (prompt)** — when an LLM or a person writes code, they write it in the form of the table and examples above. Agent definitions use SKILL.md as their manual, so this section is the prompt.
-2. **Completion time (check)** — every changed file passes `00_normalize-imports.ts` (check mode) and `06_align-tables.ts --file` (misaligned=0). If you want a form that cannot pass both checks, change this contract first.
+2. **Completion time (check)** — every changed file passes the selected import check (`00_normalize-imports.ts
+   --layout-only` for B-layout; the default full normalizer for an authorized Write/Refactor) and
+   `06_align-tables.ts --file` (`misaligned=0`). If you want a form that cannot pass both checks, change this contract first.
 
 ## Grid-first authoring
 
@@ -224,7 +266,8 @@ Limits — these keep grid-first from becoming padding by other means:
 1. A row must carry data the code needs. Do not add wrappers, parameters or helpers whose only job is to fill a column, and
    do not merge roles that merely look alike (see the reuse rule above).
 2. A different role is a different region: derived values, guards, early returns and control flow stay outside the table.
-   Wrap a side-effecting callback in a function that returns its result so its call site reads as a row.
+   Keep a side-effecting callback outside a value-row table unless an independently justified function already exposes
+   the needed result; grid shape alone never justifies a wrapper.
 3. Preserve behavior: execution order, when errors surface, and output bytes. Verify a rewrite of existing code by comparing
    the old and new versions on the same inputs, not only by running the existing tests.
 4. Hot paths: `.map` chains and tuple arrays allocate. Use them freely for configuration, reporting, CLI glue, test data and

@@ -16,8 +16,8 @@
         "from",
         "module-path"
       ],
-      "grouping": "Compare adjacent declarations only when their static syntax, role, and section match; preserve source order.",
-      "nesting": "Imported-name lists belong to the declaration cell and do not share axes with the outer declaration unless a future parser policy owns both levels.",
+      "grouping"  : "Compare adjacent declarations only when their static syntax, role, and section match; preserve source order.",
+      "nesting"   : "Imported-name lists belong to the declaration cell and do not share axes with the outer declaration unless a future parser policy owns both levels.",
       "separation": "Comments, side-effect boundaries, blank-line sections, and executable statements separate candidate groups contextually.",
       "exclusions": [
         "side-effect imports",
@@ -33,33 +33,33 @@
       ],
       "cases": [
         {
-          "id": "imports-static-ts",
-          "kind": "comparable",
-          "language": "typescript",
-          "source": "import { alpha } from \"./a.js\";\nimport { beta } from \"./b.js\";",
-          "expectation": "Needs review: these are comparable design rows, but the current TypeScript row-kind registry has no import kind and provides no automatic-write support.",
+          "id"          : "imports-static-ts",
+          "kind"        : "comparable",
+          "language"    : "typescript",
+          "source"      : "import { alpha } from \"./a.js\";\nimport { beta } from \"./b.js\";",
+          "expectation" : "Needs review: these are comparable design rows, but the current TypeScript row-kind registry has no import kind and provides no automatic-write support.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts"
           ]
         },
         {
-          "id": "imports-side-effect-role",
-          "kind": "different-role",
-          "language": "typescript",
-          "source": "import \"./setup.js\";\nimport { ready } from \"./state.js\";",
-          "expectation": "Unsupported as one group: the first row is a side-effect action and the second binds a name; preserve order and spacing.",
+          "id"          : "imports-side-effect-role",
+          "kind"        : "different-role",
+          "language"    : "typescript",
+          "source"      : "import \"./setup.js\";\nimport { ready } from \"./state.js\";",
+          "expectation" : "Unsupported as one group: the first row is a side-effect action and the second binds a name; preserve order and spacing.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts"
           ]
         },
         {
-          "id": "imports-alias-refactor",
-          "kind": "unsupported",
-          "language": "python",
-          "source": "from package import long_name as short\nfrom package import other",
-          "expectation": "Unsupported: the Python profiler explicitly refuses import rows, and changing an alias is an agent-owned Refactor requiring reference and behavior checks.",
+          "id"          : "imports-alias-refactor",
+          "kind"        : "unsupported",
+          "language"    : "python",
+          "source"      : "from package import long_name as short\nfrom package import other",
+          "expectation" : "Unsupported: the Python profiler explicitly refuses import rows, and changing an alias is an agent-owned Refactor requiring reference and behavior checks.",
           "verification": "design-only",
           "evidence": [
             "product/engine/python/profile.ts",
@@ -67,22 +67,22 @@
           ]
         },
         {
-          "id": "imports-named-list",
-          "kind": "nested",
-          "language": "typescript",
-          "source": "import { alpha, beta as localBeta } from \"./mod.js\";\nimport { gamma, delta as localDelta } from \"./other.js\";",
-          "expectation": "Needs review: named imports are a nested list with separate ownership; no current engine evidence supports decomposing or aligning it.",
+          "id"          : "imports-named-list",
+          "kind"        : "nested",
+          "language"    : "typescript",
+          "source"      : "import { alpha, beta as localBeta } from \"./mod.js\";\nimport { gamma, delta as localDelta } from \"./other.js\";",
+          "expectation" : "Needs review: named imports are a nested list with separate ownership; no current engine evidence supports decomposing or aligning it.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts"
           ]
         },
         {
-          "id": "imports-sections",
-          "kind": "separation",
-          "language": "python",
-          "source": "import operating_system_configuration_with_a_deliberately_long_name\nimport sys\n\nfrom local import app",
-          "expectation": "Unsupported for writing; the blank line may encode import sections and must remain a contextual separator. The current Python profile refuses every import row. The long row/comment is a design variation only and does not authorize padding to its width.",
+          "id"          : "imports-sections",
+          "kind"        : "separation",
+          "language"    : "python",
+          "source"      : "import operating_system_configuration_with_a_deliberately_long_name\nimport sys\n\nfrom local import app",
+          "expectation" : "Unsupported for writing; the blank line may encode import sections and must remain a contextual separator. The current Python profile refuses every import row. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
             "product/engine/python/profile.ts",
@@ -108,8 +108,8 @@
         "terminator",
         "comment"
       ],
-      "grouping": "Group same-role sibling statements with compatible axes without reordering; the TypeScript declaration-equals detector may identify two rows, but automatic application remains gated by an exact approved rule and proof, while Python tables normally require three.",
-      "nesting": "A supported call or literal-list value may own an independent inner layer; uncertain or multiline values stay opaque or are refused.",
+      "grouping"  : "Group same-role sibling statements with compatible axes without reordering; the TypeScript declaration-equals detector may identify two rows, but automatic application remains gated by an exact approved rule and proof, while Python tables normally require three.",
+      "nesting"   : "A supported call or literal-list value may own an independent inner layer; uncertain or multiline values stay opaque or are refused.",
       "separation": "Ordinary groups are contiguous; blank lines separate current declaration groups, while comments or incompatible statements also end a run.",
       "exclusions": [
         "destructuring",
@@ -127,11 +127,11 @@
       ],
       "cases": [
         {
-          "id": "declarations-typed-python",
-          "kind": "comparable",
-          "language": "python",
-          "source": "retries: int = 3\nlabel: str = \"x\"\nverbose: bool = True",
-          "expectation": "Design-only sample; related engine capability: the Python annotated-assignment profile and the test named `annotated assignments align name and type columns and never pad the trailing value` cover the same row form, but this exact snippet was not executed here and automatic application remains exact approved-rule gated.",
+          "id"          : "declarations-typed-python",
+          "kind"        : "comparable",
+          "language"    : "python",
+          "source"      : "retries: int = 3\nlabel: str = \"x\"\nverbose: bool = True",
+          "expectation" : "Design-only sample; related engine capability: the Python annotated-assignment profile and the test named `annotated assignments align name and type columns and never pad the trailing value` cover the same row form, but this exact snippet was not executed here and automatic application remains exact approved-rule gated.",
           "verification": "design-only",
           "evidence": [
             "product/engine/python/profile.ts",
@@ -140,11 +140,11 @@
           ]
         },
         {
-          "id": "declarations-type-vs-runtime",
-          "kind": "different-role",
-          "language": "typescript",
-          "source": "type UserId = string;\nconst userId = loadId();",
-          "expectation": "Design-only sample; related engine capability: TypeScript registers type-alias and runtime declaration kinds independently. They are different roles and no combined-group support is claimed for this exact snippet.",
+          "id"          : "declarations-type-vs-runtime",
+          "kind"        : "different-role",
+          "language"    : "typescript",
+          "source"      : "type UserId = string;\nconst userId = loadId();",
+          "expectation" : "Design-only sample; related engine capability: TypeScript registers type-alias and runtime declaration kinds independently. They are different roles and no combined-group support is claimed for this exact snippet.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -152,11 +152,11 @@
           ]
         },
         {
-          "id": "declarations-destructure",
-          "kind": "unsupported",
-          "language": "typescript",
-          "source": "const { host, port } = config;\nconst [first, second] = values;",
-          "expectation": "Unsupported by the current declaration detector's bounded single-name model; needs review rather than automatic rewriting.",
+          "id"          : "declarations-destructure",
+          "kind"        : "unsupported",
+          "language"    : "typescript",
+          "source"      : "const { host, port } = config;\nconst [first, second] = values;",
+          "expectation" : "Unsupported by the current declaration detector's bounded single-name model; needs review rather than automatic rewriting.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -164,11 +164,11 @@
           ]
         },
         {
-          "id": "declarations-call-layer",
-          "kind": "nested",
-          "language": "typescript",
-          "source": "const first = diagnostics(toolchain, before);\nconst second = diagnostics(toolchain, after);",
-          "expectation": "Design-only sample; related engine capability: compatible direct call values can own call axes under detector restrictions. This exact snippet was not executed here, and automatic application remains gated by an exact approved rule.",
+          "id"          : "declarations-call-layer",
+          "kind"        : "nested",
+          "language"    : "typescript",
+          "source"      : "const first = diagnostics(toolchain, before);\nconst second = diagnostics(toolchain, after);",
+          "expectation" : "Design-only sample; related engine capability: compatible direct call values can own call axes under detector restrictions. This exact snippet was not executed here, and automatic application remains gated by an exact approved rule.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -176,11 +176,11 @@
           ]
         },
         {
-          "id": "declarations-blank-section",
-          "kind": "separation",
-          "language": "typescript",
-          "source": "const width = 10;\nconst heightWithANameLongEnoughToExerciseExceptionalWidth = 20;\n\nconst label = \"panel\";",
-          "expectation": "Design-only sample; related engine capability: ordinary TypeScript declaration runs stop at a blank line and preserve statement order. The two-row declaration floor is a detector-specific exception only; `test/recommended-preset.test.ts` verifies that automatic application still requires the exact approved rule and proof. The long row/comment is a design variation only and does not authorize padding to its width.",
+          "id"          : "declarations-blank-section",
+          "kind"        : "separation",
+          "language"    : "typescript",
+          "source"      : "const width = 10;\nconst heightWithANameLongEnoughToExerciseExceptionalWidth = 20;\n\nconst label = \"panel\";",
+          "expectation" : "Design-only sample; related engine capability: ordinary TypeScript declaration runs stop at a blank line and preserve statement order. The two-row declaration floor is a detector-specific exception only; `test/recommended-preset.test.ts` verifies that automatic application still requires the exact approved rule and proof. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -207,8 +207,8 @@
         "return-type",
         "comment"
       ],
-      "grouping": "Compare sibling signatures of the same declaration role and container; keep overload sets and runtime methods distinct when their roles differ.",
-      "nesting": "Parameters and their defaults are owned by the signature cell; nested function types or destructured parameters require a separate supported policy.",
+      "grouping"  : "Compare sibling signatures of the same declaration role and container; keep overload sets and runtime methods distinct when their roles differ.",
+      "nesting"   : "Parameters and their defaults are owned by the signature cell; nested function types or destructured parameters require a separate supported policy.",
       "separation": "Blank lines and non-signature members end current TypeScript runs; decorators and documentation are structural boundaries needing review.",
       "exclusions": [
         "Python def rows",
@@ -225,11 +225,11 @@
       ],
       "cases": [
         {
-          "id": "signatures-interface-methods",
-          "kind": "comparable",
-          "language": "typescript",
-          "source": "open(path: string): File;\nclose(id: number): void;",
-          "expectation": "Design-only sample; related engine capability: the TypeScript registry has method-signature axes for accepted interface siblings. This exact snippet was not executed here and no automatic-write approval is claimed.",
+          "id"          : "signatures-interface-methods",
+          "kind"        : "comparable",
+          "language"    : "typescript",
+          "source"      : "open(path: string): File;\nclose(id: number): void;",
+          "expectation" : "Design-only sample; related engine capability: the TypeScript registry has method-signature axes for accepted interface siblings. This exact snippet was not executed here and no automatic-write approval is claimed.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -238,11 +238,11 @@
           ]
         },
         {
-          "id": "signatures-field-vs-method",
-          "kind": "different-role",
-          "language": "typescript",
-          "source": "handler: Handler;\nhandle(input: Input): Output;",
-          "expectation": "Design-only sample; related engine capability: property and method signatures use separate registered kinds. They must not share a table, and this exact snippet was not executed here.",
+          "id"          : "signatures-field-vs-method",
+          "kind"        : "different-role",
+          "language"    : "typescript",
+          "source"      : "handler: Handler;\nhandle(input: Input): Output;",
+          "expectation" : "Design-only sample; related engine capability: property and method signatures use separate registered kinds. They must not share a table, and this exact snippet was not executed here.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -250,11 +250,11 @@
           ]
         },
         {
-          "id": "signatures-python-def",
-          "kind": "unsupported",
-          "language": "python",
-          "source": "def short(x: int) -> str:\n    return str(x)\ndef longer_name(value: int) -> str:\n    return str(value)",
-          "expectation": "Unsupported: the Python profile explicitly refuses def rows and does not claim signature alignment.",
+          "id"          : "signatures-python-def",
+          "kind"        : "unsupported",
+          "language"    : "python",
+          "source"      : "def short(x: int) -> str:\n    return str(x)\ndef longer_name(value: int) -> str:\n    return str(value)",
+          "expectation" : "Unsupported: the Python profile explicitly refuses def rows and does not claim signature alignment.",
           "verification": "design-only",
           "evidence": [
             "product/engine/python/profile.ts",
@@ -262,11 +262,11 @@
           ]
         },
         {
-          "id": "signatures-function-type-param",
-          "kind": "nested",
-          "language": "typescript",
-          "source": "map(fn: (value: Input) => Output): Result;\nfilter(fn: (value: Input) => boolean): Result;",
-          "expectation": "Needs review: the nested function type owns internal parentheses and arrows; current evidence does not establish cross-level alignment.",
+          "id"          : "signatures-function-type-param",
+          "kind"        : "nested",
+          "language"    : "typescript",
+          "source"      : "map(fn: (value: Input) => Output): Result;\nfilter(fn: (value: Input) => boolean): Result;",
+          "expectation" : "Needs review: the nested function type owns internal parentheses and arrows; current evidence does not establish cross-level alignment.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -274,11 +274,11 @@
           ]
         },
         {
-          "id": "signatures-doc-boundary",
-          "kind": "separation",
-          "language": "typescript",
-          "source": "read(id: string): Item;\n\n/** Writes an item after validating an intentionally long descriptive contract. */\nwriteItemAfterValidatingTheCompletePersistentRepresentation(item: Item): void;",
-          "expectation": "Needs review as one group: blank lines and documentation separate the current run, and documentation must be preserved byte-for-byte. The long row/comment is a design variation only and does not authorize padding to its width.",
+          "id"          : "signatures-doc-boundary",
+          "kind"        : "separation",
+          "language"    : "typescript",
+          "source"      : "read(id: string): Item;\n\n/** Writes an item after validating an intentionally long descriptive contract. */\nwriteItemAfterValidatingTheCompletePersistentRepresentation(item: Item): void;",
+          "expectation" : "Needs review as one group: blank lines and documentation separate the current run, and documentation must be preserved byte-for-byte. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -305,8 +305,8 @@
         "chain-tail",
         "terminator"
       ],
-      "grouping": "Use the registered TypeScript call kind or the exact Python assigned-call signature; preserve callees, arity, and evaluation order.",
-      "nesting": "Outer call punctuation and each supported inner call/list layer have separate ownership; heterogeneous arguments remain opaque.",
+      "grouping"  : "Use the registered TypeScript call kind or the exact Python assigned-call signature; preserve callees, arity, and evaluation order.",
+      "nesting"   : "Outer call punctuation and each supported inner call/list layer have separate ownership; heterogeneous arguments remain opaque.",
       "separation": "Comments at member boundaries, incompatible calls, and ordinary blank lines end a run; no statement is moved to create a table.",
       "exclusions": [
         "optional or computed calls",
@@ -323,11 +323,11 @@
       ],
       "cases": [
         {
-          "id": "calls-ts-envelope",
-          "kind": "comparable",
-          "language": "typescript",
-          "source": "const one = service.read(alpha);\nconst two = repository.write(beta, options);",
-          "expectation": "Design-only sample; related engine capability: the test named `aligns different callable envelopes and preserves the trailing non-null assertion` covers bounded direct-call envelopes with opaque arguments. This exact snippet was not executed here, and its distinct lookup key still needs exact approval.",
+          "id"          : "calls-ts-envelope",
+          "kind"        : "comparable",
+          "language"    : "typescript",
+          "source"      : "const one = service.read(alpha);\nconst two = repository.write(beta, options);",
+          "expectation" : "Design-only sample; related engine capability: the test named `aligns different callable envelopes and preserves the trailing non-null assertion` covers bounded direct-call envelopes with opaque arguments. This exact snippet was not executed here, and its distinct lookup key still needs exact approval.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -335,11 +335,11 @@
           ]
         },
         {
-          "id": "calls-expression-vs-declaration",
-          "kind": "different-role",
-          "language": "typescript",
-          "source": "const result = fetchOne(id);\nexpect(result).toBeDefined();",
-          "expectation": "Design-only sample; related engine capability: declaration calls and call statements use different registered detectors and axes. No combined-group support is claimed for this exact snippet.",
+          "id"          : "calls-expression-vs-declaration",
+          "kind"        : "different-role",
+          "language"    : "typescript",
+          "source"      : "const result = fetchOne(id);\nexpect(result).toBeDefined();",
+          "expectation" : "Design-only sample; related engine capability: declaration calls and call statements use different registered detectors and axes. No combined-group support is claimed for this exact snippet.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -347,11 +347,11 @@
           ]
         },
         {
-          "id": "calls-python-keywords",
-          "kind": "unsupported",
-          "language": "python",
-          "source": "first = diagnostics(tool=toolchain, state=before)\nsecond = diagnostics(tool=toolchain, state=after)",
-          "expectation": "Unsupported: Python assigned-call tests explicitly refuse keyword arguments for table formation.",
+          "id"          : "calls-python-keywords",
+          "kind"        : "unsupported",
+          "language"    : "python",
+          "source"      : "first = diagnostics(tool=toolchain, state=before)\nsecond = diagnostics(tool=toolchain, state=after)",
+          "expectation" : "Unsupported: Python assigned-call tests explicitly refuse keyword arguments for table formation.",
           "verification": "design-only",
           "evidence": [
             "product/engine/python/profile.ts",
@@ -359,11 +359,11 @@
           ]
         },
         {
-          "id": "calls-nested-argument",
-          "kind": "nested",
-          "language": "typescript",
-          "source": "const first = inspect(load(alpha));\nconst second = inspect(load(longer));",
-          "expectation": "Needs review: nested argument punctuation stays inside its argument cell unless a separately supported layer owns it; no universal nested-call support is claimed.",
+          "id"          : "calls-nested-argument",
+          "kind"        : "nested",
+          "language"    : "typescript",
+          "source"      : "const first = inspect(load(alpha));\nconst second = inspect(load(longer));",
+          "expectation" : "Needs review: nested argument punctuation stays inside its argument cell unless a separately supported layer owns it; no universal nested-call support is claimed.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -371,11 +371,11 @@
           ]
         },
         {
-          "id": "calls-comment-boundary",
-          "kind": "separation",
-          "language": "typescript",
-          "source": "service.alpha();\n// lifecycle boundary with an intentionally long explanation that remains outside every call cell\nservice.beta();",
-          "expectation": "Unsupported as one automatic group: the intervening comment separates candidates and must not be moved or absorbed. The long row/comment is a design variation only and does not authorize padding to its width.",
+          "id"          : "calls-comment-boundary",
+          "kind"        : "separation",
+          "language"    : "typescript",
+          "source"      : "service.alpha();\n// lifecycle boundary with an intentionally long explanation that remains outside every call cell\nservice.beta();",
+          "expectation" : "Unsupported as one automatic group: the intervening comment separates candidates and must not be moved or absorbed. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -401,8 +401,8 @@
         "exit-value",
         "terminator"
       ],
-      "grouping": "Compare guards only within the same owned block region and preserve all intervening statement order; case clauses use their own kind.",
-      "nesting": "Nested blocks establish independent regions; punctuation inside conditions belongs to the condition cell.",
+      "grouping"  : "Compare guards only within the same owned block region and preserve all intervening statement order; case clauses use their own kind.",
+      "nesting"   : "Nested blocks establish independent regions; punctuation inside conditions belongs to the condition cell.",
       "separation": "Blank lines are contextual: supported TypeScript return regions may span them, while comments, terminal statements, and unsupported guards can break a region.",
       "exclusions": [
         "Python control-flow rows",
@@ -419,11 +419,11 @@
       ],
       "cases": [
         {
-          "id": "branches-ts-return-guards",
-          "kind": "comparable",
-          "language": "typescript",
-          "source": "if (!input) return undefined;\nif (!input.ready) return fallback;",
-          "expectation": "Design-only sample; related engine capability: the TypeScript registry has a return-guards kind and matrix-boundary tests cover return-column regions. This exact snippet was not executed here, and automatic application remains exact approved-rule gated.",
+          "id"          : "branches-ts-return-guards",
+          "kind"        : "comparable",
+          "language"    : "typescript",
+          "source"      : "if (!input) return undefined;\nif (!input.ready) return fallback;",
+          "expectation" : "Design-only sample; related engine capability: the TypeScript registry has a return-guards kind and matrix-boundary tests cover return-column regions. This exact snippet was not executed here, and automatic application remains exact approved-rule gated.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -431,11 +431,11 @@
           ]
         },
         {
-          "id": "branches-return-vs-throw",
-          "kind": "different-role",
-          "language": "typescript",
-          "source": "if (!input) return undefined;\nif (failed) throw new Error(\"failed\");",
-          "expectation": "Unsupported as one group: return and throw actions are different roles; current return-guard evidence does not authorize a combined group.",
+          "id"          : "branches-return-vs-throw",
+          "kind"        : "different-role",
+          "language"    : "typescript",
+          "source"      : "if (!input) return undefined;\nif (failed) throw new Error(\"failed\");",
+          "expectation" : "Unsupported as one group: return and throw actions are different roles; current return-guard evidence does not authorize a combined group.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -443,11 +443,11 @@
           ]
         },
         {
-          "id": "branches-python-if",
-          "kind": "unsupported",
-          "language": "python",
-          "source": "if not item:\n    return None\nif failed:\n    raise ValueError()",
-          "expectation": "Unsupported: the Python profiler explicitly refuses control-flow and return/raise rows.",
+          "id"          : "branches-python-if",
+          "kind"        : "unsupported",
+          "language"    : "python",
+          "source"      : "if not item:\n    return None\nif failed:\n    raise ValueError()",
+          "expectation" : "Unsupported: the Python profiler explicitly refuses control-flow and return/raise rows.",
           "verification": "design-only",
           "evidence": [
             "product/engine/python/profile.ts",
@@ -455,11 +455,11 @@
           ]
         },
         {
-          "id": "branches-nested-scope",
-          "kind": "nested",
-          "language": "typescript",
-          "source": "if (outer) {\n  if (!left) return one;\n}\nif (!right) return two;",
-          "expectation": "Unsupported as one group: nested and outer guards belong to different block regions; current tests require scope separation.",
+          "id"          : "branches-nested-scope",
+          "kind"        : "nested",
+          "language"    : "typescript",
+          "source"      : "if (outer) {\n  if (!left) return one;\n}\nif (!right) return two;",
+          "expectation" : "Unsupported as one group: nested and outer guards belong to different block regions; current tests require scope separation.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -467,11 +467,11 @@
           ]
         },
         {
-          "id": "branches-contextual-gap",
-          "kind": "separation",
-          "language": "typescript",
-          "source": "if (!a) return one;\n\nprepareAnIntentionallyLongIntermediateRepresentationWithoutMovingIt();\nif (!b) return two;",
-          "expectation": "Needs exact detector judgment: blank lines alone are not universal separators, but an intervening statement participates in bounded region rules; order is preserved and unsupported barriers refuse grouping. The long row/comment is a design variation only and does not authorize padding to its width.",
+          "id"          : "branches-contextual-gap",
+          "kind"        : "separation",
+          "language"    : "typescript",
+          "source"      : "if (!a) return one;\n\nprepareAnIntentionallyLongIntermediateRepresentationWithoutMovingIt();\nif (!b) return two;",
+          "expectation" : "Needs exact detector judgment: blank lines alone are not universal separators, but an intervening statement participates in bounded region rules; order is preserved and unsupported barriers refuse grouping. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -496,8 +496,8 @@
         "terminator",
         "comment"
       ],
-      "grouping": "Group siblings only within the same object, type, class, interface, enum, or supported mapping container and only when their roles match.",
-      "nesting": "Nested object/type values create lower independent tables; outer and inner colons never share an axis.",
+      "grouping"  : "Group siblings only within the same object, type, class, interface, enum, or supported mapping container and only when their roles match.",
+      "nesting"   : "Nested object/type values create lower independent tables; outer and inner colons never share an axis.",
       "separation": "Blank lines split current TypeScript member runs; Python dictionary rows require a compatible contiguous table.",
       "exclusions": [
         "computed keys",
@@ -517,11 +517,11 @@
       ],
       "cases": [
         {
-          "id": "members-ts-interface",
-          "kind": "comparable",
-          "language": "typescript",
-          "source": "short: string;\nlongerName?: number;",
-          "expectation": "Design-only sample; related engine capability: TypeScript interface-members own colon and terminator axes for accepted property signatures. This exact snippet was not executed here and no automatic-write approval is claimed.",
+          "id"          : "members-ts-interface",
+          "kind"        : "comparable",
+          "language"    : "typescript",
+          "source"      : "short: string;\nlongerName?: number;",
+          "expectation" : "Design-only sample; related engine capability: TypeScript interface-members own colon and terminator axes for accepted property signatures. This exact snippet was not executed here and no automatic-write approval is claimed.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -530,11 +530,11 @@
           ]
         },
         {
-          "id": "members-method-vs-field",
-          "kind": "different-role",
-          "language": "typescript",
-          "source": "value: string;\nread(): string;",
-          "expectation": "Design-only sample; related engine capability: fields and methods use distinct registered member kinds. They must not share columns, and this exact snippet was not executed here.",
+          "id"          : "members-method-vs-field",
+          "kind"        : "different-role",
+          "language"    : "typescript",
+          "source"      : "value: string;\nread(): string;",
+          "expectation" : "Design-only sample; related engine capability: fields and methods use distinct registered member kinds. They must not share columns, and this exact snippet was not executed here.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -542,11 +542,11 @@
           ]
         },
         {
-          "id": "members-computed-key",
-          "kind": "unsupported",
-          "language": "typescript",
-          "source": "const item = {\n  [key]: value,\n  plain: other,\n};",
-          "expectation": "Unsupported by the bounded named-property model; computed keys need review and receive no automatic-write claim.",
+          "id"          : "members-computed-key",
+          "kind"        : "unsupported",
+          "language"    : "typescript",
+          "source"      : "const item = {\n  [key]: value,\n  plain: other,\n};",
+          "expectation" : "Unsupported by the bounded named-property model; computed keys need review and receive no automatic-write claim.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -554,11 +554,11 @@
           ]
         },
         {
-          "id": "members-nested-type",
-          "kind": "nested",
-          "language": "typescript",
-          "source": "type Example = {\n  short: { x: number; longer: string };\n  longName: { x: number; longer: string };\n};",
-          "expectation": "Needs review as separate lower tables: nested type members own their axes independently; outer and inner punctuation must not align together.",
+          "id"          : "members-nested-type",
+          "kind"        : "nested",
+          "language"    : "typescript",
+          "source"      : "type Example = {\n  short: { x: number; longer: string };\n  longName: { x: number; longer: string };\n};",
+          "expectation" : "Needs review as separate lower tables: nested type members own their axes independently; outer and inner punctuation must not align together.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -566,11 +566,11 @@
           ]
         },
         {
-          "id": "members-documentation-gap",
-          "kind": "separation",
-          "language": "typescript",
-          "source": "interface Item {\n  id: string;\n\n  /** Display label with a deliberately long description that remains documentation. */\n  exceptionallyLongDisplayLabelUsedByExternalConsumers: string;\n}",
-          "expectation": "Needs review as one group: the blank line and documentation separate current runs and the comment remains untouched. The long row/comment is a design variation only and does not authorize padding to its width.",
+          "id"          : "members-documentation-gap",
+          "kind"        : "separation",
+          "language"    : "typescript",
+          "source"      : "interface Item {\n  id: string;\n\n  /** Display label with a deliberately long description that remains documentation. */\n  exceptionallyLongDisplayLabelUsedByExternalConsumers: string;\n}",
+          "expectation" : "Needs review as one group: the blank line and documentation separate current runs and the comment remains untouched. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -597,8 +597,8 @@
         "element-close",
         "row-delimiter"
       ],
-      "grouping": "Require sibling rows with compatible shape, field order, and owned delimiters; preserve record and element order.",
-      "nesting": "Each nested list or record owns an independent layer; only registered literal layers may be decomposed today.",
+      "grouping"  : "Require sibling rows with compatible shape, field order, and owned delimiters; preserve record and element order.",
+      "nesting"   : "Each nested list or record owns an independent layer; only registered literal layers may be decomposed today.",
       "separation": "Container boundaries always separate groups; comments and heterogeneous elements may split or refuse a candidate depending on language syntax.",
       "exclusions": [
         "missing or reordered fields",
@@ -618,11 +618,11 @@
       ],
       "cases": [
         {
-          "id": "records-ts-object-array",
-          "kind": "comparable",
-          "language": "typescript",
-          "source": "const rows = [\n  { name: \"a\", count: 1 },\n  { name: \"long\", count: 22 },\n];",
-          "expectation": "Design-only sample; related engine capability: TypeScript object-rows cover bounded object literals with corresponding supported properties. This exact snippet was not executed here, and exact shape plus approval gates still apply.",
+          "id"          : "records-ts-object-array",
+          "kind"        : "comparable",
+          "language"    : "typescript",
+          "source"      : "const rows = [\n  { name: \"a\", count: 1 },\n  { name: \"long\", count: 22 },\n];",
+          "expectation" : "Design-only sample; related engine capability: TypeScript object-rows cover bounded object literals with corresponding supported properties. This exact snippet was not executed here, and exact shape plus approval gates still apply.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -631,11 +631,11 @@
           ]
         },
         {
-          "id": "records-array-vs-scalar",
-          "kind": "different-role",
-          "language": "json",
-          "source": "[\n  {\"id\": 1},\n  2\n]",
-          "expectation": "Design-only sample; related engine capability: the bounded internal JSON adapter handles sibling scalar mapping entries, not heterogeneous array object/scalar rows. Public CLI integration and an approved preset are pending.",
+          "id"          : "records-array-vs-scalar",
+          "kind"        : "different-role",
+          "language"    : "json",
+          "source"      : "[\n  {\"id\": 1},\n  2\n]",
+          "expectation" : "Design-only sample; related engine capability: the bounded internal JSON adapter handles sibling scalar mapping entries, not heterogeneous array object/scalar rows. Public CLI integration and an approved preset are pending.",
           "verification": "design-only",
           "evidence": [
             "product/engine/structured/index.ts",
@@ -643,11 +643,11 @@
           ]
         },
         {
-          "id": "records-missing-field",
-          "kind": "unsupported",
-          "language": "typescript",
-          "source": "const rows = [\n  { id: 1, label: \"a\" },\n  { id: 2 },\n];",
-          "expectation": "Unsupported as a uniform record table unless a future explicit missing-field policy is reviewed; current catalog grants none.",
+          "id"          : "records-missing-field",
+          "kind"        : "unsupported",
+          "language"    : "typescript",
+          "source"      : "const rows = [\n  { id: 1, label: \"a\" },\n  { id: 2 },\n];",
+          "expectation" : "Unsupported as a uniform record table unless a future explicit missing-field policy is reviewed; current catalog grants none.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -655,11 +655,11 @@
           ]
         },
         {
-          "id": "records-python-nested",
-          "kind": "nested",
-          "language": "python",
-          "source": "rows = [\n    [\"a\", [1, 2]],\n    [\"b\", [3, 4]],\n]",
-          "expectation": "Unsupported: the Python bundle profiler explicitly refuses nested bundles and does not flatten inner lists.",
+          "id"          : "records-python-nested",
+          "kind"        : "nested",
+          "language"    : "python",
+          "source"      : "rows = [\n    [\"a\", [1, 2]],\n    [\"b\", [3, 4]],\n]",
+          "expectation" : "Unsupported: the Python bundle profiler explicitly refuses nested bundles and does not flatten inner lists.",
           "verification": "design-only",
           "evidence": [
             "product/engine/python/profile.ts",
@@ -667,11 +667,11 @@
           ]
         },
         {
-          "id": "records-yaml-comment-gap",
-          "kind": "separation",
-          "language": "yaml",
-          "source": "- id: 1\n  name: alpha\n\n# another source with a deliberately long comment that remains byte-preserved\n- id: 2\n  name: beta",
-          "expectation": "Design-only sample; related engine capability: the bounded internal YAML adapter preserves comments as barriers and tests unsupported constructs without changing their bytes. This sequence-entry snippet remains unsupported; public CLI integration and an approved preset are pending. The long row/comment is a design variation only and does not authorize padding to its width.",
+          "id"          : "records-yaml-comment-gap",
+          "kind"        : "separation",
+          "language"    : "yaml",
+          "source"      : "- id: 1\n  name: alpha\n\n# another source with a deliberately long comment that remains byte-preserved\n- id: 2\n  name: beta",
+          "expectation" : "Design-only sample; related engine capability: the bounded internal YAML adapter preserves comments as barriers and tests unsupported constructs without changing their bytes. This sequence-entry snippet remains unsupported; public CLI integration and an approved preset are pending. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
             "product/engine/structured/index.ts",
@@ -696,8 +696,8 @@
         "result-boundary",
         "terminator"
       ],
-      "grouping": "Only group expressions with the same statement role and compatible operator semantics; keep original evaluation and statement order.",
-      "nesting": "Parenthesized, ternary, short-circuit, and nested expressions remain opaque unless a dedicated policy owns that expression level.",
+      "grouping"  : "Only group expressions with the same statement role and compatible operator semantics; keep original evaluation and statement order.",
+      "nesting"   : "Parenthesized, ternary, short-circuit, and nested expressions remain opaque unless a dedicated policy owns that expression level.",
       "separation": "Blank lines, comments, and changes of operator or statement role are contextual barriers rather than a universal rule.",
       "exclusions": [
         "precedence-changing edits",
@@ -714,11 +714,11 @@
       ],
       "cases": [
         {
-          "id": "expressions-python-assignment-values",
-          "kind": "comparable",
-          "language": "python",
-          "source": "flag = a == b\nother = b == c\nthird = c == d",
-          "expectation": "Design-only sample; related engine capability: the test named `keeps == comparisons inside values and refuses values starting with ==` keeps comparisons opaque while aligning only assignment axes. This exact snippet was not executed here and automatic application remains approval gated.",
+          "id"          : "expressions-python-assignment-values",
+          "kind"        : "comparable",
+          "language"    : "python",
+          "source"      : "flag = a == b\nother = b == c\nthird = c == d",
+          "expectation" : "Design-only sample; related engine capability: the test named `keeps == comparisons inside values and refuses values starting with ==` keeps comparisons opaque while aligning only assignment axes. This exact snippet was not executed here and automatic application remains approval gated.",
           "verification": "design-only",
           "evidence": [
             "product/engine/python/profile.ts",
@@ -726,11 +726,11 @@
           ]
         },
         {
-          "id": "expressions-assignment-vs-comparison",
-          "kind": "different-role",
-          "language": "python",
-          "source": "value = other\nvalue == other",
-          "expectation": "Design-only sample; related engine capability: the Python profile accepts bounded assignments and refuses a value beginning with the second equals. The bare comparison remains a different role; this exact snippet was not executed here.",
+          "id"          : "expressions-assignment-vs-comparison",
+          "kind"        : "different-role",
+          "language"    : "python",
+          "source"      : "value = other\nvalue == other",
+          "expectation" : "Design-only sample; related engine capability: the Python profile accepts bounded assignments and refuses a value beginning with the second equals. The bare comparison remains a different role; this exact snippet was not executed here.",
           "verification": "design-only",
           "evidence": [
             "product/engine/python/profile.ts",
@@ -738,11 +738,11 @@
           ]
         },
         {
-          "id": "expressions-ternary",
-          "kind": "unsupported",
-          "language": "typescript",
-          "source": "const a = ready ? first : second;\nconst b = done ? x : y;",
-          "expectation": "Unsupported for inner operator alignment: current declaration support keeps these initializer expressions opaque and does not own ternary axes.",
+          "id"          : "expressions-ternary",
+          "kind"        : "unsupported",
+          "language"    : "typescript",
+          "source"      : "const a = ready ? first : second;\nconst b = done ? x : y;",
+          "expectation" : "Unsupported for inner operator alignment: current declaration support keeps these initializer expressions opaque and does not own ternary axes.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -750,11 +750,11 @@
           ]
         },
         {
-          "id": "expressions-nested-precedence",
-          "kind": "nested",
-          "language": "typescript",
-          "source": "const left = a + b * c;\nconst right = d + (e * f);",
-          "expectation": "Needs review: multiplication and grouping are nested inside the value cell; no current evidence authorizes aligning their operators or changing parentheses.",
+          "id"          : "expressions-nested-precedence",
+          "kind"        : "nested",
+          "language"    : "typescript",
+          "source"      : "const left = a + b * c;\nconst right = d + (e * f);",
+          "expectation" : "Needs review: multiplication and grouping are nested inside the value cell; no current evidence authorizes aligning their operators or changing parentheses.",
           "verification": "design-only",
           "evidence": [
             "product/engine/typescript/grid-kinds.ts",
@@ -762,11 +762,11 @@
           ]
         },
         {
-          "id": "expressions-comment-section",
-          "kind": "separation",
-          "language": "python",
-          "source": "alpha = left + right\n# calculated by a deliberately long alternative expression that remains a boundary\nbeta = left * right",
-          "expectation": "Unsupported as one group: the comment and operator-role change separate the rows; only bounded assignment axes may be considered independently. The long row/comment is a design variation only and does not authorize padding to its width.",
+          "id"          : "expressions-comment-section",
+          "kind"        : "separation",
+          "language"    : "python",
+          "source"      : "alpha = left + right\n# calculated by a deliberately long alternative expression that remains a boundary\nbeta = left * right",
+          "expectation" : "Unsupported as one group: the comment and operator-role change separate the rows; only bounded assignment axes may be considered independently. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
             "product/engine/python/profile.ts",
@@ -790,8 +790,8 @@
         "entry-delimiter",
         "comment"
       ],
-      "grouping": "Compare sibling mapping entries in the same parsed container; preserve key order, duplicates, escapes, indentation, and document boundaries.",
-      "nesting": "Nested mappings, sequences, and flow collections own independent axes and remain opaque to their parent row.",
+      "grouping"  : "Compare sibling mapping entries in the same parsed container; preserve key order, duplicates, escapes, indentation, and document boundaries.",
+      "nesting"   : "Nested mappings, sequences, and flow collections own independent axes and remain opaque to their parent row.",
       "separation": "JSON container syntax bounds groups; YAML blank lines and comments are contextual and document markers always separate documents.",
       "exclusions": [
         "JSON duplicate-key normalization",
@@ -809,11 +809,11 @@
       ],
       "cases": [
         {
-          "id": "documents-json-sibling-scalars",
-          "kind": "comparable",
-          "language": "json",
-          "source": "{\n  \"id\": 1,\n  \"displayName\": \"BoxBox\"\n}",
-          "expectation": "Design-only sample; related engine capability: the bounded internal JSON adapter aligns runs of at least three sibling single-line scalar properties and `test/structured-align.test.ts` verifies fixture output. This two-row snippet does not meet that floor; public CLI integration and an approved preset are pending.",
+          "id"          : "documents-json-sibling-scalars",
+          "kind"        : "comparable",
+          "language"    : "json",
+          "source"      : "{\n  \"id\": 1,\n  \"displayName\": \"BoxBox\"\n}",
+          "expectation" : "Design-only sample; related engine capability: the bounded internal JSON adapter aligns runs of at least three sibling single-line scalar properties and `test/structured-align.test.ts` verifies fixture output. This two-row snippet does not meet that floor; public CLI integration and an approved preset are pending.",
           "verification": "design-only",
           "evidence": [
             "product/engine/structured/index.ts",
@@ -822,11 +822,11 @@
           ]
         },
         {
-          "id": "documents-yaml-scalar-vs-sequence",
-          "kind": "different-role",
-          "language": "yaml",
-          "source": "name: BoxBox\nlanguages:\n  - typescript\n  - python",
-          "expectation": "Design-only sample; related engine capability: the bounded internal YAML adapter accepts simple scalar mapping rows and explicitly refuses sequence entries. These rows have different roles; public CLI integration and an approved preset are pending.",
+          "id"          : "documents-yaml-scalar-vs-sequence",
+          "kind"        : "different-role",
+          "language"    : "yaml",
+          "source"      : "name: BoxBox\nlanguages:\n  - typescript\n  - python",
+          "expectation" : "Design-only sample; related engine capability: the bounded internal YAML adapter accepts simple scalar mapping rows and explicitly refuses sequence entries. These rows have different roles; public CLI integration and an approved preset are pending.",
           "verification": "design-only",
           "evidence": [
             "product/engine/structured/index.ts",
@@ -834,11 +834,11 @@
           ]
         },
         {
-          "id": "documents-yaml-block-scalar",
-          "kind": "unsupported",
-          "language": "yaml",
-          "source": "description: |\n  First line.\n  Second line.",
-          "expectation": "Design-only sample; related engine capability: the bounded internal YAML adapter explicitly refuses block scalars and preserves their bytes in `comments and unsupported YAML constructs break groups without changing their bytes`. Public CLI integration and an approved preset are pending.",
+          "id"          : "documents-yaml-block-scalar",
+          "kind"        : "unsupported",
+          "language"    : "yaml",
+          "source"      : "description: |\n  First line.\n  Second line.",
+          "expectation" : "Design-only sample; related engine capability: the bounded internal YAML adapter explicitly refuses block scalars and preserves their bytes in `comments and unsupported YAML constructs break groups without changing their bytes`. Public CLI integration and an approved preset are pending.",
           "verification": "design-only",
           "evidence": [
             "product/engine/structured/index.ts",
@@ -846,11 +846,11 @@
           ]
         },
         {
-          "id": "documents-json-nested-object",
-          "kind": "nested",
-          "language": "json",
-          "source": "{\n  \"outer\": {\"short\": 1, \"longer\": 2},\n  \"other\": {\"short\": 3, \"longer\": 4}\n}",
-          "expectation": "Design-only sample; related engine capability: the bounded internal JSON adapter assigns nested objects independent parent ownership, as tested by `preserves JSON escapes, colons in strings, duplicate keys, CRLF, and nested ownership`. This exact two-row snippet was not executed; public CLI integration and an approved preset are pending.",
+          "id"          : "documents-json-nested-object",
+          "kind"        : "nested",
+          "language"    : "json",
+          "source"      : "{\n  \"outer\": {\"short\": 1, \"longer\": 2},\n  \"other\": {\"short\": 3, \"longer\": 4}\n}",
+          "expectation" : "Design-only sample; related engine capability: the bounded internal JSON adapter assigns nested objects independent parent ownership, as tested by `preserves JSON escapes, colons in strings, duplicate keys, CRLF, and nested ownership`. This exact two-row snippet was not executed; public CLI integration and an approved preset are pending.",
           "verification": "design-only",
           "evidence": [
             "product/engine/structured/index.ts",
@@ -858,11 +858,11 @@
           ]
         },
         {
-          "id": "documents-yaml-documents",
-          "kind": "separation",
-          "language": "yaml",
-          "source": "exceptionally_long_configuration_name_for_the_first_document: first\n---\nname: second",
-          "expectation": "Design-only sample; related engine capability: the bounded internal YAML adapter explicitly refuses document markers. These documents cannot form one group; public CLI integration and an approved preset are pending. The long row/comment is a design variation only and does not authorize padding to its width.",
+          "id"          : "documents-yaml-documents",
+          "kind"        : "separation",
+          "language"    : "yaml",
+          "source"      : "exceptionally_long_configuration_name_for_the_first_document: first\n---\nname: second",
+          "expectation" : "Design-only sample; related engine capability: the bounded internal YAML adapter explicitly refuses document markers. These documents cannot form one group; public CLI integration and an approved preset are pending. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
             "product/engine/structured/index.ts",

@@ -45,6 +45,21 @@ describe("surface forms — TypeScript", () => {
 		expect(patternOf("typescript", { kind: "assignments"       , axes: [] })).toEqual({ pattern: "CHANGE", alternatives: [] }) ;
 	});
 
+	test("the B-layout kinds map to their selected grammar patterns", () => {
+		const mappings = [
+			["object-properties", "MAP"],
+			["logical-chains", "WHEN"],
+			["if-headers-braced", "WHEN"],
+			["if-headers-return", "WHEN"],
+			["vertical-call-arguments", "DO"],
+			["declaration-call-expressions", "DEFINE"],
+		] as const;
+
+		for (const [kind, pattern] of mappings) {
+			expect(patternOf("typescript", { kind, axes: [] }), kind).toEqual({ pattern, alternatives: [] });
+		}
+	});
+
 	test("an unknown kind is not mapped (target of alarm A8)", () => {
 		expect(patternOf("typescript", { kind: "not-a-kind", axes: [] })).toBeUndefined();
 	});

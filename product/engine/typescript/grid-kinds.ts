@@ -50,12 +50,20 @@ export interface RowBoundary {
 	readonly at   : number ;
 	/** true for an insert axis with no minimum gap (`(`, `)`, `):`, `":`, `//`, layer `,`); false for a gap axis that keeps at least one space. */
 	readonly insert? : boolean;
+	/** Align the token currently at `at`, while replacing the whitespace interval from `from` (used by physical-line prefixes). */
+	readonly alignAt?: boolean;
+	/** Virtual display column used by an absent fixed-width slot such as unary `!`. */
+	readonly alignColumn?: number;
+	/** Contributes a virtual anchor to the target column without owning an editable whitespace interval. */
+	readonly measureOnly?: boolean;
+	/** Per-boundary minimum display-width gap; defaults to zero for insert axes and one for ordinary gap axes. */
+	readonly minimumGap?: number;
 	/** The nested cell this boundary belongs to: `"call"`, or a named literal list (`list:value`, `list:arg2`, `list:matcher-arg1`). A layer is kept only when every row of the run has it in the same shape. */
 	readonly layer?  : LayerTag;
 }
 
 /** Which nested cell a boundary belongs to: the compatible call layer, an outer call envelope, a subscript, or a named list slot. */
-export type LayerTag = "call" | "call-envelope" | "subscript" | `list:${string}`;
+export type LayerTag = "call" | "call-envelope" | "nested-expression" | "subscript" | `list:${string}`;
 
 /** One literal list a list slot may align: the open bracket position, the item nodes, the close bracket position. */
 export interface ListCell {
@@ -71,6 +79,8 @@ export interface RowKind {
 	readonly gap        : GapRule                                                                ;
 	readonly containers : (node: Node, seen: ReadonlySet<Node>) => readonly Node[] | undefined   ;
 	readonly detect     : (source: SourceFile, node: Node) => readonly RowBoundary[] | undefined ;
+	/** Optional structural key that splits adjacent detected rows into compatible subgroups. */
+	readonly runKey?    : (source: SourceFile, node: Node) => string | undefined;
 	/** Changes the reported name depending on the detected rows (e.g. declaration-equals when aligning the `=` axis). */
 	readonly groupName? : (run: readonly DetectedRow[]) => string;
 	/** Row floor for this run when it differs from the general floor (user-confirmed: `=` declaration tables from 2 rows). */
@@ -198,10 +208,66 @@ function callLayer(source: SourceFile, call: Node): readonly RowBoundary[] | und
 	return boundaries;
 }
 
+const COMPARISON_OPERATORS = new Set(["==", "===", "!=", "!=="]);
+
+/** Nested equality/conditional axes of one call argument. Parentheses are opaque and comparison tokens stay indivisible. */
+function nestedExpressionBoundaries(source: SourceFile, node: Node, argument: number): readonly RowBoundary[] {
+	const boundaries: RowBoundary[] = [] ;
+	let comparison                  = 0  ;
+	let conditional                 = 0  ;
+
+	const visit = (current: Node): void => {
+		const kind = syntaxKindName(current);
+		if (kind === "ParenthesizedExpression") return;
+		if (kind === "ConditionalExpression") {
+			const expression = current as unknown as {
+				readonly condition     : Node ;
+				readonly questionToken : Node ;
+				readonly whenTrue      : Node ;
+				readonly colonToken    : Node ;
+				readonly whenFalse     : Node ;
+			};
+		conditional += 1;
+		const suffix = `${argument}-${conditional}`;
+		boundaries.push(
+			{ axis: `conditional-question${suffix}`, from: expression.condition.getEnd(), at: expression.questionToken.getStart(source), layer: "nested-expression" },
+			{ axis: `conditional-true${suffix}`, from: expression.questionToken.getEnd(), at: expression.whenTrue.getStart(source), layer: "nested-expression" }     ,
+			{ axis: `conditional-colon${suffix}`, from: expression.whenTrue.getEnd(), at: expression.colonToken.getStart(source), layer: "nested-expression" }       ,
+			{ axis: `conditional-false${suffix}`, from: expression.colonToken.getEnd(), at: expression.whenFalse.getStart(source), layer: "nested-expression" }      ,
+		);
+		visit(expression.condition);
+		visit(expression.whenTrue);
+		visit(expression.whenFalse);
+		return;
+		}
+		if (kind !== "BinaryExpression") return;
+		const expression = current as unknown as { readonly left: Node; readonly operatorToken: Node; readonly right: Node } ;
+		const operator   = source.text.slice(expression.operatorToken.getStart(source), expression.operatorToken.getEnd())   ;
+		if (!COMPARISON_OPERATORS.has(operator)) return;
+		comparison += 1;
+		const suffix = `${argument}-${comparison}`;
+		boundaries.push(
+			{ axis: `comparison-operator${suffix}`, from: expression.left.getEnd(), at: expression.operatorToken.getStart(source), layer: "nested-expression" },
+			{ axis: `comparison-right${suffix}`, from: expression.operatorToken.getEnd(), at: expression.right.getStart(source), layer: "nested-expression" },
+		);
+	};
+
+	visit(node);
+	return boundaries;
+}
+
+/** Nested axes are exposed only through a complete same-call declaration layer. */
+function callExpressionLayers(source: SourceFile, call: Node): readonly RowBoundary[] {
+	return callArguments(call).flatMap((argument, index) => nestedExpressionBoundaries(source, argument, index + 1));
+}
+
 /** A list item the list layer may pad: a string, number or boolean literal. Identifiers and calls keep the list compact. */
 function isLiteralItem(node: Node): boolean {
 	const name = syntaxKindName(node);
-	return name === "StringLiteral" || name === "NumericLiteral" || name === "TrueLiteral" || name === "FalseLiteral";
+	return   name === "StringLiteral"
+          || name === "NumericLiteral"
+          || name === "TrueLiteral"
+          || name === "FalseLiteral";
 }
 
 /** An object item of the list layer: a `name: literal` property whose name text must match across rows. */
@@ -332,7 +398,10 @@ function detectDeclaration(source: SourceFile, node: Node): readonly RowBoundary
 	if (equals) boundaries.push({ axis: "equals", from: equalsAnchor, at: equals });
 	if (!colon && !equals) return undefined;
 	const call = equals ? declarationCall(node) : undefined;
-	if (call) boundaries.push(...callLayer(source, call) ?? []);
+	if (call) {
+		boundaries.push(...callLayer(source, call) ?? []);
+		boundaries.push(...callExpressionLayers(source, call));
+	}
 	for (const [tag, cell] of rowListCells(source, "declaration", node)) boundaries.push(...itemLayer(source, cell, listAxisPrefix(tag), tag));
 	const subscript = equals && !call ? subscriptPartsOf(source, node) : undefined;
 	if (subscript) {
@@ -517,9 +586,9 @@ function detectReturnGuard(source: SourceFile, node: Node): readonly RowBoundary
  * first statement) and the `continue` column; the statements in between stay as written.
  */
 function detectGuard(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
-	if (!isIfStatement(node))                      return undefined                        ;
-	if (node.elseStatement !== undefined)          return undefined            ;
-	if (!ownLineOf(source, node, LINE_REST))       return undefined         ;
+	if (!isIfStatement(node)                     ) return undefined                        ;
+	if (node.elseStatement !== undefined         ) return undefined            ;
+	if (!ownLineOf(source, node, LINE_REST)      ) return undefined         ;
 	const closeParen = tokenAfter(source, node.expression.getEnd(), ")");
 	if (closeParen === undefined)                  return undefined;
 	const thenStatement = node.thenStatement                                    ;
@@ -637,10 +706,272 @@ function detectRegistrationRow(source: SourceFile, node: Node): readonly RowBoun
 	return boundaries;
 }
 
+function physicalLine(source: SourceFile, position: number): number {
+	return source.getLineAndCharacterOfPosition(position).line;
+}
+
+function onePhysicalLine(source: SourceFile, node: Node): boolean {
+	return physicalLine(source, node.getStart(source)) === physicalLine(source, node.getEnd() - 1);
+}
+
+function extendedObjectProperties(node: Node): readonly Node[] | undefined {
+	if (!isObjectLiteralExpression(node)) return undefined;
+	const source     = node.getSourceFile() ;
+	const properties = [...node.properties] ;
+	if (properties.length === 0) return undefined;
+	const extended = properties.some(property => syntaxKindName(property) === "ShorthandPropertyAssignment" || !onePhysicalLine(source, property));
+	return extended ? properties : undefined;
+}
+
+interface ObjectPropertyFamily {
+	readonly suffix : string  ;
+	readonly legacy : boolean ;
+}
+
+/**
+ * Keeps each legacy-compatible run's local minima while the extended kind owns the whole object. Properties that
+ * do not form a three-row ordinary run share one fallback family; shorthand rows own only an existing comma gap.
+ */
+function objectPropertyFamilies(source: SourceFile, parent: Node): ReadonlyMap<Node, ObjectPropertyFamily> {
+	const properties           = extendedObjectProperties(parent) ?? [] ;
+	const runs      : Node[][] = []                                     ;
+	let current     : Node[]   = []                                     ;
+	let previousEnd : number | undefined                                ;
+	for (const property of properties) {
+		const eligible  = isPropertyAssignment(property) && onePhysicalLine(source, property) && ownLineOf(source, property, COMMA_REST) ;
+		const gap       = previousEnd === undefined ? "" : source.text.slice(previousEnd, property.getStart(source))                     ;
+		const continues = eligible && current.length > 0 && /^[ \t]*,?[ \t]*\r?\n[ \t]*$/u.test(gap)                                     ;
+		if (!eligible || !continues) {
+			if (current.length > 0) runs.push(current);
+			current = eligible ? [property] : [];
+		} else current.push(property);
+		previousEnd = property.getEnd();
+	}
+	if (current.length > 0) runs.push(current);
+
+	const legacyRuns = runs.filter(run => run.length >= 3)                      ;
+	const legacyRows = new Set(legacyRuns.flat())                               ;
+	const fallback   = properties.filter(property => !legacyRows.has(property)) ;
+	const families   = [...legacyRuns, ...(fallback.length > 0 ? [fallback] : [])]
+		.sort((left, right) => left[0]!.getStart(source) - right[0]!.getStart(source));
+	const result = new Map<Node, ObjectPropertyFamily>();
+	for (const [index, family] of families.entries()) {
+		const value = { suffix: index === 0 ? "" : String(index + 1), legacy: legacyRuns.includes(family) };
+		for (const property of family) result.set(property, value);
+	}
+	return result;
+}
+
+/** One property header row. Multiline values own only the header colon; single-line rows may also own an existing comma. */
+function detectObjectProperty(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
+	const kind = syntaxKindName(node);
+	if (kind !== "PropertyAssignment" && kind !== "ShorthandPropertyAssignment")           return undefined;
+	const parent = (node as unknown as { readonly parent?: Node }).parent;
+	if (parent === undefined || extendedObjectProperties(parent)?.includes(node) !== true) return undefined;
+	const property  = node as unknown as { readonly name: Node; readonly initializer?: Node; readonly postfixToken?: Node } ;
+	const nameStart = property.name.getStart(source)                                                                        ;
+	const line      = physicalLine(source, nameStart)                                                                       ;
+	const lineStart = source.getPositionOfLineAndCharacter(line, 0)                                                         ;
+	if (skipTrivia(source.text, lineStart) !== nameStart)                                  return undefined;
+	const family = objectPropertyFamilies(source, parent).get(node);
+	if (family === undefined)                                                              return [];
+	const axis = (name: string): string => `${name}${family.suffix}`;
+
+	const boundaries: RowBoundary[] = [];
+	if (kind === "PropertyAssignment") {
+		const nameEnd = (property.postfixToken ?? property.name).getEnd() ;
+		const colon   = tokenAfter(source, nameEnd, ":")                  ;
+		if (colon === undefined || physicalLine(source, colon) !== line) return undefined;
+		boundaries.push({ axis: axis("property-colon"), from: nameEnd, at: colon });
+		if (family.legacy && property.initializer !== undefined && spacesOnly(source, colon + 1, property.initializer.getStart(source))) {
+			boundaries.push({ axis: axis("property-value"), from: colon + 1, at: property.initializer.getStart(source) });
+		}
+	}
+	if (onePhysicalLine(source, node)) {
+		const comma = tokenAfter(source, node.getEnd(), ",");
+		if (comma !== undefined) boundaries.push({ axis: axis("property-comma"), from: node.getEnd(), at: comma });
+	}
+	return boundaries;
+}
+
+function binaryOperator(source: SourceFile, node: Node): string | undefined {
+	if (syntaxKindName(node) !== "BinaryExpression") return undefined;
+	const token = (node as unknown as { readonly operatorToken: Node }).operatorToken;
+	return source.text.slice(token.getStart(source), token.getEnd());
+}
+
+function hasMixedLogical(source: SourceFile, node: Node, operator: string): boolean {
+	let mixed = false;
+	const visit = (current: Node): void => {
+		const currentOperator = binaryOperator(source, current);
+		if ((currentOperator === "&&" || currentOperator === "||") && currentOperator !== operator) mixed = true;
+		current.forEachChild(child => { visit(child); return undefined; });
+	};
+	visit(node);
+	return mixed;
+}
+
+function logicalOperands(node: Node): readonly Node[] | undefined {
+	const source   = node.getSourceFile()             ;
+	const operator = binaryOperator    (source, node) ;
+	if (operator !== "&&" && operator !== "||")                                             return undefined;
+	const parent = (node as unknown as { readonly parent?: Node }).parent;
+	if (parent !== undefined && binaryOperator(source, parent) === operator)                return undefined;
+	if (hasMixedLogical(source, node, operator))                                            return undefined;
+
+	const operands: Node[] = [];
+	const flatten = (current: Node): void => {
+		if (syntaxKindName(current) === "ParenthesizedExpression") { operands.length = 0; return; }
+		if (binaryOperator(source, current) === operator) {
+			const binary = current as unknown as { readonly left: Node; readonly right: Node };
+			flatten(binary.left);
+			if (operands.length > 0) flatten(binary.right);
+			return;
+		}
+		operands.push(current);
+	};
+	flatten(node);
+	if (operands.length < 3 || operands.some(operand => !onePhysicalLine(source, operand))) return undefined;
+	const lines = operands.map(operand => physicalLine(source, operand.getStart(source)));
+	if (new Set(lines).size !== operands.length)                                            return undefined;
+
+	for (const [index, operand] of operands.entries()) {
+		const line         = lines[index]!                                                   ;
+		const lineStart    = source.getPositionOfLineAndCharacter(line, 0)                   ;
+		const prefix       = source.text.slice(lineStart, operand.getStart(source))          ;
+		const continuation = operator === "||" ? /^[ \t]*\|\|[ \t]+$/u : /^[ \t]*&&[ \t]+$/u ;
+		if (index === 0 ? !/[ \t]$/u.test(prefix) : !continuation.test(prefix)) return undefined;
+	}
+	return operands;
+}
+
+function whitespaceStart(text: string, position: number): number {
+	let start = position;
+	while (start > 0 && (text[start - 1] === " " || text[start - 1] === "\t")) start -= 1;
+	return start;
+}
+
+function afterLeadingTabs(text: string, lineStart: number): number {
+	let end = lineStart;
+	while (text[end] === "\t") end += 1;
+	return end;
+}
+
+/** One already-leading logical operand row, including virtual first-row operator/not slots. */
+function detectLogicalRow(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
+	if (!onePhysicalLine(source, node))         return undefined;
+	let parent = (node as unknown as { readonly parent?: Node }).parent ;
+	let member = false                                                  ;
+	while (parent !== undefined) {
+		const operands = logicalOperands(parent);
+		if (operands?.includes(node)) { member = true; break; }
+		if (binaryOperator(source, parent) !== "&&" && binaryOperator(source, parent) !== "||") break;
+		parent = (parent as unknown as { readonly parent?: Node }).parent;
+	}
+	if (!member)                                return undefined;
+	const start     = node.getStart(source)                         ;
+	const line      = physicalLine(source, start)                   ;
+	const lineStart = source.getPositionOfLineAndCharacter(line, 0) ;
+	const prefix    = source.text.slice(lineStart, start)           ;
+	const leading   = /^[ \t]*(\|\||&&)[ \t]+$/u.exec(prefix)       ;
+	const firstGap  = whitespaceStart(source.text, start)           ;
+	const indentEnd = afterLeadingTabs(source.text, lineStart)      ;
+	if (leading === null && firstGap === start) return undefined;
+
+	let operand = node;
+	let bang: number | undefined;
+	if (syntaxKindName(node) === "PrefixUnaryExpression") {
+		const unary = node as unknown as { readonly operator: number; readonly operand: Node };
+		if (SyntaxKind[unary.operator] !== "ExclamationToken" || syntaxKindName(unary.operand) === "PrefixUnaryExpression") return undefined;
+		bang = node.getStart(source);
+		operand = unary.operand;
+	}
+	const operatorStart             = leading === null ? undefined : lineStart + prefix.indexOf(leading[1]!)          ;
+	const prefixStart               = operatorStart === undefined ? Math.max(firstGap, indentEnd) : operatorStart + 2 ;
+	const operandStart              = operand.getStart(source)                                                        ;
+	const notStart                  = bang ?? operandStart                                                            ;
+	const boundaries: RowBoundary[] = []                                                                              ;
+	if (operatorStart !== undefined) boundaries.push({ axis: "logical-operator", from: indentEnd, at: operatorStart, insert: true, alignAt: true });
+	else boundaries.push({ axis: "logical-operator", from: prefixStart, at: notStart, insert: true, alignAt: true, alignColumn: Math.max(0, displayColumn(source, operandStart) - 4), measureOnly: true });
+	boundaries.push(
+		{ axis: "logical-not", from: prefixStart, at: notStart, insert: true, alignAt: true, alignColumn: bang === undefined ? displayColumn(source, operandStart) - 1 : undefined, minimumGap: 1 },
+		{ axis: "logical-operand", from: bang === undefined ? operandStart : bang + 1, at: operandStart, insert: true, alignAt: true },
+	);
+	boundaries.push(...nestedExpressionBoundaries(source, operand, 1).map(boundary => ({ ...boundary, layer: undefined })));
+	return boundaries;
+}
+
+/** A guard candidate is legacy-owned only when its contiguous guard table reaches the three-row floor. */
+function isValidGuardMember(source: SourceFile, node: Node): boolean {
+	const parent = (node as unknown as { readonly parent?: Node }).parent;
+	if (parent === undefined || (!isSourceFile(parent) && !isBlock(parent))) return false;
+	let current     : Node[] = []               ;
+	let previousEnd : number | undefined        ;
+	const flush = (): boolean => {
+		const member = current.length >= 3 && current.includes(node);
+		current = [];
+		return member;
+	};
+	for (const sibling of parent.statements) {
+		const detected  = detectGuard(source, sibling) !== undefined                                                ;
+		const gap       = previousEnd === undefined ? "" : source.text.slice(previousEnd, sibling.getStart(source)) ;
+		const continues = detected && (current.length === 0 || /^[ \t]*\r?\n[ \t]*$/u.test(gap))                    ;
+		if (continues) current.push(sibling);
+		else {
+			if (flush()) return true;
+			if (detected) current.push(sibling);
+		}
+		previousEnd = sibling.getEnd();
+	}
+	return flush();
+}
+
+function detectIfHeader(source: SourceFile, node: Node, family: "braced" | "return"): readonly RowBoundary[] | undefined {
+	if (!isIfStatement(node) || node.elseStatement !== undefined || !onePhysicalLine(source, node.expression)) return undefined;
+	const close = tokenAfter(source, node.expression.getEnd(), ")");
+	if (close === undefined) return undefined;
+	if (family === "return") {
+		if (!isReturnStatement(node.thenStatement) || !onePhysicalLine(source, node)) return undefined;
+		const start = node.thenStatement.getStart(source);
+		if (!spacesOnly(source, close + 1, start)) return undefined;
+		return [
+			{ axis: "if-close-paren", from: close, at: close, insert: true },
+			{ axis: "if-return", from: close + 1, at: start },
+		];
+	}
+	if (!isBlock(node.thenStatement) || isValidGuardMember(source, node)) return undefined;
+	const open = node.thenStatement.getStart(source);
+	if (source.text[open] !== "{" || !spacesOnly(source, close + 1, open)) return undefined;
+	return [
+		{ axis: "if-close-paren", from: close, at: close, insert: true },
+		{ axis: "if-open-brace", from: close + 1, at: open },
+	];
+}
+
+function verticalCallArguments(source: SourceFile, node: Node): readonly Node[] | undefined {
+	if (!isCallExpression(node) || node.arguments.length < 3)                return undefined;
+	const calleeLine = physicalLine      (source, node.expression.getEnd()                           ) ;
+	const lines      = node.arguments.map(argument => physicalLine(source, argument.getStart(source))) ;
+	if (lines[0] === calleeLine || new Set(lines).size !== lines.length)     return undefined;
+	if (node.arguments.some(argument => !onePhysicalLine(source, argument))) return undefined;
+	const closeLine = physicalLine(source, node.getEnd() - 1);
+	if (closeLine <= lines.at(-1)!)                                          return undefined;
+	return [...node.arguments];
+}
+
+function detectVerticalCallArgument(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
+	if (!onePhysicalLine(source, node)) return undefined;
+	const parent = (node as unknown as { readonly parent?: Node }).parent;
+	if (parent === undefined || verticalCallArguments(source, parent)?.includes(node) !== true) return undefined;
+	const comma = tokenAfter(source, node.getEnd(), ",");
+	return comma === undefined ? [] : [{ axis: "vertical-call-comma", from: node.getEnd(), at: comma, insert: true }];
+}
+
 /** Keep resource declarations and awaited/constructor initializers outside direct-call approval keys. */
 function declarationGroupName(run: readonly DetectedRow[]): string {
-	if (run.some(row => row.boundaries.some(boundary => boundary.layer === "call-envelope"))) return "declaration-call-envelope";
-	if (!run.some(row => row.boundaries.some(boundary => boundary.axis === "equals"))) return "declaration";
+	if (run.some(row => row.boundaries.some(boundary => boundary.layer === "nested-expression"))) return "declaration-call-expressions";
+	if (run.some(row => row.boundaries.some(boundary => boundary.layer === "call-envelope"))    ) return "declaration-call-envelope";
+	if (!run.some(row => row.boundaries.some(boundary => boundary.axis === "equals"))           ) return "declaration";
 	const extended = run.some(row => {
 		if (!isVariableStatement(row.node)) return false;
 		const declaration = row.node.declarationList                 ;
@@ -650,11 +981,103 @@ function declarationGroupName(run: readonly DetectedRow[]): string {
 	return extended ? "declaration-extended-equals" : "declaration-equals";
 }
 
+interface DeclarationCallSubgroup {
+	readonly boundaries : readonly RowBoundary[] ;
+	readonly key        : string                 ;
+}
+
+/** A direct-call declaration whose call arguments expose at least one recursive expression axis. */
+function declarationCallSubgroup(source: SourceFile, node: Node): DeclarationCallSubgroup | undefined {
+	const call = declarationCall(node);
+	if (call === undefined)           return undefined;
+	const callBoundaries = callLayer(source, call);
+	if (callBoundaries === undefined) return undefined;
+	const nested = callExpressionLayers(source, call);
+	if (nested.length === 0)          return undefined;
+	const boundaries = [...callBoundaries, ...nested];
+	return { boundaries, key: `${callSignature(source, call)}|${boundaries.map(boundary => boundary.axis).join(">")}` };
+}
+
+/** Contiguous declaration rows before layers are filtered by the outer table's heterogeneous shape. */
+function rawDeclarationRuns(source: SourceFile, siblings: readonly Node[]): readonly (readonly Node[])[] {
+	const runs      : Node[][] = []      ;
+	let current     : Node[]   = []      ;
+	let previousEnd : number | undefined ;
+	for (const sibling of siblings) {
+		const detected  = detectDeclaration(source, sibling) !== undefined                                          ;
+		const gap       = previousEnd === undefined ? "" : source.text.slice(previousEnd, sibling.getStart(source)) ;
+		const continues = detected && (current.length === 0 || /^[ \t]*\r?\n[ \t]*$/u.test(gap))                    ;
+		if (continues) current.push(sibling);
+		else {
+			if (current.length > 0) runs.push(current);
+			current = detected ? [sibling] : [];
+		}
+		previousEnd = sibling.getEnd();
+	}
+	if (current.length > 0) runs.push(current);
+	return runs;
+}
+
+/**
+ * Internal two-row call-expression tables are collected only when they are a proper subset of a larger declaration
+ * run. Exact homogeneous declaration runs remain owned once by the existing declaration detector.
+ */
+function declarationCallSubgroupMembers(node: Node): readonly Node[] | undefined {
+	if (!isSourceFile(node) && !isBlock(node)) return undefined;
+	const source           = node.getSourceFile()                                              ;
+	const policy           = TYPESCRIPT_LAYOUT_POLICY.rowKinds["declaration-call-expressions"] ;
+	const members : Node[] = []                                                                ;
+	for (const outer of rawDeclarationRuns(source, node.statements)) {
+		let current    : Node[]             = []        ;
+		let currentKey : string | undefined = undefined ;
+		const flush = (): void => {
+			if (current.length >= policy.minRows.value && current.length < outer.length) members.push(...current);
+			current = [];
+			currentKey = undefined;
+		};
+		for (const declaration of outer) {
+			const subgroup = declarationCallSubgroup(source, declaration);
+			if (subgroup === undefined || (currentKey !== undefined && subgroup.key !== currentKey)) flush();
+			if (subgroup !== undefined) {
+				current.push(declaration);
+				currentKey = subgroup.key;
+			}
+		}
+		flush();
+	}
+	return members.length > 0 ? members : undefined;
+}
+
+function detectDeclarationCallSubgroup(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
+	return declarationCallSubgroup(source, node)?.boundaries;
+}
+
 /**
  * Kind priority. Ordered so node syntaxes never overlap and no node is claimed by two kinds; when object-rows
  * claims array-element objects first, registration backs off via seen.
  */
 export const ROW_KINDS: readonly RowKind[] = [
+	{
+		name       : "logical-chains",
+		gap        : "blank",
+		containers : node => logicalOperands(node),
+		detect     : detectLogicalRow,
+	},
+	{
+		name       : "vertical-call-arguments",
+		gap        : "comma",
+		containers : node => isCallExpression(node) ? verticalCallArguments(node.getSourceFile(), node) : undefined,
+		detect     : detectVerticalCallArgument,
+	},
+	{
+		name       : "declaration-call-expressions",
+		gap        : TYPESCRIPT_LAYOUT_POLICY.rowKinds["declaration-call-expressions"].gap,
+		containers : node => declarationCallSubgroupMembers(node),
+		detect     : detectDeclarationCallSubgroup,
+		runKey     : (source, node) => declarationCallSubgroup(source, node)?.key,
+		minRows    : run => minimumRowsOf(TYPESCRIPT_LAYOUT_POLICY.rowKinds["declaration-call-expressions"], run.map(row => row.boundaries.map(boundary => boundary.axis))),
+		layerCall  : declarationCall,
+	},
 	{
 		name       : "declaration",
 		gap        : TYPESCRIPT_LAYOUT_POLICY.rowKinds.declaration.gap,
@@ -714,6 +1137,18 @@ export const ROW_KINDS: readonly RowKind[] = [
 		layerCall  : node => kindLayerCall("call-statements", node),
 	},
 	{
+		name       : "if-headers-braced",
+		gap        : "blank",
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
+		detect     : (source, node) => detectIfHeader(source, node, "braced"),
+	},
+	{
+		name       : "if-headers-return",
+		gap        : "blank",
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
+		detect     : (source, node) => detectIfHeader(source, node, "return"),
+	},
+	{
 		name       : "return-guards",
 		gap        : "blank",
 		containers : node => isBlock(node) ? node.statements : undefined,
@@ -738,71 +1173,152 @@ export const ROW_KINDS: readonly RowKind[] = [
 		detect     : detectCaseClause,
 	},
 	{
-		name       : "object-rows",
-		gap        : "comma",
+		name       : "object-rows"   ,
+		gap        : "comma"         ,
 		containers : node => {
 			if (!isArrayLiteralExpression(node)) return undefined;
 			if (!node.elements.every(element => objectLiteralOf(element) !== undefined)) return undefined;
 			return node.elements;
 		},
-		detect     : detectObjectRow,
+		detect     : detectObjectRow ,
 	},
 	{
-		name       : "registration",
+		name       : "object-properties",
 		gap        : "comma",
+		containers : node => extendedObjectProperties(node),
+		detect     : detectObjectProperty,
+	},
+	{
+		name       : "registration"        ,
+		gap        : "comma"               ,
 		containers : (node, seen) => {
 			if (!isObjectLiteralExpression(node) || seen.has(node)) return undefined;
 			return node.properties;
 		},
-		detect     : detectRegistrationRow,
+		detect     : detectRegistrationRow ,
 	},
 ];
 
 /** Human-readable description of which syntax boundary each axis name means. Fill it in when registering a new axis. */
 export const AXIS_NOTES: Readonly<Record<string, string>> = {
-	"call-member-dot"        : "final receiver/method dot of a supported member call; inner receiver dots remain inside the receiver cell",
-	"colon"                  : "`:` separating a name or identifier from its type or expression",
-	"equals"                 : "`=` of a declaration, alias or enum member",
-	"semicolon"              : "statement-terminating `;`",
-	"comma"                  : "row-separating `,` of an enum member or object property (a last row without one is left out of the column)",
-	"comment"                : "start column of a trailing `//` note",
-	"open-paren"             : "parameter-opening `(` (after the name width)",
-	"close-paren"            : "parameter-closing `)` (after the minimum inner width)",
-	"case-colon"             : "`:` of a case label",
-	"call-paren"             : "opening `(` of the first call in a case row",
-	"subject-close-paren"    : "`)` closing the subject argument cell of a call statement",
-	"matcher-dot"            : "`.` before the right-hand matcher of a call statement",
-	"matcher-open-paren"     : "`(` opening the matcher argument cell",
-	"matcher-close-paren"    : "`)` closing the matcher argument cell",
-	"return-tail"            : "start column of a bare `return;` at the end of a case row",
-	"value"                  : "start column of a registration-object expression",
-	"property"               : "start column of the property name at each position in an object row",
-	"open-brace"             : "opening `{` of an object row",
-	"close-brace"            : "closing `}` of an object row",
-	"tail"                   : "tail after an object row's `}` (`,` `;` `)` `as const`)",
-	"call-open-paren"        : "`(` of the nested call cell (same callee and arity in every row)",
-	"call-comma"             : "top-level argument `,` of the nested call cell, right after the widest argument",
-	"call-arg"               : "start column of the next argument of the nested call cell",
-	"call-close-paren"       : "`)` of the nested call cell, right after the widest last argument",
-	"list-value-open"        : "opening `[` or `{` of a declaration value list",
-	"list-value-comma"       : "`,` of a declaration value list, right after the widest item",
-	"list-value-el"          : "start column of the next item of a declaration value list",
-	"list-value-close"       : "closing `]` or `}` of a declaration value list, right after the widest last item",
-	"list-arg-open"          : "opening `[` or `{` of a list inside a nested call argument",
-	"list-arg-comma"         : "`,` of a list inside a nested call argument, right after the widest item",
-	"list-arg-el"            : "start column of the next item of a list inside a nested call argument",
-	"list-arg-close"         : "closing `]` or `}` of a list inside a nested call argument, right after the widest last item",
-	"list-matcher-arg-open"  : "opening `[` or `{` of a list inside a matcher argument",
-	"list-matcher-arg-comma" : "`,` of a list inside a matcher argument, right after the widest item",
-	"list-matcher-arg-el"    : "start column of the next item of a list inside a matcher argument",
-	"list-matcher-arg-close" : "closing `]` or `}` of a list inside a matcher argument, right after the widest last item",
-	"subscript-close"        : "`]` of a declaration's subscript value, right after the widest index",
-	"guard-return"           : "start column of an unbraced early return in the same block",
-	"call-envelope-open"     : "opening `(` of compatible direct-call declaration values with different signatures",
-	"call-envelope-close"    : "closing `)` of a nonempty direct-call value; its arguments remain one opaque cell",
-	"guard-close-paren"      : "`)` of a guard row's condition, right after the widest condition",
-	"guard-semi1"            : "first statement's `;` of a guard row, right after the widest first statement",
-	"guard-continue"         : "start column of the trailing `continue;` in a guard row",
+	"call-member-dot"        :
+		"final receiver/method dot of a supported member call; inner receiver dots remain inside the receiver cell",
+	"colon"                  :
+		"`:` separating a name or identifier from its type or expression",
+	"equals"                 :
+		"`=` of a declaration, alias or enum member",
+	"semicolon"              :
+		"statement-terminating `;`",
+	"comma"                  :
+		"row-separating `,` of an enum member or object property (a last row without one is left out of the column)",
+	"comment"                :
+		"start column of a trailing `//` note",
+	"open-paren"             :
+		"parameter-opening `(` (after the name width)",
+	"close-paren"            :
+		"parameter-closing `)` (after the minimum inner width)",
+	"case-colon"             :
+		"`:` of a case label",
+	"call-paren"             :
+		"opening `(` of the first call in a case row",
+	"subject-close-paren"    :
+		"`)` closing the subject argument cell of a call statement",
+	"matcher-dot"            :
+		"`.` before the right-hand matcher of a call statement",
+	"matcher-open-paren"     :
+		"`(` opening the matcher argument cell",
+	"matcher-close-paren"    :
+		"`)` closing the matcher argument cell",
+	"return-tail"            :
+		"start column of a bare `return;` at the end of a case row",
+	"value"                  :
+		"start column of a registration-object expression",
+	"property"               :
+		"start column of the property name at each position in an object row",
+	"open-brace"             :
+		"opening `{` of an object row",
+	"close-brace"            :
+		"closing `}` of an object row",
+	"tail"                   :
+		"tail after an object row's `}` (`,` `;` `)` `as const`)",
+	"call-open-paren"        :
+		"`(` of the nested call cell (same callee and arity in every row)",
+	"call-comma"             :
+		"top-level argument `,` of the nested call cell, right after the widest argument",
+	"call-arg"               :
+		"start column of the next argument of the nested call cell",
+	"call-close-paren"       :
+		"`)` of the nested call cell, right after the widest last argument",
+	"list-value-open"        :
+		"opening `[` or `{` of a declaration value list",
+	"list-value-comma"       :
+		"`,` of a declaration value list, right after the widest item",
+	"list-value-el"          :
+		"start column of the next item of a declaration value list",
+	"list-value-close"       :
+		"closing `]` or `}` of a declaration value list, right after the widest last item",
+	"list-arg-open"          :
+		"opening `[` or `{` of a list inside a nested call argument",
+	"list-arg-comma"         :
+		"`,` of a list inside a nested call argument, right after the widest item",
+	"list-arg-el"            :
+		"start column of the next item of a list inside a nested call argument",
+	"list-arg-close"         :
+		"closing `]` or `}` of a list inside a nested call argument, right after the widest last item",
+	"list-matcher-arg-open"  :
+		"opening `[` or `{` of a list inside a matcher argument",
+	"list-matcher-arg-comma" :
+		"`,` of a list inside a matcher argument, right after the widest item",
+	"list-matcher-arg-el"    :
+		"start column of the next item of a list inside a matcher argument",
+	"list-matcher-arg-close" :
+		"closing `]` or `}` of a list inside a matcher argument, right after the widest last item",
+	"subscript-close"        :
+		"`]` of a declaration's subscript value, right after the widest index",
+	"guard-return"           :
+		"start column of an unbraced early return in the same block",
+	"call-envelope-open"     :
+		"opening `(` of compatible direct-call declaration values with different signatures",
+	"call-envelope-close"    :
+		"closing `)` of a nonempty direct-call value; its arguments remain one opaque cell",
+	"guard-close-paren"      :
+		"`)` of a guard row's condition, right after the widest condition",
+	"guard-semi1"            :
+		"first statement's `;` of a guard row, right after the widest first statement",
+	"guard-continue"         :
+		"start column of the trailing `continue;` in a guard row",
+	"property-colon"         :
+		"`:` after a property name in an extended object-property region",
+	"property-value"         :
+		"value start in a legacy-compatible ordinary-property subtable of an extended object region",
+	"property-comma"         :
+		"existing trailing `,` of a single-line property or shorthand row",
+	"logical-operator"       :
+		"leading homogeneous `||` or `&&` token on a continuation line",
+	"logical-not"            :
+		"optional single unary `!` slot of a leading logical operand",
+	"logical-operand"        :
+		"operand start after the logical operator and optional unary slot",
+	"comparison-operator"    :
+		"indivisible equality operator (`==`, `===`, `!=` or `!==`) inside a comparable expression",
+	"comparison-right"       :
+		"right operand start of a comparable equality expression",
+	"conditional-question"   :
+		"`?` of a comparable conditional expression",
+	"conditional-true"       :
+		"true-branch start of a comparable conditional expression",
+	"conditional-colon"      :
+		"`:` of a comparable conditional expression",
+	"conditional-false"      :
+		"false-branch start of a comparable conditional expression",
+	"if-close-paren"         :
+		"`)` closing a one-line condition in an adjacent if-header family",
+	"if-open-brace"          :
+		"existing `{` opening a braced if body",
+	"if-return"              :
+		"start of the immediate return in an unbraced if-header family",
+	"vertical-call-comma"    :
+		"existing `,` after one physical row of an already-vertical call",
 };
 
 validateLayoutAxisNotes(TYPESCRIPT_LAYOUT_POLICY, AXIS_NOTES);
@@ -828,19 +1344,28 @@ export interface DetectedRow {
 /** Ordinary rows must be contiguous; return guards share a region of immediate block siblings without crossing section barriers. */
 export function runsOf(source: SourceFile, siblings: readonly Node[], kind: RowKind): readonly (readonly DetectedRow[])[] {
 	if (kind.name === "return-guards") return returnGuardRuns(source, siblings, kind);
+	if (kind.name === "logical-chains") {
+		const rows = siblings.map(node => ({ node, boundaries: kind.detect(source, node) })).filter(row => row.boundaries !== undefined) as readonly DetectedRow[];
+		return rows.length === siblings.length ? [rows] : [];
+	}
 	const commaGap                    = kind.gap === "comma" ;
 	const runs      : DetectedRow[][] = []                   ;
 	let current     : DetectedRow[]   = []                   ;
+	let currentKey  : string | undefined                     ;
 	let previousEnd : number | undefined                     ;
 	for (const sibling of siblings) {
-		const boundaries = kind.detect(source, sibling)                                                                                                                    ;
-		const gap        = previousEnd === undefined || boundaries === undefined ? undefined : source.text.slice(previousEnd, sibling.getStart(source))                    ;
-		const continues  = boundaries !== undefined && (previousEnd === undefined || (commaGap ? /^[ \t]*,?[ \t]*\r?\n[ \t]*$/u : /^[ \t]*\r?\n[ \t]*$/u).test(gap ?? "")) ;
+		const boundaries = kind.detect(source, sibling)                                                                                                 ;
+		const gap        = previousEnd === undefined || boundaries === undefined ? undefined : source.text.slice(previousEnd, sibling.getStart(source)) ;
+		const key        = boundaries === undefined ? undefined : kind.runKey?.(source, sibling)                                                        ;
+		const continues  = boundaries !== undefined
+			&& (current.length === 0 || kind.runKey === undefined || key === currentKey)
+			&& (previousEnd === undefined || (commaGap ? /^[ \t]*,?[ \t]*\r?\n[ \t]*$/u : /^[ \t]*\r?\n[ \t]*$/u).test(gap ?? ""));
 		if (continues) current.push({ node: sibling, boundaries });
 		else {
 			if (current.length > 0) runs.push(current);
 			current = boundaries ? [{ node: sibling, boundaries }] : [];
 		}
+		currentKey = boundaries === undefined ? undefined : key;
 		previousEnd = sibling.getEnd();
 	}
 	if (current.length > 0) runs.push(current);
@@ -897,7 +1422,13 @@ function envelopeCall(node: Node): Node | undefined {
 	const value = node.declarationList.declarations[0]?.initializer;
 	const call = value !== undefined && syntaxKindName(value) === "NonNullExpression"
 		? (value as unknown as { readonly expression: Node }).expression : value;
-	if (call === undefined || !isCallExpression(call) || call.questionDotToken !== undefined || call.typeArguments !== undefined) return undefined;
+	if (
+            call                  === undefined
+        || !isCallExpression(call)
+        ||  call.questionDotToken !== undefined
+        ||  call.typeArguments    !== undefined
+	)
+		return undefined;
 
 	return simpleCallee(call.expression) ? call : undefined;
 }
@@ -965,17 +1496,31 @@ function withLayers(source: SourceFile, kind: RowKind, run: readonly DetectedRow
 	const calls      = run.map(row => kind.layerCall?.(row.node))                                               ;
 	const signatures = new Set(calls.map(call => call === undefined ? undefined : callSignature(source, call))) ;
 	const complete   = run.every(row => row.boundaries.some(boundary => boundary.axis === "call-close-paren"))  ;
-	const sameCall   = tags.has("call") && complete && signatures.size === 1 && !signatures.has(undefined)      ;
-	if (sameCall) {
+	const sameCall   =     tags.has("call")
+                       &&  complete
+                       &&  signatures.size === 1
+                       && !signatures.has(undefined)      ;
+	if (sameCall                                            ) {
 		const widths = itemWidths(source, calls.map(call => callArguments(call!))) ;
 		if (!hasOutlierWidths(widths)) keep.add("call")                            ;
 		else if (kind.name === "declaration") rows = withVerticalOutliers(run, keep, calls as readonly Node[], widths);
 	}
+	if (tags.has("nested-expression") && keep.has("call")   ) {
+		const shapes = run.map(row => row.boundaries
+			.filter(boundary => boundary.layer === "nested-expression")
+			.map(boundary => boundary.axis)
+			.join("|"));
+		if (shapes[0] !== "" && new Set(shapes).size === 1) keep.add("nested-expression");
+	}
 	if (tags.has("subscript") && kind.name === "declaration") {
 		const parts    = run.map  (row => subscriptPartsOf(source, row.node)                                  ) ;
 		const complete = run.every(row => row.boundaries.some(boundary => boundary.axis === "subscript-close")) ;
-		if (complete && parts.every(part => part !== undefined) && new Set(parts.map(part => part!.object)).size === 1
-			&& !hasOutlierWidths(itemWidths(source, parts.map(part => [part!.index])))) keep.add("subscript");
+		if (
+                complete
+            &&  parts.every(part => part !== undefined)
+            &&  new Set(parts.map(part => part!.object)).size === 1
+            && !hasOutlierWidths(itemWidths(source, parts.map(part => [part!.index])))
+		) keep.add("subscript");
 	}
 	for (const tag of tags) {
 		if (!tag.startsWith("list:")) continue                                   ;

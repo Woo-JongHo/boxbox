@@ -80,12 +80,12 @@ interface LanguageEngine {
 }
 
 const structuredEngine = (language: "json" | "yaml"): LanguageEngine => ({
-	check: async (_root, file) => analyzeStructured(readStructuredUtf8(file), language, file).result,
-	parse: async (_root, file) => {
+	check : async (_root, file) => analyzeStructured(readStructuredUtf8(file), language, file).result,
+	parse : async (_root, file) => {
 		const diagnostics = structuredDiagnostics(readStructuredUtf8(file), language);
 		if (diagnostics.length > 0) throw new Error(`formatter output does not parse: ${diagnostics.join(",")}`);
 	},
-	write: async (_root, file) => {
+	write : async (_root, file) => {
 		const before   = readStructuredUtf8(file                  ) ;
 		const analyzed = analyzeStructured (before, language, file) ;
 		if (analyzed.result.summary.refused > 0) throw new Error(`BoxBox alignment failed: ${analyzed.refusals.map(refusal => refusal.reason).join(",")}`);
@@ -95,31 +95,31 @@ const structuredEngine = (language: "json" | "yaml"): LanguageEngine => ({
 });
 
 const pythonEngine: LanguageEngine = {
-	check: async (_root, file) => {
+	check : async (_root, file) => {
 		const result = runAlignCli(PYTHON_ALIGNER, ["--file", file, "--json"]);
 		return (JSON.parse(result.report) as ResultEnvelope).results[0]!;
 	},
-	parse: async (_root, file) => {
+	parse : async (_root, file) => {
 		const parsed = compareParse("python", "pass\n", readFileSync(file, "utf8"));
 		if (parsed.status !== "ok") throw new Error(`formatter output does not parse: ${parsed.delta.join(",")}`);
 	},
-	write: async (_root, file) => {
+	write : async (_root, file) => {
 		const result = runAlignCli(PYTHON_ALIGNER, ["--file", file, "--write", "--json"]);
 		if (result.code !== 0) throw new Error(`BoxBox alignment failed: ${result.report}`);
 	},
 };
 
 const typescriptEngine: LanguageEngine = {
-	check: async (root, file) => {
+	check : async (root, file) => {
 		let report = "";
 		await runTypeScriptAlign(["--file", file, "--json"], { root, emit: value => { report = value; } });
 		return (JSON.parse(report) as ResultEnvelope).results[0]!;
 	},
-	parse: async (root, file) => {
+	parse : async (root, file) => {
 		const diagnostics = await syntacticDiagnostics(root, file, readFileSync(file, "utf8"));
 		if (diagnostics.length > 0) throw new Error(`formatter output does not parse: ${diagnostics.join(",")}`);
 	},
-	write: async (root, file) => {
+	write : async (root, file) => {
 		const code = await runTypeScriptAlign(["--file", file, "--write", "--json"], { root, emit: () => {} });
 		if (code !== 0) throw new Error(`BoxBox alignment failed with exit code ${code}`);
 	},
@@ -162,10 +162,10 @@ async function cycle(options: FormatPipelineOptions, working: string, display: s
 	const approvals = approvedGroups(checked, options.registry, options.resolveDocument, display) ;
 	await ENGINES[options.language].write(options.root, working);
 	return {
-		formatter,
-		formatterChanged: !beforeFormatter.equals(afterFormatter)       ,
-		boxboxChanged: !afterFormatter.equals(readFileSync(working)) ,
-		approvals,
+		formatter                                                        ,
+		formatterChanged : !beforeFormatter.equals(afterFormatter)       ,
+		boxboxChanged    : !afterFormatter.equals(readFileSync(working)) ,
+		approvals                                                        ,
 	};
 }
 
@@ -207,7 +207,7 @@ export async function runFormatPipeline(given: FormatPipelineOptions): Promise<F
 		formatterChanged : first.formatterChanged ,
 		boxboxChanged    : first.boxboxChanged    ,
 		fixedPoint       : true                   ,
-		written,
+		written                                                            ,
 		formatter         : first.formatter                                ,
 		formatterExecuted : first.formatter !== null                       ,
 		formatMode        : options.formatter ? "formatter" : "standalone" ,

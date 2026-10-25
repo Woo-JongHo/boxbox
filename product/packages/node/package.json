@@ -1,9 +1,9 @@
 {
-	"name": "boxbox",
-	"version": "@BOXBOX_VERSION@",
-	"private": true,
+	"name"       : "boxbox",
+	"version"    : "@BOXBOX_VERSION@",
+	"private"    : true,
 	"description": "Development artifact for the BoxBox TypeScript and Python alignment engine",
-	"type": "module",
+	"type"       : "module",
 	"engines": {
 		"node": ">=22.22.3"
 	},

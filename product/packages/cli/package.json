@@ -1,10 +1,10 @@
 {
-	"name": "boxbox",
-	"version": "@BOXBOX_VERSION@",
-	"private": true,
-	"license": "MIT",
+	"name"       : "boxbox",
+	"version"    : "@BOXBOX_VERSION@",
+	"private"    : true,
+	"license"    : "MIT",
 	"description": "Development candidate for the BoxBox TypeScript, Python, JSON and YAML command-line engine",
-	"type": "module",
+	"type"       : "module",
 	"engines": {
 		"node": ">=22.22.3"
 	},

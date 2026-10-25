@@ -206,14 +206,15 @@ describe("matrix syntax boundaries", () => {
 			"\tif (veryLongOuter) return undefined;",
 			"}",
 		];
-		const result = align               (lines                                  ) ;
-		const guards = result.groups.filter(group => group.kind === "return-guards") ;
+		const result = align               (lines                                      ) ;
+		const guards = result.groups.filter(group => group.kind === "if-headers-return") ;
 
-		expect(guards              ).toHaveLength(1                                      ) ;
-		expect(guards[0]!.startLine).toBe        (7                                      ) ;
-		expect(guards[0]!.endLine  ).toBe        (9                                      ) ;
-		expect(result.text         ).toContain   ("\tif (outer) return undefined;"       ) ;
-		expect(result.text         ).toContain   ("\tif (a) /* keep */ return undefined;") ;
+		expect(guards              ).toHaveLength(1                                                                                                          ) ;
+		expect(guards[0]!.startLine).toBe        (7                                                                                                          ) ;
+		expect(guards[0]!.endLine  ).toBe        (9                                                                                                          ) ;
+		expect(guards[0]!.axes     ).toEqual     (expect.arrayContaining([expect.stringMatching(/^if-close-paren=/u), expect.stringMatching(/^if-return=/u)])) ;
+		expect(result.text         ).toContain   ("\tif (outer) return undefined;"                                                                           ) ;
+		expect(result.text         ).toContain   ("\tif (a) /* keep */ return undefined;"                                                                    ) ;
 	}, 60_000);
 
 	test("aligns different callable envelopes and preserves the trailing non-null assertion", () => {

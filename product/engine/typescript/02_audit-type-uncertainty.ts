@@ -52,7 +52,12 @@ function compareText(left: string, right: string): number {
 }
 
 function targetArgument(): string {
-	if (process.argv.length !== 4 || process.argv[2] !== "--file" || !process.argv[3] || process.argv[3].startsWith("--")) {
+	if (
+            process.argv.length !== 4
+        ||  process.argv[2]     !== "--file"
+        || !process.argv[3]
+        ||  process.argv[3].startsWith("--")
+	) {
 		throw new Error("usage: 02_audit-type-uncertainty.ts --file <repository TypeScript file>");
 	}
 	return process.argv[3];
@@ -94,7 +99,7 @@ async function main(): Promise<void> {
 	function add(kind: FindingKind, position: number, owner: Node): void {
 		const location = source.getLineAndCharacterOfPosition(position);
 		const finding  = {
-			kind,
+			kind                            ,
 			line   : location.line + 1      ,
 			column : location.character + 1 ,
 			text   : excerpt(owner, source) ,

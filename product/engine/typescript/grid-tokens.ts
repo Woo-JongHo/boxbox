@@ -49,10 +49,10 @@ function charTokenAt(role: BoundaryRole, source: SourceFile, position: number, c
 
 /** Returns the ternary `:` and the property/parameter/object-literal `:` as different roles. Only same-role tokens share a table. */
 export function colonOf(node: Node, source: SourceFile): Boundary | undefined {
-	if (isConditionalExpression(node)) {
+	if (isConditionalExpression(node)                                      ) {
 		return tokenAt("ternary-colon", node.colonToken.getStart(source), node.colonToken.getEnd() - node.colonToken.getStart(source));
 	}
-	if (isParameterDeclaration(node)) {
+	if (isParameterDeclaration(node)                                       ) {
 		const gapStart = (node.questionToken ?? node.name).getEnd();
 		return charTokenAt("type-annotation-colon", source, skipTrivia(source.text, gapStart), ":");
 	}
@@ -60,7 +60,7 @@ export function colonOf(node: Node, source: SourceFile): Boundary | undefined {
 		const gapStart = (node.postfixToken ?? node.name).getEnd();
 		return charTokenAt("type-annotation-colon", source, skipTrivia(source.text, gapStart), ":");
 	}
-	if (isPropertyAssignment(node)) {
+	if (isPropertyAssignment(node)                                         ) {
 		const gapStart = (node.postfixToken ?? node.name).getEnd();
 		return charTokenAt("object-literal-colon", source, skipTrivia(source.text, gapStart), ":");
 	}
@@ -94,9 +94,9 @@ export function commasOf(node: Node, source: SourceFile): readonly Boundary[] {
 
 /** Opening/closing boundary pair enclosing one cell. For block/object literal/array literal, the node's own start and end are the tokens. */
 export function bracketsOf(node: Node, source: SourceFile): { readonly open: Boundary; readonly close: Boundary } | undefined {
-	if (isBlock(node))                   return pairAt("block-brace", source, node);
+	if (isBlock(node)                  ) return pairAt("block-brace", source, node);
 	if (isObjectLiteralExpression(node)) return pairAt("object-literal-brace", source, node);
-	if (isArrayLiteralExpression(node))  return pairAt("array-bracket", source, node);
+	if (isArrayLiteralExpression(node) ) return pairAt("array-bracket", source, node);
 	if (isCallExpression(node)) {
 		const open  = charTokenAt(
 			"call-paren"                                     ,
