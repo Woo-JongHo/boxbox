@@ -1,7 +1,9 @@
 # Developing BoxBox
 
 Product implementation and shipping templates live in `../product/`. This directory contains the tools and evidence used
-to develop them. See [the layout contract](../docs/development/layout.md) and [the active plan](../docs/development/plan.md).
+to develop them. Start with the [maintainer guide](../docs/development/README.md) and
+[the layout contract](../docs/development/layout.md). The current request or issue defines the task;
+historical milestone records do not assign work.
 
 From the repository root:
 

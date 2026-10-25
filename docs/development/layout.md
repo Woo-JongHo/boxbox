@@ -3,6 +3,12 @@
 The product source of truth is `product/`. Development consumes it; product code does not import development code.
 `bun run check:layout` enforces this direction for static imports, re-exports, dynamic imports and require calls.
 
+## Public repository and installed packages
+
+The public checkout contains everything a contributor needs to understand, build, test and package BoxBox.
+An installed package contains only the files selected by its builder and package contract. Being excluded from
+the installer does not make a source file, test or development tool unnecessary in the repository.
+
 | Area | Owner | Included in the public installer |
 |---|---|---|
 | `product/engine/` | Runtime and inspection implementation | Only the public CLI dependency graph, bundled for Node |
@@ -12,10 +18,32 @@ The product source of truth is `product/`. Development consumes it; product code
 | `product/packages/` | Engine package entry and metadata | Selected package metadata and bundled code |
 | `development/` | Tools, corpus, experiments, host definitions and evidence | Excluded |
 | `test/` | Tests and synthetic fixtures | Excluded |
-| `docs/user/` | User installation guidance | Only explicitly selected package README files are shipped |
+| `product/installer/README.md` | Canonical installation guide | Shipped in the installer package |
+| `docs/user/` | User workflows and support guidance | Only explicitly selected package README files are shipped |
 | `docs/development/` | Plans, implementation, research and reviews | Excluded |
 | `plugin/` | Generated marketplace payload | Input to the host-specific installer projection |
 | `dist/` | Generated packages | Only the selected installer tarball is a publication candidate |
+
+Root `package.json`, `bun.lock`, `product.json` and `tsconfig.json` define the build inputs and configuration.
+The root READMEs, `CONTRIBUTING.md`, `LICENSE`, `CHANGELOG.md` and repository agent instructions are public entry points.
+`.github/` owns CI and collaboration templates; `.agents/plugins/` and `.claude-plugin/` own marketplace discovery.
+Keep these alongside the product and development sources so a fresh checkout can use the documented commands.
+
+## Documentation and local material
+
+Physical placement is summarized here: `product/installer/README.md` owns installation; `docs/user/` owns user workflows
+and support guidance; `docs/development/` owns contributor architecture, procedures and build/release contracts. Public
+documentation lifecycle, canonical ownership, evidence retention and archive requirements are defined in the
+[maintainer documentation guide](README.md#documentation-and-evidence-lifecycle).
+
+`plan.md` and `status.md` contain historical release records. In particular, `development/harness/report.ts` and
+`test/harness.test.ts` consume the REL table in `plan.md`; it cannot be moved as a personal note without first
+separating that public input. Review evidence also has live citations. Classify and migrate these records individually
+under the lifecycle policy rather than moving `docs/development/` wholesale.
+
+The product, CI and builders must work without a maintainer's personal management directory. Public documentation
+links to public contracts and evidence, never to a required private path or locally installed management skill.
+Generated `TEST_COMPLETED/` reports and disposable evaluation workspaces are local outputs, not published source.
 
 ## Generation contract
 
@@ -61,8 +89,8 @@ edits and refuse unexpected files. Existing installed-artifact tests pin the exa
 exercise isolated installation and repair, remove cache/origin paths, and run the permanent engine and read-only hooks.
 
 Historical review commands and recorded evidence retain their original paths. Current instructions use this layout.
-This directory separation controls package contents. A public Git repository would still expose tracked development
-material; a separately published repository would be a distinct release decision.
+This directory separation controls package contents. Tracked development material remains part of the public source
+repository even when no installer includes it; review its purpose and contents before committing it.
 
 Host contracts checked on 2026-10-20: the existing `.codex-plugin/plugin.json` remains a supported compatibility format
 under the [current OpenAI packaging contract](https://developers.openai.com/plugins/build/plugins), and

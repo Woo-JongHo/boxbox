@@ -27,8 +27,8 @@ import type {
 import      { assignmentEnvelopes } from "@/python/assignment-envelope.ts" ;
 
 export const PYTHON_SYNTAX: CodeSyntax = {
-	lineComments  : ["#"],
-	blockComments : [],
+	lineComments  : ["#"] ,
+	blockComments : []    ,
 	strings       : [
 		{ open : '"""' , close : '"""' , escape : true },
 		{ open : "'''" , close : "'''" , escape : true },
@@ -71,7 +71,11 @@ function isValueCell(masked: string): boolean {
 		else if (character === "," && depth === 0) return false;
 		if (depth < 0) return false;
 	}
-	return depth === 0 && masked.trim() !== "" && !masked.startsWith("=") && !/[;\\]/u.test(masked) && !/\s$/u.test(masked);
+	return     depth         === 0
+           &&  masked.trim() !== ""
+           && !masked.startsWith("=")
+           && !/[;\\]/u.test(masked)
+           && !/\s$/u.test(masked);
 }
 
 /** Statement starts that cannot be table rows — control flow, declarations, imports. match/case are soft keywords and excluded. */
@@ -246,9 +250,9 @@ function typedProfile(code: string, masked: string): RowProfile | null {
 	if (annotated) {
 		const typeRange  = annotated.indices![5]! ;
 		const valueRange = annotated.indices![8]! ;
-		if (slotAt(code, annotated, 9) !== "")                       return null;
+		if (slotAt(code, annotated, 9) !== ""                      ) return null;
 		if (!isAnnotation(masked.slice(typeRange[0], typeRange[1]))) return null;
-		if (isUnsafe(masked.slice(valueRange[0], valueRange[1])))    return null;
+		if (isUnsafe(masked.slice(valueRange[0], valueRange[1]))   ) return null;
 		const value = valueSlot(code, masked, annotated, 7, 8);
 		if (!value)                                                  return null;
 		return {
@@ -396,6 +400,6 @@ export const PYTHON_ALIGNER: LineProfiler = {
 	terminalAxes : ["comma"]           ,
 	// `*,` and `/,` mark keyword-only and positional-only parameters inside one parameter table.
 	transparentRow : (masked: string): boolean => /^[ \t]*[*/][ \t]*,$/u.test(masked) ,
-	profile        : profilePython                                                      ,
-	project        : assignmentEnvelopes                                                ,
+	profile        : profilePython                                                    ,
+	project        : assignmentEnvelopes                                              ,
 };

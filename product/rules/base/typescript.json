@@ -7,6 +7,7 @@
 		{ "kind": "declaration-equals", "pattern": "DEFINE" },
 		{ "kind": "declaration-extended-equals", "pattern": "DEFINE" },
 		{ "kind": "declaration-call-envelope", "pattern": "DEFINE" },
+		{ "kind": "declaration-call-expressions", "pattern": "DEFINE" },
 		{ "kind": "type-alias", "pattern": "DEFINE" },
 		{ "kind": "interface-members", "pattern": "DESCRIBE" },
 		{ "kind": "type-members", "pattern": "DESCRIBE" },
@@ -15,12 +16,17 @@
 		{ "kind": "class-method", "pattern": "DESCRIBE" },
 		{ "kind": "registration", "pattern": "MAP" },
 		{ "kind": "object-rows", "pattern": "MAP" },
+		{ "kind": "object-properties", "pattern": "MAP" },
 		{ "kind": "enum-member", "hasAxis": "equals", "pattern": "MAP" },
 		{ "kind": "enum-member", "pattern": "LIST" },
 		{ "kind": "call-statements", "pattern": "DO" },
 		{ "kind": "assignments", "pattern": "CHANGE" },
 		{ "kind": "case-clause", "pattern": "WHEN" },
 		{ "kind": "guard-statements", "pattern": "WHEN" },
-		{ "kind": "return-guards", "pattern": "WHEN" }
+		{ "kind": "return-guards", "pattern": "WHEN" },
+		{ "kind": "logical-chains", "pattern": "WHEN" },
+		{ "kind": "if-headers-braced", "pattern": "WHEN" },
+		{ "kind": "if-headers-return", "pattern": "WHEN" },
+		{ "kind": "vertical-call-arguments", "pattern": "DO" }
 	]
 }

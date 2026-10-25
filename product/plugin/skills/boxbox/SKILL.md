@@ -47,8 +47,11 @@ Every check and fix goes through the bundled launcher. Resolve `<PLUGIN_ROOT>` f
   TypeScript/Python rules. JSON/YAML Align must refuse until a complete applicable approval proof exists.
 - `guide --authoring` reads approved guidance for the target language and scope, including a new or empty file.
   Its examples guide composition; they do not prove that a proposed file is approved or safe to write.
-- `align` runs without an external formatter and preserves line structure, indentation and non-layout content.
-  If the engine needs wrapping or another structural change, report the refusal; stay within the selected mode.
+- `align` runs without an external formatter and changes horizontal layout only. It preserves non-whitespace tokens,
+  comments, identifiers and order, leading indentation, physical lines and structural AST. If the engine needs wrapping,
+  operator movement or another structural change, report the refusal; stay within the selected mode.
+- A newly detected shape or axis set has its own approval identity and suppresses an overlapping legacy group. Existing
+  approvals do not expand to it. A public whole-file write is denied when any applicable changed group lacks approval.
 - `format` retains the formatter pipeline for explicit requests to use it. If a formatter is configured for the language, it runs first.
   `format --dry-run` also executes a configured formatter twice; inspect its command and arguments in the effective config
   before running it. Use existing authorization; ask only when executing that command is outside the authorized work.

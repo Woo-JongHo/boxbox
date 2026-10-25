@@ -30,12 +30,29 @@ describe("TypeScript layout policy data", () => {
 			gap    : ["colon", "equals", "call-arg{i}", "list-value-comma{i}", "list-value-el{i}", "list-arg{i}-comma{i}", "list-arg{i}-el{i}", "semicolon"],
 			insert : ["call-open-paren", "call-comma{i}", "call-close-paren", "list-value-open", "list-value-close", "list-arg{i}-open", "list-arg{i}-close", "subscript-close", "comment"],
 		});
+		expect(KIND_AXES["object-properties"]).toEqual({
+			gap    : ["property-colon", "property-value", "property-comma", "property-colon{i}", "property-value{i}", "property-comma{i}"],
+			insert : [],
+		});
+		expect(KIND_AXES["logical-chains"]).toEqual({
+			gap    : ["comparison-operator{i}", "comparison-right{i}"],
+			insert : ["logical-operator", "logical-not", "logical-operand"],
+		});
+		expect(KIND_AXES["declaration-call-expressions"]!.gap   ).toEqual(expect.arrayContaining(["call-arg{i}", "list-arg{i}-comma{i}", "comparison-operator{i}", "conditional-false{i}"])) ;
+		expect(KIND_AXES["declaration-call-expressions"]!.insert).toEqual(expect.arrayContaining(["call-open-paren", "list-arg{i}-open", "subscript-close", "comment"])                    ) ;
+		expect(KIND_AXES["if-headers-braced"]                   ).toEqual({ gap: ["if-open-brace"], insert: ["if-close-paren"] }                                                           ) ;
+		expect(KIND_AXES["if-headers-return"]                   ).toEqual({ gap: ["if-return"], insert: ["if-close-paren"] }                                                               ) ;
+		expect(KIND_AXES["vertical-call-arguments"]             ).toEqual({ gap: [], insert: ["vertical-call-comma"] }                                                                     ) ;
+		expect(KIND_AXES.registration                           ).toEqual({ gap: ["colon", "value", "comma"], insert: [] }                                                                 ) ;
+		expect(KIND_AXES["return-guards"]                       ).toEqual({ gap: ["guard-return"], insert: [] }                                                                            ) ;
 		expect(() => validateLayoutAxisNotes(TYPESCRIPT_LAYOUT_POLICY, AXIS_NOTES)).not.toThrow();
 	});
 
 	test("keeps the declaration row-floor behavior and fallback", () => {
-		const policy      = TYPESCRIPT_LAYOUT_POLICY.rowKinds.declaration        ;
-		const declaration = ROW_KINDS.find(kind => kind.name === "declaration")! ;
+		const policy       = TYPESCRIPT_LAYOUT_POLICY.rowKinds.declaration                         ;
+		const nestedPolicy = TYPESCRIPT_LAYOUT_POLICY.rowKinds["declaration-call-expressions"]     ;
+		const declaration  = ROW_KINDS.find(kind => kind.name === "declaration")!                  ;
+		const nested       = ROW_KINDS.find(kind => kind.name === "declaration-call-expressions")! ;
 		const rows = (axes: readonly (readonly string[])[]): readonly DetectedRow[] => axes.map(boundaries => ({
 			node       : null,
 			boundaries : boundaries.map(axis => ({ axis, from: 0, at: 0 })),
@@ -45,6 +62,10 @@ describe("TypeScript layout policy data", () => {
 		expect(minimumRowsOf(policy, [["colon", "equals"], ["equals"]])      ).toBe(2        ) ;
 		expect(declaration.minRows?.(rows([["colon", "equals"], ["equals"]]))).toBe(2        ) ;
 		expect(declaration.minRows?.(rows([["equals"], ["semicolon"]]))         ).toBeUndefined() ;
+		expect(nestedPolicy.gap                                                       ).toBe("blank" ) ;
+		expect(minimumRowsOf(nestedPolicy, [["call-open-paren"], ["call-open-paren"]])).toBe(2       ) ;
+		expect(nested.minRows?.(rows([["call-open-paren"], ["call-open-paren"]]))     ).toBe(2       ) ;
+		expect(nested.minRows?.(rows([["call-open-paren"], ["call-close-paren"]]))     ).toBeUndefined() ;
 	});
 
 	test("rejects incompatible schemas, unknown fields, operations, axes and classifications", () => {

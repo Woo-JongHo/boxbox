@@ -294,7 +294,7 @@ The user authorized an available npm name after confirming they do not own npm `
 that does not reserve it. The machine is authenticated as `woojongho`; publication and real registry `npx boxbox-plugin` are pending.
 
 The installer targets **Codex and Claude Code**, with native Windows Codex as today's test priority. It installs permanent
-local engine/plugin files rather than relying on an npx cache or ZIP transfer. See [installation status](../user/codex-windows-test.md)
+local engine/plugin files rather than relying on an npx cache or ZIP transfer. See [installation status](../../product/installer/README.md)
 and the [current migration record](reviews/2026-10-16-boxbox-rename.md).
 Earlier naming evidence remains historical: [first pass](reviews/2026-10-12-boxbox-rename.md), [EggBox pass](reviews/2026-10-12-eggbox-rename.md).
 The separate full-product audit and release remain open.

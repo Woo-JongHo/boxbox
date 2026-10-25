@@ -160,7 +160,10 @@ function readConfigFile(path: string, label: string): { readonly config: Project
 	let value: unknown;
 	try { value = JSON.parse(raw); }
 	catch (error) { throw new Error(`${path}: malformed JSON: ${error instanceof Error ? error.message : String(error)}`); }
-	const migrated = typeof value === "object" && value !== null && !Array.isArray(value) && (value as Record<string, unknown>).schemaVersion === 1;
+	const migrated =    typeof value                                     === "object"
+                    &&  value                                            !== null
+                    && !Array.isArray(value)
+                    &&  (value as Record<string, unknown>).schemaVersion === 1;
 	return { config: validateProjectConfig(value, label), raw, migrated };
 }
 
@@ -184,7 +187,10 @@ function defaultUserPath(): string {
 }
 
 function missingPath(error: unknown): boolean {
-	return typeof error === "object" && error !== null && "code" in error && error.code === "ENOENT";
+	return   typeof error === "object"
+          && error        !== null
+          && "code" in error
+          && error.code   === "ENOENT";
 }
 
 function lstatIfPresent(path: string): ReturnType<typeof lstatSync> | undefined {
@@ -221,7 +227,13 @@ function prepareUserRoot(create: boolean): boolean {
 		if (!create) return false;
 		try { mkdirSync(current, { mode: 0o700 }); }
 		catch (error) {
-			if (!missingPath(error) && !(typeof error === "object" && error !== null && "code" in error && error.code === "EEXIST")) throw error;
+			if (
+				!missingPath(error)
+				&& !(typeof error === "object"
+					&& error !== null
+					&& "code" in error
+					&& error.code === "EEXIST")
+			) throw error;
 		}
 		assertRealDirectory(current);
 		if (current === root) rootCreated = true;
@@ -248,7 +260,10 @@ export function initializeUserDatabase(): UserDatabaseInitialization {
 				writeFileSync(path, "", { encoding: "utf8", flag: "wx", mode: 0o600 });
 				created = true;
 			} catch (error) {
-				if (!(typeof error === "object" && error !== null && "code" in error && error.code === "EEXIST")) throw error;
+				if (!(typeof error === "object"
+					&& error !== null
+					&& "code" in error
+					&& error.code === "EEXIST")) throw error;
 				assertUserDatabaseFile(path);
 			}
 		}

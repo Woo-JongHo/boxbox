@@ -22,7 +22,7 @@ const timeoutMs = 1000     ;
 
 위 정렬 예시는 실제 TypeScript 엔진의 출력입니다. 이름, 값, 실행 순서는 유지하면서 대응하는 구문을 더 쉽게 비교할 수 있게 합니다.
 
-제품명은 **BoxBox**이며, 핵심 CLI·스킬·플러그인 ID는 `boxbox`입니다(2026-10-16 확정). npm 설치 패키지 후보는 `boxbox-plugin`이며, 확인 당시에는 등록되지 않은 이름이었습니다. 목표 설치 명령은 `npx boxbox-plugin`입니다. 패키지 게시에는 유효한 npm 인증과 최종 릴리스 결정이 필요합니다. [Windows 플러그인 설치 안내](docs/user/codex-windows-test.md)를 참고하세요.
+제품명은 **BoxBox**이며, 핵심 CLI·스킬·플러그인 ID는 `boxbox`입니다(2026-10-16 확정). npm 설치 패키지 후보는 `boxbox-plugin`이며, 확인 당시에는 등록되지 않은 이름이었습니다. 목표 설치 명령은 `npx boxbox-plugin`입니다. 패키지 게시에는 유효한 npm 인증과 최종 릴리스 결정이 필요합니다. [Windows 플러그인 설치 안내](product/installer/README.md)를 참고하세요.
 
 ## 코드를 표로 읽는 이유
 
@@ -55,7 +55,7 @@ const timeoutMs = 1000     ;
 
 ## 작성·구조 개선·정렬·검사
 
-0.2.5 소스 후보는 에이전트 작업과 엔진의 변경 범위를 구분합니다.
+0.2.6 소스 후보는 에이전트 작업과 엔진의 변경 범위를 구분합니다.
 
 - **Write — 작성:** 에이전트가 승인된 작성 안내를 참고하여 요청한 기능을 구현합니다.
 - **Refactor — 구조 개선:** 에이전트가 기존 구조를 개선하고 동작과 필요한 성능을 별도로 검증합니다.
@@ -80,7 +80,7 @@ CLI는 이제 TypeScript, Python, 엄격한 JSON, YAML 1.2를 검사하며 구�
 
 공개 npm 설치 패키지는 `boxbox-plugin`이라는 이름으로 준비 중이며, 레지스트리 게시는 아직 대기 중입니다.
 Codex와 Claude Code용 플러그인 및 로컬 Node 엔진을 설치합니다. 현재 미리보기 상태와 호스트 요구 사항은
-[설치 안내](docs/user/codex-windows-test.md)를 참고하세요.
+[설치 안내](product/installer/README.md)를 참고하세요.
 
 로컬에서 빌드한 설치 패키지를 사용하려면:
 
@@ -97,6 +97,8 @@ npm exec --yes --package '/absolute/path/to/dist/installer/boxbox-plugin-<versio
 
 제품 소스는 `product/`에, 개발 도구·연구·증거는 `development/`에 있습니다.
 `plugin/`은 제품 템플릿에서 생성되며, `dist/`에는 생성된 패키지가 저장됩니다.
+`docs/`에는 공개 사용자·기여자 문서를 둡니다. 테스트·빌드 도구·이 문서들은 설치 패키지에서 제외되더라도
+소스 저장소에 필요하며, 개인 작업 기록은 별도로 관리합니다.
 [개발 안내](development/README.md)와 [디렉터리 구조 계약](docs/development/layout.md)을 참고하세요.
 
 ```sh
@@ -130,7 +132,7 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 
 ## 개발 현황
 
-현재는 개발 중이며 공개 배포가 완료된 상태가 아닙니다. 로컬 CLI 패키지와 스킬 어댑터는 구현되어 있지만, 공개 배포와 호스트 네이티브 이벤트 수용 작업은 남아 있습니다. 기본 `plugin/` 실행 연결 스크립트에는 명시적인 로컬 엔진 설정이 필요합니다. Windows Codex 시험에는 포함된 엔진을 영구 로컬 디렉터리에 설치하는 [npm 설치 프로그램](docs/user/codex-windows-test.md)을 사용하세요. 선택된 npm 설치 패키지 이름은 `boxbox-plugin`이며, 게시는 아직 대기 중입니다.
+현재는 개발 중이며 공개 배포가 완료된 상태가 아닙니다. 로컬 CLI 패키지와 스킬 어댑터는 구현되어 있지만, 공개 배포와 호스트 네이티브 이벤트 수용 작업은 남아 있습니다. 기본 `plugin/` 실행 연결 스크립트에는 명시적인 로컬 엔진 설정이 필요합니다. Windows Codex 시험에는 포함된 엔진을 영구 로컬 디렉터리에 설치하는 [npm 설치 프로그램](product/installer/README.md)을 사용하세요. 선택된 npm 설치 패키지 이름은 `boxbox-plugin`이며, 게시는 아직 대기 중입니다.
 
 검증된 동작과 남은 작업은 [배포 준비 상태](docs/development/status.md), [배포 계약](docs/development/release-contract.md), [계획](docs/development/plan.md)을 참고하세요. 이름 변경과 구조 이전의 과거 기록은 [이름 변경 기록](docs/development/reviews/2026-10-16-boxbox-rename.md)에 있습니다.
 

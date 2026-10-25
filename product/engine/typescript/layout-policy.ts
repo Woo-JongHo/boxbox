@@ -5,6 +5,7 @@ export const IMPLEMENTED_LAYOUT_KINDS          = [
 	"declaration",
 	"declaration-equals",
 	"declaration-extended-equals",
+	"declaration-call-expressions",
 	"return-guards",
 	"declaration-call-envelope",
 	"guard-statements",
@@ -19,7 +20,12 @@ export const IMPLEMENTED_LAYOUT_KINDS          = [
 	"assignments",
 	"call-statements",
 	"object-rows",
+	"object-properties",
 	"registration",
+	"logical-chains",
+	"if-headers-braced",
+	"if-headers-return",
+	"vertical-call-arguments",
 ] as const;
 
 export interface AxisPolicy {
@@ -39,10 +45,13 @@ export interface RowKindPolicy {
 }
 
 export interface TypeScriptLayoutPolicy {
-	readonly schemaVersion : 1                                       ;
-	readonly language      : "typescript"                            ;
-	readonly rowKinds      : Readonly<Record<string, RowKindPolicy>> ;
-	readonly kinds         : Readonly<Record<string, AxisPolicy>>    ;
+	readonly schemaVersion : 1            ;
+	readonly language      : "typescript" ;
+	readonly rowKinds      : Readonly<{
+		readonly declaration                    : RowKindPolicy ;
+		readonly "declaration-call-expressions" : RowKindPolicy ;
+	}>;
+	readonly kinds : Readonly<Record<string, AxisPolicy>> ;
 }
 
 type JsonRecord = Readonly<Record<string, unknown>>;
@@ -99,9 +108,12 @@ export function validateTypeScriptLayoutPolicy(value: unknown, where = "TypeScri
 	if (root.schemaVersion !== TYPESCRIPT_LAYOUT_SCHEMA_VERSION) throw new Error(`${where}: schemaVersion must be ${TYPESCRIPT_LAYOUT_SCHEMA_VERSION}; got ${String(root.schemaVersion)}`);
 	if (root.language !== "typescript") throw new Error(`${where}: language must be typescript`);
 	const rowKindRecords = recordOf(root.rowKinds, `${where}.rowKinds`);
-	exactKeys(rowKindRecords, ["declaration"], `${where}.rowKinds`);
-	const rowKinds    = { declaration: rowKindPolicyOf(rowKindRecords.declaration, `${where}.rowKinds.declaration`) } ;
-	const kindRecords = recordOf(root.kinds, `${where}.kinds`)                                                        ;
+	exactKeys(rowKindRecords, ["declaration", "declaration-call-expressions"], `${where}.rowKinds`);
+	const rowKinds = {
+		declaration                    : rowKindPolicyOf(rowKindRecords.declaration, `${where}.rowKinds.declaration`)                                         ,
+		"declaration-call-expressions" : rowKindPolicyOf(rowKindRecords["declaration-call-expressions"], `${where}.rowKinds.declaration-call-expressions`) ,
+	};
+	const kindRecords = recordOf(root.kinds, `${where}.kinds`);
 	exactKeys(kindRecords, IMPLEMENTED_LAYOUT_KINDS, `${where}.kinds`);
 	const kinds: Record<string, AxisPolicy> = {};
 	for (const [name, policy] of Object.entries(kindRecords)) kinds[identifier(name, `${where}.kinds`)] = axisPolicyOf(policy, `${where}.kinds.${name}`);

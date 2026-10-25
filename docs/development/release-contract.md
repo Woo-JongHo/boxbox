@@ -11,7 +11,7 @@ unapproved. [FORMAT1](plan.md#planned-scope-expansion--format1-json-and-yaml) re
 | Item | Implementation baseline | Real support verdict |
 |---|---|---|
 | Languages | TypeScript, Python, JSON, YAML | all four enter Check, Guide, Align and Format through the shared CLI; installed public-artifact tests cover their current boundaries |
-| Default write approvals | TypeScript, Python | the recommended preset contains two approved rules and four examples; JSON/YAML writes require a complete separately supplied approval proof and otherwise refuse |
+| Default write approvals | TypeScript, Python | the recommended preset contains two approved rules and four examples; JSON/YAML writes require a complete separately supplied approval proof and otherwise refuse. Issue #26's additional TypeScript detection and authoring guidance does not add approved rules or widen automatic fixes |
 | Runtime | Node >=22.22.3 with npm | measured Node 22.22.3 on macOS/WSL and 24.12.0 on native Windows; Bun stays a development and build tool |
 | OS | macOS, native Windows and Linux/WSL candidate verification | clean CI `ebfe6a…` passed six host lifecycle cells; Linux/Windows hosted smoke passed and hosted macOS smoke is queued |
 | Hosts | Codex and Claude Code | exact unpublished artifacts have real host-manager acceptance; authenticated sessions, UI/hooks and published-registry journeys have separate evidence gates |
@@ -30,15 +30,14 @@ These results do not establish authenticated host UI/hook acceptance or a final 
 
 - `check`: a read-only check. It keeps the groups and parse status of the current Result schemaVersion 1.
   check's `parse=not-run` does not mean re-parse verification was completed.
-- `guide`: read-only guidance from the effective approval data; authoring guidance also identifies unsupported and unapproved shapes.
-- `align`: writes only approved horizontal-whitespace alignment and never runs an external formatter; `--dry-run` preserves the original.
+- `guide`: read-only guidance from the effective approval data; authoring guidance also identifies unsupported and unapproved shapes. The TypeScript authoring workflow may use detected layout shapes as writing vocabulary, but detection is not approval.
+- `align`: writes only approved horizontal-whitespace alignment, preserving physical lines and indentation, and never runs an external formatter; `--dry-run` preserves the original.
 - `format`: fixes only when token preservation, a runnable parser, human-approved rules and the optional formatter order are all connected.
   If any condition is not connected, it refuses explicitly. `--dry-run` preserves the original. Temporary bypass options used during implementation are never published.
 - `init`: creates a versioned project config without overwriting existing user files.
 - `doctor`: reports the availability of the runtime, parsers, config, approval data and release files. It never reports something unimplemented as healthy.
 
-CLI arguments, exit codes and error JSON are pinned by implementation and tests in REL4. The product version 0.2.5 is development metadata,
-and the release version is undecided. Changes to the Result/config schemas must come with a version change and a migration policy.
+CLI arguments, exit codes and error JSON are pinned by implementation and tests in REL4. Version 0.2.5 exists as a GitHub draft pre-release and has not been published; the 0.2.6 delivery target is a verified GitHub draft pre-release with matching source, installer archive, release notes, SHA-256 receipt and candidate metadata. A draft is not a published release; npm publication and publishing the GitHub draft are separate decisions. Changes to the Result/config schemas must come with a version change and a migration policy.
 
 ## Write surface inventory
 
@@ -60,15 +59,13 @@ REL11, approve additional rules, license the preview package or authorize public
 
 ## Human decisions and freeze points
 
-The product name `boxbox` / `BoxBox` was confirmed on 2026-10-16. The public installer candidate is `boxbox-plugin`, selected under the user's authorization to choose an available npm name. Private engine artifacts retain the core ID `boxbox`. The existing GitHub MIT LICENSE is retained at the repository root. Installer and engine package metadata declare MIT and ship the `LICENSE` (decided 2026-10-22); publication permissions and public channel still need decisions before REL11; the local implementation remains `private: true`. Local builds, packs and isolated install experiments are
-included in the continuous-progress direction. The user separately authorized development commit/push and candidate
-delivery to `chacada`; this does not authorize a release tag, registry publication or repository visibility change.
+The product name `boxbox` / `BoxBox` was confirmed on 2026-10-16. The public installer candidate is `boxbox-plugin`, selected under the user's authorization to choose an available npm name. Private engine artifacts retain the core ID `boxbox`. The existing GitHub MIT LICENSE is retained at the repository root. Installer and engine package metadata declare MIT and ship the `LICENSE` (decided 2026-10-22); the local implementation remains `private: true`. The 0.2.6 delivery artifact is a verified GitHub draft pre-release; npm publication and publishing the draft remain separate from that delivery target.
 
 Observation data and AI suggestions are never automatically promoted into human-approved conventions or decisions.
 Approval candidate material can be prepared, but real approval history is never written on someone's behalf.
 
-Independent source/evidence reviews and the requested GLM audit have run for the current changes. Their scoped
-passes do not replace the final artifact, authenticated-host and human-decision gates.
+Prior independent source/evidence reviews and the GLM audit are scoped to their recorded candidates. The 0.2.6 candidate
+still requires the planned read-only GLM 5.3 review on frozen source; earlier reviews do not establish its completion.
 
 ## Product naming decision — 2026-10-16
 

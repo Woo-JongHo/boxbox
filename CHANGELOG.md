@@ -1,10 +1,41 @@
 # Changelog
 
 All notable changes to this project are documented here. The format follows
-[Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the first release, 0.2.5,
-is published as a pre-release.
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version 0.2.5 is a
+GitHub draft pre-release and has not been published.
 
 ## [Unreleased]
+
+## [0.2.6] - 2026-10-25
+
+### Added
+
+- Expanded TypeScript layout detection and authoring guidance for comparable
+  property and comma-bearing rows, logical prefixes, return guards, multiline
+  calls, and comparison or ternary expressions inside matching call arguments.
+  Detection and guidance do not approve these shapes for automatic fixes;
+  automatic formatting stays limited to the already approved TypeScript
+  declaration and Python assignment rules.
+
+### Changed
+
+- Public `align` remains horizontal-only: it changes approved spacing while
+  preserving physical lines and indentation. B-style authoring and refactoring
+  can use the expanded layout guidance without changing that command contract.
+- TypeScript import normalization preserves whether a trailing comma was
+  present in compact and multiline forms.
+- Existing automatic limits remain: the import 120-column/20-column outlier,
+  four-operand conditions, and call outliers. General 120-column width remains
+  an authoring consideration.
+
+### Fixed
+
+- TypeScript layout checks now account for existing punctuation and nested
+  expression columns while keeping braced and unbraced return-guard groups
+  separate.
+- Condition authoring preserves tokens, comments and structural AST, reuses
+  existing multiline condition boundaries, and refuses unsafe rewrites.
+- Import layout-only writes detect external edits before replacing a file.
 
 ## [0.2.5] - 2026-10-22
 

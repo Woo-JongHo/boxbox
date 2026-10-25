@@ -88,7 +88,10 @@ export function assignmentEnvelopes(source: string): ReadonlyMap<number, RowProf
 
 	for (const [index, raw] of source.split("\n").entries()) {
 		const line        = raw.endsWith("\r") ? raw.slice(0, -1) : raw                       ;
-		const independent = quote === "" && brackets.length === 0 && !continued && !uncertain ;
+		const independent =     quote           === ""
+                            &&  brackets.length === 0
+                            && !continued
+                            && !uncertain ;
 		let comment       = line.length                                                       ;
 
 		for (let position = 0; position < line.length; position += 1) {
@@ -110,7 +113,13 @@ export function assignmentEnvelopes(source: string): ReadonlyMap<number, RowProf
 
 		const code = comment < line.length ? line.slice(0, comment).replace(/[ \t]+$/u, "") : line;
 		continued = quote === "" && code.endsWith("\\");
-		if (!independent || quote !== "" || brackets.length !== 0 || continued || uncertain) continue;
+		if (
+			   !independent
+			||  quote           !== ""
+			||  brackets.length !== 0
+			||  continued
+			||  uncertain
+		) continue;
 
 		const profile = assignment(code);
 		if (profile) result.set(index, profile);

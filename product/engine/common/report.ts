@@ -62,8 +62,8 @@ export const DEFAULT_LIMITS: ReportLimits = {
 	largeEdits   : 20  ,
 };
 
-/** Kinds allowed to be fixed automatically from two rows (user approval, charter invariant 4) */
-const TWO_ROW_KINDS = new Set(["declaration-equals", "declaration-call-envelope", "import-declarations"]);
+/** Structural minimum-row exceptions; these do not grant write approval. */
+const TWO_ROW_KINDS = new Set(["declaration-equals", "declaration-call-envelope", "declaration-call-expressions", "import-declarations"]);
 
 export type CheckStatus = "pass" | "fail" | "not-run" | "skipped";
 
@@ -169,10 +169,10 @@ function checksOf(input: ReportInput): readonly ReportCheck[] {
 	const parse       = result.parse.status                                                                                          ;
 	const idempotent  = recheck === undefined ? undefined : recheck.summary.edits === 0 && recheck.summary.misaligned === 0          ;
 	const details = {
-		S1 : `the engine verifies token, string and comment preservation per edit and never writes a failing edit (refused groups ${refused})`                                                 ,
-		S2 : PARSE_DETAIL[parse](result.parse.tool || result.language)                                                                                                                         ,
-		S3 : idempotent === undefined ? "checked only when rechecking after --write" : `pending edits on recheck ${recheck!.summary.edits}`                                                    ,
-		S4 : floorBreaks.length === 0 ? "two-row exceptions: declarations, call envelopes, imports" : floorBreaks.map(group => `${group.startLine}-${group.endLine} ${group.kind}`).join(", ") ,
+		S1 : `the engine verifies token, string and comment preservation per edit and never writes a failing edit (refused groups ${refused})`                                                                                      ,
+		S2 : PARSE_DETAIL[parse](result.parse.tool || result.language)                                                                                                                                                              ,
+		S3 : idempotent === undefined ? "checked only when rechecking after --write" : `pending edits on recheck ${recheck!.summary.edits}`                                                                                         ,
+		S4 : floorBreaks.length === 0 ? "two-row structural exceptions: declarations, call envelopes, nested declaration calls, imports" : floorBreaks.map(group => `${group.startLine}-${group.endLine} ${group.kind}`).join(", ") ,
 	};
 
 	return [

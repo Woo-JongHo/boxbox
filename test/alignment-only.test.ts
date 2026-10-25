@@ -1,14 +1,22 @@
-import { afterEach, expect, test } from "bun:test";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
-import { tmpdir } from "node:os";
+import      { afterEach, expect, test                                   } from "bun:test"                    ;
+import      {
+              existsSync                                              ,
+              mkdirSync                                               ,
+              mkdtempSync                                             ,
+              readFileSync                                            ,
+              readdirSync                                             ,
+              rmSync                                                  ,
+              writeFileSync
+                                                                        } from "node:fs"                     ;
+import      { join                                                      } from "node:path"                   ;
+import      { tmpdir                                                    } from "node:os"                     ;
 
-import { assertAlignmentOnly } from "@/common/alignment-only.ts";
-import { APPROVAL_VERSIONS, documentResolver, loadApprovalRegistry } from "@/common/approval-gate.ts";
-import type { ApprovalRegistry } from "@/common/approval-gate.ts";
-import { contentHashOf, sectionHash } from "@/common/examples.ts";
-import type { Example } from "@/common/examples.ts";
-import { runFormatPipeline } from "@/common/format-pipeline.ts";
+import      { assertAlignmentOnly                                       } from "@/common/alignment-only.ts"  ;
+import      { APPROVAL_VERSIONS, documentResolver, loadApprovalRegistry } from "@/common/approval-gate.ts"   ;
+import type { ApprovalRegistry                                          } from "@/common/approval-gate.ts"   ;
+import      { contentHashOf, sectionHash                                } from "@/common/examples.ts"        ;
+import type { Example                                                   } from "@/common/examples.ts"        ;
+import      { runFormatPipeline                                         } from "@/common/format-pipeline.ts" ;
 
 const roots: string[] = []                                                            ;
 const preset          = join(import.meta.dir, "../product/rules/presets/recommended") ;
@@ -136,13 +144,13 @@ function verticalRegistry(root: string): ApprovalRegistry {
 	mkdirSync(join(root, "docs"));
 	writeFileSync(join(root, "docs/rules.md"), document);
 	return {
-		conventions : [{ schemaVersion: 1, id: rule, key: "v1|typescript|SourceFile|declaration-equals|equals>call-open-paren>call-comma{i}>call-arg{i}>call-comma{i}>call-arg{i}>call-close-paren>semicolon", pattern: "DEFINE", status: "approved", scope: "**/*.ts", examples: ids, versions: APPROVAL_VERSIONS, approvedBy: "synthetic-test-approver", date: "2026-10-21", layer: "project" }],
-		examples    : new Map(examples.map(example => [example.id, example])),
-		decisions   : new Map([[rule, { schemaVersion: 1, id: rule, kind: "rule", layer: "convention", ref: "docs/rules.md#Synthetic rule", docHash: sectionHash(document, "Synthetic rule"), examples: ids, approvedBy: "synthetic-test-approver", date: "2026-10-21" }]]),
+		conventions : [{ schemaVersion: 1, id: rule, key: "v1|typescript|SourceFile|declaration-equals|equals>call-open-paren>call-comma{i}>call-arg{i}>call-comma{i}>call-arg{i}>call-close-paren>semicolon", pattern: "DEFINE", status: "approved", scope: "**/*.ts", examples: ids, versions: APPROVAL_VERSIONS, approvedBy: "synthetic-test-approver", date: "2026-10-21", layer: "project" }] ,
+		examples    : new Map(examples.map(example => [example.id, example]))                                                                                                                                                                                                                                                                                                                      ,
+		decisions   : new Map([[rule, { schemaVersion: 1, id: rule, kind: "rule", layer: "convention", ref: "docs/rules.md#Synthetic rule", docHash: sectionHash(document, "Synthetic rule"), examples: ids, approvedBy: "synthetic-test-approver", date: "2026-10-21" }]])                                                                                                                        ,
 	};
 }
 
-test("real vertical candidates are refused by Align preview and apply, while legacy format retains its behavior", () => {
+test("real vertical candidates are refused by Align and remain unapproved after legacy format expansion", () => {
 	const source = "const a = pair(alpha, tiny, gamma);\nconst bb = pair(alpha, small, gamma);\nconst cc = pair(alpha, short, gamma);\nconst dd = pair(alpha, veryLongSecondArgumentHereForVerticalLayout, gamma);\n";
 	const { target, options } = fixture("typescript", source);
 	const registry = verticalRegistry(options.root);
@@ -174,13 +182,12 @@ test("real vertical candidates are refused by Align preview and apply, while leg
 	}
 	const preview = invoke(false, true);
 
-	expect(preview.stderr.toString()).toBe("");
-	expect(preview.exitCode).toBe(0);
-	expect(JSON.parse(preview.stdout.toString()).alignmentEdits).toBeUndefined();
-	expect(readFileSync(target, "utf8")).toBe(source);
+	expect(preview.stderr.toString()   ).toContain("approval denied: no matching convention") ;
+	expect(preview.exitCode            ).toBe     (1                                        ) ;
+	expect(readFileSync(target, "utf8")).toBe     (source                                   ) ;
 	const applied = invoke(false, false);
 
-	expect(applied.stderr.toString()                      ).toBe           (""                       ) ;
-	expect(applied.exitCode                               ).toBe           (0                        ) ;
-	expect(readFileSync(target, "utf8").split("\n").length).toBeGreaterThan(source.split("\n").length) ;
+	expect(applied.stderr.toString()   ).toContain  ("approval denied: no matching convention" ) ;
+	expect(applied.exitCode            ).toBe       (1                                         ) ;
+	expect(readFileSync(target, "utf8")).toBe       (source                                    ) ;
 }, 60_000);

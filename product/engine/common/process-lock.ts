@@ -29,7 +29,13 @@ export function processStartedAt(pid: number): string | null {
 function ownerOf(path: string): LockOwner | null {
 	try {
 		const owner = JSON.parse(readFileSync(join(path, "owner.json"), "utf8"));
-		if (!Number.isSafeInteger(owner.pid) || owner.pid <= 0 || typeof owner.processStartedAt !== "string" || typeof owner.token !== "string") return null;
+		if (
+			   !Number.isSafeInteger(owner.pid)
+			||  owner.pid <= 0
+			||  typeof owner.processStartedAt !== "string"
+			||  typeof owner.token            !== "string"
+		)
+			return null;
 		return owner;
 	} catch { return null; }
 }

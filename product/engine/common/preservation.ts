@@ -81,10 +81,10 @@ function lineKeys(source: string, syntax: CodeSyntax): LineKey[] {
 }
 
 const sameKey = (left: LineKey, right: LineKey): boolean =>
-	left.indent === right.indent
-	&& left.code === right.code
-	&& left.protected.length === right.protected.length
-	&& left.protected.every((text, position) => text === right.protected[position]);
+       left.indent           === right.indent
+    && left.code             === right.code
+    && left.protected.length === right.protected.length
+    && left.protected.every((text, position) => text === right.protected[position]);
 
 /**
  * Returns the 0-based indexes of lines where `after` differs from `before` in anything but horizontal

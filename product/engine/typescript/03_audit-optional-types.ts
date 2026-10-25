@@ -57,13 +57,20 @@ function diagnostic(match: RegExpMatchArray): Diagnostic {
 	const column  = match[3] ;
 	const code    = match[4] ;
 	const message = match[5] ;
-	if (!file || !line || !column || !code || !message) throw new Error(`cannot parse TypeScript diagnostic: ${match[0]}`);
+	if (
+		   !file
+		|| !line
+		|| !column
+		|| !code
+		|| !message
+	)
+		throw new Error(`cannot parse TypeScript diagnostic: ${match[0]}`);
 	return {
 		file   : file.replaceAll("\\", "/").replace(/^\.\//u, "") ,
 		line   : Number(line)                                     ,
 		column : Number(column)                                   ,
-		code,
-		message,
+		code    ,
+		message ,
 	};
 }
 

@@ -1,7 +1,7 @@
 {
-	"name": "boxbox",
+	"name"       : "boxbox",
 	"displayName": "BoxBox",
-	"version": "@BOXBOX_VERSION@",
+	"version"    : "@BOXBOX_VERSION@",
 	"description": "Guides writing and refactoring TypeScript and Python, with syntax and tabular checks for TypeScript, Python, JSON and YAML and human-approved whitespace alignment.",
 	"author": {
 		"name": "Woo-JongHo"
