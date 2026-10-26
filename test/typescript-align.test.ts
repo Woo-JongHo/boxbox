@@ -18,7 +18,7 @@ afterEach(() => {
 describe("typescript call statement alignment", () => {
 	slowTest("aligns subject/matcher parentheses, dots and semicolons of consecutive call statements", () => {
 		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
-		const target    = join(workspace, "calls.ts")                             ;
+		const target    = join       (workspace, "calls.ts"                     ) ;
 		workspaces.push(workspace);
 		writeFileSync(target, [
 			'expect(lstatSync(skill).isDirectory()).toBe(true);',
@@ -26,7 +26,7 @@ describe("typescript call statement alignment", () => {
 			'expect(realpathSync(skill)).not.toBe(realpathSync(pluginSkill));',
 		].join("\n") + "\n");
 
-		const file   = relative(root, target)                                                                                   ;
+		const file   = relative     (root, target                                                                             ) ;
 		const result = Bun.spawnSync(["bun", script, "--file", file, "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" }) ;
 		expect(result.exitCode).toBe(0);
 		expect(result.stdout.toString()).toContain("call-statements");
@@ -41,7 +41,7 @@ describe("typescript call statement alignment", () => {
 describe("typescript object row alignment", () => {
 	slowTest("aligns braces, properties, colons, values and commas of object rows", () => {
 		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
-		const target    = join(workspace, "objects.ts")                           ;
+		const target    = join       (workspace, "objects.ts"                   ) ;
 		workspaces.push(workspace);
 		writeFileSync(target, [
 			"const boundaries: RowBoundary[] = [",
@@ -53,7 +53,7 @@ describe("typescript object row alignment", () => {
 			"] ;",
 		].join("\n") + "\n");
 
-		const file   = relative(root, target)                                                                                   ;
+		const file   = relative     (root, target                                                                             ) ;
 		const result = Bun.spawnSync(["bun", script, "--file", file, "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" }) ;
 		expect(result.exitCode).toBe(0);
 		expect(result.stdout.toString()).toContain("object-rows");
@@ -69,10 +69,63 @@ describe("typescript object row alignment", () => {
 	});
 });
 
+describe("typescript literal array row alignment", () => {
+	slowTest("aligns existing commas in a multiline literal array without changing its lines or tokens", () => {
+		const workspace = mkdtempSync (join(import.meta.dir, "typescript-align-")                  ) ;
+		const target    = join        (workspace, "literal-array.ts"                               ) ;
+		const fixture   = readFileSync(resolve(root, "test/fixtures/literal-array-rows.ts"), "utf8") ;
+		workspaces.push(workspace);
+		writeFileSync(target, fixture);
+
+		const result = Bun.spawnSync(["bun", script, "--file", relative(root, target), "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" }) ;
+		const after  = readFileSync (target, "utf8"                                                                                             ) ;
+		expect(result.exitCode                ).toBe     (0                   ) ;
+		expect(result.stdout.toString()       ).toContain("literal-array-rows") ;
+		expect(preservesTokens(fixture, after)).toBe     (true                ) ;
+		const commas = after.split("\n").filter(line => line.includes("\"" )).map(line => line.indexOf(","));
+		expect(new Set(commas).size).toBe(1);
+		expect(after.split("\n").length).toBe(fixture.split("\n").length);
+
+		const rerun = Bun.spawnSync(["bun", script, "--file", relative(root, target), "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" });
+		expect(rerun.exitCode).toBe(0);
+		expect(readFileSync(target, "utf8")).toBe(after);
+	});
+
+	slowTest("keeps missing commas, compact arrays, mixed arrays and shared bracket rows out of the new kind", () => {
+		const workspace = mkdtempSync (join(import.meta.dir, "typescript-align-")                  ) ;
+		const target    = join        (workspace, "literal-array.ts"                               ) ;
+		const fixture   = readFileSync(resolve(root, "test/fixtures/literal-array-rows.ts"), "utf8") ;
+		workspaces.push(workspace);
+
+		const cases = [
+			fixture.replace('\t"registration",', '\t"registration"'),
+			'const values = ["short", "longer"] as const;\n',
+			'const values = [\n\t"short",\n\tcall(),\n\t"longer",\n] as const;\n',
+			'const values = ["short",\n\t"longer",\n\t"last",\n] as const;\n',
+			'const values = [\n\t"short",\n\t"longer",\n\t"last",\n];\n',
+			'const values = [\n\t"short",\n\t"longer"\n] as const;\n',
+		];
+		for (const [index, before] of cases.entries()) {
+			writeFileSync(target, before);
+			const result = Bun.spawnSync(["bun", script, "--file", relative(root, target), "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" }) ;
+			const after  = readFileSync (target, "utf8"                                                                                             ) ;
+			expect(result.exitCode, `case ${index}`).toBe(0);
+			expect(preservesTokens(before, after), `case ${index}`).toBe(true);
+			if (index === 0) {
+				expect(result.stdout.toString()).toContain("literal-array-rows");
+				expect(after).not.toContain('"registration",');
+			} else {
+				expect(result.stdout.toString(), `case ${index}`).not.toContain("literal-array-rows");
+				expect(after, `case ${index}`).toBe(before);
+			}
+		}
+	});
+});
+
 describe("typescript whitespace-only guarantee", () => {
 	slowTest("the fixture aligns with an identical token stream and no refused table", () => {
-		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-"))             ;
-		const target    = join(workspace, "table-kinds.ts")                                   ;
+		const workspace = mkdtempSync (join(import.meta.dir, "typescript-align-")           ) ;
+		const target    = join        (workspace, "table-kinds.ts"                          ) ;
 		const before    = readFileSync(resolve(root, "test/fixtures/table-kinds.ts"), "utf8") ;
 		workspaces.push(workspace);
 		writeFileSync(target, before);
@@ -88,7 +141,7 @@ describe("typescript whitespace-only guarantee", () => {
 describe("typescript row floors", () => {
 	slowTest("a 2-row = declaration table is aligned; a 2-row group of another kind is not", () => {
 		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
-		const target    = join(workspace, "floors.ts")                            ;
+		const target    = join       (workspace, "floors.ts"                    ) ;
 		workspaces.push(workspace);
 		writeFileSync(target, [
 			"const value = chars[index]!;",
@@ -117,7 +170,7 @@ describe("typescript row floors", () => {
 /** Writes `lines` to a temporary file, runs the aligner with --write, and returns the file's lines. */
 function alignLines(lines: readonly string[]): readonly string[] {
 	const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
-	const target    = join(workspace, "layer.ts")                             ;
+	const target    = join       (workspace, "layer.ts"                     ) ;
 	workspaces.push(workspace);
 	writeFileSync(target, `${lines.join("\n")}\n`);
 	const result = Bun.spawnSync(["bun", script, "--file", relative(root, target), "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" });

@@ -1,10 +1,17 @@
 # Changelog
 
 All notable changes to this project are documented here. The format follows
-[Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version 0.2.5 is a
-GitHub draft pre-release and has not been published.
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version 0.2.6 is merged
+and tagged; its GitHub pre-release remains a draft. See the
+release documentation when preparing a version.
 
 ## [Unreleased]
+
+### Added
+
+- Recognize standalone multiline scalar-literal arrays in `const` declarations
+  asserted `as const` as TypeScript `LIST` tables. Align existing commas only;
+  do not insert a missing comma or add automatic write approval.
 
 ## [0.2.6] - 2026-10-25
 

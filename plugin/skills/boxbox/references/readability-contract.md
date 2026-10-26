@@ -201,6 +201,7 @@ an applicable changed group lacks approval, even when a legacy kind covering nea
 | registration | `:` , expression start , trailing `,` | — |
 | assignments (`this.x = y;` assignment table) | `=` , `;` | `//` |
 | call-statements (`expect(…).toBe(…);` call-statement table) | `;` | subject `)` , matcher `.` , matcher `(` , matcher `)` , `//` |
+| literal-array-rows (one scalar literal per line in a `const` array asserted `as const`) | existing `,` | — |
 
 Authoring examples — all identical to the checker's `--write` output:
 

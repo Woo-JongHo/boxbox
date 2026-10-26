@@ -706,6 +706,37 @@ function detectRegistrationRow(source: SourceFile, node: Node): readonly RowBoun
 	return boundaries;
 }
 
+/** A vertical array of scalar literals is a row table; compact and mixed-value arrays stay with their parent syntax. */
+function literalArrayRows(node: Node): readonly Node[] | undefined {
+	if (!isArrayLiteralExpression(node))                                                                                                                                            return undefined;
+	const items = [...node.elements];
+	if (items.length === 0 || !items.every(isLiteralItem))                                                                                                                          return undefined;
+	const source    = node.getSourceFile()                                   ;
+	const assertion = (node as unknown as { readonly parent?: Node }).parent ;
+	if (assertion === undefined || syntaxKindName(assertion) !== "AsExpression")                                                                                                    return undefined;
+	const asserted = assertion as unknown as { readonly parent?: Node; readonly type: Node; readonly expression: Node };
+	if (syntaxKindName(asserted.type) !== "TypeReference" || source.text.slice(asserted.type.getStart(source), asserted.type.getEnd()) !== "const" || asserted.expression !== node) return undefined;
+	const declaration = asserted.parent as unknown as (Node & { readonly parent?: Node; readonly initializer?: unknown }) | undefined;
+	if (declaration === undefined || syntaxKindName(declaration) !== "VariableDeclaration" || declaration.initializer !== assertion)                                                return undefined;
+	const declarationList = declaration.parent as unknown as (Node & { readonly parent?: Node; readonly flags?: number }) | undefined;
+	if (declarationList === undefined || ((declarationList.flags ?? 0) & NodeFlags.Const) === 0)                                                                                    return undefined;
+	if (declarationList.parent === undefined || !isVariableStatement(declarationList.parent))                                                                                       return undefined;
+	const open  = node.getStart(source) ;
+	const close = node.getEnd() - 1     ;
+	if (physicalLine(source, open) === physicalLine(source, items[0]!.getStart(source))           ) return undefined;
+	if (physicalLine(source, close) === physicalLine(source, items.at(-1)!.getEnd() - 1)          ) return undefined;
+	if (items.some(item => !onePhysicalLine(source, item) || !ownLineOf(source, item, COMMA_REST))) return undefined;
+	return items;
+}
+
+function detectLiteralArrayRow(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
+	if (!isLiteralItem(node) || !onePhysicalLine(source, node) || !ownLineOf(source, node, COMMA_REST)) return undefined;
+	const parent = (node as unknown as { readonly parent?: Node }).parent;
+	if (parent === undefined || !isArrayLiteralExpression(parent) || !parent.elements.some(item => item === (node as unknown as typeof item))) return undefined;
+	const comma = tokenAfter(source, node.getEnd(), ",");
+	return comma === undefined ? [] : [{ axis: "comma", from: node.getEnd(), at: comma }];
+}
+
 function physicalLine(source: SourceFile, position: number): number {
 	return source.getLineAndCharacterOfPosition(position).line;
 }
@@ -1173,6 +1204,12 @@ export const ROW_KINDS: readonly RowKind[] = [
 		detect     : detectCaseClause,
 	},
 	{
+		name       : "literal-array-rows",
+		gap        : "comma",
+		containers : literalArrayRows,
+		detect     : detectLiteralArrayRow,
+	},
+	{
 		name       : "object-rows"   ,
 		gap        : "comma"         ,
 		containers : node => {
@@ -1210,7 +1247,7 @@ export const AXIS_NOTES: Readonly<Record<string, string>> = {
 	"semicolon"              :
 		"statement-terminating `;`",
 	"comma"                  :
-		"row-separating `,` of an enum member or object property (a last row without one is left out of the column)",
+		"row-separating `,` of an enum member, object property, or scalar literal array item (a last row without one is left out of the column)",
 	"comment"                :
 		"start column of a trailing `//` note",
 	"open-paren"             :

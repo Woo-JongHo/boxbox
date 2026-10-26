@@ -83,7 +83,9 @@ const value = build(
 );
 ```
 
-**List layer.** A literal list inside the table is a nested table of its own: the declaration value itself (`const STATES = [...] ;`), an argument of the layered call, or a matcher argument (`expect(x).toEqual([...])`). `[` / `{` keep one column, each item `,` sits right after the widest item in its column, the next item starts one space later, and `]` / `}` sits right after the widest last item. A slot is kept only when every row has the same list shape there (same arity, or the same object property names) and every item is a string, number or boolean literal; lists with identifiers or calls (argv-like), lists with a trailing comma or a multi-line form, and lists where one item is 20 or more columns wider than the second widest in its column stay compact. Dropping the call layer drops the list slots inside its arguments.
+**List layer.** A literal list inside another table is a nested cell: the declaration value itself (`const STATES = [...] ;`), an argument of the layered call, or a matcher argument (`expect(x).toEqual([...])`). `[` / `{` keep one column, each item `,` sits right after the widest item in its column, the next item starts one space later, and `]` / `}` sits right after the widest last item. A slot is kept only when every row has the same list shape there (same arity, or the same object property names) and every item is a string, number or boolean literal; lists with identifiers or calls (argv-like), lists with a trailing comma or a multi-line form, and lists where one item is 20 or more columns wider than the second widest in its column stay compact. Dropping the call layer drops the list slots inside its arguments.
+
+A standalone multi-line scalar literal array in a `const` declaration with `as const` is a `literal-array-rows` table instead: align the commas that already exist after its one-item-per-line rows. Do not add a missing final comma. Compact arrays, arrays without `as const`, arrays with mixed expressions and arrays whose brackets share an item line remain outside this kind.
 
 ```ts
 const STATES = new Set(["PASS", "FIXABLE", "SUGGEST", "REFUSE" ]) ;
