@@ -37,7 +37,7 @@ These results do not establish authenticated host UI/hook acceptance or a final 
 - `init`: creates a versioned project config without overwriting existing user files.
 - `doctor`: reports the availability of the runtime, parsers, config, approval data and release files. It never reports something unimplemented as healthy.
 
-CLI arguments, exit codes and error JSON are pinned by implementation and tests in REL4. Version 0.2.5 exists as a GitHub draft pre-release and has not been published; the 0.2.6 delivery target is a verified GitHub draft pre-release with matching source, installer archive, release notes, SHA-256 receipt and candidate metadata. A draft is not a published release; npm publication and publishing the GitHub draft are separate decisions. Changes to the Result/config schemas must come with a version change and a migration policy.
+CLI arguments, exit codes and error JSON are pinned by implementation and tests in REL4. Version 0.2.6 is merged and tagged, with a verified GitHub draft pre-release that has not been published. The next release number, 0.2.7, will be assigned when the accumulated changes are prepared for release. A draft is not a published release; npm publication and publishing a GitHub draft are separate decisions. The [release notes template](release-notes-template.md) defines the reusable changelog structure; the release workflow extracts the matching version section. Changes to the Result/config schemas must come with a version change and a migration policy.
 
 ## Write surface inventory
 

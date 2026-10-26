@@ -23,7 +23,7 @@ public documentation lifecycle and evidence-retention policy; [repository layout
 | Where are authored and generated files? | [Repository layout](layout.md) |
 | What rules and vocabulary do we enforce? | [Charter](../../product/rules/references/charter.md), [grammar](../../product/rules/references/grammar.md), [readability contract](../../product/rules/references/readability-contract.md) |
 | Where are historical milestone verdicts and their evidence? | [Plan and harness REL table](plan.md), [status snapshots](status.md), [documentation audit](reviews/2026-10-21-maintainer-docs.md); use the current request or issue to select work |
-| How do issues, PRs and candidate archives move? | [CI/CD](cicd.md), [release contract](release-contract.md) |
+| How are release notes prepared and delivery candidates verified? | [Release notes template](release-notes-template.md), [CI/CD](cicd.md), [release contract](release-contract.md) |
 | What is the longer-term direction? | [Design draft](design.md) |
 
 ## Documentation and evidence lifecycle

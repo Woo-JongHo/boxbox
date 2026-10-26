@@ -20,6 +20,7 @@
 		{ "kind": "enum-member", "hasAxis": "equals", "pattern": "MAP" },
 		{ "kind": "enum-member", "pattern": "LIST" },
 		{ "kind": "call-statements", "pattern": "DO" },
+		{ "kind": "literal-array-rows", "pattern": "LIST" },
 		{ "kind": "assignments", "pattern": "CHANGE" },
 		{ "kind": "case-clause", "pattern": "WHEN" },
 		{ "kind": "guard-statements", "pattern": "WHEN" },

@@ -40,6 +40,10 @@ describe("surface forms — TypeScript", () => {
 		expect(patternOf("typescript", { kind: "enum-member", axes: ["comma=9"              ] })?.pattern).toBe("LIST") ;
 	});
 
+	test("a multiline scalar literal array is LIST", () => {
+		expect(patternOf("typescript", { kind: "literal-array-rows", axes: ["comma=20"] })).toEqual({ pattern: "LIST", alternatives: [] });
+	});
+
 	test("declaration and assignment are different patterns and not ambiguous", () => {
 		expect(patternOf("typescript", { kind: "declaration-equals", axes: [] })).toEqual({ pattern: "DEFINE", alternatives: [] }) ;
 		expect(patternOf("typescript", { kind: "assignments"       , axes: [] })).toEqual({ pattern: "CHANGE", alternatives: [] }) ;
