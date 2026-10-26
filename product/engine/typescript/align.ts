@@ -8,9 +8,9 @@
  * (import rule B) takes the vertical form instead: its arguments one per line under the opening `(`, which only
  * inserts line breaks, so such a group passes the break-preserving variant of the token check.
  */
-import      { isInterfaceDeclaration                     } from "typescript/unstable/ast"            ;
-import type { Node, SourceFile                           } from "typescript/unstable/ast"            ;
-import      { writeFileSync                              } from "node:fs"                            ;
+import      { isInterfaceDeclaration                     } from "typescript/unstable/ast"             ;
+import type { Node, SourceFile                           } from "typescript/unstable/ast"             ;
+import      { writeFileSync                              } from "node:fs"                             ;
 
 import      {
               ROW_KINDS                                ,
@@ -18,14 +18,14 @@ import      {
               runsOf                                   ,
               syntaxKindName                           ,
               verticalCallText                         ,
-                                                         } from "@/typescript/grid-kinds.ts"         ;
+                                                         } from "@/typescript/grid-kinds.ts"          ;
 import type { DetectedRow, RowBoundary                   } from "@/typescript/grid-kinds.ts"          ;
-import      { loadSourceFile, syntacticDiagnostics       } from "@/typescript/load-source-file.ts"   ;
+import      { loadSourceFile, syntacticDiagnostics       } from "@/typescript/load-source-file.ts"    ;
 import      { compareTypeScriptLayout                    } from "@/typescript/layout-preservation.ts" ;
-import      { envelope, summarize                        } from "@/common/result-json.ts"            ;
-import type { ResultGroup, ResultParse                   } from "@/common/result-json.ts"            ;
-import      { updateFileAtomically                       } from "@/common/safe-file.ts"              ;
-import      { preservesTokens, preservesTokensWithBreaks } from "@/typescript/token-preservation.ts" ;
+import      { envelope, summarize                        } from "@/common/result-json.ts"             ;
+import type { ResultGroup, ResultParse                   } from "@/common/result-json.ts"             ;
+import      { updateFileAtomically                       } from "@/common/safe-file.ts"               ;
+import      { preservesTokens, preservesTokensWithBreaks } from "@/typescript/token-preservation.ts"  ;
 
 export interface Edit {
 	readonly start : number ;
@@ -66,17 +66,22 @@ function boundaryLine(source: SourceFile, boundary: { readonly from: number; rea
 }
 
 function mergeInsertions(source: SourceFile, edits: readonly Edit[]): { readonly edits: readonly Edit[]; readonly conflict?: string } {
-	const ordered        = [...edits].sort((left, right) => left.start - right.start || left.end - right.end) ;
-	const merged: Edit[] = []                                                                                 ;
+	const ordered = [...edits].sort((left, right) => left.start - right.start || left.end - right.end);
+
+	const merged: Edit[] = [];
+
 	for (const edit of ordered) {
 		const previous = merged.at(-1);
 		if (previous !== undefined && previous.end === edit.start) {
 			merged[merged.length - 1] = { start: previous.start, end: edit.end, text: `${previous.text}${edit.text}` };
 			continue;
 		}
+
 		if (previous !== undefined && previous.end > edit.start) return { edits: [], conflict: "alignment edits overlap" };
+
 		merged.push(edit);
 	}
+
 	return { edits: merged.filter(edit => source.text.slice(edit.start, edit.end) !== edit.text) };
 }
 
@@ -85,122 +90,217 @@ export function alignRows(source: SourceFile, rows: readonly DetectedRow[]): Ali
 	// and some have only `=`, so collect the precedence of adjacent boundary pairs into a topological order.
 	// If this order breaks, shifts from later-axis edits leak into earlier-axis contracts and never converge.
 	const edges = new Map<string, Set<string>>();
+
 	for (const row of rows) {
 		const byLine = new Map<number | undefined, RowBoundary[]>();
+
 		for (const boundary of row.boundaries) {
 			const line = boundaryLine(source, boundary);
+
 			byLine.set(line, [...(byLine.get(line) ?? []), boundary]);
 		}
-		if (byLine.has(undefined)) return { axes: [], skipped: [], targets: new Map(), edits: [], conflict: "an alignment boundary crosses physical lines" };
+		if (byLine.has(undefined)) return {
+			axes     : []        ,
+			skipped  : []        ,
+			targets  : new Map() ,
+			edits    : []        ,
+			conflict : "an alignment boundary crosses physical lines"
+		};
+
 		for (const sequence of byLine.values()) {
 			sequence.sort((left, right) => left.from - right.from || left.at - right.at);
-		for (let index = 0; index + 1 < sequence.length; index += 1) {
-			const before = sequence[index]!.axis     ;
-			const after  = sequence[index + 1]!.axis ;
-			if (before === after) continue;
-			if (!edges.has(before)) edges.set(before, new Set());
-			edges.get(before)!.add(after);
+			for (let index = 0; index + 1 < sequence.length; index += 1) {
+				const before = sequence[index]!.axis     ;
+				const after  = sequence[index + 1]!.axis ;
+				if (before === after) continue;
+
+				if (!edges.has(before)) edges.set(before, new Set());
+				edges.get(before)!.add(after);
+			}
 		}
 	}
-	}
+
 	const minFromOfAxis = new Map<string, number>();
-	for (const row of rows) for (const boundary of row.boundaries) {
-		minFromOfAxis.set(boundary.axis, Math.min(minFromOfAxis.get(boundary.axis) ?? Number.MAX_SAFE_INTEGER, displayColumn(source, boundary.from)));
-	}
+
+	for (const row of rows)
+		for (const boundary of row.boundaries) {
+			minFromOfAxis.set(
+				boundary.axis,
+				Math.min(
+					minFromOfAxis.get(boundary.axis) ?? Number.MAX_SAFE_INTEGER,
+					displayColumn(source, boundary.from)
+				)
+			);
+		}
+
 	const indegree = new Map<string, number>([...minFromOfAxis.keys()].map(axis => [axis, 0]));
-	for (const next of edges.values()) for (const axis of next) indegree.set(axis, (indegree.get(axis) ?? 0) + 1);
-	const ready               = [...indegree].filter(([, count]) => count === 0).map(([axis]) => axis) ;
-	const axisOrder: string[] = []                                                                     ;
+
+	for (const next of edges.values())
+		for (const axis of next)
+			indegree.set(axis, (indegree.get(axis) ?? 0) + 1);
+
+	const ready = [...indegree].filter(([, count]) => count === 0).map(([axis]) => axis);
+
+	const axisOrder: string[] = [];
+
 	while (ready.length > 0) {
 		ready.sort((left, right) => minFromOfAxis.get(left)! - minFromOfAxis.get(right)! || left.localeCompare(right));
+
 		const axis = ready.shift()!;
+
 		axisOrder.push(axis);
 		for (const next of edges.get(axis) ?? []) {
 			const count = indegree.get(next)! - 1;
+
 			indegree.set(next, count);
 			if (count === 0) ready.push(next);
 		}
 	}
-	if (axisOrder.length !== indegree.size) return { axes: [], skipped: [], targets: new Map(), edits: [], conflict: "alignment axis order contains a cycle" };
-	const shifts                        = new Map<number, number>() ;
-	const edits   : Edit[]              = []                        ;
-	const axes    : string[]            = []                        ;
-	const skipped : string[]            = []                        ;
-	const targets : Map<string, number> = new Map()                 ;
+	if (axisOrder.length !== indegree.size) return {
+		axes     : []        ,
+		skipped  : []        ,
+		targets  : new Map() ,
+		edits    : []        ,
+		conflict : "alignment axis order contains a cycle"
+	};
+
+	const shifts = new Map<number, number>();
+
+	const edits: Edit[] = [];
+
+	const axes    : string[]            = []        ;
+	const skipped : string[]            = []        ;
+	const targets : Map<string, number> = new Map() ;
+
 	for (const axis of axisOrder) {
-		const entries = rows.flatMap((row, index) => row.boundaries
-			.filter(candidate => candidate.axis === axis)
-			.map(boundary => ({ row, index, boundary, line: boundaryLine(source, boundary)! })));
+		const entries = rows.flatMap((row, index) =>
+			row.boundaries
+				.filter(candidate => candidate.axis === axis)
+				.map(boundary => ({
+					row      ,
+					index    ,
+					boundary ,
+
+					line: boundaryLine(source, boundary)!
+				}))
+		);
 		if (entries.length < 2) continue;
+
 		// The target column is set by the farthest anchor (from). Gap axes keep at least one space;
 		// insert axes align at the existing column — an aligned table is never pushed right again.
 		const alignAt = entries.some(entry => entry.boundary.alignAt);
-		if (alignAt && entries.some(entry => !entry.boundary.alignAt)) return { axes, skipped, targets, edits: [], conflict: `axis ${axis} mixes physical token and gap anchors` };
+		if (alignAt && entries.some(entry => !entry.boundary.alignAt)) return {
+			axes          ,
+			skipped       ,
+			targets       ,
+			edits    : [] ,
+			conflict : `axis ${axis} mixes physical token and gap anchors`
+		};
+
 		const minimums = entries.map(entry => entry.boundary.minimumGap ?? (entry.boundary.insert ? 0 : 1));
-		const target = Math.max(...entries.map((entry, index) => {
-			const shift  = shifts.get(entry.line) ?? 0                                                                                                     ;
-			const from   = displayColumn(source, entry.boundary.from) + shift                                                                              ;
-			const anchor = (entry.boundary.alignColumn ?? displayColumn(source, entry.boundary.alignAt ? entry.boundary.at : entry.boundary.from)) + shift ;
-			return alignAt ? Math.max(anchor, from + minimums[index]!) : from + minimums[index]!;
-		}));
-		const pads   = entries.map(entry => target - displayColumn(source, entry.boundary.from) - (shifts.get(entry.line) ?? 0));
+
+		const target = Math.max(
+			...entries.map((entry, index) => {
+				const shift = shifts.get(entry.line) ?? 0                        ;
+				const from  = displayColumn(source, entry.boundary.from) + shift ;
+
+				const anchor = (
+					entry.boundary.alignColumn
+					?? displayColumn(source, entry.boundary.alignAt ? entry.boundary.at : entry.boundary.from)
+				) + shift;
+
+				return alignAt ? Math.max(anchor, from + minimums[index]!) : from + minimums[index]!;
+			})
+		);
+
+		const pads = entries.map(entry =>
+			target - displayColumn(source, entry.boundary.from) - (shifts.get(entry.line) ?? 0)
+		);
 		if (pads.some((pad, index) => !entries[index]!.boundary.measureOnly && pad < minimums[index]!)) {
 			skipped.push(axis);
 			continue;
 		}
+
 		axes.push(`${axis}=${target}`);
 		targets.set(axis, target);
 		for (const [position, entry] of entries.entries()) {
 			const boundary = entry.boundary  ;
 			const pad      = pads[position]! ;
 			if (boundary.measureOnly) continue;
+
 			const text = " ".repeat(pad);
 			if (source.text.slice(boundary.from, boundary.at) !== text) edits.push({ start: boundary.from, end: boundary.at, text });
+
 			const oldWidth = displayColumn(source, boundary.at) - displayColumn(source, boundary.from);
+
 			shifts.set(entry.line, (shifts.get(entry.line) ?? 0) + pad - oldWidth);
 		}
 	}
+
 	const normalized = mergeInsertions(source, edits);
+
 	return { axes, skipped, targets, edits: normalized.edits, conflict: normalized.conflict };
 }
 
 function buildGroup(source: SourceFile, kindName: string, groupName: string, run: readonly DetectedRow[], context: string, depth: number): TableGroup {
 	const straight = run.filter(row => row.vertical === undefined) ;
 	const marked   = run.filter(row => row.vertical !== undefined) ;
-	const aligned  = alignRows (source, straight                 ) ;
+
+	const aligned = alignRows(source, straight);
+
 	// The vertical rows take the table's `=` column; with no aligned equals axis, the widest anchor of the run sets it.
-	const equalsRows   = run.filter(row => row.boundaries.some(boundary => boundary.axis === "equals"))                                                                                    ;
-	const equalsTarget = aligned.targets.get("equals") ?? Math.max(...equalsRows.map(row => displayColumn(source, row.boundaries.find(boundary => boundary.axis === "equals")!.from))) + 1 ;
-	const newline      = source.text.includes("\r\n") ? "\r\n" : "\n"                                                                                                                      ;
+	const equalsRows = run.filter(row =>
+		row.boundaries.some(boundary => boundary.axis === "equals")
+	);
+
+	const equalsTarget = aligned.targets.get("equals")
+		?? Math.max(...equalsRows.map(row =>
+			displayColumn(source, row.boundaries.find(boundary => boundary.axis === "equals")!.from)
+		)) + 1;
+
+	const newline = source.text.includes("\r\n") ? "\r\n" : "\n";
+
 	// The render carries the statement's own indentation, so the edit replaces the whole line's code, from its start.
 	const verticalEdits = marked.map(row => {
 		const start     = row.node.getStart                     (source                                             ) ;
 		const lineStart = source  .getPositionOfLineAndCharacter(source.getLineAndCharacterOfPosition(start).line, 0) ;
+
 		return { start: lineStart, end: row.node.getEnd(), text: verticalCallText(source, row, equalsTarget, newline) };
-	})                                                                                                                                                                                      ;
-	const edits         = [...aligned.edits, ...verticalEdits]                                                                                                                              ;
+	});
+
+	const edits = [...aligned.edits, ...verticalEdits];
+
 	if (process.env.DEBUG_ALIGN) {
 		for (const row of run) {
 			const line = source.getLineAndCharacterOfPosition(row.node.getStart(source)).line + 1     ;
 			const text = source.text.slice(row.node.getStart(source), row.node.getEnd()).slice(0, 50) ;
+
 			console.error(`    row line=${line} [${text}] ${row.boundaries.map(b => `${b.axis}(from=${displayColumn(source, b.from)},at=${displayColumn(source, b.at)})`).join(" ")}`);
 		}
 	}
+
 	const first = run[0]!.node     ;
 	const last  = run.at(-1)!.node ;
+
 	return {
-		kind      : groupName                                                             ,
+		kind : groupName,
+
 		startLine : source.getLineAndCharacterOfPosition(first.getStart(source)).line + 1 ,
 		endLine   : source.getLineAndCharacterOfPosition(last.getEnd() - 1).line + 1      ,
 		rowCount  : run.length                                                            ,
-		...(kindName === "return-guards" ? { rowLines: run.map(row => source.getLineAndCharacterOfPosition(row.node.getStart(source)).line + 1) } : {}),
-		vertical : marked.length    ,
-		context  : context          ,
-		depth    : depth            ,
+
+		...(kindName === "return-guards"
+			? { rowLines: run.map(row => source.getLineAndCharacterOfPosition(row.node.getStart(source)).line + 1) }
+			: {}),
+
+		vertical : marked.length ,
+		context  : context       ,
+		depth    : depth         ,
+
 		axes     : aligned.axes     ,
 		skipped  : aligned.skipped  ,
 		conflict : aligned.conflict ,
-		edits,
+		edits                       ,
 	};
 }
 
@@ -237,7 +337,15 @@ function collectCompressed(source: SourceFile, node: Node, result: CollectResult
 	});
 }
 
-function collect(source: SourceFile, node: Node, minRows: number, seen: Set<Node>, explainLine: number | undefined, result: CollectResult, path: readonly string[] = []): void {
+function collect(
+	source      : SourceFile         ,
+	node        : Node               ,
+	minRows     : number             ,
+	seen        : Set<Node>          ,
+	explainLine : number | undefined ,
+	result      : CollectResult      ,
+	path        : readonly string[] = []
+): void {
 	const isContainer = ROW_KINDS.some(kind => kind.containers(node, seen) !== undefined) ;
 	const childPath   = isContainer ? [...path, syntaxKindName(node)] : path              ;
 	for (const kind of ROW_KINDS) {
@@ -392,11 +500,17 @@ export async function runTypeScriptAlign(args: readonly string[], options: TypeS
 	const result: CollectResult = { groups: [], candidates: [], compressed: [] };
 	collect(source, source, minRows, new Set<Node>(), explainLine === undefined ? undefined : explainLine, result);
 	collectCompressed(source, source, result);
-	const detected          = [...result.groups].sort((left, right) => left.startLine - right.startLine)                                                                  ;
-	const overlaps          = overlapConflicts(detected)                                                                                                                  ;
-	const refused           = detected.filter(group => group.conflict !== undefined || overlaps.has(group) || (group.edits.length > 0 && !groupPreserved(source, group))) ;
-	const groups            = detected.filter(group => !refused.includes(group))                                                                                          ;
-	const compressedMembers = result.compressed.reduce((count, entry) => count + entry.members, 0)                                                                        ;
+	const detected = [...result.groups].sort((left, right) => left.startLine - right.startLine);
+
+	const overlaps = overlapConflicts(detected);
+
+	const refused = detected.filter(group =>
+		group.conflict !== undefined || overlaps.has(group) || (group.edits.length > 0 && !groupPreserved(source, group))
+	);
+
+	const groups = detected.filter(group => !refused.includes(group));
+
+	const compressedMembers = result.compressed.reduce((count, entry) => count + entry.members, 0);
 
 	const totalEdits = groups.reduce((count, group) => count + group.edits.length, 0);
 	say(`align-tables file=${relative} groups=${groups.length} misaligned=${groups.filter(group => group.edits.length > 0).length} edits=${totalEdits} compressed=${result.compressed.length} compressed-members=${compressedMembers} refused=${refused.length}${write ? " write=true" : ""}`);
@@ -429,11 +543,53 @@ export async function runTypeScriptAlign(args: readonly string[], options: TypeS
 	}
 	const report = (parse: ResultParse): void => {
 		if (!json) return;
+
 		const resultGroups: ResultGroup[] = [
-			...groups.map(group => ({ kind: group.kind, startLine: group.startLine, endLine: group.endLine, rows: group.rowCount, rowLines: group.rowLines, axes: group.axes, state: group.edits.length > 0 ? "FIXABLE" as const : "PASS" as const, edits: group.edits.length, context: group.context, depth: group.depth })),
-			...refused.map(group => ({ kind: group.kind, startLine: group.startLine, endLine: group.endLine, rows: group.rowCount, rowLines: group.rowLines, axes: group.axes, state: "REFUSE" as const, edits: group.edits.length, context: group.context, depth: group.depth })),
-			...result.compressed.map(entry => ({ kind: "interface-members-compressed", startLine: entry.line, endLine: entry.line, rows: entry.members, axes: [], state: "SUGGEST" as const, edits: 0 })),
+			...groups.map(group => ({
+				kind : group.kind,
+
+				startLine : group.startLine ,
+				endLine   : group.endLine   ,
+				rows      : group.rowCount  ,
+				rowLines  : group.rowLines  ,
+
+				axes  : group.axes         ,
+				state : group.edits.length > 0
+					? "FIXABLE" as const
+					: "PASS" as const,
+				edits : group.edits.length ,
+
+				context : group.context,
+				depth   : group.depth
+			})),
+			...refused.map(group => ({
+				kind : group.kind,
+
+				startLine : group.startLine ,
+				endLine   : group.endLine   ,
+				rows      : group.rowCount  ,
+				rowLines  : group.rowLines  ,
+
+				axes  : group.axes         ,
+				state : "REFUSE" as const  ,
+				edits : group.edits.length ,
+
+				context : group.context,
+				depth   : group.depth
+			})),
+			...result.compressed.map(entry => ({
+				kind : "interface-members-compressed",
+
+				startLine : entry.line    ,
+				endLine   : entry.line    ,
+				rows      : entry.members ,
+
+				axes  : []                 ,
+				state : "SUGGEST" as const ,
+				edits : 0
+			})),
 		].sort((left, right) => left.startLine - right.startLine);
+
 		emit(JSON.stringify(envelope([{ file: relative, language: "typescript", mode: write ? "write" : "check", summary: summarize(resultGroups), groups: resultGroups, parse }]), null, 2));
 	};
 	if (result.compressed.length > 0) { report({ status: "not-run", tool: "typescript" }); return 1; }

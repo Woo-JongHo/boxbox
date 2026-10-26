@@ -27,8 +27,8 @@ import type {
 import      { assignmentEnvelopes } from "@/python/assignment-envelope.ts" ;
 
 export const PYTHON_SYNTAX: CodeSyntax = {
-	lineComments  : ["#"],
-	blockComments : [],
+	lineComments  : ["#"] ,
+	blockComments : []    ,
 	strings       : [
 		{ open : '"""' , close : '"""' , escape : true },
 		{ open : "'''" , close : "'''" , escape : true },
@@ -71,11 +71,11 @@ function isValueCell(masked: string): boolean {
 		else if (character === "," && depth === 0) return false;
 		if (depth < 0) return false;
 	}
-	return depth === 0
-		&& masked.trim() !== ""
-		&& !masked.startsWith("=")
-		&& !/[;\\]/u.test(masked)
-		&& !/\s$/u.test(masked);
+	return    depth         === 0
+		  &&  masked.trim() !== ""
+		  && !masked.startsWith("=")
+		  && !/[;\\]/u.test(masked)
+		  && !/\s$/u.test(masked);
 }
 
 /** Statement starts that cannot be table rows — control flow, declarations, imports. match/case are soft keywords and excluded. */
@@ -133,54 +133,93 @@ function bundleProfile(code: string, masked: string): RowProfile | null {
 	const match   = BUNDLED.exec(masked) ;
 	const indices = match?.indices       ;
 	if (!match || !indices) return null;
+
 	const open  = match[2] ;
 	const close = match[4] ;
 	if ((open === "[") !== (close === "]")) return null; // mismatched bracket pair is not a bundle
+
 	const interior = indices[3] ;
 	const trailer  = indices[5] ;
 	if (!interior || !trailer)                                      return null;
+
 	if (BUNDLE_UNSAFE.test(masked.slice(interior[0], interior[1]))) return null;
 
 	const cells = cellsIn(code, masked, interior[0], interior[1]);
 	if (!cells)                                                     return null;
 
-	const slots: Slot[] = [{ axis: open === "[" ? "open[" : "open(", text: open, gapBefore: "" }];
+	const slots: Slot[] = [{
+		axis      : open === "[" ? "open[" : "open(",
+		text      : open,
+		gapBefore : ""
+	}];
+
 	cells.forEach((cell, position) => {
 		// The first cell attaches directly to the opening bracket (gap ""); other cells get one space after the comma.
 		slots.push({ axis: position === 0 ? "cell" : "arg", text: cell.text, gapBefore: cell.gap });
 		if (position < cells.length - 1) slots.push({ axis: "comma", text: ",", gapBefore: cell.commaGap });
 	});
-	slots.push({ axis: close === "]" ? "close]" : "close)", text: close + slotAt(code, match, 5), gapBefore: code.slice(cells[cells.length - 1].end, interior[1]) });
+	slots.push({
+		axis      : close === "]" ? "close]" : "close)" ,
+		text      : close + slotAt(code, match, 5)      ,
+		gapBefore : code.slice(cells[cells.length - 1].end, interior[1])
+	});
+
 	return { indent: slotAt(code, match, 1), slots };
 }
 
 /** Cuts `[start, end)` into cells at the mask's commas and validates every cell as a scalar; null when a cell fails. */
-function cellsIn(code: string, masked: string, start: number, end: number): Array<{ text: string; gap: string; commaGap: string; end: number }> | null {
-	const bounds: Array<{ start: number; end: number }> = []    ;
-	let boundStart                                      = start ;
+function cellsIn(
+	code   : string ,
+	masked : string ,
+	start  : number ,
+	end    : number
+): Array<{
+	text     : string ;
+	gap      : string ;
+	commaGap : string ;
+	end      : number
+}> | null {
+	const bounds: Array<{ start: number; end: number }> = [];
+
+	let boundStart = start;
+
 	for (let index = start; index < end; index += 1) {
 		if (masked[index] === ",") {
 			bounds.push({ start: boundStart, end: index });
+
 			boundStart = index + 1;
 		}
 	}
+
 	bounds.push({ start: boundStart, end });
 	if (bounds.length < 2) return null; // a row with a single cell is not a bundle table
 
 	const cells: Array<{ text: string; gap: string; commaGap: string; end: number }> = [];
+
 	for (const bound of bounds) {
-		const raw  = code.slice(bound.start, bound.end) ;
-		const text = raw .trim ()                       ;
+		const raw = code.slice(bound.start, bound.end);
+
+		const text = raw.trim();
 		if (text === "") return null; // empty cell from consecutive commas or after a trailing comma
+
 		const cellStart = bound.start + raw.indexOf(text);
+
 		if (text.startsWith('"') || text.startsWith("'")) {
 			if (!BUNDLE_STRING.test(text)) return null;
 		} else if (masked.slice(cellStart, cellStart + text.length) !== text || !BUNDLE_SCALAR.test(text)) {
 			return null; // a cell with an f-string prefix or string fragment left is not a scalar
 		}
+
 		const cellEnd = cellStart + text.length;
-		cells.push({ text, gap: code.slice(bound.start, cellStart), commaGap: code.slice(cellEnd, bound.end), end: cellEnd });
+
+		cells.push({
+			text,
+			gap      : code.slice(bound.start, cellStart) ,
+			commaGap : code.slice(cellEnd, bound.end)     ,
+			end      : cellEnd
+		});
 	}
+
 	return cells;
 }
 
@@ -193,12 +232,16 @@ function cellsIn(code: string, masked: string, start: number, end: number): Arra
  * not a call row and stays refused with the other unsafe values.
  */
 function assignedCallProfile(code: string, masked: string): RowProfile | null {
-	const match   = /^([ \t]*)([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)(\s*)=(\s*)([A-Za-z_][A-Za-z0-9_.]*)(\s*)\((.*)\)[ \t]*$/du.exec(masked) ;
-	const indices = match?.indices                                                                                                                          ;
+	const match =
+		/^([ \t]*)([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)(\s*)=(\s*)([A-Za-z_][A-Za-z0-9_.]*)(\s*)\((.*)\)[ \t]*$/du.exec(masked);
+
+	const indices = match?.indices;
 	if (!match || !indices) return null;
+
 	const nameRange = indices[2] ;
 	const inner     = indices[7] ;
 	if (!nameRange || !inner) return null;
+
 	const callee = slotAt(code, match, 5);
 
 	const slots: Slot[] = [
@@ -207,37 +250,64 @@ function assignedCallProfile(code: string, masked: string): RowProfile | null {
 		{ axis : `call:${callee}` , text : callee                 , gapBefore : slotAt(code, match, 4) },
 		{ axis : "open("          , text : "("                    , gapBefore : slotAt(code, match, 6) },
 	];
-	const interiorText                    = masked.slice(inner[0], inner[1])                                         ;
-	const trimmedStart                    = inner[0] + interiorText.length - interiorText.trimStart().length         ;
-	const trimmedEnd                      = inner[0] + interiorText.trimEnd().length                                 ;
-	const trimmed                         = masked.slice(trimmedStart, trimmedEnd)                                   ;
-	const OPEN_OF: Record<string, string> = { "}": "{", "]": "[", ")": "(" }                                         ;
-	const wrapOpen                        = OPEN_OF[trimmed.at(-1) ?? ""]                                            ;
-	const isWrapped                       = trimmed.length >= 2 && wrapOpen !== undefined && trimmed[0] === wrapOpen ;
-	let contentEnd                        = inner[1]                                                                 ;
+
+	const interiorText = masked.slice(inner[0], inner[1]);
+
+	const trimmedStart = inner[0] + interiorText.length - interiorText.trimStart().length ;
+	const trimmedEnd   = inner[0] + interiorText.trimEnd().length                         ;
+
+	const trimmed = masked.slice(trimmedStart, trimmedEnd);
+
+	const OPEN_OF: Record<string, string> = { "}": "{", "]": "[", ")": "(" };
+
+	const wrapOpen = OPEN_OF[trimmed.at(-1) ?? ""];
+
+	const isWrapped = trimmed.length >= 2 && wrapOpen !== undefined && trimmed[0] === wrapOpen;
+
+	let contentEnd = inner[1];
+
 	if (isWrapped) {
 		const cells = BUNDLE_UNSAFE.test(masked.slice(trimmedStart + 1, trimmedEnd - 1))
 			? null
 			: cellsIn(code, masked, trimmedStart + 1, trimmedEnd - 1);
 		if (!cells) return null;
+
 		const wrap = trimmed[0]!;
-		slots.push({ axis: wrap === "{" ? "open{" : wrap === "[" ? "open[" : "open(", text: code[trimmedStart] ?? "", gapBefore: code.slice(inner[0], trimmedStart) });
+
+		slots.push({
+			axis      : wrap === "{" ? "open{" : wrap === "[" ? "open[" : "open(" ,
+			text      : code[trimmedStart] ?? ""                                  ,
+			gapBefore : code.slice(inner[0], trimmedStart)
+		});
+
 		cells.forEach((cell, position) => {
 			slots.push({ axis: position === 0 ? "cell" : "arg", text: cell.text, gapBefore: cell.gap });
 			if (position < cells.length - 1) slots.push({ axis: "comma", text: ",", gapBefore: cell.commaGap });
 		});
-		slots.push({ axis: trimmed.at(-1) === "}" ? "close}" : trimmed.at(-1) === "]" ? "close]" : "close)", text: code[trimmedEnd - 1] ?? "", gapBefore: code.slice(cells[cells.length - 1].end, trimmedEnd - 1) });
+
+		slots.push({
+			axis      : trimmed.at(-1) === "}" ? "close}"
+				: trimmed.at(-1) === "]" ? "close]"
+				: "close)",
+			text      : code[trimmedEnd - 1] ?? "",
+			gapBefore : code.slice(cells[cells.length - 1].end, trimmedEnd - 1)
+		});
+
 		contentEnd = trimmedEnd;
 	} else {
 		const cells = cellsIn(code, masked, inner[0], inner[1]);
 		if (!cells) return null;
+
 		cells.forEach((cell, position) => {
 			slots.push({ axis: position === 0 ? "cell" : "arg", text: cell.text, gapBefore: cell.gap });
 			if (position < cells.length - 1) slots.push({ axis: "comma", text: ",", gapBefore: cell.commaGap });
 		});
+
 		contentEnd = cells[cells.length - 1]!.end;
 	}
+
 	slots.push({ axis: "close)", text: ")", gapBefore: code.slice(contentEnd, inner[1]) });
+
 	return { indent: slotAt(code, match, 1), slots };
 }
 
@@ -250,9 +320,9 @@ function typedProfile(code: string, masked: string): RowProfile | null {
 	if (annotated) {
 		const typeRange  = annotated.indices![5]! ;
 		const valueRange = annotated.indices![8]! ;
-		if (slotAt(code, annotated, 9) !== "")                       return null;
+		if (slotAt(code, annotated, 9) !== ""                      ) return null;
 		if (!isAnnotation(masked.slice(typeRange[0], typeRange[1]))) return null;
-		if (isUnsafe(masked.slice(valueRange[0], valueRange[1])))    return null;
+		if (isUnsafe(masked.slice(valueRange[0], valueRange[1]))   ) return null;
 		const value = valueSlot(code, masked, annotated, 7, 8);
 		if (!value)                                                  return null;
 		return {
@@ -393,13 +463,36 @@ export const PYTHON_ALIGNER: LineProfiler = {
 	// comma attaches to the cell. Bundle rows attach the
 	// first cell to the opening bracket and attach close too, so the closing bracket shares the last cell's width.
 	// The call layer's wrapped bundle attaches its brackets to the call the same way.
-	canonicalGaps : { name: " ", attribute: " ", "chain-target": " ", key: " ", type: " ", value: " ", colon: " ", equal: " ", comma: "", cell: "", arg: " ", "open[": "", "open(": "", "open{": "", "close]": "", "close)": "", "close}": "" },
+	canonicalGaps : {
+		name           : " " ,
+		attribute      : " " ,
+		"chain-target" : " " ,
+		key            : " " ,
+		type           : " " ,
+		value          : " " ,
+
+		colon : " " ,
+		equal : " " ,
+		comma : ""  ,
+
+		cell : ""  ,
+		arg  : " " ,
+
+		"open[" : "" ,
+		"open(" : "" ,
+		"open{" : "" ,
+
+		"close]" : "" ,
+		"close)" : "" ,
+		"close}" : ""
+	},
 	// A field without a default and a field with one are the same role: `name : type` joins `name : type = value`.
-	prefixRuns : true                ,
+	prefixRuns : true,
 	// A parameter list's trailing comma closes every row; it forms its own column after the longest row.
-	terminalAxes : ["comma"]           ,
+	terminalAxes : ["comma"],
 	// `*,` and `/,` mark keyword-only and positional-only parameters inside one parameter table.
-	transparentRow : (masked: string): boolean => /^[ \t]*[*/][ \t]*,$/u.test(masked) ,
-	profile        : profilePython                                                    ,
-	project        : assignmentEnvelopes                                              ,
+	transparentRow : (masked: string): boolean => /^[ \t]*[*/][ \t]*,$/u.test(masked),
+
+	profile : profilePython       ,
+	project : assignmentEnvelopes ,
 };
