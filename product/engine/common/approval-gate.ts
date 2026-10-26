@@ -83,10 +83,10 @@ const LAYER_ORDER: readonly ConventionLayer[] = ["project", "user", "preset"];
 
 /** A relative path leaves its base when it is `..`, starts with `../` or `..\\`, or is absolute. */
 export const escapesRoot = (relativePath: string): boolean =>
-       relativePath === ".."
-    || relativePath.startsWith("../")
-    || relativePath.startsWith("..\\")
-    || isAbsolute(relativePath);
+	relativePath === ".."
+	|| relativePath.startsWith("../")
+	|| relativePath.startsWith("..\\")
+	|| isAbsolute(relativePath);
 
 const specificity = (scope: string): number => scope.replace(/[*?]/gu, "").length;
 

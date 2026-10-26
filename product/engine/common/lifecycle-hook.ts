@@ -32,10 +32,10 @@ function snapshotExclusions(root: string): ReadonlySet<string> {
 	const namespace   = projectReceiptNamespace(projectRoot           ) ;
 	const path        = relative               (projectRoot, namespace) ;
 	if (
-           path === ""
-        || path === ".."
-        || path.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`)
-        || isAbsolute(path)
+		path === ""
+		|| path === ".."
+		|| path.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`)
+		|| isAbsolute(path)
 	)
 		return new Set();
 	return new Set([namespace]);
@@ -100,7 +100,7 @@ export function installHooks(args: readonly string[]): number {
 	if (args[0] !== "install" || !["codex", "claude"].includes(args[1] ?? "")) throw new Error("Expected hooks install codex|claude --root <absolute-path>");
 	const root     = rootOf(args.slice(2))                                           ;
 	const host     = args[1]                                                         ;
-	const folder   = join(root  , host === "codex" ? ".codex"     : ".claude"      ) ;
+	const folder   = join(root, host === "codex" ? ".codex" : ".claude")             ;
 	const path     = join(folder, host === "codex" ? "hooks.json" : "settings.json") ;
 	const document = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : {}  ;
 	const quote    = (value: string) => "'" + value.replaceAll("'", "'\\''") + "'"   ;

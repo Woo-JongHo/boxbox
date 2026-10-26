@@ -96,11 +96,11 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 			const spec  = syntax.strings.find(candidate => candidate.open === openToken) ;
 			const spec0 = spec as StringSpec                                             ;
 			const end = consumeString(
-				source                  ,
-				masked                  ,
-				index                   ,
+				source,
+				masked,
+				index,
 				index + openToken.length,
-				spec0.close             ,
+				spec0.close,
 				spec0.escape
 			);
 			// A string may span lines (triple quotes, backslash-newline). Its newlines still start lines, or every later

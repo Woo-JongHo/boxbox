@@ -8,9 +8,9 @@
  * (import rule B) takes the vertical form instead: its arguments one per line under the opening `(`, which only
  * inserts line breaks, so such a group passes the break-preserving variant of the token check.
  */
-import      { isInterfaceDeclaration                     } from "typescript/unstable/ast"             ;
-import type { Node, SourceFile                           } from "typescript/unstable/ast"             ;
-import      { writeFileSync                              } from "node:fs"                             ;
+import      { isInterfaceDeclaration                     } from "typescript/unstable/ast"            ;
+import type { Node, SourceFile                           } from "typescript/unstable/ast"            ;
+import      { writeFileSync                              } from "node:fs"                            ;
 
 import      {
               ROW_KINDS                                ,
@@ -18,14 +18,14 @@ import      {
               runsOf                                   ,
               syntaxKindName                           ,
               verticalCallText                         ,
-                                                         } from "@/typescript/grid-kinds.ts"          ;
+                                                         } from "@/typescript/grid-kinds.ts"         ;
 import type { DetectedRow, RowBoundary                   } from "@/typescript/grid-kinds.ts"          ;
-import      { loadSourceFile, syntacticDiagnostics       } from "@/typescript/load-source-file.ts"    ;
+import      { loadSourceFile, syntacticDiagnostics       } from "@/typescript/load-source-file.ts"   ;
 import      { compareTypeScriptLayout                    } from "@/typescript/layout-preservation.ts" ;
-import      { envelope, summarize                        } from "@/common/result-json.ts"             ;
-import type { ResultGroup, ResultParse                   } from "@/common/result-json.ts"             ;
-import      { updateFileAtomically                       } from "@/common/safe-file.ts"               ;
-import      { preservesTokens, preservesTokensWithBreaks } from "@/typescript/token-preservation.ts"  ;
+import      { envelope, summarize                        } from "@/common/result-json.ts"            ;
+import type { ResultGroup, ResultParse                   } from "@/common/result-json.ts"            ;
+import      { updateFileAtomically                       } from "@/common/safe-file.ts"              ;
+import      { preservesTokens, preservesTokensWithBreaks } from "@/typescript/token-preservation.ts" ;
 
 export interface Edit {
 	readonly start : number ;
@@ -94,14 +94,14 @@ export function alignRows(source: SourceFile, rows: readonly DetectedRow[]): Ali
 		if (byLine.has(undefined)) return { axes: [], skipped: [], targets: new Map(), edits: [], conflict: "an alignment boundary crosses physical lines" };
 		for (const sequence of byLine.values()) {
 			sequence.sort((left, right) => left.from - right.from || left.at - right.at);
-			for (let index = 0; index + 1 < sequence.length; index += 1) {
-				const before = sequence[index]!.axis     ;
-				const after  = sequence[index + 1]!.axis ;
-				if (before === after) continue;
-				if (!edges.has(before)) edges.set(before, new Set());
-				edges.get(before)!.add(after);
-			}
+		for (let index = 0; index + 1 < sequence.length; index += 1) {
+			const before = sequence[index]!.axis     ;
+			const after  = sequence[index + 1]!.axis ;
+			if (before === after) continue;
+			if (!edges.has(before)) edges.set(before, new Set());
+			edges.get(before)!.add(after);
 		}
+	}
 	}
 	const minFromOfAxis = new Map<string, number>();
 	for (const row of rows) for (const boundary of row.boundaries) {
@@ -200,7 +200,7 @@ function buildGroup(source: SourceFile, kindName: string, groupName: string, run
 		axes     : aligned.axes     ,
 		skipped  : aligned.skipped  ,
 		conflict : aligned.conflict ,
-		edits                       ,
+		edits,
 	};
 }
 

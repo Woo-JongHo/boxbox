@@ -31,9 +31,9 @@ export const sha256 = (bytes: string | Buffer): string => createHash("sha256").u
 export function lintConfig(raw: string): LintConfig {
 	const value = JSON.parse(raw);
 	if (
-            value?.schemaVersion !== 1
-        || !/^\d+\.\d+\.\d+$/.test(value.checker?.version ?? "")
-        || !/^[a-f0-9]{40}$/.test(value.checker?.commit ?? "")
+		value?.schemaVersion !== 1
+		|| !/^\d+\.\d+\.\d+$/.test(value.checker?.version ?? "")
+		|| !/^[a-f0-9]{40}$/.test(value.checker?.commit ?? "")
 	) {
 		throw new Error("Invalid lint configuration: expected schema 1, checker version and full commit SHA");
 	}
@@ -41,10 +41,10 @@ export function lintConfig(raw: string): LintConfig {
 	if (
 		!Array.isArray(value.exclude)
 		|| value.exclude.some((path: unknown) =>
-                typeof path !== "string"
-            || !path
-            ||  path.startsWith("/")
-            ||  path.split("/").includes("..")
+			typeof path !== "string"
+			|| !path
+			|| path.startsWith("/")
+			|| path.split("/").includes("..")
 		)
 	) {
 		throw new Error("Invalid lint exclusion paths");
@@ -78,12 +78,12 @@ export function invoke(
 	input?: Buffer
 ): Invocation {
 	const result = spawnSync(command, [...args], {
-		cwd                ,
-		env                ,
-		input              ,
-		encoding  : "utf8" ,
-		timeout            ,
-		maxBuffer : 32 * 1024 * 1024
+		cwd,
+		env,
+		input,
+		encoding: "utf8",
+		timeout,
+		maxBuffer: 32 * 1024 * 1024
 	});
 
 	return {
@@ -136,8 +136,8 @@ export function prepareChecker(root: string, directory: string, config: LintConf
 	if (version.stdout.trim() !== config.checker.version) throw new Error("Built checker version mismatch");
 
 	return {
-		entry ,
-		env   ,
+		entry,
+		env,
 		identity: {
 			...config.checker,
 			tree         : git(root, ["rev-parse", `${commit}^{tree}`]).toString().trim() ,
@@ -176,36 +176,36 @@ export function judge(result: Invocation, file: string, language: string): Judgm
 	const checked = body.results[0] ;
 	const syntax  = body.syntax     ;
 	if (
-		   !object(checked)
-		||  checked.file     !== file
-		||  checked.language !== language
-		||  checked.mode     !== "check"
+		!object(checked)
+		|| checked.file     !== file
+		|| checked.language !== language
+		|| checked.mode     !== "check"
 		|| !Array.isArray(checked.groups)
 		|| !object(checked.summary)
 	)
 		return failure("Invalid file result identity or shape");
 
 	if (
-		   !["valid", "invalid", "error"].includes(syntax.status)
-		||  typeof syntax.tool !== "string"
+		!["valid", "invalid", "error"].includes(syntax.status)
+		|| typeof syntax.tool !== "string"
 		|| !strings(syntax.diagnostics)
 	)
 		return failure("Invalid syntax result");
 	if (
-		   !object(checked.parse)
+		!object(checked.parse)
 		|| !["not-run", "ok", "skipped", "changed"].includes(checked.parse.status)
-		||  typeof checked.parse.tool !== "string"
+		|| typeof checked.parse.tool !== "string"
 	)
 		return failure("Invalid parser result");
 
 	for (const group of checked.groups) {
 		if (
-			   !object(group)
-			||  typeof group.kind !== "string"
+			!object(group)
+			|| typeof group.kind !== "string"
 			|| !count(group.startLine)
-			||  group.startLine < 1
+			|| group.startLine < 1
 			|| !count(group.endLine)
-			||  group.endLine < group.startLine
+			|| group.endLine < group.startLine
 			|| !count(group.rows)
 			|| !strings(group.axes)
 			|| !["PASS", "FIXABLE", "SUGGEST", "REFUSE"].includes(group.state)
@@ -229,27 +229,27 @@ export function judge(result: Invocation, file: string, language: string): Judgm
 	if (
 		!Array.isArray(unsupported)
 		|| unsupported.some(item =>
-			   !object(item)
+			!object(item)
 			|| !count(item.line)
-			||  item.line < 1
-			||  typeof item.reason !== "string"
+			|| item.line < 1
+			|| typeof item.reason !== "string"
 		)
 	)
 		return failure("Invalid unsupported ranges");
 
-	const unsafe =    syntax.status        !== "valid"
-                   || syntax.diagnostics.length > 0
-                   || totals.refused > 0
-                   || checked.parse.status === "skipped"
-                   || checked.parse.status === "changed";
+	const unsafe = syntax.status !== "valid"
+		|| syntax.diagnostics.length > 0
+		|| totals.refused > 0
+		|| checked.parse.status === "skipped"
+		|| checked.parse.status === "changed";
 	const expected = unsafe ? 2 : totals.misaligned > 0 ? 1 : 0;
 	if (result.status !== expected)
 		return failure(`Checker exit/result mismatch: exit=${result.status}, expected=${expected}`);
 
 	return {
-		status   : unsafe ? "error" : totals.misaligned > 0 ? "violation" : "pass" ,
-		noGroups : groups.length === 0                                             ,
-		unsupported                                                                ,
+		status: unsafe ? "error" : totals.misaligned > 0 ? "violation" : "pass",
+		noGroups: groups.length === 0,
+		unsupported,
 		...(unsafe ? { detail: `Syntax or safety refusal: ${JSON.stringify(syntax)}` } : {}),
 		result: body,
 	};

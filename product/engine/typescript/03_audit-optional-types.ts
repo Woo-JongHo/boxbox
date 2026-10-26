@@ -58,7 +58,7 @@ function diagnostic(match: RegExpMatchArray): Diagnostic {
 	const code    = match[4] ;
 	const message = match[5] ;
 	if (
-		   !file
+		!file
 		|| !line
 		|| !column
 		|| !code
@@ -69,8 +69,8 @@ function diagnostic(match: RegExpMatchArray): Diagnostic {
 		file   : file.replaceAll("\\", "/").replace(/^\.\//u, "") ,
 		line   : Number(line)                                     ,
 		column : Number(column)                                   ,
-		code    ,
-		message ,
+		code,
+		message,
 	};
 }
 

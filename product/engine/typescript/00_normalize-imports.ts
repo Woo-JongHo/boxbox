@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
-import      { readFileSync, writeFileSync } from "node:fs"                             ;
-import      { relative                    } from "node:path"                           ;
+import      { readFileSync, writeFileSync } from "node:fs"                          ;
+import      { relative                    } from "node:path"                        ;
 
-import      { displayWidth                } from "@/common/display-width.ts"           ;
+import      { displayWidth                } from "@/common/display-width.ts"        ;
 import      { updateFileAtomically        } from "@/common/safe-file.ts"               ;
 import      { compareTypeScriptLayout     } from "@/typescript/layout-preservation.ts" ;
-import      { repositoryFile              } from "@/typescript/load-source-file.ts"    ;
+import      { repositoryFile              } from "@/typescript/load-source-file.ts" ;
 
 interface ImportRow {
 	readonly text  : string ;
@@ -150,14 +150,14 @@ function parseImportRow(row: string): ParsedImport | undefined {
 	const before = (match[2] ?? "").replace(/[ \t]+$/u, "").length > 0 ? `${(match[2] ?? "").replace(/[ \t]+$/u, "")} ` : "" ;
 	const named  = match[3] ?? ""                                                                                            ;
 	return {
-		head          : `${match[1]} ` ,
-		before                         ,
+		head        : `${match[1]} ` ,
+		before                       ,
 		entries       : named.split(",").map(value => value.trim()).filter(Boolean) ,
 		trailingComma : /,[ \t\r\n]*$/u.test(named)                                 ,
 		module        : match[4] ?? ""                                              ,
 		attributes    : (match[5] ?? "").replace(/[ \t\r\n]+$/u, "") || undefined   ,
 		terminator    : (match[6] ?? "") === ";" ? ";" : ""                         ,
-		suffix                         ,
+		suffix                       ,
 	};
 }
 
@@ -230,10 +230,10 @@ function renderSection(rows: readonly TableImport[], newline: string): readonly 
 	const order  = widths.map((width, index) => ({ width, index })).filter(entry => entry.width >= 0).sort((left, right) => right.width - left.width) ;
 	const [first, second] = order;
 	if (
-           first
-        && second
-        && first.width - second.width >= OUTLIER_GAP
-        && rows[first.index]!.entries.length > 1
+		   first
+		&& second
+		&& first.width - second.width >= OUTLIER_GAP
+		&& rows[first.index]!.entries.length > 1
 	) vertical.add(first.index);
 	for (;;) {
 		if (Math.max(...renderTable(rows, vertical, newline).flatMap(text => text.split(newline)).map(line => displayWidth(line))) <= MAX_WIDTH) break;
