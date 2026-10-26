@@ -41,10 +41,10 @@ interface TableGroup {
 	/** Exact row membership for noncontiguous guard regions. */
 	readonly rowLines? : readonly number[];
 	/** Rows rendered as the declaration vertical form; their edits replace the whole row and may insert line breaks. */
-	readonly vertical : number            ;
-	readonly axes     : readonly string[] ;
-	readonly skipped  : readonly string[] ;
-	readonly edits    : readonly Edit[]   ;
+	readonly vertical  : number            ;
+	readonly axes      : readonly string[] ;
+	readonly skipped   : readonly string[] ;
+	readonly edits     : readonly Edit[]   ;
 	readonly conflict? : string            ;
 	/** The immediate AST container of the table (SourceFile, Block, InterfaceDeclaration, …) and its nesting depth. */
 	readonly context   : string            ;
@@ -123,10 +123,10 @@ export function alignRows(source: SourceFile, rows: readonly DetectedRow[]): Ali
 	}
 	if (axisOrder.length !== indegree.size) return { axes: [], skipped: [], targets: new Map(), edits: [], conflict: "alignment axis order contains a cycle" };
 	const shifts                        = new Map<number, number>() ;
-	const edits   : Edit[]              = []                                     ;
-	const axes    : string[]            = []                                     ;
-	const skipped : string[]            = []                                     ;
-	const targets : Map<string, number> = new Map()                              ;
+	const edits   : Edit[]              = []                        ;
+	const axes    : string[]            = []                        ;
+	const skipped : string[]            = []                        ;
+	const targets : Map<string, number> = new Map()                 ;
 	for (const axis of axisOrder) {
 		const entries = rows.flatMap((row, index) => row.boundaries
 			.filter(candidate => candidate.axis === axis)
@@ -194,11 +194,11 @@ function buildGroup(source: SourceFile, kindName: string, groupName: string, run
 		endLine   : source.getLineAndCharacterOfPosition(last.getEnd() - 1).line + 1      ,
 		rowCount  : run.length                                                            ,
 		...(kindName === "return-guards" ? { rowLines: run.map(row => source.getLineAndCharacterOfPosition(row.node.getStart(source)).line + 1) } : {}),
-		vertical : marked.length   ,
-		context  : context         ,
-		depth    : depth           ,
-		axes     : aligned.axes    ,
-		skipped  : aligned.skipped ,
+		vertical : marked.length    ,
+		context  : context          ,
+		depth    : depth            ,
+		axes     : aligned.axes     ,
+		skipped  : aligned.skipped  ,
 		conflict : aligned.conflict ,
 		edits,
 	};
@@ -362,7 +362,7 @@ async function writeGroups(root: string, workingRelative: string, displayRelativ
 	const preserved = groups.some(group => group.vertical > 0) ? preservesTokensWithBreaks(text, output) : preservesTokens(text, output);
 	if (!preserved) throw new Error(`combined alignment edits change more than whitespace; nothing written: ${displayRelative}`);
 	// Compares before and after with a fresh server while keeping the working copy's original path effects (JSX extension, project settings).
-	const absolute = `${root}/${workingRelative}`;
+	const absolute = `${root}/${workingRelative}`                                ;
 	const layout   = await compareTypeScriptLayout(root, absolute, text, output) ;
 	if (layout.status !== "preserved") throw new Error(`aligned output failed layout preservation (${layout.status}: ${layout.reason}); nothing written: ${displayRelative}`);
 	await writeDiagnosedOutput(absolute, text, output, value => syntacticDiagnostics(root, absolute, value), displayRelative);
@@ -392,11 +392,11 @@ export async function runTypeScriptAlign(args: readonly string[], options: TypeS
 	const result: CollectResult = { groups: [], candidates: [], compressed: [] };
 	collect(source, source, minRows, new Set<Node>(), explainLine === undefined ? undefined : explainLine, result);
 	collectCompressed(source, source, result);
-	const detected          = [...result.groups].sort((left, right) => left.startLine - right.startLine)         ;
+	const detected          = [...result.groups].sort((left, right) => left.startLine - right.startLine)                                                                  ;
 	const overlaps          = overlapConflicts(detected)                                                                                                                  ;
 	const refused           = detected.filter(group => group.conflict !== undefined || overlaps.has(group) || (group.edits.length > 0 && !groupPreserved(source, group))) ;
-	const groups            = detected.filter(group => !refused.includes(group))                                 ;
-	const compressedMembers = result.compressed.reduce((count, entry) => count + entry.members, 0)               ;
+	const groups            = detected.filter(group => !refused.includes(group))                                                                                          ;
+	const compressedMembers = result.compressed.reduce((count, entry) => count + entry.members, 0)                                                                        ;
 
 	const totalEdits = groups.reduce((count, group) => count + group.edits.length, 0);
 	say(`align-tables file=${relative} groups=${groups.length} misaligned=${groups.filter(group => group.edits.length > 0).length} edits=${totalEdits} compressed=${result.compressed.length} compressed-members=${compressedMembers} refused=${refused.length}${write ? " write=true" : ""}`);

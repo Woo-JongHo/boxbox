@@ -17,14 +17,14 @@ interface ImportRow {
 }
 
 interface ParsedImport {
-	readonly head       : string             ;
-	readonly before     : string             ;
-	readonly entries    : readonly string[]  ;
+	readonly head          : string             ;
+	readonly before        : string             ;
+	readonly entries       : readonly string[]  ;
 	readonly trailingComma : boolean            ;
-	readonly module     : string             ;
-	readonly attributes : string | undefined ;
-	readonly terminator : string             ;
-	readonly suffix     : string             ;
+	readonly module        : string             ;
+	readonly attributes    : string | undefined ;
+	readonly terminator    : string             ;
+	readonly suffix        : string             ;
 }
 
 function lexicalMask(source: string): string {
@@ -34,7 +34,7 @@ function lexicalMask(source: string): string {
 	for (let index = 0; index < chars.length; index += 1) {
 		const value = chars[index    ]! ;
 		const next  = chars[index + 1]  ;
-		if (state === "code") {
+		if (state === "code"    ) {
 			if (value === "/" && next === "/") { state = "line"    ; chars[index] = chars[index + 1] = " "; index += 1; continue; }
 			if (value === "/" && next === "*") { state = "block"   ; chars[index] = chars[index + 1] = " "; index += 1; continue; }
 			if (value === "`"                ) { state = "template"; chars[index] = " ";                                continue; }
@@ -42,12 +42,12 @@ function lexicalMask(source: string): string {
 			if (value === '"'                ) { state = "double"  ;                                                    continue; }
 			continue;
 		}
-		if (state === "line") {
+		if (state === "line"    ) {
 			if (value === "\n") state = "code";
 			else chars[index] = " ";
 			continue;
 		}
-		if (state === "block") {
+		if (state === "block"   ) {
 			if (value === "*" && next === "/") { chars[index] = chars[index + 1] = " "; index += 1; state = "code"; }
 			else if (value !== "\n") chars[index] = " ";
 			continue;
@@ -147,28 +147,28 @@ function parseImportRow(row: string): ParsedImport | undefined {
 	const suffix = at < 0 ? "" : row.slice(at)                                                                                                                                                 ;
 	const match  = /^(import(?:[ \t]+type)?)[ \t]+([^{}'"]*?)\{([^{}]*)\}[ \t\r\n]*from[ \t]+(["'][^"'\n]+["'])([ \t]+(?:with|assert)[ \t\r\n]*\{[^{}]*\})?[ \t\r\n]*(;?)[ \t]*$/su.exec(core) ;
 	if (!match) return undefined;
-	const before = (match[2] ?? "").replace(/[ \t]+$/u, "").length > 0 ? `${(match[2] ?? "").replace(/[ \t]+$/u, "")} ` : "";
+	const before = (match[2] ?? "").replace(/[ \t]+$/u, "").length > 0 ? `${(match[2] ?? "").replace(/[ \t]+$/u, "")} ` : "" ;
 	const named  = match[3] ?? ""                                                                                            ;
 	return {
-		head        : `${match[1]} `,
-		before,
+		head        : `${match[1]} ` ,
+		before                       ,
 		entries       : named.split(",").map(value => value.trim()).filter(Boolean) ,
 		trailingComma : /,[ \t\r\n]*$/u.test(named)                                 ,
-		module     : match[4] ?? ""                                                         ,
-		attributes : (match[5] ?? "").replace(/[ \t\r\n]+$/u, "") || undefined              ,
-		terminator : (match[6] ?? "") === ";" ? ";" : ""                                    ,
-		suffix,
+		module        : match[4] ?? ""                                              ,
+		attributes    : (match[5] ?? "").replace(/[ \t\r\n]+$/u, "") || undefined   ,
+		terminator    : (match[6] ?? "") === ";" ? ";" : ""                         ,
+		suffix                       ,
 	};
 }
 
 /** A brace import ready for the table: head cell, names, module, terminator and trailing comment. */
 interface TableImport {
-	readonly head       : string            ;
-	readonly entries    : readonly string[] ;
+	readonly head          : string            ;
+	readonly entries       : readonly string[] ;
 	readonly trailingComma : boolean           ;
-	readonly module     : string            ;
-	readonly terminator : string            ;
-	readonly suffix     : string            ;
+	readonly module        : string            ;
+	readonly terminator    : string            ;
+	readonly suffix        : string            ;
 }
 
 /** Width the head cell always reserves, so `{` sits in one column whether or not a section has a type import. */
@@ -195,12 +195,12 @@ function tableImport(row: string, file: string): TableImport | string {
 		return row;
 	}
 	return {
-		head       : `${parsed.head}${parsed.before}`.trimEnd() ,
-		entries    : parsed.entries                             ,
+		head          : `${parsed.head}${parsed.before}`.trimEnd() ,
+		entries       : parsed.entries                             ,
 		trailingComma : parsed.trailingComma                       ,
-		module     : parsed.module                              ,
-		terminator : parsed.terminator                          ,
-		suffix     : parsed.suffix                              ,
+		module        : parsed.module                              ,
+		terminator    : parsed.terminator                          ,
+		suffix        : parsed.suffix                              ,
 	};
 }
 
@@ -230,7 +230,7 @@ function renderSection(rows: readonly TableImport[], newline: string): readonly 
 	const order  = widths.map((width, index) => ({ width, index })).filter(entry => entry.width >= 0).sort((left, right) => right.width - left.width) ;
 	const [first, second] = order;
 	if (
-		first
+		   first
 		&& second
 		&& first.width - second.width >= OUTLIER_GAP
 		&& rows[first.index]!.entries.length > 1
@@ -289,9 +289,9 @@ function normalizeOnce(source: string, file: string, mode: NormalizeMode): strin
 		}
 		return normalized.map(text => ({ text, section: row.section }));
 	})                                                                                                               ;
-	const flat   = split.flat()                                                                                      ;
-	const parsed = flat .map (row => tableImport(row.text, file)                                                   ) ;
-	const output = flat .map ((row, index) => typeof parsed[index] === "string" ? parsed[index] : row.text         ) ;
+	const flat   = split.flat()                                                                             ;
+	const parsed = flat .map (row => tableImport(row.text, file)                                          ) ;
+	const output = flat .map ((row, index) => typeof parsed[index] === "string" ? parsed[index] : row.text) ;
 	for (const section of new Set(flat.map(row => row.section))) {
 		const members = flat.flatMap((row, index) => row.section === section && typeof parsed[index] !== "string" ? [index] : []);
 		if (members.length === 0) continue;
@@ -321,15 +321,15 @@ function targetArguments(root: string): readonly string[] {
 	return values.map(value => repositoryFile(root, value).absolute);
 }
 
-const root    = process.cwd()                    ;
-const write   = process.argv.includes("--write") ;
+const root    = process.cwd()                                                   ;
+const write   = process.argv.includes("--write")                                ;
 const mode    = process.argv.includes("--layout-only") ? "layout-only" : "full" ;
-const targets = targetArguments(root)            ;
-let changed   = 0                                ;
-let errors    = 0                                ;
+const targets = targetArguments(root)                                           ;
+let changed   = 0                                                               ;
+let errors    = 0                                                               ;
 for (const absolute of targets) {
 	try {
-		const before = readFileSync(absolute, "utf8") ;
+		const before = readFileSync(absolute, "utf8"      ) ;
 		const after  = normalize   (before, absolute, mode) ;
 		if (after === before) continue;
 		changed += 1;
