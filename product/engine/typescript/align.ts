@@ -221,7 +221,13 @@ function parseArguments(raw: readonly string[]): Arguments {
 	const explainIndex = raw.indexOf("--explain")                                     ;
 	const minRows      = minRowsIndex < 0 ? 3 : Number(raw[minRowsIndex + 1])         ;
 	const explainLine  = explainIndex < 0 ? undefined : Number(raw[explainIndex + 1]) ;
-	if (raw[0] !== "--file" || !raw[1] || (!Number.isInteger(minRows) || minRows < 3) || (explainLine !== undefined && !Number.isInteger(explainLine))) {
+	if (
+		raw[0] !== "--file"
+		|| !raw[1]
+		|| (!Number.isInteger(minRows)
+		|| minRows < 3)
+		|| (explainLine !== undefined && !Number.isInteger(explainLine))
+	) {
 		throw new Error("usage: 06_align-tables.ts --file <repository TypeScript file> [--write] [--min-rows 3] [--explain <line>] [--json]");
 	}
 	return { file: raw[1], write, minRows, explainLine, json: raw.includes("--json") };

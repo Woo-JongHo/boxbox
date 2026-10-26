@@ -103,7 +103,12 @@ function parseArguments(): Arguments {
 	const minIndex      = raw.indexOf("--min-conditions")              ;
 	const minConditions = minIndex < 0 ? 4 : Number(raw[minIndex + 1]) ;
 	const minOperands   = minConditions                                ;
-	if (raw[0] !== "--file" || !raw[1] || !Number.isInteger(minConditions) || minConditions < 3) {
+	if (
+		raw[0] !== "--file"
+		|| !raw[1]
+		|| !Number.isInteger(minConditions)
+		|| minConditions < 3
+	) {
 		throw new Error("usage: 07_wrap-conditions.ts --file <repository TypeScript file> [--write] [--min-conditions 4]");
 	}
 	return { file: raw[1], write, minOperands };

@@ -71,7 +71,11 @@ function isValueCell(masked: string): boolean {
 		else if (character === "," && depth === 0) return false;
 		if (depth < 0) return false;
 	}
-	return depth === 0 && masked.trim() !== "" && !masked.startsWith("=") && !/[;\\]/u.test(masked) && !/\s$/u.test(masked);
+	return depth === 0
+		&& masked.trim() !== ""
+		&& !masked.startsWith("=")
+		&& !/[;\\]/u.test(masked)
+		&& !/\s$/u.test(masked);
 }
 
 /** Statement starts that cannot be table rows — control flow, declarations, imports. match/case are soft keywords and excluded. */
@@ -396,6 +400,6 @@ export const PYTHON_ALIGNER: LineProfiler = {
 	terminalAxes : ["comma"]           ,
 	// `*,` and `/,` mark keyword-only and positional-only parameters inside one parameter table.
 	transparentRow : (masked: string): boolean => /^[ \t]*[*/][ \t]*,$/u.test(masked) ,
-	profile        : profilePython                                                      ,
-	project        : assignmentEnvelopes                                                ,
+	profile        : profilePython                                                    ,
+	project        : assignmentEnvelopes                                              ,
 };

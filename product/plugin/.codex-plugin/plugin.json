@@ -1,6 +1,6 @@
 {
-	"name": "boxbox",
-	"version": "@BOXBOX_VERSION@",
+	"name"       : "boxbox",
+	"version"    : "@BOXBOX_VERSION@",
 	"description": "Guides writing and refactoring TypeScript and Python, with syntax and tabular checks for TypeScript, Python, JSON and YAML and human-approved whitespace alignment.",
 	"author": {
 		"name": "Woo-JongHo"
@@ -16,11 +16,11 @@
 	],
 	"skills": "./skills/",
 	"interface": {
-		"displayName": "BoxBox",
+		"displayName"     : "BoxBox",
 		"shortDescription": "Write, refactor and align code for tabular readability",
-		"longDescription": "Guides agent-owned TypeScript and Python writing and refactoring; checks TypeScript, Python, JSON and YAML and aligns approved tables one file at a time. Unsupported structures remain unchanged. Structural changes require separate behavior verification.",
-		"developerName": "Woo-JongHo",
-		"category": "Coding",
+		"longDescription" : "Guides agent-owned TypeScript and Python writing and refactoring; checks TypeScript, Python, JSON and YAML and aligns approved tables one file at a time. Unsupported structures remain unchanged. Structural changes require separate behavior verification.",
+		"developerName"   : "Woo-JongHo",
+		"category"        : "Coding",
 		"capabilities": [
 			"Read",
 			"Write"

@@ -201,7 +201,10 @@ function callLayer(source: SourceFile, call: Node): readonly RowBoundary[] | und
 /** A list item the list layer may pad: a string, number or boolean literal. Identifiers and calls keep the list compact. */
 function isLiteralItem(node: Node): boolean {
 	const name = syntaxKindName(node);
-	return name === "StringLiteral" || name === "NumericLiteral" || name === "TrueLiteral" || name === "FalseLiteral";
+	return name === "StringLiteral"
+		|| name === "NumericLiteral"
+		|| name === "TrueLiteral"
+		|| name === "FalseLiteral";
 }
 
 /** An object item of the list layer: a `name: literal` property whose name text must match across rows. */
@@ -760,49 +763,92 @@ export const ROW_KINDS: readonly RowKind[] = [
 
 /** Human-readable description of which syntax boundary each axis name means. Fill it in when registering a new axis. */
 export const AXIS_NOTES: Readonly<Record<string, string>> = {
-	"call-member-dot"        : "final receiver/method dot of a supported member call; inner receiver dots remain inside the receiver cell",
-	"colon"                  : "`:` separating a name or identifier from its type or expression",
-	"equals"                 : "`=` of a declaration, alias or enum member",
-	"semicolon"              : "statement-terminating `;`",
-	"comma"                  : "row-separating `,` of an enum member or object property (a last row without one is left out of the column)",
-	"comment"                : "start column of a trailing `//` note",
-	"open-paren"             : "parameter-opening `(` (after the name width)",
-	"close-paren"            : "parameter-closing `)` (after the minimum inner width)",
-	"case-colon"             : "`:` of a case label",
-	"call-paren"             : "opening `(` of the first call in a case row",
-	"subject-close-paren"    : "`)` closing the subject argument cell of a call statement",
-	"matcher-dot"            : "`.` before the right-hand matcher of a call statement",
-	"matcher-open-paren"     : "`(` opening the matcher argument cell",
-	"matcher-close-paren"    : "`)` closing the matcher argument cell",
-	"return-tail"            : "start column of a bare `return;` at the end of a case row",
-	"value"                  : "start column of a registration-object expression",
-	"property"               : "start column of the property name at each position in an object row",
-	"open-brace"             : "opening `{` of an object row",
-	"close-brace"            : "closing `}` of an object row",
-	"tail"                   : "tail after an object row's `}` (`,` `;` `)` `as const`)",
-	"call-open-paren"        : "`(` of the nested call cell (same callee and arity in every row)",
-	"call-comma"             : "top-level argument `,` of the nested call cell, right after the widest argument",
-	"call-arg"               : "start column of the next argument of the nested call cell",
-	"call-close-paren"       : "`)` of the nested call cell, right after the widest last argument",
-	"list-value-open"        : "opening `[` or `{` of a declaration value list",
-	"list-value-comma"       : "`,` of a declaration value list, right after the widest item",
-	"list-value-el"          : "start column of the next item of a declaration value list",
-	"list-value-close"       : "closing `]` or `}` of a declaration value list, right after the widest last item",
-	"list-arg-open"          : "opening `[` or `{` of a list inside a nested call argument",
-	"list-arg-comma"         : "`,` of a list inside a nested call argument, right after the widest item",
-	"list-arg-el"            : "start column of the next item of a list inside a nested call argument",
-	"list-arg-close"         : "closing `]` or `}` of a list inside a nested call argument, right after the widest last item",
-	"list-matcher-arg-open"  : "opening `[` or `{` of a list inside a matcher argument",
-	"list-matcher-arg-comma" : "`,` of a list inside a matcher argument, right after the widest item",
-	"list-matcher-arg-el"    : "start column of the next item of a list inside a matcher argument",
-	"list-matcher-arg-close" : "closing `]` or `}` of a list inside a matcher argument, right after the widest last item",
-	"subscript-close"        : "`]` of a declaration's subscript value, right after the widest index",
-	"guard-return"           : "start column of an unbraced early return in the same block",
-	"call-envelope-open"     : "opening `(` of compatible direct-call declaration values with different signatures",
-	"call-envelope-close"    : "closing `)` of a nonempty direct-call value; its arguments remain one opaque cell",
-	"guard-close-paren"      : "`)` of a guard row's condition, right after the widest condition",
-	"guard-semi1"            : "first statement's `;` of a guard row, right after the widest first statement",
-	"guard-continue"         : "start column of the trailing `continue;` in a guard row",
+	"call-member-dot"        :
+		"final receiver/method dot of a supported member call; inner receiver dots remain inside the receiver cell",
+	"colon"                  :
+		"`:` separating a name or identifier from its type or expression",
+	"equals"                 :
+		"`=` of a declaration, alias or enum member",
+	"semicolon"              :
+		"statement-terminating `;`",
+	"comma"                  :
+		"row-separating `,` of an enum member or object property (a last row without one is left out of the column)",
+	"comment"                :
+		"start column of a trailing `//` note",
+	"open-paren"             :
+		"parameter-opening `(` (after the name width)",
+	"close-paren"            :
+		"parameter-closing `)` (after the minimum inner width)",
+	"case-colon"             :
+		"`:` of a case label",
+	"call-paren"             :
+		"opening `(` of the first call in a case row",
+	"subject-close-paren"    :
+		"`)` closing the subject argument cell of a call statement",
+	"matcher-dot"            :
+		"`.` before the right-hand matcher of a call statement",
+	"matcher-open-paren"     :
+		"`(` opening the matcher argument cell",
+	"matcher-close-paren"    :
+		"`)` closing the matcher argument cell",
+	"return-tail"            :
+		"start column of a bare `return;` at the end of a case row",
+	"value"                  :
+		"start column of a registration-object expression",
+	"property"               :
+		"start column of the property name at each position in an object row",
+	"open-brace"             :
+		"opening `{` of an object row",
+	"close-brace"            :
+		"closing `}` of an object row",
+	"tail"                   :
+		"tail after an object row's `}` (`,` `;` `)` `as const`)",
+	"call-open-paren"        :
+		"`(` of the nested call cell (same callee and arity in every row)",
+	"call-comma"             :
+		"top-level argument `,` of the nested call cell, right after the widest argument",
+	"call-arg"               :
+		"start column of the next argument of the nested call cell",
+	"call-close-paren"       :
+		"`)` of the nested call cell, right after the widest last argument",
+	"list-value-open"        :
+		"opening `[` or `{` of a declaration value list",
+	"list-value-comma"       :
+		"`,` of a declaration value list, right after the widest item",
+	"list-value-el"          :
+		"start column of the next item of a declaration value list",
+	"list-value-close"       :
+		"closing `]` or `}` of a declaration value list, right after the widest last item",
+	"list-arg-open"          :
+		"opening `[` or `{` of a list inside a nested call argument",
+	"list-arg-comma"         :
+		"`,` of a list inside a nested call argument, right after the widest item",
+	"list-arg-el"            :
+		"start column of the next item of a list inside a nested call argument",
+	"list-arg-close"         :
+		"closing `]` or `}` of a list inside a nested call argument, right after the widest last item",
+	"list-matcher-arg-open"  :
+		"opening `[` or `{` of a list inside a matcher argument",
+	"list-matcher-arg-comma" :
+		"`,` of a list inside a matcher argument, right after the widest item",
+	"list-matcher-arg-el"    :
+		"start column of the next item of a list inside a matcher argument",
+	"list-matcher-arg-close" :
+		"closing `]` or `}` of a list inside a matcher argument, right after the widest last item",
+	"subscript-close"        :
+		"`]` of a declaration's subscript value, right after the widest index",
+	"guard-return"           :
+		"start column of an unbraced early return in the same block",
+	"call-envelope-open"     :
+		"opening `(` of compatible direct-call declaration values with different signatures",
+	"call-envelope-close"    :
+		"closing `)` of a nonempty direct-call value; its arguments remain one opaque cell",
+	"guard-close-paren"      :
+		"`)` of a guard row's condition, right after the widest condition",
+	"guard-semi1"            :
+		"first statement's `;` of a guard row, right after the widest first statement",
+	"guard-continue"         :
+		"start column of the trailing `continue;` in a guard row",
 };
 
 validateLayoutAxisNotes(TYPESCRIPT_LAYOUT_POLICY, AXIS_NOTES);
@@ -897,7 +943,13 @@ function envelopeCall(node: Node): Node | undefined {
 	const value = node.declarationList.declarations[0]?.initializer;
 	const call = value !== undefined && syntaxKindName(value) === "NonNullExpression"
 		? (value as unknown as { readonly expression: Node }).expression : value;
-	if (call === undefined || !isCallExpression(call) || call.questionDotToken !== undefined || call.typeArguments !== undefined) return undefined;
+	if (
+		call === undefined
+		|| !isCallExpression(call)
+		|| call.questionDotToken !== undefined
+		|| call.typeArguments !== undefined
+	)
+		return undefined;
 
 	return simpleCallee(call.expression) ? call : undefined;
 }
@@ -965,7 +1017,10 @@ function withLayers(source: SourceFile, kind: RowKind, run: readonly DetectedRow
 	const calls      = run.map(row => kind.layerCall?.(row.node))                                               ;
 	const signatures = new Set(calls.map(call => call === undefined ? undefined : callSignature(source, call))) ;
 	const complete   = run.every(row => row.boundaries.some(boundary => boundary.axis === "call-close-paren"))  ;
-	const sameCall   = tags.has("call") && complete && signatures.size === 1 && !signatures.has(undefined)      ;
+	const sameCall   = tags.has("call")
+		&& complete
+		&& signatures.size === 1
+		&& !signatures.has(undefined)      ;
 	if (sameCall) {
 		const widths = itemWidths(source, calls.map(call => callArguments(call!))) ;
 		if (!hasOutlierWidths(widths)) keep.add("call")                            ;

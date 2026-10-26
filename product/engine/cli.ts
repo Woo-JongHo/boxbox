@@ -107,16 +107,27 @@ function assertRoot(root: string): string {
 function insideRoot(root: string, file: string, allowMissing = false): string {
 	const absolute = resolve (root, file    ) ;
 	const path     = relative(root, absolute) ;
-	if (path === "" || path === ".." || path.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`) || isAbsolute(path)) {
+	if (
+		path === ""
+		|| path === ".."
+		|| path.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`)
+		|| isAbsolute(path)
+	) {
 		throw new CliError("PATH_ESCAPE", `file must stay inside the project root: ${file}`);
 	}
 	if (allowMissing && !lstatSync(absolute, { throwIfNoEntry: false })) {
 		let parent = dirname(absolute);
 		while (!lstatSync(parent, { throwIfNoEntry: false })) parent = dirname(parent);
 		const parentStatus = lstatSync(parent);
-		if (parentStatus.isSymbolicLink() || !parentStatus.isDirectory()) throw new CliError("UNSAFE_FILE_PATH", `new file parent must be a real directory: ${file}`);
+		if (parentStatus.isSymbolicLink() || !parentStatus.isDirectory())
+			throw new CliError("UNSAFE_FILE_PATH", `new file parent must be a real directory: ${file}`);
 		const physical = relative(realpathSync(root), realpathSync(parent));
-		if (physical === ".." || physical.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`) || isAbsolute(physical)) throw new CliError("PATH_ESCAPE", `file resolves outside the project root: ${file}`);
+		if (
+			physical === ".."
+			|| physical.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`)
+			|| isAbsolute(physical)
+		)
+			throw new CliError("PATH_ESCAPE", `file resolves outside the project root: ${file}`);
 		return absolute;
 	}
 	if (!existsSync(absolute)) throw new CliError("FILE_NOT_FOUND", `file does not exist: ${file}`);
@@ -125,7 +136,11 @@ function insideRoot(root: string, file: string, allowMissing = false): string {
 	const realRoot = realpathSync(root              ) ;
 	const realFile = realpathSync(absolute          ) ;
 	const realPath = relative    (realRoot, realFile) ;
-	if (realPath === ".." || realPath.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`) || isAbsolute(realPath)) {
+	if (
+		realPath === ".."
+		|| realPath.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`)
+		|| isAbsolute(realPath)
+	) {
 		throw new CliError("PATH_ESCAPE", `file resolves outside the project root: ${file}`);
 	}
 	return absolute;
@@ -133,10 +148,16 @@ function insideRoot(root: string, file: string, allowMissing = false): string {
 
 function inferredLanguage(file: string): PublicLanguage | undefined {
 	const extension = extname(file).toLowerCase();
-	if (extension === ".ts" || extension === ".tsx" || extension === ".mts" || extension === ".cts") return "typescript";
-	if (extension === ".py")                                                                         return "python";
-	if (extension === ".json")                                                                       return "json";
-	if (extension === ".yaml" || extension === ".yml")                                               return "yaml";
+	if (
+		extension === ".ts"
+		|| extension === ".tsx"
+		|| extension === ".mts"
+		|| extension === ".cts"
+	)
+		return "typescript";
+	if (extension === ".py")                           return "python";
+	if (extension === ".json")                         return "json";
+	if (extension === ".yaml" || extension === ".yml") return "yaml";
 	return undefined;
 }
 
@@ -172,7 +193,13 @@ function parseFileCommand(args: readonly string[], allowDryRun: boolean, root: s
 				file = value;
 			} else {
 				if (language !== undefined) throw new CliError("DUPLICATE_OPTION", "--language may be provided only once");
-				if (value !== "typescript" && value !== "python" && value !== "json" && value !== "yaml") throw new CliError("UNSUPPORTED_LANGUAGE", `unsupported language: ${value}`);
+				if (
+					value !== "typescript"
+					&& value !== "python"
+					&& value !== "json"
+					&& value !== "yaml"
+				)
+					throw new CliError("UNSUPPORTED_LANGUAGE", `unsupported language: ${value}`);
 				language = value;
 			}
 			continue;
@@ -259,16 +286,40 @@ async function inspectFile(parsed: ParsedFileCommand, root: string, knownSyntax?
 }
 
 function doctorReport(root: string) {
-	const nodeParts   = process.versions.node.split(".").map(Number)                                                                                                                                                                                              ;
-	const node        = { ok: (nodeParts[0] ?? 0) > 22 || ((nodeParts[0] ?? 0) === 22 && ((nodeParts[1] ?? 0) > 22 || ((nodeParts[1] ?? 0) === 22 && (nodeParts[2] ?? 0) >= 3))), detail: `Node ${process.versions.node} (artifact candidate minimum: 22.22.3)` } ;
-	const pythonProbe = spawnSync("python3", ["--version"], { encoding: "utf8", timeout: 5_000, maxBuffer: 64 * 1024 })                                                                                                                                           ;
-	const python      = { ok: pythonProbe.status === 0, detail: pythonProbe.status === 0 ? (pythonProbe.stdout || pythonProbe.stderr).trim() : "python3 is unavailable or failed to start" }                                                                      ;
-	let config: { ok: boolean; detail: string; fingerprint?: string; layers?: readonly unknown[]; formatters?: readonly string[]; languages?: readonly PublicLanguage[] }                                                                                         ;
+	const nodeParts = process.versions.node.split(".").map(Number) ;
+	const node = {
+		ok: (nodeParts[0] ?? 0) > 22
+			|| ((nodeParts[0] ?? 0) === 22
+				&& ((nodeParts[1] ?? 0) > 22
+					|| ((nodeParts[1] ?? 0) === 22 && (nodeParts[2] ?? 0) >= 3))),
+		detail: `Node ${process.versions.node} (artifact candidate minimum: 22.22.3)`
+	} ;
+	const pythonProbe = spawnSync("python3", ["--version"], { encoding: "utf8", timeout: 5_000, maxBuffer: 64 * 1024 }) ;
+	const python = {
+		ok: pythonProbe.status === 0,
+		detail: pythonProbe.status === 0 ? (pythonProbe.stdout || pythonProbe.stderr).trim() : "python3 is unavailable or failed to start"
+	} ;
+	let config: {
+		ok           : boolean            ;
+		detail       : string             ;
+		fingerprint? : string             ;
+		layers?      : readonly unknown[] ;
+		formatters?  : readonly string[]  ;
+		languages?: readonly PublicLanguage[]
+	} ;
 	try {
 		const resolved   = resolveConfig        (root                                ) ;
 		const project    = resolved.sources.find(source => source.layer === "project") ;
 		const formatters = Object          .keys(resolved.effective.formatters       ) ;
-		config = { ok: true, detail: `schema 2; languages=${resolved.effective.languages.join(",")}; project=${project?.present ? "present" : "absent, inherited defaults"}`, fingerprint: resolved.fingerprint, layers: resolved.sources, formatters, languages: resolved.effective.languages };
+		config = {
+			ok: true,
+			detail:
+				`schema 2; languages=${resolved.effective.languages.join(",")}; project=${project?.present ? "present" : "absent, inherited defaults"}`,
+			fingerprint: resolved.fingerprint,
+			layers: resolved.sources,
+			formatters,
+			languages: resolved.effective.languages
+		};
 	} catch (error) {
 		config = { ok: false, detail: messageOf(error) };
 	}
@@ -277,7 +328,10 @@ function doctorReport(root: string) {
 		const context  = approvalContext(root)                                                              ;
 		const approved = context.registry.conventions.filter(record => record.status === "approved").length ;
 		approval = approved > 0
-			? { ok: true, detail: `${approved} approved convention record(s) loaded; proof remains file-specific` }
+			? {
+				ok: true,
+				detail: `${approved} approved convention record(s) loaded; proof remains file-specific`
+			}
 			: { ok: false, detail: "approved convention registry is empty" };
 	} catch (error) {
 		approval = { ok: false, detail: messageOf(error) };
@@ -286,16 +340,33 @@ function doctorReport(root: string) {
 	try {
 		const formatters = Object.entries(resolveConfig(root).effective.formatters);
 		for (const [, configured] of formatters) resolveFormatterExecutable(configured.command, root);
-		if (formatters.length > 0) formatter = { ok: true, detail: `executable resolved for ${formatters.map(([language]) => language).join(",")}; execution is verified by format --dry-run` };
+		if (formatters.length > 0) formatter = {
+			ok: true,
+			detail: `executable resolved for ${formatters.map(([language]) => language).join(",")}; execution is verified by format --dry-run`
+		};
 	} catch (error) {
 		formatter = { ok: false, detail: messageOf(error) };
 	}
-	const limitations      = ["format readiness is finally decided per file by exact approval proof", "only one explicit TypeScript, Python, JSON or YAML file is accepted", "installation and hook registration do not prove native host event delivery"] ;
-	const pythonRequired   = config.languages?.includes("python") ?? true                                                                                                                                                                                  ;
-	const runtimeUsable    = node.ok && config.ok && (!pythonRequired || python.ok)                                                                                                                                                                        ;
-	const formatConfigured = runtimeUsable && approval.ok && formatter.ok                                                                                                                                                                                  ;
-	const ok               = runtimeUsable                                                                                                                                                                                                                 ;
-	const result           = { schemaVersion: 1, tool: "boxbox", command: "doctor", ok, runtimeUsable, formatConfigured, releaseReady: false, checks: { runtime: node, python, config, approval, formatter }, limitations }                                ;
+	const limitations = [
+		"format readiness is finally decided per file by exact approval proof",
+		"only one explicit TypeScript, Python, JSON or YAML file is accepted",
+		"installation and hook registration do not prove native host event delivery"
+	] ;
+	const pythonRequired   = config.languages?.includes("python") ?? true           ;
+	const runtimeUsable    = node.ok && config.ok && (!pythonRequired || python.ok) ;
+	const formatConfigured = runtimeUsable && approval.ok && formatter.ok           ;
+	const ok               = runtimeUsable                                          ;
+	const result = {
+		schemaVersion : 1        ,
+		tool          : "boxbox" ,
+		command       : "doctor" ,
+		ok,
+		runtimeUsable,
+		formatConfigured,
+		releaseReady: false,
+		checks: { runtime: node, python, config, approval, formatter },
+		limitations
+	} ;
 	return result;
 }
 
@@ -350,9 +421,19 @@ function formatReadiness(parsed: ParsedFileCommand, root: string, result: FileRe
 	const mode = resolveConfig(root).effective.formatters[parsed.language] ? "formatter" : "standalone";
 	try {
 		const context = approvalContext(root);
-		const groups = evaluateDetected(context.registry, result.groups
-			.filter(group => group.state === "PASS" || group.state === "FIXABLE")
-			.map(group => ({ language: result.language, context: group.context, kind: group.kind, axes: group.axes, file: parsed.file })), context.resolveDocument);
+		const groups = evaluateDetected(
+			context.registry,
+			result.groups
+				.filter(group => group.state === "PASS" || group.state === "FIXABLE")
+				.map(group => ({
+					language : result.language ,
+					context  : group.context   ,
+					kind     : group.kind      ,
+					axes     : group.axes      ,
+					file     : parsed.file
+				})),
+			context.resolveDocument
+		);
 		const approvalFacts = [...new Map(groups.map(group => [group.query.key, {
 			key           : group.query.key,
 			status        : group.result.status,
@@ -365,9 +446,23 @@ function formatReadiness(parsed: ParsedFileCommand, root: string, result: FileRe
 		if (syntax.status !== "valid") reasons.push(`syntax ${syntax.status}: ${syntax.diagnostics.join("; ")}`);
 		if (result.groups.some(group => group.state === "REFUSE")) reasons.push("BoxBox safety refusal prevents formatting");
 		if (groups.length === 0) reasons.push("no verified approval rule applies to this file");
-		return { mode, approvalEligible: reasons.length === 0, verification: "not-run", approvalFacts, reasons, next: "align --dry-run verifies horizontal whitespace only; format --dry-run includes the configured formatter. Both verify parser, preservation and fixed point before writing" };
+		return {
+			mode,
+			approvalEligible: reasons.length === 0,
+			verification: "not-run",
+			approvalFacts,
+			reasons,
+			next: "align --dry-run verifies horizontal whitespace only; format --dry-run includes the configured formatter. Both verify parser, preservation and fixed point before writing"
+		};
 	} catch (error) {
-		return { mode, approvalEligible: false, verification: "not-run", approvalFacts: [], reasons: [messageOf(error)], next: "repair approval data before formatting" };
+		return {
+			mode,
+			approvalEligible : false              ,
+			verification     : "not-run"          ,
+			approvalFacts    : []                 ,
+			reasons          : [messageOf(error)] ,
+			next             : "repair approval data before formatting"
+		};
 	}
 }
 
@@ -424,13 +519,32 @@ async function guide(parsed: ParsedFileCommand, root: string): Promise<number> {
 	}
 	const inspected = await inspectFile(parsed, root) ;
 	const context   = approvalContext(root)           ;
-	const evaluated = evaluateDetected(context.registry, inspected.groups
-		.filter(group => group.state === "PASS" || group.state === "FIXABLE")
-		.map(group => ({ language: inspected.language, context: group.context, kind: group.kind, axes: group.axes, file: parsed.file })), context.resolveDocument);
-	const approved    = evaluated.filter(item => item.result.status === "approved" && item.result.writable)                                                              ;
-	const guides      = [...new Map(approved.flatMap(item => item.result.guide).map(example => [example.id, example])).values()]                                         ;
-	const conventions = [...new Set(approved.flatMap(item => item.result.conventionId ? [item.result.conventionId] : []))].sort()                                        ;
-	const output      = { schemaVersion: 1, tool: "boxbox", command: "guide", ok: guides.length > 0, file: parsed.file, language: parsed.language, conventions, guides } ;
+	const evaluated = evaluateDetected(
+		context.registry,
+		inspected.groups
+			.filter(group => group.state === "PASS" || group.state === "FIXABLE")
+			.map(group => ({
+				language : inspected.language ,
+				context  : group.context      ,
+				kind     : group.kind         ,
+				axes     : group.axes         ,
+				file     : parsed.file
+			})),
+		context.resolveDocument
+	);
+	const approved    = evaluated.filter(item => item.result.status === "approved" && item.result.writable)                       ;
+	const guides      = [...new Map(approved.flatMap(item => item.result.guide).map(example => [example.id, example])).values()]  ;
+	const conventions = [...new Set(approved.flatMap(item => item.result.conventionId ? [item.result.conventionId] : []))].sort() ;
+	const output = {
+		schemaVersion : 1                 ,
+		tool          : "boxbox"          ,
+		command       : "guide"           ,
+		ok            : guides.length > 0 ,
+		file          : parsed.file       ,
+		language      : parsed.language   ,
+		conventions,
+		guides
+	} ;
 	if (parsed.json) emitJson(output);
 	else if (guides.length === 0) console.log(`guide file=${parsed.file}: no verified approved guidance applies`);
 	else {
@@ -499,11 +613,20 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 		if (command === "status") return guardStatus(tail);
 		if (command === "db")     return database(tail, json);
 		if (command === "init") {
-			const project  = assertRoot(root)                                                                                                                                                                                          ;
+			const project = assertRoot(root) ;
 			assertSimpleFlags(tail, ["--json"]);
-			const result   = initializeProjectConfig(project)                                                                                                                                                                             ;
-			const resolved = resolveConfig(project)                                                                                                                                                                                       ;
-			const output   = { schemaVersion: 1, tool: "boxbox", command: "init", ok: true, created: result.created, config: relative(project, result.path), languages: resolved.effective.languages, fingerprint: resolved.fingerprint } ;
+			const result   = initializeProjectConfig(project) ;
+			const resolved = resolveConfig          (project) ;
+			const output = {
+				schemaVersion : 1                              ,
+				tool          : "boxbox"                       ,
+				command       : "init"                         ,
+				ok            : true                           ,
+				created       : result.created                 ,
+				config        : relative(project, result.path) ,
+				languages     : resolved.effective.languages   ,
+				fingerprint   : resolved.fingerprint
+			} ;
 			if (json) emitJson(output);
 			else console.log(result.created ? `created ${output.config}` : `kept existing ${output.config}`);
 			return 0;

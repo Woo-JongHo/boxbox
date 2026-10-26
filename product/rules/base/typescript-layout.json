@@ -6,8 +6,8 @@
 			"gap": "blank",
 			"minRows": {
 				"operation": "every-row-has-axis",
-				"axis": "equals",
-				"value": 2
+				"axis"     : "equals",
+				"value"    : 2
 			}
 		}
 	},

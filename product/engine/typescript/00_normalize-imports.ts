@@ -219,7 +219,12 @@ function renderSection(rows: readonly TableImport[], newline: string): readonly 
 	const widths = rows.map((row, index) => vertical.has(index) ? -1 : displayWidth(row.entries.join(", ")))                                          ;
 	const order  = widths.map((width, index) => ({ width, index })).filter(entry => entry.width >= 0).sort((left, right) => right.width - left.width) ;
 	const [first, second] = order;
-	if (first && second && first.width - second.width >= OUTLIER_GAP && rows[first.index]!.entries.length > 1) vertical.add(first.index);
+	if (
+		first
+		&& second
+		&& first.width - second.width >= OUTLIER_GAP
+		&& rows[first.index]!.entries.length > 1
+	) vertical.add(first.index);
 	for (;;) {
 		if (Math.max(...renderTable(rows, vertical, newline).flatMap(text => text.split(newline)).map(line => displayWidth(line))) <= MAX_WIDTH) break;
 		const widest = rows

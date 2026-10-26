@@ -1,13 +1,8 @@
-import      { createHash, randomUUID       } from "node:crypto"             ;
-import      {
-              existsSync                 ,
-              mkdirSync                  ,
-              readFileSync               ,
-              writeFileSync              ,
-                                           } from "node:fs"                 ;
-import      { extname, isAbsolute, join, relative, resolve } from "node:path" ;
-import      { snapshot, changed, supported } from "@/common/guarded-run.ts" ;
-import type { Inspection                   } from "@/common/guarded-run.ts" ;
+import      { createHash, randomUUID                              } from "node:crypto"             ;
+import      { existsSync, mkdirSync, readFileSync, writeFileSync, } from "node:fs"                 ;
+import      { extname, isAbsolute, join, relative, resolve        } from "node:path"               ;
+import      { snapshot, changed, supported                        } from "@/common/guarded-run.ts" ;
+import type { Inspection                                          } from "@/common/guarded-run.ts" ;
 
 /** The host event each hook mode answers; one table so the dispatcher and the installer cannot disagree. */
 const HOOK_EVENTS: readonly (readonly [event: string, mode: string])[] = [
@@ -36,7 +31,13 @@ function snapshotExclusions(root: string): ReadonlySet<string> {
 	const projectRoot = resolve                (root                  ) ;
 	const namespace   = projectReceiptNamespace(projectRoot           ) ;
 	const path        = relative               (projectRoot, namespace) ;
-	if (path === "" || path === ".." || path.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`) || isAbsolute(path)) return new Set();
+	if (
+		path === ""
+		|| path === ".."
+		|| path.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`)
+		|| isAbsolute(path)
+	)
+		return new Set();
 	return new Set([namespace]);
 }
 
