@@ -708,24 +708,42 @@ function detectRegistrationRow(source: SourceFile, node: Node): readonly RowBoun
 
 /** A vertical array of scalar literals is a row table; compact and mixed-value arrays stay with their parent syntax. */
 function literalArrayRows(node: Node): readonly Node[] | undefined {
-	if (!isArrayLiteralExpression(node))                                                                                                                                            return undefined;
+	if (!isArrayLiteralExpression(node))
+		return undefined;
 	const items = [...node.elements];
-	if (items.length === 0 || !items.every(isLiteralItem))                                                                                                                          return undefined;
+	if (items.length === 0 || !items.every(isLiteralItem))
+		return undefined;
 	const source    = node.getSourceFile()                                   ;
 	const assertion = (node as unknown as { readonly parent?: Node }).parent ;
-	if (assertion === undefined || syntaxKindName(assertion) !== "AsExpression")                                                                                                    return undefined;
+	if (assertion === undefined || syntaxKindName(assertion) !== "AsExpression")
+		return undefined;
 	const asserted = assertion as unknown as { readonly parent?: Node; readonly type: Node; readonly expression: Node };
-	if (syntaxKindName(asserted.type) !== "TypeReference" || source.text.slice(asserted.type.getStart(source), asserted.type.getEnd()) !== "const" || asserted.expression !== node) return undefined;
+	if (
+		   syntaxKindName(asserted.type)                                             !== "TypeReference"
+		|| source.text.slice(asserted.type.getStart(source), asserted.type.getEnd()) !== "const"
+		|| asserted.expression                                                       !== node
+	)
+		return undefined;
 	const declaration = asserted.parent as unknown as (Node & { readonly parent?: Node; readonly initializer?: unknown }) | undefined;
-	if (declaration === undefined || syntaxKindName(declaration) !== "VariableDeclaration" || declaration.initializer !== assertion)                                                return undefined;
+	if (
+		   declaration                 === undefined
+		|| syntaxKindName(declaration) !== "VariableDeclaration"
+		|| declaration.initializer     !== assertion
+	)
+		return undefined;
 	const declarationList = declaration.parent as unknown as (Node & { readonly parent?: Node; readonly flags?: number }) | undefined;
-	if (declarationList === undefined || ((declarationList.flags ?? 0) & NodeFlags.Const) === 0)                                                                                    return undefined;
-	if (declarationList.parent === undefined || !isVariableStatement(declarationList.parent))                                                                                       return undefined;
+	if (declarationList === undefined || ((declarationList.flags ?? 0) & NodeFlags.Const) === 0)
+		return undefined;
+	if (declarationList.parent === undefined || !isVariableStatement(declarationList.parent))
+		return undefined;
 	const open  = node.getStart(source) ;
 	const close = node.getEnd() - 1     ;
-	if (physicalLine(source, open) === physicalLine(source, items[0]!.getStart(source))           ) return undefined;
-	if (physicalLine(source, close) === physicalLine(source, items.at(-1)!.getEnd() - 1)          ) return undefined;
-	if (items.some(item => !onePhysicalLine(source, item) || !ownLineOf(source, item, COMMA_REST))) return undefined;
+	if (physicalLine(source, open) === physicalLine(source, items[0]!.getStart(source)))
+		return undefined;
+	if (physicalLine(source, close) === physicalLine(source, items.at(-1)!.getEnd() - 1))
+		return undefined;
+	if (items.some(item => !onePhysicalLine(source, item) || !ownLineOf(source, item, COMMA_REST)))
+		return undefined;
 	return items;
 }
 
