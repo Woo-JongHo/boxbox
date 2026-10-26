@@ -137,9 +137,9 @@ interface AcceptedRow {
 
 /** Both primary and projected rows must reconstruct the same original code with whitespace-only gaps. */
 function losslessProfile(profile: RowProfile, code: string): boolean {
-	return /^[ \t]*$/u.test(profile.indent)
-		&& profile.slots.every(slot => /^[ \t]*$/u.test(slot.gapBefore))
-		&& profile.indent + profile.slots.map((slot, position) => position === 0 ? slot.text : slot.gapBefore + slot.text).join("") === code;
+	return   /^[ \t]*$/u.test(profile.indent)
+          && profile.slots.every(slot => /^[ \t]*$/u.test(slot.gapBefore))
+          && profile.indent + profile.slots.map((slot, position) => position === 0 ? slot.text : slot.gapBefore + slot.text).join("") === code;
 }
 
 /** The row without its terminal cell when that cell's axis is listed as terminal. */

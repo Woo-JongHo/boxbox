@@ -1,9 +1,9 @@
-import      { existsSync, lstatSync, readdirSync } from "node:fs"                             ;
-import      { readFileSync, statSync             } from "node:fs"                             ;
-import      { join, resolve                      } from "node:path"                           ;
-import      { describe, expect, test             } from "bun:test"                            ;
-import      { AXIS_NOTES, KIND_AXES              } from "@/typescript/grid-kinds.ts"          ;
-import      { pluginDrift                        } from "../development/tools/sync-plugin.ts" ;
+import      { existsSync, lstatSync, readdirSync    } from "node:fs"                             ;
+import      { readFileSync, statSync                } from "node:fs"                             ;
+import      { join, resolve                         } from "node:path"                           ;
+import      { describe, expect, test                } from "bun:test"                            ;
+import      { AXIS_NOTES, KIND_AXES                 } from "@/typescript/grid-kinds.ts"          ;
+import      { pluginDrift, stampMarketplaceVersions } from "../development/tools/sync-plugin.ts" ;
 
 const ROOT                    = resolve(import.meta.dir, "..")                                                               ;
 const read                    = (path: string): string => readFileSync(resolve(ROOT, path), "utf8")                          ;
@@ -11,6 +11,47 @@ const parseJson               = (path: string): Record<string, unknown> => JSON.
 const LANGUAGE_DISCOVERY_TEXT = "TypeScript, Python, JSON, and YAML"                                                         ;
 
 describe("plugin distribution contract", () => {
+	test("marketplace version stamping preserves authored JSON layout and unrelated content", () => {
+		const source = [
+			"{",
+			'\t"version": "keep-root",',
+			'\t"plugins": [',
+			"\t\t{",
+			'\t\t\t"name"       : "boxbox",',
+			'\t\t\t"description": "literal \\\"version\\\": \\\"0.2.5\\\" stays",',
+			'\t\t\t"version"    : "0.2.5"',
+			"\t\t},",
+			"\t\t{",
+			'\t\t\t"name"   : "future",',
+			'\t\t\t"version": "9"',
+			"\t\t}",
+			"\t],",
+			'\t"metadata": { "version": "keep-nested" }',
+			"}",
+			"",
+		].join("\n");
+		const expected = source
+			.replace('\"version\"    : \"0.2.5\"', '\"version\"    : \"123.45.6789\"')
+			.replace('\"version\": \"9\"', '\"version\": \"123.45.6789\"');
+
+		const stamped = stampMarketplaceVersions(source, "123.45.6789");
+
+		expect(stamped                                      ).toBe(expected) ;
+		expect(stampMarketplaceVersions(stamped, "123.45.6789")).toBe(stamped ) ;
+		expect(() => stampMarketplaceVersions('{"plugins":[{"version":', "1.0.0")).toThrow() ;
+	});
+
+	test("marketplace version stamping rejects duplicate decoded keys per object", () => {
+		const duplicate = '{"plugins":{"shadow":{"version":"0.0.1"}},"plugins":[{"version":"0.2.5"}]}'                       ;
+		const escaped   = '{"plugins":[],"\\u0070lugins":[{"version":"0.2.5"}]}'                                             ;
+		const siblings  = '{"plugins":[{"name":"first","version":"1"},{"name":"second","version":"2"}]}'                     ;
+		const expected  = '{"plugins":[{"name":"first","version":"123.4.56789"},{"name":"second","version":"123.4.56789"}]}' ;
+
+		expect(() => stampMarketplaceVersions(duplicate, "0.2.6")).toThrow("Duplicate marketplace JSON key: plugins") ;
+		expect(() => stampMarketplaceVersions(escaped  , "0.2.6")).toThrow("Duplicate marketplace JSON key: plugins") ;
+		expect(stampMarketplaceVersions(siblings, "123.4.56789") ).toBe   (expected                                 ) ;
+	});
+
 	test("package, Claude and Codex manifests and both marketplaces share name and version", () => {
 		const packageJson = parseJson("package.json")                                                                     ;
 		const claude      = parseJson("plugin/.claude-plugin/plugin.json")                                                ;

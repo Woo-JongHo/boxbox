@@ -34,6 +34,6 @@ export function axisExpectation(groups: readonly GroupAxes[], requested: readonl
 		requested : names                                                                ,
 		covered   : covered.filter(entry => entry.groups > 0)                            ,
 		missing   : covered.filter(entry => entry.groups === 0).map(entry => entry.axis) ,
-		unknown                                                                ,
+		unknown                                                                          ,
 	};
 }

@@ -5,10 +5,10 @@
 	},
 	"plugins": [
 		{
-			"name": "boxbox",
-			"source": "./plugin",
+			"name"       : "boxbox",
+			"source"     : "./plugin",
 			"description": "Checks TypeScript, Python, JSON and YAML syntax and tabular readability one file at a time, with human-approved whitespace alignment and a read-only inspector.",
-			"version": "0.2.5"
+			"version"    : "0.2.6"
 		}
 	],
 	"description": "BoxBox: tabular readability checks for TypeScript, Python, JSON and YAML"

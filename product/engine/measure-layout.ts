@@ -81,8 +81,8 @@ function leftAnchorError(line: string, spec: LeftAnchorSpec): string | undefined
 	const contentStart = openingIndex + spec.token.length                                      ;
 	const closingIndex = line.indexOf(spec.closingToken, contentStart)                         ;
 	const content      = line.slice(contentStart, closingIndex < 0 ? undefined : closingIndex) ;
-	if (!content.trim())                                      return undefined;
-	if (!content.startsWith(" "))                             return "missing a single space after the opening boundary";
+	if (!content.trim()                                     ) return undefined;
+	if (!content.startsWith(" ")                            ) return "missing a single space after the opening boundary";
 	if (content.startsWith("  ") || content.startsWith("\t")) return "more than one space before the content";
 	return undefined;
 }

@@ -39,16 +39,16 @@ const receiptHeaderBytes  = 64 * 1024        ;
 const maximumReceiptBytes = 64 * 1024 * 1024 ;
 
 const runReceiptIO: RunReceiptIO = {
-	list: directory => readdirSync(directory)                                                          ,
-	isSafeFile: path => { const entry = lstatSync(path); return entry.isFile() && !entry.isSymbolicLink(); } ,
-	readHeader: path => {
+	list       : directory => readdirSync(directory)                                                          ,
+	isSafeFile : path => { const entry = lstatSync(path); return entry.isFile() && !entry.isSymbolicLink(); } ,
+	readHeader : path => {
 		const descriptor = openSync(path, "r");
 		try {
 			const buffer = Buffer.allocUnsafe(receiptHeaderBytes);
 			return buffer.subarray(0, readSync(descriptor, buffer, 0, buffer.length, 0));
 		} finally { closeSync(descriptor); }
 	},
-	readFull: path => {
+	readFull   : path => {
 		if (statSync(path).size > maximumReceiptBytes) throw new Error("Evidence file exceeds the status size limit");
 		return readFileSync(path, "utf8");
 	},

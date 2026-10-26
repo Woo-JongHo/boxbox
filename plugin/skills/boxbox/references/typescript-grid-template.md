@@ -1,6 +1,9 @@
 # TypeScript Grid Template
 
-Examples have the same form as `06_align-tables.ts --write` output. When this document and the checker output differ, **the checker wins**; the gap/insert distinction per axis follows the [authoring axis contract in the readability contract](readability-contract.md). Each role section is an independent table and does not borrow another section's longest value.
+Except where a section is explicitly authoring-only, examples have the same horizontal form as
+`06_align-tables.ts --write` output. When this document and the checker output differ, **the checker wins**; the
+gap/insert distinction per axis follows the [authoring axis contract in the readability contract](readability-contract.md).
+Each role section is an independent table and does not borrow another section's longest value.
 
 ## Private local types
 
@@ -57,6 +60,29 @@ const decision = registry.decisions.get(convention.id                 )! ;
 const document = resolveDocument       (decision.ref, convention.layer)  ;
 ```
 
+**Nested comparison and conditional arguments.** A declaration table with the same callee and arity may compare a
+nested expression only when it occurs at the same argument position and every participating row has the same AST
+shape. Comparison operators stay indivisible. A compatible conditional expression aligns its comparison operator,
+`?` and `:`; a different callee, arity, position or shape drops this nested layer without dropping the parent table.
+Because the parent is a declaration table, two rows are enough for this layer. Ordinary table kinds still need three.
+
+```ts
+const first  = select(input === "a"  ? left  : right, context) ;
+const second = select(value !== null ? ready : empty, context) ;
+```
+
+**Existing multiline call arguments.** When a call already has one argument per physical line, align only its existing
+top-level argument commas. Preserve its line count, leading indentation, tokens and trailing-comma choice. This
+horizontal form does not turn a compact call vertical or pull a multiline call back onto one line.
+
+```ts
+const value = build(
+	short              ,
+	muchLongerArgument ,
+	last
+);
+```
+
 **List layer.** A literal list inside the table is a nested table of its own: the declaration value itself (`const STATES = [...] ;`), an argument of the layered call, or a matcher argument (`expect(x).toEqual([...])`). `[` / `{` keep one column, each item `,` sits right after the widest item in its column, the next item starts one space later, and `]` / `}` sits right after the widest last item. A slot is kept only when every row has the same list shape there (same arity, or the same object property names) and every item is a string, number or boolean literal; lists with identifiers or calls (argv-like), lists with a trailing comma or a multi-line form, and lists where one item is 20 or more columns wider than the second widest in its column stay compact. Dropping the call layer drops the list slots inside its arguments.
 
 ```ts
@@ -67,7 +93,12 @@ expect(states(key)).toEqual(["PASS", "FIXABLE"]) ;
 expect(states(key)).toEqual(["ok"  , "changed"]) ;
 ```
 
-**Vertical form.** When one row's call argument is 20 or more columns wider than the second widest in its column (the import outlier rule B), that row takes the vertical form instead of dragging the table wide: the row goes to its own multi-line statement — arguments one per line under the opening `(`, each non-last argument comma right after the widest argument (the horizontal call-layer rule), and the closing `);` on the statement's indentation — while the remaining rows keep the call layer. The vertical row keeps the table's `=` column. The render only inserts line breaks and padding; a row left vertical leaves the table on the next run and is never touched again.
+**Authoring-only vertical form.** The raw authoring aligner may take a row vertical when one call argument is 20 or
+more columns wider than the second widest in its column (the import outlier rule B). This legacy authoring transform
+inserts line breaks and is outside public Align, which refuses it because public alignment preserves physical lines.
+The row goes to its own multiline statement — arguments one per line under the opening `(`, each non-last argument
+comma right after the widest argument, and the closing `);` on the statement's indentation — while the remaining rows
+keep the call layer. The vertical row keeps the table's `=` column and leaves the horizontal table on the next run.
 
 ```ts
 const open  = charTokenAt(
@@ -116,6 +147,57 @@ function read(value: unknown) {
 	if (typeof unwrapped !== 'string') return undefined;
 	return unwrapped;
 }
+```
+
+**Logical chains.** An existing multiline homogeneous chain is read as `operator | one space | optional ! | operand`.
+The `||`/`&&` cell is two characters and the optional negation cell is one character. The first operand has a virtual
+prefix only while authoring the shape; public Align neither inserts that prefix nor moves operators between lines.
+Comparison operators `!=` and `!==` stay indivisible, while double negation (`!!value`) is opaque and unsupported.
+
+```ts
+if (
+	    first
+	|| !second
+	||  third !== fourth
+) return;
+```
+
+**Adjacent `if` headers.** Three or more adjacent braced headers align their existing `)` and `{` boundaries even when
+a body spans several lines. Three or more adjacent unbraced-return headers align `)` and `return` instead. Blank lines,
+interstitial comments and a change between the two families split the run. No alignment path inserts braces.
+
+```ts
+if (short  ) { run(); }
+if (longest) {
+	runMore();
+}
+if (third  ) { finish(); }
+
+if (missing             ) return undefined;
+if (typeof value !== "x") return undefined;
+if (invalid             ) return undefined;
+```
+
+## Property headers
+
+A same-role property table keeps the header comparison `name | :` when a value continues onto later physical lines.
+Shorthand rows stay in the property run but do not acquire punctuation. A multiline terminal comma
+belongs to that value and does not widen the comma column of unrelated short properties. Consecutive runs of at least
+three ordinary one-line explicit properties compute independent `property-colon`, `property-value` and
+`property-comma` widths. Other explicit and multiline headers share a fallback family; shorthand contributes only an
+existing comma gap. The first source-ordered family uses unsuffixed axes, and later families use `2`, `3`, and higher
+suffixes. Only the ordinary three-or-more family has a value-start axis.
+
+```ts
+const options = {
+	short   : one,
+	expanded: build(
+		first,
+		second,
+	),
+	shorthand,
+	last    : two,
+};
 ```
 
 ## Registration objects · enum members · case rows

@@ -4,6 +4,7 @@ import      { mkdtempSync, readFileSync, rmSync, writeFileSync         } from "n
 import      { tmpdir                                                   } from "node:os"                   ;
 import      { join                                                     } from "node:path"                 ;
 import      { displayWidth                                             } from "@/common/display-width.ts" ;
+import      { loadConventions                                          } from "@/common/conventions.ts"   ;
 import      { buildReport, compareAlarms, DEFAULT_LIMITS, renderReport } from "@/common/report.ts"        ;
 import type { FileResult, ResultEnvelope, ResultGroup                  } from "@/common/result-json.ts"   ;
 
@@ -16,12 +17,12 @@ function group(partial: Partial<ResultGroup> & Pick<ResultGroup, "startLine" | "
 function fileResult(groups: readonly ResultGroup[], parse: FileResult["parse"]["status"] = "not-run", language = "typescript"): FileResult {
 	const fixable = groups.filter(entry => entry.state === "FIXABLE");
 	return {
-		file     : "sample.ts"                                                                                                                  ,
-		language                                                                                                                                ,
-		mode     : parse === "not-run" ? "check" : "write"                                                                                      ,
-		summary  : { groups: groups.length, misaligned: fixable.length, edits: fixable.reduce((sum, entry) => sum + entry.edits, 0), refused: 0, suggested: 0 } ,
-		groups                                                                                                                                  ,
-		parse    : { status: parse, tool: language }                                                                                            ,
+		file    : "sample.ts"                                                                                                                                  ,
+		language                                                                                                                                               ,
+		mode    : parse === "not-run" ? "check" : "write"                                                                                                      ,
+		summary : { groups: groups.length, misaligned: fixable.length, edits: fixable.reduce((sum, entry) => sum + entry.edits, 0), refused: 0, suggested: 0 } ,
+		groups                                                                                                                                                 ,
+		parse   : { status: parse, tool: language }                                                                                                            ,
 	};
 }
 
@@ -50,23 +51,44 @@ describe("check report — safety checks", () => {
 		expect(buildReport({ result: fileResult([]      ), text: ""                          }).checks[2]?.status).toBe("not-run") ;
 	});
 
-	test("two-row auto-fix is allowed only for approved kinds (S4)", () => {
+	test("S4 applies the structural two-row floor only to exception kinds", () => {
 		const allowed  = buildReport({ result: fileResult([group({ startLine: 1, endLine: 2, state: "FIXABLE", kind: "declaration-equals" })]), text: ""}) ;
 		const breaking = buildReport({ result: fileResult([group({ startLine: 1, endLine: 2, state: "FIXABLE", kind: "interface-members"  })]), text: ""}) ;
 
-		expect(allowed.checks[3]?.status ).toBe("pass") ;
-		expect(breaking.checks[3]?.status).toBe("fail") ;
-		expect(breaking.ok               ).toBe(false ) ;
+		expect(allowed.checks[3]?.status ).toBe     ("pass"                         ) ;
+		expect(breaking.checks[3]?.status).toBe     ("fail"                         ) ;
+		expect(breaking.ok               ).toBe     (false                          ) ;
+		expect(allowed.checks[3]?.detail ).toContain("two-row structural exceptions") ;
 	});
 
-	test("call envelope pairs meet the row floor while return guard pairs do not", () => {
-		for (const [kind, expected] of [["declaration-call-envelope", "pass"], ["return-guards", "fail"]] as const) {
+	test("nested declaration-call pairs meet the structural row floor while ordinary pairs do not", () => {
+		for (const [kind, expected] of [["declaration-call-expressions", "pass"], ["object-properties", "fail"]] as const) {
 			const report = buildReport({
 				result: fileResult([group({ startLine: 1, endLine: 2, state: "FIXABLE", kind })]),
 				text: "",
 			});
 
 			expect(report.checks.find(check => check.id === "S4")?.status).toBe(expected);
+		}
+	});
+
+	test("new TypeScript kind mappings do not create preset convention approvals", () => {
+		const root  = mkdtempSync(join(tmpdir(), "boxbox-report-unapproved-kinds-"))                                                                               ;
+		const kinds = ["object-properties", "logical-chains", "if-headers-braced", "if-headers-return", "vertical-call-arguments", "declaration-call-expressions"] ;
+
+		try {
+			const db = loadConventions(root);
+			const report = buildReport({
+				result : fileResult(kinds.map((kind, index) => group({ startLine: index + 1, endLine: index + 2, kind, context: undefined }))) ,
+				text   : ""                                                                                                                    ,
+				db                                                                                                                             ,
+			});
+
+			expect(report.conventions?.records                         ).toBe   (2                         ) ;
+			expect(report.conventions?.lookups.map(item => item.status)).toEqual(kinds.map(() => "unknown")) ;
+			expect(report.conventions?.counts.approved                 ).toBe   (0                         ) ;
+		} finally {
+			rmSync(root, { recursive: true, force: true });
 		}
 	});
 });
@@ -161,7 +183,7 @@ describe("check report — exact noncontiguous row membership", () => {
 		expect(outlier.map(alarm => alarm.startLine)              ).toEqual  ([4]                 ) ;
 	});
 
-	test("CLI emits exact outer and inner guard lines while ordinary groups keep the legacy schema", () => {
+	test("CLI keeps outer return guards legacy-shaped and reports nested if-return headers separately", () => {
 		const root = mkdtempSync(join(tmpdir(), "boxbox-row-lines-"));
 		const lines = [
 			"function inspect() {",
@@ -185,12 +207,18 @@ describe("check report — exact noncontiguous row membership", () => {
 			const result = JSON.parse(run.stdout) as ResultEnvelope                                                                                                                    ;
 			const groups = result.results[0]!.groups                                                                                                                                   ;
 			const guards = groups.filter(entry => entry.kind === "return-guards")                                                                                                      ;
+			const nested = groups.filter(entry => entry.kind === "if-headers-return")                                                                                                  ;
 
-			expect(run.status                                                                                   ).toBe   (1                      ) ;
-			expect(result.schemaVersion                                                                         ).toBe   (1                      ) ;
-			expect(guards.map(entry => entry.rowLines)                                                          ).toEqual([[2, 8, 11], [4, 5, 6]]) ;
-			expect(groups.some(entry => entry.kind === "declaration-equals")                                    ).toBe   (true                   ) ;
-			expect(groups.filter(entry => entry.kind !== "return-guards").every(entry => !("rowLines" in entry))).toBe   (true                   ) ;
+			expect(run.status                                                                                                     ).toBe         (1                                    ) ;
+			expect(result.schemaVersion                                                                                           ).toBe         (1                                    ) ;
+			expect(guards                                                                                                         ).toHaveLength (1                                    ) ;
+			expect(guards[0]?.rowLines                                                                                            ).toEqual      ([2, 8, 11]                           ) ;
+			expect(nested                                                                                                         ).toHaveLength (1                                    ) ;
+			expect(nested[0]                                                                                                      ).toMatchObject({ startLine: 4, endLine: 6, rows: 3 }) ;
+			expect(nested[0]?.axes.map(axis => axis.split("=")[0])                                                                ).toEqual      (["if-close-paren", "if-return"]      ) ;
+			expect(guards.some(entry => entry.rowLines?.includes(4) || entry.rowLines?.includes(5) || entry.rowLines?.includes(6))).toBe         (false                                ) ;
+			expect(groups.some(entry => entry.kind === "declaration-equals")                                                      ).toBe         (true                                 ) ;
+			expect(groups.filter(entry => entry.kind !== "return-guards").every(entry => !("rowLines" in entry))                  ).toBe         (true                                 ) ;
 		} finally {
 			rmSync(root, { recursive: true, force: true });
 		}
