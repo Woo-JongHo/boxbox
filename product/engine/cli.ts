@@ -28,6 +28,9 @@ import      { runTypeScriptAlign                                       } from "@
 import      { AXIS_NOTES, KIND_AXES                                    } from "@/typescript/grid-kinds.ts"    ;
 
 import      { guardedRun, guardStatus                                  } from "@/common/guarded-run.ts"       ;
+import      { runMode                                                  } from "@/common/mode.ts"              ;
+import      { runStatusline                                            } from "@/common/statusline.ts"        ;
+import      { runUpdate                                                } from "@/common/update.ts"            ;
 
 export const CLI_VERSION = "0.2.6";
 
@@ -44,6 +47,9 @@ Commands:
   status --root <path> [--json]
   hook session|post|stop --root <path>
   hooks install codex|claude --root <path>
+  mode    [off|check|align|refactor] [--global] [--json]
+  update  [--check] [--snooze [days]] [--source <checkout>] [--host claude|codex] [--json]
+  statusline [--wrap "<command>"] [--no-color]
   db init [--json]
   db status [--json]
 
@@ -554,7 +560,8 @@ async function guide(parsed: ParsedFileCommand, root: string): Promise<number> {
 	return guides.length > 0 ? 0 : 1;
 }
 
-async function format(parsed: ParsedFileCommand, root: string, alignmentOnly = false): Promise<number> {
+/** The one pipeline call behind `format`, `align` and the align-mode hook; approval and preservation gates included. */
+async function pipeline(parsed: ParsedFileCommand, root: string, alignmentOnly: boolean) {
 	const command   = alignmentOnly ? "align" : "format"                           ;
 	const errorCode = alignmentOnly ? "ALIGN_NOT_ELIGIBLE" : "FORMAT_NOT_ELIGIBLE" ;
 	const resolved  = resolveConfig(root)                                          ;
@@ -562,18 +569,26 @@ async function format(parsed: ParsedFileCommand, root: string, alignmentOnly = f
 	const formatter = alignmentOnly ? undefined : resolved.effective.formatters[parsed.language] ;
 	const context   = approvalContext(root)                                                      ;
 	if (context.registry.conventions.length === 0) throw new CliError(errorCode, `${command} refused: approval registry is empty`);
+	return runFormatPipeline({
+		root,
+		file            : parsed.file,
+		language        : parsed.language,
+		...(formatter ? { formatter } : {}),
+		registry        : context.registry        ,
+		resolveDocument : context.resolveDocument ,
+		dryRun          : parsed.dryRun           ,
+		alignmentOnly,
+		provenance      : () => approvalContext(root).fingerprint,
+	});
+}
+
+const alignFile = (parsed: ParsedFileCommand, root: string) => pipeline(parsed, root, true);
+
+async function format(parsed: ParsedFileCommand, root: string, alignmentOnly = false): Promise<number> {
+	const command   = alignmentOnly ? "align" : "format"                           ;
+	const errorCode = alignmentOnly ? "ALIGN_NOT_ELIGIBLE" : "FORMAT_NOT_ELIGIBLE" ;
 	try {
-		const result = await runFormatPipeline({
-			root,
-			file            : parsed.file,
-			language        : parsed.language,
-			...(formatter ? { formatter } : {}),
-			registry        : context.registry        ,
-			resolveDocument : context.resolveDocument ,
-			dryRun          : parsed.dryRun           ,
-			alignmentOnly,
-			provenance      : () => approvalContext(root).fingerprint,
-		});
+		const result = await pipeline(parsed, root, alignmentOnly);
 		const output = { schemaVersion: 1, tool: "boxbox", command, ok: true, dryRun: parsed.dryRun, formatEligible: true, ...result,
 			...(alignmentOnly ? { mode: "align", horizontalWhitespaceOnly: true } : {}),
 		};
@@ -584,6 +599,8 @@ async function format(parsed: ParsedFileCommand, root: string, alignmentOnly = f
 		}
 		return 0;
 	} catch (error) {
+		// Configuration refusals keep their own code, as they did before the pipeline call was shared.
+		if (error instanceof CliError) throw error;
 		throw new CliError(errorCode, `${command} refused: ${messageOf(error)}`);
 	}
 }
@@ -608,7 +625,16 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 			if (!resolveConfig(project).effective.languages.includes(parsed.language)) throw new Error("LANGUAGE_DISABLED");
 			return inspectFile(parsed, project);
 		}, CLI_VERSION);
-		if (command === "hook")   return await lifecycleHook(tail, async (project, file) => inspectFile(parseFileCommand(["--file", file], false, project), project));
+		if (command === "hook")   return await lifecycleHook(tail, async (project, file) => inspectFile(parseFileCommand(["--file", file], false, project), project), {
+			version : CLI_VERSION,
+			align   : async (project, file) => {
+				const result = await alignFile(parseFileCommand(["--file", file], false, project), project);
+				return { written: result.written, edits: result.alignmentEdits?.length ?? 0 };
+			},
+		});
+		if (command === "mode")       return runMode(tail, assertRoot(root));
+		if (command === "update")     return runUpdate(tail, CLI_VERSION);
+		if (command === "statusline") return runStatusline(tail, CLI_VERSION);
 		if (command === "hooks")  return installHooks(tail);
 		if (command === "status") return guardStatus(tail);
 		if (command === "db")     return database(tail, json);

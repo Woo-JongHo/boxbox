@@ -3,6 +3,23 @@ import      { existsSync, mkdirSync, readFileSync, writeFileSync, } from "node:f
 import      { extname, isAbsolute, join, relative, resolve        } from "node:path"               ;
 import      { snapshot, changed, supported                        } from "@/common/guarded-run.ts" ;
 import type { Inspection                                          } from "@/common/guarded-run.ts" ;
+import      { resolveMode, type Mode                              } from "@/common/mode.ts"        ;
+import      { updateNotice                                        } from "@/common/update.ts"      ;
+
+/** Applies engine-approved horizontal whitespace to one file; only called in `align` mode. */
+export type Aligner = (root: string, file: string) => Promise<{ readonly written: boolean; readonly edits: number }>;
+
+export interface LifecycleOptions {
+	readonly align?   : Aligner ;
+	readonly version? : string  ;
+}
+
+const MODE_LINES: Record<Mode, string> = {
+	off      : "Mode off: the hooks stay idle until the mode changes (`boxbox mode check`)."                                                                                                                                                 ,
+	check    : "Mode check: changed code is checked after each edit and again on completion. Read-only."                                                                                                                                     ,
+	align    : "Mode align: after each edit the engine applies approved horizontal whitespace to changed files and reports it. Re-read a file before editing it again."                                                                      ,
+	refactor : "Mode refactor: you may restructure code for readability. Before composing, run `guide --file <file> --authoring --json`; finish with `check --json --expect-axis <axis>` for each boundary you designed. Hooks only report." ,
+};
 
 /** The host event each hook mode answers; one table so the dispatcher and the installer cannot disagree. */
 const HOOK_EVENTS: readonly (readonly [event: string, mode: string])[] = [
@@ -32,7 +49,7 @@ function snapshotExclusions(root: string): ReadonlySet<string> {
 	const namespace   = projectReceiptNamespace(projectRoot           ) ;
 	const path        = relative               (projectRoot, namespace) ;
 	if (
-		path === ""
+		   path === ""
 		|| path === ".."
 		|| path.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`)
 		|| isAbsolute(path)
@@ -41,7 +58,7 @@ function snapshotExclusions(root: string): ReadonlySet<string> {
 	return new Set([namespace]);
 }
 
-export async function lifecycleHook(args: readonly string[], inspect: Inspection): Promise<number> {
+export async function lifecycleHook(args: readonly string[], inspect: Inspection, options: LifecycleOptions = {}): Promise<number> {
 	const mode  = args[0]                                            ;
 	const event = HOOK_EVENTS.find(([, name]) => name === mode)?.[0] ;
 	if (event === undefined) throw new Error("Expected session|post|stop");
@@ -57,12 +74,17 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 		const directory  = stateDirectory(root, id)                                            ;
 		const exclusions = snapshotExclusions(root)                                            ;
 		mkdirSync(directory, { recursive: true });
-		const baseline = join(directory, "baseline.json");
+		const baseline = join       (directory, "baseline.json") ;
+		const setting  = resolveMode(root                      ) ;
 		if (mode === "session") {
+			// The baseline is taken in every mode so a mode switched on mid-session still compares with the session start.
 			if (!existsSync(baseline)) writeFileSync(baseline, JSON.stringify(snapshot(root, "", {}, [], exclusions)), { flag: "wx" });
-			console.log(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: `[boxbox] Changed code is checked after each edit, and all session changes are checked again on completion. Results are recorded in ${directory}.` } }));
+			const update = options.version ? updateNotice(options.version) : undefined                                                                                       ;
+			const lines  = [`[boxbox] ${MODE_LINES[setting]}`, ...(setting === "off" ? [] : [`Results are recorded in ${directory}.`]), ...(update ? [update.context] : [])] ;
+			console.log(JSON.stringify({ ...(update ? { systemMessage: update.user } : {}), hookSpecificOutput: { hookEventName: event, additionalContext: lines.join(" ") } }));
 			return 0;
 		}
+		if (setting === "off") { console.log("{}"); return 0; }
 		if (!existsSync(baseline)) throw new Error("Missing SessionStart baseline; start a session in this project");
 		const before      = JSON.parse(readFileSync(baseline, "utf8")) ;
 		const after       = snapshot(root, "", {}, [], exclusions)     ;
@@ -76,12 +98,28 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 			checked.push({ file, result: await inspect(root, file) });
 		}
 		if (changed(after, snapshot(root, "", {}, [], exclusions)).length) throw new Error("Source changed during check");
-		const failed  = checked.some(item => item.result.summary.misaligned || item.result.summary.refused)                                                      ;
-		const state   = failed ? "FAIL" : unsupported.length ? "UNSUPPORTED" : checked.length ? "PASS" : "NO_CHANGES"                                            ;
-		const record  = { event, state, files, checked, unsupported, tool: input.tool_name ?? null, at: new Date().toISOString(), automaticFixPerformed: false } ;
-		const receipt = join(directory, `${Date.now()}-${randomUUID()}.json`)                                                                                    ;
+		const aligned = [] as { file: string; edits: number }[];
+		if (setting === "align" && mode === "post" && options.align) {
+			for (const item of checked) {
+				if (!item.result.summary.misaligned) continue;
+				try {
+					const outcome = await options.align(root, item.file);
+					if (!outcome.written) continue;
+					// The pipeline does not always list its edits; the pre-alignment check counted them exactly.
+					aligned.push({ file: item.file, edits: outcome.edits || item.result.summary.edits });
+					item.result = await inspect(root, item.file);
+				} catch {
+					// A refused alignment (no approval, preservation failure) leaves the file untouched and is reported by check.
+				}
+			}
+		}
+		const failed  = checked.some(item => item.result.summary.misaligned || item.result.summary.refused)                                                                                           ;
+		const state   = failed ? "FAIL" : unsupported.length ? "UNSUPPORTED" : checked.length ? "PASS" : "NO_CHANGES"                                                                                 ;
+		const record  = { event, state, files, checked, unsupported, tool: input.tool_name ?? null, at: new Date().toISOString(), mode: setting, aligned, automaticFixPerformed: aligned.length > 0 } ;
+		const receipt = join(directory, `${Date.now()}-${randomUUID()}.json`)                                                                                                                         ;
 		writeFileSync(receipt, JSON.stringify(record, null, 2), { flag: "wx" });
-		const reason = `[boxbox] ${event}: ${state}. ${receipt}`;
+		const fixed  = aligned.length ? ` Aligned ${aligned.map(item => `${item.file} (${item.edits} edits)`).join(", ")}; re-read before editing.` : "" ;
+		const reason = `[boxbox] ${event}: ${state}. ${receipt} mode=${setting}.${fixed}`                                                                ;
 		// Unsupported files are only reported. Stop blocks at most once per session: this breaks endless continuation
 		// even on Codex, which has no Claude-style stop_hook_active.
 		const stopMarker = join(directory, "stop-blocked")                                                             ;
@@ -100,7 +138,7 @@ export function installHooks(args: readonly string[]): number {
 	if (args[0] !== "install" || !["codex", "claude"].includes(args[1] ?? "")) throw new Error("Expected hooks install codex|claude --root <absolute-path>");
 	const root     = rootOf(args.slice(2))                                           ;
 	const host     = args[1]                                                         ;
-	const folder   = join(root, host === "codex" ? ".codex" : ".claude")             ;
+	const folder   = join(root  , host === "codex" ? ".codex"     : ".claude"      ) ;
 	const path     = join(folder, host === "codex" ? "hooks.json" : "settings.json") ;
 	const document = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : {}  ;
 	const quote    = (value: string) => "'" + value.replaceAll("'", "'\\''") + "'"   ;
