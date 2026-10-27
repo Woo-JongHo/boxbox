@@ -24,8 +24,8 @@ release documentation when preparing a version.
 
 ### Fixed
 
-- TypeScript object-row detection no longer loses rows to state left over from
-  an earlier group.
+- TypeScript objects in a run too short to become object-rows stay available
+  to registration tables instead of being dropped without a report.
 - `sync:plugin` compares plugin paths with `/` on Windows, which had blocked
   the installer build there.
 
