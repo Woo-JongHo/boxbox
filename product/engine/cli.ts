@@ -164,16 +164,26 @@ function inferredLanguage(file: string): PublicLanguage | undefined {
 	if (extension === ".py")                           return "python";
 	if (extension === ".json")                         return "json";
 	if (extension === ".yaml" || extension === ".yml") return "yaml";
+
 	return undefined;
 }
 
-function parseFileCommand(args: readonly string[], allowDryRun: boolean, root: string, allowAuthoring = false, allowExpect = false): ParsedFileCommand {
+function parseFileCommand(
+	args: readonly string[],
+	allowDryRun: boolean,
+	root: string,
+	allowAuthoring = false,
+	allowExpect = false
+): ParsedFileCommand {
 	let file         : string | undefined         ;
 	let language     : PublicLanguage | undefined ;
-	let json                    = false           ;
-	let dryRun                  = false           ;
-	let authoring               = false           ;
-	const expectAxes : string[] = []              ;
+
+	let json      = false ;
+	let dryRun    = false ;
+	let authoring = false ;
+
+	const expectAxes: string[] = [];
+
 	for (let index = 0; index < args.length; index += 1) {
 		const argument = args[index]!;
 		if (argument === "--json") { json = true; continue; }
@@ -185,14 +195,16 @@ function parseFileCommand(args: readonly string[], allowDryRun: boolean, root: s
 		}
 		if (argument === "--expect-axis" && allowExpect) {
 			const value = args[index + 1];
-			if (!value || !/^[a-z][a-z0-9{}-]*(=\d+)?$/u.test(value)) throw new CliError("MISSING_VALUE", "--expect-axis requires an axis name such as call-open-paren");
+			if (!value || !/^[a-z][a-z0-9{}-]*(=\d+)?$/u.test(value))
+				throw new CliError("MISSING_VALUE", "--expect-axis requires an axis name such as call-open-paren");
 			index += 1;
 			expectAxes.push(value);
 			continue;
 		}
 		if (argument === "--file" || argument === "--language") {
 			const value = args[index + 1];
-			if (!value || value.startsWith("--")) throw new CliError("MISSING_VALUE", `${argument} requires a value`);
+			if (!value || value.startsWith("--"))
+				throw new CliError("MISSING_VALUE", `${argument} requires a value`);
 			index += 1;
 			if (argument === "--file") {
 				if (file !== undefined) throw new CliError("DUPLICATE_OPTION", "--file may be provided only once");
@@ -212,12 +224,25 @@ function parseFileCommand(args: readonly string[], allowDryRun: boolean, root: s
 		}
 		throw new CliError("UNKNOWN_OPTION", `unknown option: ${argument}`);
 	}
-	if (!file) throw new CliError("MISSING_FILE", "one --file <path> is required");
+
+	if (!file)
+		throw new CliError("MISSING_FILE", "one --file <path> is required");
+
 	const absolute = insideRoot      (root, file, authoring) ;
 	const inferred = inferredLanguage(absolute             ) ;
-	if (!inferred) throw new CliError("UNSUPPORTED_LANGUAGE", `cannot infer a supported language from: ${file}`);
-	if (language && language !== inferred) throw new CliError("LANGUAGE_MISMATCH", `--language ${language} does not match ${file}`);
-	return { file: relative(root, absolute), language: language ?? inferred, json, dryRun, authoring, expectAxes };
+	if (!inferred)
+		throw new CliError("UNSUPPORTED_LANGUAGE", `cannot infer a supported language from: ${file}`);
+	if (language && language !== inferred)
+		throw new CliError("LANGUAGE_MISMATCH", `--language ${language} does not match ${file}`);
+
+	return {
+		file     : relative(root, absolute),
+		language : language ?? inferred,
+		json,
+		dryRun,
+		authoring,
+		expectAxes
+	};
 }
 
 function jsonRequested(args: readonly string[]): boolean {
@@ -225,7 +250,9 @@ function jsonRequested(args: readonly string[]): boolean {
 }
 
 function assertSimpleFlags(args: readonly string[], allowed: readonly string[]): void {
-	for (const argument of args) if (!allowed.includes(argument)) throw new CliError("UNKNOWN_OPTION", `unknown option: ${argument}`);
+	for (const argument of args)
+		if (!allowed.includes(argument))
+			throw new CliError("UNKNOWN_OPTION", `unknown option: ${argument}`);
 }
 
 interface ApprovalContext {
@@ -240,14 +267,22 @@ function approvalContext(root: string): ApprovalContext {
 	const userRoot   = userConfig ? dirname(userConfig) : undefined                 ;
 	const projectDb  = join(root, ".boxbox")                                        ;
 	const presetRoot = ruleData("presets/recommended/")                             ;
+
 	const sources: RegistrySource[] = [
 		...(existsSync(projectDb) ? [{ root: projectDb, layer: "project" as const }] : []),
 		...(userRoot && existsSync(userRoot) ? [{ root: userRoot, layer: "user" as const }] : []),
 		{ root: presetRoot, layer: "preset" as const },
 	];
-	const roots           = { project: root, ...(userRoot && existsSync(userRoot) ? { user: userRoot } : {}), preset: presetRoot } ;
-	const registry        = loadApprovalRegistry(sources)                                                                          ;
-	const resolveDocument = documentResolver(roots)                                                                                ;
+
+	const roots = {
+		project: root,
+		...(userRoot && existsSync(userRoot) ? { user: userRoot } : {}),
+		preset: presetRoot
+	};
+
+	const registry        = loadApprovalRegistry(sources) ;
+	const resolveDocument = documentResolver(roots)       ;
+
 	const documents = [...registry.decisions.values()].map(decision => {
 		const convention = registry.conventions.find(record => record.id === decision.id);
 		try {
@@ -257,6 +292,7 @@ function approvalContext(root: string): ApprovalContext {
 			return [decision.id, decision.ref, "invalid", messageOf(error)];
 		}
 	});
+
 	const evidence = JSON.stringify({
 		config      : config.fingerprint                ,
 		conventions : registry.conventions              ,
@@ -264,12 +300,35 @@ function approvalContext(root: string): ApprovalContext {
 		decisions   : [...registry.decisions.entries()] ,
 		documents,
 	});
-	return { registry, resolveDocument, fingerprint: `sha256:${createHash("sha256").update(evidence).digest("hex")}` };
+
+	return {
+		registry,
+		resolveDocument,
+		fingerprint: `sha256:${createHash("sha256").update(evidence).digest("hex")}`
+	};
 }
 
 function syntaxRefusal(parsed: ParsedFileCommand, syntax: SyntaxValidation): FileResult {
-	const groups = [{ kind: "syntax", startLine: 1, endLine: 1, rows: 0, axes: [], state: "REFUSE" as const, edits: 0 }];
-	return { file: parsed.file, language: parsed.language, mode: "check", summary: { groups: 1, misaligned: 0, edits: 0, refused: 1, suggested: 0 }, groups, parse: { status: "skipped", tool: syntax.tool } };
+	const groups = [
+		{
+			kind      : "syntax",
+			startLine : 1,
+			endLine   : 1,
+			rows      : 0,
+			axes      : [],
+			state     : "REFUSE" as const,
+			edits     : 0
+		}
+	];
+
+	return {
+		file     : parsed.file,
+		language : parsed.language,
+		mode     : "check",
+		summary  : { groups: 1, misaligned: 0, edits: 0, refused: 1, suggested: 0 },
+		groups,
+		parse    : { status: "skipped", tool: syntax.tool }
+	};
 }
 
 async function inspectFile(parsed: ParsedFileCommand, root: string, knownSyntax?: SyntaxValidation): Promise<FileResult> {
