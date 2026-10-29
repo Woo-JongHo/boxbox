@@ -93,3 +93,14 @@ test("other native hosts retain discovery without the Codex identity probe", () 
 
 	expect(platform.findCommand("claude", options)).toEqual({ executable: claude, args: [] });
 });
+
+test("PATH launchers forward `update boxbox` to the engine and refuse every other update target", () => {
+	const launchers = platform.pathLaunchers(node, "C:/BoxBox/plugin/scripts/boxbox.mjs");
+	expect(Object.keys(launchers).sort()).toEqual  (["bin/boxbox", "bin/boxbox.cmd", "bin/update", "bin/update.cmd"]) ;
+	expect(launchers["bin/update"]      ).toContain(`if [ "\${1:-}" != boxbox ]; then`                              ) ;
+	expect(launchers["bin/update"]      ).toContain("'C:/BoxBox/plugin/scripts/boxbox.mjs' update \"$@\""           ) ;
+	expect(launchers["bin/update.cmd"]  ).toContain('if /i not "%~1"=="boxbox"'                                     ) ;
+	if (process.platform === "win32") return;
+	const update = spawnSync("sh", ["-c", launchers["bin/update"], "update", "brew"], { encoding: "utf8" });
+	expect(update.status                                 ).toBe(2)                                                                ;
+});

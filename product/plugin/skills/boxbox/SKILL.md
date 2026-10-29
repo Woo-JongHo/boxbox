@@ -115,6 +115,26 @@ Every check and fix goes through the bundled launcher. Resolve `<PLUGIN_ROOT>` f
    missing coverage alongside the remaining `misaligned` count. Zero detected groups
    or zero misalignment does not prove that unsupported code follows the requested style. Report only validations actually run.
 
+## Modes, update and status line
+
+`/boxbox mode <off|check|align|refactor>` runs `"<PLUGIN_ROOT>/scripts/boxbox" mode <mode>` (add `--global` for the default
+of every project) and reports the change. `/boxbox mode` alone prints the current mode.
+
+| Mode | Who changes code | Hooks |
+|---|---|---|
+| `off` | Nobody | Idle |
+| `check` (default) | Nobody | Read-only check after each edit and on completion |
+| `align` | The engine only: approved horizontal whitespace | PostToolUse applies it and reports the files; re-read them before the next edit |
+| `refactor` | You, following Write/Refactor above | Report only |
+
+When SessionStart shows the update notice, do not ask about it and do not update yourself. If the user asks, point them
+to `! update boxbox` (it prints one progress line per step, verifies the installed version and shows patch notes) and a
+restart afterwards. To hide the notice for seven days, run `"<PLUGIN_ROOT>/scripts/boxbox" update --snooze`. Until the npm installer is published, the first
+update needs `update --source <absolute boxbox checkout>`; ask the user for that path. `update --check` only reports.
+
+`"<PLUGIN_ROOT>/scripts/boxbox" statusline [--wrap "<existing command>"]` prints one status-line segment such as
+`▣ BB·ALIGN ↑`. Change the user's `statusLine` setting only when they ask for it, and keep their existing command with `--wrap`.
+
 ## Rule documents
 
 Read the documents in this folder when a judgment is needed.

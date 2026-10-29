@@ -7,6 +7,7 @@ import      {
               engineCommand                                                  ,
               findCommand                                                    ,
               hookCommands                                                   ,
+              pathLaunchers                                                  ,
               supportedNode                                                  ,
                                                                                } from "./platform.mjs"            ;
 
@@ -85,6 +86,8 @@ for (const path of documents) {
 	}
 }
 writeFileSync(configuration, JSON.stringify({ node, cli, skillCommand }, null, "\t") + "\n");
+mkdirSync(join(plugin, "bin"), { recursive: true });
+for (const [path, text] of Object.entries(pathLaunchers(node, launcher))) writeFileSync(join(plugin, path), text, { mode: 0o755 });
 
 const hooksPath = join      (plugin, "hooks/hooks.json"     ) ;
 const hooks     = JSON.parse(readFileSync(hooksPath, "utf8")) ;

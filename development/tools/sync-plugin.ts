@@ -153,7 +153,8 @@ function pluginFiles(root: string, directory = "plugin"): string[] {
 	if (!stat) return [];
 	if (stat.isSymbolicLink() || !stat.isDirectory()) return [directory];
 	return readdirSync(absolute).flatMap(name => {
-		const path = join(directory, name);
+		// Expected paths use `/`; a native join would produce `\` on Windows and report every file as unexpected.
+		const path = `${directory}/${name}`;
 		return lstatSync(resolve(root, path)).isDirectory() ? pluginFiles(root, path) : [path];
 	});
 }

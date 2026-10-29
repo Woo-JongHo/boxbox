@@ -246,7 +246,6 @@ function collect(source: SourceFile, node: Node, minRows: number, seen: Set<Node
 			? contained.filter(sibling => !seen.has(sibling))
 			: contained;
 		if (!siblings) continue;
-		if (kind.name === "object-rows") for (const sibling of siblings) seen.add(sibling);
 		if (explainLine !== undefined) {
 			for (const sibling of siblings) {
 				if (source.getLineAndCharacterOfPosition(sibling.getStart(source)).line + 1 === explainLine) result.candidates.push(sibling);
@@ -255,6 +254,8 @@ function collect(source: SourceFile, node: Node, minRows: number, seen: Set<Node
 		for (const run of runsOf(source, siblings, kind)) {
 			if (run.length < (kind.minRows?.(run) ?? minRows)) continue;
 			if (kind.name === "object-properties") seen.add(node);
+			// Only objects that became object-rows are claimed; the rest stay open to registration (audit 2026-10-27).
+			if (kind.name === "object-rows") for (const row of run) seen.add(row.node);
 			if (kind.name === "if-headers-return") for (const row of run) seen.add(row.node);
 			result.groups.push(buildGroup(source, kind.name, kind.groupName ? kind.groupName(run) : kind.name, run, syntaxKindName(node), path.length));
 		}
