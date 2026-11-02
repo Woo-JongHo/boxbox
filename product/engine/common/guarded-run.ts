@@ -75,9 +75,9 @@ export function lockDirectory(root: string): string {
 }
 
 function hashFile(path: string): string {
-	const hash       = createHash("sha256");
-	const descriptor = openSync(path, "r");
-	const buffer     = Buffer.allocUnsafe(64 * 1024);
+	const hash       = createHash        ("sha256" ) ;
+	const descriptor = openSync          (path, "r") ;
+	const buffer     = Buffer.allocUnsafe(64 * 1024) ;
 
 	try {
 		for (;;) {
@@ -126,8 +126,8 @@ function advisoryStatusLock(args: readonly string[], root: string, json: boolean
 			command : "status",
 			root,
 
-			state              : "TOOL_ERROR",
-			errorCode          : "CONCURRENT_OPERATION",
+			state              : "TOOL_ERROR"           ,
+			errorCode          : "CONCURRENT_OPERATION" ,
 			nativeHookVerified : false
 		}, json);
 
@@ -267,12 +267,12 @@ export async function guardedRun(
 	const id        = randomUUID  ()     ;
 
 	const record = {
-		schemaVersion : 1,
-		tool          : "boxbox",
-		command       : "run",
-		runId         : id,
-		root          : root,
-		engineVersion : engineVersion,
+		schemaVersion : 1             ,
+		tool          : "boxbox"      ,
+		command       : "run"         ,
+		runId         : id            ,
+		root          : root          ,
+		engineVersion : engineVersion ,
 
 		runtime : {
 			node       : process.versions.node,
@@ -282,26 +282,26 @@ export async function guardedRun(
 		startedAt  : new Date().toISOString(),
 		finishedAt : null as string | null,
 
-		state         : "RUNNING",
-		childExitCode : null as number | null,
-		preflight     : "NOT_RUN",
-		validation    : "NOT_RUN",
-		errorCode     : null as string | null,
+		state         : "RUNNING"             ,
+		childExitCode : null as number | null ,
+		preflight     : "NOT_RUN"             ,
+		validation    : "NOT_RUN"             ,
+		errorCode     : null as string | null ,
 
-		before                : {} as Snapshot,
-		after                 : {} as Snapshot,
-		afterSnapshotComplete : false,
+		before                : {} as Snapshot ,
+		after                 : {} as Snapshot ,
+		afterSnapshotComplete : false          ,
 
-		ignoredSymlinks : [] as string[],
-		changed         : [] as string[],
-		checked         : [] as { file: string; result: FileResult }[],
-		unsupported     : [] as string[],
-		deleted         : [] as string[],
+		ignoredSymlinks : [] as string[]                               ,
+		changed         : [] as string[]                               ,
+		checked         : [] as { file: string; result: FileResult }[] ,
+		unsupported     : [] as string[]                               ,
+		deleted         : [] as string[]                               ,
 
-		excludedDirectories        : [...excluded],
-		symlinkDirectoriesFollowed : false,
-		nativeHookVerified         : false,
-		automaticFixPerformed      : false,
+		excludedDirectories        : [...excluded] ,
+		symlinkDirectoriesFollowed : false         ,
+		nativeHookVerified         : false         ,
+		automaticFixPerformed      : false         ,
 	};
 
 	persist(directory, record, id);
@@ -317,9 +317,9 @@ export async function guardedRun(
 
 		record.childExitCode = await execute(command, root, json);
 
-		record.after                 = snapshot(root, "", {}, record.ignoredSymlinks);
-		record.ignoredSymlinks       = [...new Set(record.ignoredSymlinks)].sort();
-		record.afterSnapshotComplete = true;
+		record.after                 = snapshot(root, "", {}, record.ignoredSymlinks) ;
+		record.ignoredSymlinks       = [...new Set(record.ignoredSymlinks)].sort()    ;
+		record.afterSnapshotComplete = true                                           ;
 
 		record.changed = changed(record.before, record.after);
 		if (record.changed.some(file =>
@@ -416,9 +416,9 @@ export function guardStatus(args: readonly string[], useOperatingSystemLock = tr
 					: latest.state
 				: "NOT_INVOKED",
 
-			runs,
-			latest,
-			changesSinceRun    : currentChanges,
+			runs                                ,
+			latest                              ,
+			changesSinceRun    : currentChanges ,
 			nativeHookVerified : false
 		}, json);
 

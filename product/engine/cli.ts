@@ -108,7 +108,7 @@ function insideRoot(root: string, file: string, allowMissing = false): string {
 	const absolute = resolve (root, file    ) ;
 	const path     = relative(root, absolute) ;
 	if (
-		path === ""
+		   path === ""
 		|| path === ".."
 		|| path.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`)
 		|| isAbsolute(path)
@@ -123,7 +123,7 @@ function insideRoot(root: string, file: string, allowMissing = false): string {
 			throw new CliError("UNSAFE_FILE_PATH", `new file parent must be a real directory: ${file}`);
 		const physical = relative(realpathSync(root), realpathSync(parent));
 		if (
-			physical === ".."
+			   physical === ".."
 			|| physical.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`)
 			|| isAbsolute(physical)
 		)
@@ -137,7 +137,7 @@ function insideRoot(root: string, file: string, allowMissing = false): string {
 	const realFile = realpathSync(absolute          ) ;
 	const realPath = relative    (realRoot, realFile) ;
 	if (
-		realPath === ".."
+		   realPath === ".."
 		|| realPath.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`)
 		|| isAbsolute(realPath)
 	) {
@@ -149,14 +149,14 @@ function insideRoot(root: string, file: string, allowMissing = false): string {
 function inferredLanguage(file: string): PublicLanguage | undefined {
 	const extension = extname(file).toLowerCase();
 	if (
-		extension === ".ts"
+		   extension === ".ts"
 		|| extension === ".tsx"
 		|| extension === ".mts"
 		|| extension === ".cts"
 	)
 		return "typescript";
-	if (extension === ".py")                           return "python";
-	if (extension === ".json")                         return "json";
+	if (extension === ".py"                          ) return "python";
+	if (extension === ".json"                        ) return "json";
 	if (extension === ".yaml" || extension === ".yml") return "yaml";
 	return undefined;
 }
@@ -170,14 +170,14 @@ function parseFileCommand(args: readonly string[], allowDryRun: boolean, root: s
 	const expectAxes : string[] = []              ;
 	for (let index = 0; index < args.length; index += 1) {
 		const argument = args[index]!;
-		if (argument === "--json") { json = true; continue; }
-		if (argument === "--dry-run" && allowDryRun) { dryRun = true; continue; }
-		if (argument === "--authoring" && allowAuthoring) {
+		if (argument === "--json"                             ) { json = true; continue; }
+		if (argument === "--dry-run" && allowDryRun           ) { dryRun = true; continue; }
+		if (argument === "--authoring" && allowAuthoring      ) {
 			if (authoring) throw new CliError("DUPLICATE_OPTION", "--authoring may be provided only once");
 			authoring = true;
 			continue;
 		}
-		if (argument === "--expect-axis" && allowExpect) {
+		if (argument === "--expect-axis" && allowExpect       ) {
 			const value = args[index + 1];
 			if (!value || !/^[a-z][a-z0-9{}-]*(=\d+)?$/u.test(value)) throw new CliError("MISSING_VALUE", "--expect-axis requires an axis name such as call-open-paren");
 			index += 1;
@@ -194,7 +194,7 @@ function parseFileCommand(args: readonly string[], allowDryRun: boolean, root: s
 			} else {
 				if (language !== undefined) throw new CliError("DUPLICATE_OPTION", "--language may be provided only once");
 				if (
-					value !== "typescript"
+					   value !== "typescript"
 					&& value !== "python"
 					&& value !== "json"
 					&& value !== "yaml"
@@ -312,13 +312,13 @@ function doctorReport(root: string) {
 		const project    = resolved.sources.find(source => source.layer === "project") ;
 		const formatters = Object          .keys(resolved.effective.formatters       ) ;
 		config = {
-			ok: true,
-			detail:
+			ok          : true                 ,
+			detail      :
 				`schema 2; languages=${resolved.effective.languages.join(",")}; project=${project?.present ? "present" : "absent, inherited defaults"}`,
-			fingerprint: resolved.fingerprint,
-			layers: resolved.sources,
-			formatters,
-			languages: resolved.effective.languages
+			fingerprint : resolved.fingerprint ,
+			layers      : resolved.sources     ,
+			formatters                         ,
+			languages   : resolved.effective.languages
 		};
 	} catch (error) {
 		config = { ok: false, detail: messageOf(error) };
@@ -360,11 +360,11 @@ function doctorReport(root: string) {
 		schemaVersion : 1        ,
 		tool          : "boxbox" ,
 		command       : "doctor" ,
-		ok,
-		runtimeUsable,
-		formatConfigured,
-		releaseReady: false,
-		checks: { runtime: node, python, config, approval, formatter },
+		ok                                                                    ,
+		runtimeUsable                                                         ,
+		formatConfigured                                                      ,
+		releaseReady : false                                                  ,
+		checks       : { runtime: node, python, config, approval, formatter } ,
 		limitations
 	} ;
 	return result;
@@ -447,12 +447,12 @@ function formatReadiness(parsed: ParsedFileCommand, root: string, result: FileRe
 		if (result.groups.some(group => group.state === "REFUSE")) reasons.push("BoxBox safety refusal prevents formatting");
 		if (groups.length === 0) reasons.push("no verified approval rule applies to this file");
 		return {
-			mode,
-			approvalEligible: reasons.length === 0,
-			verification: "not-run",
-			approvalFacts,
-			reasons,
-			next: "align --dry-run verifies horizontal whitespace only; format --dry-run includes the configured formatter. Both verify parser, preservation and fixed point before writing"
+			mode                                    ,
+			approvalEligible : reasons.length === 0 ,
+			verification     : "not-run"            ,
+			approvalFacts                           ,
+			reasons                                 ,
+			next             : "align --dry-run verifies horizontal whitespace only; format --dry-run includes the configured formatter. Both verify parser, preservation and fixed point before writing"
 		};
 	} catch (error) {
 		return {
@@ -564,15 +564,15 @@ async function format(parsed: ParsedFileCommand, root: string, alignmentOnly = f
 	if (context.registry.conventions.length === 0) throw new CliError(errorCode, `${command} refused: approval registry is empty`);
 	try {
 		const result = await runFormatPipeline({
-			root,
-			file            : parsed.file,
-			language        : parsed.language,
+			root                       ,
+			file     : parsed.file     ,
+			language : parsed.language ,
 			...(formatter ? { formatter } : {}),
 			registry        : context.registry        ,
 			resolveDocument : context.resolveDocument ,
 			dryRun          : parsed.dryRun           ,
-			alignmentOnly,
-			provenance      : () => approvalContext(root).fingerprint,
+			alignmentOnly                                             ,
+			provenance      : () => approvalContext(root).fingerprint ,
 		});
 		const output = { schemaVersion: 1, tool: "boxbox", command, ok: true, dryRun: parsed.dryRun, formatEligible: true, ...result,
 			...(alignmentOnly ? { mode: "align", horizontalWhitespaceOnly: true } : {}),
@@ -608,10 +608,10 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 			if (!resolveConfig(project).effective.languages.includes(parsed.language)) throw new Error("LANGUAGE_DISABLED");
 			return inspectFile(parsed, project);
 		}, CLI_VERSION);
-		if (command === "hook")   return await lifecycleHook(tail, async (project, file) => inspectFile(parseFileCommand(["--file", file], false, project), project));
-		if (command === "hooks")  return installHooks(tail);
+		if (command === "hook"  ) return await lifecycleHook(tail, async (project, file) => inspectFile(parseFileCommand(["--file", file], false, project), project));
+		if (command === "hooks" ) return installHooks(tail);
 		if (command === "status") return guardStatus(tail);
-		if (command === "db")     return database(tail, json);
+		if (command === "db"    ) return database(tail, json);
 		if (command === "init") {
 			const project = assertRoot(root) ;
 			assertSimpleFlags(tail, ["--json"]);
@@ -637,9 +637,9 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 			return doctor(project, json);
 		}
 		const project = assertRoot(root);
-		if (command === "check")  return await check(parseFileCommand(tail, false, project, false, true), project);
-		if (command === "guide")  return await guide(parseFileCommand(tail, false, project, true), project);
-		if (command === "align")  return await format(parseFileCommand(tail, true, project), project, true);
+		if (command === "check" ) return await check(parseFileCommand(tail, false, project, false, true), project);
+		if (command === "guide" ) return await guide(parseFileCommand(tail, false, project, true), project);
+		if (command === "align" ) return await format(parseFileCommand(tail, true, project), project, true);
 		if (command === "format") return await format(parseFileCommand(tail, true, project), project);
 		throw new CliError("UNKNOWN_COMMAND", `unknown command: ${command}`);
 	} catch (error) {

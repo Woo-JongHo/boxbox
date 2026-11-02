@@ -49,8 +49,8 @@ describe("hook — text to report", () => {
 	});
 
 	test("reports only new alarms and states that existing alarms are not this edit's responsibility", () => {
-		const current  = buildReport({ result: result("FIXABLE"), text: "A = 1\nBB = 2\nC = 3" })                ;
-		const baseline = buildReport({ result: result("PASS"   ), text: "A = 1\nBB = 2\nC = 3" })                ;
+		const current  = buildReport({ result: result("FIXABLE"), text: "A = 1\nBB = 2\nC = 3" }               ) ;
+		const baseline = buildReport({ result: result("PASS"   ), text: "A = 1\nBB = 2\nC = 3" }               ) ;
 		const message  = postMessage({ ...current, comparison: compareAlarms(current.alarms, baseline.alarms) }) ;
 
 		expect(message)    .toContain("1 alarm(s) introduced by this edit"                     ) ;
@@ -96,9 +96,9 @@ describe("hook — flow (simulating Claude Code input)", () => {
 	});
 
 	test("with BOXBOX_HOOKS=off it does nothing, and invalid input never blocks the edit", () => {
-		const project = mkdtempSync(join(tmpdir(), "boxbox-hook-"))                                                                                                 ;
-		const off     = run(project, "session", {}, { BOXBOX_HOOKS: "off" })                                                                                        ;
-		const broken  = spawnSync(process.execPath, [HOOK, "post"], { input: "{not json", encoding: "utf8", env: { ...process.env, CLAUDE_PROJECT_DIR: project } }) ;
+		const project = mkdtempSync(join(tmpdir(), "boxbox-hook-")                                                                                                  ) ;
+		const off     = run        (project, "session", {}, { BOXBOX_HOOKS: "off" }                                                                                 ) ;
+		const broken  = spawnSync  (process.execPath, [HOOK, "post"], { input: "{not json", encoding: "utf8", env: { ...process.env, CLAUDE_PROJECT_DIR: project } }) ;
 
 		expect(off.stdout   ).toBe("") ;
 		expect(broken.status).toBe(0 ) ;

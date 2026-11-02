@@ -52,43 +52,43 @@ export function collectSyntaxCases(root: string, grammarPath: string) {
 	if (new Set(kinds.map(kind => kind.value)).size !== kinds.length) throw new Error("Duplicate canonical TypeScript syntax kinds require explicit review");
 
 	return {
-		schemaVersion   : 1,
-		purpose         : "research-inventory-not-approved-rules",
-		scope           : ["typescript", "python"],
-		coverageMeaning : "Parser inventory entries collected; semantic roles, variants, examples and alignment decisions remain separate review work.",
-		typescript: {
-			version: packageMetadata.version,
-			source: "typescript/unstable/ast.SyntaxKind in the installed exact-version package",
-			kinds: kinds.map(entry => ({
+		schemaVersion   : 1                                                                                                                             ,
+		purpose         : "research-inventory-not-approved-rules"                                                                                       ,
+		scope           : ["typescript", "python"]                                                                                                      ,
+		coverageMeaning : "Parser inventory entries collected; semantic roles, variants, examples and alignment decisions remain separate review work." ,
+		typescript : {
+			version          : packageMetadata.version                                                     ,
+			source           : "typescript/unstable/ast.SyntaxKind in the installed exact-version package" ,
+			kinds            : kinds.map(entry => ({
 				id: `typescript.syntax.${entry.name}`,
 				...entry,
-				category          : entry.value >= SyntaxKind.FirstJSDocNode && entry.value <= SyntaxKind.LastJSDocNode ? "documentation-node" : entry.value >= SyntaxKind.FirstNode ? "node" : entry.value >= SyntaxKind.FirstKeyword && entry.value <= SyntaxKind.LastKeyword ? "keyword" : "token-or-trivia",
-				aliases           : allKinds.filter(other => other.value === entry.value && other.name !== entry.name).map(other => other.name),
-				alignmentDecision : "unreviewed",
+				category          : entry.value >= SyntaxKind.FirstJSDocNode && entry.value <= SyntaxKind.LastJSDocNode ? "documentation-node" : entry.value >= SyntaxKind.FirstNode ? "node" : entry.value >= SyntaxKind.FirstKeyword && entry.value <= SyntaxKind.LastKeyword ? "keyword" : "token-or-trivia" ,
+				aliases           : allKinds.filter(other => other.value === entry.value && other.name !== entry.name).map(other => other.name)                                                                                                                                                                 ,
+				alignmentDecision : "unreviewed"                                                                                                                                                                                                                                                                ,
 			})),
-			existingRowKinds: ROW_KINDS.map(kind => kind.name),
+			existingRowKinds : ROW_KINDS.map(kind => kind.name)                                            ,
 		},
-		python: {
-			version       : python.version,
-			source        : `https://github.com/python/cpython/blob/v${python.version}/Grammar/python.gram`,
-			grammarSha256 : grammarHash,
-			nodes         : python.nodes.map(node => ({ id: `python.ast.${node.name}`, ...node, alignmentDecision: "unreviewed" })),
-			productions   : productions.map(name => ({ id: `python.grammar.${name}`, name, category: name.startsWith("invalid_") ? "error-recovery" : "syntax-production", alignmentDecision: "unreviewed" })),
+		python     : {
+			version       : python.version                                                                                                                                                                     ,
+			source        : `https://github.com/python/cpython/blob/v${python.version}/Grammar/python.gram`                                                                                                    ,
+			grammarSha256 : grammarHash                                                                                                                                                                        ,
+			nodes         : python.nodes.map(node => ({ id: `python.ast.${node.name}`, ...node, alignmentDecision: "unreviewed" }))                                                                            ,
+			productions   : productions.map(name => ({ id: `python.grammar.${name}`, name, category: name.startsWith("invalid_") ? "error-recovery" : "syntax-production", alignmentDecision: "unreviewed" })) ,
 		},
 	};
 }
 
 if (import.meta.main) {
 	if (process.argv.slice(2).some(arg => arg !== "--write")) throw new Error("usage: collect-syntax-cases.ts [--write]");
-	const root   = resolve(import.meta.dir, "..", "..")                                                              ;
+	const root   = resolve           (import.meta.dir, "..", ".."                                                  ) ;
 	const result = collectSyntaxCases(root, resolve(root, ".boxbox/cache/syntax-case-inventory/python-3.14.2.gram")) ;
 	const summary = {
-		typescriptKinds                : result.typescript.kinds.length,
-		typescriptExistingRowKinds     : result.typescript.existingRowKinds.length,
-		pythonAstClasses               : result.python.nodes.length,
-		pythonConcreteCurrentNodes     : result.python.nodes.filter(node => !node.abstract && !node.deprecatedCompatibility).length,
-		pythonSyntaxProductions        : result.python.productions.filter(rule => rule.category === "syntax-production").length,
-		pythonErrorRecoveryProductions : result.python.productions.filter(rule => rule.category === "error-recovery").length,
+		typescriptKinds                : result.typescript.kinds.length                                                             ,
+		typescriptExistingRowKinds     : result.typescript.existingRowKinds.length                                                  ,
+		pythonAstClasses               : result.python.nodes.length                                                                 ,
+		pythonConcreteCurrentNodes     : result.python.nodes.filter(node => !node.abstract && !node.deprecatedCompatibility).length ,
+		pythonSyntaxProductions        : result.python.productions.filter(rule => rule.category === "syntax-production").length     ,
+		pythonErrorRecoveryProductions : result.python.productions.filter(rule => rule.category === "error-recovery").length        ,
 	};
 	if (process.argv.includes("--write")) {
 		mkdirSync(resolve(root, "development/corpus/syntax"), { recursive: true });

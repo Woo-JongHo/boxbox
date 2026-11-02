@@ -72,19 +72,19 @@ function gitFingerprint(): RunRecord["git"] {
 	const ahead  = run(["rev-list", "--count", "@{u}..HEAD"]) ;
 	const status = run(["status", "--porcelain"]            ) ;
 	return {
-		branch,
-		sha,
-		dirty : status !== null && status.length > 0,
-		ahead : ahead === null ? null : Number(ahead),
+		branch                                        ,
+		sha                                           ,
+		dirty : status !== null && status.length > 0  ,
+		ahead : ahead === null ? null : Number(ahead) ,
 	};
 }
 
 function hostFingerprint(): RunRecord["host"] {
 	const node = spawnSync("node", ["--version"], { encoding: "utf8" }) ;
 	return {
-		platform : `${process.platform}-${process.arch}`,
-		bun      : Bun.version ?? "unknown",
-		node     : node.status === 0 ? (node.stdout ?? "").trim() : null,
+		platform : `${process.platform}-${process.arch}`                 ,
+		bun      : Bun.version ?? "unknown"                              ,
+		node     : node.status === 0 ? (node.stdout ?? "").trim() : null ,
 	};
 }
 
@@ -146,21 +146,21 @@ function runSelfAlign(): StageOutcome {
 		.flatMap(prefix => listTypeScriptFiles(resolve(root, prefix)).map(relativeToRoot))
 		.sort()                                                                                  ;
 	const normalizeScript = resolve(root, "product/engine/typescript/00_normalize-imports.ts") ;
-	const alignScript     = resolve(root, "product/engine/typescript/06_align-tables.ts")      ;
-	const normalize       = spawn(bun, [normalizeScript, ...files], 600_000)                   ;
-	const changed         = countOf(normalize.output, /changed=(\d+)/)                         ;
-	const errors          = countOf(normalize.output, /errors=(\d+)/)                          ;
+	const alignScript     = resolve(root, "product/engine/typescript/06_align-tables.ts"     ) ;
+	const normalize       = spawn  (bun, [normalizeScript, ...files], 600_000                ) ;
+	const changed         = countOf(normalize.output, /changed=(\d+)/                        ) ;
+	const errors          = countOf(normalize.output, /errors=(\d+)/                         ) ;
 	let misaligned = 0, misalignedFiles = 0, compressed = 0                                      ;
 	for (const path of files) {
-		const result          = spawn(bun, [alignScript, "--file", path], 120_000) ;
-		const count           = countOf(result.output, /misaligned=(\d+)/)         ;
-		const compressedCount = countOf(result.output, /compressed=(\d+)/)         ;
+		const result          = spawn  (bun, [alignScript, "--file", path], 120_000) ;
+		const count           = countOf(result.output, /misaligned=(\d+)/          ) ;
+		const compressedCount = countOf(result.output, /compressed=(\d+)/          ) ;
 		if (count === null || compressedCount === null) {
 			return {
-				ok       : false,
-				exitCode : result.status,
-				metrics  : { files: files.length, changed: changed ?? -1, errors: errors ?? -1, misaligned, misalignedFiles, compressed },
-				error    : `could not parse the alignment check summary: ${path}`,
+				ok       : false                                                                                                          ,
+				exitCode : result.status                                                                                                  ,
+				metrics  : { files: files.length, changed: changed ?? -1, errors: errors ?? -1, misaligned, misalignedFiles, compressed } ,
+				error    : `could not parse the alignment check summary: ${path}`                                                         ,
 			}                                                                                        ;
 		}
 		if (count > 0) misalignedFiles += 1                                                      ;
@@ -168,25 +168,25 @@ function runSelfAlign(): StageOutcome {
 		compressed += compressedCount                                                            ;
 	}
 	return {
-		ok       : changed === 0 && errors === 0 && misaligned === 0,
-		exitCode : normalize.status,
-		metrics  : { files: files.length, changed: changed ?? -1, errors: errors ?? -1, misaligned, misalignedFiles, compressed },
+		ok       : changed === 0 && errors === 0 && misaligned === 0                                                              ,
+		exitCode : normalize.status                                                                                               ,
+		metrics  : { files: files.length, changed: changed ?? -1, errors: errors ?? -1, misaligned, misalignedFiles, compressed } ,
 	};
 }
 
 function runCheck(): StageOutcome {
-	const result = spawn(bun, ["run", "check"], 600_000)                     ;
-	const pass   = countOf(result.output, /(\d+) pass/)                      ;
-	const skip   = countOf(result.output, /(\d+) skip/)                      ;
-	const fail   = countOf(result.output, /(\d+) fail/)                      ;
+	const result = spawn              (bun, ["run", "check"], 600_000      ) ;
+	const pass   = countOf            (result.output, /(\d+) pass/         ) ;
+	const skip   = countOf            (result.output, /(\d+) skip/         ) ;
+	const fail   = countOf            (result.output, /(\d+) fail/         ) ;
 	const ran    = result.output.match(/Ran (\d+) tests across (\d+) files/) ;
 	if (pass === null || skip === null || fail === null) {
 		return { ok: false, exitCode: result.status, metrics: {}, error: "could not parse pass/skip/fail from the check output" } ;
 	}
 	return {
-		ok       : result.status === 0 && fail === 0,
-		exitCode : result.status,
-		metrics  : { pass, skip, fail, tests: ran === null ? -1 : Number(ran[1]!), testFiles: ran === null ? -1 : Number(ran[2]!) },
+		ok       : result.status === 0 && fail === 0                                                                                ,
+		exitCode : result.status                                                                                                    ,
+		metrics  : { pass, skip, fail, tests: ran === null ? -1 : Number(ran[1]!), testFiles: ran === null ? -1 : Number(ran[2]!) } ,
 	};
 }
 
@@ -197,12 +197,12 @@ function packedArtifact(directory: string, version: string): RunArtifact {
 	const entry   = parsed[0]!                                                                                                                         ;
 	const tarball = resolve(root, "dist", entry.filename)                                                                                              ;
 	return {
-		stage  : "pack",
-		target : directory,
-		name   : entry.filename,
-		bytes  : statSync(tarball).size,
-		sha256 : sha256Of(tarball),
-		files  : entry.files.length,
+		stage  : "pack"                 ,
+		target : directory              ,
+		name   : entry.filename         ,
+		bytes  : statSync(tarball).size ,
+		sha256 : sha256Of(tarball)      ,
+		files  : entry.files.length     ,
 		version,
 	};
 }
@@ -222,9 +222,9 @@ function runPack(): StageOutcome {
 }
 
 function runArtifactJourney(): StageOutcome {
-	const result = spawn(bun, ["test", "--timeout", "60000", "test/public-artifact.test.ts", "test/node-artifact.test.ts"], 600_000) ;
-	const pass   = countOf(result.output, /(\d+) pass/)                                                                              ;
-	const fail   = countOf(result.output, /(\d+) fail/)                                                                              ;
+	const result = spawn  (bun, ["test", "--timeout", "60000", "test/public-artifact.test.ts", "test/node-artifact.test.ts"], 600_000) ;
+	const pass   = countOf(result.output, /(\d+) pass/                                                                               ) ;
+	const fail   = countOf(result.output, /(\d+) fail/                                                                               ) ;
 	if (pass === null || fail === null) {
 		return { ok: false, exitCode: result.status, metrics: {}, error: "could not parse pass/fail from the artifact test output" } ;
 	}
@@ -232,9 +232,9 @@ function runArtifactJourney(): StageOutcome {
 }
 
 function runCorpusGate(): StageOutcome {
-	const result   = spawn(bun, ["development/tools/corpus-promote.ts", "--check"], 600_000) ;
-	const checked  = countOf(result.output, /checked=(\d+)/)                                 ;
-	const failures = countOf(result.output, /failures=(\d+)/)                                ;
+	const result   = spawn  (bun, ["development/tools/corpus-promote.ts", "--check"], 600_000) ;
+	const checked  = countOf(result.output, /checked=(\d+)/                                  ) ;
+	const failures = countOf(result.output, /failures=(\d+)/                                 ) ;
 	if (checked === null || failures === null) {
 		return { ok: false, exitCode: result.status, metrics: {}, error: "could not parse checked/failures from the corpus gate output" } ;
 	}
@@ -303,8 +303,8 @@ function main(): void {
 	const requestedStages = known.filter(id => !skip.has(id))                                                                ;
 	if (requestedStages.length === 0) throw new Error("no stages requested") ;
 
-	const git           = gitFingerprint()        ;
-	const host          = hostFingerprint()       ;
+	const git           = gitFingerprint       () ;
+	const host          = hostFingerprint      () ;
 	const preconditions = npmCachePreconditions() ;
 
 	if (dryRun) {
@@ -335,20 +335,20 @@ function main(): void {
 
 	const completion = completionOf(requestedStages, stages)                  ;
 	const record: RunRecord = {
-		schemaVersion : RUNS_SCHEMA_VERSION,
-		recordType    : "run",
-		runId         : `${startedAt.replace(/[:.]/g, "-")}-${(git.sha ?? "nogit").slice(0, 8)}`,
-		startedAt,
-		git,
-		host,
-		preconditions,
-		requestedStages,
-		stages,
-		artifacts,
-		completion,
-		ok       : completion.complete && completion.failed === 0,
-		note,
-		limitations,
+		schemaVersion : RUNS_SCHEMA_VERSION                                                      ,
+		recordType    : "run"                                                                    ,
+		runId         : `${startedAt.replace(/[:.]/g, "-")}-${(git.sha ?? "nogit").slice(0, 8)}` ,
+		startedAt                                                 ,
+		git                                                       ,
+		host                                                      ,
+		preconditions                                             ,
+		requestedStages                                           ,
+		stages                                                    ,
+		artifacts                                                 ,
+		completion                                                ,
+		ok       : completion.complete && completion.failed === 0 ,
+		note                                                      ,
+		limitations                                               ,
 	};
 
 	appendRun(evidenceDir, record)                                            ;

@@ -100,10 +100,10 @@ test("status reads only bounded headers before loading the latest run", () => {
 	const names               = Array.from({ length: 128 }, (_, index) => `${String(index).padStart(8, "0")}-0000-0000-0000-000000000000.json`) ;
 	const fullReads: string[] = []                                                                                                              ;
 	const result = loadLatestRun("/evidence", {
-		list       : () => names,
-		isSafeFile : () => true,
-		readHeader : path => Buffer.from(`{\n  "startedAt": "2026-10-16T12:${path.includes("00000127") ? "59" : "00"}:00.000Z",\n  "padding": "`),
-		readFull   : path => { fullReads.push(path); return JSON.stringify({ startedAt: "2026-10-16T12:59:00.000Z", state: "NO_CHANGES" }); },
+		list       : () => names                                                                                                                  ,
+		isSafeFile : () => true                                                                                                                   ,
+		readHeader : path => Buffer.from(`{\n  "startedAt": "2026-10-16T12:${path.includes("00000127") ? "59" : "00"}:00.000Z",\n  "padding": "`) ,
+		readFull   : path => { fullReads.push(path); return JSON.stringify({ startedAt: "2026-10-16T12:59:00.000Z", state: "NO_CHANGES" }); }     ,
 	});
 	expect(result.runs  ).toBe         (128                    ) ;
 	expect(result.latest).toMatchObject({ state: "NO_CHANGES" }) ;

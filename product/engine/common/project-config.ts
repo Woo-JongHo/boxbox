@@ -160,10 +160,10 @@ function readConfigFile(path: string, label: string): { readonly config: Project
 	let value: unknown;
 	try { value = JSON.parse(raw); }
 	catch (error) { throw new Error(`${path}: malformed JSON: ${error instanceof Error ? error.message : String(error)}`); }
-	const migrated = typeof value === "object"
-		&& value !== null
-		&& !Array.isArray(value)
-		&& (value as Record<string, unknown>).schemaVersion === 1;
+	const migrated =    typeof value                                     === "object"
+		            &&  value                                            !== null
+		            && !Array.isArray(value)
+		            &&  (value as Record<string, unknown>).schemaVersion === 1;
 	return { config: validateProjectConfig(value, label), raw, migrated };
 }
 
@@ -187,10 +187,10 @@ function defaultUserPath(): string {
 }
 
 function missingPath(error: unknown): boolean {
-	return typeof error === "object"
-		&& error !== null
-		&& "code" in error
-		&& error.code === "ENOENT";
+	return   typeof error === "object"
+		  && error        !== null
+		  && "code" in error
+		  && error.code   === "ENOENT";
 }
 
 function lstatIfPresent(path: string): ReturnType<typeof lstatSync> | undefined {
@@ -302,25 +302,73 @@ function merge(base: EffectiveConfig, layer: ProjectConfig): EffectiveConfig {
 }
 
 export function resolveConfig(root: string, options: ResolveConfigOptions = {}): ResolvedConfig {
-	const baseRaw                  = JSON.stringify(BASE_CONFIG)                                                                       ;
-	const presetConfig             = options.preset ? validateProjectConfig(options.preset, "recommended preset") : RECOMMENDED_CONFIG ;
-	const presetRaw                = JSON.stringify(presetConfig)                                                                      ;
-	const userPath                 = resolve(options.userConfigPath ?? defaultUserPath())                                              ;
-	const projectPath              = projectConfigPath(root)                                                                           ;
-	const user                     = readConfigFile(userPath, "user config")                                                           ;
-	const project                  = readConfigFile(projectPath, "project config")                                                     ;
-	let effective: EffectiveConfig = { schemaVersion: 2, languages: [...PUBLIC_LANGUAGES], preset: "recommended", formatters: {} }     ;
-	for (const layer of [BASE_CONFIG, presetConfig, user?.config, project?.config]) if (layer) effective = merge(effective, layer);
-	const embeddedSource = (layer: "base" | "preset", path: string, raw: string): ConfigSource => ({ layer, path, present: true, fingerprint: digest(raw) })                                                                                                             ;
-	const fileSource     = (layer: "user" | "project", path: string, file: ReturnType<typeof readConfigFile>): ConfigSource => ({ layer, path, present: file !== undefined, fingerprint: digest(file?.raw ?? ""), ...(file?.migrated ? { migrated: 1 as const } : {}) }) ;
+	const baseRaw = JSON.stringify(BASE_CONFIG);
+
+	const presetConfig = options.preset
+		? validateProjectConfig(options.preset, "recommended preset")
+		: RECOMMENDED_CONFIG;
+
+	const presetRaw = JSON.stringify(presetConfig);
+
+	const userPath = resolve(
+		options.userConfigPath ?? defaultUserPath()
+	);
+	const projectPath = projectConfigPath(root);
+
+	const user    = readConfigFile(userPath   , "user config"   ) ;
+	const project = readConfigFile(projectPath, "project config") ;
+
+	let effective: EffectiveConfig = {
+		schemaVersion : 2                     ,
+		languages     : [...PUBLIC_LANGUAGES] ,
+		preset        : "recommended"         ,
+		formatters    : {}
+	};
+
+	for (const layer of [BASE_CONFIG, presetConfig, user?.config, project?.config])
+		if (layer) effective = merge(effective, layer);
+
+	const embeddedSource = (
+		layer : "base" | "preset" ,
+		path  : string            ,
+		raw   : string
+	): ConfigSource => ({
+		layer              ,
+		path               ,
+		present     : true ,
+		fingerprint : digest(raw)
+	});
+
+	const fileSource = (
+		layer : "user" | "project" ,
+		path  : string             ,
+		file  : ReturnType<typeof readConfigFile>
+	): ConfigSource => ({
+		layer                                 ,
+		path                                  ,
+		present     : file !== undefined      ,
+		fingerprint : digest(file?.raw ?? "") ,
+
+		...(file?.migrated ? { migrated: 1 as const } : {})
+	});
 
 	const sources: ConfigSource[] = [
 		embeddedSource("base"   , "embedded:base"              , baseRaw   ),
 		embeddedSource("preset" , "embedded:preset/recommended", presetRaw ),
-		fileSource    ("user"   , userPath                     , user      ),
-		fileSource    ("project", projectPath                  , project   ),
+
+		fileSource("user"   , userPath   , user   ),
+		fileSource("project", projectPath, project),
 	];
-	const fingerprint = digest(JSON.stringify({ sources: sources.map(source => [source.layer, source.present, source.fingerprint]), effective }));
+
+	const fingerprint = digest(JSON.stringify({
+		sources: sources.map(source => [
+			source.layer   ,
+			source.present ,
+			source.fingerprint
+		]),
+		effective
+	}));
+
 	return { effective, fingerprint, sources };
 }
 

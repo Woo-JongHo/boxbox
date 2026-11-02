@@ -179,10 +179,10 @@ export function selectGuideExamples(examples: readonly Example[], want: { readon
 
 	return examples
 		.filter(example =>
-			example.status === "approved"
-			&& example.verdict === "after-better"
+			   example.status   === "approved"
+			&& example.verdict  === "after-better"
 			&& example.language === want.language
-			&& example.regime === want.regime
+			&& example.regime   === want.regime
 			&& overlap(example) > 0
 		)
 		.sort((left, right) => overlap(right) - overlap(left) || right.date.localeCompare(left.date) || left.id.localeCompare(right.id))

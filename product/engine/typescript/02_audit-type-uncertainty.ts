@@ -53,10 +53,10 @@ function compareText(left: string, right: string): number {
 
 function targetArgument(): string {
 	if (
-		process.argv.length !== 4
-		|| process.argv[2] !== "--file"
+		    process.argv.length !== 4
+		||  process.argv[2]     !== "--file"
 		|| !process.argv[3]
-		|| process.argv[3].startsWith("--")
+		||  process.argv[3].startsWith("--")
 	) {
 		throw new Error("usage: 02_audit-type-uncertainty.ts --file <repository TypeScript file>");
 	}

@@ -179,7 +179,7 @@ function parseYaml(source: string): Parsed {
 		const lineEnd = (starts[index + 1] ?? source.length) - (starts[index + 1] === undefined ? 0 : 1);
 		if (pair.reason) { refusals.push({ line: index + 1, reason: pair.reason }); return; }
 		if (
-			pair.keyStart < starts[index]!
+			   pair.keyStart < starts[index]!
 			|| pair.keyEnd > lineEnd
 			|| pair.valueStart < starts[index]!
 			|| pair.valueEnd > lineEnd
@@ -195,10 +195,10 @@ function parseYaml(source: string): Parsed {
 		const colon              = text.indexOf(":", pair.keyEnd - starts[index]!) ;
 		const keyStart           = pair.keyStart - starts[index]!                  ;
 		if (
-			keyStart !== match.groups.indent.length
+			   keyStart                                           !== match.groups.indent.length
 			|| text.slice(keyStart, pair.keyEnd - starts[index]!) !== match.groups.key
 			|| colon < 0
-			|| text.slice(colon + 1, relativeValueStart).trim() !== ""
+			|| text.slice(colon + 1, relativeValueStart).trim()   !== ""
 		) {
 			refusals.push({ line: index + 1, reason: "YAML value properties are not alignable" }); return;
 		}
@@ -229,8 +229,8 @@ function runsOf(rows: readonly Row[]): readonly Row[][] {
 	for (const row of rows) {
 		const previous = current.at(-1);
 		if (
-			previous
-			&& row.line === previous.line + 1
+			   previous
+			&& row.line   === previous.line + 1
 			&& row.parent === previous.parent
 			&& row.indent === previous.indent
 		) current.push(row);
@@ -266,15 +266,15 @@ export function analyzeStructured(source: string, language: StructuredLanguage, 
 			depth: 0
 		}] ;
 		return {
-			output: source,
-			refusals,
-			result: {
-				file,
-				language,
-				mode: "check",
-				groups,
-				summary: summarize(groups),
-				parse: { status: "skipped", tool: language === "json" ? "JSON.parse" : "yaml@2.9.1" }
+			output : source ,
+			refusals        ,
+			result : {
+				file                        ,
+				language                    ,
+				mode    : "check"           ,
+				groups                      ,
+				summary : summarize(groups) ,
+				parse   : { status: "skipped", tool: language === "json" ? "JSON.parse" : "yaml@2.9.1" }
 			}
 		};
 	}
@@ -298,13 +298,13 @@ export function analyzeStructured(source: string, language: StructuredLanguage, 
 		depth     : Math.floor(run.rows[0]!.indent.length / 2)
 	}));
 	return {
-		output,
-		refusals: parsed.refusals,
-		result: {
-			file,
-			language,
-			mode: "check",
-			groups,
+		output                     ,
+		refusals : parsed.refusals ,
+		result   : {
+			file          ,
+			language      ,
+			mode: "check" ,
+			groups        ,
 			summary     : summarize(groups) ,
 			unsupported : parsed.refusals   ,
 			parse       : { status: "not-run", tool: language === "json" ? "JSON.parse" : "yaml@2.9.1" }
@@ -326,7 +326,7 @@ export function preservesStructured(before: string, after: string, language: Str
 			const output = afterLines[index]!;
 			const beforeRow = beforeRows.get(index), afterRow = afterRows.get(index);
 			if (
-				!beforeRow
+				   !beforeRow
 				|| !afterRow
 				|| !/^[ \t]*$/u.test(beforeRow.beforeColon)
 				|| !/^[ \t]*$/u.test(beforeRow.afterColon)

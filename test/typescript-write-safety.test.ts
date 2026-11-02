@@ -85,10 +85,10 @@ describe("atomic file replacement helper", () => {
 	});
 
 	test("refuses symbolic and hard link targets conservatively", async () => {
-		const directory = workspace()                    ;
-		const source    = join(directory, "source.ts")   ;
-		const symbolic  = join(directory, "symbolic.ts") ;
-		const hard      = join(directory, "hard.ts")     ;
+		const directory = workspace()                         ;
+		const source    = join     (directory, "source.ts"  ) ;
+		const symbolic  = join     (directory, "symbolic.ts") ;
+		const hard      = join     (directory, "hard.ts"    ) ;
 		writeFileSync(source, "source\n");
 		symlinkSync(source, symbolic);
 		linkSync(source, hard);
@@ -123,7 +123,7 @@ describe("TS multi-pass working copy", () => {
 		const file = relative(root, target);
 
 		const first   = Bun.spawnSync(["bun", script, "--file", file, "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" }) ;
-		const aligned = readFileSync(target)                                                                                     ;
+		const aligned = readFileSync (target                                                                                   ) ;
 		const second  = Bun.spawnSync(["bun", script, "--file", file, "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" }) ;
 
 		expect(first.exitCode                      ).toBe   (0   ) ;

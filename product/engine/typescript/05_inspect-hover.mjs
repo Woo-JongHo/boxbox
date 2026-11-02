@@ -1,21 +1,26 @@
 #!/usr/bin/env node
 
-import { spawn                                            } from "node:child_process" ;
-import { existsSync, readFileSync, realpathSync, statSync } from "node:fs"            ;
-import { basename, relative, resolve                      } from "node:path"          ;
-import { pathToFileURL                                    } from "node:url"           ;
+import      { spawn                       } from "node:child_process" ;
+import      {
+              existsSync                ,
+              readFileSync              ,
+              realpathSync              ,
+              statSync
+                                          } from "node:fs"            ;
+import      { basename, relative, resolve } from "node:path"          ;
+import      { pathToFileURL               } from "node:url"           ;
 
-const root = process.cwd();
-const targetArgument = process.argv[2];
-const symbolArguments = process.argv.slice(3);
+const root            = process.cwd()         ;
+const targetArgument  = process.argv[2]       ;
+const symbolArguments = process.argv.slice(3) ;
 
 if (!targetArgument || symbolArguments.length === 0) {
 	throw new Error("usage: 05_inspect-hover.mjs <file> <symbol[#occurrence]> [symbol[#occurrence] ...]");
 }
 
 function repositoryFile(value) {
-	const target = resolve(root, value);
-	const path = relative(root, target).replaceAll("\\", "/");
+	const target = resolve(root, value)                         ;
+	const path   = relative(root, target).replaceAll("\\", "/") ;
 	if (!path || path === ".." || path.startsWith("../")) throw new Error(`file must be inside repository: ${value}`);
 	if (!existsSync(target) || !statSync(target).isFile()) throw new Error(`file does not exist: ${value}`);
 	const physical = relative(realpathSync(root), realpathSync(target)).replaceAll("\\", "/");
@@ -24,16 +29,16 @@ function repositoryFile(value) {
 	return { path, target };
 }
 
-const file = repositoryFile(targetArgument);
-const target = file.target;
-const source = readFileSync(target, "utf8");
-const binary = resolve(root, "node_modules/.bin/tsc");
-const server = spawn(binary, ["--lsp", "--stdio"], { cwd: root, stdio: ["pipe", "pipe", "pipe"] });
+const file   = repositoryFile(targetArgument)                                                      ;
+const target = file.target                                                                         ;
+const source = readFileSync(target, "utf8")                                                        ;
+const binary = resolve(root, "node_modules/.bin/tsc")                                              ;
+const server = spawn(binary, ["--lsp", "--stdio"], { cwd: root, stdio: ["pipe", "pipe", "pipe"] }) ;
 
-let nextId = 1;
-let buffer = Buffer.alloc(0);
-let stderr = "";
-const pending = new Map();
+let nextId    = 1               ;
+let buffer    = Buffer.alloc(0) ;
+let stderr    = ""              ;
+const pending = new Map()       ;
 const serverExit = new Promise(resolveExit => server.once("exit", (code, signal) => {
 	const error = new Error(stderr.trim() || `TypeScript LSP exited with ${code ?? signal ?? "unknown"}`);
 	for (const waiting of pending.values()) waiting.reject(error);
@@ -75,9 +80,9 @@ server.stdout.on("data", chunk => {
 	while (true) {
 		const headerEnd = buffer.indexOf("\r\n\r\n");
 		if (headerEnd < 0) return;
-		const header = buffer.subarray(0, headerEnd).toString("utf8");
-		const length = Number(/Content-Length: (\d+)/iu.exec(header)?.[1]);
-		const bodyStart = headerEnd + 4;
+		const header    = buffer.subarray(0, headerEnd).toString("utf8")      ;
+		const length    = Number(/Content-Length: (\d+)/iu.exec(header)?.[1]) ;
+		const bodyStart = headerEnd + 4                                       ;
 		if (!Number.isFinite(length) || buffer.length < bodyStart + length) return;
 		const message = JSON.parse(buffer.subarray(bodyStart, bodyStart + length).toString("utf8"));
 		buffer = buffer.subarray(bodyStart + length);
@@ -135,42 +140,42 @@ function comparePosition(left, right) {
 	return left.position.line - right.position.line || left.position.character - right.position.character;
 }
 
-const rootUri = pathToFileURL(root).href;
-const uri = pathToFileURL(target).href;
+const rootUri = pathToFileURL(root).href   ;
+const uri     = pathToFileURL(target).href ;
 
-let opened = false;
-let verificationError = null;
+let opened            = false ;
+let verificationError = null  ;
 try {
 	await request("initialize", {
-		processId: process.pid,
-		rootUri,
-		capabilities: {
+		processId        : process.pid                              ,
+		rootUri                                                     ,
+		capabilities     : {
 			textDocument: {
 				documentSymbol: { hierarchicalDocumentSymbolSupport: true },
 				hover: { contentFormat: ["markdown", "plaintext"] },
 			},
 		},
-		workspaceFolders: [{ uri: rootUri, name: basename(root) }],
+		workspaceFolders : [{ uri: rootUri, name: basename(root) }] ,
 	});
 	notify("initialized", {});
 	notify("textDocument/didOpen", { textDocument: { uri, languageId: "typescript", version: 1, text: source } });
 	opened = true;
 
-	const response = await request("textDocument/documentSymbol", { textDocument: { uri } });
-	const symbols = flattenSymbols(response).sort(comparePosition);
+	const response = await request("textDocument/documentSymbol", { textDocument: { uri } }) ;
+	const symbols  = flattenSymbols(response).sort(comparePosition)                          ;
 	if (symbols.length === 0) throw new Error(`document symbols missing: ${file.path}`);
 
 	for (const value of symbolArguments) {
-		const selector = parseSymbolArgument(value);
-		const matches = symbols.filter(symbol => symbol.name === selector.name);
+		const selector = parseSymbolArgument(value                                  ) ;
+		const matches  = symbols.filter     (symbol => symbol.name === selector.name) ;
 		if (matches.length === 0) throw new Error(`symbol declaration not found: ${selector.name}`);
 		if (!selector.explicit && matches.length > 1) {
 			throw new Error(`ambiguous symbol declaration: ${selector.name}; use ${selector.name}#1..#${matches.length}`);
 		}
 		const symbol = matches[selector.occurrence - 1];
 		if (!symbol) throw new Error(`symbol occurrence not found: ${selector.label}; available=${matches.length}`);
-		const hover = await request("textDocument/hover", { textDocument: { uri }, position: symbol.position });
-		const documentation = hoverDocumentation(hover);
+		const hover         = await request("textDocument/hover", { textDocument: { uri }, position: symbol.position }) ;
+		const documentation = hoverDocumentation(hover)                                                                 ;
 		if (!documentation) throw new Error(`hover documentation missing: ${selector.label}`);
 		console.log(`${selector.label}: ${documentation}`);
 	}
@@ -192,9 +197,9 @@ if (server.exitCode === null && server.signalCode === null) {
 	}
 }
 const { code: exitCode } = await serverExit;
-const exitMessage = stderr.trim();
-const knownWatcherPanic = /panic: assignment to entry in nil map[\s\S]*lspwatcher/u.test(exitMessage);
-const knownWatcherClose = /^context canceled(?:\n|$)[\s\S]*lspwatcher: closed/u.test(exitMessage);
+const exitMessage       = stderr.trim()                                                               ;
+const knownWatcherPanic = /panic: assignment to entry in nil map[\s\S]*lspwatcher/u.test(exitMessage) ;
+const knownWatcherClose = /^context canceled(?:\n|$)[\s\S]*lspwatcher: closed/u.test(exitMessage)     ;
 if (!forcedShutdown && exitCode !== 0 && exitMessage !== "context canceled" && !knownWatcherPanic && !knownWatcherClose) {
 	throw new Error(exitMessage || `TypeScript LSP exited with ${exitCode}`);
 }

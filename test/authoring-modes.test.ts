@@ -1,8 +1,16 @@
-import { afterEach, describe, expect, test } from "bun:test";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
-import { tmpdir } from "node:os";
-import { APPROVAL_VERSIONS } from "@/common/approval-gate.ts";
+import      { afterEach, describe, expect, test } from "bun:test"                  ;
+import      {
+              existsSync                      ,
+              mkdirSync                       ,
+              mkdtempSync                     ,
+              readFileSync                    ,
+              rmSync                          ,
+              symlinkSync                     ,
+              writeFileSync
+                                                } from "node:fs"                   ;
+import      { join, resolve                     } from "node:path"                 ;
+import      { tmpdir                            } from "node:os"                   ;
+import      { APPROVAL_VERSIONS                 } from "@/common/approval-gate.ts" ;
 
 const repository           = resolve(import.meta.dir, "..")            ;
 const cli                  = join(repository, "product/engine/cli.ts") ;

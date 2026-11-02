@@ -32,7 +32,7 @@ function snapshotExclusions(root: string): ReadonlySet<string> {
 	const namespace   = projectReceiptNamespace(projectRoot           ) ;
 	const path        = relative               (projectRoot, namespace) ;
 	if (
-		path === ""
+		   path === ""
 		|| path === ".."
 		|| path.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`)
 		|| isAbsolute(path)
@@ -45,72 +45,166 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 	const mode  = args[0]                                            ;
 	const event = HOOK_EVENTS.find(([, name]) => name === mode)?.[0] ;
 	if (event === undefined) throw new Error("Expected session|post|stop");
+
 	const given = args.length > 1 ? rootOf(args.slice(1)) : undefined;
+
 	try {
 		const input = JSON.parse(readFileSync(0, "utf8"));
 		if (!input.session_id) throw new Error("Missing session_id");
+
 		// Plugin hooks are called without --root, so use the working folder the host passes in.
 		const suppliedRoot = given ?? input.cwd;
 		if (typeof suppliedRoot !== "string" || !isAbsolute(suppliedRoot)) throw new Error("Missing absolute cwd");
-		const root       = resolve(suppliedRoot)                                               ;
-		const id         = createHash("sha256").update(String(input.session_id)).digest("hex") ;
-		const directory  = stateDirectory(root, id)                                            ;
-		const exclusions = snapshotExclusions(root)                                            ;
+
+		const root = resolve(suppliedRoot);
+
+		const id = createHash("sha256").update(String(input.session_id)).digest("hex");
+
+		const directory  = stateDirectory    (root, id) ;
+		const exclusions = snapshotExclusions(root    ) ;
+
 		mkdirSync(directory, { recursive: true });
+
 		const baseline = join(directory, "baseline.json");
 		if (mode === "session") {
-			if (!existsSync(baseline)) writeFileSync(baseline, JSON.stringify(snapshot(root, "", {}, [], exclusions)), { flag: "wx" });
-			console.log(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: `[boxbox] Changed code is checked after each edit, and all session changes are checked again on completion. Results are recorded in ${directory}.` } }));
+			if (!existsSync(baseline)) writeFileSync(
+				baseline                                              ,
+				JSON.stringify(snapshot(root, "", {}, [], exclusions)),
+				{ flag: "wx" }
+			);
+
+			console.log(JSON.stringify({
+				hookSpecificOutput: {
+					hookEventName     : event,
+					additionalContext : `[boxbox] Changed code is checked after each edit, and all session changes are checked again on completion. Results are recorded in ${directory}.`
+				}
+			}));
+
 			return 0;
 		}
+
 		if (!existsSync(baseline)) throw new Error("Missing SessionStart baseline; start a session in this project");
-		const before      = JSON.parse(readFileSync(baseline, "utf8")) ;
-		const after       = snapshot(root, "", {}, [], exclusions)     ;
-		const files       = changed(before, after)                     ;
-		const checked     = []                                         ;
-		const unsupported = []                                         ;
+
+		const before = JSON.parse(readFileSync(baseline, "utf8")) ;
+		const after  = snapshot  (root, "", {}, [], exclusions  ) ;
+
+		const files = changed(before, after);
+
+		const checked     = [] ;
+		const unsupported = [] ;
+
 		for (const file of files) {
 			if (!after[file]) continue;
-			if (after[file]?.startsWith("symlink:") || before[file]?.startsWith("symlink:")) throw new Error("Changed symlink");
-			if (!supported.has(extname(file).toLowerCase())) { unsupported.push(file); continue; }
+			if (
+				after[file]?.startsWith("symlink:") || before[file]?.startsWith("symlink:")
+			) throw new Error("Changed symlink");
+			if (!supported.has(extname(file).toLowerCase())) {
+				unsupported.push(file);
+				continue;
+			}
+
 			checked.push({ file, result: await inspect(root, file) });
 		}
+
 		if (changed(after, snapshot(root, "", {}, [], exclusions)).length) throw new Error("Source changed during check");
-		const failed  = checked.some(item => item.result.summary.misaligned || item.result.summary.refused)                                                      ;
-		const state   = failed ? "FAIL" : unsupported.length ? "UNSUPPORTED" : checked.length ? "PASS" : "NO_CHANGES"                                            ;
-		const record  = { event, state, files, checked, unsupported, tool: input.tool_name ?? null, at: new Date().toISOString(), automaticFixPerformed: false } ;
-		const receipt = join(directory, `${Date.now()}-${randomUUID()}.json`)                                                                                    ;
+
+		const failed = checked.some(item => item.result.summary.misaligned || item.result.summary.refused);
+
+		const state =
+			  failed             ? "FAIL"
+			: unsupported.length ? "UNSUPPORTED"
+			: checked.length     ? "PASS"
+			: "NO_CHANGES";
+
+		const record = {
+			event,
+			state,
+
+			files       ,
+			checked     ,
+			unsupported ,
+
+			tool : input.tool_name ?? null  ,
+			at   : new Date().toISOString() ,
+
+			automaticFixPerformed: false
+		};
+
+		const receipt = join(directory, `${Date.now()}-${randomUUID()}.json`);
+
 		writeFileSync(receipt, JSON.stringify(record, null, 2), { flag: "wx" });
+
 		const reason = `[boxbox] ${event}: ${state}. ${receipt}`;
+
 		// Unsupported files are only reported. Stop blocks at most once per session: this breaks endless continuation
 		// even on Codex, which has no Claude-style stop_hook_active.
-		const stopMarker = join(directory, "stop-blocked")                                                             ;
-		const blocked    = failed && !(mode === "stop" && (input.stop_hook_active === true || existsSync(stopMarker))) ;
+		const stopMarker = join(directory, "stop-blocked");
+
+		const blocked = failed && !(mode === "stop" && (input.stop_hook_active === true || existsSync(stopMarker)));
 		if (blocked && mode === "stop") writeFileSync(stopMarker, "");
-		console.log(JSON.stringify(mode === "stop" ? (blocked ? { decision: "block", reason } : { systemMessage: reason }) : { ...(blocked ? { decision: "block", reason } : {}), hookSpecificOutput: { hookEventName: event, additionalContext: reason } }));
+
+		console.log(JSON.stringify(
+			mode === "stop"
+				? (blocked
+					? { decision: "block", reason }
+					: { systemMessage: reason })
+				: {
+					...(blocked ? { decision: "block", reason } : {}),
+					hookSpecificOutput: {
+						hookEventName     : event,
+						additionalContext : reason
+					}
+				}
+		));
 	} catch (error) {
 		const reason = `[boxbox] hook error: ${error instanceof Error ? error.message : String(error)}`;
 		// Hook errors (such as a missing baseline) never trap the agent. The check is read-only, so it only reports.
-		console.log(JSON.stringify(mode === "stop" ? { systemMessage: reason } : { hookSpecificOutput: { hookEventName: event, additionalContext: reason } }));
+		console.log(JSON.stringify(
+			mode === "stop"
+				? { systemMessage: reason }
+				: {
+					hookSpecificOutput: {
+						hookEventName     : event,
+						additionalContext : reason
+					}
+				}
+		));
 	}
+
 	return 0;
 }
 
 export function installHooks(args: readonly string[]): number {
 	if (args[0] !== "install" || !["codex", "claude"].includes(args[1] ?? "")) throw new Error("Expected hooks install codex|claude --root <absolute-path>");
-	const root     = rootOf(args.slice(2))                                           ;
-	const host     = args[1]                                                         ;
-	const folder   = join(root, host === "codex" ? ".codex" : ".claude")             ;
-	const path     = join(folder, host === "codex" ? "hooks.json" : "settings.json") ;
-	const document = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : {}  ;
-	const quote    = (value: string) => "'" + value.replaceAll("'", "'\\''") + "'"   ;
-	const entry    = process.argv[1]!                                                ;
-	const prefix   = `${quote(process.execPath)} ${quote(entry)}`                    ;
+	const root = rootOf(args.slice(2)) ;
+	const host = args[1]               ;
+
+	const folder = join(root  , host === "codex" ? ".codex"     : ".claude"      ) ;
+	const path   = join(folder, host === "codex" ? "hooks.json" : "settings.json") ;
+
+	const document = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : {};
+
+	const quote = (value: string) => "'" + value.replaceAll("'", "'\\''") + "'";
+
+	const entry = process.argv[1]!;
+
+	const prefix = `${quote(process.execPath)} ${quote(entry)}`;
 	document.hooks ??= {};
 	for (const [event, mode] of HOOK_EVENTS) {
 		const list    = document.hooks[event] ?? []                    ;
 		const command = `${prefix} hook ${mode} --root ${quote(root)}` ;
-		if (!list.some((item: any) => item.hooks?.some((hook: any) => hook.command === command))) list.push({ ...(event === "PostToolUse" ? { matcher: ".*" } : {}), hooks: [{ type: "command", command, timeout: 120 }] });
+
+		if (!list.some((item: any) =>
+			item.hooks?.some((hook: any) => hook.command === command)
+		)) list.push({
+			...(event === "PostToolUse" ? { matcher: ".*" } : {}),
+			hooks: [{
+				type    : "command" ,
+				command             ,
+				timeout : 120
+			}]
+		});
+
 		document.hooks[event] = list;
 	}
 	mkdirSync(folder, { recursive: true });
