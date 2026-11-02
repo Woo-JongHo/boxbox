@@ -113,18 +113,32 @@ function signatureOf(profile: RowProfile): string {
 	return `${profile.indent}|${profile.slots.map(slot => slot.axis).join(">")}`;
 }
 
+/** Measure a cell at its actual starting column without changing its tab bytes or the shared width policy. */
+function cellWidth(text: string, column: number): number {
+	const offset = column % 4;
+	return text.includes("\t") ? displayWidth(" ".repeat(offset) + text) - offset : displayWidth(text);
+}
+
 function rebuildCode(aligner: LineProfiler, profile: RowProfile, widths: readonly number[] | null): string {
-	const parts: string[] = [profile.indent]         ;
-	const lastIndex       = profile.slots.length - 1 ;
+	const parts: string[] = [profile.indent]             ;
+	const lastIndex       = profile.slots.length - 1     ;
+	let column            = displayWidth(profile.indent) ;
 	profile.slots.forEach((slot, position) => {
-		if (position > 0) parts.push(canonicalGap(aligner, slot.axis));
+		if (position > 0) {
+			const gap = canonicalGap(aligner, slot.axis);
+			parts.push(gap);
+			column += cellWidth(gap, column);
+		}
+		const width = cellWidth(slot.text, column);
 		// The last cell of a row has nothing after it to align, so it is not padded — never create trailing whitespace.
 		if (widths !== null && aligner.columnAxes.includes(slot.axis) && position !== lastIndex) {
-			const pad = widths[position] - displayWidth(slot.text);
+			const pad = widths[position] - width;
 			parts.push(pad > 0 ? slot.text + " ".repeat(pad) : slot.text);
+			column += Math.max(0, pad);
 		} else {
 			parts.push(slot.text);
 		}
+		column += width;
 	});
 	return parts.join("");
 }
@@ -202,11 +216,11 @@ function alignRun(aligner: LineProfiler, run: readonly AcceptedRow[], terminalAx
 	const terminal = run[0].profile.slots.at(-1)?.axis ?? ""                                                          ;
 	const shared   = terminalAxes.includes(terminal) && run.every(row => row.profile.slots.at(-1)?.axis === terminal) ;
 	if (lengths.size === 1 || !shared) {
-		const widths = columnWidths(run);
+		const widths = columnWidths(aligner, run);
 		return run.map(row => rebuildCode(aligner, row.profile, widths));
 	}
 	const bodies = run   .map  (row => ({ ...row, profile: withoutTerminal(row.profile, terminalAxes) })) ;
-	const widths = columnWidths(bodies                                                                  ) ;
+	const widths = columnWidths(aligner, bodies                                                         ) ;
 	const codes  = bodies.map  (row => rebuildCode(aligner, row.profile, widths)                        ) ;
 	const column = Math  .max  (...codes.map(code => displayWidth(code))                                ) ;
 	return codes.map((code, position) => {
@@ -222,12 +236,25 @@ function columnsFollowWideText(row: AcceptedRow): boolean {
 }
 
 /** A column is as wide as its longest cell among rows that continue past it; a row's last cell is never padded. */
-function columnWidths(run: readonly AcceptedRow[]): number[] {
+function columnWidths(aligner: LineProfiler, run: readonly AcceptedRow[]): number[] {
+	const columns = run.map(row => displayWidth(row.profile.indent));
 	return longestProfile(run).slots.map((_, position) => {
-		const continuing = run.filter(row => position < row.profile.slots.length - 1) ;
-		const present    = run.filter(row => position < row.profile.slots.length)     ;
-		const measured   = continuing.length > 0 ? continuing : present               ;
-		return Math.max(...measured.map(row => displayWidth(row.profile.slots[position].text)));
+		const cellWidths = run.map((row, index) => {
+			const slot = row.profile.slots[position];
+			if (!slot) return 0;
+			if (position > 0) columns[index] += cellWidth(canonicalGap(aligner, slot.axis), columns[index]);
+			return cellWidth(slot.text, columns[index]);
+		});
+		const continuing = run .some(row => position < row.profile.slots.length - 1                                                                ) ;
+		const width      = Math.max (...cellWidths.map((value, index) => continuing && position >= run[index].profile.slots.length - 1 ? 0 : value)) ;
+		run.forEach((row, index) => {
+			const slot = row.profile.slots[position];
+			if (!slot) return;
+			columns[index] += aligner.columnAxes.includes(slot.axis) && position < row.profile.slots.length - 1
+				? Math.max(width, cellWidths[index])
+				: cellWidths[index];
+		});
+		return width;
 	});
 }
 
@@ -300,13 +327,13 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 				rows      : run.length                                       ,
 				indent    : run[0].profile.indent                            ,
 				axes      : longestProfile(run).slots.map(slot => slot.axis) ,
-				widths    : columnWidths(run)                                ,
+				widths    : columnWidths(aligner, run)                       ,
 				edits     : []                                               ,
 				refusal   : "wide-characters"                                ,
 			});
 			continue;
 		}
-		const widths       = columnWidths(run                        ) ;
+		const widths       = columnWidths(aligner, run               ) ;
 		const alignedCodes = alignRun    (aligner, run, terminalAxes ) ;
 		const commentRows  = run.map     (row => row.comment !== null) ;
 		const commentColumn = Math.max(

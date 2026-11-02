@@ -466,12 +466,12 @@ function detectMethod(source: SourceFile, node: Node): readonly RowBoundary[] | 
 	const closeAnchor   = hasParameters ? parameters.at(-1)!.getEnd() : open + 1 ;
 	const close         = tokenAfter(source, closeAnchor, ")")                   ;
 	if (!close)                                                            return undefined;
-	const boundaries: RowBoundary[] = [{ axis: "open-paren", from: open, at: open, insert: true }];
+	const boundaries: RowBoundary[] = [{ axis: "open-paren", from: nameEnd, at: open, insert: true }];
 	// Empty parameter lists stay attached as () — the closing paren is not aligned to the table width; padding goes outside.
-	if (hasParameters) boundaries.push({ axis: "close-paren", from: close, at: close, insert: true });
+	if (hasParameters) boundaries.push({ axis: "close-paren", from: closeAnchor, at: close, insert: true });
 	const typeColon = node.type ? tokenAfter(source, close + 1, ":") : undefined;
-	// The return-type `:` is aligned as an insert axis (from==at) to preserve the existing `):` convention.
-	if (typeColon) boundaries.push({ axis: "colon", from: typeColon, at: typeColon, insert: true });
+	// The return-type `:` remains attached when no padding is needed.
+	if (typeColon) boundaries.push({ axis: "colon", from: close + 1, at: typeColon, insert: true });
 	const commentAnchor = node.type ? node.type.getEnd() : node.getEnd() ;
 	const comment       = trailingComment(source, commentAnchor)         ;
 	if (comment) boundaries.push(comment);
@@ -586,9 +586,9 @@ function detectReturnGuard(source: SourceFile, node: Node): readonly RowBoundary
  * first statement) and the `continue` column; the statements in between stay as written.
  */
 function detectGuard(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
-	if (!isIfStatement(node)                     ) return undefined                        ;
-	if (node.elseStatement !== undefined         ) return undefined            ;
-	if (!ownLineOf(source, node, LINE_REST)      ) return undefined         ;
+	if (!isIfStatement(node)               ) return undefined                        ;
+	if (node.elseStatement !== undefined   ) return undefined            ;
+	if (!ownLineOf(source, node, LINE_REST)) return undefined         ;
 	const closeParen = tokenAfter(source, node.expression.getEnd(), ")");
 	if (closeParen === undefined)                  return undefined;
 	const thenStatement = node.thenStatement                                    ;
@@ -618,9 +618,9 @@ function detectCaseClause(source: SourceFile, node: Node): readonly RowBoundary[
 	if (!ownLineOf(source, node, LINE_REST)) return undefined;
 	const colon = tokenAfter(source, node.expression.getEnd(), ":");
 	if (!colon)                              return undefined;
-	// The label `:` is aligned as an insert axis (from==at) to preserve the `case "a":` convention.
-	const boundaries: RowBoundary[] = [{ axis: "case-colon", from: colon, at: colon, insert: true }] ;
-	const statements                = node.statements                                                ;
+	// The label `:` is an insert axis, preserving the compact `case "a":` convention.
+	const boundaries: RowBoundary[] = [{ axis: "case-colon", from: node.expression.getEnd(), at: colon, insert: true }] ;
+	const statements                = node.statements                                                                   ;
 	if (statements.length > 0) {
 		const call = firstCallOf(statements[0]!);
 		if (call) {
@@ -935,7 +935,7 @@ function detectIfHeader(source: SourceFile, node: Node, family: "braced" | "retu
 		const start = node.thenStatement.getStart(source);
 		if (!spacesOnly(source, close + 1, start)) return undefined;
 		return [
-			{ axis: "if-close-paren", from: close, at: close, insert: true },
+			{ axis: "if-close-paren", from: node.expression.getEnd(), at: close, insert: true },
 			{ axis: "if-return", from: close + 1, at: start },
 		];
 	}
@@ -943,7 +943,7 @@ function detectIfHeader(source: SourceFile, node: Node, family: "braced" | "retu
 	const open = node.thenStatement.getStart(source);
 	if (source.text[open] !== "{" || !spacesOnly(source, close + 1, open)) return undefined;
 	return [
-		{ axis: "if-close-paren", from: close, at: close, insert: true },
+		{ axis: "if-close-paren", from: node.expression.getEnd(), at: close, insert: true },
 		{ axis: "if-open-brace", from: close + 1, at: open },
 	];
 }
