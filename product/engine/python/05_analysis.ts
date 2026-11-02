@@ -101,7 +101,7 @@ export function analyzePython(source: string, timeoutMs = 60_000): PythonAnalysi
 
 /** Conservative whitespace gap test; all spelling comes from original source slices. */
 function safeEdit(source: string, lines: string[], offsets: number[], segments: readonly PythonToken[], index: number, after: string): boolean {
-	if (!integer(index) || index >= lines.length || /\r(?!$)|\n/u.test(after)) return false;
+	if (!integer(index) || index >= lines.length || /\r(?!$)|\n/u.test(after))                return false;
 	const before = lines[index]!, start = offsets[index]!, end = start + before.length;
 	if ((before.endsWith("\r")) !== after.endsWith("\r")                                    ) return false;
 	if ((before.match(/^[ \t]*/u)?.[0] ?? "") !== (after.match(/^[ \t]*/u)?.[0] ?? "")      ) return false;
@@ -119,7 +119,7 @@ function safeEdit(source: string, lines: string[], offsets: number[], segments: 
 	let cursor = 0, old = 0, previous = "";
 	for (const t of intersect) {
 		const a = t.start - start, b = t.end - start, gap = before.slice(old, a), text = source.slice(t.start, t.end);
-		if (!/^[ \t]*$/u.test(gap)) return false;
+		if (!/^[ \t]*$/u.test(gap))                                                                    return false;
 		const match = /^[ \t]*/u.exec(after.slice(cursor))!;
 		const nextGap = match[0]; cursor += nextGap.length;
 		if (old === 0 && gap !== nextGap                                                             ) return false;

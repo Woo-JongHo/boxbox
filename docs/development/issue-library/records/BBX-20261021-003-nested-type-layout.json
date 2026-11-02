@@ -1,9 +1,9 @@
 {
-  "$schema": "../issue.schema.json",
+  "$schema"      : "../issue.schema.json",
   "schemaVersion": 1,
-  "id": "BBX-20261021-003",
-  "title": "Inline nested interface types stretched the entire table",
-  "category": "structural-layout",
+  "id"           : "BBX-20261021-003",
+  "title"        : "Inline nested interface types stretched the entire table",
+  "category"     : "structural-layout",
   "tags": [
     "typescript",
     "interface",
@@ -40,18 +40,18 @@
   ],
   "verification": [
     {
-      "name": "Final repository check",
+      "name"  : "Final repository check",
       "status": "passed",
-      "scope": "All current repository suites, TypeScript type checking and installer shell syntax",
+      "scope" : "All current repository suites, TypeScript type checking and installer shell syntax",
       "evidence": [
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log"
       ],
       "result": "bun run check exited 0: 571 pass, 5 existing unavailable Rust/Kotlin parser skips, 0 fail, 2799 assertions. Skipped parsers were not verified."
     },
     {
-      "name": "Independent review closure",
+      "name"  : "Independent review closure",
       "status": "passed",
-      "scope": "Static review of the implemented correction and its documented limits",
+      "scope" : "Static review of the implemented correction and its documented limits",
       "evidence": [
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet.md",
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/glm-closure.md"
@@ -59,9 +59,9 @@
       "result": "The scoped independent review passed. Prior BLOCKED reviews and corrections remain in history. Reviewers did not execute tests."
     },
     {
-      "name": "Interface layout preservation",
+      "name"  : "Interface layout preservation",
       "status": "passed",
-      "scope": "Example member layout, type checking and emitted JavaScript",
+      "scope" : "Example member layout, type checking and emitted JavaScript",
       "evidence": [
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/example-layout.md",
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/example-runtime-equivalence.json",
@@ -95,44 +95,44 @@
   "history": [
     {
       "sequence": 1,
-      "date": "2026-10-21",
-      "event": "reported",
-      "summary": "User suggested placing exceptional nested types below the normal fields.",
+      "date"    : "2026-10-21",
+      "event"   : "reported",
+      "summary" : "User suggested placing exceptional nested types below the normal fields.",
       "evidence": []
     },
     {
       "sequence": 2,
-      "date": "2026-10-21",
-      "event": "implemented",
-      "summary": "Separated the two nested type members while preserving the public field contract.",
+      "date"    : "2026-10-21",
+      "event"   : "implemented",
+      "summary" : "Separated the two nested type members while preserving the public field contract.",
       "evidence": [
         "docs/development/reviews/2026-10-21-matrix-columns.md"
       ]
     },
     {
       "sequence": 3,
-      "date": "2026-10-21",
-      "event": "verified",
-      "summary": "Scoped checks passed with an explicit two-row detector coverage limit.",
+      "date"    : "2026-10-21",
+      "event"   : "verified",
+      "summary" : "Scoped checks passed with an explicit two-row detector coverage limit.",
       "evidence": [
         "docs/development/issue-library/evidence/example-layout-report.md"
       ]
     },
     {
       "sequence": 4,
-      "date": "2026-10-21",
-      "event": "decision",
-      "summary": "Previous current-verification entries are preserved in the linked snapshot. The current list below records the final checked state; earlier failures remain searchable in history.",
+      "date"    : "2026-10-21",
+      "event"   : "decision",
+      "summary" : "Previous current-verification entries are preserved in the linked snapshot. The current list below records the final checked state; earlier failures remain searchable in history.",
       "evidence": [
         "docs/development/issue-library/evidence/records-before-final-closure.json"
       ]
     },
     {
       "sequence": 5,
-      "date": "2026-10-21",
-      "event": "verified",
-      "status": "passed",
-      "summary": "Closed for the documented supported scope after final repository checks, applicable installed-artifact evidence and independent review. No new public preset approvals or live profile installation is implied.",
+      "date"    : "2026-10-21",
+      "event"   : "verified",
+      "status"  : "passed",
+      "summary" : "Closed for the documented supported scope after final repository checks, applicable installed-artifact evidence and independent review. No new public preset approvals or live profile installation is implied.",
       "evidence": [
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log",
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet.md",

@@ -1,9 +1,9 @@
 {
-  "$schema": "../issue.schema.json",
+  "$schema"      : "../issue.schema.json",
   "schemaVersion": 1,
-  "id": "BBX-20261021-002",
-  "title": "Different callees did not share call parentheses",
-  "category": "syntax-boundary",
+  "id"           : "BBX-20261021-002",
+  "title"        : "Different callees did not share call parentheses",
+  "category"     : "syntax-boundary",
   "tags": [
     "typescript",
     "call",
@@ -40,18 +40,18 @@
   ],
   "verification": [
     {
-      "name": "Final repository check",
+      "name"  : "Final repository check",
       "status": "passed",
-      "scope": "All current repository suites, TypeScript type checking and installer shell syntax",
+      "scope" : "All current repository suites, TypeScript type checking and installer shell syntax",
       "evidence": [
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log"
       ],
       "result": "bun run check exited 0: 571 pass, 5 existing unavailable Rust/Kotlin parser skips, 0 fail, 2799 assertions. Skipped parsers were not verified."
     },
     {
-      "name": "Independent review closure",
+      "name"  : "Independent review closure",
       "status": "passed",
-      "scope": "Static review of the implemented correction and its documented limits",
+      "scope" : "Static review of the implemented correction and its documented limits",
       "evidence": [
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet.md",
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/glm-closure.md"
@@ -59,9 +59,9 @@
       "result": "The scoped independent review passed. Prior BLOCKED reviews and corrections remain in history. Reviewers did not execute tests."
     },
     {
-      "name": "Installed host compatibility",
+      "name"  : "Installed host compatibility",
       "status": "passed",
-      "scope": "Isolated Codex and Claude registrations and bundled launchers",
+      "scope" : "Isolated Codex and Claude registrations and bundled launchers",
       "evidence": [
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/installed.json",
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/installed-transcript.json",
@@ -100,51 +100,51 @@
   "history": [
     {
       "sequence": 1,
-      "date": "2026-10-21",
-      "event": "reported",
-      "summary": "User supplied decision/document as a shared-call-column example.",
+      "date"    : "2026-10-21",
+      "event"   : "reported",
+      "summary" : "User supplied decision/document as a shared-call-column example.",
       "evidence": []
     },
     {
       "sequence": 2,
-      "date": "2026-10-21",
-      "event": "diagnosed",
-      "summary": "Signature-based inner layers did not provide a heterogeneous outer envelope.",
+      "date"    : "2026-10-21",
+      "event"   : "diagnosed",
+      "summary" : "Signature-based inner layers did not provide a heterogeneous outer envelope.",
       "evidence": []
     },
     {
       "sequence": 3,
-      "date": "2026-10-21",
-      "event": "implemented",
-      "summary": "Added the envelope kind and updated the actual example.",
+      "date"    : "2026-10-21",
+      "event"   : "implemented",
+      "summary" : "Added the envelope kind and updated the actual example.",
       "evidence": [
         "docs/development/reviews/2026-10-21-matrix-columns.md"
       ]
     },
     {
       "sequence": 4,
-      "date": "2026-10-21",
-      "event": "verified",
-      "summary": "Pre-dot suite passed; dot-axis integration requires a later verification entry.",
+      "date"    : "2026-10-21",
+      "event"   : "verified",
+      "summary" : "Pre-dot suite passed; dot-axis integration requires a later verification entry.",
       "evidence": [
         "docs/development/issue-library/evidence/pre-dot-check.txt"
       ]
     },
     {
       "sequence": 5,
-      "date": "2026-10-21",
-      "event": "decision",
-      "summary": "Previous current-verification entries are preserved in the linked snapshot. The current list below records the final checked state; earlier failures remain searchable in history.",
+      "date"    : "2026-10-21",
+      "event"   : "decision",
+      "summary" : "Previous current-verification entries are preserved in the linked snapshot. The current list below records the final checked state; earlier failures remain searchable in history.",
       "evidence": [
         "docs/development/issue-library/evidence/records-before-final-closure.json"
       ]
     },
     {
       "sequence": 6,
-      "date": "2026-10-21",
-      "event": "verified",
-      "status": "passed",
-      "summary": "Closed for the documented supported scope after final repository checks, applicable installed-artifact evidence and independent review. No new public preset approvals or live profile installation is implied.",
+      "date"    : "2026-10-21",
+      "event"   : "verified",
+      "status"  : "passed",
+      "summary" : "Closed for the documented supported scope after final repository checks, applicable installed-artifact evidence and independent review. No new public preset approvals or live profile installation is implied.",
       "evidence": [
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log",
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet.md",

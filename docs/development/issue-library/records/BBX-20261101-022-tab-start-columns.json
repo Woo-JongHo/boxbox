@@ -1,9 +1,9 @@
 {
-  "$schema": "../issue.schema.json",
+  "$schema"      : "../issue.schema.json",
   "schemaVersion": 1,
-  "id": "BBX-20261101-022",
-  "title": "Tab-bearing cells use the wrong start column during alignment",
-  "category": "syntax-boundary",
+  "id"           : "BBX-20261101-022",
+  "title"        : "Tab-bearing cells use the wrong start column during alignment",
+  "category"     : "syntax-boundary",
   "tags": [
     "tabs",
     "display-width",
@@ -37,18 +37,18 @@
   ],
   "verification": [
     {
-      "name": "Author-reported tab regression suites",
+      "name"  : "Author-reported tab regression suites",
       "status": "passed",
-      "scope": "The five focused engine/shared preservation suites for the tab-width source snapshot; not a full repository or final candidate check.",
+      "scope" : "The five focused engine/shared preservation suites for the tab-width source snapshot; not a full repository or final candidate check.",
       "evidence": [
         "docs/development/reviews/2026-11-01-engine-self-use-evidence/author-reported-results.md"
       ],
       "result": "The author report records 79 passed, 0 failed and 478 assertions. Claude commented that it found no tab-width defect in its code inspection, but its overall Common/Python verdict was FINDINGS and it ran no tests."
     },
     {
-      "name": "Candidate v1 historical self-use and full check",
+      "name"  : "Candidate v1 historical self-use and full check",
       "status": "passed",
-      "scope": "Historical content ID 7af5b42b29c34e48; its source state was superseded after the first Opus FINDINGS.",
+      "scope" : "Historical content ID 7af5b42b29c34e48; its source state was superseded after the first Opus FINDINGS.",
       "evidence": [
         "docs/development/reviews/2026-11-01-engine-self-use-evidence/candidate-v1-verification-history.json",
         "docs/development/reviews/2026-11-01-engine-self-use-evidence/candidate-v1-self-use-files.json"
@@ -56,9 +56,9 @@
       "result": "Historical candidate v1 reported 50 files / 592 groups / 0 misaligned and full check 677 pass / 0 fail. It was not final closure because Opus found three code findings and evidence gaps; candidate v2 supersedes it."
     },
     {
-      "name": "Candidate v2 fix-only Opus review",
+      "name"  : "Candidate v2 fix-only Opus review",
       "status": "passed",
-      "scope": "Read-only review of all three prior Opus code findings, the v2 source/test deltas, and candidate/build/full-check/artifact receipts. Reviewer executed no tests or CLI.",
+      "scope" : "Read-only review of all three prior Opus code findings, the v2 source/test deltas, and candidate/build/full-check/artifact receipts. Reviewer executed no tests or CLI.",
       "evidence": [
         "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-initial-review.md",
         "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-initial-review-metadata.json",
@@ -69,9 +69,9 @@
       "result": "Claude Opus actual model claude-opus-5-5 returned PASS, process exit 0, is_error false. It closed the three code findings and evidence gate. The review did not certify all blocks or a native host matrix."
     },
     {
-      "name": "Candidate v2 final evidence and Opus fix-only review",
+      "name"  : "Candidate v2 final evidence and Opus fix-only review",
       "status": "passed",
-      "scope": "Candidate da1e93b36a6ca63a, parent 7af5b42b29c34e48; frozen source, issue regressions, artifact provenance and read-only final finding closure.",
+      "scope" : "Candidate da1e93b36a6ca63a, parent 7af5b42b29c34e48; frozen source, issue regressions, artifact provenance and read-only final finding closure.",
       "evidence": [
         "docs/development/reviews/2026-11-01-engine-self-use-evidence/candidate-manifest.json",
         "docs/development/reviews/2026-11-01-engine-self-use-evidence/final-self-use-files.json",
@@ -116,27 +116,27 @@
   "history": [
     {
       "sequence": 1,
-      "date": "2026-11-01",
-      "event": "reported",
-      "summary": "Read-only self-use inspection found tab-bearing cells measured without their actual display start column.",
+      "date"    : "2026-11-01",
+      "event"   : "reported",
+      "summary" : "Read-only self-use inspection found tab-bearing cells measured without their actual display start column.",
       "evidence": [
         "docs/development/reviews/2026-11-01-engine-self-use.md"
       ]
     },
     {
       "sequence": 2,
-      "date": "2026-11-01",
-      "event": "implemented",
-      "summary": "A start-column-aware width calculation and tab-bearing regression cases were authored in the shared table engine and engine tests.",
+      "date"    : "2026-11-01",
+      "event"   : "implemented",
+      "summary" : "A start-column-aware width calculation and tab-bearing regression cases were authored in the shared table engine and engine tests.",
       "evidence": [
         "docs/development/reviews/2026-11-01-engine-self-use-evidence/author-reported-results.md"
       ]
     },
     {
       "sequence": 3,
-      "date": "2026-11-01",
-      "event": "verified",
-      "summary": "The author reported the bounded focused suite passing. This is not an independent approval or final-candidate result.",
+      "date"    : "2026-11-01",
+      "event"   : "verified",
+      "summary" : "The author reported the bounded focused suite passing. This is not an independent approval or final-candidate result.",
       "evidence": [
         "docs/development/reviews/2026-11-01-engine-self-use-evidence/author-reported-results.md"
       ],
@@ -144,9 +144,9 @@
     },
     {
       "sequence": 4,
-      "date": "2026-11-01",
-      "event": "verified",
-      "summary": "Frozen-candidate per-file self-use and parser-required full check passed with the scoped results in the linked evidence. This is not semantic-completeness proof and does not replace the required final Opus review.",
+      "date"    : "2026-11-01",
+      "event"   : "verified",
+      "summary" : "Frozen-candidate per-file self-use and parser-required full check passed with the scoped results in the linked evidence. This is not semantic-completeness proof and does not replace the required final Opus review.",
       "evidence": [
         "docs/development/reviews/2026-11-01-engine-self-use.md",
         "docs/development/reviews/2026-11-01-engine-self-use-evidence/final-candidate-verification.json",
@@ -156,9 +156,9 @@
     },
     {
       "sequence": 5,
-      "date": "2026-11-01",
-      "event": "verified",
-      "summary": "Fixed-model Opus 5.5 found this issue-specific tab/axis boundary sound but identified other candidate findings; record remains verifying until those are corrected and candidate evidence is refreshed.",
+      "date"    : "2026-11-01",
+      "event"   : "verified",
+      "summary" : "Fixed-model Opus 5.5 found this issue-specific tab/axis boundary sound but identified other candidate findings; record remains verifying until those are corrected and candidate evidence is refreshed.",
       "evidence": [
         "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-initial-review.md"
       ],
@@ -166,9 +166,9 @@
     },
     {
       "sequence": 6,
-      "date": "2026-11-01",
-      "event": "verified",
-      "summary": "Candidate v2 final checks and the fixed-model Opus fix-only review passed for this scoped record. The first Opus FINDINGS, first full-check failure, and transient ENOSPC report remain in history; this record is resolved without implying semantic completeness or host-matrix coverage.",
+      "date"    : "2026-11-01",
+      "event"   : "verified",
+      "summary" : "Candidate v2 final checks and the fixed-model Opus fix-only review passed for this scoped record. The first Opus FINDINGS, first full-check failure, and transient ENOSPC report remain in history; this record is resolved without implying semantic completeness or host-matrix coverage.",
       "evidence": [
         "docs/development/reviews/2026-11-01-engine-self-use-evidence/candidate-manifest.json",
         "docs/development/reviews/2026-11-01-engine-self-use-evidence/final-candidate-verification.json",

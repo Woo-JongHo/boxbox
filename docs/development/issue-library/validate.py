@@ -20,11 +20,11 @@ REPOSITORY = LIBRARY.parents[2]
 # Historical evidence uses these exact paths only; current artifacts must use current paths.
 # These exact historical relocations locate the current physical source; they do not prove historical byte identity.
 HISTORICAL_SOURCE_RELOCATIONS = {
-	"product/engine/typescript/grid-kinds.ts": "product/engine/typescript/13_grid-kinds.ts",
-	"product/engine/python/profile.ts": "product/engine/python/03_profile.ts",
-	"product/engine/common/result-json.ts": "product/engine/common/24_result-json.ts",
-	"product/engine/common/report.ts": "product/engine/common/23_report.ts",
-	"product/engine/common/table-engine.ts": "product/engine/common/06_table-engine.ts",
+	"product/engine/typescript/grid-kinds.ts" : "product/engine/typescript/13_grid-kinds.ts",
+	"product/engine/python/profile.ts"        : "product/engine/python/03_profile.ts"       ,
+	"product/engine/common/result-json.ts"    : "product/engine/common/24_result-json.ts"   ,
+	"product/engine/common/report.ts"         : "product/engine/common/23_report.ts"        ,
+	"product/engine/common/table-engine.ts"   : "product/engine/common/06_table-engine.ts"  ,
 }
 KEYWORDS = {
 	"$schema", "title", "description", "type", "required", "additionalProperties",
@@ -175,9 +175,9 @@ def main():
 	files = args.records or sorted((LIBRARY / "records").glob("*.json"))
 	require(bool(files), "No records found")
 	identifiers = set()
-	values = 0
-	references = 0
-	existing_references = 0
+	values                          = 0
+	references                      = 0
+	existing_references             = 0
 	relocated_historical_references = 0
 	for file in files:
 		record = json.loads(file.read_text())
@@ -200,10 +200,10 @@ def main():
 		"status": "passed",
 		"method": "Dependency-free Python checker for the documented schema subset; unknown keywords are rejected. Not a full Draft 2020-12 validator.",
 		"records": len(files),
-		"checkedValues": values,
-		"referenceOccurrences": references,
-		"existingReferenceOccurrences": existing_references,
-		"relocatedHistoricalReferenceOccurrences": relocated_historical_references,
+		"checkedValues"                           : values                         ,
+		"referenceOccurrences"                    : references                     ,
+		"existingReferenceOccurrences"            : existing_references            ,
+		"relocatedHistoricalReferenceOccurrences" : relocated_historical_references,
 		"checks": ["schema subset", "template fields and enum drift", "unique IDs including canonical/draft collisions", "filename agreement", "history sequencing and machine-readable failures", "existing repository references", "observed-result evidence", "resolved action/verification state", "README index and links when validating the library"],
 		"excluded": "templates/issue.json is instructional and is not a factual record.",
 	}, indent=2))
