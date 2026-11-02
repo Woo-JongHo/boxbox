@@ -10,15 +10,16 @@ import      { spawnSync                   } from "node:child_process"           
 import      { readFileSync, writeFileSync } from "node:fs"                            ;
 import      { join                        } from "node:path"                          ;
 import      { preservesTokens             } from "@/typescript/token-preservation.ts" ;
-import      { straySemicolonPadding       } from "@/common/report.ts"                 ;
+import      { straySemicolonPaddings      } from "@/common/report.ts"                 ;
 
 const ROOT = join(import.meta.dir, "..", "..");
 
 /** Removes the spaces before the trailing `;` on A12 target lines. The decision is made once against the original body (straySemicolonPadding). */
 export function stripSemicolonPadding(text: string): string {
-	const lines = text.split("\n");
+	const lines   = text.split            ("\n" ) ;
+	const targets = straySemicolonPaddings(lines) ;
 
-	return lines.map((line, index) => straySemicolonPadding(lines, index) === undefined ? line : line.replace(/(\S)[ \t]+;(\r?)$/u, "$1;$2")).join("\n");
+	return lines.map((line, index) => targets.has(index) ? line.replace(/(\S)[ \t]+;(\r?)$/u, "$1;$2") : line).join("\n");
 }
 
 function realign(file: string): void {

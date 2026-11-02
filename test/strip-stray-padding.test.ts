@@ -1,6 +1,9 @@
-import      { describe, expect, test } from "bun:test"                                    ;
-import      { straySemicolonPadding  } from "@/common/report.ts"                          ;
-import      { stripSemicolonPadding  } from "../development/tools/strip-stray-padding.ts" ;
+import      { describe, expect, test   } from "bun:test"                                    ;
+import      {
+              straySemicolonPadding  ,
+              straySemicolonPaddings
+                                       } from "@/common/report.ts"                          ;
+import      { stripSemicolonPadding    } from "../development/tools/strip-stray-padding.ts" ;
 
 const at = (text: string, line: number): number | undefined => straySemicolonPadding(text.split("\n"), line - 1);
 
@@ -22,6 +25,21 @@ describe("out-of-table padding (A12)", () => {
 		expect(at("\t// note ;"                                 , 1)).toBeUndefined() ;
 		expect(at("import { a } from \"m\" ;"                   , 1)).toBeUndefined() ;
 		expect(at("                } from \"node:fs\"        ;", 1)).toBeUndefined() ;
+	});
+
+	test("inline comments and multiline comment or template content are never cleanup targets", () => {
+		const source = ['const a = 1; // note ;', '/*', 'body ;', '*/', 'const value = `', 'literal ;', '`;', '', 'return value  ;'].join("\n");
+
+		for (const line of [1, 3, 6]) expect(at(source, line)).toBeUndefined();
+		expect(at(source, 9)).toBe(2);
+		expect(stripSemicolonPadding(source)).toBe(source.replace('return value  ;', 'return value;'));
+	});
+
+	test("batch scanner decisions match independent token-preservation checks in mixed source", () => {
+		const lines = ['const name = "😀";', 'const a = 1; // note ;', 'const pattern = /a ;/;', '/*', 'body ;', '*/', 'const value = `', 'literal ;', '`;', '', 'return value  ;', '', 'throw error   ;'].map(line => `${line}\r`) ;
+		const batch = straySemicolonPaddings(lines)                                                                                                                                                                                ;
+		for (const [index] of lines.entries()) expect(batch.get(index)).toBe(straySemicolonPadding(lines, index));
+		expect([...batch.keys()]).toEqual([10, 12]);
 	});
 
 	test("cleanup changes only target lines, judged against the original body", () => {

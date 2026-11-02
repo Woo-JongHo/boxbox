@@ -61,6 +61,13 @@ They preserve input bytes and reject write flags or identity/content races. `MAT
 describe detected groups; `NO_GROUPS` is distinct from a group PASS. Exit 0 covers MATCH/NO_GROUPS, exit 1 covers
 mismatch or unavailable measurement, and exit 2 covers usage/parser/tool failures. Measurement does not approve writes.
 
+### Padding alarm boundaries
+
+A12 padding alarms inspect scanner-confirmed TypeScript whitespace or preservation-confirmed Python gaps.
+Semicolons inside strings and comments are excluded. JSON/YAML scalar contents are not padding candidates.
+Uncertain Python syntax omits the suggestion; parser/tool failures remain visible. The development padding cleaner
+uses the same TypeScript whitespace range check.
+
 ### Current public write path
 
 [runFormatPipeline](../../product/engine/common/format-pipeline.ts) performs the following sequence:

@@ -3,11 +3,15 @@
  * builds pass/fail for safety checks S1–S4 and alarms A1–A9. It is a pure function: the same input yields the same report.
  * Alarms are not failures but "places for a human or an AI to look". Deciding (whether to fix, whether to change a rule) is not this module's job.
  */
-import      { displayWidth                                 } from "@/common/display-width.ts" ;
-import type { FileResult, GroupState, ResultGroup          } from "@/common/result-json.ts"   ;
-import      { patternOf                                    } from "@/common/surface.ts"       ;
-import      { lookup, type ConventionDb, type LookupResult } from "@/common/conventions.ts"   ;
-import      { lookupKeyOf                                  } from "@/common/signature.ts"     ;
+import      { displayWidth                                 } from "@/common/display-width.ts"          ;
+import type { FileResult, GroupState, ResultGroup          } from "@/common/result-json.ts"            ;
+import      { patternOf                                    } from "@/common/surface.ts"                ;
+import      { lookup, type ConventionDb, type LookupResult } from "@/common/conventions.ts"            ;
+import      { lookupKeyOf                                  } from "@/common/signature.ts"              ;
+import      { horizontalWhitespaceRanges, preservesTokens  } from "@/typescript/token-preservation.ts" ;
+import      { changedLines                                 } from "@/common/preservation.ts"           ;
+import      { PYTHON_SYNTAX                                } from "@/python/profile.ts"                ;
+import      { PythonSourceSyntaxError                      } from "@/python/string-ranges.ts"          ;
 
 export const REPORT_SCHEMA_VERSION = 1;
 
@@ -38,6 +42,27 @@ const indentOf = (line: string): string => /^[ \t]*/u.exec(line)![0];
  * (handled by 00_normalize-imports.ts) are excluded. `development/tools/strip-stray-padding.ts` also uses this function.
  */
 export function straySemicolonPadding(lines: readonly string[], index: number): number | undefined {
+	return strayPadding(lines, index);
+}
+
+/** Checks all candidate gaps in one scanner pass over the original source. */
+export function straySemicolonPaddings(lines: readonly string[]): ReadonlyMap<number, number> {
+	const candidates = new Map<number, { start: number; end: number; padding: number }>() ;
+	let offset       = 0                                                                  ;
+	for (const [index, line] of lines.entries()) {
+		const padding = strayPadding(lines, index, false);
+		if (padding !== undefined) {
+			const end = offset + line.replace(/\r$/u, "").length - 1;
+			candidates.set(index, { start: end - padding, end, padding });
+		}
+		offset += line.length + 1;
+	}
+	if (candidates.size === 0) return new Map();
+	const whitespace = new Map(horizontalWhitespaceRanges(lines.join("\n")).map(range => [range.start, range.end]));
+	return new Map([...candidates].filter(([, gap]) => whitespace.get(gap.start) === gap.end).map(([index, gap]) => [index, gap.padding]));
+}
+
+function strayPadding(lines: readonly string[], index: number, verify = true): number | undefined {
 	const line = lines[index] ?? "";
 	if (/^\s*(\/\/|\*|\/\*|import\b|export\s.*\bfrom\b|\}\s*from\b)/u.test(line)) return undefined;
 
@@ -50,6 +75,12 @@ export function straySemicolonPadding(lines: readonly string[], index: number): 
 	const column    = semicolonColumn(line)                                                                                                              ;
 	const neighbors = [lines[index - 1], lines[index + 1]].filter((other): other is string => other !== undefined && indentOf(other) === indentOf(line)) ;
 	if (neighbors.some(other => semicolonColumn(other) === column))               return undefined;
+	if (!verify)                                                                  return padding[1]!.length;
+
+	const before    = lines.join("\n")                                                                                                     ;
+	const after     = lines.map((value, position) => position === index ? value.replace(/(\S)[ \t]+;(\r?)$/u, "$1;$2") : value).join("\n") ;
+	const preserved = preservesTokens(before, after)                                                                                       ;
+	if (!preserved)                                                               return undefined;
 
 	return padding[1]!.length;
 }
@@ -229,11 +260,25 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 	}
 
 	// Out-of-table padding: with no rows to compare there must be no columns either (grammar section 1, statement regime).
-	for (let lineNumber = 1; lineNumber <= lines.length; lineNumber += 1) {
-		if (groupAt(lineNumber)) continue;
-
-		const padding = straySemicolonPadding(lines, lineNumber - 1);
-		if (padding !== undefined) push("A12", lineNumber, lineNumber, `${padding} space(s) before ;`, "do not align columns outside a table: remove the spaces");
+	const typescriptStray = result.language === "typescript" ? straySemicolonPaddings(lines) : new Map<number, number>();
+	const stray = lines.flatMap((_, index) => {
+		if (groupAt(index + 1)) return [];
+		const padding = result.language === "typescript" ? typescriptStray.get(index) : result.language === "python" ? strayPadding(lines, index, false) : undefined;
+		return padding === undefined ? [] : [{ index, padding }];
+	});
+	const strayLines = new Set(stray.map(item => item.index)) ;
+	let changed      = new Set<number>()                      ;
+	if (result.language !== "typescript" && stray.length > 0) {
+		try {
+			const candidate = lines.map((line, index) => strayLines.has(index) ? line.replace(/(\S)[ \t]+;(\r?)$/u, "$1;$2") : line).join("\n");
+			changed = new Set(changedLines(lines.join("\n"), candidate, PYTHON_SYNTAX));
+		} catch (error) {
+			if (!(error instanceof PythonSourceSyntaxError)) throw error;
+			changed = strayLines;
+		}
+	}
+	for (const { index, padding } of stray) {
+		if (!changed.has(index)) push("A12", index + 1, index + 1, `${padding} space(s) before ;`, "do not align columns outside a table: remove the spaces");
 	}
 
 	for (const group of result.groups) {
@@ -252,11 +297,11 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 		}
 
 		const byState: Readonly<Partial<Record<GroupState, readonly [AlarmId, string, string]>>> = {
-			FIXABLE : ["A0", `${group.kind} ${group.rows} rows, pending edits ${group.edits}`, "fixable by whitespace alignment (safe): 06_align-tables.ts --file <file> --write"] ,
+			FIXABLE : ["A0", `${group.kind} ${group.rows} rows, pending edits ${group.edits}`, `fixable by whitespace alignment (safe): ${result.language === "typescript" ? "06_align-tables.ts" : result.language === "python" ? "06_align-tables.ts" : "06_align-tables.ts"} --file <file> --write`] ,
 			REFUSE  : group.reason === "wide-characters"
 				? ["A4", `${group.kind}: a column would follow wide characters`, "move the wide text out of the compared cells, for example into a named constant"]
 				: ["A4", `${group.kind}: cannot split losslessly`              , "check the row structure; if it is an engine bug, add a fixture"                ],
-			SUGGEST : ["A6", `${group.kind} ${group.rows} rows`                              , "a human decides whether to make it a table"                                   ]    ,
+			SUGGEST : ["A6", `${group.kind} ${group.rows} rows`                              , "a human decides whether to make it a table"                                   ]                                                                                                                         ,
 		};
 		const stateAlarm = byState[group.state];
 		if (stateAlarm) push(stateAlarm[0], ...span, stateAlarm[1], stateAlarm[2]);

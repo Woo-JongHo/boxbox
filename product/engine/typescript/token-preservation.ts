@@ -29,14 +29,15 @@ const DIVISION_AFTER = new Set<SyntaxKind>([
 
 const TRIVIA = new Set<SyntaxKind>([SyntaxKind.NewLineTrivia, SyntaxKind.SingleLineCommentTrivia, SyntaxKind.MultiLineCommentTrivia]);
 
-/** Token stream of `text` without horizontal whitespace: `kind:text` per token, comment and line break. */
-export function tokenStream(text: string): readonly string[] {
+function scan(text: string, visit: (kind: SyntaxKind, text: string, start: number, end: number) => void): void {
 	const scanner                           = createScanner(false, undefined, text) ;
 	const braces : ("block" | "template")[] = []                                    ;
-	const tokens : string[]                 = []                                    ;
 	let previous                            = SyntaxKind.Unknown                    ;
 	for (let kind = scanner.scan(); kind !== SyntaxKind.EndOfFile; kind = scanner.scan()) {
-		if (kind === SyntaxKind.WhitespaceTrivia) continue;
+		if (kind === SyntaxKind.WhitespaceTrivia) {
+			visit(kind, scanner.getTokenText(), scanner.getTokenStart(), scanner.getTokenEnd());
+			continue;
+		}
 		if (kind === SyntaxKind.OpenBraceToken) braces.push("block");
 		else if (kind === SyntaxKind.TemplateHead) braces.push("template");
 		else if (kind === SyntaxKind.CloseBraceToken && braces.pop() === "template") {
@@ -45,10 +46,23 @@ export function tokenStream(text: string): readonly string[] {
 		} else if ((kind === SyntaxKind.SlashToken || kind === SyntaxKind.SlashEqualsToken) && !DIVISION_AFTER.has(previous)) {
 			kind = scanner.reScanSlashToken();
 		}
-		tokens.push(`${kind}:${scanner.getTokenText()}`);
+		visit(kind, scanner.getTokenText(), scanner.getTokenStart(), scanner.getTokenEnd());
 		if (!TRIVIA.has(kind)) previous = kind;
 	}
+}
+
+/** Token stream of `text` without horizontal whitespace: `kind:text` per token, comment and line break. */
+export function tokenStream(text: string): readonly string[] {
+	const tokens: string[] = [];
+	scan(text, (kind, value) => { if (kind !== SyntaxKind.WhitespaceTrivia) tokens.push(`${kind}:${value}`); });
 	return tokens;
+}
+
+/** Scanner-confirmed horizontal whitespace spans, in UTF-16 offsets. */
+export function horizontalWhitespaceRanges(text: string): readonly { readonly start: number; readonly end: number }[] {
+	const ranges: { start: number; end: number }[] = [];
+	scan(text, (kind, _value, start, end) => { if (kind === SyntaxKind.WhitespaceTrivia) ranges.push({ start, end }); });
+	return ranges;
 }
 
 /** True when `after` differs from `before` only in horizontal whitespace between tokens. */
