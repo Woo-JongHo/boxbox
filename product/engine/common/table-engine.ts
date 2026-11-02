@@ -127,6 +127,17 @@ export interface AlignOptions {
 	readonly minRows : number;
 	/** When false, only report and leave output identical to the source. */
 	readonly apply   : boolean;
+	/** Optional read-only observation of the selected rows and actual alignment plan. */
+	readonly observe?: (groups: readonly PlannedMeasurement[]) => void;
+}
+
+/** Read-only observation of one selected line-engine run. */
+export interface PlannedMeasurement {
+	readonly rows         : readonly { readonly line: number; readonly profile: RowProfile }[] ;
+	readonly alignedCodes : readonly string[] | null                                           ;
+	readonly edits        : readonly TableEdit[]                                               ;
+	/** Explains a pair or preservation refusal when no safe plan is available. */
+	readonly reason?      : string                                                             ;
 }
 
 const canonicalGap = (aligner: LineProfiler, axis: string): string => aligner.canonicalGaps[axis] ?? " ";
@@ -343,17 +354,20 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 	const primary      = contiguousRuns(accepted, prefixRuns, terminalAxes, transparent)                                                                      ;
 	const runs         = !prepared && projections === undefined ? primary : projectedRuns(primary, projected, minRows, prefixRuns, terminalAxes, transparent) ;
 
-	const candidates  : DetectedTable[] = [] ;
-	const wideRefused : DetectedTable[] = [] ;
-	const pairs       : PairGroup[]     = [] ;
+	const candidates   : DetectedTable[]                                                                                                   = [] ;
+	const wideRefused  : DetectedTable[]                                                                                                   = [] ;
+	const pairs        : PairGroup[]                                                                                                       = [] ;
+	const observations : { run: readonly AcceptedRow[]; table?: DetectedTable; alignedCodes: readonly string[] | null; reason?: string }[] = [] ;
 
 	for (const run of runs) {
 		const signature = signatureOf(longestProfile(run));
 		if (run.length < minRows) {
 			pairs.push({ startLine: run[0].index + 1, endLine: run[run.length - 1].index + 1, rows: run.length, signature });
+			if (options.observe) observations.push({ run, alignedCodes: null, reason: "pair below minimum row count" });
 			continue;
 		}
 		if (run.some(row => columnsFollowWideText(row))) {
+			if (options.observe) observations.push({ run, alignedCodes: null, reason: "wide characters" });
 			wideRefused.push({
 				startLine : run[0].index + 1                                 ,
 				endLine   : run[run.length - 1].index + 1                    ,
@@ -395,10 +409,16 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 			edits     : tableEdits                                       ,
 		};
 		candidates.push(table);
+		if (options.observe) observations.push({ run, table, alignedCodes });
 	}
 
 	const { details, refused } = refuseUnsafeTables(source, lines, candidates, aligner, prepared);
-
+	options.observe?.(observations.map(entry => ({
+		rows         : entry.run.map(row => ({ line: row.index + 1, profile: row.profile })) ,
+		alignedCodes : entry.alignedCodes                                                    ,
+		edits        : entry.table?.edits ?? []                                              ,
+		...(entry.reason || entry.table && !details.includes(entry.table) ? { reason: entry.reason ?? "preservation refused the group" } : {}),
+	})));
 	const editsByLine = new Map(details.flatMap(table => table.edits.map(edit => [edit.index, edit] as const)));
 	const output = options.apply
 		? lines.map((line, index) => editsByLine.get(index)?.after ?? line).join("\n")

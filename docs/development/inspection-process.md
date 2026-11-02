@@ -54,6 +54,13 @@ and tokenizer character columns map separately to original UTF-16 offsets, retai
 BOM, lone CR and unpaired surrogates fail explicitly. Parser children run in isolated mode. Changed Python writes
 retain an independent AST-structure comparison; this does not execute source or approve additional rules.
 
+### Read-only column measurement
+
+The TypeScript and Python `measure-columns.ts` tools expose the selected aligner's actual rows and column targets.
+They preserve input bytes and reject write flags or identity/content races. `MATCH`, `MISMATCH` and `UNMEASURABLE`
+describe detected groups; `NO_GROUPS` is distinct from a group PASS. Exit 0 covers MATCH/NO_GROUPS, exit 1 covers
+mismatch or unavailable measurement, and exit 2 covers usage/parser/tool failures. Measurement does not approve writes.
+
 ### Current public write path
 
 [runFormatPipeline](../../product/engine/common/format-pipeline.ts) performs the following sequence:

@@ -1,5 +1,5 @@
 /**
- * STEP6: Detects contiguous rows per registered table kind (grid-kinds.ts), checks the axis columns
+ * Detects contiguous rows per registered table kind (grid-kinds.ts), checks the axis columns
  * (`:`, `;`, `=`, `(`, `)`, `,`, `}`, `//`), and aligns them at minimum width with --write. Conditional-type `:`,
  * for-header `;`, empty statements and one-line execution blocks are not row candidates. Comments split all
  * tables; blank lines split ordinary tables, while return guards can bridge statements within one block region. --explain <line> reports which kind the line was detected as and its axes.
@@ -20,6 +20,7 @@ import      {
               verticalCallText                         ,
                                                          } from "@/typescript/grid-kinds.ts"          ;
 import type { DetectedRow, RowBoundary                   } from "@/typescript/grid-kinds.ts"          ;
+import type { MeasurementGroup, MeasurementPoint         } from "@/common/column-measurement.ts"      ;
 import      { loadSourceFile, syntacticDiagnostics       } from "@/typescript/load-source-file.ts"    ;
 import      { compareTypeScriptLayout                    } from "@/typescript/layout-preservation.ts" ;
 import      { envelope, summarize                        } from "@/common/result-json.ts"             ;
@@ -242,7 +243,7 @@ export function alignRows(source: SourceFile, rows: readonly DetectedRow[]): Ali
 	return { axes, skipped, targets, edits: normalized.edits, conflict: normalized.conflict };
 }
 
-function buildGroup(source: SourceFile, kindName: string, groupName: string, run: readonly DetectedRow[], context: string, depth: number): TableGroup {
+function buildGroup(source: SourceFile, kindName: string, groupName: string, run: readonly DetectedRow[], context: string, depth: number, observe?: (group: TableGroup, run: readonly DetectedRow[], aligned: AlignedRows) => void): TableGroup {
 	const straight = run.filter(row => row.vertical === undefined) ;
 	const marked   = run.filter(row => row.vertical !== undefined) ;
 
@@ -282,7 +283,7 @@ function buildGroup(source: SourceFile, kindName: string, groupName: string, run
 	const first = run[0]!.node     ;
 	const last  = run.at(-1)!.node ;
 
-	return {
+	const group: TableGroup = {
 		kind : groupName,
 
 		startLine : source.getLineAndCharacterOfPosition(first.getStart(source)).line + 1 ,
@@ -302,6 +303,8 @@ function buildGroup(source: SourceFile, kindName: string, groupName: string, run
 		conflict : aligned.conflict ,
 		edits                       ,
 	};
+	observe?.(group, run, aligned);
+	return group;
 }
 
 /** The gate a group's combined edit must pass: vertical rows may insert line breaks, nothing else may. */
@@ -319,9 +322,10 @@ export function censusGroups(source: SourceFile, minRows: number): readonly Tabl
 }
 
 interface CollectResult {
-	readonly groups     : TableGroup[]                                          ;
-	readonly candidates : Node[]                                                ;
-	readonly compressed : { readonly line: number; readonly members: number }[] ;
+	readonly groups     : TableGroup[]                                                                   ;
+	readonly candidates : Node[]                                                                         ;
+	readonly compressed : { readonly line: number; readonly members: number }[]                          ;
+	readonly observe?   : (group: TableGroup, run: readonly DetectedRow[], aligned: AlignedRows) => void ;
 }
 
 /** Finds interfaces whose member table is compressed onto one physical line. Expanding is a structural change, so it is not fixed automatically. */
@@ -364,7 +368,7 @@ function collect(
 			if (run.length < (kind.minRows?.(run) ?? minRows)) continue;
 			if (kind.name === "object-properties") seen.add(node);
 			if (kind.name === "if-headers-return") for (const row of run) seen.add(row.node);
-			result.groups.push(buildGroup(source, kind.name, kind.groupName ? kind.groupName(run) : kind.name, run, syntaxKindName(node), path.length));
+			result.groups.push(buildGroup(source, kind.name, kind.groupName ? kind.groupName(run) : kind.name, run, syntaxKindName(node), path.length, result.observe));
 		}
 	}
 	node.forEachChild(child => {
@@ -397,6 +401,41 @@ function overlapConflicts(groups: readonly TableGroup[]): ReadonlySet<TableGroup
 		}
 	}
 	return conflicts;
+}
+
+/** Read-only observation of the registered runs and plans used by the aligner. */
+export function measureTypeScriptGroups(source: SourceFile, minRows = 3): readonly MeasurementGroup[] {
+	const observed : { group: TableGroup; run: readonly DetectedRow[]; aligned: AlignedRows }[] = []                                                                                                                       ;
+	const result   : CollectResult                                                              = { groups: [], candidates: [], compressed: [], observe: (group, run, aligned) => observed.push({ group, run, aligned }) } ;
+	collect(source, source, minRows, new Set<Node>(), undefined, result);
+	collectCompressed(source, source, result);
+	const overlaps = overlapConflicts(result.groups);
+	const groups: MeasurementGroup[] = observed.map(({ group, run, aligned }) => {
+		const axes = new Map<string, MeasurementPoint[]>();
+		for (const row of run) for (const boundary of row.boundaries) {
+			const points = axes.get(boundary.axis) ?? []                                               ;
+			const line   = source.getLineAndCharacterOfPosition(boundary.at).line + 1                  ;
+			const target = row.vertical === undefined ? aligned.targets.get(boundary.axis) : undefined ;
+			points.push({ rowLine: line, currentColumn: boundary.alignColumn ?? displayColumn(source, boundary.at), targetColumn: target ?? null, anchor: boundary.alignColumn !== undefined || boundary.measureOnly ? "virtual" : "physical", editable: !boundary.measureOnly, ...(target === undefined ? { reason: "axis has no horizontal planner target" } : {}) });
+			axes.set(boundary.axis, points);
+		}
+		const missing = [...axes.values()].some(points => points.some(point => point.targetColumn === null))                                                                                                                                                                                                                                                          ;
+		const reason  = group.conflict ?? (overlaps.has(group) ? "alignment edits overlap another group" : group.vertical ? "vertical outlier requires structural authoring" : aligned.skipped.length || missing ? "axis has no horizontal planner target" : group.edits.length > 0 && !groupPreserved(source, group) ? "preservation refused the group" : undefined) ;
+		return { kind: group.kind, rowLines: run.map(row => source.getLineAndCharacterOfPosition(row.node.getStart(source)).line + 1), axes: [...axes].map(([axis, points]) => ({ axis, points })), state: reason ? "UNMEASURABLE" : group.edits.length ? "MISMATCH" : "MATCH", ...(reason ? { reason } : {}) };
+	});
+	const pairs: CollectResult = { groups: [], candidates: [], compressed: [], observe: (group, run) => {
+		if (run.length !== 2 || observed.some(item => item.run.some(row => run.some(pair => pair.node === row.node)))) return;
+		const axes = new Map<string, MeasurementPoint[]>();
+		for (const row of run) for (const boundary of row.boundaries) {
+			const points = axes.get(boundary.axis) ?? [];
+			points.push({ rowLine: source.getLineAndCharacterOfPosition(boundary.at).line + 1, currentColumn: boundary.alignColumn ?? displayColumn(source, boundary.at), targetColumn: null, anchor: boundary.alignColumn !== undefined || boundary.measureOnly ? "virtual" : "physical", editable: !boundary.measureOnly, reason: "pair below minimum row count" });
+			axes.set(boundary.axis, points);
+		}
+		groups.push({ kind: group.kind, rowLines: run.map(row => source.getLineAndCharacterOfPosition(row.node.getStart(source)).line + 1), axes: [...axes].map(([axis, points]) => ({ axis, points })), state: "UNMEASURABLE", reason: "pair below minimum row count" });
+	} };
+	collect(source, source, 2, new Set<Node>(), undefined, pairs);
+	for (const entry of result.compressed) groups.push({ kind: "compressed-interface", rowLines: [entry.line], axes: [], state: "UNMEASURABLE", reason: "interface members share one physical line" });
+	return groups;
 }
 
 interface Arguments {
