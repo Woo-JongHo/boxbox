@@ -38,7 +38,7 @@ Decide in this order:
 ## Type clarity
 
 - Inspect `?`, `null`, `undefined`, `!` and `as` together as uncertainty markers.
-- Extract the syntax markers of the target file first with `bun <SKILL>/engine/typescript/02_audit-type-uncertainty.ts --file <target file>`. The auditor separates, via the AST, only optional declarations, `null`, `undefined`, non-null assertions, definite assignments, `as` and angle-bracket assertions — not logical `!` or the conditional `?`.
+- Extract the syntax markers of the target file first with `bun <SKILL>/engine/typescript/03_audit-type-uncertainty.ts --file <target file>`. The auditor separates, via the AST, only optional declarations, `null`, `undefined`, non-null assertions, definite assignments, `as` and angle-bracket assertions — not logical `!` or the conditional `?`.
 - Keep `?` when omission is a real input contract, and narrow to a concrete type as early as possible after entering the function.
 - When `exactOptionalPropertyTypes` is off, `property?: T` also accepts an explicit `property: undefined`. Inspect omitted properties and explicit `undefined` at call sites separately; when they mean the same thing, unify on omitting the property.
 - When the meaning of omission for a `?` kept on a public or boundary interface is not obvious from the name, place a short `/** JSDoc */` right before the property and verify it with a property hover.
@@ -95,14 +95,14 @@ Decide in this order:
 
 ## Automated checks
 
-Scripts are split by language. `engine/common/` holds the language-agnostic engine (string/comment masking, table detection and minimum-width alignment, display width), and `engine/typescript/` holds the TypeScript AST/LSP tools numbered in order (00→08). `engine/python/` is a line profiler on the common engine (01_group-regions, 06_align-tables) that locks repeated rows — dictionaries, assignments, import blocks, assigned calls and their bundle arguments — into tables, and `engine/structured/` aligns JSON and YAML scalar mappings. String and comment contents are masked to prevent structural misreads, and rows that fail lossless decomposition or are uncertain are refused — refusal is the safe direction.
+Scripts are split by language. Engine folders stay flat, and every file has a unique contiguous numeric ID within its folder, including common, CLI, structured and helper files. IDs follow file order for navigation; they do not define workflow steps or execution order. Python provides grouping (`00_group-regions.ts`), measurement (`01_measure-columns.ts`) and alignment (`02_align-tables.ts`); `03_profile.ts`, `04_assignment-envelope.ts` and `05_analysis.ts`–`07_string-ranges.ts` support those tools. Python AST/token analysis feeds its profile and shared line planner. `engine/structured/` aligns JSON and YAML scalar mappings. String and comment contents are masked to prevent structural misreads, and rows that fail lossless decomposition or are uncertain are refused — refusal is the safe direction.
 
 ```bash
-bun <SKILL>/engine/python/06_align-tables.ts --file <target file> [--write] [--min-rows 3]
-bun <SKILL>/engine/python/01_group-regions.ts --file <target file>
+bun <SKILL>/engine/python/02_align-tables.ts --file <target file> [--write] [--min-rows 3]
+bun <SKILL>/engine/python/00_group-regions.ts --file <target file>
 ```
 
-**STEP0 — Normalize import declarations.** Select the path before changing imports. B-layout import authoring uses `--layout-only`: it may move an existing brace import between compact and vertical forms, but preserves tokens, comments, structural AST and whether the final named specifier already has a trailing comma. It refuses an inline `type` specifier that the full normalizer would split, because splitting it into `import` and `import type` declarations is a token-changing Write/Refactor operation. Use the default full normalizer only inside that separately authorized structural workflow.
+**Normalize import declarations.** Select the path before changing imports. B-layout import authoring uses `--layout-only`: it may move an existing brace import between compact and vertical forms, but preserves tokens, comments, structural AST and whether the final named specifier already has a trailing comma. It refuses an inline `type` specifier that the full normalizer would split, because splitting it into `import` and `import type` declarations is a token-changing Write/Refactor operation. Use the default full normalizer only inside that separately authorized structural workflow.
 
 A single named specifier stays compact. Two or more become vertical when (A) the completed compact line exceeds 120 display columns, (B) its names are at least 20 columns wider than the section's second widest names, or (C) the aligned table still exceeds 120 columns, taking the widest names first. These import thresholds and the lone-brace-import exception are unchanged. All brace imports in a section share the `import`/`import type`, `{ }`, `from`, module and optional `;` columns. Imports without braces and imports with attributes stay as written without breaking the table.
 
@@ -115,19 +115,19 @@ bun <SKILL>/engine/typescript/00_normalize-imports.ts --write --layout-only <tar
 
 Check mode fails and lists files when any file needs changes. `--layout-only` reports `layout-only refuses token-changing import normalization` and leaves the file unchanged when full normalization would split mixed type/value imports. After any authorized `--write`, run TypeScript, architecture and behavior verification.
 
-**STEP6 — Align boundaries per table kind.** For each table kind detected by the [kind registry](engine/typescript/grid-kinds.ts), align its registered axes to the actual longest value. Ordinary groups need three contiguous same-role rows; declarations with `=` and their compatible nested call-expression layer use the existing two-row floor. Gap axes keep at least one space; insert axes preserve attached-token conventions and only align the column.
+**Align boundaries per table kind.** For each table kind detected by the [kind registry](engine/typescript/13_grid-kinds.ts), align its registered axes to the actual longest value. Ordinary groups need three contiguous same-role rows; declarations with `=` and their compatible nested call-expression layer use the existing two-row floor. Gap axes keep at least one space; insert axes preserve attached-token conventions and only align the column.
 
 The B-layout kinds add these bounded shapes: `object-properties` keeps property header `:` and one-line commas while shorthand rows omit absent punctuation; `logical-chains` aligns already-leading homogeneous `&&`/`||` chains, with an optional single `!` slot and opaque `!!`; `if-headers-braced` aligns `)`/`{`, while `if-headers-return` aligns `)`/`return`; `vertical-call-arguments` aligns commas in calls that are already multiline; and `declaration-call-expressions` aligns compatible comparison/conditional expressions at the same argument position in same-callee, same-arity declarations. `!=` and `!==` remain indivisible. Blank lines, interstitial comments and incompatible shapes split or drop these layers. A new kind suppresses its overlapping legacy region instead of borrowing an older approval identity.
 
 The raw authoring aligner retains the 20-column call-argument outlier transform: it may take that declaration row vertical, then applies token/comment and structural-AST checks. Public Align refuses that newline-changing candidate and accepts only horizontal edits that preserve leading indentation and physical lines. Interface members compressed onto one physical line are likewise reported and not expanded. Conditional expressions outside the supported nested declaration-call shape, `for` headers, empty statements, other one-line execution blocks, rows split by JSDoc, and unsupported logical shapes remain excluded. The per-role shapes live in the [TypeScript grid template](rules/references/typescript-grid-template.md).
 
 ```bash
-bun <SKILL>/engine/typescript/06_align-tables.ts --file <target file> [--write] [--min-rows 3] [--explain <line>]
+bun <SKILL>/engine/typescript/07_align-tables.ts --file <target file> [--write] [--min-rows 3] [--explain <line>]
 ```
 
 The first command reports table kinds, axes and mismatch counts, and fails on any mismatch. Horizontal edits preserve non-whitespace tokens, comments, identifiers and order, leading indentation, physical lines and structural AST; a table that would change more is refused, never written, and counted as `refused=`. With `--write`, the output is also re-parsed by the language's official parser (TypeScript 7, python3); if its diagnostics differ from the source, nothing is written (`parse=changed`). If the parser is missing or fails to run, it exits non-zero before writing. `BOXBOX_REQUIRE_PARSERS=0` does not bypass this. An optional parser skip in tests does not mean product writes are allowed. Every aligner accepts `--json` and prints one versioned result (`schemaVersion`, per-file `summary`, per-group `state` PASS / FIXABLE / SUGGEST / REFUSE, `parse`) — agents and CI should read that instead of the text report. TypeScript `--write` confirms alignment, re-parsing and convergence in a temporary working copy for up to 5 passes, then replaces the original once (`passes=`). The shared line engine also replaces only a verified working copy and refuses when an external edit is detected right before commit. A failed working copy never reaches the original. Use `--write` only after reading the file and confirming the table rows share a role, then rerun to prove `misaligned=0`. When something does not work: ① classify the kind with `--explain <line>`, ② identify missing or excess axes, ③ register the kind and axes in `grid-kinds.ts` and pin it with `test/fixtures/table-kinds.ts` and `test/typescript-align.test.ts`.
 
-**STEP7 — Author condition chains.** This authoring-only tool gives a homogeneous `&&` or `||` chain with at least
+**Author condition chains.** This authoring-only tool gives a homogeneous `&&` or `||` chain with at least
 four operands a leading-operator multiline form. It moves existing trailing operators to the following lines and reserves
 a virtual three-column operator prefix on the first operand, plus one optional `!` slot when needed. It does not add
 parentheses, functions or wrappers, and it preserves operand tokens, comments and evaluation order. Existing multiline
@@ -136,47 +136,54 @@ move safely are refused. Before writing, the tool verifies exact token/comment p
 diagnostics and recursive AST structure. Public Align is separate and never invokes this newline-changing authoring path.
 
 ```bash
-bun <SKILL>/engine/typescript/07_wrap-conditions.ts --file <target file> [--write] [--min-conditions 4]
+bun <SKILL>/engine/typescript/08_wrap-conditions.ts --file <target file> [--write] [--min-conditions 4]
 ```
 
 The contract threshold is four operands. The CLI accepts an explicit experimental threshold no lower than three; using
 that override does not change public approval or the documented authoring convention.
 
-**STEP8 — Check the function map.** Check drift between the function map at the top of a feature implementation file (`GROUP | FUNCTION | INPUT | RETURN | CALLS | ROLE`) and the actual declarations: FUNCTION 1:1, INPUT count match, CALLS existence. `--scaffold` generates a skeleton from the declarations. The map format follows the [TypeScript grid template](rules/references/typescript-grid-template.md).
+**Check the function map.** Check drift between the function map at the top of a feature implementation file (`GROUP | FUNCTION | INPUT | RETURN | CALLS | ROLE`) and the actual declarations: FUNCTION 1:1, INPUT count match, CALLS existence. `--scaffold` generates a skeleton from the declarations. The map format follows the [TypeScript grid template](rules/references/typescript-grid-template.md).
 
 ```bash
-bun <SKILL>/engine/typescript/08_function-map.ts --file <target file> [--scaffold]
+bun <SKILL>/engine/typescript/09_function-map.ts --file <target file> [--scaffold]
 ```
 
-**STEP1 — Confirm groups.** Before claiming any alignment, use the AST to find "contiguous rows that can form one table". Ordinary tables group sibling nodes with a shared role; registered nested detectors may expose compatible rows inside one call, logical chain or multiline property region. Group by AST role and nesting rather than text position, so a ternary `:` and a property/object-literal `:` remain different axes.
+**Confirm candidate groups.** Before claiming any alignment, use the AST to find "contiguous rows that can form one table". Ordinary tables group sibling nodes with a shared role; registered nested detectors may expose compatible rows inside one call, logical chain or multiline property region. Group by AST role and nesting rather than text position, so a ternary `:` and a property/object-literal `:` remain different axes.
 
 ```bash
-bun <SKILL>/engine/typescript/01_group-regions.ts --file <target file> [--min-rows 2]
+bun <SKILL>/engine/typescript/02_group-regions.ts --file <target file> [--min-rows 2]
 ```
 
 Each output line is `line-range container SyntaxKind rows=count table|pair axes=boundary-axes`. `rows>=3` is `table`; `rows==2` is `pair` (promoted to a table only when the user confirmed the comparison is useful) — both are still **candidates**. Sharing a SyntaxKind is all that was confirmed; rows that look very different, such as `declare const x: boolean;` and a multi-line `export const y = { ... };`, can land in the same SyntaxKind by accident. Decide whether a candidate is a real table by reading its content per the contract's "record the base form" and "judge exceptional elements" steps. `axes` lists the boundary axes actually present in the group (`type-annotation-colon`, `object-literal-colon`, `ternary-colon`, `call-arg-comma`, `array-comma`, `object-comma`, `statement-semicolon`).
 
-**STEP2 — Type uncertainty.** Extract the list of type-uncertainty syntax with the TypeScript 7 AST.
+**Audit type uncertainty.** Extract the list of type-uncertainty syntax with the TypeScript 7 AST.
 
 ```bash
-bun <SKILL>/engine/typescript/02_audit-type-uncertainty.ts --file <target file>
+bun <SKILL>/engine/typescript/03_audit-type-uncertainty.ts --file <target file>
 ```
 
 The output is not an automatic removal list. Judge each item as `keep / normalize at boundary / remove` from its definition, callers and tests.
 
-**STEP3 — Optional gate.** Check readiness to tighten optional contracts repository-wide with this auditor.
+**Audit optional types.** Check readiness to tighten optional contracts repository-wide with this auditor.
 
 ```bash
-bun <SKILL>/engine/typescript/03_audit-optional-types.ts
-bun <SKILL>/engine/typescript/03_audit-optional-types.ts --max-errors <current baseline> --file <target file>
+bun <SKILL>/engine/typescript/04_audit-optional-types.ts
+bun <SKILL>/engine/typescript/04_audit-optional-types.ts --max-errors <current baseline> --file <target file>
 ```
 
 The default run is the final gate and fails on any error. During migration, pass `--max-errors <current baseline>` so the run fails when errors increase and passes when they decrease or stay the same. `--file` does not change the global verdict; it additionally shows line, column, error code and diagnostic message for the given file. Use this to clean up explicit `undefined` arguments in the current product file first. Enable it as a permanent `tsconfig.json` gate only after the total error count is 0 and related behavior tests pass. Never add `| undefined` to every optional type just to silence errors.
 
-**STEP4 — Measure columns.** Within a group confirmed by 01, measure the actual screen columns, including tabs and CJK display width. `04_measure-columns.ts` (automatic measurement from 01's group output) is not implemented yet; until then keep using `measure-layout.ts` with manual flags.
+**Measure columns.** Use the language-specific measurement tool to observe registered groups through the same alignment planner that alignment uses. It is read-only and does not write the file. A `MATCH` means the planner proposes no horizontal edits for the reported group; `MISMATCH` means it proposes edits; `UNMEASURABLE` identifies a candidate whose measurement or safe plan is unavailable; `NO_GROUPS` means no registered measurable groups were found and is not a coverage pass; `ERROR` is a usage, parser or tool failure. It does not find every unsupported construct.
 
 ```bash
-bun <SKILL>/engine/measure-layout.ts src/cli.ts \
+bun <SKILL>/engine/typescript/05_measure-columns.ts --file <target file> [--json]
+bun <SKILL>/engine/python/01_measure-columns.ts --file <target file> [--json]
+```
+
+For arbitrary manually selected ranges or tokens, use `03_measure-layout.ts` with explicit flags as below. The measurement tool measures only groups emitted by the existing aligner; it does not change alignment or public approval.
+
+```bash
+bun <SKILL>/engine/03_measure-layout.ts src/00_cli.ts \
   --lines 3,5-20 \
   --tokens 'from|//#1|:#1|=>' \
   --left-anchor '{#1|(#1|<#1'
@@ -187,15 +194,15 @@ Use `--left-anchor` only to check the start column of an execution cell whose co
 `--center-cell '(#1|<#1'` computes the minimum inner width from the actual longest value in the selected line range and checks that each non-empty cell's left and right padding differ by at most one space. Run different role sections separately by splitting the line range.
 `--compact-before '}#2'` checks that there is exactly one space between the last statement's `;` and the closing `}`. It fails when padding to match the length of a production row's last function value remains.
 
-**STEP5 — Verify hovers.** Check the hover documentation of named types and public optional properties with the TypeScript 7 LSP. This is a conditional final step that runs only when a name or JSDoc was newly added.
+**Verify hovers.** Check the hover documentation of named types and public optional properties with the TypeScript 7 LSP. This is a conditional final step that runs only when a name or JSDoc was newly added.
 
 ```bash
-node <SKILL>/engine/typescript/05_inspect-hover.mjs \
+node <SKILL>/engine/typescript/06_inspect-hover.mjs \
   test/fixtures/hover-contract.ts \
   CompactResult HoverOptions StoredOptions
 ```
 
-`05_inspect-hover.mjs` finds the actual declaration from the TypeScript LSP document symbols, then requests a hover. It can check JSDoc on properties such as `resumeThreadId`, not just types. When two or more declarations share a name, an ambiguous request fails, so select by source order as in `resumeThreadId#1`. Without JSDoc the check fails even when a function signature was shown.
+`06_inspect-hover.mjs` finds the actual declaration from the TypeScript LSP document symbols, then requests a hover. It can check JSDoc on properties such as `resumeThreadId`, not just types. When two or more declarations share a name, an ambiguous request fails, so select by source order as in `resumeThreadId#1`. Without JSDoc the check fails even when a function signature was shown.
 
 ## Done criteria
 
@@ -205,7 +212,7 @@ node <SKILL>/engine/typescript/05_inspect-hover.mjs \
 - When omission and explicit `undefined` mean the same state, call sites are unified on omitting the property, and the total `exactOptionalPropertyTypes` error count does not grow without justification.
 - Do not spread new tables with fewer than two comparison rows, or excessive whitespace absent from the canonical form.
 - Every changed TypeScript file passes the selected import lock (`00_normalize-imports.ts --layout-only` for B-layout;
-  the default full check for an authorized Write/Refactor) and `06_align-tables.ts --file` (`misaligned=0`;
+  the default full check for an authorized Write/Refactor) and `07_align-tables.ts --file` (`misaligned=0`;
   `compressed` is 0 or has a manual expansion plan). Write code per the
   [authoring axis contract](rules/references/readability-contract.md) at authoring time; the checks prove it.
 - `bun run check`, the target behavior tests, and `git diff --check` pass.

@@ -1,4 +1,4 @@
-import      { afterEach, describe, expect, test              } from "bun:test"              ;
+import      { afterEach, describe, expect, test              } from "bun:test"                 ;
 import      {
               chmodSync                                    ,
               linkSync                                     ,
@@ -9,14 +9,14 @@ import      {
               rmSync                                       ,
               symlinkSync                                  ,
               writeFileSync                                ,
-                                                             } from "node:fs"               ;
-import      { join, relative, resolve                        } from "node:path"             ;
+                                                             } from "node:fs"                  ;
+import      { join, relative, resolve                        } from "node:path"                ;
 
-import      { updateFileAtomically, updateFileAtomicallySync } from "@/common/safe-file.ts" ;
-import      { runStagedPasses, writeDiagnosedOutput          } from "@/typescript/align.ts" ;
+import      { updateFileAtomically, updateFileAtomicallySync } from "@/common/12_safe-file.ts" ;
+import      { runStagedPasses, writeDiagnosedOutput          } from "@/typescript/12_align.ts" ;
 
 const root                 = resolve(import.meta.dir, "..")                                ;
-const script               = resolve(root, "product/engine/typescript/06_align-tables.ts") ;
+const script               = resolve(root, "product/engine/typescript/07_align-tables.ts") ;
 const workspaces: string[] = []                                                            ;
 
 function workspace(): string {

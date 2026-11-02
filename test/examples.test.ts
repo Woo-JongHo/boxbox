@@ -6,7 +6,7 @@ import      {
               validateDecision                      ,
               validateExample                       ,
               type Example                          ,
-                                                      } from "@/common/examples.ts"                   ;
+                                                      } from "@/common/17_examples.ts"                ;
 import      { checkDecision, checkExample, loadPreset } from "../development/tools/examples-check.ts" ;
 
 function example(partial: Partial<Example> & Pick<Example, "id" | "before" | "after">): Example {

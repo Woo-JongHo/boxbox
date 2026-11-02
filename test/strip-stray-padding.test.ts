@@ -2,7 +2,7 @@ import      { describe, expect, test   } from "bun:test"                        
 import      {
               straySemicolonPadding  ,
               straySemicolonPaddings
-                                       } from "@/common/report.ts"                          ;
+                                       } from "@/common/23_report.ts"                       ;
 import      { stripSemicolonPadding    } from "../development/tools/strip-stray-padding.ts" ;
 
 const at = (text: string, line: number): number | undefined => straySemicolonPadding(text.split("\n"), line - 1);

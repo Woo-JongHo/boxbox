@@ -73,12 +73,12 @@
   "related": [
     {
       "kind": "code",
-      "path": "product/engine/typescript/grid-kinds.ts",
+      "path": "product/engine/typescript/13_grid-kinds.ts",
       "note": "Call envelope and declaration grouping."
     },
     {
       "kind": "code",
-      "path": "product/engine/common/authoring-guide.ts",
+      "path": "product/engine/common/20_authoring-guide.ts",
       "note": "Actual decision/document pair."
     },
     {

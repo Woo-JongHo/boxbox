@@ -1,9 +1,9 @@
-import      { describe, expect, test        } from "bun:test"                 ;
-import      { maskSource                    } from "@/common/code-text.ts"    ;
-import type { CodeSyntax                    } from "@/common/code-text.ts"    ;
-import      { alignSource                   } from "@/common/table-engine.ts" ;
-import type { LineProfiler, RowProfile      } from "@/common/table-engine.ts" ;
-import      { PYTHON_ALIGNER, PYTHON_SYNTAX } from "@/python/profile.ts"      ;
+import      { describe, expect, test        } from "bun:test"                    ;
+import      { maskSource                    } from "@/common/00_code-text.ts"    ;
+import type { CodeSyntax                    } from "@/common/00_code-text.ts"    ;
+import      { alignSource                   } from "@/common/06_table-engine.ts" ;
+import type { LineProfiler, RowProfile      } from "@/common/06_table-engine.ts" ;
+import      { PYTHON_ALIGNER, PYTHON_SYNTAX } from "@/python/03_profile.ts"      ;
 
 const SYNTAX: CodeSyntax = {
 	lineComments  : ["//"]                                    ,

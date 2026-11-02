@@ -1,4 +1,4 @@
-import      { afterEach, expect, test } from "bun:test"                 ;
+import      { afterEach, expect, test } from "bun:test"                    ;
 import      {
               chmodSync             ,
               mkdirSync             ,
@@ -6,11 +6,11 @@ import      {
               readFileSync          ,
               rmSync                ,
               writeFileSync
-                                      } from "node:fs"                  ;
-import      { tmpdir                  } from "node:os"                  ;
-import      { join, resolve           } from "node:path"                ;
-import      { alignSource             } from "@/common/table-engine.ts" ;
-import      { PYTHON_ALIGNER          } from "@/python/profile.ts"      ;
+                                      } from "node:fs"                     ;
+import      { tmpdir                  } from "node:os"                     ;
+import      { join, resolve           } from "node:path"                   ;
+import      { alignSource             } from "@/common/06_table-engine.ts" ;
+import      { PYTHON_ALIGNER          } from "@/python/03_profile.ts"      ;
 
 const root                 = resolve(import.meta.dir, "..") ;
 const workspaces: string[] = []                             ;
@@ -20,7 +20,7 @@ function invoke(language: "typescript" | "python", source: string, args: string[
 	workspaces.push(workspace);
 	const file = join(workspace, language === "python" ? "sample.py" : "sample.ts");
 	writeFileSync(file, source);
-	const script = join         (root, "product/engine", language, "measure-columns.ts"                                                                   ) ;
+	const script = join         (root, "product/engine", language, language === "typescript" ? "05_measure-columns.ts" : "01_measure-columns.ts"          ) ;
 	const run    = Bun.spawnSync(["bun", script, "--file", file.split("/").at(-1)!, "--json", ...args], { cwd: workspace, stdout: "pipe", stderr: "pipe" }) ;
 	return { result: JSON.parse(run.stdout.toString()), exit: run.exitCode, after: readFileSync(file, "utf8") };
 }
@@ -96,7 +96,7 @@ test("TypeScript reports a non-declaration pair as unmeasurable", () => {
 });
 
 test("unsupported file extensions return one in text and JSON modes", () => {
-	const script = join(root, "product/engine/python/measure-columns.ts");
+	const script = join(root, "product/engine/python/01_measure-columns.ts");
 	for (const args of [["--file", "sample.txt"], ["--file", "sample.txt", "--json"]]) {
 		const result = Bun.spawnSync(["bun", script, ...args], { cwd: root, stdout: "pipe", stderr: "pipe" });
 		expect(result.exitCode).toBe(1);
@@ -110,7 +110,7 @@ test("missing Python fails closed without changing the target", () => {
 	const source = "a=1\nlonger=2\nthird=3\n"   ;
 	const file   = join(workspace, "sample.py") ;
 	writeFileSync(file, source);
-	const script = join         (root, "product/engine/python/measure-columns.ts"                                                                                                         ) ;
+	const script = join         (root, "product/engine/python/01_measure-columns.ts"                                                                                                      ) ;
 	const run    = Bun.spawnSync([process.execPath, script, "--file", "sample.py", "--json"], { cwd: workspace, env: { ...process.env, PATH: workspace }, stdout: "pipe", stderr: "pipe" }) ;
 	expect(run.exitCode                           ).toBe(2      ) ;
 	expect(JSON.parse(run.stdout.toString()).state).toBe("ERROR") ;
@@ -130,7 +130,7 @@ test("an external edit during Python analysis is retained and refused", () => {
 	writeFileSync(file, source);
 	writeFileSync(fake, '#!/bin/sh\n"$REAL_PYTHON" "$@" > "$PYTHON_OUTPUT"\nprintf "external = 9\\n" > "$TARGET"\n/bin/cat "$PYTHON_OUTPUT"\n');
 	chmodSync(fake, 0o755);
-	const script = join         (root, "product/engine/python/measure-columns.ts"                                                                                                                                                                                              ) ;
+	const script = join         (root, "product/engine/python/01_measure-columns.ts"                                                                                                                                                                                           ) ;
 	const run    = Bun.spawnSync([process.execPath, script, "--file", "sample.py", "--json"], { cwd: workspace, env: { ...process.env, PATH: binaryDir, REAL_PYTHON: python!, PYTHON_OUTPUT: join(workspace, "analysis.json"), TARGET: file }, stdout: "pipe", stderr: "pipe" }) ;
 	expect(run.exitCode                           ).toBe(2               ) ;
 	expect(JSON.parse(run.stdout.toString()).state).toBe("ERROR"         ) ;

@@ -1,4 +1,4 @@
-import      { afterEach, describe, expect, test } from "bun:test"                  ;
+import      { afterEach, describe, expect, test } from "bun:test"                     ;
 import      {
               existsSync                      ,
               mkdirSync                       ,
@@ -7,14 +7,14 @@ import      {
               rmSync                          ,
               symlinkSync                     ,
               writeFileSync
-                                                } from "node:fs"                   ;
-import      { join, resolve                     } from "node:path"                 ;
-import      { tmpdir                            } from "node:os"                   ;
-import      { APPROVAL_VERSIONS                 } from "@/common/approval-gate.ts" ;
+                                                } from "node:fs"                      ;
+import      { join, resolve                     } from "node:path"                    ;
+import      { tmpdir                            } from "node:os"                      ;
+import      { APPROVAL_VERSIONS                 } from "@/common/18_approval-gate.ts" ;
 
-const repository           = resolve(import.meta.dir, "..")            ;
-const cli                  = join(repository, "product/engine/cli.ts") ;
-const workspaces: string[] = []                                        ;
+const repository           = resolve(import.meta.dir, "..")               ;
+const cli                  = join(repository, "product/engine/00_cli.ts") ;
+const workspaces: string[] = []                                           ;
 
 function workspace(): string {
 	const root = mkdtempSync(join(tmpdir(), "boxbox-authoring-modes-"));

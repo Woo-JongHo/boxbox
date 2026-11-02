@@ -1,6 +1,6 @@
-import      { afterEach, describe, expect, test                          } from "bun:test"                  ;
-import      { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs"                   ;
-import      { join                                                       } from "node:path"                 ;
+import      { afterEach, describe, expect, test                          } from "bun:test"                     ;
+import      { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs"                      ;
+import      { join                                                       } from "node:path"                    ;
 
 import      {
               APPROVAL_VERSIONS                                        ,
@@ -9,10 +9,10 @@ import      {
               evaluateDetected                                         ,
               loadApprovalRegistry                                     ,
               type ApprovalRegistry                                    ,
-                                                                         } from "@/common/approval-gate.ts" ;
-import      { sectionHash, contentHashOf, type Decision, type Example    } from "@/common/examples.ts"      ;
-import      { type LoadedConvention                                      } from "@/common/conventions.ts"   ;
-import      { lookupKeyOf                                                } from "@/common/signature.ts"     ;
+                                                                         } from "@/common/18_approval-gate.ts" ;
+import      { sectionHash, contentHashOf, type Decision, type Example    } from "@/common/17_examples.ts"      ;
+import      { type LoadedConvention                                      } from "@/common/16_conventions.ts"   ;
+import      { lookupKeyOf                                                } from "@/common/02_signature.ts"     ;
 
 const KEY                  = lookupKeyOf("typescript", "SourceFile", "declaration-equals", ["equals", "semicolon"]) ;
 const workspaces: string[] = []                                                                                     ;

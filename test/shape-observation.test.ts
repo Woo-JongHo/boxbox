@@ -11,7 +11,7 @@ import      {
 import      { dirname, join                       } from "node:path"                         ;
 import      { version as typescriptVersion        } from "typescript"                        ;
 
-import      { observeShapes, SHAPE_PARSER_VERSION } from "@/typescript/09_observe-shapes.ts" ;
+import      { observeShapes, SHAPE_PARSER_VERSION } from "@/typescript/10_observe-shapes.ts" ;
 
 const roots: string[] = [];
 

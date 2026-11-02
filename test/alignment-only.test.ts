@@ -1,4 +1,4 @@
-import      { afterEach, expect, test                                   } from "bun:test"                    ;
+import      { afterEach, expect, test                                   } from "bun:test"                       ;
 import      {
               existsSync                                              ,
               mkdirSync                                               ,
@@ -7,16 +7,16 @@ import      {
               readdirSync                                             ,
               rmSync                                                  ,
               writeFileSync
-                                                                        } from "node:fs"                     ;
-import      { join                                                      } from "node:path"                   ;
-import      { tmpdir                                                    } from "node:os"                     ;
+                                                                        } from "node:fs"                        ;
+import      { join                                                      } from "node:path"                      ;
+import      { tmpdir                                                    } from "node:os"                        ;
 
-import      { assertAlignmentOnly                                       } from "@/common/alignment-only.ts"  ;
-import      { APPROVAL_VERSIONS, documentResolver, loadApprovalRegistry } from "@/common/approval-gate.ts"   ;
-import type { ApprovalRegistry                                          } from "@/common/approval-gate.ts"   ;
-import      { contentHashOf, sectionHash                                } from "@/common/examples.ts"        ;
-import type { Example                                                   } from "@/common/examples.ts"        ;
-import      { runFormatPipeline                                         } from "@/common/format-pipeline.ts" ;
+import      { assertAlignmentOnly                                       } from "@/common/10_alignment-only.ts"  ;
+import      { APPROVAL_VERSIONS, documentResolver, loadApprovalRegistry } from "@/common/18_approval-gate.ts"   ;
+import type { ApprovalRegistry                                          } from "@/common/18_approval-gate.ts"   ;
+import      { contentHashOf, sectionHash                                } from "@/common/17_examples.ts"        ;
+import type { Example                                                   } from "@/common/17_examples.ts"        ;
+import      { runFormatPipeline                                         } from "@/common/21_format-pipeline.ts" ;
 
 const roots: string[] = []                                                            ;
 const preset          = join(import.meta.dir, "../product/rules/presets/recommended") ;
@@ -156,8 +156,8 @@ test("real vertical candidates are refused by Align and remain unapproved after 
 	const registry = verticalRegistry(options.root);
 	// Isolate TypeScript server state, as separate CLI invocations do.
 	const script = `
-		import { runFormatPipeline } from ${JSON.stringify(join(import.meta.dir, "../product/engine/common/format-pipeline.ts"))};
-		import { documentResolver } from ${JSON.stringify(join(import.meta.dir, "../product/engine/common/approval-gate.ts"))};
+		import { runFormatPipeline } from ${JSON.stringify(join(import.meta.dir, "../product/engine/common/21_format-pipeline.ts"))};
+		import { documentResolver } from ${JSON.stringify(join(import.meta.dir, "../product/engine/common/18_approval-gate.ts"))};
 		const options = JSON.parse(process.argv[1]);
 		options.registry.examples = new Map(options.registry.examples);
 		options.registry.decisions = new Map(options.registry.decisions);

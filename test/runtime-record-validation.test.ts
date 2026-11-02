@@ -1,12 +1,12 @@
-import      { describe, expect, test               } from "bun:test"                ;
+import      { describe, expect, test               } from "bun:test"                   ;
 
-import      { parseConventions, validateConvention } from "@/common/conventions.ts" ;
+import      { parseConventions, validateConvention } from "@/common/16_conventions.ts" ;
 import      {
               contentHashOf                      ,
               parseRecords                       ,
               validateDecision                   ,
               validateExample                    ,
-                                                   } from "@/common/examples.ts"    ;
+                                                   } from "@/common/17_examples.ts"    ;
 
 const convention = {
 	schemaVersion : 1                                                              ,

@@ -1,4 +1,4 @@
-import      { afterAll, beforeAll, describe, expect, test } from "bun:test"                ;
+import      { afterAll, beforeAll, describe, expect, test } from "bun:test"                   ;
 import      {
               chmodSync                                 ,
               existsSync                                ,
@@ -7,15 +7,15 @@ import      {
               readFileSync                              ,
               rmSync                                    ,
               writeFileSync                             ,
-                                                          } from "node:fs"                 ;
-import      { tmpdir                                      } from "node:os"                 ;
-import      { join, resolve                               } from "node:path"               ;
-import      { parserAvailable                             } from "@/common/parse-check.ts" ;
+                                                          } from "node:fs"                    ;
+import      { tmpdir                                      } from "node:os"                    ;
+import      { join, resolve                               } from "node:path"                  ;
+import      { parserAvailable                             } from "@/common/08_parse-check.ts" ;
 
 const ROOT   = resolve(import.meta.dir, "..")                                     ;
 const BUN    = process.execPath                                                   ;
-const SCRIPT = join(ROOT, "product/engine/python/06_align-tables.ts")             ;
-const MODULE = join(ROOT, "product/engine/common/parse-check.ts")                 ;
+const SCRIPT = join(ROOT, "product/engine/python/02_align-tables.ts")             ;
+const MODULE = join(ROOT, "product/engine/common/08_parse-check.ts")              ;
 const SOURCE = readFileSync(join(ROOT, "test/fixtures/python/tables.py"), "utf8") ;
 
 let scratch = "";

@@ -15,7 +15,7 @@
  */
 import      { existsSync, readFileSync } from "node:fs"                ;
 import      { join                     } from "node:path"              ;
-import      { patternOf                } from "@/common/surface.ts"    ;
+import      { patternOf                } from "@/common/03_surface.ts" ;
 import      { readCensusReport         } from "./corpus-signatures.ts" ;
 
 const ROOT  = join(import.meta.dir, "..", ".."                            ) ;

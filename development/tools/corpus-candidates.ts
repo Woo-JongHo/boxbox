@@ -98,7 +98,7 @@ function validateSources(rows: readonly Observation[], inputDir: string, checkou
 	const heads = new Map<string, string>();
 	for (const row of rows) {
 		const checkout = checkoutOf(row.source.id) ;
-		const known    = heads.get(row.source.id)  ;
+		const known    = heads.get (row.source.id) ;
 		if (known !== undefined && known !== row.source.commit) throw new Error(`${row.source.id}: inconsistent observed commits`);
 		if (known === undefined) {
 			if (headOf(checkout, timeoutMs) !== row.source.commit) throw new Error(`${row.source.id}: source commit mismatch`);
@@ -175,7 +175,7 @@ function makeExample(row: Observation, candidateId: string, checkout: string, ti
 		writeFileSync(copy, original);
 		const language = languageOf(row.lookupKey);
 		if (language !== "typescript" && language !== "python") throw new Error(`unsupported language: ${language}`);
-		const aligner = join(ROOT, "product", "engine", language, "06_align-tables.ts")                                                                       ;
+		const aligner = join     (ROOT, "product", "engine", language, language === "typescript" ? "07_align-tables.ts" : "02_align-tables.ts"              ) ;
 		const first   = spawnSync("bun", [aligner, "--file", `source${extension}`, "--write", "--json"], { cwd: work, encoding: "utf8", timeout: timeoutMs }) ;
 		if (first.error || first.status !== 0) throw new Error(first.error?.message ?? `aligner exit ${first.status}`);
 		const afterFull     = readFileSync(copy, "utf8")                                                                                      ;

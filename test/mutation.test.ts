@@ -4,18 +4,18 @@
  * parsers are slow).
  * BOXBOX_MUTATIONS scales the variant count per language (default 1000); a failure prints its seed and a minimized input.
  */
-import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                            ;
-import      { join, relative                                   } from "node:path"                          ;
-import      { fileURLToPath                                    } from "node:url"                           ;
-import      { preservesTokens                                  } from "@/typescript/token-preservation.ts" ;
-import      { describe, expect, test                           } from "bun:test"                           ;
-import      { compareParse, syntaxDiagnostics                  } from "@/common/parse-check.ts"            ;
-import      { changedLines                                     } from "@/common/preservation.ts"           ;
-import      { alignSource                                      } from "@/common/table-engine.ts"           ;
-import type { CodeSyntax, LineProfiler                         } from "@/common/table-engine.ts"           ;
-import      { PYTHON_ALIGNER                                   } from "@/python/profile.ts"                ;
-import      { PythonSourceSyntaxError                          } from "@/python/string-ranges.ts"          ;
-import      { minimize, mutate                                 } from "./mutator.ts"                       ;
+import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                               ;
+import      { join, relative                                   } from "node:path"                             ;
+import      { fileURLToPath                                    } from "node:url"                              ;
+import      { preservesTokens                                  } from "@/typescript/16_token-preservation.ts" ;
+import      { describe, expect, test                           } from "bun:test"                              ;
+import      { compareParse, syntaxDiagnostics                  } from "@/common/08_parse-check.ts"            ;
+import      { changedLines                                     } from "@/common/09_preservation.ts"           ;
+import      { alignSource                                      } from "@/common/06_table-engine.ts"           ;
+import type { CodeSyntax, LineProfiler                         } from "@/common/06_table-engine.ts"           ;
+import      { PYTHON_ALIGNER                                   } from "@/python/03_profile.ts"                ;
+import      { PythonSourceSyntaxError                          } from "@/python/07_string-ranges.ts"          ;
+import      { minimize, mutate                                 } from "./mutator.ts"                          ;
 
 const VARIANTS     = Number       (process.env.BOXBOX_MUTATIONS ?? 1000         ) ;
 const PARSE_SAMPLE = Math.max     (3, Math.floor(VARIANTS / 200)                ) ;
@@ -125,7 +125,7 @@ describe("mutation invariants", () => {
 describe("mutation invariants (TypeScript aligner)", () => {
 	const TS_VARIANTS = Number(process.env.BOXBOX_TS_MUTATIONS ?? 5)          ;
 	const root        = fileURLToPath(new URL("..", import.meta.url))         ;
-	const script      = `${root}product/engine/typescript/06_align-tables.ts` ;
+	const script      = `${root}product/engine/typescript/07_align-tables.ts` ;
 	const source      = readFileSync(`${FIXTURES}table-kinds.ts`, "utf8")     ;
 
 	test(`${TS_VARIANTS} variants keep the token stream, refuse nothing, parse alike and are idempotent`, () => {

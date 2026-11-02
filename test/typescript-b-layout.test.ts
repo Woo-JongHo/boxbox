@@ -1,17 +1,17 @@
-import      { afterEach, describe, expect, test                } from "bun:test"                           ;
-import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                            ;
-import      { tmpdir                                           } from "node:os"                            ;
-import      { join, relative, resolve                          } from "node:path"                          ;
+import      { afterEach, describe, expect, test                } from "bun:test"                              ;
+import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                               ;
+import      { tmpdir                                           } from "node:os"                               ;
+import      { join, relative, resolve                          } from "node:path"                             ;
 
-import type { ResultEnvelope, ResultGroup                      } from "@/common/result-json.ts"            ;
-import      { displayWidth                                     } from "@/common/display-width.ts"          ;
-import      { alignRows                                        } from "@/typescript/align.ts"              ;
-import type { DetectedRow                                      } from "@/typescript/grid-kinds.ts"         ;
-import      { loadSourceFile                                   } from "@/typescript/load-source-file.ts"   ;
-import      { preservesTokensWithBreaks                        } from "@/typescript/token-preservation.ts" ;
+import type { ResultEnvelope, ResultGroup                      } from "@/common/24_result-json.ts"            ;
+import      { displayWidth                                     } from "@/common/01_display-width.ts"          ;
+import      { alignRows                                        } from "@/typescript/12_align.ts"              ;
+import type { DetectedRow                                      } from "@/typescript/13_grid-kinds.ts"         ;
+import      { loadSourceFile                                   } from "@/typescript/15_load-source-file.ts"   ;
+import      { preservesTokensWithBreaks                        } from "@/typescript/16_token-preservation.ts" ;
 
 const ROOT                  = resolve(import.meta.dir, "..")                                ;
-const SCRIPT                = resolve(ROOT, "product/engine/typescript/06_align-tables.ts") ;
+const SCRIPT                = resolve(ROOT, "product/engine/typescript/07_align-tables.ts") ;
 const workspaces : string[] = []                                                            ;
 
 interface Aligned {

@@ -6,11 +6,11 @@
  *
  * Usage: bun development/tools/strip-stray-padding.ts [--write] <file>...
  */
-import      { spawnSync                   } from "node:child_process"                 ;
-import      { readFileSync, writeFileSync } from "node:fs"                            ;
-import      { join                        } from "node:path"                          ;
-import      { preservesTokens             } from "@/typescript/token-preservation.ts" ;
-import      { straySemicolonPaddings      } from "@/common/report.ts"                 ;
+import      { spawnSync                   } from "node:child_process"                    ;
+import      { readFileSync, writeFileSync } from "node:fs"                               ;
+import      { join                        } from "node:path"                             ;
+import      { preservesTokens             } from "@/typescript/16_token-preservation.ts" ;
+import      { straySemicolonPaddings      } from "@/common/23_report.ts"                 ;
 
 const ROOT = join(import.meta.dir, "..", "..");
 
@@ -23,7 +23,7 @@ export function stripSemicolonPadding(text: string): string {
 }
 
 function realign(file: string): void {
-	spawnSync(process.execPath, [join(ROOT, "product/engine/typescript/06_align-tables.ts"), "--file", file, "--write"], { cwd: ROOT, encoding: "utf8" });
+	spawnSync(process.execPath, [join(ROOT, "product/engine/typescript/07_align-tables.ts"), "--file", file, "--write"], { cwd: ROOT, encoding: "utf8" });
 	spawnSync(process.execPath, [join(ROOT, "product/engine/typescript/00_normalize-imports.ts"), "--write", file], { cwd: ROOT, encoding: "utf8" });
 }
 

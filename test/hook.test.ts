@@ -1,14 +1,14 @@
-import      { describe, expect, test                                            } from "bun:test"                ;
-import      { spawnSync                                                         } from "node:child_process"      ;
-import      { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs"                 ;
-import      { tmpdir                                                            } from "node:os"                 ;
-import      { join                                                              } from "node:path"               ;
-import      { AGENT_ALARMS, coreLines, hookTarget, postMessage                  } from "@/common/hook.ts"        ;
-import      { buildReport, compareAlarms                                        } from "@/common/report.ts"      ;
-import type { FileResult                                                        } from "@/common/result-json.ts" ;
+import      { describe, expect, test                                            } from "bun:test"                   ;
+import      { spawnSync                                                         } from "node:child_process"         ;
+import      { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs"                    ;
+import      { tmpdir                                                            } from "node:os"                    ;
+import      { join                                                              } from "node:path"                  ;
+import      { AGENT_ALARMS, coreLines, hookTarget, postMessage                  } from "@/common/26_hook.ts"        ;
+import      { buildReport, compareAlarms                                        } from "@/common/23_report.ts"      ;
+import type { FileResult                                                        } from "@/common/24_result-json.ts" ;
 
 const ROOT    = join(import.meta.dir, ".."                            ) ;
-const HOOK    = join(ROOT           , "product/engine/hook.ts"        ) ;
+const HOOK    = join(ROOT           , "product/engine/02_hook.ts"     ) ;
 const FIXTURE = join(ROOT           , "test/fixtures/python/tables.py") ;
 
 describe("hook — target decision", () => {
@@ -109,7 +109,7 @@ describe("hook — flow (simulating Claude Code input)", () => {
 		const hooks = JSON.parse(readFileSync(join(ROOT, "development/hooks/hooks.json"), "utf8")) as { hooks: Record<string, { matcher?: string; hooks: { command: string }[] }[]> };
 
 		expect(Object.keys(hooks.hooks).sort()).toEqual(["PostToolUse", "PreToolUse", "SessionStart"]);
-		for (const entries of Object.values(hooks.hooks)) expect(entries[0]?.hooks[0]?.command).toContain("${CLAUDE_PLUGIN_ROOT}/product/engine/hook.ts");
+		for (const entries of Object.values(hooks.hooks)) expect(entries[0]?.hooks[0]?.command).toContain("${CLAUDE_PLUGIN_ROOT}/product/engine/02_hook.ts");
 		expect(hooks.hooks["PostToolUse"]?.[0]?.matcher).toBe("Write|Edit|MultiEdit");
 	});
 });

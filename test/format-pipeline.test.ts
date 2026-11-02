@@ -1,13 +1,13 @@
-import      { afterEach, describe, expect, test                          } from "bun:test"                    ;
-import      { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync } from "node:fs"                     ;
-import      { readFileSync, rmSync, symlinkSync, writeFileSync           } from "node:fs"                     ;
-import      { join                                                       } from "node:path"                   ;
+import      { afterEach, describe, expect, test                          } from "bun:test"                       ;
+import      { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync } from "node:fs"                        ;
+import      { readFileSync, rmSync, symlinkSync, writeFileSync           } from "node:fs"                        ;
+import      { join                                                       } from "node:path"                      ;
 
-import      { APPROVAL_VERSIONS, documentResolver                        } from "@/common/approval-gate.ts"   ;
-import type { ApprovalRegistry                                           } from "@/common/approval-gate.ts"   ;
-import      { contentHashOf, sectionHash                                 } from "@/common/examples.ts"        ;
-import type { Example                                                    } from "@/common/examples.ts"        ;
-import      { runFormatPipeline                                          } from "@/common/format-pipeline.ts" ;
+import      { APPROVAL_VERSIONS, documentResolver                        } from "@/common/18_approval-gate.ts"   ;
+import type { ApprovalRegistry                                           } from "@/common/18_approval-gate.ts"   ;
+import      { contentHashOf, sectionHash                                 } from "@/common/17_examples.ts"        ;
+import type { Example                                                    } from "@/common/17_examples.ts"        ;
+import      { runFormatPipeline                                          } from "@/common/21_format-pipeline.ts" ;
 
 const workspaces: string[] = [];
 

@@ -73,7 +73,7 @@
   "related": [
     {
       "kind": "code",
-      "path": "product/engine/common/examples.ts",
+      "path": "product/engine/common/17_examples.ts",
       "note": "Example interface."
     },
     {

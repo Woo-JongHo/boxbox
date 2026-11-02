@@ -1,6 +1,6 @@
-import      { afterEach, expect, test } from "bun:test"                 ;
-import      { spawn, spawnSync        } from "node:child_process"       ;
-import      { createHash              } from "node:crypto"              ;
+import      { afterEach, expect, test } from "bun:test"                    ;
+import      { spawn, spawnSync        } from "node:child_process"          ;
+import      { createHash              } from "node:crypto"                 ;
 import      {
               existsSync            ,
               mkdtempSync           ,
@@ -11,17 +11,17 @@ import      {
               writeFileSync         ,
               symlinkSync           ,
               utimesSync            ,
-                                      } from "node:fs"                  ;
-import      { tmpdir                  } from "node:os"                  ;
-import      { basename, dirname, join } from "node:path"                ;
+                                      } from "node:fs"                     ;
+import      { tmpdir                  } from "node:os"                     ;
+import      { basename, dirname, join } from "node:path"                   ;
 import      {
               guardedRun            ,
               guardStatus           ,
               loadLatestRun         ,
               lockDirectory         ,
               snapshot              ,
-                                      } from "@/common/guarded-run.ts"  ;
-import      { acquireProcessLock      } from "@/common/process-lock.ts" ;
+                                      } from "@/common/25_guarded-run.ts"  ;
+import      { acquireProcessLock      } from "@/common/13_process-lock.ts" ;
 
 const roots: string[] = []                                                                                                                                                                                                                                       ;
 const root            = () => { const path = mkdtempSync(join(tmpdir(), "boxbox-guard-")); roots.push(path); return path; }                                                                                                                                      ;

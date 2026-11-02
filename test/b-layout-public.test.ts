@@ -1,18 +1,18 @@
-import      { afterEach, describe, expect, test                        } from "bun:test"                    ;
-import      { mkdtempSync, readFileSync, rmSync, writeFileSync         } from "node:fs"                     ;
-import      { tmpdir                                                   } from "node:os"                     ;
-import      { join, resolve                                            } from "node:path"                   ;
+import      { afterEach, describe, expect, test                        } from "bun:test"                       ;
+import      { mkdtempSync, readFileSync, rmSync, writeFileSync         } from "node:fs"                        ;
+import      { tmpdir                                                   } from "node:os"                        ;
+import      { join, resolve                                            } from "node:path"                      ;
 
-import      { assertAlignmentOnly                                      } from "@/common/alignment-only.ts"  ;
-import      { documentResolver, evaluateApproval, loadApprovalRegistry } from "@/common/approval-gate.ts"   ;
-import      { runFormatPipeline                                        } from "@/common/format-pipeline.ts" ;
-import      { lookupKeyOf                                              } from "@/common/signature.ts"       ;
-import type { ResultEnvelope, ResultGroup                              } from "@/common/result-json.ts"     ;
-import      { runTypeScriptAlign                                       } from "@/typescript/align.ts"       ;
+import      { assertAlignmentOnly                                      } from "@/common/10_alignment-only.ts"  ;
+import      { documentResolver, evaluateApproval, loadApprovalRegistry } from "@/common/18_approval-gate.ts"   ;
+import      { runFormatPipeline                                        } from "@/common/21_format-pipeline.ts" ;
+import      { lookupKeyOf                                              } from "@/common/02_signature.ts"       ;
+import type { ResultEnvelope, ResultGroup                              } from "@/common/24_result-json.ts"     ;
+import      { runTypeScriptAlign                                       } from "@/typescript/12_align.ts"       ;
 
 const root                  = resolve(import.meta.dir, "..")                                ;
 const preset                = join(root, "product/rules/presets/recommended")               ;
-const wrapScript            = join(root, "product/engine/typescript/07_wrap-conditions.ts") ;
+const wrapScript            = join(root, "product/engine/typescript/08_wrap-conditions.ts") ;
 const workspaces : string[] = []                                                            ;
 
 afterEach(() => {

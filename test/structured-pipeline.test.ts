@@ -1,4 +1,4 @@
-import      { afterEach, expect, test             } from "bun:test"                    ;
+import      { afterEach, expect, test             } from "bun:test"                       ;
 import      {
               existsSync                        ,
               mkdirSync                         ,
@@ -7,16 +7,16 @@ import      {
               readdirSync                       ,
               rmSync                            ,
               writeFileSync
-                                                  } from "node:fs"                     ;
-import      { tmpdir                              } from "node:os"                     ;
-import      { join                                } from "node:path"                   ;
+                                                  } from "node:fs"                        ;
+import      { tmpdir                              } from "node:os"                        ;
+import      { join                                } from "node:path"                      ;
 
-import      { APPROVAL_VERSIONS, documentResolver } from "@/common/approval-gate.ts"   ;
-import type { ApprovalRegistry                    } from "@/common/approval-gate.ts"   ;
-import      { contentHashOf, sectionHash          } from "@/common/examples.ts"        ;
-import type { Example                             } from "@/common/examples.ts"        ;
-import      { runFormatPipeline                   } from "@/common/format-pipeline.ts" ;
-import type { StructuredLanguage                  } from "@/structured/index.ts"       ;
+import      { APPROVAL_VERSIONS, documentResolver } from "@/common/18_approval-gate.ts"   ;
+import type { ApprovalRegistry                    } from "@/common/18_approval-gate.ts"   ;
+import      { contentHashOf, sectionHash          } from "@/common/17_examples.ts"        ;
+import type { Example                             } from "@/common/17_examples.ts"        ;
+import      { runFormatPipeline                   } from "@/common/21_format-pipeline.ts" ;
+import type { StructuredLanguage                  } from "@/structured/00_index.ts"       ;
 
 const roots: string[] = [];
 

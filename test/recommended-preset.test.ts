@@ -9,17 +9,17 @@ import      {
               documentResolver                           ,
               evaluateApproval                           ,
               loadApprovalRegistry                       ,
-                                                           } from "@/common/approval-gate.ts"             ;
-import      { contentHashOf                                } from "@/common/examples.ts"                  ;
-import      { runFormatPipeline                            } from "@/common/format-pipeline.ts"           ;
-import      { compareParse, syntaxDiagnostics              } from "@/common/parse-check.ts"               ;
-import      { changedLines                                 } from "@/common/preservation.ts"              ;
-import type { ResultEnvelope                               } from "@/common/result-json.ts"               ;
-import      { lookupKeyOf                                  } from "@/common/signature.ts"                 ;
-import      { alignSource                                  } from "@/common/table-engine.ts"              ;
-import      { PYTHON_ALIGNER                               } from "@/python/profile.ts"                   ;
-import      { PythonSourceSyntaxError                      } from "@/python/string-ranges.ts"             ;
-import      { preservesTokens                              } from "@/typescript/token-preservation.ts"    ;
+                                                           } from "@/common/18_approval-gate.ts"          ;
+import      { contentHashOf                                } from "@/common/17_examples.ts"               ;
+import      { runFormatPipeline                            } from "@/common/21_format-pipeline.ts"        ;
+import      { compareParse, syntaxDiagnostics              } from "@/common/08_parse-check.ts"            ;
+import      { changedLines                                 } from "@/common/09_preservation.ts"           ;
+import type { ResultEnvelope                               } from "@/common/24_result-json.ts"            ;
+import      { lookupKeyOf                                  } from "@/common/02_signature.ts"              ;
+import      { alignSource                                  } from "@/common/06_table-engine.ts"           ;
+import      { PYTHON_ALIGNER                               } from "@/python/03_profile.ts"                ;
+import      { PythonSourceSyntaxError                      } from "@/python/07_string-ranges.ts"          ;
+import      { preservesTokens                              } from "@/typescript/16_token-preservation.ts" ;
 import      { preparePublicPreset                          } from "../development/tools/public-preset.ts" ;
 
 const PRESET          = join(import.meta.dir, "../product/rules/presets/recommended")                                   ;
@@ -38,7 +38,7 @@ function registry(root = PRESET): ReturnType<typeof loadApprovalRegistry> {
 }
 
 function inspectTypeScript(root: string, file: string, write = false): ResultEnvelope {
-	const script = join         (import.meta.dir, "../product/engine/typescript/06_align-tables.ts"                                                                ) ;
+	const script = join         (import.meta.dir, "../product/engine/typescript/07_align-tables.ts"                                                                ) ;
 	const run    = Bun.spawnSync([process.execPath, script, "--file", file, "--json", ...(write ? ["--write"] : [])], { cwd: root, stdout: "pipe", stderr: "pipe" }) ;
 	if (run.exitCode !== 0 && run.exitCode !== 1) throw new Error(`TypeScript inspection failed: ${run.stderr.toString()}`);
 	return JSON.parse(run.stdout.toString()) as ResultEnvelope;

@@ -8,15 +8,15 @@
  *
  * Usage: bun development/tools/examples-check.ts
  */
-import      { spawnSync          } from "node:child_process"   ;
+import      { spawnSync          } from "node:child_process"      ;
 import      {
               existsSync       ,
               mkdtempSync      ,
               readFileSync     ,
               writeFileSync    ,
-                                 } from "node:fs"              ;
-import      { tmpdir             } from "node:os"              ;
-import      { join               } from "node:path"            ;
+                                 } from "node:fs"                 ;
+import      { tmpdir             } from "node:os"                 ;
+import      { join               } from "node:path"               ;
 import      {
               parseRecords     ,
               sectionHash      ,
@@ -25,7 +25,7 @@ import      {
               type AlarmAssert ,
               type Decision    ,
               type Example     ,
-                                 } from "@/common/examples.ts" ;
+                                 } from "@/common/17_examples.ts" ;
 
 const ROOT      = join(import.meta.dir, "..", "..")                            ;
 const PRESET    = join(ROOT, "product", "rules", "presets", "recommended")     ;
@@ -37,7 +37,7 @@ interface ReportJson {
 }
 
 function reportOf(dir: string, file: string): ReportJson {
-	const run = spawnSync(process.execPath, [join(ROOT, "product/engine/report.ts"), "--file", file, "--json"], { cwd: dir, encoding: "utf8" });
+	const run = spawnSync(process.execPath, [join(ROOT, "product/engine/01_report.ts"), "--file", file, "--json"], { cwd: dir, encoding: "utf8" });
 
 	return JSON.parse(run.stdout) as ReportJson;
 }
@@ -67,7 +67,7 @@ export function checkExample(example: Example): readonly string[] {
 	writeFileSync(join(dir, `after.${extension}` ), example.after );
 
 	if (example.verdict === "bad") {
-		spawnSync(process.execPath, [join(ROOT, `product/engine/${example.language}/06_align-tables.ts`), "--file", `before.${extension}`, "--write"], { cwd: dir, encoding: "utf8" });
+		spawnSync(process.execPath, [join(ROOT, `product/engine/${example.language}/${example.language === "typescript" ? "07_align-tables.ts" : "02_align-tables.ts"}`), "--file", `before.${extension}`, "--write"], { cwd: dir, encoding: "utf8" });
 
 		return readFileSync(join(dir, `before.${extension}`), "utf8") === example.after ? ["bad: the engine produced the forbidden shape"] : [];
 	}

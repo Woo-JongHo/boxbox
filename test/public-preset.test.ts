@@ -10,8 +10,8 @@ import      {
 import      { tmpdir                            } from "node:os"                               ;
 import      { join                              } from "node:path"                             ;
 
-import      { APPROVAL_VERSIONS                 } from "@/common/approval-gate.ts"             ;
-import      { contentHashOf, sectionHash        } from "@/common/examples.ts"                  ;
+import      { APPROVAL_VERSIONS                 } from "@/common/18_approval-gate.ts"          ;
+import      { contentHashOf, sectionHash        } from "@/common/17_examples.ts"               ;
 import      { preparePublicPreset               } from "../development/tools/public-preset.ts" ;
 
 const roots: string[] = [];

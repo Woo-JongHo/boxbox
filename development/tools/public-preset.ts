@@ -1,15 +1,15 @@
-import      { lstatSync, readFileSync, realpathSync } from "node:fs"                   ;
-import      { isAbsolute, relative, resolve         } from "node:path"                 ;
+import      { lstatSync, readFileSync, realpathSync } from "node:fs"                      ;
+import      { isAbsolute, relative, resolve         } from "node:path"                    ;
 
-import      { parseConventions                      } from "@/common/conventions.ts"   ;
-import      { APPROVAL_VERSIONS                     } from "@/common/approval-gate.ts" ;
+import      { parseConventions                      } from "@/common/16_conventions.ts"   ;
+import      { APPROVAL_VERSIONS                     } from "@/common/18_approval-gate.ts" ;
 import      {
               parseRecords                        ,
               sectionHash                         ,
               validateDecision                    ,
               validateExample                     ,
-                                                    } from "@/common/examples.ts"      ;
-import type { Decision, Example                     } from "@/common/examples.ts"      ;
+                                                    } from "@/common/17_examples.ts"      ;
+import type { Decision, Example                     } from "@/common/17_examples.ts"      ;
 
 export interface PublicPresetFile {
 	readonly path : string ;

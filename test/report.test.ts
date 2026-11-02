@@ -1,12 +1,12 @@
-import      { describe, expect, test                                      } from "bun:test"                  ;
-import      { spawnSync                                                   } from "node:child_process"        ;
-import      { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                   ;
-import      { tmpdir                                                      } from "node:os"                   ;
-import      { join                                                        } from "node:path"                 ;
-import      { displayWidth                                                } from "@/common/display-width.ts" ;
-import      { loadConventions                                             } from "@/common/conventions.ts"   ;
-import      { buildReport, compareAlarms, DEFAULT_LIMITS, renderReport    } from "@/common/report.ts"        ;
-import type { FileResult, ResultEnvelope, ResultGroup                     } from "@/common/result-json.ts"   ;
+import      { describe, expect, test                                      } from "bun:test"                     ;
+import      { spawnSync                                                   } from "node:child_process"           ;
+import      { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                      ;
+import      { tmpdir                                                      } from "node:os"                      ;
+import      { join                                                        } from "node:path"                    ;
+import      { displayWidth                                                } from "@/common/01_display-width.ts" ;
+import      { loadConventions                                             } from "@/common/16_conventions.ts"   ;
+import      { buildReport, compareAlarms, DEFAULT_LIMITS, renderReport    } from "@/common/23_report.ts"        ;
+import type { FileResult, ResultEnvelope, ResultGroup                     } from "@/common/24_result-json.ts"   ;
 
 const ROOT = join(import.meta.dir, "..");
 
@@ -118,7 +118,7 @@ describe("check report — alarms", () => {
 	test("A12 surfaces missing or malformed Python tokenizer failures", () => {
 		const root = mkdtempSync(join(tmpdir(), "boxbox-a12-parser-"));
 		try {
-			const module  = join(ROOT, "product/engine/common/report.ts")                                                                                                                                                                          ;
+			const module  = join(ROOT, "product/engine/common/23_report.ts")                                                                                                                                                                       ;
 			const source  = 'value=f"{1}"\nreturn value ;'                                                                                                                                                                                         ;
 			const result  = fileResult([], "not-run", "python")                                                                                                                                                                                    ;
 			const program = `import { buildReport } from ${JSON.stringify(module)}; try { buildReport({ result: ${JSON.stringify(result)}, text: ${JSON.stringify(source)} }); } catch (error) { console.error(error.message); process.exit(7); }` ;
@@ -250,7 +250,7 @@ describe("check report — exact noncontiguous row membership", () => {
 		try {
 			writeFileSync(join(root, "sample.ts"), `${lines.join("\n")}\n`);
 
-			const run    = spawnSync(process.execPath, [join(ROOT, "product/engine/typescript/06_align-tables.ts"), "--file", "sample.ts", "--json"], { cwd: root, encoding: "utf8" }) ;
+			const run    = spawnSync(process.execPath, [join(ROOT, "product/engine/typescript/07_align-tables.ts"), "--file", "sample.ts", "--json"], { cwd: root, encoding: "utf8" }) ;
 			const result = JSON.parse(run.stdout) as ResultEnvelope                                                                                                                    ;
 			const groups = result.results[0]!.groups                                                                                                                                   ;
 			const guards = groups.filter(entry => entry.kind === "return-guards")                                                                                                      ;
@@ -282,8 +282,8 @@ describe("check report — output", () => {
 	});
 
 	test("CLI: checking the Python fixture in check mode passes the safety checks with exit code 0", () => {
-		const run    = spawnSync(process.execPath, [join(ROOT, "product/engine/report.ts"), "--file", "test/fixtures/python/tables.py", "--json"], { cwd: ROOT, encoding: "utf8" }) ;
-		const report = JSON.parse(run.stdout) as ReturnType<typeof buildReport>                                                                                                     ;
+		const run    = spawnSync(process.execPath, [join(ROOT, "product/engine/01_report.ts"), "--file", "test/fixtures/python/tables.py", "--json"], { cwd: ROOT, encoding: "utf8" }) ;
+		const report = JSON.parse(run.stdout) as ReturnType<typeof buildReport>                                                                                                        ;
 
 		expect(run.status                          ).toBe     (0   ) ;
 		expect(report.ok                           ).toBe     (true) ;
@@ -329,14 +329,14 @@ describe("check report — baseline comparison", () => {
 		const fixture = readFileSync(join(ROOT, "test/fixtures/python/tables.py"), "utf8") ;
 		writeFileSync(join(dir, "base.py"), fixture);
 		writeFileSync(join(dir, "cur.py" ), fixture.replace('    "port": 8080,', `    "port": 8080,\n    "description": "${"x".repeat(120)}",`)) ;
-		const run     = (...extra: readonly string[]) => JSON.parse(spawnSync(process.execPath, [join(ROOT, "product/engine/report.ts"), "--file", "cur.py", "--json", ...extra], { cwd: dir, encoding: "utf8" }).stdout) as ReturnType<typeof buildReport> ;
-		const edited  = run("--baseline", "base.py")                                                                                                                                                                                                        ;
-		const created = run("--baseline", "none"   )                                                                                                                                                                                                        ;
+		const run     = (...extra: readonly string[]) => JSON.parse(spawnSync(process.execPath, [join(ROOT, "product/engine/01_report.ts"), "--file", "cur.py", "--json", ...extra], { cwd: dir, encoding: "utf8" }).stdout) as ReturnType<typeof buildReport> ;
+		const edited  = run("--baseline", "base.py")                                                                                                                                                                                                           ;
+		const created = run("--baseline", "none"   )                                                                                                                                                                                                           ;
 
 		expect(edited.comparison?.newAlarms.map(alarm => alarm.id).sort()).toEqual(["A1", "A3"]            ) ;
 		expect(edited.comparison?.existingAlarms.length                  ).toBe   (edited.alarms.length - 2) ;
 		expect(created.comparison?.newAlarms.length                      ).toBe   (created.alarms.length   ) ;
-		const missing = spawnSync(process.execPath, [join(ROOT, "product/engine/report.ts"), "--file", "cur.py", "--baseline", "nope.py"], { cwd: dir, encoding: "utf8" });
+		const missing = spawnSync(process.execPath, [join(ROOT, "product/engine/01_report.ts"), "--file", "cur.py", "--baseline", "nope.py"], { cwd: dir, encoding: "utf8" });
 
 		expect(missing.status).not.toBe(0);
 		expect(missing.stderr).toContain("baseline not found");

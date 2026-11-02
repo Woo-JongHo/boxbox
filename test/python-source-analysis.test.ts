@@ -1,18 +1,18 @@
-import      { describe, expect, test  } from "bun:test"                    ;
+import      { describe, expect, test  } from "bun:test"                       ;
 import      {
               chmodSync             ,
               mkdtempSync           ,
               readFileSync          ,
               rmSync                ,
               writeFileSync
-                                      } from "node:fs"                     ;
-import      { tmpdir                  } from "node:os"                     ;
-import      { join, resolve           } from "node:path"                   ;
-import      { alignSource             } from "@/common/table-engine.ts"    ;
-import      { PYTHON_ALIGNER          } from "@/python/profile.ts"         ;
-import      { analyzePython           } from "@/python/analysis.ts"        ;
-import      { PYTHON_ANALYSIS_SCRIPT  } from "@/python/analysis-script.ts" ;
-import      { PythonSourceSyntaxError } from "@/python/string-ranges.ts"   ;
+                                      } from "node:fs"                        ;
+import      { tmpdir                  } from "node:os"                        ;
+import      { join, resolve           } from "node:path"                      ;
+import      { alignSource             } from "@/common/06_table-engine.ts"    ;
+import      { PYTHON_ALIGNER          } from "@/python/03_profile.ts"         ;
+import      { analyzePython           } from "@/python/05_analysis.ts"        ;
+import      { PYTHON_ANALYSIS_SCRIPT  } from "@/python/06_analysis-script.ts" ;
+import      { PythonSourceSyntaxError } from "@/python/07_string-ranges.ts"   ;
 
 const align = (source: string) => alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true });
 
@@ -61,8 +61,8 @@ describe("Python source analysis", () => {
 			const script     = `#!${process.execPath}\nimport { appendFileSync, readFileSync } from "node:fs";\nappendFileSync(${JSON.stringify(count)}, "x");\nconst result = Bun.spawnSync([${JSON.stringify(python)}, ...process.argv.slice(2)], { stdin: readFileSync(0), stdout: "pipe", stderr: "pipe" });\nprocess.stdout.write(result.stdout); process.stderr.write(result.stderr); process.exit(result.exitCode);\n` ;
 			writeFileSync(executable, script);
 			chmodSync(executable, 0o755);
-			const module  = resolve("product/engine/python/profile.ts")                                                                                                                                                                                                                                                  ;
-			const engine  = resolve("product/engine/common/table-engine.ts")                                                                                                                                                                                                                                             ;
+			const module  = resolve("product/engine/python/03_profile.ts")                                                                                                                                                                                                                                               ;
+			const engine  = resolve("product/engine/common/06_table-engine.ts")                                                                                                                                                                                                                                          ;
 			const program = `import { PYTHON_ALIGNER } from ${JSON.stringify(module)}; import { alignSource } from ${JSON.stringify(engine)}; const result = alignSource("a=1\\nlonger=2\\nthird=3\\n\\nx=1\\nyy=2\\nzzz=3\\n", PYTHON_ALIGNER, { minRows: 3, apply: true }); if (result.tables !== 2) process.exit(2);` ;
 			const run     = Bun.spawnSync([process.execPath, "-e", program], { env: { ...process.env, PATH: root }, stdout: "pipe", stderr: "pipe" })                                                                                                                                                                    ;
 			expect(run.exitCode).toBe(0);
@@ -109,7 +109,7 @@ test("source token protocol refuses a token crossing a formatted range", () => {
 		const reply      = { version: 1, status: "ok", sourceLength: 4, pythonVersion: [3, 14, 2], owners: [], rows: [], tokens: [[1, 0, 4]], formatted: [[1, 3]] } ;
 		writeFileSync(executable, `#!${process.execPath}\nconsole.log(${JSON.stringify(JSON.stringify(reply))});\n`);
 		chmodSync(executable, 0o755);
-		const module  = resolve("product/engine/python/analysis.ts")                                                                                                                               ;
+		const module  = resolve("product/engine/python/05_analysis.ts")                                                                                                                            ;
 		const program = `import { analyzePython } from ${JSON.stringify(module)}; try { analyzePython("abcd"); process.exit(5); } catch(error) { console.error(error.message); process.exit(7); }` ;
 		const result  = Bun.spawnSync([process.execPath, "-e", program], { env: { ...process.env, PATH: root }, stdout: "pipe", stderr: "pipe" })                                                  ;
 		expect(result.exitCode).toBe(7);

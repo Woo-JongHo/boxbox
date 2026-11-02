@@ -146,7 +146,7 @@ function runSelfAlign(): StageOutcome {
 		.flatMap(prefix => listTypeScriptFiles(resolve(root, prefix)).map(relativeToRoot))
 		.sort()                                                                                  ;
 	const normalizeScript = resolve(root, "product/engine/typescript/00_normalize-imports.ts") ;
-	const alignScript     = resolve(root, "product/engine/typescript/06_align-tables.ts"     ) ;
+	const alignScript     = resolve(root, "product/engine/typescript/07_align-tables.ts"     ) ;
 	const normalize       = spawn  (bun, [normalizeScript, ...files], 600_000                ) ;
 	const changed         = countOf(normalize.output, /changed=(\d+)/                        ) ;
 	const errors          = countOf(normalize.output, /errors=(\d+)/                         ) ;

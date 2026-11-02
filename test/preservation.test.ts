@@ -1,10 +1,10 @@
-import      { describe, expect, test } from "bun:test"                           ;
-import type { CodeSyntax             } from "@/common/code-text.ts"              ;
-import      { PYTHON_SYNTAX          } from "@/python/profile.ts"                ;
-import      { changedLines           } from "@/common/preservation.ts"           ;
-import      { alignSource            } from "@/common/table-engine.ts"           ;
-import      { preservesTokens        } from "@/typescript/token-preservation.ts" ;
-import type { LineProfiler           } from "@/common/table-engine.ts"           ;
+import      { describe, expect, test } from "bun:test"                              ;
+import type { CodeSyntax             } from "@/common/00_code-text.ts"              ;
+import      { PYTHON_SYNTAX          } from "@/python/03_profile.ts"                ;
+import      { changedLines           } from "@/common/09_preservation.ts"           ;
+import      { alignSource            } from "@/common/06_table-engine.ts"           ;
+import      { preservesTokens        } from "@/typescript/16_token-preservation.ts" ;
+import type { LineProfiler           } from "@/common/06_table-engine.ts"           ;
 
 const SYNTAX: CodeSyntax = {
 	lineComments  : ["//"]                                    ,

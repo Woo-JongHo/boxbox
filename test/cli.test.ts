@@ -1,4 +1,4 @@
-import      { afterEach, describe, expect, test } from "bun:test"                  ;
+import      { afterEach, describe, expect, test } from "bun:test"                     ;
 import      {
               chmodSync                       ,
               existsSync                      ,
@@ -9,16 +9,16 @@ import      {
               rmSync                          ,
               symlinkSync                     ,
               writeFileSync                   ,
-                                                } from "node:fs"                   ;
-import      { join, resolve                     } from "node:path"                 ;
+                                                } from "node:fs"                      ;
+import      { join, resolve                     } from "node:path"                    ;
 
-import      { APPROVAL_VERSIONS                 } from "@/common/approval-gate.ts" ;
-import      { contentHashOf, sectionHash        } from "@/common/examples.ts"      ;
-import      { lookupKeyOf                       } from "@/common/signature.ts"     ;
+import      { APPROVAL_VERSIONS                 } from "@/common/18_approval-gate.ts" ;
+import      { contentHashOf, sectionHash        } from "@/common/17_examples.ts"      ;
+import      { lookupKeyOf                       } from "@/common/02_signature.ts"     ;
 
-const repository           = resolve(import.meta.dir, "..")               ;
-const cli                  = resolve(repository, "product/engine/cli.ts") ;
-const workspaces: string[] = []                                           ;
+const repository           = resolve(import.meta.dir, "..")                  ;
+const cli                  = resolve(repository, "product/engine/00_cli.ts") ;
+const workspaces: string[] = []                                              ;
 
 interface Invocation {
 	readonly status : number ;

@@ -22,7 +22,7 @@ import      { join, resolve   } from "node:path" ;
 const ROOT    = resolve(import.meta.dir, "..")                                     ;
 const BUN     = process.execPath                                                   ;
 const PYTHON  = Bun.which("python3")!                                              ;
-const SCRIPT  = join(ROOT, "product/engine/python/06_align-tables.ts")             ;
+const SCRIPT  = join(ROOT, "product/engine/python/02_align-tables.ts")             ;
 const FIXTURE = readFileSync(join(ROOT, "test/fixtures/python/tables.py"), "utf8") ;
 
 const workspaces: string[] = [];
@@ -125,7 +125,7 @@ test("independent AST gate refuses a corrupted string candidate", () => {
 	const source = 'a = "x = y"\nb = "x = y"\nc = "x = y"\n' ;
 	writeFileSync(target, source);
 	const program = `
-		import { runAlignCli } from ${JSON.stringify(join(ROOT, "product/engine/common/align-cli.ts"))};
+		import { runAlignCli } from ${JSON.stringify(join(ROOT, "product/engine/common/22_align-cli.ts"))};
 		const aligner = { language: "python", syntax: { lineComments: [], blockComments: [], strings: [] }, columnAxes: [], canonicalGaps: { equal: "", tail: "" },
 			profile(code) { const match = /^([a-z] = "x)\\s+(=)\\s+(y")$/.exec(code); return match && { indent: "", slots: [{ axis: "head", text: match[1], gapBefore: "" }, { axis: "equal", text: match[2], gapBefore: " " }, { axis: "tail", text: match[3], gapBefore: " " }] }; } };
 		const result = runAlignCli(aligner, ["--file", process.argv[1], "--write"]);

@@ -1,9 +1,9 @@
-import      { describe, expect, test } from "bun:test"                 ;
-import      { fileURLToPath          } from "node:url"                 ;
-import      { alignSource            } from "@/common/table-engine.ts" ;
-import      { maskSource             } from "@/common/code-text.ts"    ;
-import      { PYTHON_ALIGNER         } from "@/python/profile.ts"      ;
-import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
+import      { describe, expect, test } from "bun:test"                    ;
+import      { fileURLToPath          } from "node:url"                    ;
+import      { alignSource            } from "@/common/06_table-engine.ts" ;
+import      { maskSource             } from "@/common/00_code-text.ts"    ;
+import      { PYTHON_ALIGNER         } from "@/python/03_profile.ts"      ;
+import      { defineLanguageSuite    } from "./lang-harness.ts"           ;
 
 defineLanguageSuite({
 	aligner     : PYTHON_ALIGNER                                                      ,

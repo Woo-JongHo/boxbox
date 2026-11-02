@@ -2,7 +2,7 @@ import      { existsSync, lstatSync, readdirSync    } from "node:fs"            
 import      { readFileSync, statSync                } from "node:fs"                             ;
 import      { join, resolve                         } from "node:path"                           ;
 import      { describe, expect, test                } from "bun:test"                            ;
-import      { AXIS_NOTES, KIND_AXES                 } from "@/typescript/grid-kinds.ts"          ;
+import      { AXIS_NOTES, KIND_AXES                 } from "@/typescript/13_grid-kinds.ts"       ;
 import      { pluginDrift, stampMarketplaceVersions } from "../development/tools/sync-plugin.ts" ;
 
 const ROOT                    = resolve(import.meta.dir, "..")                                                               ;

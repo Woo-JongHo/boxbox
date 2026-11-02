@@ -1,28 +1,28 @@
-import      { describe, expect, test     } from "bun:test"                        ;
+import      { describe, expect, test     } from "bun:test"                           ;
 import      {
               mkdtempSync              ,
               readFileSync             ,
               rmSync                   ,
               writeFileSync
-                                         } from "node:fs"                         ;
-import      { tmpdir                     } from "node:os"                         ;
-import      { join                       } from "node:path"                       ;
-import      { assignmentEnvelopes        } from "@/python/assignment-envelope.ts" ;
-import      { changedLines               } from "@/common/preservation.ts"        ;
-import      { assertAlignmentOnly        } from "@/common/alignment-only.ts"      ;
+                                         } from "node:fs"                            ;
+import      { tmpdir                     } from "node:os"                            ;
+import      { join                       } from "node:path"                          ;
+import      { assignmentEnvelopes        } from "@/python/04_assignment-envelope.ts" ;
+import      { changedLines               } from "@/common/09_preservation.ts"        ;
+import      { assertAlignmentOnly        } from "@/common/10_alignment-only.ts"      ;
 import      {
               APPROVAL_VERSIONS        ,
               documentResolver         ,
               evaluateApproval         ,
               loadApprovalRegistry     ,
-                                         } from "@/common/approval-gate.ts"       ;
-import type { ApprovalRegistry           } from "@/common/approval-gate.ts"       ;
-import type { Example                    } from "@/common/examples.ts"            ;
-import      { contentHashOf, sectionHash } from "@/common/examples.ts"            ;
-import      { lookupKeyOf                } from "@/common/signature.ts"           ;
-import      { runFormatPipeline          } from "@/common/format-pipeline.ts"     ;
-import      { alignSource                } from "@/common/table-engine.ts"        ;
-import      { PYTHON_ALIGNER             } from "@/python/profile.ts"             ;
+                                         } from "@/common/18_approval-gate.ts"       ;
+import type { ApprovalRegistry           } from "@/common/18_approval-gate.ts"       ;
+import type { Example                    } from "@/common/17_examples.ts"            ;
+import      { contentHashOf, sectionHash } from "@/common/17_examples.ts"            ;
+import      { lookupKeyOf                } from "@/common/02_signature.ts"           ;
+import      { runFormatPipeline          } from "@/common/21_format-pipeline.ts"     ;
+import      { alignSource                } from "@/common/06_table-engine.ts"        ;
+import      { PYTHON_ALIGNER             } from "@/python/03_profile.ts"             ;
 
 const PRESET = join(import.meta.dir, "../product/rules/presets/recommended");
 
@@ -236,8 +236,8 @@ test("the new exact key cannot inherit the shipped simple-assignment approval", 
 }, 60_000);
 
 test("public Check and Guide expose the new group without approved write coverage", () => {
-	const root = mkdtempSync(join(tmpdir(), "boxbox-python-envelope-cli-")) ;
-	const cli  = join       (import.meta.dir, "../product/engine/cli.ts"  ) ;
+	const root = mkdtempSync(join(tmpdir(), "boxbox-python-envelope-cli-") ) ;
+	const cli  = join       (import.meta.dir, "../product/engine/00_cli.ts") ;
 	const invoke = (args: readonly string[], expectedExit = 1) => {
 		const source = `import { runCli } from ${JSON.stringify(cli)}; process.exitCode = await runCli(JSON.parse(process.env.BOXBOX_TEST_ARGS!), process.cwd());`                                                          ;
 		const run    = Bun.spawnSync([process.execPath, "-e", source], { cwd: root, env: { ...process.env, XDG_CONFIG_HOME: join(root, "user"), BOXBOX_TEST_ARGS: JSON.stringify(args) }, stdout: "pipe", stderr: "pipe" }) ;

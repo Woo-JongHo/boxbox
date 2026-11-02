@@ -41,7 +41,7 @@ test("a copied development skill resolves engine aliases and its TypeScript runt
 	writeFileSync(join(skill, "engine/alias-portability-probe.ts"), [
 		'import { version } from "typescript";',
 		'import { parse } from "yaml";',
-		'import { displayWidth } from "@/common/display-width.ts";',
+		'import { displayWidth } from "@/common/01_display-width.ts";',
 		'console.log(JSON.stringify({ version, width: displayWidth("가a"), yaml: parse("ready: true").ready }));',
 	].join("\n") + "\n");
 	const alias = Bun.spawnSync(["bun", join(skill, "engine/alias-portability-probe.ts")], { cwd: home });
@@ -51,7 +51,7 @@ test("a copied development skill resolves engine aliases and its TypeScript runt
 	const project = workspace();
 	writeFileSync(join(project, "tsconfig.json"), '{"compilerOptions":{"target":"esnext"}}\n');
 	writeFileSync(join(project, "sample.ts"), "const alpha = 1;\nconst beta = 2;\n");
-	const engine = Bun.spawnSync(["bun", join(skill, "engine/typescript/01_group-regions.ts"), "--file", "sample.ts"], { cwd: project });
+	const engine = Bun.spawnSync(["bun", join(skill, "engine/typescript/02_group-regions.ts"), "--file", "sample.ts"], { cwd: project });
 	expect(engine.exitCode).toBe(0);
 	expect(engine.stdout.toString()).toContain("grid-regions file=sample.ts");
 });

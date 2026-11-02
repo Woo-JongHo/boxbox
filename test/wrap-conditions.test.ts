@@ -3,7 +3,7 @@ import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs" 
 import      { join, relative, resolve                          } from "node:path" ;
 
 const root                 = resolve(import.meta.dir, "..")                                   ;
-const script               = resolve(root, "product/engine/typescript/07_wrap-conditions.ts") ;
+const script               = resolve(root, "product/engine/typescript/08_wrap-conditions.ts") ;
 const workspaces: string[] = []                                                               ;
 
 function target(text: string, name = "sample.ts"): string {

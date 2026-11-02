@@ -44,7 +44,7 @@ if (!build.success) throw new Error(build.logs.map(log => log.message).join("\n"
 const bundlePath = resolve(output, "dist/cli.js")    ;
 const bundle     = await Bun.file(bundlePath).text() ;
 if (!bundle.startsWith("#!/usr/bin/env node")) throw new Error("public CLI bundle is missing its Node shebang");
-for (const forbidden of ["Bun.", "bun:", "@/", root, "internal-runner", "00_normalize-imports", "00_expand-interface-members", "07_wrap-conditions", "08_function-map", "09_observe-shapes"]) {
+for (const forbidden of ["Bun.", "bun:", "@/", root, "internal-runner", "00_normalize-imports", "01_expand-interface-members", "08_wrap-conditions", "09_function-map", "10_observe-shapes"]) {
 	if (bundle.includes(forbidden)) throw new Error(`public CLI artifact contains forbidden runtime reference: ${forbidden}`);
 }
 if (!bundle.includes("yaml@2.9.1")) throw new Error("public CLI bundle is missing the statically bundled yaml parser identity");

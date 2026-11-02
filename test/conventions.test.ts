@@ -1,13 +1,13 @@
-import      { describe, expect, test  } from "bun:test"                ;
-import      { spawnSync               } from "node:child_process"      ;
+import      { describe, expect, test  } from "bun:test"                   ;
+import      { spawnSync               } from "node:child_process"         ;
 import      {
               mkdirSync             ,
               mkdtempSync           ,
               readFileSync          ,
               writeFileSync         ,
-                                      } from "node:fs"                 ;
-import      { tmpdir                  } from "node:os"                 ;
-import      { join                    } from "node:path"               ;
+                                      } from "node:fs"                    ;
+import      { tmpdir                  } from "node:os"                    ;
+import      { join                    } from "node:path"                  ;
 import      {
               globToRegExp          ,
               indexConventions      ,
@@ -15,9 +15,9 @@ import      {
               parseConventions      ,
               validateConvention    ,
               type LoadedConvention ,
-                                      } from "@/common/conventions.ts" ;
-import      { buildReport             } from "@/common/report.ts"      ;
-import      { lookupKeyOf             } from "@/common/signature.ts"   ;
+                                      } from "@/common/16_conventions.ts" ;
+import      { buildReport             } from "@/common/23_report.ts"      ;
+import      { lookupKeyOf             } from "@/common/02_signature.ts"   ;
 
 const ROOT = join       (import.meta.dir, ".."                                                     ) ;
 const KEY  = lookupKeyOf("typescript", "Block", "declaration-equals", ["equals=12", "semicolon=40"]) ;
@@ -103,8 +103,8 @@ describe("report and CLI", () => {
 		writeFileSync(join(project, ".boxbox", "conventions.jsonl"), `${JSON.stringify(approve)}\n`);
 		writeFileSync(join(project, "a.py"), readFileSync(join(ROOT, "test/fixtures/python/tables.py"), "utf8"));
 
-		const run    = spawnSync(process.execPath, [join(ROOT, "product/engine/report.ts"), "--file", "a.py", "--json"], { cwd: project, encoding: "utf8" }) ;
-		const report = JSON.parse(run.stdout) as ReturnType<typeof buildReport>                                                                              ;
+		const run    = spawnSync(process.execPath, [join(ROOT, "product/engine/01_report.ts"), "--file", "a.py", "--json"], { cwd: project, encoding: "utf8" }) ;
+		const report = JSON.parse(run.stdout) as ReturnType<typeof buildReport>                                                                                 ;
 
 		expect(report.conventions?.counts.approved).toBeGreaterThan(0);
 		expect(report.conventions?.lookups.filter(entry => entry.status === "approved").every(entry => entry.id === "py-define")).toBe(true);

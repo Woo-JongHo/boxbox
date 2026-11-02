@@ -1,8 +1,8 @@
-import      { afterEach, describe, expect, test } from "bun:test"                ;
-import      { copyFileSync, mkdtempSync, rmSync } from "node:fs"                 ;
-import      { join, relative, resolve           } from "node:path"               ;
-import      { RESULT_SCHEMA_VERSION, summarize  } from "@/common/result-json.ts" ;
-import type { FileResult, ResultEnvelope        } from "@/common/result-json.ts" ;
+import      { afterEach, describe, expect, test } from "bun:test"                   ;
+import      { copyFileSync, mkdtempSync, rmSync } from "node:fs"                    ;
+import      { join, relative, resolve           } from "node:path"                  ;
+import      { RESULT_SCHEMA_VERSION, summarize  } from "@/common/24_result-json.ts" ;
+import type { FileResult, ResultEnvelope        } from "@/common/24_result-json.ts" ;
 
 const root                 = resolve(import.meta.dir, "..") ;
 const workspaces: string[] = []                             ;
@@ -43,7 +43,7 @@ const LINE_ENGINE = [["python", "py"]] as const;
 
 describe("shared result JSON", () => {
 	test("TypeScript aligner emits a valid envelope", () => {
-		const value = run("product/engine/typescript/06_align-tables.ts", ["--file", "test/fixtures/table-kinds.ts"]);
+		const value = run("product/engine/typescript/07_align-tables.ts", ["--file", "test/fixtures/table-kinds.ts"]);
 		expect(problems(value)                                                  ).toEqual([]          ) ;
 		expect(value.results[0]!.language                                       ).toBe   ("typescript") ;
 		expect(value.results[0]!.groups.some(group => group.state === "FIXABLE")).toBe   (true        ) ;
@@ -51,7 +51,7 @@ describe("shared result JSON", () => {
 
 	for (const [language, extension] of LINE_ENGINE) {
 		test(`${language} aligner emits a valid envelope`, () => {
-			const value = run(`product/engine/${language}/06_align-tables.ts`, ["--file", `test/fixtures/${language}/tables.${extension}`]);
+			const value = run(`product/engine/${language}/02_align-tables.ts`, ["--file", `test/fixtures/${language}/tables.${extension}`]);
 			expect(problems(value)).toEqual([]);
 			expect(value.results[0]!.language).toBe(language);
 		});
@@ -62,7 +62,7 @@ describe("shared result JSON", () => {
 		const target    = join       (workspace, "tables.py"               ) ;
 		workspaces.push(workspace);
 		copyFileSync(resolve(root, "test/fixtures/python/tables.py"), target);
-		const value = run("product/engine/python/06_align-tables.ts", ["--file", relative(root, target), "--write"]);
+		const value = run("product/engine/python/02_align-tables.ts", ["--file", relative(root, target), "--write"]);
 		expect(problems(value)       ).toEqual  ([]                            ) ;
 		expect(value.results[0]!.mode).toBe     ("write"                       ) ;
 		expect(["ok", "skipped"]     ).toContain(value.results[0]!.parse.status) ;

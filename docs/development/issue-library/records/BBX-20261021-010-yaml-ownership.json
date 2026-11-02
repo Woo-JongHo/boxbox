@@ -58,7 +58,7 @@
   "related": [
     {
       "kind": "code",
-      "path": "product/engine/structured/index.ts",
+      "path": "product/engine/structured/00_index.ts",
       "note": "Candidate ownership and preservation."
     },
     {

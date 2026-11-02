@@ -17,7 +17,7 @@ import      { spawnSync                                            } from "node:
 import      { patternNameOf                                        } from "./corpus-measures.ts"   ;
 import      { QUEUE, typeSlug, VERDICTS, type Suggestion           } from "./corpus-judge.ts"      ;
 import      { readCensusReport                                     } from "./corpus-signatures.ts" ;
-import      { appendUsage, codexModel, codexTokens                 } from "@/common/usage.ts"      ;
+import      { appendUsage, codexModel, codexTokens                 } from "@/common/28_usage.ts"   ;
 
 const ROOT  = join(import.meta.dir, "..", "..")                         ;
 const OUT   = join(ROOT, "TEST_COMPLETED", "corpus")                    ;
