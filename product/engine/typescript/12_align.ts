@@ -358,13 +358,13 @@ function collect(
 			? contained.filter(sibling => !seen.has(sibling))
 			: contained;
 		if (!siblings) continue;
-		if (kind.name === "object-rows") for (const sibling of siblings) seen.add(sibling);
 		if (explainLine !== undefined) {
 			for (const sibling of siblings) {
 				if (source.getLineAndCharacterOfPosition(sibling.getStart(source)).line + 1 === explainLine) result.candidates.push(sibling);
 			}
 		}
 		for (const run of runsOf(source, siblings, kind)) {
+			if (kind.name === "object-rows") for (const row of run) seen.add(row.node);
 			if (run.length < (kind.minRows?.(run) ?? minRows)) continue;
 			if (kind.name === "object-properties") seen.add(node);
 			if (kind.name === "if-headers-return") for (const row of run) seen.add(row.node);

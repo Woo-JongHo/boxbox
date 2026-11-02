@@ -59,6 +59,34 @@ function axisNames(value: ResultGroup): readonly string[] {
 }
 
 describe("TypeScript B-layout regions", () => {
+	test("aligns the fields of a multiline singleton object array", () => {
+		const result = run([
+			"function refusal(language: string) {",
+			"\tconst groups = [{",
+			'\t\tkind: "mapping",',
+			"\t\tstartLine: 1,",
+			"\t\tendLine: 1,",
+			"\t\trows: 0,",
+			'\t\taxes: ["key-colon", "value"],',
+			'\t\tstate: "REFUSE",',
+			"\t\tedits: 0,",
+			'\t\tcontext: language === "json" ? "object" : "block-map",',
+			"\t\tdepth: 0",
+			"\t}];",
+			"\treturn groups;",
+			"}",
+			"",
+		].join("\n"));
+		const fields = result.text.split("\n").slice(2, 11);
+
+		expect(group(result, "registration").rows                                                                       ).toBe   (9                ) ;
+		expect(fields.map(line => displayWidth(line.slice(0, line.indexOf(":"))))                                       ).toEqual(Array(9).fill(18)) ;
+		expect(fields.map(line => displayWidth(/^[^:]+:[ \t]*/u.exec(line)![0]))                                        ).toEqual(Array(9).fill(20)) ;
+		expect(fields.filter(line => line.endsWith(",")).map(line => displayWidth(line.slice(0, line.lastIndexOf(","))))).toEqual(Array(8).fill(65)) ;
+		expect(result.groups.some(candidate => candidate.kind === "object-rows")                                        ).toBe   (false            ) ;
+		expect(preservesTokensWithBreaks(result.before, result.text)                                                    ).toBe   (true             ) ;
+	}, 60_000);
+
 	test("removes excess padding from existing header and case axes", () => {
 		const source = [
 			"function headers(a: boolean, bbbbbbb: boolean, ccc: boolean, x: string) {",
