@@ -43,14 +43,14 @@ CLI arguments, exit codes and error JSON are pinned by implementation and tests 
 
 | Current entry point | Current role | Public release handling |
 |---|---|---|
-| `typescript/06_align-tables.ts --write` | AST alignment, token and diagnostic checks, multi-pass | connected only through the public command that goes through safe replacement and the approval/formatter gates |
-| `python/06_align-tables.ts --write` | shared line alignment, preservation and diagnostic checks | connected through the same public gate |
+| `typescript/07_align-tables.ts --write` | AST alignment, token and diagnostic checks, multi-pass | connected only through the public command that goes through safe replacement and the approval/formatter gates |
+| `python/02_align-tables.ts --write` | shared line alignment, preservation and diagnostic checks | connected through the same public gate |
 | structured JSON/YAML adapter | source-range horizontal alignment with syntax and preservation checks | connected through the same public gate; no JSON/YAML rule is default-approved |
 | `typescript/00_normalize-imports.ts --write` | import splitting and reordering | excluded from the first public automatic-fix allowlist |
-| `typescript/00_expand-interface-members.ts --write` | expanding compressed members | excluded from the first public automatic-fix allowlist |
-| `typescript/07_wrap-conditions.ts --write` | line breaks in condition chains | excluded from the first public automatic-fix allowlist |
-| `typescript/08_function-map.ts --scaffold` | generating function-map comments | excluded from the first public automatic-fix allowlist |
-| `typescript/09_observe-shapes.ts` | local evidence cache | no permission to modify sources. Public exposure is a later decision |
+| `typescript/01_expand-interface-members.ts --write` | expanding compressed members | excluded from the first public automatic-fix allowlist |
+| `typescript/08_wrap-conditions.ts --write` | line breaks in condition chains | excluded from the first public automatic-fix allowlist |
+| `typescript/09_function-map.ts --scaffold` | generating function-map comments | excluded from the first public automatic-fix allowlist |
+| `typescript/10_observe-shapes.ts` | local evidence cache | no permission to modify sources. Public exposure is a later decision |
 | corpus, AI evaluation and development fix scripts | development/research | excluded from the public engine artifact |
 
 This is not a list of repository scripts to delete. The CLI builder rejects references to the excluded writers, and the public-artifact

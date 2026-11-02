@@ -1,0 +1,1404 @@
+{
+  "schemaVersion"          : 1,
+  "originalCommit"         : "93fc6c37d3e7da43bf6e0366f84a9f3360b54813",
+  "originalTree"           : "064efd2222506d4b53243c03fd0099b45304afcd",
+  "reconstructedTreeCommit": "57cc86e158560735743f0ed56a0cf9acdfca8c6c",
+  "reconstructedTree"      : "064efd2222506d4b53243c03fd0099b45304afcd",
+  "branch"                 : "refactor/engine-stability-split",
+  "originalBranchPreserved": "chore/public-repository-layout",
+  "commitsBeforeDocumentationClosure": [
+    {
+      "phase"     : 1,
+      "commit"    : "afd6ef569beb7e4d44d9b64d51c285899bfbf114",
+      "subject"   : "Correct minimum-width alignment columns",
+      "validation": "38/0; tsc; 12 per-file layout commands"
+    },
+    {
+      "phase"  : 2,
+      "commit" : "bf54c29d68543d7914e4333fd2893b54bed905e3",
+      "subject": "Preserve Python source through AST analysis",
+      "paths"  : 26
+    },
+    {
+      "phase"  : 3,
+      "commit" : "8100518ff9b77d193900f4aa0dbf05e50387b51e",
+      "subject": "Expose read-only planner column measurements",
+      "paths"  : 7
+    },
+    {
+      "phase"  : 4,
+      "commit" : "cbcf95e73a21454e2ed42899548df2a709b45736",
+      "subject": "Exclude protected content from padding alarms",
+      "paths"  : 6
+    },
+    {
+      "phase"  : 5,
+      "commit" : "f9ba2fe43f21cf86e389262777913c69f29627fa",
+      "subject": "Align supporting engine tables",
+      "paths"  : 27
+    },
+    {
+      "phase"  : 6,
+      "commit" : "05f215bed37f26d192dd4129db7fdb80b4a3bc06",
+      "subject": "Retain frozen engine verification evidence",
+      "paths"  : 57
+    },
+    {
+      "phase"  : 7,
+      "commit" : "57cc86e158560735743f0ed56a0cf9acdfca8c6c",
+      "subject": "Number flat engine files contiguously",
+      "paths"  : 236
+    },
+    {
+      "phase"  : 8,
+      "commit" : "fce37e760af6640b5828c568725cc29b486b1b9a",
+      "subject": "Align mutable inspection records",
+      "paths"  : 16
+    },
+    {
+      "phase"  : 9,
+      "commit" : "613241b483d3a656f569c95f56b86ae06417326c",
+      "subject": "Combine equivalent detector admission guards",
+      "paths"  : 1
+    }
+  ],
+  "additionalSourceChanges": [
+    "fce37e760af6640b5828c568725cc29b486b1b9a",
+    "613241b483d3a656f569c95f56b86ae06417326c"
+  ],
+  "sourceCandidate": {
+    "candidateId"  : "ee0e4a3686e2fe13",
+    "contentSha256": "ee0e4a3686e2fe1359b4161de3989a34189cce351ca6970519f5264084b96bab",
+    "sourceHead"   : "613241b483d3a656f569c95f56b86ae06417326c",
+    "files": {
+      "LICENSE"                                                                                   : "c1532bdb792370a19ab8f4f8ef51ae82f9a81209a4dfc2b279478679c8fb3623",
+      "bun.lock"                                                                                  : "202d13ce1f2e006b9b56dc2bd8277ad040490086dd87439a49b3bfb66304c9e6",
+      "development/harness/db.ts"                                                                 : "663e76d011a7a6ee534dd7469219367a882bfe8ce1e34e241ceaa1dfe1b0126c",
+      "development/harness/lint-changed-checker.ts"                                               : "87acd7a866ff80aec409008612604543838673d6b23ff31ec0b4f43bb50aac1c",
+      "development/harness/lint-changed-git.ts"                                                   : "adf00b5e7b556a35a60b95391c0c946e6ad5bd2a0fcc9fab718b8fbe615a6938",
+      "development/harness/lint-changed.ts"                                                       : "f9a618e8fc2af44298d35feb49eb5ef0c780123065bef695facaa4b2196d9390",
+      "development/harness/report.ts"                                                             : "c77b79c49ab065a188717cb2154712f8b81f8d116c39fdafcea0fc16c47038f4",
+      "development/harness/run.ts"                                                                : "8e1d01b0b39f0626cb371da87da76152f9d7942682cee4d4613f2315482b6895",
+      "development/hooks/hooks.json"                                                              : "2e7ba8d5a42844201ac14781966ed17f0f4062834564b00ec34b37536fb74e25",
+      "development/install.sh"                                                                    : "b51b8688ca5b1693d10d929e8f1332f81963beadca83e015510b824f8f1dd11d",
+      "development/tools/build-cli-artifact.ts"                                                   : "77de73d01b8b27c3707081e3740c4507c3459525c09b3d8e336d49b50147a125",
+      "development/tools/build-installer-artifact.ts"                                             : "a65338a5290b192ea715ded1f5fea24c0f191d65b82663ed39abd5e1f2f0a1f7",
+      "development/tools/build-node-artifact.ts"                                                  : "feea19bdc8ab7697043357f2a727edf65b9ed68ed72f1c549c0ea0e4b6a1671c",
+      "development/tools/build-syntax-variants.py"                                                : "af43d16b1e9359a66a371cf68e92a5b03b548df43f192b6c7dcee8534d7bcc11",
+      "development/tools/check-layout.ts"                                                         : "eb770c58596b09ea80340af5948a9a62876e1a22fea68f3f1048a2c2c43a45b0",
+      "development/tools/collect-syntax-cases.ts"                                                 : "2d2f03f168c433bec034c731d25ecc341dd02a7cf3586422c39ce9b6c4d52b38",
+      "development/tools/corpus-candidates.ts"                                                    : "271f0df956565b65180c2c433418b922802e6af58e757e029b67e74889563a04",
+      "development/tools/corpus-fetch.ts"                                                         : "91b50d38accfaeb672571f61defdca79804f67abde05f8abafcf14f82fb169c8",
+      "development/tools/corpus-judge.ts"                                                         : "b6657d481ad4e25b729cbbdd2ff61a17556b418bc458a2e0054abdf95775d859",
+      "development/tools/corpus-measures.ts"                                                      : "d07988d6c5f8e91c9e0a8d1a64feeddb9a1690f517435ec967641959a968a6e6",
+      "development/tools/corpus-promote.ts"                                                       : "7bdaaca01bbc0278379b4156301eaf00aaaacbfc790eb2baea6d1183760b0c75",
+      "development/tools/corpus-signatures.ts"                                                    : "1193bc008bcbccbc7bd243ea2f46d64d22f69fe6a012807120cc04ebbb007e39",
+      "development/tools/corpus-triage.ts"                                                        : "5a0a08b1f85fb2fb2417d21fe8518cee890dfa934b39d8a60b8797229d53bb32",
+      "development/tools/eval.ts"                                                                 : "5d5c86b4952b0f3f83c6cc7fe44305cda8200c517a8f0aa85bfb4f0eeb330dd0",
+      "development/tools/examples-check.ts"                                                       : "ed96055a09acc8d6f20a443877e69b934d7f838f38e41d60de83d4ea3a7e2bf1",
+      "development/tools/model-assignments.ts"                                                    : "a4d70b881c2902e9f730f8a29bba73e74d59b2015908ac26b788cafb93eb6f66",
+      "development/tools/pattern-catalog.ts"                                                      : "13fd53bd3d51786860de793977948a32cc4bb4fc6d1e7d422374ea88f3645420",
+      "development/tools/product-identity.generated.json"                                         : "13e4c4da6b664aaf1b929eafee793fd7efc56b875420969bf1fcc20ad19ba671",
+      "development/tools/public-preset.ts"                                                        : "a578b104226257d185717ccda444cca7975ea54c36f22c1f98cb58568b04f760",
+      "development/tools/release-candidate.ts"                                                    : "3ade8c10a19e26bbec0bc061025a9b2752aacbe04bee3b88acedd5ce6e0b8dc1",
+      "development/tools/release-lifecycle.mjs"                                                   : "fb2f0510d7bcf77b0fd8dfeb7fbbd8d6010fd271e82226b2ddfffe01513bb569",
+      "development/tools/release-notes.ts"                                                        : "57b7ebf574e2c0cad7242216bf6fb4b067bb0a90a8a5765a7229cae673e578ce",
+      "development/tools/release-smoke.mjs"                                                       : "89ccdf3fda079225376cc9b0d82331641fb84c283a99ad464962e92e5291b1fe",
+      "development/tools/score-inspector-report.ts"                                               : "79ea4f5ba9aadfde26882c171133e7b922ddd8e94905a9289188bb8108a181c3",
+      "development/tools/session-usage.ts"                                                        : "46e3726fc82a4d07b1a99a4d1c67b4a93eaa8214029670bed1b4d5df3d490417",
+      "development/tools/stress-corpus.ts"                                                        : "8009b100441c19b46df848b41c62f9e2778cba062e35bbcb071fd0188e5aed3a",
+      "development/tools/strip-stray-padding.ts"                                                  : "b8b0f0ba6f6b5d02bf5827d7d95864b51dd7fff1d9f6da366fdebb48167e5110",
+      "development/tools/sync-plugin.ts"                                                          : "18a760db7a2f6b0affd7942d87055ea98f7baf6f51e9fb547cec595db1bda82f",
+      "development/tools/sync-product.ts"                                                         : "f78aead0d0784782ff26069148ce33741d9f7d697e6fb8550255929d87a6dee9",
+      "development/tools/test-completed.ts"                                                       : "fda0c4ae78ea64c5896b4539a781582352c6cceb13f762837c9ec5d8296b4d2d",
+      "development/tools/usage-report.ts"                                                         : "eca59b0049d1fb526c2ef9a1a9487336d0f9bb7f23f4a02bc2e82c28e06c0907",
+      "development/tools/verify-syntax-cases.ts"                                                  : "a8e6ec8f11865a9d4e6c10fede4fe1da5d1dcb0a13187402c4b4afd0763038d3",
+      "package.json"                                                                              : "62283680a39622bedb83d8104ceb12ba503e3b669034f8d8d266d9a650642b1c",
+      "product/engine/00_cli.ts"                                                                  : "18e29011988ea4fd058fdeb1fc6018b604a892ee43f7b9784423e396ceea4042",
+      "product/engine/01_report.ts"                                                               : "5c6dcdf7e11238e3c05cd0ee9364bfad512e996621735d7aa4d027dd20fdc723",
+      "product/engine/02_hook.ts"                                                                 : "a63135ab8d7413aed96b83416d7bcea6b901b25a2e870b550b1e76a0908b520d",
+      "product/engine/03_measure-layout.ts"                                                       : "1002d62b0a67462b87a09da5b751a2f6d7af7d56c8a93a51b1e4dbad0667b5f3",
+      "product/engine/04_internal-runner.ts"                                                      : "e79c6e7531144fb29e93cbfedca9b682eef4022e5afe0f5f82b8082b2557a741",
+      "product/engine/05_rule-data.ts"                                                            : "14fd27395a78f4bd6ef38e434afc5524faa3b1d2502325c0756e8a47e2c2c526",
+      "product/engine/common/00_code-text.ts"                                                     : "80cc753fe2408ce76d7850e0f6ddc5a1d6c3c98968d7b5b53a80af9f35ed1cff",
+      "product/engine/common/01_display-width.ts"                                                 : "6bdfc444754fcc4f02ce64108bed00090dd432c7f43f8c68cbd59f7484245aef",
+      "product/engine/common/02_signature.ts"                                                     : "958a206fa54e709a735c3305726b49e2811ad5074c78e12208766e5087067e4d",
+      "product/engine/common/03_surface.ts"                                                       : "1a604f097f153ffe1e528e1ddfc073e7152092f9db508bb2a0295c877483f593",
+      "product/engine/common/04_grammar-ids.ts"                                                   : "3f6198417f339189e58f5ee2c8bc991e63b8f303eb834d174f510b6dfb3d5e63",
+      "product/engine/common/05_axis-expectations.ts"                                             : "7489a41b41748378bd12f7ffa1bec7dd3fd17d3e6f40e6372d6698dbd4c97b00",
+      "product/engine/common/06_table-engine.ts"                                                  : "6474a9e93613ee6057a81847638f53a99a1aa88c7dab8e82dd30ebeb09c1e813",
+      "product/engine/common/07_column-measurement.ts"                                            : "8510c3b2630b70ae65e95701fc19b769438e864db596223a20f238ece3d184b7",
+      "product/engine/common/08_parse-check.ts"                                                   : "a68123570d2e4c712258ab3ce708e475b1c31ab00a387e17399380837fb3fb0e",
+      "product/engine/common/09_preservation.ts"                                                  : "8ae578d151f33c6f36ac505079f1001aed20dbd8791bf7329f55aabc622a3ed6",
+      "product/engine/common/10_alignment-only.ts"                                                : "9b6bbdab5a469df87e5e1505c4d95d8e952da38d795921c382128483791b18d0",
+      "product/engine/common/11_syntax-validation.ts"                                             : "0bddc69485a4a33ef851467ab31334331efd4e4dd3cfd79d4937c634d41df5d1",
+      "product/engine/common/12_safe-file.ts"                                                     : "ddc81949b3c0c481f64124659b33eaa848b8025f5a3dab53434617279cdd711e",
+      "product/engine/common/13_process-lock.ts"                                                  : "aa1561f1c1ea0007f3a4f26536a96567fff43b155992fdcfe8b814a8b458faa9",
+      "product/engine/common/14_formatter-process.ts"                                             : "9151c31fd6eea06dfde47740343cb135b310bd38756a72f80ccbdbc643b584d0",
+      "product/engine/common/15_project-config.ts"                                                : "524f04d1c869d2f412c67516e3d5981b55f093fcfd7e0c14f48f13fac9f94096",
+      "product/engine/common/16_conventions.ts"                                                   : "a6690aec9e844924da271425920422d407746c003c8db5bdcc2d7dc8d2ed09e6",
+      "product/engine/common/17_examples.ts"                                                      : "3ea908fe0d1327ba86b4ae7016f00bc8b324acbb9697fcd9977a9b52f8622e9e",
+      "product/engine/common/18_approval-gate.ts"                                                 : "ac4a486cfa213bb5cf19717e764c4b4d36d74b6306e48ad27f4843d987893ab0",
+      "product/engine/common/19_runtime-record-validation.ts"                                     : "6d3f57389801cdb610de1524e927750b07b3b97a1df637a32891ac094ccd5f8b",
+      "product/engine/common/20_authoring-guide.ts"                                               : "b4749960c4b576679f27f77aba8bd5e7f8126544b0edc1f55177777b1e7fe8a4",
+      "product/engine/common/21_format-pipeline.ts"                                               : "69a7ffecb1ad9d6bab2fd42a4664fae0dac6abca24563ae3e946fd2419be6c55",
+      "product/engine/common/22_align-cli.ts"                                                     : "8e9ea7e19a92755a88e2648915d1c4e6bf566ff9a49fb48bcefa356d966e3dd7",
+      "product/engine/common/23_report.ts"                                                        : "5bf6ac834a0221c67e93fd6ea4e200e3a1d3a57e9a92b31e50d6333016ebcf7c",
+      "product/engine/common/24_result-json.ts"                                                   : "fc791a830e5431916562143267740571e4735fe5fdb739590a15d7eea9ef08aa",
+      "product/engine/common/25_guarded-run.ts"                                                   : "e19d78a848f532985d7a7644dba8d8d743c65273e7c5914c6f2b264e4cdcdc15",
+      "product/engine/common/26_hook.ts"                                                          : "c90de12b9b303ceb3eaeb77c52302d1bb08007e2d190b808099a6266da0318cd",
+      "product/engine/common/27_lifecycle-hook.ts"                                                : "977cc9177c74756b113fa10701a83d2d338a57b9b591542cc68d1001c566e521",
+      "product/engine/common/28_usage.ts"                                                         : "71608ae8c0d8625ca583eab656151c6646774ba308d34119e70108a3d2191958",
+      "product/engine/python/00_group-regions.ts"                                                 : "e9e13a2fd717a02dfe637f4fca9d06e0483d8244b18b46694fec5f607c307226",
+      "product/engine/python/01_measure-columns.ts"                                               : "b432e93aa4506f1cd314885450638b2608c0507cc131b88bd7c40b0bede30e2c",
+      "product/engine/python/02_align-tables.ts"                                                  : "ff6e98136517e13c1a1f690b57d15410030e9877e6f570e787a0c4e5e5add78a",
+      "product/engine/python/03_profile.ts"                                                       : "965e116014cdb122b2485c5171f318f909801950d9e9516e247cefd78719e7a5",
+      "product/engine/python/04_assignment-envelope.ts"                                           : "4e2b4b5949a99435b7d538ebc4b04d4596b2276f449fde73a5586c185993a045",
+      "product/engine/python/05_analysis.ts"                                                      : "5f3ccf619b303a2223af5733c49d736f686473f9892d25f06f52bb4c96f126cf",
+      "product/engine/python/06_analysis-script.ts"                                               : "8d3a643df758ed44f41e1846449dd8b56bbc09b919e3ac5f1cdcfe9428ea3fd9",
+      "product/engine/python/07_string-ranges.ts"                                                 : "b103365220454d0f72104efa9270551b45685d9bbf1a2130ceca8880809e97c0",
+      "product/engine/structured/00_index.ts"                                                     : "ac49c55e2e52a392d92cc5f605fe37b600f981f8ea157c04d98d78bc37194195",
+      "product/engine/typescript/00_normalize-imports.ts"                                         : "164044cbba3f1b5ccf5ed739eadc84fe1c92e93aca4b7777c5a5272739843024",
+      "product/engine/typescript/01_expand-interface-members.ts"                                  : "56c315925d902e9c0046fd82c17cb3162a10e92e7b592ec865d5d4f28b47c9c2",
+      "product/engine/typescript/02_group-regions.ts"                                             : "ff6b2fb046b66ac991beff5c13750c230558c786d52896f38ccc4643797105a2",
+      "product/engine/typescript/03_audit-type-uncertainty.ts"                                    : "b994a034232adef7474ae256a79cfce50e9d6a54ec25c52507e65a6c330a5777",
+      "product/engine/typescript/04_audit-optional-types.ts"                                      : "4fd3ea121b63a67ba44fca9a7b0c795762db25b729a294eb0efc0ac6af08c94a",
+      "product/engine/typescript/05_measure-columns.ts"                                           : "0569209b0f79333ad01201bb81b737343c8e623ec7a5f982b0e7f3b489b5a028",
+      "product/engine/typescript/06_inspect-hover.mjs"                                            : "dfafe7ca754587b0c95229cb7ee3706f598a6bf4228cef7696d49023783789c6",
+      "product/engine/typescript/07_align-tables.ts"                                              : "0d13ff138df5add9454158076bca80e5145f482ccd6d05b7d0e34330ee55dc81",
+      "product/engine/typescript/08_wrap-conditions.ts"                                           : "f7656fe0c9fdc4c048bac4a59d07c2808874bb74ef1063fbf6791eb4cac49d9f",
+      "product/engine/typescript/09_function-map.ts"                                              : "51db149134b7caf20aae95b7f810f525a300c8ad01152ce994b1da8d30df9eaa",
+      "product/engine/typescript/10_observe-shapes.ts"                                            : "08ec37edfe49035deeebb5a95347ed928f6b9cf34dbad66752930ccddfe5c8e5",
+      "product/engine/typescript/11_grid-tokens.ts"                                               : "15015d6f47ba2048a32aa6a7529877ababd33a13e1ee513ad1a1dd89d746dc62",
+      "product/engine/typescript/12_align.ts"                                                     : "ae4da395c9b9a4af271dd9aac8a99cc341c057af6e87c12d8c67020b3d984632",
+      "product/engine/typescript/13_grid-kinds.ts"                                                : "397334a646dc3bbb4f5691504145de12cee9a5e4647eb3020ad174555b09fd74",
+      "product/engine/typescript/14_layout-policy.ts"                                             : "9410aceca2d22350df45e3c0cfa922a1f94a47f763f11a396ada017c0e431e00",
+      "product/engine/typescript/15_load-source-file.ts"                                          : "006b6eed41146170a9c1d5fc7979b9ded5e4064500fa3a732c98346db38dbdf3",
+      "product/engine/typescript/16_token-preservation.ts"                                        : "ed4b33cdbc941c4c7fad7883336f298b6250d8cb72cfef6e87e718c39b96e643",
+      "product/engine/typescript/17_layout-preservation.ts"                                       : "e0a252b14edd1ba64c22f2b5d95f0e080536b671a4da9c57d21e2fcfe5e4c111",
+      "product/installer/README.md"                                                               : "ee03d5b4207d4943d278260a343f72eccbd4246d1d0c6fc291bed4d61e19045d",
+      "product/installer/claude-registration.mjs"                                                 : "b5bfdc71e0a451b3aed503537af5519db99cbc12a52eee182df44416c6f9b680",
+      "product/installer/entry.mjs"                                                               : "5e1efbbf1c36f4c0addf6044e0f65b0d9146b626b8e8047762da9b163e39baa9",
+      "product/installer/install-state.mjs"                                                       : "2c127c6bc639f315dd485da08b3f293b7b086185dd376addc52b6707b69c72e7",
+      "product/installer/install.mjs"                                                             : "85c896fab54fd5509c2c3505eeeff7ecb5b44ca76c8990e7c67f864d2d8d9351",
+      "product/installer/launcher.mjs"                                                            : "60b6e8363193232eb770c17dafaf121408b25fb3d8928da835756611bf2b027e",
+      "product/installer/platform.mjs"                                                            : "fa92c707282691fafe0c7a8ffd58bc4d43c7eea286bbc1274884e091cba017f0",
+      "product/models.json"                                                                       : "c052f88adfcceecf53c6bbb87fca4e22771d9301729c3424e1c984eaf890cf8e",
+      "product/packages/cli/README.md"                                                            : "1d144ceda28c2c914bcdcca98c26d6097bc61c3afe7984ab481c8ccbde3af090",
+      "product/packages/cli/entry.ts"                                                             : "072db0a7de9e800daf0fb59742584df0e4a495494a7fd5e2a93d6228253f3c55",
+      "product/packages/cli/package.json"                                                         : "b26e180490bd70c2bde9bd19a36a912b922887e1ff1e4aec070a6f0fd2e7685c",
+      "product/packages/node/README.md"                                                           : "579a98a6c600f2cf6a07d98c5b7ab569252773fb6f8567d0f736a67095be5188",
+      "product/packages/node/package.json"                                                        : "4ada9cc04283469fbaf3db2bb4c4f1d5e9a0fdf0ff6d45b6fbd55034d44c3c8b",
+      "product/plugin/.claude-plugin/plugin.json"                                                 : "68d02b85260bffe9e49004357b8be06b712c34d8e370961a143163c5e99a6edb",
+      "product/plugin/.codex-plugin/plugin.json"                                                  : "e483624083e57fe07ecaefdd15652f4fd57424783de5598bee79911d963f6181",
+      "product/plugin/README.md"                                                                  : "26363ab9c01ca38b94a75a14ddfa9e0c695770c9b2be517edce806679e8c4234",
+      "product/plugin/agents/readability-inspector.md"                                            : "9bd4ba12863a65e8dfe9a80439dec2f6352df942106c4a70110b8bbf3b6ec151",
+      "product/plugin/hooks/hooks.json"                                                           : "3b878a9ec82dd1c91def3b908be3ba2d4ac0d64e24d104a3eb4c84114a6091f5",
+      "product/plugin/scripts/boxbox"                                                             : "c8f32214416be7b067c10d069014b6cdacdd8c11023dda39ab8e10012e004601",
+      "product/plugin/skills/boxbox/SKILL.md"                                                     : "0847bf531d1231c67cc1ae0311f2275973b896b071ff32f453e7bb30be2c2edf",
+      "product/rules/base/python.json"                                                            : "11ae34bc39f995beb08e73010653b93c28b20445fa7f3bf6fa92af8556896dd0",
+      "product/rules/base/typescript-layout.json"                                                 : "b50ff68d1adaed31e7cf76633dd49f73b284d72b534359b47173e355762cba27",
+      "product/rules/base/typescript.json"                                                        : "19b690c1f877deb59eccfb74be263e8878c7b4de4ca45d9dd881793811d7e6b9",
+      "product/rules/patterns/catalog.json"                                                       : "5d4b7d88dcfb57106b4b20c6066a629fcf7bf3eb626ec4ad18982d5b23565b91",
+      "product/rules/presets/recommended/conventions.jsonl"                                       : "e9ed8c2fc41ebfced18658027786c4ae2c174a8710f9c64dc68f934304708a54",
+      "product/rules/presets/recommended/decisions.jsonl"                                         : "1143577d3f1b58860300a7b5e06c575f2e36c2b8a7f50152fbe1a1c3344f9991",
+      "product/rules/presets/recommended/docs/public/decisions/py-simple-assignments.md"          : "61997c3071a0558c9992335fb6245a589e5b85d27c5e6c5f9991a82942ba4848",
+      "product/rules/presets/recommended/docs/public/decisions/ts-sourcefile-call-declarations.md": "d6fc3b19f594d9b4865e24defbd236c30367c6244dbfeed09843c4c5ea5de600",
+      "product/rules/presets/recommended/examples.jsonl"                                          : "7e047d5b7311d2b55430c64864128716c2bbc32279e1d547b8f07dbb2baf9e16",
+      "product/rules/references/charter.md"                                                       : "7eb30ee250bcdef3eb3224652d11f7fa6ca007e18135c5677cf973e3e759c5ce",
+      "product/rules/references/grammar.md"                                                       : "becaeddfc561879c736105a03540ea5e3ba4e78f22803df2719fc294f54be411",
+      "product/rules/references/readability-contract.md"                                          : "a0cba2a5a5b4790a4f0783c07997381cce25f72ec6156ba7d81e47a9d41f84e9",
+      "product/rules/references/typescript-grid-template.md"                                      : "1d1c9adc41d3cdf434ff503ed98509c74b940efc95a9f4684eb812286b9f4783",
+      "tsconfig.json"                                                                             : "77fe5a3e16b233ca206903f511319aac3904692b30bd40baab5f7fd1513bca41"
+    }
+  },
+  "fullCheck": {
+    "candidateId": "ee0e4a3686e2fe13",
+    "argv": [
+      "bun",
+      "run",
+      "check"
+    ],
+    "cwd": "<repository-root>",
+    "explicitEnvironment": {
+      "BOXBOX_REQUIRE_PARSERS": "1"
+    },
+    "exitCode": 1,
+    "durationSeconds": 372.432,
+    "tests": {
+      "passed"      : "732",
+      "failed"      : "3",
+      "expectations": "4307",
+      "total"       : "735",
+      "files"       : "78"
+    },
+    "inputFiles": 1521,
+    "inputDrift": [],
+    "sourceFiles": 139,
+    "logSha256": "ed5e2747e65748185c01ddc83977d84973400f76c8ff5e9217e3ea1bbc4d39e2"
+  },
+  "fullRunFailureObservations": [
+    {
+      "test": "real npx infers the boxbox bin from the public installer and installs both hosts independently of cache and origin",
+      "observation": "ENOSPC during installer repair"
+    },
+    {
+      "test": "explicit host flags install only selected adapters and engine-only does not register any host",
+      "observation": "npm extraction ENOSPC"
+    },
+    {
+      "test": "minimizes method parentheses without detaching empty parameter lists",
+      "observation": "60000 ms test timeout"
+    }
+  ],
+  "resourceRecovery": {
+    "exitCode": 0,
+    "argv": [
+      "bun",
+      "test",
+      "--timeout",
+      "60000",
+      "test/installer-artifact.test.ts",
+      "test/typescript-b-layout.test.ts",
+      "--test-name-pattern",
+      "real npx infers|explicit host flags|minimizes method parentheses"
+    ],
+    "passed"      : 3,
+    "failed"      : 0,
+    "filteredOut" : 23,
+    "expectations": 113,
+    "inputDrift": [],
+    "logSha256"               : "b48597090ab2fd8cca96fff5c4197d903dca64334b8fbc5546e4a2fcf2da4b2f",
+    "originalFullGateExitCode": 1,
+    "sourceCandidateUnchanged": true,
+    "coverageConclusion"      : "The original full run passed732tests; all3failedtests passed the scoped resource-recovery invocation. The initial full command remains recorded as failed."
+  },
+  "remainingGateChecks": [
+    {
+      "argv": [
+        "bunx",
+        "tsc",
+        "--noEmit"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.366
+    },
+    {
+      "argv": [
+        "bash",
+        "-n",
+        "development/install.sh"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.004
+    },
+    {
+      "argv": [
+        "bun",
+        "development/tools/sync-plugin.ts",
+        "--check"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.056
+    },
+    {
+      "argv": [
+        "claude",
+        "plugin",
+        "validate",
+        "--strict",
+        "./plugin"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 1.223
+    },
+    {
+      "argv": [
+        "claude",
+        "plugin",
+        "validate",
+        "--strict",
+        "."
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.689
+    }
+  ],
+  "pinnedReadability": {
+    "status": "passed-by-impact-scoped-composition",
+    "checker": {
+      "version"     : "0.2.5",
+      "commit"      : "9a0406e27fb43241d71f9e5a8815da7e4301e1b1",
+      "tree"        : "8e81ddadb08a325daa8d7b1e04b2f1cc37f587b8",
+      "bundleSha256": "60dc99364e1e69cb7b22cbef2f7f0736f475b98a5e4181a9c9fbe8696934b898",
+      "bun"         : "1.4.0"
+    },
+    "configSha256": "731dd8cf08f1b327aa8b8dfe7aeda00771a7a4e6d4ed8ed08bc2655962b179fc",
+    "originalFullInvocation": {
+      "base"      : "13e9ced",
+      "target"    : "93fc6c3",
+      "exitCode"  : 1,
+      "targets"   : 156,
+      "violations": 17
+    },
+    "followups": [
+      {
+        "receiptIndex": 1,
+        "targets"     : 16,
+        "exitCode"    : 0
+      },
+      {
+        "receiptIndex": 2,
+        "targets"     : 1,
+        "exitCode"    : 0
+      }
+    ],
+    "frozenFileMatches"    : 156,
+    "unchangedPassingFiles": 139,
+    "changedPassingFiles"  : 17,
+    "files": [
+      {
+        "path"        : "development/harness/run.ts",
+        "sha256"      : "8e1d01b0b39f0626cb371da87da76152f9d7942682cee4d4613f2315482b6895",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/hooks/hooks.json",
+        "sha256"      : "2e7ba8d5a42844201ac14781966ed17f0f4062834564b00ec34b37536fb74e25",
+        "receiptIndex": 0,
+        "noGroups"    : true
+      },
+      {
+        "path"        : "development/tools/build-cli-artifact.ts",
+        "sha256"      : "77de73d01b8b27c3707081e3740c4507c3459525c09b3d8e336d49b50147a125",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/build-node-artifact.ts",
+        "sha256"      : "feea19bdc8ab7697043357f2a727edf65b9ed68ed72f1c549c0ea0e4b6a1671c",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/check-layout.ts",
+        "sha256"      : "eb770c58596b09ea80340af5948a9a62876e1a22fea68f3f1048a2c2c43a45b0",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/collect-syntax-cases.ts",
+        "sha256"      : "2d2f03f168c433bec034c731d25ecc341dd02a7cf3586422c39ce9b6c4d52b38",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/corpus-candidates.ts",
+        "sha256"      : "271f0df956565b65180c2c433418b922802e6af58e757e029b67e74889563a04",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/corpus-judge.ts",
+        "sha256"      : "b6657d481ad4e25b729cbbdd2ff61a17556b418bc458a2e0054abdf95775d859",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/corpus-measures.ts",
+        "sha256"      : "d07988d6c5f8e91c9e0a8d1a64feeddb9a1690f517435ec967641959a968a6e6",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/corpus-promote.ts",
+        "sha256"      : "7bdaaca01bbc0278379b4156301eaf00aaaacbfc790eb2baea6d1183760b0c75",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/corpus-signatures.ts",
+        "sha256"      : "1193bc008bcbccbc7bd243ea2f46d64d22f69fe6a012807120cc04ebbb007e39",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/corpus-triage.ts",
+        "sha256"      : "5a0a08b1f85fb2fb2417d21fe8518cee890dfa934b39d8a60b8797229d53bb32",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/eval.ts",
+        "sha256"      : "5d5c86b4952b0f3f83c6cc7fe44305cda8200c517a8f0aa85bfb4f0eeb330dd0",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/examples-check.ts",
+        "sha256"      : "ed96055a09acc8d6f20a443877e69b934d7f838f38e41d60de83d4ea3a7e2bf1",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/public-preset.ts",
+        "sha256"      : "a578b104226257d185717ccda444cca7975ea54c36f22c1f98cb58568b04f760",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/session-usage.ts",
+        "sha256"      : "46e3726fc82a4d07b1a99a4d1c67b4a93eaa8214029670bed1b4d5df3d490417",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/stress-corpus.ts",
+        "sha256"      : "8009b100441c19b46df848b41c62f9e2778cba062e35bbcb071fd0188e5aed3a",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/strip-stray-padding.ts",
+        "sha256"      : "b8b0f0ba6f6b5d02bf5827d7d95864b51dd7fff1d9f6da366fdebb48167e5110",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/sync-plugin.ts",
+        "sha256"      : "18a760db7a2f6b0affd7942d87055ea98f7baf6f51e9fb547cec595db1bda82f",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/test-completed.ts",
+        "sha256"      : "fda0c4ae78ea64c5896b4539a781582352c6cceb13f762837c9ec5d8296b4d2d",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "development/tools/usage-report.ts",
+        "sha256"      : "eca59b0049d1fb526c2ef9a1a9487336d0f9bb7f23f4a02bc2e82c28e06c0907",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "docs/development/issue-library/records/BBX-20261021-001-return-column.json",
+        "sha256"      : "e9b5106d25d1d1e7effb4f3a81317a0f1eec66567f8786b77fdf562b40ea68cd",
+        "receiptIndex": 1,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "docs/development/issue-library/records/BBX-20261021-002-call-envelope.json",
+        "sha256"      : "a6edf791ccb830122072a8b4041495e13c241bb277914c9c189bec9c181c9127",
+        "receiptIndex": 1,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "docs/development/issue-library/records/BBX-20261021-003-nested-type-layout.json",
+        "sha256"      : "626e740ed8f701f2c711432a5e106b22c411b60ce978e1f3728a4ba89f840291",
+        "receiptIndex": 1,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "docs/development/issue-library/records/BBX-20261021-004-member-dot.json",
+        "sha256"      : "2670c541d2370ee3cbefdd717e028a0ada3f12ad16d9ca7982a1504ae5d8ce6e",
+        "receiptIndex": 1,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "docs/development/issue-library/records/BBX-20261021-006-report-row-membership.json",
+        "sha256"      : "42fd19bb1c153aa2fdca176c3625f0b9657616602e9b1043b65f49353cb107fc",
+        "receiptIndex": 1,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "docs/development/issue-library/records/BBX-20261021-010-yaml-ownership.json",
+        "sha256"      : "4a440462cc629ce194d7e132021efdb181e15defb6bdcd4667a62d3769440923",
+        "receiptIndex": 1,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "docs/development/issue-library/records/BBX-20261021-012-hook-json-self-observation.json",
+        "sha256"      : "9e0939cc1b3cda166b98b1f0648d388e0fba9d750fe4cf109acc555df75abec5",
+        "receiptIndex": 1,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "docs/development/issue-library/records/BBX-20261022-015-python-assignment-envelope.json",
+        "sha256"      : "e70072eb1fae6228f3b2e3c8378f3360012a4d8a77f79b91be250e832c819f7e",
+        "receiptIndex": 1,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "docs/development/issue-library/records/BBX-20261022-021-boxbox-monitor.json",
+        "sha256"      : "eb235663509109a24657ab822b49b808a29b987b77d451c49544b6164ecebb7e",
+        "receiptIndex": 1,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "docs/development/issue-library/records/BBX-20261101-022-tab-start-columns.json",
+        "sha256"      : "6ddaff9346cb5e826f0956e7ec9aa1adce53241af1094e1dbea2c8f7570f0645",
+        "receiptIndex": 1,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "docs/development/issue-library/records/BBX-20261101-023-typescript-insert-axis-minimum-width.json",
+        "sha256"      : "b56970b58e71bc91fc9e79a19b95d30d5c325ebf2475b681f68e0247f71181b3",
+        "receiptIndex": 1,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "docs/development/issue-library/records/BBX-20261101-024-python-pep701-string-preservation.json",
+        "sha256"      : "01878aa3314bfc4d8f294c5d2ad02fc5607a6527e16e083a684ecb81cd90cd66",
+        "receiptIndex": 1,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "docs/development/issue-library/records/BBX-20261101-025-a12-inline-comment-and-language-scope.json",
+        "sha256"      : "97d4a3c23b8f18a70615b0ee89d8fc0f36cc74a2631c8e0850a9d888de687853",
+        "receiptIndex": 1,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "docs/development/issue-library/records/BBX-20261102-026-python-invalid-utf8-formatter-preflight.json",
+        "sha256"      : "69d95d16c3457bcda05f7dab0b07dfd47ee638f791694700aa2bd6d7b7a58e04",
+        "receiptIndex": 1,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "docs/development/issue-library/validate.py",
+        "sha256"      : "f3d3a2dac0f5a9a61335727544abf14487aa9f417fa6d77464831b6e6d5e730a",
+        "receiptIndex": 1,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/00_cli.ts",
+        "sha256"      : "18e29011988ea4fd058fdeb1fc6018b604a892ee43f7b9784423e396ceea4042",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/01_report.ts",
+        "sha256"      : "5c6dcdf7e11238e3c05cd0ee9364bfad512e996621735d7aa4d027dd20fdc723",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/02_hook.ts",
+        "sha256"      : "a63135ab8d7413aed96b83416d7bcea6b901b25a2e870b550b1e76a0908b520d",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/03_measure-layout.ts",
+        "sha256"      : "1002d62b0a67462b87a09da5b751a2f6d7af7d56c8a93a51b1e4dbad0667b5f3",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/04_internal-runner.ts",
+        "sha256"      : "e79c6e7531144fb29e93cbfedca9b682eef4022e5afe0f5f82b8082b2557a741",
+        "receiptIndex": 0,
+        "noGroups"    : true
+      },
+      {
+        "path"        : "product/engine/05_rule-data.ts",
+        "sha256"      : "14fd27395a78f4bd6ef38e434afc5524faa3b1d2502325c0756e8a47e2c2c526",
+        "receiptIndex": 0,
+        "noGroups"    : true
+      },
+      {
+        "path"        : "product/engine/common/00_code-text.ts",
+        "sha256"      : "80cc753fe2408ce76d7850e0f6ddc5a1d6c3c98968d7b5b53a80af9f35ed1cff",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/01_display-width.ts",
+        "sha256"      : "6bdfc444754fcc4f02ce64108bed00090dd432c7f43f8c68cbd59f7484245aef",
+        "receiptIndex": 0,
+        "noGroups"    : true
+      },
+      {
+        "path"        : "product/engine/common/02_signature.ts",
+        "sha256"      : "958a206fa54e709a735c3305726b49e2811ad5074c78e12208766e5087067e4d",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/03_surface.ts",
+        "sha256"      : "1a604f097f153ffe1e528e1ddfc073e7152092f9db508bb2a0295c877483f593",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/04_grammar-ids.ts",
+        "sha256"      : "3f6198417f339189e58f5ee2c8bc991e63b8f303eb834d174f510b6dfb3d5e63",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/05_axis-expectations.ts",
+        "sha256"      : "7489a41b41748378bd12f7ffa1bec7dd3fd17d3e6f40e6372d6698dbd4c97b00",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/06_table-engine.ts",
+        "sha256"      : "6474a9e93613ee6057a81847638f53a99a1aa88c7dab8e82dd30ebeb09c1e813",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/07_column-measurement.ts",
+        "sha256"      : "8510c3b2630b70ae65e95701fc19b769438e864db596223a20f238ece3d184b7",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/08_parse-check.ts",
+        "sha256"      : "a68123570d2e4c712258ab3ce708e475b1c31ab00a387e17399380837fb3fb0e",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/09_preservation.ts",
+        "sha256"      : "8ae578d151f33c6f36ac505079f1001aed20dbd8791bf7329f55aabc622a3ed6",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/10_alignment-only.ts",
+        "sha256"      : "9b6bbdab5a469df87e5e1505c4d95d8e952da38d795921c382128483791b18d0",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/11_syntax-validation.ts",
+        "sha256"      : "0bddc69485a4a33ef851467ab31334331efd4e4dd3cfd79d4937c634d41df5d1",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/12_safe-file.ts",
+        "sha256"      : "ddc81949b3c0c481f64124659b33eaa848b8025f5a3dab53434617279cdd711e",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/13_process-lock.ts",
+        "sha256"      : "aa1561f1c1ea0007f3a4f26536a96567fff43b155992fdcfe8b814a8b458faa9",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/14_formatter-process.ts",
+        "sha256"      : "9151c31fd6eea06dfde47740343cb135b310bd38756a72f80ccbdbc643b584d0",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/15_project-config.ts",
+        "sha256"      : "524f04d1c869d2f412c67516e3d5981b55f093fcfd7e0c14f48f13fac9f94096",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/16_conventions.ts",
+        "sha256"      : "a6690aec9e844924da271425920422d407746c003c8db5bdcc2d7dc8d2ed09e6",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/17_examples.ts",
+        "sha256"      : "3ea908fe0d1327ba86b4ae7016f00bc8b324acbb9697fcd9977a9b52f8622e9e",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/18_approval-gate.ts",
+        "sha256"      : "ac4a486cfa213bb5cf19717e764c4b4d36d74b6306e48ad27f4843d987893ab0",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/19_runtime-record-validation.ts",
+        "sha256"      : "6d3f57389801cdb610de1524e927750b07b3b97a1df637a32891ac094ccd5f8b",
+        "receiptIndex": 0,
+        "noGroups"    : true
+      },
+      {
+        "path"        : "product/engine/common/20_authoring-guide.ts",
+        "sha256"      : "b4749960c4b576679f27f77aba8bd5e7f8126544b0edc1f55177777b1e7fe8a4",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/21_format-pipeline.ts",
+        "sha256"      : "69a7ffecb1ad9d6bab2fd42a4664fae0dac6abca24563ae3e946fd2419be6c55",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/22_align-cli.ts",
+        "sha256"      : "8e9ea7e19a92755a88e2648915d1c4e6bf566ff9a49fb48bcefa356d966e3dd7",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/23_report.ts",
+        "sha256"      : "5bf6ac834a0221c67e93fd6ea4e200e3a1d3a57e9a92b31e50d6333016ebcf7c",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/24_result-json.ts",
+        "sha256"      : "fc791a830e5431916562143267740571e4735fe5fdb739590a15d7eea9ef08aa",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/25_guarded-run.ts",
+        "sha256"      : "e19d78a848f532985d7a7644dba8d8d743c65273e7c5914c6f2b264e4cdcdc15",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/26_hook.ts",
+        "sha256"      : "c90de12b9b303ceb3eaeb77c52302d1bb08007e2d190b808099a6266da0318cd",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/27_lifecycle-hook.ts",
+        "sha256"      : "977cc9177c74756b113fa10701a83d2d338a57b9b591542cc68d1001c566e521",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/common/28_usage.ts",
+        "sha256"      : "71608ae8c0d8625ca583eab656151c6646774ba308d34119e70108a3d2191958",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/python/00_group-regions.ts",
+        "sha256"      : "e9e13a2fd717a02dfe637f4fca9d06e0483d8244b18b46694fec5f607c307226",
+        "receiptIndex": 0,
+        "noGroups"    : true
+      },
+      {
+        "path"        : "product/engine/python/01_measure-columns.ts",
+        "sha256"      : "b432e93aa4506f1cd314885450638b2608c0507cc131b88bd7c40b0bede30e2c",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/python/02_align-tables.ts",
+        "sha256"      : "ff6e98136517e13c1a1f690b57d15410030e9877e6f570e787a0c4e5e5add78a",
+        "receiptIndex": 0,
+        "noGroups"    : true
+      },
+      {
+        "path"        : "product/engine/python/03_profile.ts",
+        "sha256"      : "965e116014cdb122b2485c5171f318f909801950d9e9516e247cefd78719e7a5",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/python/04_assignment-envelope.ts",
+        "sha256"      : "4e2b4b5949a99435b7d538ebc4b04d4596b2276f449fde73a5586c185993a045",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/python/05_analysis.ts",
+        "sha256"      : "5f3ccf619b303a2223af5733c49d736f686473f9892d25f06f52bb4c96f126cf",
+        "receiptIndex": 1,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/python/06_analysis-script.ts",
+        "sha256"      : "8d3a643df758ed44f41e1846449dd8b56bbc09b919e3ac5f1cdcfe9428ea3fd9",
+        "receiptIndex": 0,
+        "noGroups"    : true
+      },
+      {
+        "path"        : "product/engine/python/07_string-ranges.ts",
+        "sha256"      : "b103365220454d0f72104efa9270551b45685d9bbf1a2130ceca8880809e97c0",
+        "receiptIndex": 0,
+        "noGroups"    : true
+      },
+      {
+        "path"        : "product/engine/structured/00_index.ts",
+        "sha256"      : "ac49c55e2e52a392d92cc5f605fe37b600f981f8ea157c04d98d78bc37194195",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/typescript/00_normalize-imports.ts",
+        "sha256"      : "164044cbba3f1b5ccf5ed739eadc84fe1c92e93aca4b7777c5a5272739843024",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/typescript/01_expand-interface-members.ts",
+        "sha256"      : "56c315925d902e9c0046fd82c17cb3162a10e92e7b592ec865d5d4f28b47c9c2",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/typescript/02_group-regions.ts",
+        "sha256"      : "ff6b2fb046b66ac991beff5c13750c230558c786d52896f38ccc4643797105a2",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/typescript/03_audit-type-uncertainty.ts",
+        "sha256"      : "b994a034232adef7474ae256a79cfce50e9d6a54ec25c52507e65a6c330a5777",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/typescript/04_audit-optional-types.ts",
+        "sha256"      : "4fd3ea121b63a67ba44fca9a7b0c795762db25b729a294eb0efc0ac6af08c94a",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/typescript/05_measure-columns.ts",
+        "sha256"      : "0569209b0f79333ad01201bb81b737343c8e623ec7a5f982b0e7f3b489b5a028",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/typescript/07_align-tables.ts",
+        "sha256"      : "0d13ff138df5add9454158076bca80e5145f482ccd6d05b7d0e34330ee55dc81",
+        "receiptIndex": 0,
+        "noGroups"    : true
+      },
+      {
+        "path"        : "product/engine/typescript/08_wrap-conditions.ts",
+        "sha256"      : "f7656fe0c9fdc4c048bac4a59d07c2808874bb74ef1063fbf6791eb4cac49d9f",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/typescript/09_function-map.ts",
+        "sha256"      : "51db149134b7caf20aae95b7f810f525a300c8ad01152ce994b1da8d30df9eaa",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/typescript/10_observe-shapes.ts",
+        "sha256"      : "08ec37edfe49035deeebb5a95347ed928f6b9cf34dbad66752930ccddfe5c8e5",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/typescript/11_grid-tokens.ts",
+        "sha256"      : "15015d6f47ba2048a32aa6a7529877ababd33a13e1ee513ad1a1dd89d746dc62",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/typescript/12_align.ts",
+        "sha256"      : "ae4da395c9b9a4af271dd9aac8a99cc341c057af6e87c12d8c67020b3d984632",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/typescript/13_grid-kinds.ts",
+        "sha256"      : "397334a646dc3bbb4f5691504145de12cee9a5e4647eb3020ad174555b09fd74",
+        "receiptIndex": 2,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/typescript/14_layout-policy.ts",
+        "sha256"      : "9410aceca2d22350df45e3c0cfa922a1f94a47f763f11a396ada017c0e431e00",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/typescript/15_load-source-file.ts",
+        "sha256"      : "006b6eed41146170a9c1d5fc7979b9ded5e4064500fa3a732c98346db38dbdf3",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/typescript/16_token-preservation.ts",
+        "sha256"      : "ed4b33cdbc941c4c7fad7883336f298b6250d8cb72cfef6e87e718c39b96e643",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/engine/typescript/17_layout-preservation.ts",
+        "sha256"      : "e0a252b14edd1ba64c22f2b5d95f0e080536b671a4da9c57d21e2fcfe5e4c111",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "product/packages/cli/entry.ts",
+        "sha256"      : "072db0a7de9e800daf0fb59742584df0e4a495494a7fd5e2a93d6228253f3c55",
+        "receiptIndex": 0,
+        "noGroups"    : true
+      },
+      {
+        "path"        : "product/rules/patterns/catalog.json",
+        "sha256"      : "5d4b7d88dcfb57106b4b20c6066a629fcf7bf3eb626ec4ad18982d5b23565b91",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/alias-portability.test.ts",
+        "sha256"      : "0bc942654a2491245c383ece4ed6386dcc0f0b06506b41e549796cd90d8c9fbd",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/alignment-only.test.ts",
+        "sha256"      : "88755743ef4153dadd657d7e4676b375582f0b1b8fb9ef4950f2f3de945fea34",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/approval-gate.test.ts",
+        "sha256"      : "918c334b4f39a52c8f35aa479a61d86e239f5b21e394733eb908ff72a3b3e490",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/authoring-modes.test.ts",
+        "sha256"      : "1631639fcbc18d6cbec22a2ce805330e682d145372f1bf3dd7158270ce795401",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/b-layout-public.test.ts",
+        "sha256"      : "11f22b5921417319472450d4cf83d253cb4d7628836e76009ed5028e137fd392",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/cli.test.ts",
+        "sha256"      : "e944c86ac593d14f97447a22452ef198700efa1eca63b752f9c4989e4d21a837",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/column-measurement.test.ts",
+        "sha256"      : "aec059abc653f413bcb5ae3c79d957612c2446ca5576be7bab00bd8aeadc4e1c",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/config-layers.test.ts",
+        "sha256"      : "d8a4db2ccd8b4097285dabe6076ad5c74d4fe94b03ec92568a18b693e9e007fb",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/conventions.test.ts",
+        "sha256"      : "5bccb2d6ceb17561392796ee25dd36320d0a87cccb959f7a883ed97708f4ca4f",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/corpus-promote.test.ts",
+        "sha256"      : "f6cf1fbc3f1be96e793461ec95e232a05e3eda183acac79548cbaa265b834365",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/corpus-signatures.test.ts",
+        "sha256"      : "16a898adacf4bd8d912515bef499762898dcaa182a44d3f43bb2c5f707fa7157",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/edge-inputs.test.ts",
+        "sha256"      : "574807fd48e8366a08c3ebe1834b34e33045d850c341d7c11f4508d8b49e901d",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/engine-judgment.test.ts",
+        "sha256"      : "1a017631bd3942d812dcc6bc805b1a333a834f62014b69898949da58cdf75dac",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/engine.test.ts",
+        "sha256"      : "4a5761f70a660447b7a77bb16f01c634a9c1cded417f4a0406f4eed6865f8437",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/examples.test.ts",
+        "sha256"      : "15030aad111966a35f0fb7271dbe874b2ef0284b25334d9d2ad3961eb360c53e",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/format-pipeline.test.ts",
+        "sha256"      : "688e24f9c552d421f12290df354a834c72e8d0c19834ccb2221958582c2af25a",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/formatter-process.test.ts",
+        "sha256"      : "9ec31500f70c4a013006b9cb462be324277672fead0d481e2fb368a915acb3d0",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/guarded-run.test.ts",
+        "sha256"      : "6156f9424fc255389764dfd51301668fb3374c767925d3662005a77c18a9b2b2",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/hook.test.ts",
+        "sha256"      : "761194d0e4ea60adf86034d57c12ba23d4f4a46eb44022f6671dcf4f6966918d",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/install-lifecycle.test.ts",
+        "sha256"      : "f0e377cd01ec7e6a1db4922a4e332885452a6181ef0148cadb3ca273c4125aed",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/issue-library-references.test.ts",
+        "sha256"      : "5be865fa771a0f4ddab8cfd39f344b94c8e36c5e6a955c0d802ec8c8fbc6c7a2",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/lang-harness.ts",
+        "sha256"      : "c28d92fbdb42f20ec766c9b0298970f4dc10f173c4c2e82cf9d7fdb9811f468e",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/layout-preservation.test.ts",
+        "sha256"      : "bb639641ff28505118c4352c80117ac423d8079e7d937f65b495abd5fca18ce4",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/layout.test.ts",
+        "sha256"      : "b5f169cd7e16824ec8f429d492b6061b0925bb4bd70e81a5a9f612c9402546f2",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/line-write-safety.test.ts",
+        "sha256"      : "63a5c3bd164e2ea76fd25cfc6d70d9d7d1a51b9c8b0084afb0ef777c071bf02f",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/mutation.test.ts",
+        "sha256"      : "bc2b6c81b70bdcfdb1886ede3c258d6b5d8b317ea593dbb60f76cd9a8767264a",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/mutator.ts",
+        "sha256"      : "44ac348d6f20a6a42d19836a33d1dd3832da8830def4d05279b695dbcfa4de62",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/node-artifact.test.ts",
+        "sha256"      : "2a66186e424af3e8d80d879736ac9efb9309a13cb0ffcb14e7b5b9853b985a01",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/normalize-imports.test.ts",
+        "sha256"      : "29e51e305967d147ccda4baf4b1df2a6ab6166ed0d9b6bc5f7e32fdb380694ff",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/parse-check.test.ts",
+        "sha256"      : "2b8f3eeadf4174becea80f84b5b1cbc3f423bd7d959d799e8924a5632122c594",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/parser-fault.test.ts",
+        "sha256"      : "cbbebead91a67cf14c30cf010355f835bc10a8c5830f8383fbd6561213bbd3ea",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/plugin-contract.test.ts",
+        "sha256"      : "3ed3a82b229b2fe0bc666204fe6cfc08b55d4fa033e5df40b93bcaa6ff33bf7d",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/preservation.test.ts",
+        "sha256"      : "46727bd0e2e9591f1df587d03fe30cde0d85bc666bbc9486383ead1fcc0ad074",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/public-artifact.test.ts",
+        "sha256"      : "79b906ec4b40f0273aae38191a9037c04d2fb9c73a67adf32a458c533c8ecbd7",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/public-preset.test.ts",
+        "sha256"      : "c7073e200d6daf22458ccd1d2abd9642dc4f307336231996f386097aff25e793",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/python-align.test.ts",
+        "sha256"      : "5f6979b2c7b8caaf3f32cbe1861771b2f206c4003540124ede42d4f25170f634",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/python-assignment-envelope.test.ts",
+        "sha256"      : "fc7d53ee6a4e9faafaf85d5fb2514d546ac1e1b353d45772882aff35945219f5",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/python-source-analysis.test.ts",
+        "sha256"      : "8571208c39433ee006a43af787460763243dd11bf47d0c044a9869020e8f88bd",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/recommended-preset.test.ts",
+        "sha256"      : "9c737ca9c7162dd3c42c39c4882347c98bfa196e5d2d03c1f8d30ee0da717a04",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/report.test.ts",
+        "sha256"      : "2436724a33f7f4d506c04704fdcaecb7a23aa4597e3dfb5e7b7f4d63141c388d",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/result-json.test.ts",
+        "sha256"      : "2d6bd230154e9ba92ccbf9c1b8cffa4756be7059ad2b65dc39021003e07c07ce",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/runtime-record-validation.test.ts",
+        "sha256"      : "a21a4dfee5459858f710f59c040ece1a789da5f6ced8fb35f1951fc7285ec13a",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/session-usage.test.ts",
+        "sha256"      : "04dd98bb8bbf5f917681e639f6ad69c1c7a6af4f0a1f322e5e10bcbb5b2527ab",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/shape-observation.test.ts",
+        "sha256"      : "c0ac0e2ff8880525753cff92efb4a6a87435cc6f434b1c1ebf689a57f7f05bc4",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/strip-stray-padding.test.ts",
+        "sha256"      : "30174b0e3f70ae98691349ed7d55a105f6bc53b6280edafbe5b478c9eee9e340",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/structured-align.test.ts",
+        "sha256"      : "011e86fa06d1dde1235d2fa63e5272b85e7e1d16694e4af16ef07f4a31a2d974",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/structured-pipeline.test.ts",
+        "sha256"      : "77230f489e643780cab6a9f2f2eed4dd34befa3b1c19f9c13688f605980880dd",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/surface.test.ts",
+        "sha256"      : "d087ae3d2a5aaf3c9b4b505eca94f4804bf537cb39fecc7f5bcb4543c83d6190",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/syntax-validation.test.ts",
+        "sha256"      : "346a86c22c32608c37ae691755fcc2ccbb0a8dad196955ea3ffd39ef5fc95c64",
+        "receiptIndex": 0,
+        "noGroups"    : true
+      },
+      {
+        "path"        : "test/typescript-align.test.ts",
+        "sha256"      : "3b28461c9b50a2c4f8dd2866dad1f2fbc4e3ea9f4ad2f524659b2e55393e3c32",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/typescript-b-layout.test.ts",
+        "sha256"      : "f440406cd607c33535f425c12194397348368874c80dfce1b815349c54b44c15",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/typescript-layout-policy.test.ts",
+        "sha256"      : "96ee08ad365b354eb4509b376c1d9bf4ec758c4484942d3e163f8542ce4a929e",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/typescript-matrix-boundaries.test.ts",
+        "sha256"      : "93f3757f43aebbca22991316c053845e5cc0adde4c0d4f4969faaeac7396ecd9",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/typescript-registration-comma.test.ts",
+        "sha256"      : "1f63d3e911a396f0d4003a0092bd6f9d34e735d44fd1ddf12e07f4f01ca55eea",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/typescript-write-safety.test.ts",
+        "sha256"      : "0bbced5c187c478d29c55d2971ce230c8a8a3227e3677692b8a868cf3b3678ff",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/usage.test.ts",
+        "sha256"      : "a28b3c03f43b92e343714c14c19025e0f96696679a3b7417df6521f7021045cd",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      },
+      {
+        "path"        : "test/wrap-conditions.test.ts",
+        "sha256"      : "527c21cbb296b245ec5ec27dcabf301fbc88cc2f717fc4762b2daa69056fb4d6",
+        "receiptIndex": 0,
+        "noGroups"    : false
+      }
+    ],
+    "limits": [
+      "This is composed local verification, not a GitHub Actions run.",
+      "Unsupported ranges and no-groups counts retain their bounded meaning."
+    ]
+  },
+  "guardBehaviorComparison": [
+    {
+      "label"                     : "table-kinds",
+      "exitCode"                  : 1,
+      "stdoutSha256"              : "d84b13b731d3939f8e2797a53c32bf7e7256917d08c7aa00c98ab6cf15b84024",
+      "stderrSha256"              : "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exactExitStdoutStderrMatch": true
+    },
+    {
+      "label"                     : "guards",
+      "exitCode"                  : 1,
+      "stdoutSha256"              : "91237dce1c5b2c5f5594acc520cdc28bbe85aec6af74998167e3f1b7e663d5a9",
+      "stderrSha256"              : "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exactExitStdoutStderrMatch": true
+    },
+    {
+      "label"                     : "else-guards",
+      "exitCode"                  : 0,
+      "stdoutSha256"              : "c1ae411b58e3d3330593283efd9b06e578886a79a1a27f6cc7476fb2b4d8d770",
+      "stderrSha256"              : "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exactExitStdoutStderrMatch": true
+    },
+    {
+      "label"                     : "nonblock-guards",
+      "exitCode"                  : 0,
+      "stdoutSha256"              : "c1ae411b58e3d3330593283efd9b06e578886a79a1a27f6cc7476fb2b4d8d770",
+      "stderrSha256"              : "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exactExitStdoutStderrMatch": true
+    }
+  ],
+  "independentReview": {
+    "codexBoundaryReview": "Read-only review found no source-boundary blocker in geometry and Python reconstruction; historical model evidence is not inferred.",
+    "glmSourceHistoryAttempt": {
+      "requestedModel": "opencode/glm-5.3-flash-free",
+      "actualAssistantModelMetadata": [
+        {
+          "providerID": "opencode",
+          "modelID"   : "glm-5.3-flash-free",
+          "agent"     : "boxbox-split-review",
+          "finish"    : "tool-calls"
+        },
+        {
+          "providerID": "opencode",
+          "modelID"   : "glm-5.3-flash-free",
+          "agent"     : "boxbox-split-review",
+          "finish"    : null
+        }
+      ],
+      "exitCode"   : -15,
+      "timeout"    : true,
+      "wallSeconds": 181.795,
+      "eventTypes": [
+        "step_finish",
+        "step_start",
+        "tool_use"
+      ],
+      "errors": [],
+      "packetSha256": "38f50d96f50b67f3bb2dde74cd888180ac87ed9632bb69598570b2c0d0cb1869",
+      "reviewSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verdict"     : null,
+      "scope"       : "semantic reconstruction source/history packet and two CI follow-ups; no new exhaustive engine audit"
+    },
+    "glmInlineClosureAttempt": {
+      "requestedModel": "opencode/glm-5.3-flash-free",
+      "actualAssistantModelMetadata": [],
+      "exitCode"       : -15,
+      "timeout"        : true,
+      "durationSeconds": 120.082,
+      "toolNames": [],
+      "errors": [],
+      "reviewSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "inputSha256" : "7d0b59d3ddf92c7a4b44d011976268e5c065a28bb1129e6f9f6c333f768774a2",
+      "firstLine"   : null,
+      "scope"       : "inline commit-boundary and CI-closure packet only; not exhaustive engine review"
+    },
+    "finalVerdict": null,
+    "limit": "Both GLM attempts reached their explicit time limits without a final verdict; neither is PASS."
+  },
+  "ciSettingsObserved": {
+    "date"                : "2026-11-02",
+    "repositoryVisibility": "public",
+    "defaultBranch"       : "main",
+    "requiredChecks": [
+      "plugin-contract (ubuntu-latest)",
+      "plugin-contract (macos-latest)"
+    ],
+    "requiredReviews" : false,
+    "enforceAdmins"   : false,
+    "allowForcePushes": false
+  },
+  "limits": [
+    "No hosted GitHub Actions result is claimed for the new branch.",
+    "Native Windows/WSL host matrix was not run.",
+    "The original full check exit1 is retained; its three failed tests passed an unchanged-candidate scoped rerun.",
+    "The GLM final audit remains incomplete."
+  ],
+  "executionBudget": {
+    "limit"      : 12,
+    "used"       : 12,
+    "unit"       : "bounded author/focused-verification cycle",
+    "composition": "10 semantic authoring commits, one corrective cycle, one frozen verification closure including impact-scoped resource recovery"
+  }
+}
