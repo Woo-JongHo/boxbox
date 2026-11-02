@@ -586,9 +586,11 @@ function detectReturnGuard(source: SourceFile, node: Node): readonly RowBoundary
  * first statement) and the `continue` column; the statements in between stay as written.
  */
 function detectGuard(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
-	if (!isIfStatement(node)               ) return undefined                        ;
-	if (node.elseStatement !== undefined   ) return undefined            ;
-	if (!ownLineOf(source, node, LINE_REST)) return undefined         ;
+	if (
+		   !isIfStatement(node)
+		||  node.elseStatement !== undefined
+		|| !ownLineOf(source, node, LINE_REST)
+	) return undefined;
 	const closeParen = tokenAfter(source, node.expression.getEnd(), ")");
 	if (closeParen === undefined)                  return undefined;
 	const thenStatement = node.thenStatement                                    ;
