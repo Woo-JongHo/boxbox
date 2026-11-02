@@ -1,0 +1,12 @@
+{
+  "priorCandidate": "8af93033d704109c",
+  "candidateId": "1e160aecc4f043e1",
+  "changedSourceFiles": [
+    "product/rules/patterns/catalog.json"
+  ],
+  "engineHashesUnchanged": true,
+  "selfUseFilesSha256": "40b9e1ebf7983bcb4555aec17702dea7ebc3965138c136df3c5d22e7fec0be2a",
+  "note": "No re-run of engine self-use or independent04/Sonnet-fix review required; only advisory evidence paths changed. Final Opus and full gate target new candidate.",
+  "approvedPresetFilesUnchanged": true,
+  "approvedPresetFilesCompared": 5
+}

@@ -64,7 +64,7 @@ describe("install.sh lifecycle", () => {
 		expect(lstatSync(join(skill, "engine")).isSymbolicLink()).toBe     (false         ) ;
 		expect(lstatSync(join(skill, "rules")).isSymbolicLink() ).toBe     (false         ) ;
 		expect(existsSync(join(skill, "fixtures"))              ).toBe     (false         ) ;
-		const runtime = Bun.spawnSync(["bun", "-e", 'const { surfaceOf } = await import(process.argv[1]); console.log(surfaceOf("python").language);', join(skill, "engine/common/surface.ts")], { cwd: home });
+		const runtime = Bun.spawnSync(["bun", "-e", 'const { surfaceOf } = await import(process.argv[1]); console.log(surfaceOf("python").language);', join(skill, "engine/common/03_surface.ts")], { cwd: home });
 		expect(runtime.exitCode).toBe(0);
 		expect(runtime.stdout.toString().trim()).toBe("python");
 

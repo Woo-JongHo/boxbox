@@ -5,21 +5,21 @@
  * safety results per file. Usage:
  *   bun development/tools/test-completed.ts [--samples 3]
  */
-import      { spawnSync          } from "node:child_process"                 ;
+import      { spawnSync       } from "node:child_process"                    ;
 import      {
-              mkdirSync        ,
-              readFileSync     ,
-              rmSync           ,
-              writeFileSync    ,
-                                 } from "node:fs"                            ;
-import      { join               } from "node:path"                          ;
-import      { compareParse       } from "@/common/parse-check.ts"            ;
-import      { changedLines       } from "@/common/preservation.ts"           ;
-import      { alignSource        } from "@/common/table-engine.ts"           ;
-import type { LineProfiler       } from "@/common/table-engine.ts"           ;
-import      { PYTHON_ALIGNER     } from "@/python/profile.ts"                ;
-import      { preservesTokens    } from "@/typescript/token-preservation.ts" ;
-import      { mutate             } from "../../test/mutator.ts"              ;
+              mkdirSync     ,
+              readFileSync  ,
+              rmSync        ,
+              writeFileSync ,
+                              } from "node:fs"                               ;
+import      { join            } from "node:path"                             ;
+import      { compareParse    } from "@/common/08_parse-check.ts"            ;
+import      { changedLines    } from "@/common/09_preservation.ts"           ;
+import      { alignSource     } from "@/common/06_table-engine.ts"           ;
+import type { LineProfiler    } from "@/common/06_table-engine.ts"           ;
+import      { PYTHON_ALIGNER  } from "@/python/03_profile.ts"                ;
+import      { preservesTokens } from "@/typescript/16_token-preservation.ts" ;
+import      { mutate          } from "../../test/mutator.ts"                 ;
 
 const ROOT     = join(import.meta.dir, "..", "..")                     ;
 const OUT      = join(ROOT, "TEST_COMPLETED")                          ;
@@ -58,12 +58,12 @@ function lineEntry(aligner: LineProfiler, title: string, before: string): Entry 
 }
 
 function typescriptEntry(title: string, file: string): Entry {
-	const work   = join(OUT, "tmp")                       ;
-	const target = join(work, file.split("/").pop()!)     ;
-	const before = readFileSync(join(ROOT, file), "utf8") ;
+	const work   = join        (OUT, "tmp"                  ) ;
+	const target = join        (work, file.split("/").pop()!) ;
+	const before = readFileSync(join(ROOT, file), "utf8"    ) ;
 	mkdirSync(work, { recursive: true });
 	writeFileSync(target, before);
-	const run    = spawnSync("bun", [join(ROOT, "product/engine/typescript/06_align-tables.ts"), "--file", target.slice(ROOT.length + 1), "--write"], { cwd: ROOT, encoding: "utf8" }) ;
+	const run    = spawnSync("bun", [join(ROOT, "product/engine/typescript/07_align-tables.ts"), "--file", target.slice(ROOT.length + 1), "--write"], { cwd: ROOT, encoding: "utf8" }) ;
 	const after  = readFileSync(target, "utf8")                                                                                                                                        ;
 	const report = run.stdout ?? ""                                                                                                                                                    ;
 	const checks = [
@@ -93,7 +93,7 @@ for (const file of ["table-kinds.ts", "table-alignment.ts", "grid-regions.ts"]) 
 rmSync(join(OUT, "tmp"), { recursive: true, force: true });
 
 for (const entry of entries) {
-	const aligned  = join(OUT, entry.language, entry.title)                                                                     ;
+	const aligned  = join(OUT, entry.language, entry.title                                                                    ) ;
 	const original = join(OUT, entry.language, ...entry.title.split("/").slice(0, -1), "before", entry.title.split("/").pop()!) ;
 	mkdirSync(join(aligned, ".."), { recursive: true });
 	mkdirSync(join(original, ".."), { recursive: true });

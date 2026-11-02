@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "7af5b42b29c34e48",
+  "sourceHead": "13e9ced56559f14c91766f5e962992a40cd816f9",
+  "status": "historical candidate v1; first Opus returned FINDINGS",
+  "fullCheck": {
+    "command": "BOXBOX_REQUIRE_PARSERS=1 bun run check",
+    "exit": 0,
+    "pass": 677,
+    "fail": 0,
+    "assertions": 4130,
+    "files": 75,
+    "seconds": 272.87,
+    "typescriptNoEmit": "pass",
+    "shellSyntax": "pass"
+  },
+  "mechanicalAudit": {
+    "align": {
+      "files": 50,
+      "groups": 592,
+      "misaligned": 0,
+      "edits": 0,
+      "refused": 0,
+      "suggested": 0,
+      "nonzero_exit": 0
+    },
+    "imports": {
+      "files": 50,
+      "changed": 0,
+      "errors": 0,
+      "nonzero_exit": 0
+    },
+    "source_cli": {
+      "supported_pass": 49,
+      "unsupported": 1,
+      "other_nonzero": 0
+    }
+  },
+  "installedArtifact": {
+    "sha256": "023f727732854301d292f5d1371948de2026d202a37ed1a72b3384c1662dd398",
+    "status": "passed",
+    "runtime": {
+      "node": "v22.22.3",
+      "python": "Python 3.14.2",
+      "npm": "10.9.8"
+    },
+    "scenarios": {
+      "pep701": "passed",
+      "typescriptApproved": "passed",
+      "pythonApproved": "passed",
+      "typescriptUnapproved": "passed"
+    }
+  },
+  "mutationOracleAtThatTime": {
+    "alignedCombined": 886,
+    "invalidRejected": 114,
+    "warning": "The 886 combined aligned seeds were not all proven syntactically valid; the first Opus review identified this gap. Candidate v2 supersedes it with 505 valid-aligned / 381 invalid-aligned / 114 invalid-rejected."
+  },
+  "firstOpusVerdict": "FINDINGS",
+  "firstOpusActualModel": "claude-opus-5-5"
+}

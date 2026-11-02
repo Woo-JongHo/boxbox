@@ -1,13 +1,13 @@
-import { afterEach, describe, expect, test } from "bun:test";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
-import { columnSetGuide } from "@/common/authoring-guide.ts";
-import { axisExpectation, baseAxis } from "@/common/axis-expectations.ts";
-import { AXIS_NOTES, KIND_AXES } from "@/typescript/grid-kinds.ts";
+import      { afterEach, describe, expect, test  } from "bun:test"                         ;
+import      { mkdtempSync, rmSync, writeFileSync } from "node:fs"                          ;
+import      { tmpdir                             } from "node:os"                          ;
+import      { join, resolve                      } from "node:path"                        ;
+import      { columnSetGuide                     } from "@/common/20_authoring-guide.ts"   ;
+import      { axisExpectation, baseAxis          } from "@/common/05_axis-expectations.ts" ;
+import      { AXIS_NOTES, KIND_AXES              } from "@/typescript/13_grid-kinds.ts"    ;
 
-const cli                  = resolve(import.meta.dir, "../product/engine/cli.ts") ;
-const workspaces: string[] = []                                                   ;
+const cli                  = resolve(import.meta.dir, "../product/engine/00_cli.ts") ;
+const workspaces: string[] = []                                                      ;
 
 function workspace(): string {
 	const root = mkdtempSync(join(tmpdir(), "boxbox-engine-judgment-"));

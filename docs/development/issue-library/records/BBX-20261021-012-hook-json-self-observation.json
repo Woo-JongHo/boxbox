@@ -64,12 +64,12 @@
   "related": [
     {
       "kind": "code",
-      "path": "product/engine/common/lifecycle-hook.ts",
+      "path": "product/engine/common/27_lifecycle-hook.ts",
       "note": "Computes and applies the exact current-project receipt namespace exclusion."
     },
     {
       "kind": "code",
-      "path": "product/engine/common/guarded-run.ts",
+      "path": "product/engine/common/25_guarded-run.ts",
       "note": "Provides snapshot recursion with an optional explicit directory exclusion set."
     },
     {

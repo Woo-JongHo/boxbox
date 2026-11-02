@@ -1,0 +1,113 @@
+{
+  "candidateId": "58071284368e7e9b",
+  "engineFilesUnchangedAfterFullGate": 62,
+  "fullGateReceipt": "verification.json",
+  "postGateSourceInputDifferences": [
+    {
+      "path": "product/rules/references/charter.md",
+      "beforeSha256": "990f70b4e41e1ffc6683667f4a95dd494bf679444448532417aa73481f41049f",
+      "afterSha256": "7eb30ee250bcdef3eb3224652d11f7fa6ca007e18135c5677cf973e3e759c5ce",
+      "kind": "documentation references only"
+    },
+    {
+      "path": "product/rules/references/readability-contract.md",
+      "beforeSha256": "64d7164d6326f9d6f71ff57f8e5adbb7288b15b44325b4c7c8f74f41b847b044",
+      "afterSha256": "a0cba2a5a5b4790a4f0783c07997381cce25f72ec6156ba7d81e47a9d41f84e9",
+      "kind": "documentation references only"
+    },
+    {
+      "path": "product/rules/references/typescript-grid-template.md",
+      "beforeSha256": "b02f95173a4755bfb562baeedd379a25dc8b2d6e39b4b08e60ee097296ef660f",
+      "afterSha256": "1d1c9adc41d3cdf434ff503ed98509c74b940efc95a9f4684eb812286b9f4783",
+      "kind": "documentation references only"
+    }
+  ],
+  "postGateDocumentation": {
+    "canonicalReferences": [
+      "product/rules/references/charter.md",
+      "product/rules/references/readability-contract.md",
+      "product/rules/references/typescript-grid-template.md"
+    ],
+    "generatedCopiesSynchronized": true,
+    "correctedNonEnginePaths": [
+      "development/harness/README.md",
+      "docs/development/layout.md",
+      "docs/development/implementation.md"
+    ],
+    "currentPythonAnalysisDescriptionUpdated": "docs/development/inspection-process.md",
+    "codeReferenceOccurrencesResolved": 19,
+    "focusedTests": {
+      "argv": [
+        "bun",
+        "test",
+        "--timeout",
+        "60000",
+        "test/surface.test.ts",
+        "test/issue-library-references.test.ts"
+      ],
+      "exitCode": 0,
+      "passed": 19,
+      "failed": 0,
+      "expectations": 117
+    },
+    "issueValidator": {
+      "records": 26,
+      "referenceOccurrences": 656,
+      "physicallyExisting": 650,
+      "historicalRelocations": 6,
+      "exitCode": 0
+    },
+    "layoutCheckExitCode": 0,
+    "cliRebuild": {
+      "exitCode": 0,
+      "sha256": "4107f2227cb495d03d30065bb1ca17a1d0889fffc0eefd7bd4977d9042d805bf",
+      "byteIdenticalToInstalledSmokeArtifact": true
+    }
+  },
+  "pluginGuard": {
+    "status": "passed",
+    "claudeVersion": "2.1.286",
+    "codexVersion": "0.166.0",
+    "contractHookTests": {
+      "passed": 17,
+      "failed": 0
+    },
+    "claudeIsolatedInstall": {
+      "skills": 1,
+      "agents": 1,
+      "hooks": 3
+    },
+    "codexIsolatedInstall": {
+      "installed": true,
+      "enabled": true
+    },
+    "finalDocumentPathFollowup": "sync drift and official strict validators rerun; isolated registration checks reused because only reference filenames changed",
+    "officialSources": [
+      "https://developers.openai.com/plugins/build/plugins",
+      "https://learn.chatgpt.com/docs/hooks"
+    ],
+    "assumptionChangesRequired": false
+  },
+  "numberingAudit": {
+    "route": "opencode/glm-5.3-flash-free",
+    "status": "incomplete",
+    "verdict": null,
+    "failures": [
+      "ENOSPC while saving review output",
+      "provider/server and local statement errors"
+    ],
+    "partialObservation": "Old script names remained in three shipped reference documents; direct inspection confirmed and corrected those references.",
+    "priorPythonAudit": "The earlier 1e160aecc4f043e1 GLM PASS applies only to that recorded candidate.",
+    "eventLogSha256": "f432cf60461c451717fda1e330099d4c89201703bbf30b64e8a83d71ace09448"
+  },
+  "limits": [
+    "Native Windows/WSL host matrix not run",
+    "No latest-numbering independent audit PASS",
+    "No new rule approval, version change, model configuration change or release"
+  ],
+  "executionBudget": {
+    "budget": 20,
+    "used": 7,
+    "unit": "bounded author/focused-verification cycle"
+  }
+}

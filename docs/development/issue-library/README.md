@@ -15,10 +15,10 @@ layout rules, and the approved-rule registry owns automatic-write authority.
 | Category | Meaning | Records |
 | --- | --- | --- |
 | `grouping` | Which rows share a region or scope | [001: return columns](records/BBX-20261021-001-return-column.json), [015: Python assignment envelope](records/BBX-20261022-015-python-assignment-envelope.json) |
-| `syntax-boundary` | Which tokens define columns within those rows | [002: call parentheses](records/BBX-20261021-002-call-envelope.json), [004: member dot](records/BBX-20261021-004-member-dot.json), [010: YAML AST ownership](records/BBX-20261021-010-yaml-ownership.json) |
+| `syntax-boundary` | Which tokens define columns within those rows | [002: call parentheses](records/BBX-20261021-002-call-envelope.json), [004: member dot](records/BBX-20261021-004-member-dot.json), [010: YAML AST ownership](records/BBX-20261021-010-yaml-ownership.json), [022: tab start columns](records/BBX-20261101-022-tab-start-columns.json), [023: TypeScript insert-axis minimum width](records/BBX-20261101-023-typescript-insert-axis-minimum-width.json), [024: Python PEP 701 string preservation](records/BBX-20261101-024-python-pep701-string-preservation.json) |
 | `structural-layout` | Layout changes requiring an authored structural edit | [003: nested interface types](records/BBX-20261021-003-nested-type-layout.json) |
-| `verification-gap` | A check or completion claim missed the requested property | [005: coverage versus PASS](records/BBX-20261021-005-coverage-vs-pass.json), [006: report row membership](records/BBX-20261021-006-report-row-membership.json), [014: detector versus preset coverage](records/BBX-20261022-014-preset-coverage.json) |
-| `runtime` | Execution behavior, crashes, performance or resource handling | Available; no records yet |
+| `verification-gap` | A check or completion claim missed the requested property | [005: coverage versus PASS](records/BBX-20261021-005-coverage-vs-pass.json), [006: report row membership](records/BBX-20261021-006-report-row-membership.json), [014: detector versus preset coverage](records/BBX-20261022-014-preset-coverage.json), [025: A12 inline-comment and language scope](records/BBX-20261101-025-a12-inline-comment-and-language-scope.json) |
+| `runtime` | Execution behavior, crashes, performance or resource handling | [026: Python invalid UTF-8 formatter preflight](records/BBX-20261102-026-python-invalid-utf8-formatter-preflight.json) |
 | `installation` | Installation, updates, removal or platform setup | [008: internal import aliases](records/BBX-20261021-008-import-alias.json), [009: install ownership](records/BBX-20261021-009-install-ownership.json), [017: Claude marketplace transition](records/BBX-20261022-017-claude-marketplace-transition.json) |
 | `host-integration` | Codex/Claude discovery, hooks, HUD or host contracts | [011: HUD evidence state](records/BBX-20261021-011-hud-evidence-state.json), [012: hook JSON self-observation](records/BBX-20261021-012-hook-json-self-observation.json), [013: HUD entry path alias](records/BBX-20261021-013-hud-entryguard-alias.json), [020: model and effort assignment](records/BBX-20261022-020-model-effort-assignment.json), [021: monitor report](records/BBX-20261022-021-boxbox-monitor.json) |
 | `storage` | SQLite, persistence, migrations or data integrity | Available; no records yet |
@@ -41,6 +41,9 @@ Record 016 is resolved after full validation and the bounded GLM transport compl
 Record 017 is verifying the confirmed Claude transition repair: source/GLM, local and exact clean-CI `ebfe6a77…` six-core/four-HUD matrices passed independent review, including closure of a preserved raw-log evidence gap; PR source verification passed, while hosted macOS candidate smoke remains queued and the original product failures stay preserved.
 Record 018 resolves a full-check failure caused by Bun discovering a historical `.test.ts` evidence snapshot; byte-identical `.txt` storage plus an original-name/hash map preserves the evidence without skipping or removing an active test.
 Earlier snapshots and failures remain in history; no new public preset approval is implied.
+
+Records 022–025 preserve four distinct self-use mechanisms found during the 2026-11-01 engine inspection.
+They are resolved for the bounded 2026-11-01 self-use scope after the v2 75-file full check, 50-file mechanical audit, installed artifact smoke and fixed-model Opus fix-only PASS. The first Opus FINDINGS and earlier failures remain in each record's history. This does not assert semantic completeness, host-matrix coverage, or new preset approval. See the [self-use review](../reviews/2026-11-01-engine-self-use.md) for counts, evidence limits, unsupported `.mjs` public-check status and the global STALE source-status distinction.
 
 ## Find an earlier case
 
@@ -124,6 +127,12 @@ enum agreement is checked while allowing its instructional ID/date placeholders.
   establishing why a defect exists is not a passing verification of its fix.
 - `related[].path`, `verification[].evidence[]` and `history[].evidence[]` use repository-root-
   relative paths. A `related` note explains why the reader should open the target.
+- Current `related` and `verification` references must point to files at their current repository paths.
+  For `history[].evidence` only, the validator accepts an exact documented source relocation after the recorded path
+  no longer exists, and only when the mapped regular file resolves inside this repository. This locates the moved
+  source file; it does not claim the current file has the historical bytes. Validator output separates total
+  `referenceOccurrences`, physically existing `existingReferenceOccurrences`, and
+  `relocatedHistoricalReferenceOccurrences`.
 
 These records convey no approval for reusable preset rules. Local user authorization,
 detector coverage, syntax/type checks and public write eligibility remain separate facts.
@@ -160,3 +169,10 @@ earlier current-verification lists before final evidence replaced them. See the
 [final-validation.json](evidence/final-validation.json) records the closed record-set check;
 [validator-final-negative-cases.json](evidence/validator-final-negative-cases.json) records rejection
 of a failed result mislabeled as verified and a canonical record missing its ID, without a traceback.
+
+
+## 2026-11-01 frozen engine self-use evidence
+
+The four records `BBX-20261101-022` through `025` share the bounded final candidate evidence in [final-candidate-verification.json](../reviews/2026-11-01-engine-self-use-evidence/final-candidate-verification.json) and the per-file source hash/result ledger in [final-self-use-files.json](../reviews/2026-11-01-engine-self-use-evidence/final-self-use-files.json). These records remain `verifying`: Opus returned FINDINGS, and assigned corrections plus an artifact-backed follow-up review are required. The evidence retains the initial failed full-check and mutation-oracle diagnosis; the later successful run does not erase them.
+
+Record 026 resolves the confirmed Python invalid-byte formatter-preflight mechanism for candidate `1e160aecc4f043e1`: the required-parser 725-test gate, immutable installed-artifact journey and user-selected GLM final audit passed. The [flat engine review](../reviews/2026-11-02-engine-stages-python-ast.md) retains earlier failures, exact scope and platform limits.

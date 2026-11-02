@@ -127,9 +127,9 @@ still require their own proof. Report checked columns and unsupported regions se
 26. Judge each foreign element as one of `required domain information`, `boundary-only information`, `implementation detail`, `duplicate expression`. Keep boundary information near the boundary, implementation details inside, and remove duplicate expressions.
 27. Do not accept a structural change just because it looks shorter. Accept it as simplification only when the base form actually became more uniform and behavior, type safety and layer responsibility were preserved.
 28. With `exactOptionalPropertyTypes` off, `property?: T` also accepts an explicit `property: undefined`. Inspect property omission and explicit `undefined` at call sites separately, and unify on omission when they mean the same absence. Keep `| undefined` as an explicit contract only when a different meaning is confirmed.
-29. For optional tightening, first run `audit-optional-types.ts` as a read-only migration gate. The default run requires zero errors, and `--max-errors <current baseline>` fails on any increase. `--file <target file>` keeps the global verdict while separately reporting line, column, error code and diagnostic message for that file. Enable it in `tsconfig.json` only after confirming zero total errors and passing related behavior tests; never pass the gate by appending `| undefined` wholesale.
-30. The population for the uncertainty audit is extracted from the TypeScript AST by `audit-type-uncertainty.ts --file <target file>`. It reports optional properties, parameters, methods, tuples and types, `null`, `undefined`, non-null assertions, definite assignments, `as` and angle-bracket assertions as distinct kinds. Logical negation and the conditional operator are not listed; the output is not an automatic removal list, and each item is judged from definitions, callers and tests.
-31. A feature implementation file may carry a function map at the top (`GROUP | FUNCTION | INPUT | RETURN | CALLS | ROLE`). FUNCTION maps 1:1 to declarations in the file, the INPUT count must match the parameters, and names listed in CALLS must exist in the file. Drift between map and code is locked by the `08_function-map.ts` check. GROUP and ROLE follow the sections and roles of the reading flow. The repository-wide flow summary is still owned by audit documents under `docs/`.
+29. For optional tightening, first run `04_audit-optional-types.ts` as a read-only migration gate. The default run requires zero errors, and `--max-errors <current baseline>` fails on any increase. `--file <target file>` keeps the global verdict while separately reporting line, column, error code and diagnostic message for that file. Enable it in `tsconfig.json` only after confirming zero total errors and passing related behavior tests; never pass the gate by appending `| undefined` wholesale.
+30. The population for the uncertainty audit is extracted from the TypeScript AST by `03_audit-type-uncertainty.ts --file <target file>`. It reports optional properties, parameters, methods, tuples and types, `null`, `undefined`, non-null assertions, definite assignments, `as` and angle-bracket assertions as distinct kinds. Logical negation and the conditional operator are not listed; the output is not an automatic removal list, and each item is judged from definitions, callers and tests.
+31. A feature implementation file may carry a function map at the top (`GROUP | FUNCTION | INPUT | RETURN | CALLS | ROLE`). FUNCTION maps 1:1 to declarations in the file, the INPUT count must match the parameters, and names listed in CALLS must exist in the file. Drift between map and code is locked by the `09_function-map.ts` check. GROUP and ROLE follow the sections and roles of the reading flow. The repository-wide flow summary is still owned by audit documents under `docs/`.
 32. Public Port and Domain contracts default to compact TypeScript notation. Do not add role comments to a method list that mixes JSDoc, optional capabilities and lifecycle responsibilities to create a fake table, and do not pad type internals to align the closing `>` of `Promise< >`.
 33. In a same-role object array, each object is one row. When omitting an optional property is merely a presentational default, normalize every row to the same property cells and align `{`, each `:`, each `,` and `}` to the actual longest value. When the omission itself carries domain meaning, do not overwrite it with an explicit value; split it into a separate table.
 34. An object-based column specification and the generation of data rows for those columns are independent tables. Do not nest the two tables inside complex call arguments; split each into a named local value and keep the call site minimal, as in `{ columns, rows }`.
@@ -166,7 +166,7 @@ Proceed to the next step only after the current one passes. Do not adjust a late
 
 ## Authoring axis contract — the single basis for prompts and checks
 
-Code is written **from the moment of authoring** with the axis columns below already aligned. Before completion, the checker applies a second lock. This table maps 1:1 to the `KIND_AXES` registry in `grid-kinds.ts`; when document examples and checker output differ, **the checker wins**.
+Code is written **from the moment of authoring** with the axis columns below already aligned. Before completion, the checker applies a second lock. This table maps 1:1 to the `KIND_AXES` registry in `13_grid-kinds.ts`; when document examples and checker output differ, **the checker wins**.
 
 Each newly supported shape or axis set has a new kind and suppresses any overlapping legacy region. Detection never
 widens an older approval key: approval remains exact to kind and ordered axes. Public whole-file writes are denied when
@@ -241,9 +241,10 @@ Insert-axis conventions — things the checker never reverts, however the code i
 Two-point lock:
 
 1. **Authoring time (prompt)** — when an LLM or a person writes code, they write it in the form of the table and examples above. Agent definitions use SKILL.md as their manual, so this section is the prompt.
-2. **Completion time (check)** — every changed file passes the selected import check (`00_normalize-imports.ts
-   --layout-only` for B-layout; the default full normalizer for an authorized Write/Refactor) and
-   `06_align-tables.ts --file` (`misaligned=0`). If you want a form that cannot pass both checks, change this contract first.
+2. **Completion time (check)** — every changed TypeScript file passes the selected import check
+   (`00_normalize-imports.ts --layout-only` for B-layout; the default full normalizer for an authorized
+   Write/Refactor). Every changed TypeScript or Python file passes its language aligner
+   (`typescript/07_align-tables.ts --file` or `python/02_align-tables.ts --file`, `misaligned=0`). If you want a form that cannot pass both checks, change this contract first.
 
 ## Grid-first authoring
 

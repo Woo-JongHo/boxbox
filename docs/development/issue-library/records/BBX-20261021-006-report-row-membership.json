@@ -74,17 +74,17 @@
   "related": [
     {
       "kind": "code",
-      "path": "product/engine/common/report.ts",
+      "path": "product/engine/common/23_report.ts",
       "note": "rowLinesOf and group-at-line membership."
     },
     {
       "kind": "code",
-      "path": "product/engine/common/result-json.ts",
+      "path": "product/engine/common/24_result-json.ts",
       "note": "Optional exact row membership in result metadata."
     },
     {
       "kind": "code",
-      "path": "product/engine/typescript/align.ts",
+      "path": "product/engine/typescript/12_align.ts",
       "note": "Group construction."
     },
     {

@@ -72,7 +72,7 @@
   "related": [
     {
       "kind": "code",
-      "path": "product/engine/typescript/grid-kinds.ts",
+      "path": "product/engine/typescript/13_grid-kinds.ts",
       "note": "Return-guard detection and region construction."
     },
     {

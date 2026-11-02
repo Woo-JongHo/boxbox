@@ -1,0 +1,157 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261102-026",
+  "title": "Reject invalid Python source bytes before formatter preview",
+  "category": "runtime",
+  "tags": [
+    "python",
+    "utf-8",
+    "formatter-preflight"
+  ],
+  "status": "resolved",
+  "symptom": "A focused pre-fix format test showed that a configured Python formatter could transform invalid initial UTF-8 before BoxBox validated the source. This reproduction establishes a formatter-side transformation before validation; it does not establish that the original user file was written.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "The Python format pipeline reached the optional formatter before checking that the original source bytes were valid UTF-8. The initial-byte preflight now rejects malformed source before preview or formatter invocation."
+  },
+  "requestedOutcome": "Invalid initial Python source bytes are refused before preview or formatter execution, and the caller's source bytes remain unchanged.",
+  "decisions": [
+    "Validate original Python source bytes at the start of the format operation. This does not change the public result schema, approved rules, language support or formatter admission policy for valid input."
+  ],
+  "actions": [
+    {
+      "description": "Preserve the pre-fix invalid-UTF-8 formatter reproduction as a regression case.",
+      "status": "done"
+    },
+    {
+      "description": "Reject invalid initial Python bytes before preview or formatter execution and cover preview and apply behavior.",
+      "status": "done"
+    },
+    {
+      "description": "Complete frozen-candidate full, artifact and independent-review verification.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Pre-fix invalid-UTF-8 reproduction",
+      "status": "passed",
+      "scope": "Focused Python format-pipeline reproduction: the configured formatter could transform invalid initial UTF-8 before validation; one test, two assertions.",
+      "evidence": [
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast-evidence/bounded-results.json"
+      ],
+      "result": "The reproduction is recorded as formatter-side transformation before validation. It does not claim a write to the original user file."
+    },
+    {
+      "name": "Initial-byte preflight regression",
+      "status": "passed",
+      "scope": "Focused preview and apply cases reject malformed initial bytes before preview or formatter invocation; one test, six assertions.",
+      "evidence": [
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast-evidence/bounded-results.json"
+      ],
+      "result": "The regression verifies early refusal and preservation for invalid UTF-8, including preview and apply paths."
+    },
+    {
+      "name": "Frozen-candidate full check, artifact journey and independent review",
+      "status": "passed",
+      "scope": "Frozen shipped-source candidate 1e160aecc4f043e1, final check-input revision 2, immutable installed artifact and user-selected GLM static audit; native host matrix not run.",
+      "evidence": [
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast-evidence/verification.json",
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast-evidence/artifact-provenance.json",
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast-evidence/installed-smoke.json",
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast-evidence/glm-final.md",
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast-evidence/review-metadata.json"
+      ],
+      "result": "Required-parser full gate exit 0: 725 passed, 0 failed, 4,334 expectations across 78 files; 132 source hashes match and 1,443 check inputs have zero during-run drift. Four installed CLI scenarios pass on the byte-identical final artifact. GLM final audit PASS; the formatter-preflight outcome remains bounded to initial encoding refusal and original-byte preservation."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "product/engine/common/21_format-pipeline.ts",
+      "note": "Python initial-byte validation before formatter preview or execution."
+    },
+    {
+      "kind": "test",
+      "path": "test/format-pipeline.test.ts",
+      "note": "Pre-fix reproduction and early-refusal regressions."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-11-02-engine-stages-python-ast.md",
+      "note": "Scope and verification state for the numbered-stage and Python AST source-analysis work."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-11-02",
+      "event": "reported",
+      "summary": "A focused pre-fix format regression showed the optional formatter could transform invalid initial Python UTF-8 before BoxBox validation.",
+      "evidence": [
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast-evidence/bounded-results.json"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-11-02",
+      "event": "diagnosed",
+      "summary": "The format pipeline did not preflight original Python bytes before entering the optional formatter path.",
+      "evidence": [
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast.md"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-11-02",
+      "event": "implemented",
+      "summary": "The Python format path now validates initial bytes before preview or formatter invocation; focused preview and apply regressions were added.",
+      "evidence": [
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast-evidence/bounded-results.json"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date": "2026-11-02",
+      "event": "verified",
+      "status": "passed",
+      "summary": "The focused reproduction and preflight regression passed for their stated scope; final candidate verification remains separate.",
+      "evidence": [
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast-evidence/bounded-results.json"
+      ]
+    },
+    {
+      "sequence": 5,
+      "date": "2026-11-02",
+      "event": "verified",
+      "status": "not-run",
+      "summary": "Final frozen-candidate full check, package/installed artifact and independent review are pending.",
+      "evidence": []
+    },
+    {
+      "sequence": 6,
+      "date": "2026-11-02",
+      "event": "verification-failed",
+      "status": "failed",
+      "summary": "Earlier whole-candidate attempts stopped on stale advisory catalog references and then two stale Python test contracts. These were verification failures, not a demonstrated preflight regression; both histories are retained.",
+      "evidence": [
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast-evidence/bounded-execution.json"
+      ]
+    },
+    {
+      "sequence": 7,
+      "date": "2026-11-02",
+      "event": "verified",
+      "status": "passed",
+      "summary": "Candidate 1e160aecc4f043e1 passed final required-parser 725-test gate, immutable artifact journey and user-selected GLM audit. Resolve the initial invalid-byte formatter-preflight issue for this bounded scope; no native host or initial-syntax-policy claim.",
+      "evidence": [
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast-evidence/verification.json",
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast-evidence/artifact-provenance.json",
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast-evidence/installed-smoke.json",
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast-evidence/glm-final.md",
+        "docs/development/reviews/2026-11-02-engine-stages-python-ast-evidence/review-metadata.json"
+      ]
+    }
+  ]
+}

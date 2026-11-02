@@ -1,0 +1,22 @@
+{
+  "candidateId": "1e160aecc4f043e1",
+  "shippedSourceUnchanged": true,
+  "files": {
+    "test/column-measurement.test.ts": {
+      "beforeSha256": "a7a47eab0d8e686d52aab95e8495abbf41a4ea1d319596f00cf69de4b581a5e7",
+      "afterSha256": "9af41012d481402d0ef23f9ab7abe6f4a577e932b2be855de92325ae0922d5b4"
+    },
+    "test/edge-inputs.test.ts": {
+      "beforeSha256": "60b603f886dfd42bb17426e72eed2e4624dcbf9fc9b5b28813e4f97c06cc74c1",
+      "afterSha256": "86c96baefc76d9624ca18a478490a9f0cbc7486a504bd958e0b3b7ecff80b699"
+    },
+    "test/recommended-preset.test.ts": {
+      "beforeSha256": "a9d99ff4504c252bd9afdf2d2df837a133dc6491cb8e89e0d6f62f1b583cb2a2",
+      "afterSha256": "1fcf8088fa0903a8d4b2b270d5cedf9f3b9b62cad19399159d9a127e8a65b075"
+    },
+    "test/issue-library-references.test.ts": {
+      "beforeSha256": "b1626dee7be3df711be9e893ce586a2bab48fc05c604b7457db5fe367373369e",
+      "afterSha256": "57441298ccf73202eaaaeb145e5681daf8342b7df1041defa884b9166acb25b5"
+    }
+  }
+}

@@ -1,17 +1,17 @@
-import      { afterEach, describe, expect, test                } from "bun:test"                           ;
-import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                            ;
-import      { tmpdir                                           } from "node:os"                            ;
-import      { join, relative, resolve                          } from "node:path"                          ;
+import      { afterEach, describe, expect, test                } from "bun:test"                              ;
+import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                               ;
+import      { tmpdir                                           } from "node:os"                               ;
+import      { join, relative, resolve                          } from "node:path"                             ;
 
-import type { ResultEnvelope, ResultGroup                      } from "@/common/result-json.ts"            ;
-import      { displayWidth                                     } from "@/common/display-width.ts"          ;
-import      { alignRows                                        } from "@/typescript/align.ts"              ;
-import type { DetectedRow                                      } from "@/typescript/grid-kinds.ts"         ;
-import      { loadSourceFile                                   } from "@/typescript/load-source-file.ts"   ;
-import      { preservesTokensWithBreaks                        } from "@/typescript/token-preservation.ts" ;
+import type { ResultEnvelope, ResultGroup                      } from "@/common/24_result-json.ts"            ;
+import      { displayWidth                                     } from "@/common/01_display-width.ts"          ;
+import      { alignRows                                        } from "@/typescript/12_align.ts"              ;
+import type { DetectedRow                                      } from "@/typescript/13_grid-kinds.ts"         ;
+import      { loadSourceFile                                   } from "@/typescript/15_load-source-file.ts"   ;
+import      { preservesTokensWithBreaks                        } from "@/typescript/16_token-preservation.ts" ;
 
 const ROOT                  = resolve(import.meta.dir, "..")                                ;
-const SCRIPT                = resolve(ROOT, "product/engine/typescript/06_align-tables.ts") ;
+const SCRIPT                = resolve(ROOT, "product/engine/typescript/07_align-tables.ts") ;
 const workspaces : string[] = []                                                            ;
 
 interface Aligned {
@@ -59,6 +59,126 @@ function axisNames(value: ResultGroup): readonly string[] {
 }
 
 describe("TypeScript B-layout regions", () => {
+	test("removes excess padding from existing header and case axes", () => {
+		const source = [
+			"function headers(a: boolean, bbbbbbb: boolean, ccc: boolean, x: string) {",
+			"\tif (a         ) { one(); }",
+			"\tif (bbbbbbb   ) { two(); }",
+			"\tif (ccc       ) { three(); }",
+			"",
+			"\tif (a         ) return 1;",
+			"\tif (bbbbbbb   ) return 2;",
+			"\tif (ccc       ) return 3;",
+			"",
+			"\tswitch (x) {",
+			"\t\tcase 'a'       : return 1;",
+			"\t\tcase 'bbb'     : return 2;",
+			"\t\tcase 'cc'      : return 3;",
+			"\t}",
+			"}",
+			"",
+		].join("\r\n");
+		const result = run(source);
+
+		expect(result.text).toBe([
+			"function headers(a: boolean, bbbbbbb: boolean, ccc: boolean, x: string) {",
+			"\tif (a      ) { one(); }",
+			"\tif (bbbbbbb) { two(); }",
+			"\tif (ccc    ) { three(); }",
+			"",
+			"\tif (a      ) return 1;",
+			"\tif (bbbbbbb) return 2;",
+			"\tif (ccc    ) return 3;",
+			"",
+			"\tswitch (x) {",
+			"\t\tcase 'a'  : return 1;",
+			"\t\tcase 'bbb': return 2;",
+			"\t\tcase 'cc' : return 3;",
+			"\t}",
+			"}",
+			"",
+		].join("\r\n"));
+		expect(result.groups.filter(candidate => candidate.kind.startsWith("if-headers-")).map(candidate => candidate.state)).toEqual(["PASS", "PASS"]) ;
+		expect(group(result, "case-clause").state                                                                           ).toBe   ("PASS"          ) ;
+		expect(preservesTokensWithBreaks(source, result.text)                                                               ).toBe   (true            ) ;
+
+		expect(result.passes).toBeGreaterThan(0);
+	}, 60_000);
+
+	test("minimizes method parentheses without detaching empty parameter lists", () => {
+		const source = [
+			"interface Example {",
+			"\tshort        (a: string      ): void;",
+			"\tlongerName   (b: number      ): void;",
+			"\tthird        (c: boolean     ): void;",
+			"\tempty        ()               : void;",
+			"}",
+			"",
+		].join("\n");
+		const result = run(source);
+
+		expect(result.text).toBe([
+			"interface Example {",
+			"\tshort     (a: string ): void;",
+			"\tlongerName(b: number ): void;",
+			"\tthird     (c: boolean): void;",
+			"\tempty     ()          : void;",
+			"}",
+			"",
+		].join("\n"));
+		expect(group(result, "method-signature").state).toBe("PASS");
+		expect(preservesTokensWithBreaks(source, result.text)).toBe(true);
+
+		expect(result.passes).toBeGreaterThan(0);
+	}, 60_000);
+
+	test("preserves comments and unsupported optional or trailing-comma method boundaries", () => {
+		const source = [
+			"interface Example {",
+			"\tfirst? (value: string): void;",
+			"\tsecond?(value: string): void;",
+			"\tthird? (value: string): void;",
+			"\tone(value: string, ): void;",
+			"\ttwo(value: number, ): void;",
+			"\tthree(value: boolean, ): void;",
+			"}",
+			"function guards(a: boolean, b: boolean, c: boolean) {",
+			"\tif (a /* keep */ ) { one(); }",
+			"\tif (b /* keep */ ) { two(); }",
+			"\tif (c /* keep */ ) { three(); }",
+			"}",
+			"",
+		].join("\n");
+		const result = run(source);
+
+		expect(result.text                                                                                                     ).toBe(source) ;
+		expect(result.groups.some(candidate => candidate.kind === "method-signature" || candidate.kind === "if-headers-braced")).toBe(false ) ;
+		expect(preservesTokensWithBreaks(source, result.text)                                                                  ).toBe(true  ) ;
+	}, 60_000);
+
+	test("keeps rest parameters intact while minimizing method axes", () => {
+		const source = [
+			"interface Example {",
+			"\tone     (...values: string[]   ): void;",
+			"\ttwo     (...items: number[]    ): void;",
+			"\tthree   (...flags: boolean[]   ): void;",
+			"}",
+			"",
+		].join("\n");
+		const result = run(source);
+
+		expect(result.text).toBe([
+			"interface Example {",
+			"\tone  (...values: string[]): void;",
+			"\ttwo  (...items: number[] ): void;",
+			"\tthree(...flags: boolean[]): void;",
+			"}",
+			"",
+		].join("\n"));
+		expect(group(result, "method-signature").state).toBe("PASS");
+		expect(preservesTokensWithBreaks(source, result.text)).toBe(true);
+	}, 60_000);
+
 	test("aligns extended object headers without inventing shorthand or multiline punctuation", () => {
 		const result = run([
 			"const formatters = [];",

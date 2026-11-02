@@ -14,9 +14,13 @@
  *
  * Usage: bun development/tools/session-usage.ts <transcript.jsonl | -> [--json]   ("-" reads standard input, so a remote record need not be stored)
  */
-import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
-import { estimateTokens } from "@/common/usage.ts";
+import      {
+              existsSync   ,
+              readdirSync  ,
+              readFileSync
+                             } from "node:fs"              ;
+import      { join           } from "node:path"            ;
+import      { estimateTokens } from "@/common/28_usage.ts" ;
 
 export interface Totals {
 	readonly turns      : number ;
@@ -63,15 +67,15 @@ const asText   = (value: unknown): string => typeof value === "string" ? value :
  * Engine commands in the forms they appear: the plugin launcher, the CLI entry, and the Windows bridge
  * `node -e "$B" -- <command>` (or the same script inline) that the generated skill uses. One shell call may run several of them.
  */
-const ENGINE_COMMAND = /(?:\b(?:boxbox(?:\.mjs)?|entry\.ts|cli\.ts)['"]?|-e\s+"\$\w+"\s+--|-e\s+(?:"[^"]*spawnSync[^"]*"|'[^']*spawnSync[^']*')\s+--)\s+(check|guide|format|align|doctor|run|status|hook|init)\b/gu ;
-const ALIGNER_SCRIPT = /06_align-tables\.ts/u                                                                                                                                                                       ;
+const ENGINE_COMMAND = /(?:\b(?:boxbox(?:\.mjs)?|entry\.ts|(?:00_)?cli\.ts)['"]?|-e\s+"\$\w+"\s+--|-e\s+(?:"[^"]*spawnSync[^"]*"|'[^']*spawnSync[^']*')\s+--)\s+(check|guide|format|align|doctor|run|status|hook|init)\b/gu ;
+const ALIGNER_SCRIPT = /(?:06_align-tables(?:\.ts|[\\/]index\.ts)|(?:07|02)_align-tables\.ts)/u                                                                                                                             ;
 
 /** Names every BoxBox step a tool call belongs to, in command order; a call that is none of them is `other`. */
 export function categoriesOf(tool: string, input: unknown): readonly string[] {
 	const fields = asRecord(input) ?? {};
-	if (tool === "Skill" && /boxbox/iu.test(asText(fields.skill)))                       return ["boxbox:skill"]    ;
+	if (tool === "Skill" && /boxbox/iu.test(asText(fields.skill))                      ) return ["boxbox:skill"]    ;
 	if (tool === "Agent" && /readability-inspector/u.test(asText(fields.subagent_type))) return ["boxbox:inspector"] ;
-	if (tool !== "Bash")                                                                 return ["other"]           ;
+	if (tool !== "Bash"                                                                ) return ["other"]           ;
 	const command = asText(fields.command)                                                   ;
 	const engine  = [...command.matchAll(ENGINE_COMMAND)].map(match => `boxbox:${match[1]}`) ;
 	if (engine.length)                                                                   return engine ;

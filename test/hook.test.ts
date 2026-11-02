@@ -1,14 +1,14 @@
-import      { describe, expect, test                                            } from "bun:test"                ;
-import      { spawnSync                                                         } from "node:child_process"      ;
-import      { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs"                 ;
-import      { tmpdir                                                            } from "node:os"                 ;
-import      { join                                                              } from "node:path"               ;
-import      { AGENT_ALARMS, coreLines, hookTarget, postMessage                  } from "@/common/hook.ts"        ;
-import      { buildReport, compareAlarms                                        } from "@/common/report.ts"      ;
-import type { FileResult                                                        } from "@/common/result-json.ts" ;
+import      { describe, expect, test                                            } from "bun:test"                   ;
+import      { spawnSync                                                         } from "node:child_process"         ;
+import      { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs"                    ;
+import      { tmpdir                                                            } from "node:os"                    ;
+import      { join                                                              } from "node:path"                  ;
+import      { AGENT_ALARMS, coreLines, hookTarget, postMessage                  } from "@/common/26_hook.ts"        ;
+import      { buildReport, compareAlarms                                        } from "@/common/23_report.ts"      ;
+import type { FileResult                                                        } from "@/common/24_result-json.ts" ;
 
 const ROOT    = join(import.meta.dir, ".."                            ) ;
-const HOOK    = join(ROOT           , "product/engine/hook.ts"        ) ;
+const HOOK    = join(ROOT           , "product/engine/02_hook.ts"     ) ;
 const FIXTURE = join(ROOT           , "test/fixtures/python/tables.py") ;
 
 describe("hook — target decision", () => {
@@ -49,8 +49,8 @@ describe("hook — text to report", () => {
 	});
 
 	test("reports only new alarms and states that existing alarms are not this edit's responsibility", () => {
-		const current  = buildReport({ result: result("FIXABLE"), text: "A = 1\nBB = 2\nC = 3" })                ;
-		const baseline = buildReport({ result: result("PASS"   ), text: "A = 1\nBB = 2\nC = 3" })                ;
+		const current  = buildReport({ result: result("FIXABLE"), text: "A = 1\nBB = 2\nC = 3" }               ) ;
+		const baseline = buildReport({ result: result("PASS"   ), text: "A = 1\nBB = 2\nC = 3" }               ) ;
 		const message  = postMessage({ ...current, comparison: compareAlarms(current.alarms, baseline.alarms) }) ;
 
 		expect(message)    .toContain("1 alarm(s) introduced by this edit"                     ) ;
@@ -96,9 +96,9 @@ describe("hook — flow (simulating Claude Code input)", () => {
 	});
 
 	test("with BOXBOX_HOOKS=off it does nothing, and invalid input never blocks the edit", () => {
-		const project = mkdtempSync(join(tmpdir(), "boxbox-hook-"))                                                                                                 ;
-		const off     = run(project, "session", {}, { BOXBOX_HOOKS: "off" })                                                                                        ;
-		const broken  = spawnSync(process.execPath, [HOOK, "post"], { input: "{not json", encoding: "utf8", env: { ...process.env, CLAUDE_PROJECT_DIR: project } }) ;
+		const project = mkdtempSync(join(tmpdir(), "boxbox-hook-")                                                                                                  ) ;
+		const off     = run        (project, "session", {}, { BOXBOX_HOOKS: "off" }                                                                                 ) ;
+		const broken  = spawnSync  (process.execPath, [HOOK, "post"], { input: "{not json", encoding: "utf8", env: { ...process.env, CLAUDE_PROJECT_DIR: project } }) ;
 
 		expect(off.stdout   ).toBe("") ;
 		expect(broken.status).toBe(0 ) ;
@@ -109,7 +109,7 @@ describe("hook — flow (simulating Claude Code input)", () => {
 		const hooks = JSON.parse(readFileSync(join(ROOT, "development/hooks/hooks.json"), "utf8")) as { hooks: Record<string, { matcher?: string; hooks: { command: string }[] }[]> };
 
 		expect(Object.keys(hooks.hooks).sort()).toEqual(["PostToolUse", "PreToolUse", "SessionStart"]);
-		for (const entries of Object.values(hooks.hooks)) expect(entries[0]?.hooks[0]?.command).toContain("${CLAUDE_PLUGIN_ROOT}/product/engine/hook.ts");
+		for (const entries of Object.values(hooks.hooks)) expect(entries[0]?.hooks[0]?.command).toContain("${CLAUDE_PLUGIN_ROOT}/product/engine/02_hook.ts");
 		expect(hooks.hooks["PostToolUse"]?.[0]?.matcher).toBe("Write|Edit|MultiEdit");
 	});
 });

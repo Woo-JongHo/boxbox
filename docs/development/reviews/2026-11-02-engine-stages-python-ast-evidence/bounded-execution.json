@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "1e160aecc4f043e1",
+  "previousAttempts": [
+    {
+      "candidateId": "8af93033d704109c",
+      "result": "Full check stopped before tests on stale advisory catalog evidence path.",
+      "logSha256": "68a370e599f4eff1e2d78ff874b07d854aa51945e843b577368a9248b7448bd6"
+    },
+    {
+      "candidateId": "1e160aecc4f043e1",
+      "checkInputRevision": 1,
+      "passed": 718,
+      "failed": 2,
+      "expectations": 4299,
+      "testFiles": 78,
+      "inputDrift": [],
+      "reason": "Stale BOM allowance expectation and invalid indentation fixture; revised in test-only follow-up.",
+      "logSha256": "35e4c72a0d053430963c5ba82ac1697ca7018ba287e90d1bee913db57bf2f704"
+    }
+  ],
+  "referenceTestFormat": {
+    "initialWrapperState": "CHILD_FAILED",
+    "reason": "Private proof incorrectly required unchanged line breaks after06 import expansion.",
+    "correctedProof": {
+      "exactTokensAndCommentsPreserved": true,
+      "lineBreaksPreserved": false,
+      "layout": {
+        "status": "preserved",
+        "reason": "tokens, comments, diagnostics and AST structure preserved"
+      },
+      "note": "06 vertically expanded the import list; layout AST proof is required rather than claiming horizontal-only change."
+    },
+    "subsequentWrapperState": "NO_CHANGES",
+    "checkedTargets": 0,
+    "referenceTestsPassed": 8
+  },
+  "nativeHostMatrix": "not run",
+  "codecs": "StrictUTF8 LF/CRLF; BOM,loneCR,unpairedsurrogate unsupported",
+  "historicalEvidence": "Preserved; exact history source resolver has two aliases only"
+}

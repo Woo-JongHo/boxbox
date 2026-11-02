@@ -1,4 +1,4 @@
-import      { afterEach, describe, expect, test } from "bun:test"                  ;
+import      { afterEach, describe, expect, test } from "bun:test"                     ;
 import      {
               existsSync                      ,
               mkdtempSync                     ,
@@ -9,12 +9,12 @@ import      {
               symlinkSync                     ,
               statSync                        ,
               writeFileSync                   ,
-                                                } from "node:fs"                   ;
-import      { join, resolve                     } from "node:path"                 ;
-import      { spawnSync                         } from "node:child_process"        ;
+                                                } from "node:fs"                      ;
+import      { join, resolve                     } from "node:path"                    ;
+import      { spawnSync                         } from "node:child_process"           ;
 
-import      { APPROVAL_VERSIONS                 } from "@/common/approval-gate.ts" ;
-import      { contentHashOf, sectionHash        } from "@/common/examples.ts"      ;
+import      { APPROVAL_VERSIONS                 } from "@/common/18_approval-gate.ts" ;
+import      { contentHashOf, sectionHash        } from "@/common/17_examples.ts"      ;
 
 const root                  = resolve(import.meta.dir, "..") ;
 const workspaces : string[] = []                             ;
@@ -271,7 +271,7 @@ describe("public CLI local package artifact", () => {
 		]);
 
 		const bundle = readFileSync(join(installed, "dist/cli.js"), "utf8");
-		for (const forbidden of ["Bun.", "bun:", "@/", root, "internal-runner", "00_normalize-imports", "00_expand-interface-members", "07_wrap-conditions", "08_function-map", "09_observe-shapes"]) {
+		for (const forbidden of ["Bun.", "bun:", "@/", root, "internal-runner", "00_normalize-imports", "01_expand-interface-members", "08_wrap-conditions", "09_function-map", "10_observe-shapes"]) {
 			expect(bundle).not.toContain(forbidden);
 		}
 	}, 180_000);

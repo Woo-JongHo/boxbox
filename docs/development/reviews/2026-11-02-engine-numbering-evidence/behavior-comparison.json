@@ -1,0 +1,225 @@
+{
+  "normalization": "Exact simultaneous replacements of mapped full engine paths, engine-relative command paths and aliases only. No broad basename or whitespace normalization.",
+  "cases": [
+    {
+      "label": "sample.ts-check",
+      "exitBefore": 1,
+      "exitAfter": 1,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "sample.py-check",
+      "exitBefore": 1,
+      "exitAfter": 1,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "sample.json-check",
+      "exitBefore": 1,
+      "exitAfter": 1,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "sample.yaml-check",
+      "exitBefore": 1,
+      "exitAfter": 1,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "sample.ts-align",
+      "exitBefore": 0,
+      "exitAfter": 0,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "sample.ts-format",
+      "exitBefore": 0,
+      "exitAfter": 0,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "sample.ts-guide",
+      "exitBefore": 0,
+      "exitAfter": 0,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "sample.py-align",
+      "exitBefore": 0,
+      "exitAfter": 0,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "sample.py-format",
+      "exitBefore": 0,
+      "exitAfter": 0,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "sample.py-guide",
+      "exitBefore": 0,
+      "exitAfter": 0,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "typescript-01_group-regions.ts",
+      "exitBefore": 0,
+      "exitAfter": 0,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "typescript-04_measure-columns.ts",
+      "exitBefore": 1,
+      "exitAfter": 1,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "typescript-06_align-tables.ts",
+      "exitBefore": 1,
+      "exitAfter": 1,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "python-01_group-regions.ts",
+      "exitBefore": 1,
+      "exitAfter": 1,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "python-04_measure-columns.ts",
+      "exitBefore": 1,
+      "exitAfter": 1,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "python-06_align-tables.ts",
+      "exitBefore": 1,
+      "exitAfter": 1,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "python-invalid-04_measure-columns.ts",
+      "exitBefore": 2,
+      "exitAfter": 2,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "python-invalid-06_align-tables.ts",
+      "exitBefore": 1,
+      "exitAfter": 1,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "imports",
+      "exitBefore": 1,
+      "exitAfter": 1,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    },
+    {
+      "label": "members",
+      "exitBefore": 1,
+      "exitAfter": 1,
+      "inputHashesEqual": true,
+      "stdoutExact": true,
+      "stdoutMappedEqual": true,
+      "stderrExact": true,
+      "stderrMappedEqual": true,
+      "passed": true
+    }
+  ]
+}

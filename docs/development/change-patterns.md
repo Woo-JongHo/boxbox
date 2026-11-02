@@ -25,9 +25,7 @@ reviews hold detailed evidence; the library is the searchable entry point, not a
 
 1. Capture a small synthetic positive fixture and a counterexample where alignment must not happen. Keep strings,
    comments, indentation, evaluation order and the existing row floor intact.
-2. For a line-engine language, edit `product/engine/<language>/profile.ts`; use the shared table engine and thin
-   `01_group-regions.ts` / `06_align-tables.ts` wrappers. For TypeScript, edit the AST detector/kind implementation
-   and `typescript/grid-kinds.ts` as needed.
+2. For a line-engine language, edit `product/engine/<language>/NN_profile.ts`; use the shared table engine and language tools with unique per-folder IDs. The current Python tools are `python/00_group-regions.ts` and `python/02_align-tables.ts`. For TypeScript, edit the AST detector/kind implementation and `typescript/13_grid-kinds.ts` as needed.
 3. Update `test/fixtures/<language>/` and the language alignment suite. Check preservation, exact golden output,
    idempotence, parser behavior, traps and minimum rows. TypeScript has its own AST suite.
 4. If role classification changes, update the applicable base surface mapping and grammar consistency tests.

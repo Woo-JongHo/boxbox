@@ -87,12 +87,12 @@
   "related": [
     {
       "kind": "code",
-      "path": "product/engine/python/profile.ts",
+      "path": "product/engine/python/03_profile.ts",
       "note": "Scalar-call and ordinary assignment recognition."
     },
     {
       "kind": "code",
-      "path": "product/engine/common/table-engine.ts",
+      "path": "product/engine/common/06_table-engine.ts",
       "note": "Contiguous same-signature grouping and edit preservation."
     },
     {

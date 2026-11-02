@@ -44,8 +44,8 @@ The core value is conservatism: a row whose structure cannot be decomposed lossl
 
 Supported languages:
 
-- **TypeScript** — AST + LSP tooling (TypeScript 7), table-kind registry in `grid-kinds.ts`.
-- **Python** — the shared line engine plus a per-language profile (string/comment masking + row slot rules). Line-engine profiles for Java, Go, Rust, JavaScript, C, C++, Swift and Kotlin were removed on 2026-10-22 because they were not ready; the scope is the four public languages.
+- **TypeScript** — AST + LSP tooling (TypeScript 7), table-kind registry in `13_grid-kinds.ts`.
+- **Python** — CPython `ast`/`tokenize` source analysis feeds the shared line engine and Python profile (string/comment masking + row-slot rules). The grouping, measurement and alignment tools use the same Python analysis and planner. Line-engine profiles for Java, Go, Rust, JavaScript, C, C++, Swift and Kotlin were removed on 2026-10-22; the public scope remains TypeScript, Python, JSON and YAML.
 - **JSON and YAML** — strict document validation and bounded scalar-mapping candidates in `product/engine/structured`; source ranges, unsupported reasons and horizontal-only preservation feed the same public approval/write pipeline. Public preset approval is separate from adapter support.
 
 ## Structure map
@@ -53,11 +53,18 @@ Supported languages:
 ```text
 product/                         canonical product sources
   engine/                        CLI, shared engine, language profiles and inspection runners
-    common/                      preservation, parsers, safe writes, config, approvals, hooks
-    typescript/                  TypeScript 7 AST/LSP pipeline and kind registry
-    python/                      shared line-engine profile and thin runners
+    common/                      flat shared engine modules; each file has a unique numeric ID
+    typescript/                  flat TypeScript 7 AST/LSP tools and helpers; every file has a unique numeric ID
+      00_normalize-imports.ts; 01_expand-interface-members.ts; 02_group-regions.ts
+      03_audit-type-uncertainty.ts; 04_audit-optional-types.ts; 05_measure-columns.ts
+      06_inspect-hover.mjs; 07_align-tables.ts; 08_wrap-conditions.ts; 09_function-map.ts
+      10_observe-shapes.ts; 11_grid-tokens.ts; 12_align.ts; 13_grid-kinds.ts; 14_layout-policy.ts
+      15_load-source-file.ts; 16_token-preservation.ts; 17_layout-preservation.ts
+    python/                      flat AST-backed Python tools and helpers; every file has a unique numeric ID
+      00_group-regions.ts; 01_measure-columns.ts; 02_align-tables.ts; 03_profile.ts
+      04_assignment-envelope.ts; 05_analysis.ts; 06_analysis-script.ts; 07_string-ranges.ts
     structured/                  JSON/YAML parser-backed scalar mapping adapter
-    rule-data.ts                 rule paths shared by source and bundled engines
+    05_rule-data.ts             rule paths shared by source and bundled engines
   models.json                    model and effort per AI-judgment role and host; sync:plugin stamps the agent definitions
   rules/
     patterns/                    advisory nine-family catalog; never approval authority
@@ -93,10 +100,10 @@ dist/                            generated engine packages and npm installer; gi
 - **There are two release artifacts.** The engine CLI package (`development/tools/build-cli-artifact.ts` → `product/packages/cli` → `dist/boxbox-<version>.tgz`) and the thin agent plugin (`plugin/`: `SKILL.md`, read-only inspector, manifests, hook adapter) share one set of engine and rule data. The public CLI bundle does not include the raw write runners or auxiliary writers (`docs/development/release-contract.md`).
 - **Host adapters are thin.** Only discovery location and manifest differ per host (see `docs/development/agent-portability.md`).
 - **Model and effort.** `product/models.json` is the only place a model or effort for the plugin's agent roles is written; `bun run sync:plugin` stamps the Claude and Codex agent definitions from it (`development/tools/model-assignments.ts`). Never hand-edit those fields, and never assign the `author` role. Values are `unevaluated-default` until an evaluation selects them ([proposal](docs/development/proposals/2026-10-22-model-effort-assignment.md)).
-- **Roles.** The read-only inspector investigates one product file; the main agent authors and verifies product changes within the current authorized task. Parallel workers must have disjoint ownership.
+- **Roles.** Engine filenames have unique contiguous numeric IDs per folder; IDs follow file order and are for navigation, not workflow or execution order. See `docs/development/layout.md` before adding an engine file. The read-only inspector investigates one product file; the main agent authors and verifies product changes within the current authorized task. Parallel workers must have disjoint ownership.
 - **Subagent briefing.** Spawn prompts follow `docs/development/subagent-brief.md`: the task, owned and excluded paths, acceptance commands and the few applicable facts are written into the brief. A worker reads only cited sections of `plan.md` or `status.md` when historical context or the harness table is needed. The brief states the current authorized task. General read and re-run discipline lives in the global coding guidelines.
-- **Adding a language** (needs a scope decision first; the public scope is four languages): create `product/engine/<lang>/profile.ts` exporting a `LineProfiler`, add `01_group-regions.ts` / `06_align-tables.ts` wrappers, add `test/fixtures/<lang>/{tables,tables.aligned,tricky}.*`, add `test/<lang>-align.test.ts` using `lang-harness.ts`, then update the language list in manifests, `SKILL.md` and `plugin-contract.test.ts`.
-- **Adding a TypeScript table kind:** register its detector in `grid-kinds.ts`, its descriptive axes in `rules/base/typescript-layout.json` and implemented-kind validation in `layout-policy.ts`; add fixtures and tests. Only declaration grouping gap/minimum-row policy is currently data-executed; row boundary extraction stays code-owned.
+- **Adding a language** (needs a scope decision first; the public scope is four languages): create `product/engine/<lang>/NN_profile.ts` exporting a `LineProfiler`, then add language tools with unique per-folder numeric IDs, add `test/fixtures/<lang>/{tables,tables.aligned,tricky}.*`, add `test/<lang>-align.test.ts` using `lang-harness.ts`, then update the language list in manifests, `SKILL.md` and `plugin-contract.test.ts`.
+- **Adding a TypeScript table kind:** register its detector in `13_grid-kinds.ts`, its descriptive axes in `rules/base/typescript-layout.json` and implemented-kind validation in `14_layout-policy.ts`; add fixtures and tests. Only declaration grouping gap/minimum-row policy is currently data-executed; row boundary extraction stays code-owned.
 
 ## Verification budget
 
@@ -133,12 +140,12 @@ bun run development/tools/stress-corpus.ts   # optional; clones OSS repos into /
 
 ## Conventions
 
-- Runtime is Bun (TypeScript scripts run directly); `05_inspect-hover.mjs` runs on Node.
-- Code in this repo is itself held to the skill's rules: aligned import/declaration tables, tabs for indentation. Run the relevant `06_align-tables.ts` on files you change.
+- Runtime is Bun (TypeScript scripts run directly); `06_inspect-hover.mjs` runs on Node.
+- Code in this repo is itself held to the skill's rules: aligned import/declaration tables, tabs for indentation. Run the relevant language aligner on files you change.
 - **When the property differs, split with a blank line** (`product/rules/references/grammar.md` section 1 paragraph rule). The property is the pattern (`DEFINE`, `WHEN`, `EXIT`, `DO` …) and, for a definition, the declaration kind (`type`/`interface` erased after compilation versus declarations that remain at run time). Examples: a `const` group and an `expect` group; a definition, a check (`if … throw`) and a result (`return`). Build alignment tables only within one property, and never hand-align columns across lines with different properties. Exception: a guard that checks a name defined just above stays attached to the definition. `export` and `const`/`let` are not mandatory criteria (grouping them is nice but not enforced). **Apply retroactively only to files you touch** (do not change untouched files).
 - **Compose grid-first.** When you write or restructure code here, design the rows before writing: for each group of three or more same-role values, name the shared column set and write every value as one row of it (one reader shape for several options, one `key : value ,` field per row, `.map` rows over comparable lists, a branch picked in one row such as `const run = flag ? a : b;`). Limits, from [grid-first authoring](product/rules/references/readability-contract.md#grid-first-authoring): no wrapper or parameter whose only job is to fill a column; derived values, guards and control flow stay outside the table; behavior, order and output bytes are preserved and a rewrite is compared old versus new on the same inputs; measure before using `.map` chains in hot paths. Like the other conventions it applies to files you touch, and it is guidance, not rule approval.
 - **Keep statements in their original execution order.** Do not reorder declarations to look nicer (for example, sorting by argument count can use a `const` before its declaration and break). Group only by inserting blank lines within already consecutive statements.
-- **`product/engine/`, `test/` and `development/tools/` import engine modules with `@/`** (`tsconfig.json` `paths`: `@/*` = `product/engine/*`). The copied development skill carries its own resolver (`@/*` = `./engine/*`) and pinned dependencies; public Node bundles resolve aliases at build time. Keep the engine-external layout JSON import and runtime `new URL(..., import.meta.url)` paths relative: they locate files, not engine module aliases. `check:layout` rejects unintended relative engine module imports and invalid alias targets.
+- **`product/engine/`, `test/` and `development/tools/` import engine modules with `@/`** (`tsconfig.json` `paths`: `@/*` = `product/engine/*`). Engine filenames use unique contiguous numeric IDs within each directory. IDs follow file order for navigation; they do not define workflow steps or execution order. See `docs/development/layout.md` before adding engine files. The copied development skill carries its own resolver (`@/*` = `./engine/*`) and pinned dependencies; public Node bundles resolve aliases at build time. Keep the engine-external layout JSON import and runtime `new URL(..., import.meta.url)` paths relative: they locate files, not engine module aliases. `check:layout` rejects unintended relative engine module imports and invalid alias targets.
 - `package.json` owns the release version. Product manifest templates use `@BOXBOX_VERSION@`; `bun run sync:plugin` and package builders stamp generated output without modifying product templates. Change the version in `package.json`, regenerate and build (`test/plugin-contract.test.ts` catches output drift). Validate the release plugin with `claude plugin validate --strict ./plugin` and `claude plugin validate --strict .`.
 - Agent definitions must stay read-only: `development/agents/readability-inspector.md` and `product/plugin/agents/readability-inspector.md` declare frontmatter `disallowedTools: Write, Edit, …`, and `development/codex/readability-inspector.toml` declares `sandbox_mode = "read-only"`. Current tests only check that these files exist, so the read-only property itself is not test-enforced — keep it by hand when editing the definitions.
 - `stress/` contains third-party code and must not be committed.

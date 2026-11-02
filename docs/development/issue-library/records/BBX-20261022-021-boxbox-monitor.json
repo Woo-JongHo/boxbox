@@ -67,7 +67,7 @@
     },
     {
       "kind": "code",
-      "path": "product/engine/common/lifecycle-hook.ts",
+      "path": "product/engine/common/27_lifecycle-hook.ts",
       "note": "Owns the SessionStart baseline and the hook receipts."
     },
     {

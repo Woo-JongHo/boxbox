@@ -1,0 +1,14 @@
+Python 3.9.6
+bun test v1.4.0 (34cbb9a40)
+
+test/parse-check.test.ts:
+(pass) Python 3.9 protects every case of formatted-string prefixes when available [229.73ms]
+
+test/line-write-safety.test.ts:
+(pass) unsupported formatted-string syntax on Python 3.9 refuses with JSON and unchanged bytes [87.51ms]
+
+ 2 pass
+ 23 filtered out
+ 0 fail
+ 5 expect() calls
+Ran 2 tests across 2 files. [395.00ms]

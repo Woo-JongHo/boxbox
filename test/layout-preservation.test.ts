@@ -1,8 +1,8 @@
-import      { afterEach, describe, expect, test               } from "bun:test"                            ;
-import      { mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs"                             ;
-import      { join                                            } from "node:path"                           ;
+import      { afterEach, describe, expect, test               } from "bun:test"                               ;
+import      { mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs"                                ;
+import      { join                                            } from "node:path"                              ;
 
-import      { compareTypeScriptLayout                         } from "@/typescript/layout-preservation.ts" ;
+import      { compareTypeScriptLayout                         } from "@/typescript/17_layout-preservation.ts" ;
 
 const workspaces: string[] = [];
 

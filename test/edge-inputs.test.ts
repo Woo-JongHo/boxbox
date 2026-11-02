@@ -1,6 +1,6 @@
-import      { describe, expect, test } from "bun:test"                 ;
-import      { alignSource            } from "@/common/table-engine.ts" ;
-import      { PYTHON_ALIGNER         } from "@/python/profile.ts"      ;
+import      { describe, expect, test } from "bun:test"                    ;
+import      { alignSource            } from "@/common/06_table-engine.ts" ;
+import      { PYTHON_ALIGNER         } from "@/python/03_profile.ts"      ;
 
 const align = (source: string): ReturnType<typeof alignSource> => alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true });
 
@@ -25,11 +25,9 @@ describe("edge inputs", () => {
 		expect(result.output ).toContain("\"host\"  : \"localhost:8080\",\r") ;
 	});
 
-	test("a BOM is preserved and only the first line is excluded", () => {
-		const source = "\uFEFFDEFAULT = 3\nLONG_TIMEOUT = 90\nDEBUG = False\n" ;
-		const result = align(source)                                           ;
-		expect(result.output.startsWith("\uFEFFDEFAULT = 3\n")).toBe(true)                ; // BOM + refused first row stay untouched
-		expect(result.output.split("\n").slice(1, 3)).toEqual(["LONG_TIMEOUT = 90", "DEBUG = False"]);
+	test("a BOM is explicitly refused before alignment", () => {
+		const source = "\uFEFFDEFAULT = 3\nLONG_TIMEOUT = 90\nDEBUG = False\n";
+		expect(() => align(source)).toThrow("Unsupported Python source encoding or line endings");
 	});
 
 	test("a multi-thousand-line file aligns within the time budget", () => {

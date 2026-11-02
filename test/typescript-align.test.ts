@@ -1,10 +1,10 @@
-import      { afterEach, describe, expect, test                } from "bun:test"                           ;
-import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                            ;
-import      { join, relative, resolve                          } from "node:path"                          ;
-import      { preservesTokens                                  } from "@/typescript/token-preservation.ts" ;
+import      { afterEach, describe, expect, test                } from "bun:test"                              ;
+import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                               ;
+import      { join, relative, resolve                          } from "node:path"                             ;
+import      { preservesTokens                                  } from "@/typescript/16_token-preservation.ts" ;
 
 const root                 = resolve(import.meta.dir, "..")                                ;
-const script               = resolve(root, "product/engine/typescript/06_align-tables.ts") ;
+const script               = resolve(root, "product/engine/typescript/07_align-tables.ts") ;
 const workspaces: string[] = []                                                            ;
 
 /** Every test here spawns the aligner, which starts a TypeScript 7 server — a busy machine can push one invocation past Bun's 5 s default. */
@@ -18,7 +18,7 @@ afterEach(() => {
 describe("typescript call statement alignment", () => {
 	slowTest("aligns subject/matcher parentheses, dots and semicolons of consecutive call statements", () => {
 		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
-		const target    = join(workspace, "calls.ts")                             ;
+		const target    = join       (workspace, "calls.ts"                     ) ;
 		workspaces.push(workspace);
 		writeFileSync(target, [
 			'expect(lstatSync(skill).isDirectory()).toBe(true);',
@@ -26,7 +26,7 @@ describe("typescript call statement alignment", () => {
 			'expect(realpathSync(skill)).not.toBe(realpathSync(pluginSkill));',
 		].join("\n") + "\n");
 
-		const file   = relative(root, target)                                                                                   ;
+		const file   = relative     (root, target                                                                             ) ;
 		const result = Bun.spawnSync(["bun", script, "--file", file, "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" }) ;
 		expect(result.exitCode).toBe(0);
 		expect(result.stdout.toString()).toContain("call-statements");
@@ -41,7 +41,7 @@ describe("typescript call statement alignment", () => {
 describe("typescript object row alignment", () => {
 	slowTest("aligns braces, properties, colons, values and commas of object rows", () => {
 		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
-		const target    = join(workspace, "objects.ts")                           ;
+		const target    = join       (workspace, "objects.ts"                   ) ;
 		workspaces.push(workspace);
 		writeFileSync(target, [
 			"const boundaries: RowBoundary[] = [",
@@ -53,7 +53,7 @@ describe("typescript object row alignment", () => {
 			"] ;",
 		].join("\n") + "\n");
 
-		const file   = relative(root, target)                                                                                   ;
+		const file   = relative     (root, target                                                                             ) ;
 		const result = Bun.spawnSync(["bun", script, "--file", file, "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" }) ;
 		expect(result.exitCode).toBe(0);
 		expect(result.stdout.toString()).toContain("object-rows");
@@ -71,8 +71,8 @@ describe("typescript object row alignment", () => {
 
 describe("typescript whitespace-only guarantee", () => {
 	slowTest("the fixture aligns with an identical token stream and no refused table", () => {
-		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-"))             ;
-		const target    = join(workspace, "table-kinds.ts")                                   ;
+		const workspace = mkdtempSync (join(import.meta.dir, "typescript-align-")           ) ;
+		const target    = join        (workspace, "table-kinds.ts"                          ) ;
 		const before    = readFileSync(resolve(root, "test/fixtures/table-kinds.ts"), "utf8") ;
 		workspaces.push(workspace);
 		writeFileSync(target, before);
@@ -88,7 +88,7 @@ describe("typescript whitespace-only guarantee", () => {
 describe("typescript row floors", () => {
 	slowTest("a 2-row = declaration table is aligned; a 2-row group of another kind is not", () => {
 		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
-		const target    = join(workspace, "floors.ts")                            ;
+		const target    = join       (workspace, "floors.ts"                    ) ;
 		workspaces.push(workspace);
 		writeFileSync(target, [
 			"const value = chars[index]!;",
@@ -117,7 +117,7 @@ describe("typescript row floors", () => {
 /** Writes `lines` to a temporary file, runs the aligner with --write, and returns the file's lines. */
 function alignLines(lines: readonly string[]): readonly string[] {
 	const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
-	const target    = join(workspace, "layer.ts")                             ;
+	const target    = join       (workspace, "layer.ts"                     ) ;
 	workspaces.push(workspace);
 	writeFileSync(target, `${lines.join("\n")}\n`);
 	const result = Bun.spawnSync(["bun", script, "--file", relative(root, target), "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" });
@@ -280,7 +280,7 @@ describe("typescript hand-made samples", () => {
 		]);
 	});
 
-	slowTest("keeps the hand-aligned guard sample of 00_normalize-imports unchanged", () => {
+	slowTest("keeps the hand-aligned guard sample of normalize-imports unchanged", () => {
 		const sample = [
 			'\t\t\tif (value === "/" && next === "/") { state = "line"    ; chars[index] = chars[index + 1] = " "; index += 1; continue; }',
 			'\t\t\tif (value === "/" && next === "*") { state = "block"   ; chars[index] = chars[index + 1] = " "; index += 1; continue; }',

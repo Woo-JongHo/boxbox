@@ -1,0 +1,31 @@
+{
+  "userDirection": "Use GLM for the final audit; overrides the session Opus requirement.",
+  "attempts": [
+    {
+      "requestedModel": "opus",
+      "requestedEffort": "high",
+      "exitCode": 143,
+      "isError": true,
+      "startedAt": "2026-11-02T00:26:19.440599+00:00",
+      "activeDurationSeconds": 710.118,
+      "wallDurationSeconds": null,
+      "verdict": null,
+      "actualModelMetadata": null,
+      "reason": "Stopped after excessive wall-clock wait without any result.",
+      "receiptSha256": "9a4f69768ba934d1ab9806a73515f53e4f59054757d86e8c58926923b942404c"
+    },
+    {
+      "requestedModel": "opus",
+      "requestedEffort": "medium",
+      "exitCode": 143,
+      "isError": true,
+      "startedAt": "2026-11-02T01:34:10.893539+00:00",
+      "activeDurationSeconds": 149.943,
+      "wallDurationSeconds": 149.937,
+      "verdict": null,
+      "actualModelMetadata": null,
+      "reason": "Stopped when the user explicitly selected GLM instead.",
+      "receiptSha256": "64b420f08cb98d827a08de8481b4e24d056f0845b75c746be60ced4e61dfae05"
+    }
+  ]
+}

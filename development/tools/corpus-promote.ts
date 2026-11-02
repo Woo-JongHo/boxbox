@@ -80,8 +80,8 @@ export function scaffoldFor(language: string, kind: string): string {
 
 function runAligner(language: string, file: string): void {
 	const aligner = language === "typescript"
-		? join(ROOT, "product", "engine", "typescript", "06_align-tables.ts")
-		: join(ROOT, "product", "engine", "python", "06_align-tables.ts");
+		? join(ROOT, "product", "engine", "typescript", "07_align-tables.ts")
+		: join(ROOT, "product", "engine", "python", "02_align-tables.ts");
 	const result = spawnSync("bun", [aligner, "--file", file, "--write"], { encoding: "utf8", timeout: 300_000 })  ;
 	if (result.status !== 0) throw new Error(`alignment failed: ${result.stderr.toString().split("\n")[0]}`)       ;
 }

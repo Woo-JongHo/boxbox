@@ -126,8 +126,8 @@ export function renderSummary(types: readonly { readonly signature: string; read
 
 function alignedSlice(language: string, absolute: string, before: string, startLine: number, endLine: number): { readonly lines: readonly string[]; readonly note: string } {
 	const aligner = language === "typescript"
-		? join(ROOT, "product", "engine", "typescript", "06_align-tables.ts")
-		: join(ROOT, "product", "engine", "python", "06_align-tables.ts");
+		? join(ROOT, "product", "engine", "typescript", "07_align-tables.ts")
+		: join(ROOT, "product", "engine", "python", "02_align-tables.ts");
 	const result = spawnSync("bun", [aligner, "--file", absolute, "--write"], { encoding: "utf8", timeout: 300_000 });
 	if (result.status !== 0) return { lines: [], note: `alignment failed: ${result.stderr.toString().split("\n")[0]}` };
 	const afterLines  = readFileSync(absolute, "utf8").split("\n") ;

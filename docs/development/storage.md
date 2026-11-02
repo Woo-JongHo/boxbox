@@ -41,13 +41,13 @@ rule-proof evaluation and public-distribution policy are three separate validati
 | Hook receipts | Host plugin data/root/session, or project fallback | Unique exclusive receipt files; read-only source inspection | No schemaVersion/dedicated receipt validator; concurrent Stop marker acquisition not proved atomic |
 | Development harness | `development/harness/evidence/runs.jsonl` and `latest.json` | Append history, minimal read validation, atomic latest-file replacement | History and latest are separate writes, not one transaction |
 
-Owners: [project-config.ts](../../product/engine/common/project-config.ts),
-[approval-gate.ts](../../product/engine/common/approval-gate.ts),
-[conventions.ts](../../product/engine/common/conventions.ts), [examples.ts](../../product/engine/common/examples.ts),
+Owners: [15_project-config.ts](../../product/engine/common/15_project-config.ts),
+[18_approval-gate.ts](../../product/engine/common/18_approval-gate.ts),
+[16_conventions.ts](../../product/engine/common/16_conventions.ts), [17_examples.ts](../../product/engine/common/17_examples.ts),
 [public-preset.ts](../../development/tools/public-preset.ts),
-[shape observer](../../product/engine/typescript/09_observe-shapes.ts),
-[lifecycle-hook.ts](../../product/engine/common/lifecycle-hook.ts),
-[guarded-run.ts](../../product/engine/common/guarded-run.ts), [harness DB](../../development/harness/db.ts).
+[shape observer](../../product/engine/typescript/10_observe-shapes.ts),
+[27_lifecycle-hook.ts](../../product/engine/common/27_lifecycle-hook.ts),
+[25_guarded-run.ts](../../product/engine/common/25_guarded-run.ts), [harness DB](../../development/harness/db.ts).
 
 ## Data and invariants
 

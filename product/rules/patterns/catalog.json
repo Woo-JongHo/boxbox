@@ -27,8 +27,8 @@
         "module-path rewriting"
       ],
       "evidence": [
-        "product/engine/typescript/grid-kinds.ts",
-        "product/engine/python/profile.ts",
+        "product/engine/typescript/13_grid-kinds.ts",
+        "product/engine/python/03_profile.ts",
         "test/fixtures/table-kinds.ts"
       ],
       "cases": [
@@ -40,7 +40,7 @@
           "expectation" : "Needs review: these are comparable design rows, but the current TypeScript row-kind registry has no import kind and provides no automatic-write support.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts"
+            "product/engine/typescript/13_grid-kinds.ts"
           ]
         },
         {
@@ -51,7 +51,7 @@
           "expectation" : "Unsupported as one group: the first row is a side-effect action and the second binds a name; preserve order and spacing.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts"
+            "product/engine/typescript/13_grid-kinds.ts"
           ]
         },
         {
@@ -62,7 +62,7 @@
           "expectation" : "Unsupported: the Python profiler explicitly refuses import rows, and changing an alias is an agent-owned Refactor requiring reference and behavior checks.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/python/profile.ts",
+            "product/engine/python/03_profile.ts",
             "test/python-align.test.ts"
           ]
         },
@@ -74,7 +74,7 @@
           "expectation" : "Needs review: named imports are a nested list with separate ownership; no current engine evidence supports decomposing or aligning it.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts"
+            "product/engine/typescript/13_grid-kinds.ts"
           ]
         },
         {
@@ -85,7 +85,7 @@
           "expectation" : "Unsupported for writing; the blank line may encode import sections and must remain a contextual separator. The current Python profile refuses every import row. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/python/profile.ts",
+            "product/engine/python/03_profile.ts",
             "test/python-align.test.ts"
           ]
         }
@@ -119,8 +119,8 @@
         "execution-order changes"
       ],
       "evidence": [
-        "product/engine/typescript/grid-kinds.ts",
-        "product/engine/python/profile.ts",
+        "product/engine/typescript/13_grid-kinds.ts",
+        "product/engine/python/03_profile.ts",
         "test/typescript-align.test.ts",
         "test/python-align.test.ts",
         "test/fixtures/table-kinds.ts"
@@ -134,7 +134,7 @@
           "expectation" : "Design-only sample; related engine capability: the Python annotated-assignment profile and the test named `annotated assignments align name and type columns and never pad the trailing value` cover the same row form, but this exact snippet was not executed here and automatic application remains exact approved-rule gated.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/python/profile.ts",
+            "product/engine/python/03_profile.ts",
             "test/python-align.test.ts",
             "test/fixtures/python/tables.py"
           ]
@@ -147,7 +147,7 @@
           "expectation" : "Design-only sample; related engine capability: TypeScript registers type-alias and runtime declaration kinds independently. They are different roles and no combined-group support is claimed for this exact snippet.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/fixtures/table-kinds.ts"
           ]
         },
@@ -159,7 +159,7 @@
           "expectation" : "Unsupported by the current declaration detector's bounded single-name model; needs review rather than automatic rewriting.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-align.test.ts"
           ]
         },
@@ -171,7 +171,7 @@
           "expectation" : "Design-only sample; related engine capability: compatible direct call values can own call axes under detector restrictions. This exact snippet was not executed here, and automatic application remains gated by an exact approved rule.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-align.test.ts"
           ]
         },
@@ -183,7 +183,7 @@
           "expectation" : "Design-only sample; related engine capability: ordinary TypeScript declaration runs stop at a blank line and preserve statement order. The two-row declaration floor is a detector-specific exception only; `test/recommended-preset.test.ts` verifies that automatic application still requires the exact approved rule and proof. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-align.test.ts",
             "test/recommended-preset.test.ts"
           ]
@@ -218,8 +218,8 @@
         "signature refactors"
       ],
       "evidence": [
-        "product/engine/typescript/grid-kinds.ts",
-        "product/engine/python/profile.ts",
+        "product/engine/typescript/13_grid-kinds.ts",
+        "product/engine/python/03_profile.ts",
         "test/typescript-align.test.ts",
         "test/fixtures/table-kinds.ts"
       ],
@@ -232,7 +232,7 @@
           "expectation" : "Design-only sample; related engine capability: the TypeScript registry has method-signature axes for accepted interface siblings. This exact snippet was not executed here and no automatic-write approval is claimed.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-align.test.ts",
             "test/fixtures/table-kinds.ts"
           ]
@@ -245,7 +245,7 @@
           "expectation" : "Design-only sample; related engine capability: property and method signatures use separate registered kinds. They must not share a table, and this exact snippet was not executed here.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/fixtures/table-kinds.ts"
           ]
         },
@@ -257,7 +257,7 @@
           "expectation" : "Unsupported: the Python profile explicitly refuses def rows and does not claim signature alignment.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/python/profile.ts",
+            "product/engine/python/03_profile.ts",
             "test/python-align.test.ts"
           ]
         },
@@ -269,7 +269,7 @@
           "expectation" : "Needs review: the nested function type owns internal parentheses and arrows; current evidence does not establish cross-level alignment.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-align.test.ts"
           ]
         },
@@ -281,7 +281,7 @@
           "expectation" : "Needs review as one group: blank lines and documentation separate the current run, and documentation must be preserved byte-for-byte. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-align.test.ts"
           ]
         }
@@ -316,8 +316,8 @@
         "callee renaming"
       ],
       "evidence": [
-        "product/engine/typescript/grid-kinds.ts",
-        "product/engine/python/profile.ts",
+        "product/engine/typescript/13_grid-kinds.ts",
+        "product/engine/python/03_profile.ts",
         "test/typescript-matrix-boundaries.test.ts",
         "test/python-align.test.ts"
       ],
@@ -330,7 +330,7 @@
           "expectation" : "Design-only sample; related engine capability: the test named `aligns different callable envelopes and preserves the trailing non-null assertion` covers bounded direct-call envelopes with opaque arguments. This exact snippet was not executed here, and its distinct lookup key still needs exact approval.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-matrix-boundaries.test.ts"
           ]
         },
@@ -342,7 +342,7 @@
           "expectation" : "Design-only sample; related engine capability: declaration calls and call statements use different registered detectors and axes. No combined-group support is claimed for this exact snippet.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-align.test.ts"
           ]
         },
@@ -354,7 +354,7 @@
           "expectation" : "Unsupported: Python assigned-call tests explicitly refuse keyword arguments for table formation.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/python/profile.ts",
+            "product/engine/python/03_profile.ts",
             "test/python-align.test.ts"
           ]
         },
@@ -366,7 +366,7 @@
           "expectation" : "Needs review: nested argument punctuation stays inside its argument cell unless a separately supported layer owns it; no universal nested-call support is claimed.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-matrix-boundaries.test.ts"
           ]
         },
@@ -378,7 +378,7 @@
           "expectation" : "Unsupported as one automatic group: the intervening comment separates candidates and must not be moved or absorbed. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-matrix-boundaries.test.ts"
           ]
         }
@@ -412,8 +412,8 @@
         "cross-scope alignment"
       ],
       "evidence": [
-        "product/engine/typescript/grid-kinds.ts",
-        "product/engine/python/profile.ts",
+        "product/engine/typescript/13_grid-kinds.ts",
+        "product/engine/python/03_profile.ts",
         "test/typescript-matrix-boundaries.test.ts",
         "test/typescript-align.test.ts"
       ],
@@ -426,7 +426,7 @@
           "expectation" : "Design-only sample; related engine capability: the TypeScript registry has a return-guards kind and matrix-boundary tests cover return-column regions. This exact snippet was not executed here, and automatic application remains exact approved-rule gated.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-matrix-boundaries.test.ts"
           ]
         },
@@ -438,7 +438,7 @@
           "expectation" : "Unsupported as one group: return and throw actions are different roles; current return-guard evidence does not authorize a combined group.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-matrix-boundaries.test.ts"
           ]
         },
@@ -450,7 +450,7 @@
           "expectation" : "Unsupported: the Python profiler explicitly refuses control-flow and return/raise rows.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/python/profile.ts",
+            "product/engine/python/03_profile.ts",
             "test/python-align.test.ts"
           ]
         },
@@ -462,7 +462,7 @@
           "expectation" : "Unsupported as one group: nested and outer guards belong to different block regions; current tests require scope separation.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-matrix-boundaries.test.ts"
           ]
         },
@@ -474,7 +474,7 @@
           "expectation" : "Needs exact detector judgment: blank lines alone are not universal separators, but an intervening statement participates in bounded region rules; order is preserved and unsupported barriers refuse grouping. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-matrix-boundaries.test.ts"
           ]
         }
@@ -507,9 +507,9 @@
         "semantic optionality changes"
       ],
       "evidence": [
-        "product/engine/typescript/grid-kinds.ts",
-        "product/engine/python/profile.ts",
-        "product/engine/structured/index.ts",
+        "product/engine/typescript/13_grid-kinds.ts",
+        "product/engine/python/03_profile.ts",
+        "product/engine/structured/00_index.ts",
         "test/typescript-align.test.ts",
         "test/python-align.test.ts",
         "test/structured-align.test.ts",
@@ -524,7 +524,7 @@
           "expectation" : "Design-only sample; related engine capability: TypeScript interface-members own colon and terminator axes for accepted property signatures. This exact snippet was not executed here and no automatic-write approval is claimed.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-align.test.ts",
             "test/fixtures/table-kinds.ts"
           ]
@@ -537,7 +537,7 @@
           "expectation" : "Design-only sample; related engine capability: fields and methods use distinct registered member kinds. They must not share columns, and this exact snippet was not executed here.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/fixtures/table-kinds.ts"
           ]
         },
@@ -549,7 +549,7 @@
           "expectation" : "Unsupported by the bounded named-property model; computed keys need review and receive no automatic-write claim.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-align.test.ts"
           ]
         },
@@ -561,7 +561,7 @@
           "expectation" : "Needs review as separate lower tables: nested type members own their axes independently; outer and inner punctuation must not align together.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-align.test.ts"
           ]
         },
@@ -573,7 +573,7 @@
           "expectation" : "Needs review as one group: the blank line and documentation separate current runs and the comment remains untouched. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-align.test.ts"
           ]
         }
@@ -608,9 +608,9 @@
         "JSON or YAML public writes before CLI integration and approved presets exist"
       ],
       "evidence": [
-        "product/engine/typescript/grid-kinds.ts",
-        "product/engine/python/profile.ts",
-        "product/engine/structured/index.ts",
+        "product/engine/typescript/13_grid-kinds.ts",
+        "product/engine/python/03_profile.ts",
+        "product/engine/structured/00_index.ts",
         "test/typescript-align.test.ts",
         "test/python-align.test.ts",
         "test/structured-align.test.ts",
@@ -625,7 +625,7 @@
           "expectation" : "Design-only sample; related engine capability: TypeScript object-rows cover bounded object literals with corresponding supported properties. This exact snippet was not executed here, and exact shape plus approval gates still apply.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-align.test.ts",
             "test/fixtures/table-kinds.ts"
           ]
@@ -638,7 +638,7 @@
           "expectation" : "Design-only sample; related engine capability: the bounded internal JSON adapter handles sibling scalar mapping entries, not heterogeneous array object/scalar rows. Public CLI integration and an approved preset are pending.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/structured/index.ts",
+            "product/engine/structured/00_index.ts",
             "test/structured-align.test.ts"
           ]
         },
@@ -650,7 +650,7 @@
           "expectation" : "Unsupported as a uniform record table unless a future explicit missing-field policy is reviewed; current catalog grants none.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-align.test.ts"
           ]
         },
@@ -662,7 +662,7 @@
           "expectation" : "Unsupported: the Python bundle profiler explicitly refuses nested bundles and does not flatten inner lists.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/python/profile.ts",
+            "product/engine/python/03_profile.ts",
             "test/python-align.test.ts"
           ]
         },
@@ -674,7 +674,7 @@
           "expectation" : "Design-only sample; related engine capability: the bounded internal YAML adapter preserves comments as barriers and tests unsupported constructs without changing their bytes. This sequence-entry snippet remains unsupported; public CLI integration and an approved preset are pending. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/structured/index.ts",
+            "product/engine/structured/00_index.ts",
             "test/structured-align.test.ts",
             "test/fixtures/yaml/tables.yaml"
           ]
@@ -707,8 +707,8 @@
         "operand reordering"
       ],
       "evidence": [
-        "product/engine/typescript/grid-kinds.ts",
-        "product/engine/python/profile.ts",
+        "product/engine/typescript/13_grid-kinds.ts",
+        "product/engine/python/03_profile.ts",
         "test/python-align.test.ts",
         "test/typescript-align.test.ts"
       ],
@@ -721,7 +721,7 @@
           "expectation" : "Design-only sample; related engine capability: the test named `keeps == comparisons inside values and refuses values starting with ==` keeps comparisons opaque while aligning only assignment axes. This exact snippet was not executed here and automatic application remains approval gated.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/python/profile.ts",
+            "product/engine/python/03_profile.ts",
             "test/python-align.test.ts"
           ]
         },
@@ -733,7 +733,7 @@
           "expectation" : "Design-only sample; related engine capability: the Python profile accepts bounded assignments and refuses a value beginning with the second equals. The bare comparison remains a different role; this exact snippet was not executed here.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/python/profile.ts",
+            "product/engine/python/03_profile.ts",
             "test/python-align.test.ts"
           ]
         },
@@ -745,7 +745,7 @@
           "expectation" : "Unsupported for inner operator alignment: current declaration support keeps these initializer expressions opaque and does not own ternary axes.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-align.test.ts"
           ]
         },
@@ -757,7 +757,7 @@
           "expectation" : "Needs review: multiplication and grouping are nested inside the value cell; no current evidence authorizes aligning their operators or changing parentheses.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/typescript/grid-kinds.ts",
+            "product/engine/typescript/13_grid-kinds.ts",
             "test/typescript-align.test.ts"
           ]
         },
@@ -769,7 +769,7 @@
           "expectation" : "Unsupported as one group: the comment and operator-role change separate the rows; only bounded assignment axes may be considered independently. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/python/profile.ts",
+            "product/engine/python/03_profile.ts",
             "test/python-align.test.ts"
           ]
         }
@@ -802,9 +802,9 @@
         "public writes before CLI integration and approved presets exist"
       ],
       "evidence": [
-        "product/engine/structured/index.ts",
+        "product/engine/structured/00_index.ts",
         "test/structured-align.test.ts",
-        "product/engine/cli.ts",
+        "product/engine/00_cli.ts",
         "test/authoring-modes.test.ts"
       ],
       "cases": [
@@ -816,7 +816,7 @@
           "expectation" : "Design-only sample; related engine capability: the bounded internal JSON adapter aligns runs of at least three sibling single-line scalar properties and `test/structured-align.test.ts` verifies fixture output. This two-row snippet does not meet that floor; public CLI integration and an approved preset are pending.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/structured/index.ts",
+            "product/engine/structured/00_index.ts",
             "test/structured-align.test.ts",
             "test/fixtures/json/tables.json"
           ]
@@ -829,7 +829,7 @@
           "expectation" : "Design-only sample; related engine capability: the bounded internal YAML adapter accepts simple scalar mapping rows and explicitly refuses sequence entries. These rows have different roles; public CLI integration and an approved preset are pending.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/structured/index.ts",
+            "product/engine/structured/00_index.ts",
             "test/structured-align.test.ts"
           ]
         },
@@ -841,7 +841,7 @@
           "expectation" : "Design-only sample; related engine capability: the bounded internal YAML adapter explicitly refuses block scalars and preserves their bytes in `comments and unsupported YAML constructs break groups without changing their bytes`. Public CLI integration and an approved preset are pending.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/structured/index.ts",
+            "product/engine/structured/00_index.ts",
             "test/structured-align.test.ts"
           ]
         },
@@ -853,7 +853,7 @@
           "expectation" : "Design-only sample; related engine capability: the bounded internal JSON adapter assigns nested objects independent parent ownership, as tested by `preserves JSON escapes, colons in strings, duplicate keys, CRLF, and nested ownership`. This exact two-row snippet was not executed; public CLI integration and an approved preset are pending.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/structured/index.ts",
+            "product/engine/structured/00_index.ts",
             "test/structured-align.test.ts"
           ]
         },
@@ -865,7 +865,7 @@
           "expectation" : "Design-only sample; related engine capability: the bounded internal YAML adapter explicitly refuses document markers. These documents cannot form one group; public CLI integration and an approved preset are pending. The long row/comment is a design variation only and does not authorize padding to its width.",
           "verification": "design-only",
           "evidence": [
-            "product/engine/structured/index.ts",
+            "product/engine/structured/00_index.ts",
             "test/structured-align.test.ts"
           ]
         }

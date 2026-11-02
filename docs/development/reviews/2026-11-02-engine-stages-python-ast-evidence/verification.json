@@ -1,0 +1,36 @@
+{
+  "candidateId": "1e160aecc4f043e1",
+  "checkInputRevision": 2,
+  "argv": [
+    "bun",
+    "run",
+    "check"
+  ],
+  "cwd": "<repository-root>",
+  "explicitEnvironment": {
+    "BOXBOX_REQUIRE_PARSERS": "1"
+  },
+  "exitCode": 0,
+  "durationSeconds": 314.017,
+  "tests": {
+    "passed": 725,
+    "failed": 0,
+    "expectations": 4334,
+    "total": 725,
+    "files": 78,
+    "duration": "313.37s"
+  },
+  "pythonMutationLine": [
+    "python mutation outcomes: valid-aligned=505 invalid-aligned=0 invalid-rejected=495 total=1000"
+  ],
+  "inputFiles": 1443,
+  "inputDrift": [],
+  "sourceInputsMatchCandidate": true,
+  "logSha256": "7e8b39508f1ea338e2010becf02506c115582b4e16950a6e570e33941914e6d9",
+  "receiptSha256": "e9e89354f19b42716f66fc84f5ad3175eefbc5a23f35a57b38fc4a68fd11e391",
+  "limits": [
+    "Author-run command evidence; reviewers execute no tests.",
+    "Full check includes TypeScript and shell gates after tests.",
+    "Native host matrix was not run."
+  ]
+}

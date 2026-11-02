@@ -1,6 +1,6 @@
-import      { afterEach, expect, test } from "bun:test"                 ;
-import      { spawn, spawnSync        } from "node:child_process"       ;
-import      { createHash              } from "node:crypto"              ;
+import      { afterEach, expect, test } from "bun:test"                    ;
+import      { spawn, spawnSync        } from "node:child_process"          ;
+import      { createHash              } from "node:crypto"                 ;
 import      {
               existsSync            ,
               mkdtempSync           ,
@@ -11,17 +11,17 @@ import      {
               writeFileSync         ,
               symlinkSync           ,
               utimesSync            ,
-                                      } from "node:fs"                  ;
-import      { tmpdir                  } from "node:os"                  ;
-import      { basename, dirname, join } from "node:path"                ;
+                                      } from "node:fs"                     ;
+import      { tmpdir                  } from "node:os"                     ;
+import      { basename, dirname, join } from "node:path"                   ;
 import      {
               guardedRun            ,
               guardStatus           ,
               loadLatestRun         ,
               lockDirectory         ,
               snapshot              ,
-                                      } from "@/common/guarded-run.ts"  ;
-import      { acquireProcessLock      } from "@/common/process-lock.ts" ;
+                                      } from "@/common/25_guarded-run.ts"  ;
+import      { acquireProcessLock      } from "@/common/13_process-lock.ts" ;
 
 const roots: string[] = []                                                                                                                                                                                                                                       ;
 const root            = () => { const path = mkdtempSync(join(tmpdir(), "boxbox-guard-")); roots.push(path); return path; }                                                                                                                                      ;
@@ -100,10 +100,10 @@ test("status reads only bounded headers before loading the latest run", () => {
 	const names               = Array.from({ length: 128 }, (_, index) => `${String(index).padStart(8, "0")}-0000-0000-0000-000000000000.json`) ;
 	const fullReads: string[] = []                                                                                                              ;
 	const result = loadLatestRun("/evidence", {
-		list       : () => names,
-		isSafeFile : () => true,
-		readHeader : path => Buffer.from(`{\n  "startedAt": "2026-10-16T12:${path.includes("00000127") ? "59" : "00"}:00.000Z",\n  "padding": "`),
-		readFull   : path => { fullReads.push(path); return JSON.stringify({ startedAt: "2026-10-16T12:59:00.000Z", state: "NO_CHANGES" }); },
+		list       : () => names                                                                                                                  ,
+		isSafeFile : () => true                                                                                                                   ,
+		readHeader : path => Buffer.from(`{\n  "startedAt": "2026-10-16T12:${path.includes("00000127") ? "59" : "00"}:00.000Z",\n  "padding": "`) ,
+		readFull   : path => { fullReads.push(path); return JSON.stringify({ startedAt: "2026-10-16T12:59:00.000Z", state: "NO_CHANGES" }); }     ,
 	});
 	expect(result.runs  ).toBe         (128                    ) ;
 	expect(result.latest).toMatchObject({ state: "NO_CHANGES" }) ;

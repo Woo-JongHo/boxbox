@@ -1,0 +1,11 @@
+{
+  "candidateId": "58071284368e7e9b",
+  "contentSha256": "58071284368e7e9b5ec00f744005baccbf58a1180e37599d2adf86346345d484",
+  "tarballFile": "boxbox-58071284368e7e9b.tgz",
+  "tarballSha256": "4107f2227cb495d03d30065bb1ca17a1d0889fffc0eefd7bd4977d9042d805bf",
+  "buildExitCode": 0,
+  "sourceInputsMatch": true,
+  "buildInputDrift": [],
+  "buildLogSha256": "5c1f5cf7ab72a28586dad9aab301406d6c9a5112460c9ba518d72c3905edf397",
+  "buildReceiptSha256": "3b8a98873865eca8f88722adafd9ce9827cb4131276d796e644f6a4de76ce0b1"
+}

@@ -1,11 +1,11 @@
-import      { describe, expect, test  } from "bun:test"              ;
-import      { readFileSync            } from "node:fs"               ;
+import      { describe, expect, test  } from "bun:test"                 ;
+import      { readFileSync            } from "node:fs"                  ;
 
 import      {
               analyzeStructured     ,
               preservesStructured   ,
               structuredDiagnostics ,
-                                      } from "@/structured/index.ts" ;
+                                      } from "@/structured/00_index.ts" ;
 
 const fixture = (name: string): string => readFileSync(new URL(`fixtures/${name}`, import.meta.url), "utf8");
 

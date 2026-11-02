@@ -1,4 +1,4 @@
-import      { afterEach, describe, expect, test } from "bun:test"                   ;
+import      { afterEach, describe, expect, test } from "bun:test"                      ;
 import      {
               mkdirSync                       ,
               mkdtempSync                     ,
@@ -6,15 +6,15 @@ import      {
               rmSync                          ,
               symlinkSync                     ,
               writeFileSync                   ,
-                                                } from "node:fs"                    ;
-import      { join                              } from "node:path"                  ;
+                                                } from "node:fs"                       ;
+import      { join                              } from "node:path"                     ;
 
 import      {
               initializeProjectConfig         ,
               readProjectConfig               ,
               resolveConfig                   ,
               validateProjectConfig           ,
-                                                } from "@/common/project-config.ts" ;
+                                                } from "@/common/15_project-config.ts" ;
 
 const workspaces: string[] = [];
 

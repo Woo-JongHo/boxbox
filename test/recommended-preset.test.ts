@@ -1,25 +1,26 @@
-import      { afterEach, describe, expect, test                 } from "bun:test"                              ;
-import      { mkdirSync, mkdtempSync, readFileSync, rmSync      } from "node:fs"                               ;
-import      { writeFileSync                                     } from "node:fs"                               ;
-import      { tmpdir                                            } from "node:os"                               ;
-import      { join                                              } from "node:path"                             ;
+import      { afterEach, describe, expect, test            } from "bun:test"                              ;
+import      { mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs"                               ;
+import      { writeFileSync                                } from "node:fs"                               ;
+import      { tmpdir                                       } from "node:os"                               ;
+import      { join                                         } from "node:path"                             ;
 
 import      {
-              APPROVAL_VERSIONS                                ,
-              documentResolver                                 ,
-              evaluateApproval                                 ,
-              loadApprovalRegistry                             ,
-                                                                } from "@/common/approval-gate.ts"             ;
-import      { contentHashOf                                     } from "@/common/examples.ts"                  ;
-import      { runFormatPipeline                                 } from "@/common/format-pipeline.ts"           ;
-import      { compareParse                                      } from "@/common/parse-check.ts"               ;
-import      { changedLines                                      } from "@/common/preservation.ts"              ;
-import type { ResultEnvelope                                    } from "@/common/result-json.ts"               ;
-import      { lookupKeyOf                                       } from "@/common/signature.ts"                 ;
-import      { alignSource                                       } from "@/common/table-engine.ts"              ;
-import      { PYTHON_ALIGNER                                    } from "@/python/profile.ts"                   ;
-import      { preservesTokens                                   } from "@/typescript/token-preservation.ts"   ;
-import      { preparePublicPreset                               } from "../development/tools/public-preset.ts" ;
+              APPROVAL_VERSIONS                          ,
+              documentResolver                           ,
+              evaluateApproval                           ,
+              loadApprovalRegistry                       ,
+                                                           } from "@/common/18_approval-gate.ts"          ;
+import      { contentHashOf                                } from "@/common/17_examples.ts"               ;
+import      { runFormatPipeline                            } from "@/common/21_format-pipeline.ts"        ;
+import      { compareParse, syntaxDiagnostics              } from "@/common/08_parse-check.ts"            ;
+import      { changedLines                                 } from "@/common/09_preservation.ts"           ;
+import type { ResultEnvelope                               } from "@/common/24_result-json.ts"            ;
+import      { lookupKeyOf                                  } from "@/common/02_signature.ts"              ;
+import      { alignSource                                  } from "@/common/06_table-engine.ts"           ;
+import      { PYTHON_ALIGNER                               } from "@/python/03_profile.ts"                ;
+import      { PythonSourceSyntaxError                      } from "@/python/07_string-ranges.ts"          ;
+import      { preservesTokens                              } from "@/typescript/16_token-preservation.ts" ;
+import      { preparePublicPreset                          } from "../development/tools/public-preset.ts" ;
 
 const PRESET          = join(import.meta.dir, "../product/rules/presets/recommended")                                   ;
 const TS_KEY          = "v1|typescript|SourceFile|declaration-equals|equals>call-open-paren>call-close-paren>semicolon" ;
@@ -37,7 +38,7 @@ function registry(root = PRESET): ReturnType<typeof loadApprovalRegistry> {
 }
 
 function inspectTypeScript(root: string, file: string, write = false): ResultEnvelope {
-	const script = join(import.meta.dir, "../product/engine/typescript/06_align-tables.ts")                                                                          ;
+	const script = join         (import.meta.dir, "../product/engine/typescript/07_align-tables.ts"                                                                ) ;
 	const run    = Bun.spawnSync([process.execPath, script, "--file", file, "--json", ...(write ? ["--write"] : [])], { cwd: root, stdout: "pipe", stderr: "pipe" }) ;
 	if (run.exitCode !== 0 && run.exitCode !== 1) throw new Error(`TypeScript inspection failed: ${run.stderr.toString()}`);
 	return JSON.parse(run.stdout.toString()) as ResultEnvelope;
@@ -73,7 +74,7 @@ describe("the approved recommended preset", () => {
 	});
 
 	test("a prepared public package retains complete proofs and refuses changed approval documents", () => {
-		const output = workspace()                 ;
+		const output = workspace          ()       ;
 		const files  = preparePublicPreset(PRESET) ;
 
 		expect(files.map(file => file.path)).toEqual([
@@ -93,15 +94,15 @@ describe("the approved recommended preset", () => {
 			expect(result).toMatchObject({ status: "approved", writable: true, layer: "preset", reasons: [] });
 			expect(result.guide).toHaveLength(1);
 		}
-		const decision = data.decisions.get("py-simple-assignments")! ;
-		const document = join(output, decision.ref.split("#")[0]!)    ;
+		const decision = data.decisions.get("py-simple-assignments"            )! ;
+		const document = join              (output, decision.ref.split("#")[0]!)  ;
 		writeFileSync(document, `${readFileSync(document, "utf8")}\nUnapproved expansion.\n`);
 
 		expect(evaluateApproval(data, { key: PY_KEY, file: "sample.py" }, documentResolver(output))).toMatchObject({ status: "unknown", writable: false, reasons: ["decision document hash is stale"] });
 	});
 
 	test("both shipped approval proofs survive a CRLF document checkout", () => {
-		const data            = registry()               ;
+		const data            = registry        ()       ;
 		const resolveDocument = documentResolver(PRESET) ;
 		for (const convention of data.conventions) {
 			const result = evaluateApproval(data, { key: convention.key, file: convention.id.startsWith("ts-") ? "table.ts" : "table.py" }, (ref, layer) => {
@@ -113,7 +114,7 @@ describe("the approved recommended preset", () => {
 	});
 
 	test("approval lookup remains limited to the exact language, scope, container and axes", () => {
-		const data            = registry()               ;
+		const data            = registry        ()       ;
 		const resolveDocument = documentResolver(PRESET) ;
 		const denied = [
 			{ key : TS_KEY                                                , file : "sample.tsx" },
@@ -126,8 +127,8 @@ describe("the approved recommended preset", () => {
 	});
 
 	test("the approved TypeScript example and two-row declaration exception use real safe writes and reach a token-preserving fixed point", async () => {
-		const root     = workspace()                                                    ;
-		const data     = registry()                                                     ;
+		const root     = workspace        ()                                            ;
+		const data     = registry         ()                                            ;
 		const positive = data.examples.get("ts-sourcefile-call-declarations-positive")! ;
 		const cases = [
 			{ file: "three.ts", before: positive.before, after: positive.after },
@@ -186,10 +187,10 @@ describe("the approved recommended preset", () => {
 	}, 60_000);
 
 	test("the approved Python example remains safe at its existing indentation", async () => {
-		const root     = workspace()                                          ;
-		const data     = registry()                                           ;
+		const root     = workspace        ()                                  ;
+		const data     = registry         ()                                  ;
 		const positive = data.examples.get("py-simple-assignments-positive")! ;
-		const target   = join(root, "sample.py")                              ;
+		const target   = join             (root, "sample.py"               )  ;
 		writeFileSync(target, positive.before);
 		const options = { root, file: "sample.py", language: "python" as const, registry: data, resolveDocument: documentResolver(PRESET) } ;
 		const first   = await runFormatPipeline(options)                                                                                    ;
@@ -203,10 +204,10 @@ describe("the approved recommended preset", () => {
 	});
 
 	test("the excluded single TypeScript row and two Python rows stay unchanged", async () => {
-		const root      = workspace()                                                                     ;
-		const data      = registry()                                                                      ;
+		const root      = workspace        ()                                                             ;
+		const data      = registry         ()                                                             ;
 		const tsCounter = data.examples.get("ts-sourcefile-call-declarations-single-row-counterexample")! ;
-		const pyCounter = data.examples.get("py-simple-assignments-two-row-counterexample")!              ;
+		const pyCounter = data.examples.get("py-simple-assignments-two-row-counterexample"             )! ;
 		writeFileSync(join(root, "single.ts"), tsCounter.before);
 		const checked = await inspectTypeScript(root, "single.ts", true);
 
@@ -274,12 +275,19 @@ describe("the approved recommended preset", () => {
 	test("compound assignments and differing indentation never become approved Python tables", () => {
 		for (const source of [
 			"alpha += 1\nmuch_longer += 22\nmid += 333\n",
-			"alpha = 1\n  much_longer = 22\nmid = 333\n",
+			"if outer:\n    alpha = 1\n    if inner:\n        much_longer = 22\n    mid = 333\n",
 		]) {
+			expect(syntaxDiagnostics("python", source).diagnostics).toEqual([]);
 			const aligned = alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true });
 
 			expect(aligned.output).toBe(source);
 			expect(aligned.details).toEqual([]);
 		}
+	});
+
+	test("unexpected indentation is classified as Python syntax invalid", () => {
+		const source = "alpha = 1\n  much_longer = 22\nmid = 333\n";
+		expect(syntaxDiagnostics("python", source).diagnostics.length).toBeGreaterThan(0);
+		expect(() => alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true })).toThrow(PythonSourceSyntaxError);
 	});
 });

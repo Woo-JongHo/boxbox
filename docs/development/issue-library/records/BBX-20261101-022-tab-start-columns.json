@@ -1,0 +1,182 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261101-022",
+  "title": "Tab-bearing cells use the wrong start column during alignment",
+  "category": "syntax-boundary",
+  "tags": [
+    "tabs",
+    "display-width",
+    "minimum-width",
+    "shared-engine"
+  ],
+  "status": "resolved",
+  "symptom": "The shared table engine measures a cell containing a tab as if the cell began at display column zero. Since tab stops depend on the actual starting column, the rebuilt separator or terminal columns can remain misaligned or wider than the measured minimum. A reproduced Python source is `a: X\\t| Y = 1\\nbb: Z | Y = 2\\nccc: X | Y = 3`; expected separator columns are `:` at 4 and `=` at 12 after tab expansion. Additional cases cover mixed indentation, tabs inside quoted cells, prefix rows and trailing comments.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "The original shared width and rebuild paths measured tab-bearing cells from display column zero instead of each slot start, causing incorrect boundaries at tab stops. Candidate v2 retains the bounded correction; the final 50-file audit and full check passed, and the Opus fix-only review passed. The issue remains limited to this mechanism and existing width policy."
+  },
+  "requestedOutcome": "Measure tab-bearing cells at their actual display start column and produce minimum aligned boundaries while preserving source tab bytes, indentation, comments, syntax, and second-pass idempotence.",
+  "decisions": [
+    "Keep the existing display-width policy and preserve tab bytes; this issue does not decide a new tab width or Unicode-width policy.",
+    "Keep detector, minimum-row, refusal, approval, and public write contracts unchanged."
+  ],
+  "actions": [
+    {
+      "description": "Measure tab-bearing cells at their actual start column and retain their original bytes, with regression cases for first/middle/last cells, mixed indentation, optional defaults, terminal punctuation and comments.",
+      "status": "done"
+    },
+    {
+      "description": "Complete the frozen candidate self-use audit and parser-required full check; both passed with the scope recorded in the linked evidence.",
+      "status": "done"
+    },
+    {
+      "description": "Complete the v2 frozen checks and required fixed-model Opus fix-only review before closure; both are now recorded as passed.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Author-reported tab regression suites",
+      "status": "passed",
+      "scope": "The five focused engine/shared preservation suites for the tab-width source snapshot; not a full repository or final candidate check.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/author-reported-results.md"
+      ],
+      "result": "The author report records 79 passed, 0 failed and 478 assertions. Claude commented that it found no tab-width defect in its code inspection, but its overall Common/Python verdict was FINDINGS and it ran no tests."
+    },
+    {
+      "name": "Candidate v1 historical self-use and full check",
+      "status": "passed",
+      "scope": "Historical content ID 7af5b42b29c34e48; its source state was superseded after the first Opus FINDINGS.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/candidate-v1-verification-history.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/candidate-v1-self-use-files.json"
+      ],
+      "result": "Historical candidate v1 reported 50 files / 592 groups / 0 misaligned and full check 677 pass / 0 fail. It was not final closure because Opus found three code findings and evidence gaps; candidate v2 supersedes it."
+    },
+    {
+      "name": "Candidate v2 fix-only Opus review",
+      "status": "passed",
+      "scope": "Read-only review of all three prior Opus code findings, the v2 source/test deltas, and candidate/build/full-check/artifact receipts. Reviewer executed no tests or CLI.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-initial-review.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-initial-review-metadata.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-fix-only-review.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-fix-only-review-metadata.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-fix-only-v2.md"
+      ],
+      "result": "Claude Opus actual model claude-opus-5-5 returned PASS, process exit 0, is_error false. It closed the three code findings and evidence gate. The review did not certify all blocks or a native host matrix."
+    },
+    {
+      "name": "Candidate v2 final evidence and Opus fix-only review",
+      "status": "passed",
+      "scope": "Candidate da1e93b36a6ca63a, parent 7af5b42b29c34e48; frozen source, issue regressions, artifact provenance and read-only final finding closure.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/candidate-manifest.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/final-self-use-files.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/final-candidate-verification.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-initial-review.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-initial-review-metadata.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-fix-only-review.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-fix-only-review-metadata.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-fix-only-v2.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/python39-runtime-and-tests.log"
+      ],
+      "result": "Candidate v2 da1e93b36a6ca63a passed: 75-file manifest/full-check receipt drift 0; 50 audited files/592 emitted groups/0 misaligned/0 edits/0 import changes; 49 supported TypeScript public Checks passed, with the .mjs helper unsupported by public Check and separately node --check passing; full check 679 pass/0 fail/4,159 expectations; build/artifact/installed-smoke SHA linked and all four smoke scenarios passed. Claude Opus actual model claude-opus-5-5 returned fix-only PASS without running tests/CLI. Counts are emitted-group evidence, not semantic completeness or host-matrix proof."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "product/engine/common/06_table-engine.ts",
+      "note": "Shared column-width and rebuild implementation."
+    },
+    {
+      "kind": "test",
+      "path": "test/engine.test.ts",
+      "note": "Regression coverage for tab-bearing lossless cells."
+    },
+    {
+      "kind": "contract",
+      "path": "product/rules/references/readability-contract.md",
+      "note": "Defines minimum-width alignment and preservation boundaries."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-11-01-engine-self-use.md",
+      "note": "Records the self-use finding, current verification state, support limits, and follow-up gate."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-11-01-engine-self-use-evidence/author-reported-results.md",
+      "note": "Compact, explicitly author-reported focused test outcomes and source-snapshot limits."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-11-01",
+      "event": "reported",
+      "summary": "Read-only self-use inspection found tab-bearing cells measured without their actual display start column.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use.md"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-11-01",
+      "event": "implemented",
+      "summary": "A start-column-aware width calculation and tab-bearing regression cases were authored in the shared table engine and engine tests.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/author-reported-results.md"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-11-01",
+      "event": "verified",
+      "summary": "The author reported the bounded focused suite passing. This is not an independent approval or final-candidate result.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/author-reported-results.md"
+      ],
+      "status": "passed"
+    },
+    {
+      "sequence": 4,
+      "date": "2026-11-01",
+      "event": "verified",
+      "summary": "Frozen-candidate per-file self-use and parser-required full check passed with the scoped results in the linked evidence. This is not semantic-completeness proof and does not replace the required final Opus review.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/final-candidate-verification.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/final-self-use-files.json"
+      ],
+      "status": "passed"
+    },
+    {
+      "sequence": 5,
+      "date": "2026-11-01",
+      "event": "verified",
+      "summary": "Fixed-model Opus 5.5 found this issue-specific tab/axis boundary sound but identified other candidate findings; record remains verifying until those are corrected and candidate evidence is refreshed.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-initial-review.md"
+      ],
+      "status": "passed"
+    },
+    {
+      "sequence": 6,
+      "date": "2026-11-01",
+      "event": "verified",
+      "summary": "Candidate v2 final checks and the fixed-model Opus fix-only review passed for this scoped record. The first Opus FINDINGS, first full-check failure, and transient ENOSPC report remain in history; this record is resolved without implying semantic completeness or host-matrix coverage.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/candidate-manifest.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/final-candidate-verification.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/final-self-use-files.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-fix-only-review.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-fix-only-review-metadata.json"
+      ],
+      "status": "passed"
+    }
+  ]
+}

@@ -6,23 +6,24 @@
  *
  * Usage: bun development/tools/strip-stray-padding.ts [--write] <file>...
  */
-import      { spawnSync                   } from "node:child_process"                 ;
-import      { readFileSync, writeFileSync } from "node:fs"                            ;
-import      { join                        } from "node:path"                          ;
-import      { preservesTokens             } from "@/typescript/token-preservation.ts" ;
-import      { straySemicolonPadding       } from "@/common/report.ts"                 ;
+import      { spawnSync                   } from "node:child_process"                    ;
+import      { readFileSync, writeFileSync } from "node:fs"                               ;
+import      { join                        } from "node:path"                             ;
+import      { preservesTokens             } from "@/typescript/16_token-preservation.ts" ;
+import      { straySemicolonPaddings      } from "@/common/23_report.ts"                 ;
 
 const ROOT = join(import.meta.dir, "..", "..");
 
 /** Removes the spaces before the trailing `;` on A12 target lines. The decision is made once against the original body (straySemicolonPadding). */
 export function stripSemicolonPadding(text: string): string {
-	const lines = text.split("\n");
+	const lines   = text.split            ("\n" ) ;
+	const targets = straySemicolonPaddings(lines) ;
 
-	return lines.map((line, index) => straySemicolonPadding(lines, index) === undefined ? line : line.replace(/(\S)[ \t]+;(\r?)$/u, "$1;$2")).join("\n");
+	return lines.map((line, index) => targets.has(index) ? line.replace(/(\S)[ \t]+;(\r?)$/u, "$1;$2") : line).join("\n");
 }
 
 function realign(file: string): void {
-	spawnSync(process.execPath, [join(ROOT, "product/engine/typescript/06_align-tables.ts"), "--file", file, "--write"], { cwd: ROOT, encoding: "utf8" });
+	spawnSync(process.execPath, [join(ROOT, "product/engine/typescript/07_align-tables.ts"), "--file", file, "--write"], { cwd: ROOT, encoding: "utf8" });
 	spawnSync(process.execPath, [join(ROOT, "product/engine/typescript/00_normalize-imports.ts"), "--write", file], { cwd: ROOT, encoding: "utf8" });
 }
 

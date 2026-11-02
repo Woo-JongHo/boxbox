@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
-import      { readFileSync, writeFileSync } from "node:fs"                          ;
-import      { relative                    } from "node:path"                        ;
+import      { readFileSync, writeFileSync } from "node:fs"                                ;
+import      { relative                    } from "node:path"                              ;
 
-import      { displayWidth                } from "@/common/display-width.ts"        ;
-import      { updateFileAtomically        } from "@/common/safe-file.ts"               ;
-import      { compareTypeScriptLayout     } from "@/typescript/layout-preservation.ts" ;
-import      { repositoryFile              } from "@/typescript/load-source-file.ts" ;
+import      { displayWidth                } from "@/common/01_display-width.ts"           ;
+import      { updateFileAtomically        } from "@/common/12_safe-file.ts"               ;
+import      { compareTypeScriptLayout     } from "@/typescript/17_layout-preservation.ts" ;
+import      { repositoryFile              } from "@/typescript/15_load-source-file.ts"    ;
 
 interface ImportRow {
 	readonly text  : string ;

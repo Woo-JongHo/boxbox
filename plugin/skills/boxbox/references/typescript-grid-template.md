@@ -1,7 +1,7 @@
 # TypeScript Grid Template
 
 Except where a section is explicitly authoring-only, examples have the same horizontal form as
-`06_align-tables.ts --write` output. When this document and the checker output differ, **the checker wins**; the
+`07_align-tables.ts --write` output. When this document and the checker output differ, **the checker wins**; the
 gap/insert distinction per axis follows the [authoring axis contract in the readability contract](readability-contract.md).
 Each role section is an independent table and does not borrow another section's longest value.
 
@@ -310,7 +310,7 @@ The following measurement command is for the development skill, where `<SKILL>/e
 Public plugin checks and fixes use the bundled launcher described in its SKILL.md.
 
 ```bash
-bun <SKILL>/engine/measure-layout.ts src/cli.ts \
+bun <SKILL>/engine/03_measure-layout.ts src/cli.ts \
   --lines 52-62 \
   --tokens ':#1|(#1|)#1|=>' \
   --center-cell '(#1' \
@@ -321,7 +321,7 @@ If the result is not `center(()=ok`, existing spaces were reused as width or the
 
 ## Function map
 
-Put a reading map of the file's functions at the top of a feature implementation file. `08_function-map.ts` checks drift between the map and the declarations.
+Put a reading map of the file's functions at the top of a feature implementation file. `09_function-map.ts` checks drift between the map and the declarations.
 
 ```ts
 // GROUP | FUNCTION        | INPUT              | RETURN  | CALLS             | ROLE
@@ -329,4 +329,4 @@ Put a reading map of the file's functions at the top of a feature implementation
 // BUILD | runBuildCommand  | args, dependencies | Promise | writeSessions     | build run
 ```
 
-GROUP is the role section in the file (RUN, LIST, STATE, ...), INPUT lists parameter names, and CALLS lists call targets in the file. Check drift with `08_function-map.ts --file <target file>`, and generate a skeleton with `--scaffold`.
+GROUP is the role section in the file (RUN, LIST, STATE, ...), INPUT lists parameter names, and CALLS lists call targets in the file. Check drift with `09_function-map.ts --file <target file>`, and generate a skeleton with `--scaffold`.

@@ -1,13 +1,13 @@
-import      { afterEach, describe, expect, test                } from "bun:test"                    ;
-import      { chmodSync, mkdirSync, mkdtempSync, readdirSync   } from "node:fs"                     ;
-import      { readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs"                     ;
-import      { join                                             } from "node:path"                   ;
+import      { afterEach, describe, expect, test                          } from "bun:test"                       ;
+import      { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync } from "node:fs"                        ;
+import      { readFileSync, rmSync, symlinkSync, writeFileSync           } from "node:fs"                        ;
+import      { join                                                       } from "node:path"                      ;
 
-import      { APPROVAL_VERSIONS, documentResolver              } from "@/common/approval-gate.ts"   ;
-import type { ApprovalRegistry                                 } from "@/common/approval-gate.ts"   ;
-import      { contentHashOf, sectionHash                       } from "@/common/examples.ts"        ;
-import type { Example                                          } from "@/common/examples.ts"        ;
-import      { runFormatPipeline                                } from "@/common/format-pipeline.ts" ;
+import      { APPROVAL_VERSIONS, documentResolver                        } from "@/common/18_approval-gate.ts"   ;
+import type { ApprovalRegistry                                           } from "@/common/18_approval-gate.ts"   ;
+import      { contentHashOf, sectionHash                                 } from "@/common/17_examples.ts"        ;
+import type { Example                                                    } from "@/common/17_examples.ts"        ;
+import      { runFormatPipeline                                          } from "@/common/21_format-pipeline.ts" ;
 
 const workspaces: string[] = [];
 
@@ -36,9 +36,9 @@ function registry(root: string, language: "typescript" | "python", key: string, 
 	const counter  = example(`${rule}-counter`, language, rule, "bad")           ;
 	const document = readFileSync(join(root, "docs/rules.md"), "utf8")           ;
 	return {
-		conventions : [{ schemaVersion: 1, id: rule, key, pattern: "DEFINE", status, scope: "src/**", examples: [positive.id, counter.id], versions: APPROVAL_VERSIONS, approvedBy: "synthetic-test-approver", date: "2026-10-04", layer: "project" }],
-		examples    : new Map([[positive.id, positive], [counter.id, counter]]),
-		decisions   : new Map([[rule, { schemaVersion: 1, id: rule, kind: "rule", layer: "convention", ref: "docs/rules.md#Table alignment", docHash: sectionHash(document, "Table alignment"), examples: [positive.id, counter.id], approvedBy: "synthetic-test-approver", date: "2026-10-04" }]]),
+		conventions : [{ schemaVersion: 1, id: rule, key, pattern: "DEFINE", status, scope: "src/**", examples: [positive.id, counter.id], versions: APPROVAL_VERSIONS, approvedBy: "synthetic-test-approver", date: "2026-10-04", layer: "project" }]                                              ,
+		examples    : new Map([[positive.id, positive], [counter.id, counter]])                                                                                                                                                                                                                     ,
+		decisions   : new Map([[rule, { schemaVersion: 1, id: rule, kind: "rule", layer: "convention", ref: "docs/rules.md#Table alignment", docHash: sectionHash(document, "Table alignment"), examples: [positive.id, counter.id], approvedBy: "synthetic-test-approver", date: "2026-10-04" }]]) ,
 	};
 }
 
@@ -59,6 +59,19 @@ afterEach(() => {
 const TS_KEY = "v1|typescript|SourceFile|declaration-equals|equals>call-open-paren>call-close-paren>semicolon" ;
 const PY_KEY = "v1|python|-|table|name>equal>value"                                                            ;
 
+for (const formatted of [false, true]) test(`Python warning literals survive preview, apply and fixed-point recheck with formatted strings ${formatted}`, async () => {
+	const root   = workspace()                                                                     ;
+	const target = join(root, "src/warning.py")                                                    ;
+	const source = 'PAT = "\\d+"\na=1\nlonger=2\nthird=3\n' + (formatted ? 'text = f"{1}"\n' : '') ;
+	writeFileSync(target, source);
+	const options = { root, file: "src/warning.py", language: "python" as const, registry: registry(root, "python", PY_KEY), resolveDocument: documentResolver(root) } ;
+	const preview = await runFormatPipeline({ ...options, dryRun: true })                                                                                              ;
+	expect(preview.written                           ).toBe(false ) ;
+	expect(readFileSync(target, "utf8")              ).toBe(source) ;
+	expect((await runFormatPipeline(options)).written).toBe(true  ) ;
+	expect((await runFormatPipeline(options)).written).toBe(false ) ;
+}, 60_000);
+
 for (const scenario of [
 	{
 		language: "typescript" as const, name: "TypeScript", file: "sample.ts", key: TS_KEY,
@@ -71,8 +84,8 @@ for (const scenario of [
 		formatterBody: `import { readFileSync, writeFileSync } from "node:fs"; const p=process.argv[2]; writeFileSync(p,readFileSync(p,"utf8").replaceAll("=", " = "));`,
 	},
 ]) test(`the real ${scenario.name} pipeline writes only the approved working copy and stays fixed on rerun`, async () => {
-	const root   = workspace()                      ;
-	const target = join(root, "src", scenario.file) ;
+	const root   = workspace()                           ;
+	const target = join     (root, "src", scenario.file) ;
 	writeFileSync(target, scenario.source);
 	const options = {
 		root, file: `src/${scenario.file}`, language: scenario.language,
@@ -96,8 +109,8 @@ for (const scenario of [
 	{ language: "typescript" as const, file: "sample.ts", key: TS_KEY, source: "const a=fn(1);\nconst longer=fn(22);\nconst mid=fn(333);\n" },
 	{ language: "python" as const, file: "sample.py", key: PY_KEY, source: "a=1\nlonger=22\nmid=333\n" },
 ]) test(`standalone ${scenario.language} alignment previews and writes with the same approval and fixed-point safeguards`, async () => {
-	const root   = workspace()                      ;
-	const target = join(root, "src", scenario.file) ;
+	const root   = workspace()                           ;
+	const target = join     (root, "src", scenario.file) ;
 	writeFileSync(target, scenario.source);
 	const options = { root, file: `src/${scenario.file}`, language: scenario.language, registry: registry(root, scenario.language, scenario.key), resolveDocument: documentResolver(root) } ;
 	const preview = await runFormatPipeline({ ...options, dryRun: true })                                                                                                                   ;
@@ -114,9 +127,9 @@ for (const scenario of [
 }, 60_000);
 
 test("the TypeScript pipeline writes the same result even with a symlink in the root path", async () => {
-	const root   = workspace()                                                                        ;
-	const linked = join(import.meta.dir, `boxbox-format-link-${Math.random().toString(16).slice(2)}`) ;
-	const target = join(root, "src/sample.ts")                                                        ;
+	const root   = workspace()                                                                             ;
+	const linked = join     (import.meta.dir, `boxbox-format-link-${Math.random().toString(16).slice(2)}`) ;
+	const target = join     (root, "src/sample.ts"                                                       ) ;
 	symlinkSync(root, linked);
 	workspaces.push(linked);
 	writeFileSync(target, "const a=fn(1);\nconst longer=fn(22);\nconst mid=fn(333);\n");
@@ -174,7 +187,7 @@ describe("format pipeline fails closed", () => {
 	});
 
 	test("a missing executable and an approval refusal each close before writing", async () => {
-		const root    = workspace()                          ;
+		const root    = workspace ()                         ;
 		const missing = pythonCase(root, `process.exit(0);`) ;
 		await expect(runFormatPipeline({ ...missing.options, formatter: { command: "boxbox-no-such-formatter", args: ["{file}"], timeoutMs: 100 } })).rejects.toThrow("executable not found");
 		const denied = pythonCase(root, `process.exit(0);`, "rejected");
@@ -197,18 +210,18 @@ describe("format pipeline fails closed", () => {
 	});
 
 	test("does not write when the approval rules are empty or the second full run differs", async () => {
-		const root  = workspace()                          ;
+		const root  = workspace ()                         ;
 		const empty = pythonCase(root, `process.exit(0);`) ;
 		await expect(runFormatPipeline({ ...empty.options, registry: { conventions: [], examples: new Map(), decisions: new Map() } })).rejects.toThrow("approval denied");
 
-		const changing = pythonCase(root, `import { appendFileSync } from "node:fs"; appendFileSync(process.argv[2], "# tick\\n");`) ;
-		const before   = readFileSync(changing.target)                                                                               ;
+		const changing = pythonCase  (root, `import { appendFileSync } from "node:fs"; appendFileSync(process.argv[2], "# tick\\n");`) ;
+		const before   = readFileSync(changing.target                                                                                ) ;
 		await expect(runFormatPipeline(changing.options)).rejects.toThrow("byte fixed point");
 		expect(readFileSync(changing.target).equals(before)).toBe(true);
 	});
 
 	test("external edits and provenance changes are detected right before commit", async () => {
-		const root     = workspace()                          ;
+		const root     = workspace ()                         ;
 		const external = pythonCase(root, `process.exit(0);`) ;
 		await expect(runFormatPipeline({ ...external.options, beforeCommit: () => writeFileSync(external.target, "external=True\n") })).rejects.toThrow("target changed before commit");
 		expect(readFileSync(external.target, "utf8")).toBe("external=True\n");
@@ -218,4 +231,21 @@ describe("format pipeline fails closed", () => {
 		await expect(runFormatPipeline({ ...provenance.options, provenance: () => revision, beforeCommit: () => { revision = "two"; } })).rejects.toThrow("provenance changed");
 		expect(leftovers(root)).toEqual([]);
 	});
+});
+
+test("Python refuses invalid initial UTF-8 before preview or formatter execution", async () => {
+	const root    = workspace()                                                                                                                                                                          ;
+	const target  = join(root, "src/invalid.py")                                                                                                                                                         ;
+	const marker  = join(root, "formatter-ran")                                                                                                                                                          ;
+	const inputs  = [Buffer.from([0xff, 0x0a]), Buffer.from("\uFEFFa=1\n"), Buffer.from("a=1\rb=2")]                                                                                                     ;
+	const body    = `import { writeFileSync } from "node:fs"; writeFileSync(${JSON.stringify(marker)}, "ran"); writeFileSync(process.argv[2], "a=1\\nlonger=2\\nthird=3\\n");`                           ;
+	const options = { root, file: "src/invalid.py", language: "python" as const, formatter: formatter(root, body), registry: registry(root, "python", PY_KEY), resolveDocument: documentResolver(root) } ;
+	for (const bytes of inputs) {
+		writeFileSync(target, bytes);
+		for (const dryRun of [true, false]) {
+			await expect(runFormatPipeline({ ...options, dryRun })).rejects.toThrow("Unsupported Python source encoding");
+			expect(existsSync(marker)).toBe(false);
+			expect(readFileSync(target).equals(bytes)).toBe(true);
+		}
+	}
 });

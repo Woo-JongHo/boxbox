@@ -2,12 +2,12 @@
  * Harness for per-language alignment suites. Each language test checks preservation, idempotence, golden,
  * traps and no alignment of 2-row groups with this one function. Language-specific properties are added by each test file's own test() calls.
  */
-import      { readFileSync                  } from "node:fs"                  ;
-import      { expect, test                  } from "bun:test"                 ;
-import      { compareParse, parserAvailable } from "@/common/parse-check.ts"  ;
-import      { changedLines                  } from "@/common/preservation.ts" ;
-import      { alignSource                   } from "@/common/table-engine.ts" ;
-import type { LineProfiler                  } from "@/common/table-engine.ts" ;
+import      { readFileSync                  } from "node:fs"                     ;
+import      { expect, test                  } from "bun:test"                    ;
+import      { compareParse, parserAvailable } from "@/common/08_parse-check.ts"  ;
+import      { changedLines                  } from "@/common/09_preservation.ts" ;
+import      { alignSource                   } from "@/common/06_table-engine.ts" ;
+import type { LineProfiler                  } from "@/common/06_table-engine.ts" ;
 
 export interface LanguageSuiteInput {
 	readonly aligner     : LineProfiler;

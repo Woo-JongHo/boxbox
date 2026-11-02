@@ -1,11 +1,11 @@
-import      { afterEach, describe, expect, test                } from "bun:test"                           ;
-import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                            ;
-import      { tmpdir                                           } from "node:os"                            ;
-import      { join, resolve                                    } from "node:path"                          ;
-import      { preservesTokens                                  } from "@/typescript/token-preservation.ts" ;
-import type { ResultEnvelope                                   } from "@/common/result-json.ts"            ;
+import      { afterEach, describe, expect, test                } from "bun:test"                              ;
+import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                               ;
+import      { tmpdir                                           } from "node:os"                               ;
+import      { join, resolve                                    } from "node:path"                             ;
+import      { preservesTokens                                  } from "@/typescript/16_token-preservation.ts" ;
+import type { ResultEnvelope                                   } from "@/common/24_result-json.ts"            ;
 
-const script               = resolve(import.meta.dir, "../product/engine/typescript/06_align-tables.ts") ;
+const script               = resolve(import.meta.dir, "../product/engine/typescript/07_align-tables.ts") ;
 const workspaces: string[] = []                                                                          ;
 
 afterEach(() => {

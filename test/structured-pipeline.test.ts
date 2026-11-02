@@ -1,14 +1,22 @@
-import { afterEach, expect, test } from "bun:test";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import      { afterEach, expect, test             } from "bun:test"                       ;
+import      {
+              existsSync                        ,
+              mkdirSync                         ,
+              mkdtempSync                       ,
+              readFileSync                      ,
+              readdirSync                       ,
+              rmSync                            ,
+              writeFileSync
+                                                  } from "node:fs"                        ;
+import      { tmpdir                              } from "node:os"                        ;
+import      { join                                } from "node:path"                      ;
 
-import { APPROVAL_VERSIONS, documentResolver } from "@/common/approval-gate.ts";
-import type { ApprovalRegistry } from "@/common/approval-gate.ts";
-import { contentHashOf, sectionHash } from "@/common/examples.ts";
-import type { Example } from "@/common/examples.ts";
-import { runFormatPipeline } from "@/common/format-pipeline.ts";
-import type { StructuredLanguage } from "@/structured/index.ts";
+import      { APPROVAL_VERSIONS, documentResolver } from "@/common/18_approval-gate.ts"   ;
+import type { ApprovalRegistry                    } from "@/common/18_approval-gate.ts"   ;
+import      { contentHashOf, sectionHash          } from "@/common/17_examples.ts"        ;
+import type { Example                             } from "@/common/17_examples.ts"        ;
+import      { runFormatPipeline                   } from "@/common/21_format-pipeline.ts" ;
+import type { StructuredLanguage                  } from "@/structured/00_index.ts"       ;
 
 const roots: string[] = [];
 
@@ -35,9 +43,9 @@ function registry(root: string, language: StructuredLanguage): ApprovalRegistry 
 	const exampleIds = examples.map(example => example.id              ) ;
 	const document   = readFileSync(join(root, "docs/rules.md"), "utf8") ;
 	return {
-		conventions : [{ schemaVersion: 1, id, key: `v1|${language}|${language === "json" ? "object" : "block-map"}|mapping|key-colon>value`, pattern: "DEFINE", status: "approved", scope: `**/*.${language === "json" ? "json" : "yaml"}`, examples: exampleIds, versions: APPROVAL_VERSIONS, approvedBy: "synthetic-test-approver", date: "2026-10-21", layer: "project" }],
-		examples    : new Map(examples.map(example => [example.id, example])),
-		decisions   : new Map([[id, { schemaVersion: 1, id, kind: "rule", layer: "convention", ref: "docs/rules.md#Structured mapping", docHash: sectionHash(document, "Structured mapping"), examples: exampleIds, approvedBy: "synthetic-test-approver", date: "2026-10-21" }]]),
+		conventions : [{ schemaVersion: 1, id, key: `v1|${language}|${language === "json" ? "object" : "block-map"}|mapping|key-colon>value`, pattern: "DEFINE", status: "approved", scope: `**/*.${language === "json" ? "json" : "yaml"}`, examples: exampleIds, versions: APPROVAL_VERSIONS, approvedBy: "synthetic-test-approver", date: "2026-10-21", layer: "project" }] ,
+		examples    : new Map(examples.map(example => [example.id, example]))                                                                                                                                                                                                                                                                                                  ,
+		decisions   : new Map([[id, { schemaVersion: 1, id, kind: "rule", layer: "convention", ref: "docs/rules.md#Structured mapping", docHash: sectionHash(document, "Structured mapping"), examples: exampleIds, approvedBy: "synthetic-test-approver", date: "2026-10-21" }]])                                                                                             ,
 	};
 }
 

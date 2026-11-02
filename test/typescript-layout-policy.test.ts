@@ -1,19 +1,19 @@
-import      { describe, expect, test           } from "bun:test"                      ;
-import      { cpSync, mkdtempSync              } from "node:fs"                       ;
-import      { tmpdir                           } from "node:os"                       ;
-import      { join, resolve                    } from "node:path"                     ;
+import      { describe, expect, test           } from "bun:test"                         ;
+import      { cpSync, mkdtempSync              } from "node:fs"                          ;
+import      { tmpdir                           } from "node:os"                          ;
+import      { join, resolve                    } from "node:path"                        ;
 
 import layoutData from "../product/rules/base/typescript-layout.json" with { type: "json" };
 
-import      { AXIS_NOTES, KIND_AXES, ROW_KINDS } from "@/typescript/grid-kinds.ts"    ;
-import type { DetectedRow                      } from "@/typescript/grid-kinds.ts"    ;
+import      { AXIS_NOTES, KIND_AXES, ROW_KINDS } from "@/typescript/13_grid-kinds.ts"    ;
+import type { DetectedRow                      } from "@/typescript/13_grid-kinds.ts"    ;
 import      {
               IMPLEMENTED_LAYOUT_KINDS       ,
               minimumRowsOf                  ,
               TYPESCRIPT_LAYOUT_POLICY       ,
               validateLayoutAxisNotes        ,
               validateTypeScriptLayoutPolicy ,
-                                               } from "@/typescript/layout-policy.ts" ;
+                                               } from "@/typescript/14_layout-policy.ts" ;
 
 const ROOT = resolve(import.meta.dir, "..");
 
@@ -96,7 +96,7 @@ describe("TypeScript layout policy data", () => {
 		const root = mkdtempSync(join(tmpdir(), "boxbox-layout-policy-"));
 		cpSync(join(ROOT, "product/engine"), join(root, "engine"), { recursive: true });
 		cpSync(join(ROOT, "product/rules" ), join(root, "rules" ), { recursive: true });
-		const entry = join         (root, "engine/typescript/layout-policy.ts"                                                                                                                                                     ) ;
+		const entry = join         (root, "engine/typescript/14_layout-policy.ts"                                                                                                                                                  ) ;
 		const run   = Bun.spawnSync(["bun", "-e", `import { TYPESCRIPT_LAYOUT_POLICY as policy } from ${JSON.stringify(entry)}; console.log(policy.schemaVersion, policy.language)`], { cwd: root, stderr: "pipe", stdout: "pipe" }) ;
 		expect(run.exitCode               ).toBe(0               ) ;
 		expect(run.stdout.toString().trim()).toBe("1 typescript") ;

@@ -1,11 +1,11 @@
-import      { describe, expect, test                             } from "bun:test"                   ;
-import      { readdirSync, readFileSync                          } from "node:fs"                    ;
-import      { join                                               } from "node:path"                  ;
-import      { alignSource                                        } from "@/common/table-engine.ts"   ;
-import      { GENRES, PARAGRAPH_PURPOSES, PATTERNS, ROLES, UNITS } from "@/common/grammar-ids.ts"    ;
-import      { patternOf, surfaceOf, validateSurface              } from "@/common/surface.ts"        ;
-import      { PYTHON_ALIGNER                                     } from "@/python/profile.ts"        ;
-import      { KIND_AXES                                          } from "@/typescript/grid-kinds.ts" ;
+import      { describe, expect, test                             } from "bun:test"                      ;
+import      { readdirSync, readFileSync                          } from "node:fs"                       ;
+import      { join                                               } from "node:path"                     ;
+import      { alignSource                                        } from "@/common/06_table-engine.ts"   ;
+import      { GENRES, PARAGRAPH_PURPOSES, PATTERNS, ROLES, UNITS } from "@/common/04_grammar-ids.ts"    ;
+import      { patternOf, surfaceOf, validateSurface              } from "@/common/03_surface.ts"        ;
+import      { PYTHON_ALIGNER                                     } from "@/python/03_profile.ts"        ;
+import      { KIND_AXES                                          } from "@/typescript/13_grid-kinds.ts" ;
 
 const ROOT    = join        (import.meta.dir, ".."                                    ) ;
 const GRAMMAR = readFileSync(join(ROOT, "product/rules/references/grammar.md"), "utf8") ;

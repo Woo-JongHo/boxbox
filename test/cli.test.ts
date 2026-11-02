@@ -1,4 +1,4 @@
-import      { afterEach, describe, expect, test } from "bun:test"                  ;
+import      { afterEach, describe, expect, test } from "bun:test"                     ;
 import      {
               chmodSync                       ,
               existsSync                      ,
@@ -9,16 +9,16 @@ import      {
               rmSync                          ,
               symlinkSync                     ,
               writeFileSync                   ,
-                                                } from "node:fs"                   ;
-import      { join, resolve                     } from "node:path"                 ;
+                                                } from "node:fs"                      ;
+import      { join, resolve                     } from "node:path"                    ;
 
-import      { APPROVAL_VERSIONS                 } from "@/common/approval-gate.ts" ;
-import      { contentHashOf, sectionHash        } from "@/common/examples.ts"      ;
-import      { lookupKeyOf                       } from "@/common/signature.ts"     ;
+import      { APPROVAL_VERSIONS                 } from "@/common/18_approval-gate.ts" ;
+import      { contentHashOf, sectionHash        } from "@/common/17_examples.ts"      ;
+import      { lookupKeyOf                       } from "@/common/02_signature.ts"     ;
 
-const repository           = resolve(import.meta.dir, "..")               ;
-const cli                  = resolve(repository, "product/engine/cli.ts") ;
-const workspaces: string[] = []                                           ;
+const repository           = resolve(import.meta.dir, "..")                  ;
+const cli                  = resolve(repository, "product/engine/00_cli.ts") ;
+const workspaces: string[] = []                                              ;
 
 interface Invocation {
 	readonly status : number ;
@@ -39,10 +39,10 @@ function workspace(): string {
 function invoke(root: string, args: readonly string[], environment: Record<string, string> = {}): Invocation {
 	const source = `import { runCli } from ${JSON.stringify(cli)}; process.exitCode = await runCli(JSON.parse(process.env.BOXBOX_TEST_ARGS!), process.cwd());`;
 	const result = Bun.spawnSync([process.execPath, "-e", source], {
-		cwd    : root,
-		env    : { ...process.env, ...environment, BOXBOX_TEST_ARGS: JSON.stringify(args) },
-		stdout : "pipe",
-		stderr : "pipe",
+		cwd    : root                                                                       ,
+		env    : { ...process.env, ...environment, BOXBOX_TEST_ARGS: JSON.stringify(args) } ,
+		stdout : "pipe"                                                                     ,
+		stderr : "pipe"                                                                     ,
 	});
 	return { status: result.exitCode, stdout: result.stdout.toString(), stderr: result.stderr.toString() };
 }
@@ -59,6 +59,23 @@ function pythonFixture(root: string): string {
 	return path;
 }
 
+test("public Python alignment handles warning literals during preview, write and recheck", () => {
+	const root   = workspace()                                           ;
+	const target = join(root, "warning.py")                              ;
+	const source = 'PAT = "\\d+"\na=1\nlonger=2\nthird=3\ntext=f"{1}"\n' ;
+	writeFileSync(target, source);
+	const preview = invoke(root, ["align", "--file", "warning.py", "--dry-run", "--json"]);
+	expect(preview.status                    ).toBe(0     ) ;
+	expect(JSON.parse(preview.stdout).written).toBe(false ) ;
+	expect(readFileSync(target, "utf8")      ).toBe(source) ;
+	const applied = invoke(root, ["align", "--file", "warning.py", "--json"]);
+	expect(applied.status).toBe(0);
+	expect(JSON.parse(applied.stdout).written).toBe(true);
+	const rerun = invoke(root, ["align", "--file", "warning.py", "--json"]);
+	expect(rerun.status).toBe(0);
+	expect(JSON.parse(rerun.stdout).written).toBe(false);
+}, 60_000);
+
 function approvedPythonProject(root: string): void {
 	const directory = join(root     , ".boxbox"      ) ;
 	const docs      = join(directory, "docs"         ) ;
@@ -66,9 +83,9 @@ function approvedPythonProject(root: string): void {
 	mkdirSync(docs, { recursive: true });
 	writeFileSync(formatter, `import { readFileSync, writeFileSync } from "node:fs"; const file=process.argv[2]; writeFileSync(file, readFileSync(file,"utf8").replace(/\\s*=\\s*/gu," = "));\n`);
 	writeFileSync(join(directory, "config.json"), `${JSON.stringify({
-		schemaVersion : 2,
-		languages     : ["python"],
-		formatters    : { python: { command: process.execPath, args: [formatter, "{file}"], timeoutMs: 5_000 } },
+		schemaVersion : 2                                                                                        ,
+		languages     : ["python"]                                                                               ,
+		formatters    : { python: { command: process.execPath, args: [formatter, "{file}"], timeoutMs: 5_000 } } ,
 	}, null, 2)}\n`);
 	const key            = lookupKeyOf("python", undefined, "table", ["name", "equal", "value"]) ;
 	const document       = "# Test rules\n\n## Python table\nTest approval rule\n"               ;
@@ -209,9 +226,9 @@ describe("public CLI", () => {
 		expect(run.status).toBe(1);
 		expect(value.syntax.status).toBe("valid");
 		expect(value.formatReadiness).toMatchObject({
-			approvalEligible : true,
-			verification     : "not-run",
-			approvalFacts    : [{ conventionId: "test-python-table", layer: "project", status: "approved", proofComplete: true, reasons: [] }],
+			approvalEligible : true                                                                                                            ,
+			verification     : "not-run"                                                                                                       ,
+			approvalFacts    : [{ conventionId: "test-python-table", layer: "project", status: "approved", proofComplete: true, reasons: [] }] ,
 		});
 	});
 

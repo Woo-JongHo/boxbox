@@ -64,7 +64,7 @@ product/engine + product/rules/presets    -> pack:cli    -> dist/boxbox-<version
 product/installer + plugin/ + engine     -> pack:installer -> dist/installer/boxbox-plugin-<version>.tgz
 ```
 
-Installed engines keep preset records in `rules/presets/recommended/`. `rule-data.ts` resolves this location consistently
+Installed engines keep preset records in `rules/presets/recommended/`. `05_rule-data.ts` resolves this location consistently
 from source and from bundled Node code. The public CLI still excludes raw write runners, research tools and fixtures.
 The internal Node artifact remains a separate development artifact.
 
@@ -76,9 +76,11 @@ links into an ownership-marked development copy, includes the skill-local `@/*` 
 pinned runtime packages plus the TypeScript platform package after dependency preflight. It does not copy test fixtures
 or research data. Development source execution still requires Bun. Public installation uses the npm installer and Node instead.
 
+Engine folders stay flat. Every engine file, including shared, CLI, structured and helper files, has a unique contiguous numeric ID within its folder followed by a descriptive name (for example, `typescript/07_align-tables.ts` and `common/06_table-engine.ts`). IDs follow file order for navigation; they do not define workflow steps, execution order or dependencies. New files take the next ID in their folder. Imports still use the engine-root `@/` alias.
+
 Engine TypeScript modules use `@/` for imports within `product/engine/`. The one static module exception is
-`typescript/layout-policy.ts` loading `../../rules/base/typescript-layout.json`, which is owned by `product/rules/`.
-The runtime `new URL(..., import.meta.url)` paths in `hook.ts`, `report.ts` and `rule-data.ts` also remain relative
+`typescript/14_layout-policy.ts` loading `../../rules/base/typescript-layout.json`, which is owned by `product/rules/`.
+The runtime `new URL(..., import.meta.url)` paths in `02_hook.ts`, `01_report.ts` and `05_rule-data.ts` also remain relative
 because they locate files rather than importing engine modules. The layout checker enforces this boundary.
 
 ## Verification

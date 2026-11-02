@@ -1,4 +1,4 @@
-import      { afterEach, expect, test                                   } from "bun:test"                    ;
+import      { afterEach, expect, test                                   } from "bun:test"                       ;
 import      {
               existsSync                                              ,
               mkdirSync                                               ,
@@ -7,16 +7,16 @@ import      {
               readdirSync                                             ,
               rmSync                                                  ,
               writeFileSync
-                                                                        } from "node:fs"                     ;
-import      { join                                                      } from "node:path"                   ;
-import      { tmpdir                                                    } from "node:os"                     ;
+                                                                        } from "node:fs"                        ;
+import      { join                                                      } from "node:path"                      ;
+import      { tmpdir                                                    } from "node:os"                        ;
 
-import      { assertAlignmentOnly                                       } from "@/common/alignment-only.ts"  ;
-import      { APPROVAL_VERSIONS, documentResolver, loadApprovalRegistry } from "@/common/approval-gate.ts"   ;
-import type { ApprovalRegistry                                          } from "@/common/approval-gate.ts"   ;
-import      { contentHashOf, sectionHash                                } from "@/common/examples.ts"        ;
-import type { Example                                                   } from "@/common/examples.ts"        ;
-import      { runFormatPipeline                                         } from "@/common/format-pipeline.ts" ;
+import      { assertAlignmentOnly                                       } from "@/common/10_alignment-only.ts"  ;
+import      { APPROVAL_VERSIONS, documentResolver, loadApprovalRegistry } from "@/common/18_approval-gate.ts"   ;
+import type { ApprovalRegistry                                          } from "@/common/18_approval-gate.ts"   ;
+import      { contentHashOf, sectionHash                                } from "@/common/17_examples.ts"        ;
+import type { Example                                                   } from "@/common/17_examples.ts"        ;
+import      { runFormatPipeline                                         } from "@/common/21_format-pipeline.ts" ;
 
 const roots: string[] = []                                                            ;
 const preset          = join(import.meta.dir, "../product/rules/presets/recommended") ;
@@ -156,8 +156,8 @@ test("real vertical candidates are refused by Align and remain unapproved after 
 	const registry = verticalRegistry(options.root);
 	// Isolate TypeScript server state, as separate CLI invocations do.
 	const script = `
-		import { runFormatPipeline } from ${JSON.stringify(join(import.meta.dir, "../product/engine/common/format-pipeline.ts"))};
-		import { documentResolver } from ${JSON.stringify(join(import.meta.dir, "../product/engine/common/approval-gate.ts"))};
+		import { runFormatPipeline } from ${JSON.stringify(join(import.meta.dir, "../product/engine/common/21_format-pipeline.ts"))};
+		import { documentResolver } from ${JSON.stringify(join(import.meta.dir, "../product/engine/common/18_approval-gate.ts"))};
 		const options = JSON.parse(process.argv[1]);
 		options.registry.examples = new Map(options.registry.examples);
 		options.registry.decisions = new Map(options.registry.decisions);
@@ -190,4 +190,44 @@ test("real vertical candidates are refused by Align and remain unapproved after 
 	expect(applied.stderr.toString()   ).toContain  ("approval denied: no matching convention" ) ;
 	expect(applied.exitCode            ).toBe       (1                                         ) ;
 	expect(readFileSync(target, "utf8")).toBe       (source                                    ) ;
+}, 60_000);
+
+test("public Python preview and apply preserve PEP 701 literals and align completed-string successors", () => {
+	const literal = 'text = f"""{ """\na = 1\nlonger = 2\nthird = 3\n""" }"""\n' ;
+	const source  = literal + "alpha=1\nlonger=2\nthird=3\n"                     ;
+	const { target, options } = fixture("python", source);
+	const entry = join(import.meta.dir, "../product/packages/cli/entry.ts");
+	const invoke = (args: readonly string[]) => Bun.spawnSync([process.execPath, entry, "align", "--file", options.file, ...args, "--json"], {
+		cwd: options.root, stdout: "pipe", stderr: "pipe", timeout: 30_000,
+	});
+	const preview = invoke(["--dry-run"]);
+
+	expect(preview.exitCode).toBe(0);
+	const proposal = JSON.parse(preview.stdout.toString());
+
+	expect(proposal                                                                ).toMatchObject({ ok: true, written: false, fixedPoint: true, safety: { parserChecked: true } }) ;
+	expect(proposal.alignmentEdits.every((edit: { line: number }) => edit.line > 5)).toBe         (true                                                                           ) ;
+	expect(readFileSync(target, "utf8")                                            ).toBe         (source                                                                         ) ;
+	const applied = invoke([]);
+
+	expect(applied.exitCode).toBe(0);
+	const output = readFileSync(target, "utf8");
+
+	expect(output.slice(0, literal.length)).toBe(literal);
+	expect(output.slice(literal.length)).toBe("alpha  = 1\nlonger = 2\nthird  = 3\n");
+	expect(() => assertAlignmentOnly(Buffer.from(source), Buffer.from(output), "python")).not.toThrow();
+	const value = (synthetic: string) => {
+		// Only this fixed synthetic snippet is evaluated, never a user's file or a parser-validation input.
+		const result = Bun.spawnSync(["python3", "-c", synthetic + "\nimport json; print(json.dumps(text))\n"], { stdout: "pipe", stderr: "pipe" });
+		expect(result.exitCode).toBe(0);
+		return result.stdout.toString();
+	};
+
+	expect(value(output)).toBe(value(source));
+	const recheck = invoke([]);
+
+	expect(recheck.exitCode                                                                                              ).toBe   (0                       ) ;
+	expect(JSON.parse(recheck.stdout.toString()).written                                                                 ).toBe   (false                   ) ;
+	expect(readFileSync(target, "utf8")                                                                                  ).toBe   (output                  ) ;
+	expect(() => assertAlignmentOnly(Buffer.from(literal), Buffer.from(literal.replace("a = 1", "a      = 1")), "python")).toThrow("alignment-only refusal") ;
 }, 60_000);

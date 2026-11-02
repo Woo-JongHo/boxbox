@@ -1,9 +1,9 @@
-import      { describe, expect, test   } from "bun:test"                 ;
-import      { maskSource               } from "@/common/code-text.ts"    ;
-import type { CodeSyntax               } from "@/common/code-text.ts"    ;
-import      { alignSource              } from "@/common/table-engine.ts" ;
-import type { LineProfiler, RowProfile } from "@/common/table-engine.ts" ;
-import      { PYTHON_SYNTAX            } from "@/python/profile.ts"      ;
+import      { describe, expect, test        } from "bun:test"                    ;
+import      { maskSource                    } from "@/common/00_code-text.ts"    ;
+import type { CodeSyntax                    } from "@/common/00_code-text.ts"    ;
+import      { alignSource                   } from "@/common/06_table-engine.ts" ;
+import type { LineProfiler, RowProfile      } from "@/common/06_table-engine.ts" ;
+import      { PYTHON_ALIGNER, PYTHON_SYNTAX } from "@/python/03_profile.ts"      ;
 
 const SYNTAX: CodeSyntax = {
 	lineComments  : ["//"]                                    ,
@@ -158,4 +158,121 @@ describe("alignSource", () => {
 		expect(result.misaligned).toBe(2                             ) ;
 		expect(result.edits     ).toBe(0                             ) ;
 	});
+});
+
+/** Expand ASCII fixture tabs as a terminal would, independently of the engine width utility. */
+function fixtureColumn(line: string, marker: string): number {
+	let expanded = line;
+	while (expanded.includes("\t")) {
+		const index = expanded.indexOf("\t");
+		expanded = expanded.slice(0, index) + " ".repeat(4 - index % 4) + expanded.slice(index + 1);
+	}
+	return expanded.indexOf(marker);
+}
+
+describe("tab-bearing lossless cells", () => {
+	const cases = [
+		{
+			name: "middle annotation cells",
+			source: "a: X\t| Y = 1\nbb: Z | Y = 2\nccc: X | Y = 3",
+			columns: [[":", 4], ["=", 12]],
+		},
+		{
+			name: "first cells after mixed indentation",
+			source: '\t "a\tb": 1,\n\t "cc": 22,\n\t "ddd": 333,',
+			columns: [[":", 11], [",", 16]],
+		},
+		{
+			name: "last cells before comments",
+			source: 'a = "x\ty" # one\nbb = "z" # two\nccc = "w" # three',
+			columns: [["=", 4], ["#", 15]],
+		},
+		{
+			name: "prefix rows with optional defaults",
+			source: " a: Long\t| Y\n bb: X\t| Y = 2\n ccc: Z | Y = 3",
+			columns: [[":", 5], ["=", 16]],
+		},
+		{
+			name: "prefix terminal rows with tab-bearing bodies and comments",
+			source: ' a: Z | Y, # one\n bb: X\t| Y = "u\tv", # two\n ccc: Z | Y = "z", # three',
+			columns: [[":", 5], ["=", 16], [",", 26], ["#", 28]],
+		},
+	] as const;
+
+	test.each([...cases])("aligns $name at actual minimum display columns", ({ source, columns }) => {
+		const prefix   = source.startsWith('\t') ? "data = {\n" : source.startsWith(' ') ? (source.includes(',') ? "def f(\n" : "class C:\n") : "" ;
+		const suffix   = prefix.startsWith("data") ? "\n}" : prefix.startsWith("def") ? "\n):\n pass" : ""                                         ;
+		const document = prefix + source + suffix                                                                                                  ;
+		const once     = alignSource(document, PYTHON_ALIGNER, { minRows: 3, apply: true })                                                        ;
+		const lines    = once.output.split("\n").slice(prefix ? 1 : 0, (prefix ? 1 : 0) + source.split("\n").length)                               ;
+
+		expect(once.tables).toBe(1);
+		expect(once.refused).toEqual([]);
+		for (const [marker, column] of columns) {
+			expect(lines.filter(line => line.includes(marker)).map(line => fixtureColumn(line, marker))).toEqual(
+				lines.filter(line => line.includes(marker)).map(() => column),
+			);
+		}
+		for (const [index, line] of source.split("\n").entries()) {
+			expect(lines[index]!.match(/^[ \t]*/u)?.[0]).toBe(line.match(/^[ \t]*/u)?.[0]);
+			const masked  = maskSource(line, PYTHON_SYNTAX)                                 ;
+			const comment = masked.commentStarts[0]!                                        ;
+			const code    = (comment >= 0 ? line.slice(0, comment) : line).trimEnd()        ;
+			const profile = PYTHON_ALIGNER.profile(code, masked.text.slice(0, code.length)) ;
+			for (const slot of profile!.slots) expect(lines[index]).toContain(slot.text);
+			if (comment >= 0) expect(lines[index]).toContain(line.slice(comment));
+			expect(lines[index]).not.toMatch(/[ \t]+$/u);
+		}
+
+		const twice   = alignSource(once.output, PYTHON_ALIGNER, { minRows: 3, apply: true }) ;
+		const preview = alignSource(document   , PYTHON_ALIGNER, { minRows: 3, apply: false}) ;
+
+		expect(twice.output    ).toBe   (once.output ) ;
+		expect(twice.misaligned).toBe   (0           ) ;
+		expect(twice.edits     ).toBe   (0           ) ;
+		expect(preview.output  ).toBe   (document    ) ;
+		expect(preview.edits   ).toBe   (0           ) ;
+		expect(preview.details ).toEqual(once.details) ;
+	});
+});
+
+describe("Python formatted-string boundaries", () => {
+	const nested = 'text = f"""{ """\na = 1\nlonger = 2\nthird = 3\n""" }"""\n' ;
+	const table  = "alpha=1\nlonger=2\nthird=3\n"                               ;
+	const variants = [
+		nested,
+		nested.replace('f"""', 'rf"""'),
+		nested.replace('f"""', 'Fr"""'),
+		nested.replace('{ """', '{ # a quote " stays inside this replacement field\n """'),
+		'text = f"{"x"}"\n',
+		'text = f"{f"{1}"}"\n',
+		'text = f"""{1:{len("ab")}}"""\n',
+		'label = "\u{1f600}"; ' + nested,
+		nested.replaceAll("\n", "\r\n"),
+	];
+
+	test.each(variants)("protects completed formatted strings and resumes normal tables: %j", (prefix) => {
+		const source = prefix + table                                                   ;
+		const result = alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true }) ;
+		const mask   = maskSource(source, PYTHON_SYNTAX)                                ;
+
+		expect(result.output.slice(0, prefix.length)                                             ).toBe   (prefix                                ) ;
+		expect(result.tables                                                                     ).toBe   (1                                     ) ;
+		expect(result.details[0]!.startLine                                                      ).toBe   (prefix.split("\n").length             ) ;
+		expect(result.output.slice(prefix.length)                                                ).toBe   ("alpha  = 1\nlonger = 2\nthird  = 3\n") ;
+		expect(mask.text.length                                                                  ).toBe   (source.length                         ) ;
+		expect(mask.text.match(/\r?\n/gu)                                                        ).toEqual(source.match(/\r?\n/gu)               ) ;
+		expect(alignSource(result.output, PYTHON_ALIGNER, { minRows: 3, apply: true }).misaligned).toBe   (0                                     ) ;
+	});
+});
+
+
+test("tab-bearing cells retain minimum columns after a long prefix without a full-width synthetic prefix", () => {
+	const source = `${"a".repeat(50_000)} : "x\ty" ;\nb : "z" ;\nc : "w" ;`       ;
+	const result = alignSource(source, TEST_ALIGNER, { minRows: 3, apply: true }) ;
+
+	expect(result.tables                                                                   ).toBe     (1                       ) ;
+	expect(result.output.split("\n").map(line => fixtureColumn(line, ";"))                 ).toEqual  ([50_011, 50_011, 50_011]) ;
+	expect(result.output                                                                   ).toContain('"x\ty"'                ) ;
+	expect(alignSource(result.output, TEST_ALIGNER, { minRows: 3, apply: true }).misaligned).toBe     (0                       ) ;
 });
