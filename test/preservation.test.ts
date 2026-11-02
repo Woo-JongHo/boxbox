@@ -1,5 +1,6 @@
 import      { describe, expect, test } from "bun:test"                           ;
 import type { CodeSyntax             } from "@/common/code-text.ts"              ;
+import      { PYTHON_SYNTAX          } from "@/python/profile.ts"                ;
 import      { changedLines           } from "@/common/preservation.ts"           ;
 import      { alignSource            } from "@/common/table-engine.ts"           ;
 import      { preservesTokens        } from "@/typescript/token-preservation.ts" ;
@@ -86,4 +87,14 @@ describe("preservesTokens (TypeScript scanner)", () => {
 		expect(preservesTokens("let x = 1;", "letx = 1;"                    )).toBe(false) ;
 		expect(preservesTokens("a == b;"   , "a = = b;"                     )).toBe(false) ;
 	});
+});
+
+
+test("Python parser-owned formatted-string ranges protect literal bytes before sentinel substitution", () => {
+	const before    = 'text = f"""{ """\na = 1\nlonger = 2\nthird = 3\n""" }"""\n'             ;
+	const corrupted = before.replace("a = 1", "a      = 1").replace("third = 3", "third  = 3") ;
+
+	expect(changedLines(before, corrupted, PYTHON_SYNTAX)                                                  ).toEqual([1, 3]) ;
+	expect(changedLines(before, before.replace("text =", "text   ="), PYTHON_SYNTAX)                       ).toEqual([]    ) ;
+	expect(changedLines(before.replaceAll("\n", "\r\n"), corrupted.replaceAll("\n", "\r\n"), PYTHON_SYNTAX)).toEqual([1, 3]) ;
 });

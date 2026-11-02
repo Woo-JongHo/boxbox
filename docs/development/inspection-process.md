@@ -46,6 +46,14 @@ masking, lossless slot decomposition, adjacent rows with compatible signatures a
 YAML use a structured-document adapter. These adapters feed the same result lifecycle but retain separate parsing,
 candidate extraction and preservation logic. They emit [ResultEnvelope](../../product/engine/common/result-json.ts).
 
+### Python document analysis
+
+Python prepares one document-local CPython `ast`/`tokenize` analysis before its profile feeds the shared line planner.
+Container ownership constrains rows; formatted strings remain opaque original-source slices. AST UTF-8 byte columns
+and tokenizer character columns map separately to original UTF-16 offsets, retaining LF/CRLF. Unsupported encoding,
+BOM, lone CR and unpaired surrogates fail explicitly. Parser children run in isolated mode. Changed Python writes
+retain an independent AST-structure comparison; this does not execute source or approve additional rules.
+
 ### Current public write path
 
 [runFormatPipeline](../../product/engine/common/format-pipeline.ts) performs the following sequence:

@@ -1,19 +1,20 @@
 /**
- * CLI shared by every language's 01_group-regions.ts and 06_align-tables.ts shims.
- * Usage: 06_align-tables.ts --file <target file>... [--write] [--min-rows 3] [--explain <line>] [--json]
- *        01_group-regions.ts --file <target file>... [--min-rows 3]
+ * CLI shared by the TypeScript and Python grouping and alignment entrypoints.
+ * Usage: <language-aligner> --file <target file>... [--write] [--min-rows 3] [--explain <line>] [--json]
+ *        <language-grouper> --file <target file>... [--min-rows 3]
  * Fails with exit code 1 when anything is misaligned and --write is absent. --json prints the shared versioned
  * result (result-json.ts) instead of the text report.
  */
-import      { readFileSync, writeFileSync                         } from "node:fs"                  ;
-import      { relative, resolve                                   } from "node:path"                ;
-import      { compareParse                                        } from "@/common/parse-check.ts"  ;
-import      { updateFileAtomicallySync                            } from "@/common/safe-file.ts"    ;
-import      { alignSource                                         } from "@/common/table-engine.ts" ;
-import type { AlignResult, DetectedTable, LineProfiler, PairGroup } from "@/common/table-engine.ts" ;
-import      { envelope, summarize                                 } from "@/common/result-json.ts"  ;
-import      { indentDepth                                         } from "@/common/signature.ts"    ;
-import type { FileResult, GroupState, ResultGroup, ResultParse    } from "@/common/result-json.ts"  ;
+import      { readFileSync, writeFileSync                         } from "node:fs"                   ;
+import      { relative, resolve                                   } from "node:path"                 ;
+import      { compareParse, comparePythonStructure                } from "@/common/parse-check.ts"   ;
+import      { updateFileAtomicallySync                            } from "@/common/safe-file.ts"     ;
+import      { alignSource                                         } from "@/common/table-engine.ts"  ;
+import type { AlignResult, DetectedTable, LineProfiler, PairGroup } from "@/common/table-engine.ts"  ;
+import      { envelope, summarize                                 } from "@/common/result-json.ts"   ;
+import      { indentDepth                                         } from "@/common/signature.ts"     ;
+import type { FileResult, GroupState, ResultGroup, ResultParse    } from "@/common/result-json.ts"   ;
+import      { PythonSourceSyntaxError                             } from "@/python/string-ranges.ts" ;
 
 /** Re-exported so CodeSyntax can also be imported from this module. */
 export type { CodeSyntax } from "@/common/code-text.ts";
@@ -83,25 +84,52 @@ interface FileReport {
 	readonly failed  : boolean           ;
 }
 
+/** A parser-confirmed syntax rejection never creates candidate edits or guessed ranges. */
+function invalidSourceRun(source: string): FileRun {
+	const result: AlignResult = { output: source, groups: 0, tables: 0, misaligned: 0, edits: 0, details: [], pairs: [], refused: [] };
+	return { source, result, parsed: { status: "changed", tool: "python3" }, parseLines: ["  parse=changed tool=python3\n    Python source is invalid"] };
+}
+
+function decodeSource(aligner: LineProfiler, bytes: Uint8Array): string {
+	if (aligner.language !== "python") return Buffer.from(bytes).toString("utf8");
+	try { return new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes); }
+	catch { throw new Error("Unsupported Python source encoding: expected UTF-8"); }
+}
+
 function alignOnly(aligner: LineProfiler, absolute: string, minRows: number): FileRun {
-	const source = readFileSync(absolute, "utf8");
-	return {
-		source     : source                                                  ,
-		result     : alignSource(source, aligner, { minRows, apply: false }) ,
-		parsed     : { status: "not-run", tool: "" }                         ,
-		parseLines : []                                                      ,
-	};
+	const source = decodeSource(aligner, readFileSync(absolute));
+	try {
+		return {
+			source     : source                                                  ,
+			result     : alignSource(source, aligner, { minRows, apply: false }) ,
+			parsed     : { status: "not-run", tool: "" }                         ,
+			parseLines : []                                                      ,
+		};
+	} catch (error) {
+		if (aligner.language !== "python" || !(error instanceof PythonSourceSyntaxError)) throw error;
+		return invalidSourceRun(source);
+	}
 }
 
 function alignAndWrite(aligner: LineProfiler, absolute: string, minRows: number): FileRun {
 	let run!: FileRun;
 	updateFileAtomicallySync(absolute, ({ initial, working }) => {
-		const source = initial.toString("utf8"                                   ) ;
-		const result = alignSource     (source, aligner, { minRows, apply: true }) ;
+		const source = decodeSource(aligner, initial);
+		let result: AlignResult;
+		try {
+			result = alignSource(source, aligner, { minRows, apply: true });
+		} catch (error) {
+			if (aligner.language !== "python" || !(error instanceof PythonSourceSyntaxError)) throw error;
+			run = invalidSourceRun(source);
+			return;
+		}
 		run = { source, result, parsed: { status: "not-run", tool: "" }, parseLines: [] };
 		if (result.misaligned === 0) return;
 		// Even after the working copy is verified, the helper rechecks the original identity and bytes right before commit.
-		const parse = compareParse(aligner.language, source, result.output);
+		const diagnostics = compareParse(aligner.language, source, result.output);
+		const parse = aligner.language === "python" && diagnostics.status === "ok"
+			? comparePythonStructure(source, result.output)
+			: diagnostics;
 		run = { source, result, parsed: { status: parse.status, tool: parse.tool }, parseLines: [`  parse=${parse.status} tool=${parse.tool}${parse.delta.map(line => `\n    ${line}`).join("")}`] };
 		if (parse.status !== "changed") writeFileSync(working, result.output);
 	});

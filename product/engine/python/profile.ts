@@ -18,17 +18,14 @@
  * Its distinct assignment-value axis never inherits approval for the detailed value axis.
  * Refusal is safe; misrecognition is dangerous.
  */
-import type {
-              CodeSyntax        ,
-              LineProfiler      ,
-              RowProfile        ,
-              Slot              ,
-                                  } from "@/common/table-engine.ts"        ;
-import      { assignmentEnvelopes } from "@/python/assignment-envelope.ts" ;
+import type { CodeSyntax, LineProfiler, RowProfile, Slot, } from "@/common/table-engine.ts"        ;
+import      { pythonStringRanges                          } from "@/python/string-ranges.ts"       ;
+import      { assignment, assignmentEnvelopes             } from "@/python/assignment-envelope.ts" ;
 
 export const PYTHON_SYNTAX: CodeSyntax = {
-	lineComments  : ["#"] ,
-	blockComments : []    ,
+	protectedRanges : pythonStringRanges ,
+	lineComments    : ["#"]              ,
+	blockComments   : []                 ,
 	strings       : [
 		{ open : '"""' , close : '"""' , escape : true },
 		{ open : "'''" , close : "'''" , escape : true },
@@ -36,6 +33,9 @@ export const PYTHON_SYNTAX: CodeSyntax = {
 		{ open : "'"   , close : "'"   , escape : true },
 	],
 };
+
+import      { analyzePython } from "@/python/analysis.ts" ;
+import type { PythonRowKind } from "@/python/analysis.ts" ;
 
 const INDENT = "([ \\t]*)"                                              ;
 const NAME   = "([A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*)" ;
@@ -454,9 +454,55 @@ function profilePython(code: string, masked: string): RowProfile | null {
 	return null;
 }
 
+function preparePython(source: string) {
+	const analysis = analyzePython(source)                   ;
+	// Cache unique row ownership by physical line and grammar kind once per source.
+	const owners = new Map<string, string | null>();
+	for (const row of analysis.rows) {
+		const key = `${row.line}:${row.kind}`;
+		owners.set(key, owners.has(key) ? null : `${row.kind}:${row.owner}`);
+	}
+	const owner   = (index: number, kind: PythonRowKind): string | null => owners.get(`${index}:${kind}`) ?? null ;
+	const markers = new Map<number, string>()                                                                     ;
+	// Retain stable first-on-line order, exactly as the former stable sorted lookups did.
+	const params   = analysis.rows.filter(row => row.kind === "parameter").sort((a, b) => a.line - b.line) ;
+	const distinct = params.filter((row, index) => index === 0 || params[index - 1]!.line !== row.line)    ;
+	const lines    = source.split("\n")                                                                    ;
+	let cursor     = 0                                                                                     ;
+	for (const [index, line] of lines.entries()) {
+		while (cursor < distinct.length && distinct[cursor]!.line < index) cursor += 1;
+		if (!/^[ \t]*[*/][ \t]*,[ \t]*\r?$/u.test(line)) continue;
+		const before = distinct[cursor - 1] ;
+		const after  = distinct[cursor    ] ;
+		if (before && after && after.line > index && before.owner === after.owner) markers.set(index, `parameter:${before.owner}`);
+	}
+	return {
+		protectedRanges: analysis.formatted,
+		row(index: number, code: string, masked: string) {
+			const profile = profilePython(code, masked);
+			if (!profile) return null;
+			const axes = profile.slots.map(slot => slot.axis);
+			const kind: PythonRowKind = axes[0] === "key" ? "dictionary"
+				: axes[0]?.startsWith("open") ? "bundle"
+				: axes.at(-1) === "comma" ? axes.includes("colon") ? "parameter" : "keyword"
+				: "statement";
+			const region = owner(index, kind);
+			return region === null ? null : { profile, region };
+		},
+		project(index: number, code: string) {
+			const profile = assignment(code              ) ;
+			const region  = owner     (index, "statement") ;
+			return profile && region !== null ? { profile, region } : null;
+		},
+		transparent(index: number) { return markers.get(index) ?? null; },
+		unsafeEditLines: analysis.unsafeEditLines,
+	};
+}
+
 export const PYTHON_ALIGNER: LineProfiler = {
-	language      : "python",
-	syntax        : PYTHON_SYNTAX,
+	prepareSource : preparePython ,
+	language      : "python"      ,
+	syntax        : PYTHON_SYNTAX ,
 	// cell/arg axes of bundle rows are followed by a comma or the close slot, so aligning them never creates trailing whitespace.
 	columnAxes    : ["name", "attribute", "chain-target", "key", "type", "value", "cell", "arg"],
 	// Colon and equal get one space after the longest cell (`name : type = value`), matching the TypeScript tables;

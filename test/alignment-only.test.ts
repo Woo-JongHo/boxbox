@@ -191,3 +191,43 @@ test("real vertical candidates are refused by Align and remain unapproved after 
 	expect(applied.exitCode            ).toBe       (1                                         ) ;
 	expect(readFileSync(target, "utf8")).toBe       (source                                    ) ;
 }, 60_000);
+
+test("public Python preview and apply preserve PEP 701 literals and align completed-string successors", () => {
+	const literal = 'text = f"""{ """\na = 1\nlonger = 2\nthird = 3\n""" }"""\n' ;
+	const source  = literal + "alpha=1\nlonger=2\nthird=3\n"                     ;
+	const { target, options } = fixture("python", source);
+	const entry = join(import.meta.dir, "../product/packages/cli/entry.ts");
+	const invoke = (args: readonly string[]) => Bun.spawnSync([process.execPath, entry, "align", "--file", options.file, ...args, "--json"], {
+		cwd: options.root, stdout: "pipe", stderr: "pipe", timeout: 30_000,
+	});
+	const preview = invoke(["--dry-run"]);
+
+	expect(preview.exitCode).toBe(0);
+	const proposal = JSON.parse(preview.stdout.toString());
+
+	expect(proposal                                                                ).toMatchObject({ ok: true, written: false, fixedPoint: true, safety: { parserChecked: true } }) ;
+	expect(proposal.alignmentEdits.every((edit: { line: number }) => edit.line > 5)).toBe         (true                                                                           ) ;
+	expect(readFileSync(target, "utf8")                                            ).toBe         (source                                                                         ) ;
+	const applied = invoke([]);
+
+	expect(applied.exitCode).toBe(0);
+	const output = readFileSync(target, "utf8");
+
+	expect(output.slice(0, literal.length)).toBe(literal);
+	expect(output.slice(literal.length)).toBe("alpha  = 1\nlonger = 2\nthird  = 3\n");
+	expect(() => assertAlignmentOnly(Buffer.from(source), Buffer.from(output), "python")).not.toThrow();
+	const value = (synthetic: string) => {
+		// Only this fixed synthetic snippet is evaluated, never a user's file or a parser-validation input.
+		const result = Bun.spawnSync(["python3", "-c", synthetic + "\nimport json; print(json.dumps(text))\n"], { stdout: "pipe", stderr: "pipe" });
+		expect(result.exitCode).toBe(0);
+		return result.stdout.toString();
+	};
+
+	expect(value(output)).toBe(value(source));
+	const recheck = invoke([]);
+
+	expect(recheck.exitCode                                                                                              ).toBe   (0                       ) ;
+	expect(JSON.parse(recheck.stdout.toString()).written                                                                 ).toBe   (false                   ) ;
+	expect(readFileSync(target, "utf8")                                                                                  ).toBe   (output                  ) ;
+	expect(() => assertAlignmentOnly(Buffer.from(literal), Buffer.from(literal.replace("a = 1", "a      = 1")), "python")).toThrow("alignment-only refusal") ;
+}, 60_000);

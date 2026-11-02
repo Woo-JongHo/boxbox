@@ -15,10 +15,18 @@ export interface BlockCommentSpec {
 	readonly close : string;
 }
 
+/** Half-open [start, end) UTF-16 code-unit offsets into the original source; source geometry, including newlines, is retained. */
+export interface ProtectedRange {
+	readonly start : number;
+	readonly end   : number;
+}
+
 export interface CodeSyntax {
 	readonly lineComments  : readonly string[]           ;
 	readonly blockComments : readonly BlockCommentSpec[] ;
 	readonly strings       : readonly StringSpec[]       ;
+	/** Optional parser-owned opaque spans, measured on original source before any whitespace sentinels. */
+	readonly protectedRanges?: (source: string) => readonly ProtectedRange[];
 }
 
 export interface MaskedSource {
@@ -30,20 +38,19 @@ export interface MaskedSource {
 	readonly opensInBlock  : readonly boolean[];
 }
 
-const longestFirst = (values: readonly string[]): readonly string[] => [...values].sort((left, right) => right.length - left.length);
-
-export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
+export function maskSource(source: string, syntax: CodeSyntax, protectedRanges = syntax.protectedRanges?.(source) ?? []): MaskedSource {
 	// UTF-16 code unit array — indexOf/startsWith coordinates must match array indices exactly.
 	// A code point array ([...source]) would shift coordinates at every non-BMP character (surrogate pair).
-	const masked                    = source.split("")                                    ;
-	const strings                   = longestFirst(syntax.strings.map(spec => spec.open)) ;
-	const commentStarts : number[]  = [-1]                                                ;
-	const opensInBlock  : boolean[] = [false]                                             ;
-	let line                        = 0                                                   ;
-	let lineStart                   = 0                                                   ;
-	let inBlock                     = false                                               ;
-	let blockClose                  = ""                                                  ;
-	let index                       = 0                                                   ;
+	const masked                    = source.split("")                                                                ;
+	const strings                   = [...syntax.strings].sort((left, right) => right.open.length - left.open.length) ;
+	const protectedEnds             = new Map(protectedRanges.map(range => [range.start, range.end]))                 ;
+	const commentStarts : number[]  = [-1]                                                                            ;
+	const opensInBlock  : boolean[] = [false]                                                                         ;
+	let line                        = 0                                                                               ;
+	let lineStart                   = 0                                                                               ;
+	let inBlock                     = false                                                                           ;
+	let blockClose                  = ""                                                                              ;
+	let index                       = 0                                                                               ;
 
 	const blank = (from: number, length: number): void => {
 		for (let offset = 0; offset < length; offset += 1) masked[from + offset] = " ";
@@ -91,18 +98,15 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 			continue;
 		}
 
-		const openToken = strings.find(token => source.startsWith(token, index));
-		if (openToken) {
-			const spec  = syntax.strings.find(candidate => candidate.open === openToken) ;
-			const spec0 = spec as StringSpec                                             ;
-			const end = consumeString(
-				source,
-				masked,
-				index,
-				index + openToken.length,
-				spec0.close,
-				spec0.escape
-			);
+		const protectedEnd = protectedEnds.get(index)                                                                                                       ;
+		const spec         = protectedEnd === undefined ? strings.find(candidate => source.startsWith(candidate.open, index)) : undefined                   ;
+		const end          = protectedEnd ?? (spec && spec.open ? consumeString(source, masked, index + spec.open.length, spec.close, spec.escape) : index) ;
+		if (end > index) {
+			if (protectedEnd !== undefined) {
+				for (let position = index; position < end; position += 1) {
+					if (source[position] !== "\n" && source[position] !== "\r") masked[position] = " ";
+				}
+			}
 			// A string may span lines (triple quotes, backslash-newline). Its newlines still start lines, or every later
 			// line's commentStarts and opensInBlock would shift by one.
 			for (let newline = source.indexOf("\n", index); newline >= 0 && newline < end; newline = source.indexOf("\n", newline + 1)) {
@@ -121,7 +125,7 @@ export function maskSource(source: string, syntax: CodeSyntax): MaskedSource {
 }
 
 /** Masks the interior from after open to before close with spaces, and returns the index after close. */
-function consumeString(source: string, masked: string[], open: number, from: number, close: string, escape: boolean): number {
+function consumeString(source: string, masked: string[], from: number, close: string, escape: boolean): number {
 	let index = from;
 	while (index < source.length) {
 		if (source.startsWith(close, index)) return index + close.length;

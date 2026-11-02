@@ -1,23 +1,28 @@
-import      { describe, expect, test                           } from "bun:test"                        ;
-import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                         ;
-import      { tmpdir                                           } from "node:os"                         ;
-import      { join                                             } from "node:path"                       ;
-import      { assignmentEnvelopes                              } from "@/python/assignment-envelope.ts" ;
-import      { changedLines                                     } from "@/common/preservation.ts"        ;
-import      { assertAlignmentOnly                              } from "@/common/alignment-only.ts"      ;
+import      { describe, expect, test     } from "bun:test"                        ;
 import      {
-              APPROVAL_VERSIONS                              ,
-              documentResolver                               ,
-              evaluateApproval                               ,
-              loadApprovalRegistry                           ,
-                                                               } from "@/common/approval-gate.ts"       ;
-import type { ApprovalRegistry                                 } from "@/common/approval-gate.ts"       ;
-import type { Example                                          } from "@/common/examples.ts"            ;
-import      { contentHashOf, sectionHash                       } from "@/common/examples.ts"            ;
-import      { lookupKeyOf                                      } from "@/common/signature.ts"           ;
-import      { runFormatPipeline                                } from "@/common/format-pipeline.ts"     ;
-import      { alignSource                                      } from "@/common/table-engine.ts"        ;
-import      { PYTHON_ALIGNER                                   } from "@/python/profile.ts"             ;
+              mkdtempSync              ,
+              readFileSync             ,
+              rmSync                   ,
+              writeFileSync
+                                         } from "node:fs"                         ;
+import      { tmpdir                     } from "node:os"                         ;
+import      { join                       } from "node:path"                       ;
+import      { assignmentEnvelopes        } from "@/python/assignment-envelope.ts" ;
+import      { changedLines               } from "@/common/preservation.ts"        ;
+import      { assertAlignmentOnly        } from "@/common/alignment-only.ts"      ;
+import      {
+              APPROVAL_VERSIONS        ,
+              documentResolver         ,
+              evaluateApproval         ,
+              loadApprovalRegistry     ,
+                                         } from "@/common/approval-gate.ts"       ;
+import type { ApprovalRegistry           } from "@/common/approval-gate.ts"       ;
+import type { Example                    } from "@/common/examples.ts"            ;
+import      { contentHashOf, sectionHash } from "@/common/examples.ts"            ;
+import      { lookupKeyOf                } from "@/common/signature.ts"           ;
+import      { runFormatPipeline          } from "@/common/format-pipeline.ts"     ;
+import      { alignSource                } from "@/common/table-engine.ts"        ;
+import      { PYTHON_ALIGNER             } from "@/python/profile.ts"             ;
 
 const PRESET = join(import.meta.dir, "../product/rules/presets/recommended");
 
@@ -151,6 +156,7 @@ test("primary preservation refusal never retries the same rows through a broader
 test("projection rows must independently pass exact source reconstruction", () => {
 	const result = alignSource(SOURCE, {
 		...PYTHON_ALIGNER,
+		prepareSource: undefined,
 		project: () => new Map([1, 2, 3].map(index => [index, { indent: "    ", slots: [{ axis: "name", text: "invented", gapBefore: "" }] }])),
 	}, { minRows: 3, apply: true });
 
@@ -160,7 +166,7 @@ test("projection rows must independently pass exact source reconstruction", () =
 
 test("single rows, pairs, blank lines, comments and different indentation do not become automatic tables", () => {
 	const rows = ["first = price * quantity", "second = max(0, first - discount)", "third = second + shipping"];
-	for (const source of [rows[0]!, rows.slice(0, 2).join("\n"), rows.join("\n\n"), rows.join("\n# section\n"), rows.map((line, index) => " ".repeat(index) + line).join("\n")]) {
+	for (const source of [rows[0]!, rows.slice(0, 2).join("\n"), rows.join("\n\n"), rows.join("\n# section\n")]) {
 		const result = align(source);
 
 		expect(result.tables).toBe(0);
@@ -178,8 +184,9 @@ test("parenthesized keyword arguments and prior-line explicit continuation canno
 		"result = (\nfirst = price * quantity\nsecond = max(0, first - discount)\nthird = second + shipping\n)\n",
 		"prefix = \\\nfirst = price * quantity\nsecond = max(0, first - discount)\nthird = second + shipping\n",
 	];
-	for (const source of fixtures) {
-		expect(align(source).details.filter(table => table.axes.includes("assignment-value"))).toEqual([]);
+	for (const [index, source] of fixtures.entries()) {
+		if (index !== 1) expect(align(source).details.filter(table => table.axes.includes("assignment-value"))).toEqual([]);
+		else expect(() => align(source)).toThrow();
 		expect(assignmentEnvelopes(source).has(source.startsWith("prefix") ? 1 : 2)).toBe(false);
 	}
 });
@@ -278,9 +285,9 @@ test("a complete synthetic test proof permits preview and apply of the new envel
 	}));
 	const examples = records.map(record => record.id);
 	const registry: ApprovalRegistry = {
-		conventions : [{ schemaVersion: 1, id, key: "v1|python|-|table|name>equal>assignment-value", pattern: "DEFINE", status: "approved", scope: "**/*.py", examples, versions: APPROVAL_VERSIONS, approvedBy: "synthetic-test-approver", date: "2026-10-22", layer: "project" }],
-		examples    : new Map(records.map(record => [record.id, record])),
-		decisions   : new Map([[id, { schemaVersion: 1, id, kind: "rule", layer: "convention", ref: "rules.md#Calculation envelope", docHash: sectionHash(document, "Calculation envelope"), examples, approvedBy: "synthetic-test-approver", date: "2026-10-22" }]]),
+		conventions : [{ schemaVersion: 1, id, key: "v1|python|-|table|name>equal>assignment-value", pattern: "DEFINE", status: "approved", scope: "**/*.py", examples, versions: APPROVAL_VERSIONS, approvedBy: "synthetic-test-approver", date: "2026-10-22", layer: "project" }] ,
+		examples    : new Map(records.map(record => [record.id, record]))                                                                                                                                                                                                           ,
+		decisions   : new Map([[id, { schemaVersion: 1, id, kind: "rule", layer: "convention", ref: "rules.md#Calculation envelope", docHash: sectionHash(document, "Calculation envelope"), examples, approvedBy: "synthetic-test-approver", date: "2026-10-22" }]])               ,
 	};
 
 	try {

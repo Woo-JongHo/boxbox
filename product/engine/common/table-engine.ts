@@ -34,7 +34,29 @@ export interface RowProfile {
 	readonly slots  : readonly Slot[];
 }
 
+/** A source-confirmed row and an internal region identity; the identity never enters approval keys. */
+export interface PreparedRow {
+	readonly profile: RowProfile;
+	readonly region: string;
+}
+
+/** One invocation's source analysis and edit safety checks. */
+export interface PreparedSource {
+	/** Opaque original-source spans consumed by the shared mask. */
+	readonly protectedRanges: readonly { readonly start: number; readonly end: number }[];
+	/** Decompose a physical row only when the source owner admits it. */
+	row(index: number, code: string, masked: string): PreparedRow | null;
+	/** Offer a lower-priority outer row in its original region. */
+	project(index: number, code: string, masked: string): PreparedRow | null;
+	/** Return the marker's owning region, or null when it is not transparent. */
+	transparent(index: number, masked: string): string | null;
+	/** Identify edits that fail the original-source preservation proof. */
+	unsafeEditLines(edits: readonly TableEdit[]): readonly number[];
+}
+
 export interface LineProfiler {
+	/** Prepare one source document; absent for legacy profilers. */
+	prepareSource?(source: string): PreparedSource;
 	readonly language      : string;
 	readonly syntax        : CodeSyntax;
 	/** Cells on these axes are right-padded to the column width (compared columns). */
@@ -147,6 +169,7 @@ interface AcceptedRow {
 	readonly index   : number        ;
 	readonly profile : RowProfile    ;
 	readonly comment : string | null ;
+	readonly region  : string | null ;
 }
 
 /** Both primary and projected rows must reconstruct the same original code with whitespace-only gaps. */
@@ -175,8 +198,8 @@ function prefixRelated(left: RowProfile, right: RowProfile, terminalAxes: readon
 }
 
 /** True when only transparent marker lines sit between two rows. */
-function adjacent(previous: number, next: number, transparent: ReadonlySet<number>): boolean {
-	for (let index = previous + 1; index < next; index += 1) if (!transparent.has(index)) return false;
+function adjacent(previous: AcceptedRow, next: AcceptedRow, transparent: ReadonlyMap<number, string | null>): boolean {
+	for (let index = previous.index + 1; index < next.index; index += 1) if (!transparent.has(index) || transparent.get(index) !== previous.region) return false;
 	return true;
 }
 
@@ -185,7 +208,7 @@ function longestProfile(run: readonly AcceptedRow[]): RowProfile {
 	return run.reduce((longest, row) => row.profile.slots.length > longest.slots.length ? row.profile : longest, run[0].profile);
 }
 
-function contiguousRuns(rows: readonly AcceptedRow[], prefixRuns: boolean, terminalAxes: readonly string[], transparent: ReadonlySet<number>): AcceptedRow[][] {
+function contiguousRuns(rows: readonly AcceptedRow[], prefixRuns: boolean, terminalAxes: readonly string[], transparent: ReadonlyMap<number, string | null>): AcceptedRow[][] {
 	const runs  : AcceptedRow[][] = [] ;
 	let current : AcceptedRow[]   = [] ;
 	const flush = (): void => {
@@ -194,8 +217,8 @@ function contiguousRuns(rows: readonly AcceptedRow[], prefixRuns: boolean, termi
 	};
 
 	for (const row of rows) {
-		const previous   = current.at(-1)                                                ;
-		const contiguous = !previous || adjacent(previous.index, row.index, transparent) ;
+		const previous   = current.at(-1)                                                                      ;
+		const contiguous = !previous || adjacent(previous, row, transparent) && previous.region === row.region ;
 		const sameShape  = previous && (prefixRuns
 			? prefixRelated(longestProfile(current), row.profile, terminalAxes)
 			: signatureOf(previous.profile) === signatureOf(row.profile));
@@ -259,7 +282,7 @@ function columnWidths(aligner: LineProfiler, run: readonly AcceptedRow[]): numbe
 }
 
 /** Select one owner per row. A primary table remains reserved even if the preservation gate later refuses it. */
-function projectedRuns(primary: AcceptedRow[][], projected: readonly AcceptedRow[], minRows: number, prefixRuns: boolean, terminalAxes: readonly string[], transparent: ReadonlySet<number>): AcceptedRow[][] {
+function projectedRuns(primary: AcceptedRow[][], projected: readonly AcceptedRow[], minRows: number, prefixRuns: boolean, terminalAxes: readonly string[], transparent: ReadonlyMap<number, string | null>): AcceptedRow[][] {
 	const primaryTables  = primary.filter(run => run.length >= minRows)                                                             ;
 	const reserved       = new Set(primaryTables.flatMap(run => run.map(row => row.index)))                                         ;
 	const fallback       = contiguousRuns(projected.filter(row => !reserved.has(row.index)), prefixRuns, terminalAxes, transparent) ;
@@ -273,15 +296,16 @@ function projectedRuns(primary: AcceptedRow[][], projected: readonly AcceptedRow
 }
 
 export function alignSource(source: string, aligner: LineProfiler, options: AlignOptions): AlignResult {
-	const minRows     = Math     .max  (3, options.minRows    ) ;
-	const mask        = maskSource     (source, aligner.syntax) ;
-	const lines       = source   .split("\n"                  ) ;
-	const maskedLines = mask.text.split("\n"                  ) ;
+	const prepared    = aligner.prepareSource?.(source)                                    ;
+	const minRows     = Math     .max  (3, options.minRows    )                            ;
+	const mask        = maskSource     (source, aligner.syntax, prepared?.protectedRanges) ;
+	const lines       = source   .split("\n"                  )                            ;
+	const maskedLines = mask.text.split("\n"                  )                            ;
 
-	const projections               = aligner.project?.(source) ;
-	const accepted  : AcceptedRow[] = []                        ;
-	const transparent               = new Set<number>()         ;
-	const projected : AcceptedRow[] = []                        ;
+	const projections               = prepared ? undefined : aligner.project?.(source) ;
+	const accepted  : AcceptedRow[] = []                                               ;
+	const transparent               = new Map<number, string | null>()                 ;
+	const projected : AcceptedRow[] = []                                               ;
 
 	lines.forEach((raw, index) => {
 		// CRLF files carry \r at every line end; profiling strips it and the rebuilt line gets it back, so a
@@ -290,25 +314,34 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		const line       = hadCR ? raw.slice(0, -1) : raw                                             ;
 		const maskedLine = hadCR ? (maskedLines[index] ?? "").slice(0, -1) : maskedLines[index] ?? "" ;
 		if (mask.opensInBlock[index]) return;
-		const commentStart = mask.commentStarts[index]                                 ;
-		const codeEnd      = commentStart >= 0 ? commentStart : line.length            ;
-		const comment      = codeEnd < line.length ? line.slice(codeEnd).trim() : null ;
+		const commentStart = mask.commentStarts[index]                                                                    ;
+		const codeEnd      = commentStart >= 0 ? commentStart : line.length                                               ;
+		const comment      = codeEnd < line.length ? (prepared ? line.slice(codeEnd) : line.slice(codeEnd).trim()) : null ;
 		// Leftover spaces before a comment are replaced by the computed gap on reassembly, so strip them from the code part.
 		const code       = comment !== null ? line.slice(0, codeEnd).replace(/\s+$/u, "") : line.slice(0, codeEnd)             ;
 		const maskedCode = comment !== null ? maskedLine.slice(0, codeEnd).replace(/\s+$/u, "") : maskedLine.slice(0, codeEnd) ;
 		if (maskedCode.trim() === "") return;
-		const profile = aligner.profile(code, maskedCode);
-		if (profile && losslessProfile(profile, code)) accepted.push({ index, profile, comment });
-		else if (comment === null && aligner.transparentRow?.(maskedCode)) transparent.add(index);
+		const row = prepared ? prepared.row(index, code, maskedCode) : (() => {
+			const profile = aligner.profile(code, maskedCode);
+			return profile ? { profile, region: null } : null;
+		})();
+		if (row && losslessProfile(row.profile, code)) accepted.push({ index, profile: row.profile, comment, region: row.region });
+		else if (comment === null) {
+			const region = prepared ? prepared.transparent(index, maskedCode) : aligner.transparentRow?.(maskedCode) ? null : undefined;
+			if (region !== null && region !== undefined || !prepared && region === null) transparent.set(index, region ?? null);
+		}
 
-		const projection = projections?.get(index);
-		if (projection && losslessProfile(projection, code)) projected.push({ index, profile: projection, comment });
+		const projection = prepared ? prepared.project(index, code, maskedCode) : (() => {
+			const profile = projections?.get(index);
+			return profile ? { profile, region: null } : null;
+		})();
+		if (projection && losslessProfile(projection.profile, code)) projected.push({ index, profile: projection.profile, comment, region: projection.region });
 	});
 
-	const terminalAxes = aligner.terminalAxes ?? []                                                                                              ;
-	const prefixRuns   = aligner.prefixRuns === true                                                                                             ;
-	const primary      = contiguousRuns(accepted, prefixRuns, terminalAxes, transparent)                                                         ;
-	const runs         = projections === undefined ? primary : projectedRuns(primary, projected, minRows, prefixRuns, terminalAxes, transparent) ;
+	const terminalAxes = aligner.terminalAxes ?? []                                                                                                           ;
+	const prefixRuns   = aligner.prefixRuns === true                                                                                                          ;
+	const primary      = contiguousRuns(accepted, prefixRuns, terminalAxes, transparent)                                                                      ;
+	const runs         = !prepared && projections === undefined ? primary : projectedRuns(primary, projected, minRows, prefixRuns, terminalAxes, transparent) ;
 
 	const candidates  : DetectedTable[] = [] ;
 	const wideRefused : DetectedTable[] = [] ;
@@ -352,7 +385,7 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 			if (withCR === raw) return;
 			tableEdits.push({ index: row.index, before: raw, after: withCR });
 		});
-		candidates.push({
+		const table: DetectedTable = {
 			startLine : run[0].index + 1                                 ,
 			endLine   : run[run.length - 1].index + 1                    ,
 			rows      : run.length                                       ,
@@ -360,10 +393,12 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 			axes      : longestProfile(run).slots.map(slot => slot.axis) ,
 			widths    : widths                                           ,
 			edits     : tableEdits                                       ,
-		});
+		};
+		candidates.push(table);
 	}
 
-	const { details, refused } = refuseUnsafeTables(source, lines, candidates, aligner);
+	const { details, refused } = refuseUnsafeTables(source, lines, candidates, aligner, prepared);
+
 	const editsByLine = new Map(details.flatMap(table => table.edits.map(edit => [edit.index, edit] as const)));
 	const output = options.apply
 		? lines.map((line, index) => editsByLine.get(index)?.after ?? line).join("\n")
@@ -386,14 +421,14 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
  * repeats until the output passes. A failure that no remaining edited line explains (an edit that broke string or
  * comment state for later lines) refuses every table that still has edits.
  */
-function refuseUnsafeTables(source: string, lines: readonly string[], tables: readonly DetectedTable[], aligner: LineProfiler): { readonly details: readonly DetectedTable[]; readonly refused: readonly DetectedTable[] } {
+function refuseUnsafeTables(source: string, lines: readonly string[], tables: readonly DetectedTable[], aligner: LineProfiler, prepared?: PreparedSource): { readonly details: readonly DetectedTable[]; readonly refused: readonly DetectedTable[] } {
 	let kept                       = [...tables] ;
 	const refused: DetectedTable[] = []          ;
 	for (;;) {
 		const afterByLine = new Map(kept.flatMap(table => table.edits.map(edit => [edit.index, edit.after] as const)));
 		if (afterByLine.size === 0) break;
-		const candidate = lines.map((line, index) => afterByLine.get(index) ?? line).join("\n") ;
-		const changed   = new Set(changedLines(source, candidate, aligner.syntax))              ;
+		const candidate = lines.map((line, index) => afterByLine.get(index) ?? line).join("\n")                                                              ;
+		const changed   = new Set(prepared ? prepared.unsafeEditLines(kept.flatMap(table => table.edits)) : changedLines(source, candidate, aligner.syntax)) ;
 		if (changed.size === 0) break;
 		const culprits = kept.filter(table => table.edits.some(edit => changed.has(edit.index)))                ;
 		const drop     = new Set(culprits.length > 0 ? culprits : kept.filter(table => table.edits.length > 0)) ;

@@ -200,8 +200,11 @@ describe("tab-bearing lossless cells", () => {
 	] as const;
 
 	test.each([...cases])("aligns $name at actual minimum display columns", ({ source, columns }) => {
-		const once  = alignSource      (source, PYTHON_ALIGNER, { minRows: 3, apply: true }) ;
-		const lines = once.output.split("\n"                                               ) ;
+		const prefix   = source.startsWith('\t') ? "data = {\n" : source.startsWith(' ') ? (source.includes(',') ? "def f(\n" : "class C:\n") : "" ;
+		const suffix   = prefix.startsWith("data") ? "\n}" : prefix.startsWith("def") ? "\n):\n pass" : ""                                         ;
+		const document = prefix + source + suffix                                                                                                  ;
+		const once     = alignSource(document, PYTHON_ALIGNER, { minRows: 3, apply: true })                                                        ;
+		const lines    = once.output.split("\n").slice(prefix ? 1 : 0, (prefix ? 1 : 0) + source.split("\n").length)                               ;
 
 		expect(once.tables).toBe(1);
 		expect(once.refused).toEqual([]);
@@ -222,16 +225,47 @@ describe("tab-bearing lossless cells", () => {
 		}
 
 		const twice   = alignSource(once.output, PYTHON_ALIGNER, { minRows: 3, apply: true }) ;
-		const preview = alignSource(source     , PYTHON_ALIGNER, { minRows: 3, apply: false}) ;
+		const preview = alignSource(document   , PYTHON_ALIGNER, { minRows: 3, apply: false}) ;
 
 		expect(twice.output    ).toBe   (once.output ) ;
 		expect(twice.misaligned).toBe   (0           ) ;
 		expect(twice.edits     ).toBe   (0           ) ;
-		expect(preview.output  ).toBe   (source      ) ;
+		expect(preview.output  ).toBe   (document    ) ;
 		expect(preview.edits   ).toBe   (0           ) ;
 		expect(preview.details ).toEqual(once.details) ;
 	});
 });
+
+describe("Python formatted-string boundaries", () => {
+	const nested = 'text = f"""{ """\na = 1\nlonger = 2\nthird = 3\n""" }"""\n' ;
+	const table  = "alpha=1\nlonger=2\nthird=3\n"                               ;
+	const variants = [
+		nested,
+		nested.replace('f"""', 'rf"""'),
+		nested.replace('f"""', 'Fr"""'),
+		nested.replace('{ """', '{ # a quote " stays inside this replacement field\n """'),
+		'text = f"{"x"}"\n',
+		'text = f"{f"{1}"}"\n',
+		'text = f"""{1:{len("ab")}}"""\n',
+		'label = "\u{1f600}"; ' + nested,
+		nested.replaceAll("\n", "\r\n"),
+	];
+
+	test.each(variants)("protects completed formatted strings and resumes normal tables: %j", (prefix) => {
+		const source = prefix + table                                                   ;
+		const result = alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true }) ;
+		const mask   = maskSource(source, PYTHON_SYNTAX)                                ;
+
+		expect(result.output.slice(0, prefix.length)                                             ).toBe   (prefix                                ) ;
+		expect(result.tables                                                                     ).toBe   (1                                     ) ;
+		expect(result.details[0]!.startLine                                                      ).toBe   (prefix.split("\n").length             ) ;
+		expect(result.output.slice(prefix.length)                                                ).toBe   ("alpha  = 1\nlonger = 2\nthird  = 3\n") ;
+		expect(mask.text.length                                                                  ).toBe   (source.length                         ) ;
+		expect(mask.text.match(/\r?\n/gu)                                                        ).toEqual(source.match(/\r?\n/gu)               ) ;
+		expect(alignSource(result.output, PYTHON_ALIGNER, { minRows: 3, apply: true }).misaligned).toBe   (0                                     ) ;
+	});
+});
+
 
 test("tab-bearing cells retain minimum columns after a long prefix without a full-width synthetic prefix", () => {
 	const source = `${"a".repeat(50_000)} : "x\ty" ;\nb : "z" ;\nc : "w" ;`       ;
