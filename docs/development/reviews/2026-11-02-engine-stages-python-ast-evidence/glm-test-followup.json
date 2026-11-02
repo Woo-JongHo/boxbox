@@ -1,0 +1,38 @@
+{
+  "candidateId": "1e160aecc4f043e1",
+  "productSourceUnchanged": true,
+  "change": "Strengthen successful comment-table assertion after GLM non-blocking observation3: actual table accepted, no refusal, exact complete aligned output.",
+  "focusedTests": {
+    "passed": 11,
+    "failed": 0,
+    "expectations": 25,
+    "exitCode": 0,
+    "logSha256": "9916444a73d3ca28f3c52a5231e28cdd218e5daa2bb0e9a2a2042b0130db7fa4"
+  },
+  "fullGateScope": "The 725/0 full check is final test revision2, before this test-only strengthening; no full-gate or artifact rerun is claimed.",
+  "beforeTestSha256": "165813c4c61f788429a8d569f2577af95e63364b17db75dd73150cb0dd626523",
+  "afterTestSha256": "b654416c3a1b05603e8795280ae1a5e5af01a93c6102a3612e90cdb873ab24e5",
+  "commands": [
+    {
+      "argv": [
+        "bun",
+        "product/engine/typescript/00_normalize-imports.ts",
+        "--layout-only",
+        "test/python-source-analysis.test.ts"
+      ],
+      "exitCode": 0
+    },
+    {
+      "argv": [
+        "bun",
+        "product/engine/typescript/06_align-tables.ts",
+        "--file",
+        "test/python-source-analysis.test.ts",
+        "--json"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "typecheckExitCode": 0,
+  "typecheckLog": "Empty captured tsc stdout/stderr; process exit0."
+}

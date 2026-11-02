@@ -1,0 +1,13 @@
+{
+  "reviewer": "Claude",
+  "requestedModel": "Claude Opus (opus), fixed/no fallback",
+  "actualModel": "claude-opus-5-5",
+  "provider": "firstParty",
+  "verdict": "PASS",
+  "terminalReason": "completed",
+  "cliExit": 0,
+  "isError": false,
+  "testsExecuted": false,
+  "cliExecuted": false,
+  "accountCostTokenMetadata": "omitted"
+}

@@ -1,0 +1,23 @@
+{
+  "agent": "boxbox-final-review",
+  "pure": true,
+  "effectiveWildcardPolicies": {
+    "*": "deny",
+    "doom_loop": "ask",
+    "external_directory": "deny",
+    "question": "deny",
+    "plan_enter": "deny",
+    "plan_exit": "deny",
+    "read": "allow",
+    "glob": "allow",
+    "grep": "allow"
+  },
+  "scopedExternalDirectory": "Candidate evidence root only; exact private policy hash is recorded in the audit receipt.",
+  "sourceExecution": "denied",
+  "mutations": "denied",
+  "delegation": "denied",
+  "observedTools": {
+    "read": 7
+  },
+  "permissionConfigRuntimeVerified": true
+}

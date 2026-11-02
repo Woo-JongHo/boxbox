@@ -1,0 +1,12 @@
+{
+  "candidateId": "1e160aecc4f043e1",
+  "artifactSha256": "7f6470c382e11b0c66135b5a45f48d14b3a7553b886fd183348ad5ba03173898",
+  "checkedArtifactCandidate": "8af93033d704109c",
+  "checkedArtifactByteIdentical": true,
+  "smokeExitCode": 0,
+  "smokeSourceInputDrift": [],
+  "smokeSummarySha256": "09dfc86633f3658a6a49334acf93bb958389f21a5379ffb2959ea726fc190d98",
+  "smokeLogSha256": "fcb38ac066e4f400f039a3b27819ddaa9a6a2f3ea2dfe8c801c48834ea6bb288",
+  "smokeReceiptSha256": "61b4831680a96d9a15ce996a350e555a5356110d48ad531fd78f81e792db3a1f",
+  "note": "The rebuilt final tarball is byte-identical. Reuse the completed immutable artifact journey; no installed smoke rerun or forged new invocation."
+}

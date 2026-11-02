@@ -1,0 +1,96 @@
+{
+  "budget": 60,
+  "used": 58,
+  "unit": "bounded authoring and focused verification cycle",
+  "cycles": [
+    {
+      "id": "stage-migration",
+      "requestedModel": "gpt-6.1-sol",
+      "effort": "high",
+      "cycles": 3,
+      "status": "focused-tests-and-self-use-passed",
+      "note": "50moves,110refs; sequentialwhitespacepass108files;finalsentinelsandregression. Rootwillreconcileexactcountwithworker."
+    },
+    {
+      "id": "python-ast-core",
+      "requestedModel": "gpt-6.1-terra",
+      "effort": "high",
+      "cycles": 12,
+      "status": "focused122-plus-actual39-type-layout-hover-passed",
+      "note": "Fullfinalmutationstillrequiredafterstandalonehelperconsolidation; finalrootcheckcoversit"
+    },
+    {
+      "id": "measurement04",
+      "requestedModel": "gpt-6.1-terra",
+      "cycles": 9,
+      "status": "126focused-plus11final-measurement-tests-passed"
+    },
+    {
+      "id": "flat-layout-steering",
+      "requestedModel": "gpt-6.1-sol",
+      "cycles": 3,
+      "status": "55moves-132preservation-10behaviorpassed;knownreporttestfailurequeued"
+    },
+    {
+      "id": "sonnet-closure-private-preparation",
+      "requestedModel": "gpt-6.1-terra",
+      "cycles": 7
+    },
+    {
+      "id": "sonnet-closure-flat",
+      "requestedModel": "gpt-6.1-terra",
+      "cycles": 5,
+      "status": "focused162/default+81/3.9;writerreleased"
+    },
+    {
+      "id": "docs-core-and-flat",
+      "requestedModel": "gpt-6-luna",
+      "cycles": 5,
+      "status": "validator+8tests+links passed;writerreleased"
+    },
+    {
+      "id": "docs-private-preparation",
+      "requestedModel": "gpt-6-luna",
+      "cycles": 3
+    },
+    {
+      "id": "root-frozen-integration",
+      "cycles": 1,
+      "status": "inprogress;62files700groups0changes selfusepassed"
+    },
+    {
+      "id": "advisory-catalog-path-fix",
+      "cycles": 1,
+      "status": "exact path substitution;validator pending"
+    },
+    {
+      "id": "measurement-test-closure",
+      "cycles": 2
+    },
+    {
+      "id": "full-gate-test-contract-closure",
+      "cycles": 2
+    },
+    {
+      "id": "reference-test-layout-and-proof",
+      "cycles": 2
+    },
+    {
+      "id": "root-full-gate-revision2",
+      "cycles": 1,
+      "status": "pending"
+    },
+    {
+      "id": "glm-comment-test-strengthening",
+      "cycles": 1,
+      "status": "focused11pass+00/06;tsc pending"
+    },
+    {
+      "id": "final-documentation-evidence-closure",
+      "cycles": 1,
+      "status": "validator,links,diff andsource132hashes passed"
+    }
+  ],
+  "privateLedgerSha256": "0b1542234ad41435acf73ea5c38c73579e26dcd3e148b0d11fa0454a0bc09b01",
+  "note": "Portable summary; full per-command transcripts and worker handoffs stay outside the checkout. Read-only review tool turns and setup are separate from candidate authoring cycles."
+}

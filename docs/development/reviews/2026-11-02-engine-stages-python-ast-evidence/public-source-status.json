@@ -1,0 +1,9 @@
+{
+  "exitCode": 0,
+  "state": "STALE",
+  "runId": "179fcba2-054a-4238-a426-383fa46e381d",
+  "latestRunState": "NO_CHANGES",
+  "checkedTargets": 0,
+  "checkedFiles": [],
+  "note": "Latest guard status is distinct from the frozen62-file engine audit and725-test gate. NO_CHANGES/zero targets is not PASS. Documentation-only closure can make the old guard snapshot stale."
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "file": "product/engine/typescript/08_function-map.ts",
+    "line": 103,
+    "text": "console.log(`// TODO      | ${declaration.name}${pad} | ${inputs} | TODO   | TODO  | TODO`);",
+    "textExistedInInitialBaseline": true
+  },
+  {
+    "file": "test/parse-check.test.ts",
+    "line": 21,
+    "text": "test.skipIf(!parserAvailable(language))(`${language}: a parse-changing edit is detected and a whitespace edit is not`, () => {",
+    "textExistedInInitialBaseline": true
+  }
+]
