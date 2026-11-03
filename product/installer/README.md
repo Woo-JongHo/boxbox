@@ -38,6 +38,16 @@ To test a local candidate before publication, use the absolute installer tarball
 npm.cmd exec --yes --package 'C:\path\to\boxbox-plugin-<version>.tgz' -- boxbox
 ```
 
+## If you added the marketplace first
+
+Adding this repository as a Claude or Codex marketplace installs the plugin without an engine. The installer refuses to replace a same-named marketplace from another source, so remove that registration first, then rerun the installer. Removing a marketplace also removes its plugins, so only do this for a registration that points at this repository. Run the lines for your host:
+
+```sh
+claude plugin uninstall boxbox@boxbox-plugins --scope user
+claude plugin marketplace remove boxbox-plugins
+codex plugin marketplace remove boxbox-plugins
+```
+
 ## Removing an earlier HUD
 
 The opt-in terminal HUD (`--hud`) was removed after 0.2.4. If an earlier installation enabled it, disable it with

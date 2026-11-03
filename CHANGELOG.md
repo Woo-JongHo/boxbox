@@ -7,6 +7,25 @@ release documentation when preparing a version.
 
 ## [Unreleased]
 
+### Fixed
+
+- A marketplace-only install no longer blocks the host: without an engine, hooks
+  exit 0 instead of 2 and no checks run. Previously every edit and response
+  reported a blocking hook error, and a one-line file write took 17 turns in a
+  real Claude session. Hook decisions with an engine are unchanged.
+- The missing-engine message now links the setup steps. The installer still
+  refuses a same-named marketplace from another source, now without a stack
+  trace. It gives removal commands only for a registration of this repository
+  with no other plugins, because removing a marketplace removes its plugins.
+- Rebuilding the installer removes older archives, so the documented install
+  command always expands to one archive.
+
+### Changed
+
+- The README's first example now uses a shape the default preset approves, and
+  an installed-artifact test pins its output. The install section gives commands
+  that work from a fresh clone and states that no one-command install exists yet.
+
 ### Added
 
 - Recognize standalone multiline scalar-literal arrays in `const` declarations

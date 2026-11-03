@@ -10,17 +10,17 @@ This project treats repeated code like a spreadsheet: each same-role statement i
 
 ```typescript
 // Before
-const name = "deploy";
-const retries = 3;
-const timeoutMs = 1000;
+const users = load("users");
+const orders = load("orders");
+const invoices = load("invoices");
 
 // After
-const name      = "deploy" ;
-const retries   = 3        ;
-const timeoutMs = 1000     ;
+const users    = load("users"   ) ;
+const orders   = load("orders"  ) ;
+const invoices = load("invoices") ;
 ```
 
-The aligned example above is actual TypeScript engine output. Names, values and execution order stay the same; corresponding syntax becomes easier to compare.
+The aligned example above is actual TypeScript engine output, and a test keeps it that way. Automatic writes are deliberately narrow today: two approved rules, so most other patterns are reported, not changed. Names, values and execution order stay the same; corresponding syntax becomes easier to compare.
 
 The product is **BoxBox**; core CLI, skill and plugin IDs are `boxbox` (confirmed on 2026-10-16). The npm installer candidate is `boxbox-plugin`, which was unregistered when checked. Its target command is `npx boxbox-plugin`; publication requires valid npm authentication and a final release decision. See the [Windows plugin installation guide](product/installer/README.md).
 
@@ -78,19 +78,26 @@ their own complete local or future preset approval proof.
 
 ## Install the plugin
 
-The public npm installer is being prepared as `boxbox-plugin`; registry publication is pending.
-It installs the plugin and its local Node engine for Codex and Claude Code. See the
-[installation guide](product/installer/README.md) for the current preview status and host requirements.
-
-To try a locally built installer:
+There is no one-command install yet: the `boxbox-plugin` npm package is not published. Build the installer from source; this needs git, [Bun](https://bun.sh), Node.js 22.22.3 or later, npm, and the Codex or Claude Code CLI. It installs the plugin and a local Node engine for every host it detects. See the
+[installation guide](product/installer/README.md) for details.
 
 ```sh
+git clone https://github.com/Woo-JongHo/boxbox.git
+cd boxbox
 bun install
 bun run pack:installer
-npm exec --yes --package '/absolute/path/to/dist/installer/boxbox-plugin-<version>.tgz' -- boxbox --codex
+npm exec --yes --package "$PWD"/dist/installer/boxbox-plugin-*.tgz -- boxbox
 ```
 
-Replace `<version>` with the version in `package.json`, or use the exact archive path printed by `pack:installer`. This local artifact journey requires the checkout for building. The installed plugin uses its permanent Node engine.
+Restart the host, then ask it to align a file with BoxBox. Adding this repository as a Claude or Codex marketplace installs only the plugin, without the engine: commands stop with a setup message, and checks do not run: hooks do not block, and only the session hook prints that message. If you already did that, remove that registration first, using the lines for your host, then run the installer:
+
+```sh
+claude plugin uninstall boxbox@boxbox-plugins --scope user
+claude plugin marketplace remove boxbox-plugins
+codex plugin marketplace remove boxbox-plugins
+```
+
+On Windows, replace the wildcard with the full archive path; see the installation guide. The checkout is needed only for building. The installed plugin uses its permanent Node engine.
 The public installer needs Node.js 22.22.3 or later and npm; Python formatting additionally needs `python3`.
 
 ## Develop BoxBox

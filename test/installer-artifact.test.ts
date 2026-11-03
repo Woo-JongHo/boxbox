@@ -109,7 +109,10 @@ beforeAll(() => {
 	npm      = realpathSync(String(npmLookup.stdout).trim()) ;
 	npx      = realpathSync(String(npxLookup.stdout).trim()) ;
 	npmCache = String(cacheLookup.stdout).trim()             ;
+	mkdirSync(join(ROOT, "dist/installer"), { recursive: true });
+	writeFileSync(join(ROOT, "dist/installer/boxbox-plugin-0.0.0-stale.tgz"), "");
 	expectStatus(run("bun", ["development/tools/build-installer-artifact.ts"], { cwd: ROOT }), 0);
+	expect(readdirSync(join(ROOT, "dist/installer")).filter(name => name.endsWith(".tgz"))).toHaveLength(1);
 	artifact = join(ROOT, "dist/installer", `${NPM_NAME}-${VERSION}.tgz`);
 }, 120_000);
 

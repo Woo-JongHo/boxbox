@@ -10,17 +10,17 @@
 
 ```typescript
 // Before
-const name = "deploy";
-const retries = 3;
-const timeoutMs = 1000;
+const users = load("users");
+const orders = load("orders");
+const invoices = load("invoices");
 
 // After
-const name      = "deploy" ;
-const retries   = 3        ;
-const timeoutMs = 1000     ;
+const users    = load("users"   ) ;
+const orders   = load("orders"  ) ;
+const invoices = load("invoices") ;
 ```
 
-上面的对齐示例是 TypeScript 引擎的实际输出。名称、值和执行顺序保持不变；对应的语法元素变得更容易比较。
+上面的对齐示例是 TypeScript 引擎的实际输出，并由测试保证。目前自动写入的范围有意保持狭窄：只有两条已批准的规则，其他大多数模式只报告，不修改。名称、值和执行顺序保持不变；对应的语法元素变得更容易比较。
 
 产品名称是 **BoxBox**；核心 CLI、技能和插件的 ID 为 `boxbox`（于 2026-10-16 确认）。npm 安装器的候选包名是 `boxbox-plugin`，检查时尚未被注册。目标命令为 `npx boxbox-plugin`；发布需要有效的 npm 身份验证和最终发布决定。请参阅 [Windows 插件安装指南](product/installer/README.md)。
 
@@ -77,19 +77,26 @@ JSON/YAML 写入需要完整的本地批准证据或未来单独批准的预设�
 
 ## 安装插件
 
-公开的 npm 安装器正以 `boxbox-plugin` 为包名进行准备；尚未发布到注册表。
-它会为 Codex 和 Claude Code 安装插件及其本地 Node 引擎。当前预览状态和宿主要求请参阅
+目前还不能用一条命令安装：npm 包 `boxbox-plugin` 尚未发布。请从源码构建安装器；需要 git、[Bun](https://bun.sh)、Node.js 22.22.3 或更高版本、npm，以及 Codex 或 Claude Code CLI。它会为检测到的每个宿主安装插件和本地 Node 引擎。详情请参阅
 [安装指南](product/installer/README.md)。
 
-如需试用本地构建的安装器：
-
 ```sh
+git clone https://github.com/Woo-JongHo/boxbox.git
+cd boxbox
 bun install
 bun run pack:installer
-npm exec --yes --package '/absolute/path/to/dist/installer/boxbox-plugin-<version>.tgz' -- boxbox --codex
+npm exec --yes --package "$PWD"/dist/installer/boxbox-plugin-*.tgz -- boxbox
 ```
 
-将 `<version>` 替换为 `package.json` 中的版本号，或使用 `pack:installer` 输出的完整压缩包路径。此本地构建产物的使用流程需要检出仓库进行构建。安装后的插件使用其永久安装的 Node 引擎。
+重启宿主，然后让它用 BoxBox 对齐文件。将本仓库添加为 Claude 或 Codex 市场时，只会安装插件而没有引擎：命令会显示设置提示并停止，检查也不会运行：钩子不会阻止操作，只有会话钩子会输出该提示。如果已经这样添加，请先运行你所用宿主对应的命令删除该注册，再运行安装器：
+
+```sh
+claude plugin uninstall boxbox@boxbox-plugins --scope user
+claude plugin marketplace remove boxbox-plugins
+codex plugin marketplace remove boxbox-plugins
+```
+
+在 Windows 上，请将通配符替换为压缩包的完整路径，详见安装指南。检出仓库只在构建时需要。安装后的插件使用其永久安装的 Node 引擎。
 公开安装器需要 Node.js 22.22.3 或更高版本以及 npm；Python 格式化还需要 `python3`。
 
 ## 开发 BoxBox
