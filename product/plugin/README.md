@@ -5,7 +5,7 @@ strict JSON and YAML 1.2 against a "spreadsheet-style" readability contract. Sam
 and their syntax boundaries form
 minimum-width columns. The agent owns new code and structural changes; the engine applies only human-approved alignment
 rules. JSON/YAML Check and alignment-engine support is limited to runs of at least three adjacent, same-level,
-single-line scalar mapping entries. The default preset still authorizes writes only for two TypeScript/Python rules.
+single-line scalar mapping entries. The default preset still authorizes writes only for its TypeScript and Python rules.
 
 ## Choose the change scope
 

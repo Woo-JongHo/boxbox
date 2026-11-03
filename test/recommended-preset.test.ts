@@ -37,7 +37,7 @@ function registry(root = PRESET): ReturnType<typeof loadApprovalRegistry> {
 }
 
 function inspectTypeScript(root: string, file: string, write = false): ResultEnvelope {
-	const script = join(import.meta.dir, "../product/engine/typescript/06_align-tables.ts")                                                                          ;
+	const script = join         (import.meta.dir, "../product/engine/typescript/06_align-tables.ts"                                                                ) ;
 	const run    = Bun.spawnSync([process.execPath, script, "--file", file, "--json", ...(write ? ["--write"] : [])], { cwd: root, stdout: "pipe", stderr: "pipe" }) ;
 	if (run.exitCode !== 0 && run.exitCode !== 1) throw new Error(`TypeScript inspection failed: ${run.stderr.toString()}`);
 	return JSON.parse(run.stdout.toString()) as ResultEnvelope;
@@ -48,24 +48,25 @@ afterEach(() => {
 });
 
 describe("the approved recommended preset", () => {
-	test("ships exactly the two human-approved rules with matching dated, versioned proof records", () => {
+	test("ships exactly the human-approved rules with matching dated, versioned proof records", () => {
 		const data = registry();
 
-		expect(data.conventions.map(record => record.id)).toEqual(["ts-sourcefile-call-declarations", "py-simple-assignments"]) ;
-		expect(data.examples.size                       ).toBe   (4                                                           ) ;
-		expect(data.decisions.size                      ).toBe   (2                                                           ) ;
+		expect(data.conventions.map(record => record.id)).toEqual(["ts-sourcefile-call-declarations", "py-simple-assignments", "ts-sourcefile-value-declarations", "ts-sourcefile-call-envelope-declarations", "ts-sourcefile-empty-call-declarations"]) ;
+		expect(data.examples.size                       ).toBe   (10                                                                                                                                                                                   ) ;
+		expect(data.decisions.size                      ).toBe   (5                                                                                                                                                                                    ) ;
 		for (const convention of data.conventions) {
-			expect(convention).toMatchObject({ status: "approved", approvedBy: "maintainer", date: "2026-10-21", versions: APPROVAL_VERSIONS });
+			const date = ["ts-sourcefile-call-declarations", "py-simple-assignments"].includes(convention.id) ? "2026-10-21" : "2026-11-03";
+			expect(convention).toMatchObject({ status: "approved", approvedBy: "maintainer", date, versions: APPROVAL_VERSIONS });
 			const decision = data.decisions.get(convention.id)!;
 
-			expect(decision).toMatchObject({ kind: "rule", layer: "convention", approvedBy: "maintainer", date: "2026-10-21", examples: convention.examples });
+			expect(decision).toMatchObject({ kind: "rule", layer: "convention", approvedBy: "maintainer", date, examples: convention.examples });
 			const { document } = documentResolver(PRESET)(decision.ref, "preset");
 
-			expect(document).toContain("A human maintainer approved this exact scope, the positive example and the excluded boundary on 2026-10-21.");
+			expect(document).toContain(`A human maintainer approved this exact scope, the positive example and the excluded boundary on ${date}.`);
 			for (const id of convention.examples!) {
 				const example = data.examples.get(id)!;
 
-				expect(example).toMatchObject({ status: "approved", approvedBy: "maintainer", date: "2026-10-21", versions: APPROVAL_VERSIONS, source: { kind: "synthetic", license: "CC0-1.0" } });
+				expect(example).toMatchObject({ status: "approved", approvedBy: "maintainer", date, versions: APPROVAL_VERSIONS, source: { kind: "synthetic", license: "CC0-1.0" } });
 				expect(example.contentHash).toBe(contentHashOf(example.before, example.after));
 				if (example.verdict === "bad") expect(example.after).not.toBe(example.before);
 			}
@@ -73,13 +74,16 @@ describe("the approved recommended preset", () => {
 	});
 
 	test("a prepared public package retains complete proofs and refuses changed approval documents", () => {
-		const output = workspace()                 ;
+		const output = workspace          ()       ;
 		const files  = preparePublicPreset(PRESET) ;
 
 		expect(files.map(file => file.path)).toEqual([
 			"conventions.jsonl", "examples.jsonl", "decisions.jsonl",
 			"docs/public/decisions/ts-sourcefile-call-declarations.md",
 			"docs/public/decisions/py-simple-assignments.md",
+			"docs/public/decisions/ts-sourcefile-value-declarations.md",
+			"docs/public/decisions/ts-sourcefile-call-envelope-declarations.md",
+			"docs/public/decisions/ts-sourcefile-empty-call-declarations.md",
 		]);
 		for (const file of files) {
 			const target = join(output, file.path);
@@ -93,15 +97,15 @@ describe("the approved recommended preset", () => {
 			expect(result).toMatchObject({ status: "approved", writable: true, layer: "preset", reasons: [] });
 			expect(result.guide).toHaveLength(1);
 		}
-		const decision = data.decisions.get("py-simple-assignments")! ;
-		const document = join(output, decision.ref.split("#")[0]!)    ;
+		const decision = data.decisions.get("py-simple-assignments"            )! ;
+		const document = join              (output, decision.ref.split("#")[0]!)  ;
 		writeFileSync(document, `${readFileSync(document, "utf8")}\nUnapproved expansion.\n`);
 
 		expect(evaluateApproval(data, { key: PY_KEY, file: "sample.py" }, documentResolver(output))).toMatchObject({ status: "unknown", writable: false, reasons: ["decision document hash is stale"] });
 	});
 
 	test("both shipped approval proofs survive a CRLF document checkout", () => {
-		const data            = registry()               ;
+		const data            = registry        ()       ;
 		const resolveDocument = documentResolver(PRESET) ;
 		for (const convention of data.conventions) {
 			const result = evaluateApproval(data, { key: convention.key, file: convention.id.startsWith("ts-") ? "table.ts" : "table.py" }, (ref, layer) => {
@@ -113,7 +117,7 @@ describe("the approved recommended preset", () => {
 	});
 
 	test("approval lookup remains limited to the exact language, scope, container and axes", () => {
-		const data            = registry()               ;
+		const data            = registry        ()       ;
 		const resolveDocument = documentResolver(PRESET) ;
 		const denied = [
 			{ key : TS_KEY                                                , file : "sample.tsx" },
@@ -126,8 +130,8 @@ describe("the approved recommended preset", () => {
 	});
 
 	test("the approved TypeScript example and two-row declaration exception use real safe writes and reach a token-preserving fixed point", async () => {
-		const root     = workspace()                                                    ;
-		const data     = registry()                                                     ;
+		const root     = workspace        ()                                            ;
+		const data     = registry         ()                                            ;
 		const positive = data.examples.get("ts-sourcefile-call-declarations-positive")! ;
 		const cases = [
 			{ file: "three.ts", before: positive.before, after: positive.after },
@@ -186,10 +190,10 @@ describe("the approved recommended preset", () => {
 	}, 60_000);
 
 	test("the approved Python example remains safe at its existing indentation", async () => {
-		const root     = workspace()                                          ;
-		const data     = registry()                                           ;
+		const root     = workspace        ()                                  ;
+		const data     = registry         ()                                  ;
 		const positive = data.examples.get("py-simple-assignments-positive")! ;
-		const target   = join(root, "sample.py")                              ;
+		const target   = join             (root, "sample.py"               )  ;
 		writeFileSync(target, positive.before);
 		const options = { root, file: "sample.py", language: "python" as const, registry: data, resolveDocument: documentResolver(PRESET) } ;
 		const first   = await runFormatPipeline(options)                                                                                    ;
@@ -203,10 +207,10 @@ describe("the approved recommended preset", () => {
 	});
 
 	test("the excluded single TypeScript row and two Python rows stay unchanged", async () => {
-		const root      = workspace()                                                                     ;
-		const data      = registry()                                                                      ;
+		const root      = workspace        ()                                                             ;
+		const data      = registry         ()                                                             ;
 		const tsCounter = data.examples.get("ts-sourcefile-call-declarations-single-row-counterexample")! ;
-		const pyCounter = data.examples.get("py-simple-assignments-two-row-counterexample")!              ;
+		const pyCounter = data.examples.get("py-simple-assignments-two-row-counterexample"             )! ;
 		writeFileSync(join(root, "single.ts"), tsCounter.before);
 		const checked = await inspectTypeScript(root, "single.ts", true);
 

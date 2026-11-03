@@ -2,8 +2,8 @@
 
 BoxBox helps an agent compose code as comparable rows and columns, then checks the result. Choose a workflow by the
 change you want to permit. The public engine checks and has alignment implementations for TypeScript, Python, strict
-JSON and YAML 1.2. Write authorization remains rule-specific; the default preset still contains only two approved
-TypeScript/Python rules.
+JSON and YAML 1.2. Write authorization remains rule-specific; the default preset contains only a few approved
+TypeScript and Python rules.
 
 | Workflow | Use it for | Who changes the file? |
 |---|---|---|

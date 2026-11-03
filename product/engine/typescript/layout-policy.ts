@@ -4,6 +4,7 @@ export const TYPESCRIPT_LAYOUT_SCHEMA_VERSION = 1;
 export const IMPLEMENTED_LAYOUT_KINDS          = [
 	"declaration"                  ,
 	"declaration-equals"           ,
+	"declaration-values"           ,
 	"declaration-extended-equals"  ,
 	"declaration-call-expressions" ,
 	"return-guards"                ,

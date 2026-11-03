@@ -7,6 +7,20 @@ release documentation when preparing a version.
 
 ## [Unreleased]
 
+### Added
+
+- Three approved TypeScript rules for top-level declarations: simple values
+  (`ts-sourcefile-value-declarations`), direct calls with arguments
+  (`ts-sourcefile-call-envelope-declarations`) and empty calls
+  (`ts-sourcefile-empty-call-declarations`). `align` and `format` can now write
+  these shapes, so the README's value-declaration example works.
+- `check` reports `fixableGroups` and `approvedFixableGroups`. Its exit code is
+  unchanged. A file with an unapproved group is still refused as a whole, so an
+  approved count above zero does not mean `align` will write it.
+- The `declaration-values` kind, reported only when every initializer in a run
+  is a string, number, boolean or null. Other initializers keep
+  `declaration-equals`, which stays unapproved.
+
 ### Fixed
 
 - A marketplace-only install no longer blocks the host: without an engine, hooks
@@ -22,8 +36,19 @@ release documentation when preparing a version.
 
 ### Changed
 
-- The README's first example now uses a shape the default preset approves, and
-  an installed-artifact test pins its output. The install section gives commands
+- Value-only declaration runs now report `declaration-values` instead of
+  `declaration-equals`, so a project approval of that exact key no longer
+  matches them.
+- An axis present on only one row, such as a member call, type annotation or
+  comment, now stays in the reported axes, so the row no longer shares a lookup
+  key with plain rows. Alignment is unchanged. A same-call declaration run with
+  one such row therefore no longer matches `ts-sourcefile-call-declarations`. A
+  lone `call-envelope-close` stays omitted, as the empty-call rule documents.
+- A declaration row holding a comment that is not reported as its comment axis,
+  such as `/* note */` or a `//` with no space before it, no longer reports
+  `declaration-values` or `declaration-call-envelope`. Comments inside a call's
+  argument list stay part of that opaque cell.
+- An installed-artifact test now pins the output of the README's first example. The install section gives commands
   that work from a fresh clone and states that no one-command install exists yet.
 
 ### Added

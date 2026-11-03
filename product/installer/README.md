@@ -111,7 +111,7 @@ arguments literally, so no shell switch is needed.
 The Claude plugin also includes the canonical read-only inspector; the Codex plugin does not include an agent.
 Native Windows execution must still be verified on the destination computer.
 
-The recommended preset includes approved TypeScript top-level single-call variable declarations (2+ rows) and Python
+The recommended preset includes approved TypeScript top-level variable declarations of calls and simple values (2+ rows) and Python
 simple name assignments (3+ rows at one indentation). No custom formatter or approval DB is required for those exact
 patterns. Other patterns remain read-only until approved. Use `check --json`, `guide --json`, then `format --dry-run`
 before an explicit `format` request. Hooks remain read-only.

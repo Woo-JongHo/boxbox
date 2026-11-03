@@ -4,6 +4,7 @@
  * columns without knowing the kind. To add a case: 01 which kind is it → 02 which axis is missing → 03 register
  * the kind and axes in this file, add rows to test/fixtures/table-kinds.ts, and pin them with test/typescript-align.test.ts.
  */
+import      { createScanner } from "typescript/unstable/ast/scanner" ;
 import      {
               isArrayLiteralExpression                                    ,
               isBlock                                                     ,
@@ -1016,6 +1017,39 @@ function detectVerticalCallArgument(source: SourceFile, node: Node): readonly Ro
 	return comma === undefined ? [] : [{ axis: "vertical-call-comma", from: node.getEnd(), at: comma, insert: true }];
 }
 
+// Compare kinds, not names: SyntaxKind's reverse lookup returns aliases such as FirstLiteralToken.
+const VALUE_INITIALIZERS = new Set<number>([SyntaxKind.StringLiteral, SyntaxKind.NumericLiteral, SyntaxKind.TrueKeyword, SyntaxKind.FalseKeyword, SyntaxKind.NullKeyword]) ;
+const SIGN_OPERATORS     = new Set<number>([SyntaxKind.MinusToken, SyntaxKind.PlusToken])                                                                                  ;
+
+/**
+ * True when the row's lines hold a comment outside the opaque cell that the row does not report as its comment axis,
+ * so its lookup key would hide it. Only the text around the cell is scanned: the cell may hold regular expressions and
+ * templates, which a bare scan misreads as comments.
+ */
+function hasUnreportedComment(source: SourceFile, row: DetectedRow, cell: Node): boolean {
+	const start    = source.getPositionOfLineAndCharacter(source.getLineAndCharacterOfPosition(row.node.getStart(source)).line, 0) ;
+	const lineEnd  = source.text.indexOf("\n", row.node.getEnd())                                                                  ;
+	const end      = lineEnd < 0 ? source.text.length : lineEnd                                                                    ;
+	const reported = new Set(row.boundaries.filter(boundary => boundary.axis === "comment").map(boundary => boundary.at))          ;
+	for (const [from, to] of [[start, cell.getStart(source)], [cell.getEnd(), end]] as const) {
+		const scanner = createScanner(false, undefined, source.text.slice(from, to));
+		for (let token = scanner.scan(); token !== SyntaxKind.EndOfFile; token = scanner.scan()) {
+			const comment = token === SyntaxKind.SingleLineCommentTrivia || token === SyntaxKind.MultiLineCommentTrivia;
+			if (comment && !reported.has(from + scanner.getTokenStart())) return true;
+		}
+	}
+	return false;
+}
+
+/** A string, number, boolean or null, including a signed number; everything else keeps the wider declaration-equals key. */
+function simpleValueInitializer(node: Node): Node | undefined {
+	const value = isVariableStatement(node) ? node.declarationList.declarations[0]?.initializer : undefined;
+	if (value === undefined || value.kind !== SyntaxKind.PrefixUnaryExpression) return value !== undefined && VALUE_INITIALIZERS.has(value.kind) ? value : undefined;
+
+	const unary = value as unknown as { readonly operator: number; readonly operand: Node };
+	return SIGN_OPERATORS.has(unary.operator) && unary.operand.kind === SyntaxKind.NumericLiteral ? value : undefined;
+}
+
 /** Keep resource declarations and awaited/constructor initializers outside direct-call approval keys. */
 function declarationGroupName(run: readonly DetectedRow[]): string {
 	if (run.some(row => row.boundaries.some(boundary => boundary.layer === "nested-expression"))) return "declaration-call-expressions";
@@ -1027,7 +1061,11 @@ function declarationGroupName(run: readonly DetectedRow[]): string {
 		const initializer = declaration.declarations[0]?.initializer ;
 		return (declaration.flags & NodeFlags.Using) !== 0 || (initializer !== undefined && (isAwaitExpression(initializer) || isNewExpression(initializer)));
 	});
-	return extended ? "declaration-extended-equals" : "declaration-equals";
+	const values = run.every(row => {
+		const value = simpleValueInitializer(row.node);
+		return value !== undefined && !hasUnreportedComment(row.node.getSourceFile(), row, value);
+	});
+	return extended ? "declaration-extended-equals" : values ? "declaration-values" : "declaration-equals";
 }
 
 interface DeclarationCallSubgroup {
@@ -1524,6 +1562,9 @@ function withCallEnvelope(source: SourceFile, kind: RowKind, run: readonly Detec
 	const legacyCalls = run.map(row => declarationCall(row.node))                ;
 	const signatures  = new Set(calls.map(call => callSignature(source, call!))) ;
 	if (signatures.size === 1 && legacyCalls.every(call => call !== undefined)) return run;
+
+	// The argument list is one opaque cell, so only comments outside the call are hidden from the key.
+	if (run.some((row, index) => hasUnreportedComment(source, row, calls[index]!))) return run;
 
 	const envelopes = calls.map(call => envelopeBoundaries(source, call!));
 	if (envelopes.some(boundaries => boundaries === undefined))                 return run;

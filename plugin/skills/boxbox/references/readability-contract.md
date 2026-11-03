@@ -184,6 +184,7 @@ an applicable changed group lacks approval, even when a legacy kind covering nea
 |---|---|---|
 | declaration | `:` , `;` | `//` |
 | declaration-equals (declaration table with `=`) | `:` , `=` , `;` | `//` |
+| declaration-values (every initializer a string, number, boolean or null) | `:` , `=` , `;` | `//` |
 | declaration-call-envelope | `colon`, `equals`, `semicolon` | `call-member-dot`, `call-envelope-open`, `call-envelope-close`, `comment` |
 | declaration-call-expressions | `colon`, `equals`, `call-arg{i}`, `list-value-comma{i}`, `list-value-el{i}`, `list-arg{i}-comma{i}`, `list-arg{i}-el{i}`, `comparison-operator{i}`, `comparison-right{i}`, `conditional-question{i}`, `conditional-true{i}`, `conditional-colon{i}`, `conditional-false{i}`, `semicolon` | `call-open-paren`, `call-comma{i}`, `call-close-paren`, `list-value-open`, `list-value-close`, `list-arg{i}-open`, `list-arg{i}-close`, `subscript-close`, `comment` |
 | return-guards | `guard-return` | — |

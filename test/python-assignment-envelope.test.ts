@@ -278,9 +278,9 @@ test("a complete synthetic test proof permits preview and apply of the new envel
 	}));
 	const examples = records.map(record => record.id);
 	const registry: ApprovalRegistry = {
-		conventions : [{ schemaVersion: 1, id, key: "v1|python|-|table|name>equal>assignment-value", pattern: "DEFINE", status: "approved", scope: "**/*.py", examples, versions: APPROVAL_VERSIONS, approvedBy: "synthetic-test-approver", date: "2026-10-22", layer: "project" }],
-		examples    : new Map(records.map(record => [record.id, record])),
-		decisions   : new Map([[id, { schemaVersion: 1, id, kind: "rule", layer: "convention", ref: "rules.md#Calculation envelope", docHash: sectionHash(document, "Calculation envelope"), examples, approvedBy: "synthetic-test-approver", date: "2026-10-22" }]]),
+		conventions : [{ schemaVersion: 1, id, key: "v1|python|-|table|name>equal>assignment-value", pattern: "DEFINE", status: "approved", scope: "**/*.py", examples, versions: APPROVAL_VERSIONS, approvedBy: "synthetic-test-approver", date: "2026-10-22", layer: "project" }] ,
+		examples    : new Map(records.map(record => [record.id, record]))                                                                                                                                                                                                           ,
+		decisions   : new Map([[id, { schemaVersion: 1, id, kind: "rule", layer: "convention", ref: "rules.md#Calculation envelope", docHash: sectionHash(document, "Calculation envelope"), examples, approvedBy: "synthetic-test-approver", date: "2026-10-22" }]])               ,
 	};
 
 	try {
@@ -300,7 +300,7 @@ test("a complete synthetic test proof permits preview and apply of the new envel
 		expect(applied.safety                                                       ).toMatchObject({ approvalChecked: true, parserChecked: true }) ;
 		expect(readFileSync(file, "utf8")                                           ).toBe         (EXPECTED                                      ) ;
 		expect((await runFormatPipeline(options)).written                           ).toBe         (false                                         ) ;
-		expect(loadApprovalRegistry([{ root: PRESET, layer: "preset" }]).conventions).toHaveLength (2                                             ) ;
+		expect(loadApprovalRegistry([{ root: PRESET, layer: "preset" }]).conventions).toHaveLength (5                                             ) ;
 	} finally {
 		rmSync(root, { recursive: true, force: true });
 	}

@@ -10,17 +10,17 @@ BoxBox는 반복되는 코드를 스프레드시트처럼 다룹니다. 같은 �
 
 ```typescript
 // Before
-const users = load("users");
-const orders = load("orders");
-const invoices = load("invoices");
+const name = "deploy";
+const retries = 3;
+const timeoutMs = 1000;
 
 // After
-const users    = load("users"   ) ;
-const orders   = load("orders"  ) ;
-const invoices = load("invoices") ;
+const name      = "deploy" ;
+const retries   = 3        ;
+const timeoutMs = 1000     ;
 ```
 
-위 정렬 예시는 실제 TypeScript 엔진의 출력이며, 테스트로 이를 유지합니다. 현재 자동 쓰기 범위는 승인된 규칙 2개로 의도적으로 좁아서, 그 밖의 패턴은 대부분 변경하지 않고 보고만 합니다. 이름, 값, 실행 순서는 유지하면서 대응하는 구문을 더 쉽게 비교할 수 있게 합니다.
+위 정렬 예시는 실제 TypeScript 엔진의 출력이며, 테스트로 이를 유지합니다. 현재 자동 쓰기 범위는 승인된 규칙 몇 개로 의도적으로 좁아서, 그 밖의 패턴은 대부분 변경하지 않고 보고만 합니다. 이름, 값, 실행 순서는 유지하면서 대응하는 구문을 더 쉽게 비교할 수 있게 합니다.
 
 제품명은 **BoxBox**이며, 핵심 CLI·스킬·플러그인 ID는 `boxbox`입니다(2026-10-16 확정). npm 설치 패키지 후보는 `boxbox-plugin`이며, 확인 당시에는 등록되지 않은 이름이었습니다. 목표 설치 명령은 `npx boxbox-plugin`입니다. 패키지 게시에는 유효한 npm 인증과 최종 릴리스 결정이 필요합니다. [Windows 플러그인 설치 안내](product/installer/README.md)를 참고하세요.
 
@@ -73,7 +73,7 @@ CLI는 이제 TypeScript, Python, 엄격한 JSON, YAML 1.2를 검사하며 구�
 서로 인접한 단일 행 스칼라 매핑 항목 3개 이상으로 제한됩니다. 지원하지 않는 행은 별도로 보고하고 그대로
 둡니다. YAML 블록 스칼라, 앵커, 별칭, 태그, 복합 키, flow collection, sequence, directive, document marker는
 이 정렬 범위에 포함되지 않습니다. 구조화 문서용 Align 엔진 경로는 구현됐지만, 권장 프리셋의 쓰기 승인은
-아래 TypeScript/Python 규칙 2개뿐입니다. JSON/YAML 쓰기에는 완전한 로컬 승인 증거나 향후 프리셋 승인이
+아래 TypeScript와 Python 규칙뿐입니다. JSON/YAML 쓰기에는 완전한 로컬 승인 증거나 향후 프리셋 승인이
 별도로 필요합니다.
 
 ## 플러그인 설치
@@ -123,7 +123,7 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 | 구분 | 지원 범위 |
 | --- | --- |
 | 구현된 공개 CLI Check/Align 엔진 | TypeScript, Python, 엄격한 JSON, YAML 1.2 (`.yaml`/`.yml`) |
-| 기본 프리셋 쓰기 승인 | TypeScript 호출 선언과 Python 단순 대입, 두 규칙만 승인 |
+| 기본 프리셋 쓰기 승인 | TypeScript 선언 형태 4개와 Python 단순 대입, 다섯 규칙만 승인 |
 | 개발용 정렬 엔진 | 위와 같은 4개 언어(그 밖의 라인 엔진 언어는 2026-10-22에 제거) |
 | TypeScript 탐지 | TypeScript 7 AST 도구와 표 종류 레지스트리 |
 | JSON/YAML 탐지 | 같은 단계에서 인접한 단일 행 스칼라 매핑 항목 3개 이상 |
@@ -135,7 +135,7 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 
 프로젝트 설정은 `.boxbox/`에 저장됩니다. 설정은 Base → Preset → User → Project 순서로 적용되며, 안전 불변 조건은 항상 지켜야 합니다.
 
-권장 프리셋에는 승인된 규칙 2개, 합성 예제 4개, 결정 기록 2개가 있습니다. 규칙은 TypeScript 최상위 호출 선언(2행 이상)과 Python 단순 대입(3행 이상)입니다. 연구 후보는 별도로 보관하며 자동으로 승인하지 않습니다. 현재 규칙은 [가독성 계약](product/rules/references/readability-contract.md), 에이전트 작업 흐름은 [플러그인 스킬](product/plugin/skills/boxbox/SKILL.md)을 참고하세요.
+권장 프리셋에는 승인된 규칙 5개, 합성 예제 10개, 결정 기록 5개가 있습니다. 규칙은 TypeScript 최상위 선언인 같은 함수 호출, 그 밖의 호출, 빈 호출, 단순 값(2행 이상)과 Python 단순 대입(3행 이상)입니다. 연구 후보는 별도로 보관하며 자동으로 승인하지 않습니다. 현재 규칙은 [가독성 계약](product/rules/references/readability-contract.md), 에이전트 작업 흐름은 [플러그인 스킬](product/plugin/skills/boxbox/SKILL.md)을 참고하세요.
 
 ## 개발 현황
 

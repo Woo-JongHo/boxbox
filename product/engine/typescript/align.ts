@@ -131,7 +131,12 @@ export function alignRows(source: SourceFile, rows: readonly DetectedRow[]): Ali
 		const entries = rows.flatMap((row, index) => row.boundaries
 			.filter(candidate => candidate.axis === axis)
 			.map(boundary => ({ row, index, boundary, line: boundaryLine(source, boundary)! })));
-		if (entries.length < 2) continue;
+		if (entries.length < 2) {
+			// A lone axis is not aligned, but it stays in the report so the approval key can tell the row apart; only a lone
+			// call close is part of an approved key's documented scope. Unknown axes therefore fail closed.
+			if (axis !== "call-envelope-close" && entries.length === 1) axes.push(`${axis}=${displayColumn(source, entries[0]!.boundary.at)}`);
+			continue;
+		}
 		// The target column is set by the farthest anchor (from). Gap axes keep at least one space;
 		// insert axes align at the existing column — an aligned table is never pushed right again.
 		const alignAt = entries.some(entry => entry.boundary.alignAt);
