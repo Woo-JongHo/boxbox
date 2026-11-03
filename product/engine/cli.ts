@@ -8,6 +8,7 @@ import      { dirname, extname, isAbsolute, join, relative, resolve    } from "n
 import      { documentResolver, evaluateDetected, loadApprovalRegistry } from "@/common/approval-gate.ts"     ;
 import type { ApprovalRegistry, DocumentResolver, RegistrySource       } from "@/common/approval-gate.ts"     ;
 import      { runAlignCli                                              } from "@/common/align-cli.ts"         ;
+import      { detectFormatters, formatterAffects, formatterWarning                       } from "@/common/formatter-detection.ts" ;
 import      { resolveFormatterExecutable                               } from "@/common/formatter-process.ts" ;
 import      { runFormatPipeline                                        } from "@/common/format-pipeline.ts"   ;
 import      { authoringGuide, columnSetGuide                           } from "@/common/authoring-guide.ts"   ;
@@ -336,7 +337,9 @@ function doctorReport(root: string) {
 	} catch (error) {
 		approval = { ok: false, detail: messageOf(error) };
 	}
-	let formatter = { ok: true, detail: "standalone alignment; no external formatter required" };
+	const detectedFormatters = detectFormatters(root)                                                                                                                                                   ;
+	const warnings           = detectedFormatters.map(formatterWarning)                                                                                                                                 ;
+	let formatter            = { ok: true, detail: detectedFormatters.length > 0 ? "standalone alignment; no formatter configured in BoxBox" : "standalone alignment; no external formatter required" } ;
 	try {
 		const formatters = Object.entries(resolveConfig(root).effective.formatters);
 		for (const [, configured] of formatters) resolveFormatterExecutable(configured.command, root);
@@ -365,6 +368,8 @@ function doctorReport(root: string) {
 		formatConfigured                                                      ,
 		releaseReady : false                                                  ,
 		checks       : { runtime: node, python, config, approval, formatter } ,
+		detectedFormatters                                                    ,
+		warnings                                                              ,
 		limitations
 	} ;
 	return result;
@@ -375,6 +380,7 @@ function doctor(root: string, json: boolean): number {
 	if (json) emitJson(result);
 	else {
 		for (const [name, check] of Object.entries(result.checks)) console.log(`${check.ok ? "ok" : "not-ready"} ${name}: ${check.detail}`);
+		for (const warning of result.warnings) console.log(`warning: ${warning}`);
 		for (const limitation of result.limitations) console.log(`limitation: ${limitation}`);
 	}
 	return result.ok ? 0 : 1;
@@ -568,6 +574,7 @@ async function format(parsed: ParsedFileCommand, root: string, alignmentOnly = f
 	const formatter = alignmentOnly ? undefined : resolved.effective.formatters[parsed.language] ;
 	const context   = approvalContext(root)                                                      ;
 	if (context.registry.conventions.length === 0) throw new CliError(errorCode, `${command} refused: approval registry is empty`);
+	const warnings = detectFormatters(root).filter(detected => formatterAffects(detected, parsed.language)).map(formatterWarning);
 	try {
 		const result = await runFormatPipeline({
 			root                       ,
@@ -580,13 +587,14 @@ async function format(parsed: ParsedFileCommand, root: string, alignmentOnly = f
 			alignmentOnly                                             ,
 			provenance      : () => approvalContext(root).fingerprint ,
 		});
-		const output = { schemaVersion: 1, tool: "boxbox", command, ok: true, dryRun: parsed.dryRun, formatEligible: true, ...result,
+		const output = { schemaVersion: 1, tool: "boxbox", command, ok: true, dryRun: parsed.dryRun, formatEligible: true, ...result, warnings,
 			...(alignmentOnly ? { mode: "align", horizontalWhitespaceOnly: true } : {}),
 		};
 		if (parsed.json) emitJson(output);
 		else {
 			console.log(`${command} file=${result.file} mode=${result.formatMode} dry-run=${parsed.dryRun} written=${result.written} formatter-changed=${result.formatterChanged} boxbox-changed=${result.boxboxChanged} fixed-point=${result.fixedPoint} approvals=${result.approvals.join(",")}`);
 			for (const edit of result.alignmentEdits ?? []) console.log(`line ${edit.line}\n- ${edit.before}\n+ ${edit.after}`);
+			for (const warning of warnings) console.log(`warning: ${warning}`);
 		}
 		return 0;
 	} catch (error) {
@@ -623,18 +631,24 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 			assertSimpleFlags(tail, ["--json"]);
 			const result   = initializeProjectConfig(project) ;
 			const resolved = resolveConfig          (project) ;
+			const detected = detectFormatters       (project) ;
 			const output = {
-				schemaVersion : 1                              ,
-				tool          : "boxbox"                       ,
-				command       : "init"                         ,
-				ok            : true                           ,
-				created       : result.created                 ,
-				config        : relative(project, result.path) ,
-				languages     : resolved.effective.languages   ,
-				fingerprint   : resolved.fingerprint
+				schemaVersion      : 1                              ,
+				tool               : "boxbox"                       ,
+				command            : "init"                         ,
+				ok                 : true                           ,
+				created            : result.created                 ,
+				config             : relative(project, result.path) ,
+				languages          : resolved.effective.languages   ,
+				fingerprint        : resolved.fingerprint           ,
+				detectedFormatters : detected                       ,
+				warnings           : detected.map(formatterWarning)
 			} ;
 			if (json) emitJson(output);
-			else console.log(result.created ? `created ${output.config}` : `kept existing ${output.config}`);
+			else {
+				console.log(result.created ? `created ${output.config}` : `kept existing ${output.config}`);
+				for (const warning of output.warnings) console.log(`warning: ${warning}`);
+			}
 			return 0;
 		}
 		if (command === "doctor") {

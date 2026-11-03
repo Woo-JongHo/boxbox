@@ -30,6 +30,8 @@ The npm `boxbox-plugin` candidate was unregistered when checked; this is not a r
 
 A marketplace install contains only this plugin, not the engine. Until the engine is configured, checks do not run: commands stop with a setup message, hooks exit without blocking the host, and only the session hook prints that message. Build and run the installer as described in the [root README](https://github.com/Woo-JongHo/boxbox#install-the-plugin). If you added this repository as a marketplace first, remove that registration before running the installer.
 
+Formatters such as Prettier, Black and Ruff revert BoxBox alignment in the files they rewrite. `doctor`, `init`, `align` and `format` warn when a project-root configuration shows one.
+
 For a manually configured local engine, set `BOXBOX_CLI` to the installed BoxBox `dist/cli.js` before invoking the standard shim.
 The npm installer configures its own local Node launcher, including native Windows hooks.
 Requirements: Node.js 22.22.3 or later, npm and the chosen host CLI (Codex or Claude Code). Python fixes additionally need a runnable `python3`.

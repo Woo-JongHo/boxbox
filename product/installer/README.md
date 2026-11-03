@@ -116,6 +116,8 @@ simple name assignments (3+ rows at one indentation). No custom formatter or app
 patterns. Other patterns remain read-only until approved. Use `check --json`, `guide --json`, then `format --dry-run`
 before an explicit `format` request. Hooks remain read-only.
 
+Formatters such as Prettier, Black and Ruff revert BoxBox alignment in the files they rewrite. `doctor`, `init`, `align` and `format` warn when a project-root configuration shows one; multi-file hook and CI support is not built yet.
+
 External formatters are optional. On Windows use a native executable or a Node JS entry point (`node.exe` plus script
 and `{file}` arguments). Arbitrary `.cmd`/`.bat` formatters are refused with configuration guidance; BoxBox never
 interpolates formatter arguments into a shell. A configured formatter failure never falls back silently to standalone mode.

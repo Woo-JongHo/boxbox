@@ -38,6 +38,7 @@ Every check and fix goes through the bundled launcher. Resolve `<PLUGIN_ROOT>` f
 "<PLUGIN_ROOT>/scripts/boxbox" format --file <file> --json
 ```
 
+- If `doctor`, `align` or `format` reports a formatter warning, relay it to the user with its conditions intact: a warning saying a formatter "may be in use" does not establish that it runs.
 - The implemented public commands accept TypeScript, Python, strict JSON and YAML 1.2 files **one at a time**. Fixing Python requires a runnable `python3`.
 - Structured Check accepts `.json`, `.yaml` and `.yml`. It considers only runs of at least three adjacent,
   same-level, single-line scalar mapping entries for alignment. YAML multiline values, block scalars, anchors,

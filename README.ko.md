@@ -97,7 +97,9 @@ claude plugin marketplace remove boxbox-plugins
 codex plugin marketplace remove boxbox-plugins
 ```
 
-Windows에서는 와일드카드 대신 아카이브 전체 경로를 쓰세요. 설치 안내를 참고하세요. 저장소 체크아웃은 빌드할 때만 필요합니다. 설치된 플러그인은 영구 설치된 자체 Node 엔진을 사용합니다.
+Windows에서는 와일드카드 대신 아카이브 전체 경로를 쓰세요. 설치 안내를 참고하세요. **프로젝트에서 코드 포매터를 쓴다면:** Prettier, Black, Ruff 포매터는 자신이 다시 쓰는 파일에서 BoxBox의 정렬을 되돌립니다. BoxBox는 포매터 뒤에 실행되고 에디터, 훅, CI가 BoxBox를 호출하도록 설계되었지만, 여러 파일을 처리하는 훅과 CI 지원은 아직 없습니다. 그때까지는 다음 포맷 실행에서 그 파일들의 정렬이 되돌아가고, 포맷 검사도 그 파일들을 보고한다고 생각하세요. `doctor`, `init`, `align`, `format`은 프로젝트 루트 설정에서 포매터가 확인되면 경고합니다.
+
+저장소 체크아웃은 빌드할 때만 필요합니다. 설치된 플러그인은 영구 설치된 자체 Node 엔진을 사용합니다.
 공개 설치 프로그램에는 Node.js 22.22.3 이상과 npm이 필요하며, Python 포맷에는 `python3`가 추가로 필요합니다.
 
 ## BoxBox 개발
