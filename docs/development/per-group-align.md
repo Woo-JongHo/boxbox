@@ -11,7 +11,7 @@
 - It adds 1 TypeScript candidate out of 111 files.
 - The approved surface is the larger limit: 30 of 1,091 fixable groups are approved, and 91 files contain fixable groups with none approved.
 
-The design already says BoxBox runs last, with the canonical form `C(file) = boxbox(formatter(file))` ([design invariant 9](design.md)). What is missing is the adoption path. See [Decision needed](#decision-needed).
+The design draft already decided this: BoxBox runs after the formatter and overrides it, and hooks and CI call BoxBox instead of the formatter directly ([design section 3.5](design.md#35-formatter-coexistence--boxbox-runs-last)). Most of that is not built. See [Formatter decision and gaps](#formatter-decision-and-gaps).
 
 ## Evidence
 
@@ -140,18 +140,30 @@ The baseline is the original file, because `align` never runs a formatter:
 - CRLF, mixed line endings and a missing final newline.
 - `check` and `align` agree on the selection for the same input.
 
-## Decision needed
+## Formatter decision and gaps
 
-Formatter projects revert alignment unless they change their workflow. The maintainer should choose what BoxBox offers them:
+Design section 3.5 (status: draft) says BoxBox overrides the formatter, that format-on-save, hooks and CI call `boxbox format` and `boxbox check` instead of the formatter, and that the README and `boxbox init` must state this up front. Checked at `7409d47`:
 
-1. **Target projects without a formatter.** Say so plainly and keep the engine as it is.
-2. **Make the composite canonical, as the design says.** The project runs BoxBox after its formatter and its CI and editor check the composite result, not the formatter alone. This needs a documented setup and a multi-file command, because the CLI accepts one file at a time. Projects must agree to change their format check.
-3. **Exempt code from the formatter.** Users can already apply Prettier and Ruff ignore comments or file exclusion settings, which BoxBox adds nothing to. BoxBox inserting comments automatically would add non-whitespace text, which conflicts with the whitespace-only guarantee.
-4. **Read-only reporting for formatter projects.** `check` and agent guidance only.
+| Decision in section 3.5 | Today |
+|---|---|
+| A configured formatter runs before BoxBox in `format` | Built. `align` never runs it |
+| `check` computes `boxbox(formatter(file))` | Not built. `check` inspects the file as it is |
+| `init` and `doctor` detect formatter configs and print hook and CI changes | Not built. In `click`, which runs `ruff format`, `doctor` reports "no external formatter required", and `init` writes a config with no formatter or guidance |
+| The README states this up front | Not done |
+| Hooks and CI can check a project | Not practical. The CLI accepts one file at a time |
 
-Option 2 follows the existing design and is the only one that gives existing formatter projects a kept result without exemptions. Until it exists, option 1 or 4 is the honest description of today's behavior, and the README should say so.
+So a formatter project today gets a result that its next format run reverts, with no warning.
 
-If per-group proceeds after that decision, build Python first, and decide draft PR #34 first. It changes 236 files, including engine modules, and currently conflicts with `main`, so work on those modules could need redoing.
+Alternatives, if the maintainer does not want to keep this decision:
+
+- **Target projects without a formatter.** Say so plainly and keep the engine as it is.
+- **Read-only reporting for formatter projects.** `check` and agent guidance only.
+
+Users can also exempt code with Prettier and Ruff ignore comments or file exclusion settings, without BoxBox doing anything. BoxBox inserting such comments itself would add non-whitespace text, which conflicts with the whitespace-only guarantee.
+
+Whichever is chosen, stating the behavior in the README and having `doctor` detect a formatter is the cheapest honest first step.
+
+If per-group proceeds after that, build Python first, and decide draft PR #34 first. It changes 236 files, including engine modules, and currently conflicts with `main`, so work on those modules could need redoing.
 
 Rule expansion is a separate lever. Before approving more rules, count the files they would reach using `lookupKeyOf` from `product/engine/common/signature.ts` and the selection above, and check whether those files run a formatter.
 
