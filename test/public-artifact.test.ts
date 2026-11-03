@@ -66,6 +66,9 @@ describe("public CLI local package artifact", () => {
 			"rules/presets/recommended/decisions.jsonl",
 			"rules/presets/recommended/docs/public/decisions/py-simple-assignments.md",
 			"rules/presets/recommended/docs/public/decisions/ts-sourcefile-call-declarations.md",
+			"rules/presets/recommended/docs/public/decisions/ts-sourcefile-call-envelope-declarations.md",
+			"rules/presets/recommended/docs/public/decisions/ts-sourcefile-empty-call-declarations.md",
+			"rules/presets/recommended/docs/public/decisions/ts-sourcefile-value-declarations.md",
 			"rules/presets/recommended/examples.jsonl",
 		]);
 
@@ -86,7 +89,7 @@ describe("public CLI local package artifact", () => {
 		const yamlLicense = readFileSync(join(root, "node_modules/yaml/LICENSE"), "utf8");
 		expect(readFileSync(join(installed, "THIRD_PARTY_NOTICES"), "utf8")).toBe(`yaml 2.9.1 (ISC)\n\n${yamlLicense}`);
 		expect(existsSync(join(installed, "node_modules/yaml"))).toBe(false);
-		for (const [name, rows] of [["conventions.jsonl", 2], ["examples.jsonl", 4], ["decisions.jsonl", 2]] as const) {
+		for (const [name, rows] of [["conventions.jsonl", 5], ["examples.jsonl", 10], ["decisions.jsonl", 5]] as const) {
 			const records = readFileSync(join(installed, "rules/presets/recommended", name), "utf8").trim().split("\n").map(line => JSON.parse(line));
 			expect(records).toHaveLength(rows);
 			expect(records.every(record => record.approvedBy === "maintainer")).toBe(true);
@@ -152,8 +155,9 @@ describe("public CLI local package artifact", () => {
 
 		const authoring = run(executable, ["guide", "--file", "new/sample.ts", "--authoring", "--json"], { cwd: project, env: runtimeEnv });
 		expectStatus(authoring, 0);
-		expect(JSON.parse(authoring.stdout)).toMatchObject({ basis: "authoring", verification: "not-run", writeAuthorized: false, rules: [{ id: "ts-sourcefile-call-declarations" }] });
-		expect(existsSync(join(project, "new"))).toBe(false);
+		expect(JSON.parse(authoring.stdout)                                                    ).toMatchObject({ basis: "authoring", verification: "not-run", writeAuthorized: false }                                                                                     ) ;
+		expect(JSON.parse(authoring.stdout).rules.map((rule: { id: string }) => rule.id).sort()).toEqual      (["ts-sourcefile-call-declarations", "ts-sourcefile-call-envelope-declarations", "ts-sourcefile-empty-call-declarations", "ts-sourcefile-value-declarations"]) ;
+		expect(existsSync(join(project, "new"))                                                ).toBe         (false                                                                                                                                                       ) ;
 
 		const jsonTarget = join(project, "sample.json")                         ;
 		const jsonSource = "{\n  \"a\":1,\n  \"longer\" : 2,\n  \"x\"  :3\n}\n" ;

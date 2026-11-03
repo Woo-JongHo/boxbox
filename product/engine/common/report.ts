@@ -63,7 +63,7 @@ export const DEFAULT_LIMITS: ReportLimits = {
 };
 
 /** Structural minimum-row exceptions; these do not grant write approval. */
-const TWO_ROW_KINDS = new Set(["declaration-equals", "declaration-call-envelope", "declaration-call-expressions", "import-declarations"]);
+const TWO_ROW_KINDS = new Set(["declaration-equals", "declaration-values", "declaration-call-envelope", "declaration-call-expressions", "import-declarations"]);
 
 export type CheckStatus = "pass" | "fail" | "not-run" | "skipped";
 

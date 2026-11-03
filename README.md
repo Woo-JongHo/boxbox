@@ -10,17 +10,17 @@ This project treats repeated code like a spreadsheet: each same-role statement i
 
 ```typescript
 // Before
-const users = load("users");
-const orders = load("orders");
-const invoices = load("invoices");
+const name = "deploy";
+const retries = 3;
+const timeoutMs = 1000;
 
 // After
-const users    = load("users"   ) ;
-const orders   = load("orders"  ) ;
-const invoices = load("invoices") ;
+const name      = "deploy" ;
+const retries   = 3        ;
+const timeoutMs = 1000     ;
 ```
 
-The aligned example above is actual TypeScript engine output, and a test keeps it that way. Automatic writes are deliberately narrow today: two approved rules, so most other patterns are reported, not changed. Names, values and execution order stay the same; corresponding syntax becomes easier to compare.
+The aligned example above is actual TypeScript engine output, and a test keeps it that way. Automatic writes are deliberately narrow today: a few approved rules, so most other patterns are reported, not changed. Names, values and execution order stay the same; corresponding syntax becomes easier to compare.
 
 The product is **BoxBox**; core CLI, skill and plugin IDs are `boxbox` (confirmed on 2026-10-16). The npm installer candidate is `boxbox-plugin`, which was unregistered when checked. Its target command is `npx boxbox-plugin`; publication requires valid npm authentication and a final release decision. See the [Windows plugin installation guide](product/installer/README.md).
 
@@ -73,7 +73,7 @@ JSON and YAML alignment is deliberately narrow:
 three or more adjacent, same-level, single-line scalar mapping entries. It reports unsupported rows separately and
 leaves them unchanged. YAML block scalars, anchors, aliases, tags, complex keys, flow collections, sequences,
 directives and document markers are outside this alignment slice. The engine path exists for structured Align, but
-the recommended preset still authorizes writes for only the two TypeScript/Python rules below; JSON/YAML writes need
+the recommended preset still authorizes writes for only the TypeScript and Python rules below; JSON/YAML writes need
 their own complete local or future preset approval proof.
 
 ## Install the plugin
@@ -123,7 +123,7 @@ sources; `--copy` creates a managed copy. Development authoring hooks require se
 | Surface | Coverage |
 | --- | --- |
 | Implemented public CLI Check/Align engines | TypeScript, Python, strict JSON and YAML 1.2 (`.yaml`/`.yml`) |
-| Default preset write authorization | Two rules only: TypeScript call declarations and Python simple assignments |
+| Default preset write authorization | Five rules only: four TypeScript declaration shapes and Python simple assignments |
 | Development alignment engines | The same four languages; other line-engine languages were removed on 2026-10-22 |
 | TypeScript detection | TypeScript 7 AST tools and a table-kind registry |
 | JSON/YAML detection | Adjacent same-level runs of 3+ single-line scalar mapping entries |
@@ -135,7 +135,7 @@ The four supported languages do not have equal release support: only TypeScript 
 
 Project configuration lives in `.boxbox/`. Configuration is resolved through Base → Preset → User → Project layers; safety invariants remain mandatory.
 
-The recommended preset contains two approved conventions, four synthetic examples and two decisions: TypeScript top-level call declarations (2+ rows) and Python simple assignments (3+ rows). Research candidates are kept separately and are not automatically approved. See the [readability contract](product/rules/references/readability-contract.md) for the current rules and the [plugin skill](product/plugin/skills/boxbox/SKILL.md) for the agent workflow.
+The recommended preset contains five approved conventions, ten synthetic examples and five decisions: TypeScript top-level declarations of same-function calls, other calls, empty calls and simple values (2+ rows), and Python simple assignments (3+ rows). Research candidates are kept separately and are not automatically approved. See the [readability contract](product/rules/references/readability-contract.md) for the current rules and the [plugin skill](product/plugin/skills/boxbox/SKILL.md) for the agent workflow.
 
 ## Development status
 

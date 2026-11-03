@@ -223,7 +223,7 @@ test("npm installer name differs from private engine and both host payloads have
 		"package/rules/presets/recommended/conventions.jsonl",
 		"package/rules/presets/recommended/decisions.jsonl",
 		"package/rules/presets/recommended/docs/public/decisions/py-simple-assignments.md",
-		"package/rules/presets/recommended/docs/public/decisions/ts-sourcefile-call-declarations.md",
+		"package/rules/presets/recommended/docs/public/decisions/ts-sourcefile-call-declarations.md", "package/rules/presets/recommended/docs/public/decisions/ts-sourcefile-call-envelope-declarations.md", "package/rules/presets/recommended/docs/public/decisions/ts-sourcefile-empty-call-declarations.md", "package/rules/presets/recommended/docs/public/decisions/ts-sourcefile-value-declarations.md",
 		"package/rules/presets/recommended/examples.jsonl",
 	].sort());
 	for (const path of nestedFiles) expect(readFileSync(join(nested, path), "utf8")).not.toContain(ROOT);

@@ -91,12 +91,12 @@ describe("CLI", () => {
 		const root       = workspace()                                                                  ;
 		const typescript = invoke   (root, ["guide", "--file", "new/code.ts", "--authoring", "--json"]) ;
 		const python     = invoke   (root, ["guide", "--file", "new/code.py", "--authoring", "--json"]) ;
-		expect(typescript.code                                                                                                          ).toBe           (0                     ) ;
-		expect(typescript.value.writeAuthorized                                                                                         ).toBe           (false                 ) ;
-		expect(typescript.value.columnSets.filter((set: { approved: boolean }) => set.approved).map((set: { kind: string }) => set.kind)).toEqual        (["declaration-equals"]) ;
-		expect(Object.keys(typescript.value.axisNotes).length                                                                           ).toBeGreaterThan(30                    ) ;
-		expect(python.value.columnSets                                                                                                  ).toEqual        ([]                    ) ;
-		expect(python.value.axisNotes                                                                                                   ).toEqual        ({}                    ) ;
+		expect(typescript.code                                                                                                          ).toBe           (0                                                                        ) ;
+		expect(typescript.value.writeAuthorized                                                                                         ).toBe           (false                                                                    ) ;
+		expect(typescript.value.columnSets.filter((set: { approved: boolean }) => set.approved).map((set: { kind: string }) => set.kind)).toEqual        (["declaration-equals", "declaration-values", "declaration-call-envelope"]) ;
+		expect(Object.keys(typescript.value.axisNotes).length                                                                           ).toBeGreaterThan(30                                                                       ) ;
+		expect(python.value.columnSets                                                                                                  ).toEqual        ([]                                                                       ) ;
+		expect(python.value.axisNotes                                                                                                   ).toEqual        ({}                                                                       ) ;
 	});
 
 	test("check --expect-axis reports coverage and does not change the exit status", () => {

@@ -10,17 +10,17 @@
 
 ```typescript
 // Before
-const users = load("users");
-const orders = load("orders");
-const invoices = load("invoices");
+const name = "deploy";
+const retries = 3;
+const timeoutMs = 1000;
 
 // After
-const users    = load("users"   ) ;
-const orders   = load("orders"  ) ;
-const invoices = load("invoices") ;
+const name      = "deploy" ;
+const retries   = 3        ;
+const timeoutMs = 1000     ;
 ```
 
-上面的对齐示例是 TypeScript 引擎的实际输出，并由测试保证。目前自动写入的范围有意保持狭窄：只有两条已批准的规则，其他大多数模式只报告，不修改。名称、值和执行顺序保持不变；对应的语法元素变得更容易比较。
+上面的对齐示例是 TypeScript 引擎的实际输出，并由测试保证。目前自动写入的范围有意保持狭窄：只有少数已批准的规则，其他大多数模式只报告，不修改。名称、值和执行顺序保持不变；对应的语法元素变得更容易比较。
 
 产品名称是 **BoxBox**；核心 CLI、技能和插件的 ID 为 `boxbox`（于 2026-10-16 确认）。npm 安装器的候选包名是 `boxbox-plugin`，检查时尚未被注册。目标命令为 `npx boxbox-plugin`；发布需要有效的 npm 身份验证和最终发布决定。请参阅 [Windows 插件安装指南](product/installer/README.md)。
 
@@ -72,7 +72,7 @@ CLI 现在可以检查 TypeScript、Python、严格 JSON 和 YAML 1.2，并将�
 parser error。JSON/YAML 对齐范围刻意限制为：
 同一层级中至少三个相邻的单行标量映射条目。引擎会单独报告不支持的行，并保持其原样。
 YAML 块标量、锚点、别名、标签、复杂键、流式集合、序列、指令和文档标记不在本次对齐范围内。
-结构化文档的 Align 引擎路径已经实现，但推荐预设仍只授权下述两条 TypeScript/Python 规则写入；
+结构化文档的 Align 引擎路径已经实现，但推荐预设仍只授权下述 TypeScript 和 Python 规则写入；
 JSON/YAML 写入需要完整的本地批准证据或未来单独批准的预设规则。
 
 ## 安装插件
@@ -121,7 +121,7 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 | 范围 | 覆盖情况 |
 | --- | --- |
 | 已实现的公开 CLI Check/Align 引擎 | TypeScript、Python、严格 JSON 和 YAML 1.2（`.yaml`/`.yml`） |
-| 默认预设写入授权 | 仅两条规则：TypeScript 调用声明和 Python 简单赋值 |
+| 默认预设写入授权 | 仅五条规则：四种 TypeScript 声明形式和 Python 简单赋值 |
 | 开发版对齐引擎 | 与上述相同的四种语言（其他行引擎语言已于 2026-10-22 移除） |
 | TypeScript 检测 | TypeScript 7 AST 工具和表格类型注册表 |
 | JSON/YAML 检测 | 同一层级中至少三个相邻的单行标量映射条目 |
@@ -133,7 +133,7 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 
 项目配置位于 `.boxbox/`。配置按 Base → Preset → User → Project 的层级解析；安全不变条件始终是强制要求。
 
-推荐预设包含两条已批准的约定、四个合成示例和两条决策记录：TypeScript 顶层调用声明（至少 2 行）和 Python 简单赋值（至少 3 行）。研究候选规则单独保存，不会自动获得批准。当前规则请参阅[可读性契约](product/rules/references/readability-contract.md)，智能体工作流程请参阅[插件技能](product/plugin/skills/boxbox/SKILL.md)。
+推荐预设包含五条已批准的约定、十个合成示例和五条决策记录：TypeScript 顶层声明中的相同函数调用、其他调用、空调用和简单值（至少 2 行），以及 Python 简单赋值（至少 3 行）。研究候选规则单独保存，不会自动获得批准。当前规则请参阅[可读性契约](product/rules/references/readability-contract.md)，智能体工作流程请参阅[插件技能](product/plugin/skills/boxbox/SKILL.md)。
 
 ## 开发状态
 

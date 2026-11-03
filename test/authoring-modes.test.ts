@@ -37,13 +37,14 @@ describe("matrix authoring and alignment modes", () => {
 
 			expect(result.code                                     ).toBe         (0                                                                                ) ;
 			expect(result.value                                    ).toMatchObject({ basis: "authoring", language, verification: "not-run", writeAuthorized: false }) ;
-			expect(result.value.rules                              ).toHaveLength (1                                                                                ) ;
-			expect(result.value.rules[0]                           ).toMatchObject({ id, scope: language === "python" ? "**/*.py" : "**/*.ts" }                     ) ;
-			expect(result.value.rules[0].examples                  ).toHaveLength (1                                                                                ) ;
-			expect(result.value.rules[0].counterexamples[0].verdict).toBe         ("bad"                                                                            ) ;
-			expect(result.value.rules[0].contract                  ).toContain    (language === "python" ? "Three or more" : "Two or more"                          ) ;
-			expect(existsSync(join(root, "new"))                   ).toBe         (false                                                                            ) ;
-			expect(existsSync(join(root, ".boxbox"))               ).toBe         (false                                                                            ) ;
+			const rule = result.value.rules.find((entry: { id: string }) => entry.id === id);
+			expect(result.value.rules               ).toHaveLength (language === "python" ? 1 : 4                                                    ) ;
+			expect(rule                             ).toMatchObject({ id, scope: language === "python" ? "**/*.py" : "**/*.ts" }                     ) ;
+			expect(rule.examples                    ).toHaveLength (1                                                                                ) ;
+			expect(rule.counterexamples[0].verdict  ).toBe         ("bad"                                                                            ) ;
+			expect(rule.contract                    ).toContain    (language === "python" ? "Three or more" : "Two or more"                          ) ;
+			expect(existsSync(join(root, "new"))    ).toBe         (false                                                                            ) ;
+			expect(existsSync(join(root, ".boxbox"))).toBe         (false                                                                            ) ;
 		}
 	});
 
