@@ -59,7 +59,7 @@ These surfaces are not complete yet.
 
 - A closed learning path that loads corpus verdicts into the convention/example/decision DB and feeds GUIDE
 - Real host acceptance of hook output end to end, and an integrated LEARN / GUIDE / REVIEW interface
-- Running the release plugin (`plugin/`, 2026-10-07) against the published engine: it installs in Claude Code and Codex, and its hooks use a local-engine shim that refuses to run without an explicit `BOXBOX_CLI` (2026-10-16 safety update)
+- Running the release plugin (`plugin/`, 2026-10-07) against the published engine: it installs in Claude Code and Codex, and its hooks use a local-engine shim that, without a configured engine, exits 2 for commands and exits 0 for hooks so the host is not blocked. Checks do not run in that state. It refuses to run without an explicit `BOXBOX_CLI` (2026-10-16 safety update)
 
 ## 2. Module map and execution flow
 

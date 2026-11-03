@@ -3,6 +3,7 @@ import      {
               chmodSync     ,
               cpSync        ,
               mkdirSync     ,
+              readdirSync   ,
               readFileSync  ,
               rmSync        ,
               writeFileSync ,
@@ -84,6 +85,8 @@ export function buildInstallerArtifact(): string {
 
 	const destination = join(ROOT, "dist/installer");
 	mkdirSync(destination, { recursive: true });
+	// The documented install command expands one archive; an older one would become npm's executable argument.
+	for (const name of readdirSync(destination)) if (name.endsWith(".tgz")) rmSync(join(destination, name));
 	const packed = run("npm", ["pack", output, "--pack-destination", destination, "--json"]);
 	writeFileSync(join(destination, "pack-result.json"), packed);
 	const archive = join(destination, (JSON.parse(packed) as [{ filename: string }])[0].filename);

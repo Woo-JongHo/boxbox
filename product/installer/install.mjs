@@ -56,7 +56,11 @@ if (host) {
 }
 
 const claude = host && metadata.host === "claude" ? claudeRegistration(root, metadata, (args, options) => invoke(host, args, options)) : undefined;
-claude?.preflight();
+try {
+	claude?.preflight();
+} catch (error) {
+	fail(error.message);
+}
 
 const tarball = join(root, "packages", `${metadata.name}-${metadata.version}.tgz`);
 if (!existsSync(tarball)) fail(`Bundled engine is missing: ${tarball}. Rerun the BoxBox installer to repair the local payload.`);

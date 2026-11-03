@@ -214,6 +214,27 @@ describe("public CLI local package artifact", () => {
 		expect(readFileSync(target).equals(standaloneOutput)).toBe(true);
 		writeFileSync(target, original);
 
+		const firstBlock = /^```(\w*)\n(.*?)^```/msu.exec(readFileSync(join(root, "README.md"), "utf8"));
+		expect(firstBlock?.[1]).toBe("typescript");
+		const readme = /^\/\/ Before\n(.*)\n\/\/ After\n(.*)$/su.exec(firstBlock![2]!);
+		expect(readme).not.toBeNull();
+		const [readmeBefore, readmeAfter] = [readme![1]!, readme![2]!]              ;
+		const firstExample                = join(project, "readme-first-example.ts") ;
+		writeFileSync(firstExample, readmeBefore);
+		const firstPreview = run(executable, ["align", "--file", "readme-first-example.ts", "--dry-run", "--json"], { cwd: project, env: runtimeEnv });
+		expectStatus(firstPreview, 0);
+		expect(JSON.parse(firstPreview.stdout).written).toBe(false);
+		expect(readFileSync(firstExample, "utf8")).toBe(readmeBefore);
+		const firstWrite = run(executable, ["align", "--file", "readme-first-example.ts", "--json"], { cwd: project, env: runtimeEnv });
+		expectStatus(firstWrite, 0);
+		expect(JSON.parse(firstWrite.stdout).written).toBe(true);
+		expect(readFileSync(firstExample, "utf8")).toBe(readmeAfter);
+		expectStatus(run(executable, ["check", "--file", "readme-first-example.ts"], { cwd: project, env: runtimeEnv }), 0);
+		const firstRepeat = run(executable, ["align", "--file", "readme-first-example.ts", "--json"], { cwd: project, env: runtimeEnv });
+		expectStatus(firstRepeat, 0);
+		expect(JSON.parse(firstRepeat.stdout).written).toBe(false);
+		expect(readFileSync(firstExample, "utf8")).toBe(readmeAfter);
+
 		const rule      = "synthetic-ts-rule"                                                                                                                                                  ;
 		const positive  = `${rule}-positive`                                                                                                                                                   ;
 		const counter   = `${rule}-counter`                                                                                                                                                    ;

@@ -28,13 +28,15 @@ for an arbitrary file. Authorized multi-file work proceeds one file at a time.
 The intended entry point is the npm installer: `npx boxbox-plugin`. It installs this plugin and its included engine into a permanent user directory.
 The npm `boxbox-plugin` candidate was unregistered when checked; this is not a reservation. npm authentication is complete; publication remains pending.
 
+A marketplace install contains only this plugin, not the engine. Until the engine is configured, checks do not run: commands stop with a setup message, hooks exit without blocking the host, and only the session hook prints that message. Build and run the installer as described in the [root README](https://github.com/Woo-JongHo/boxbox#install-the-plugin). If you added this repository as a marketplace first, remove that registration before running the installer.
+
 For a manually configured local engine, set `BOXBOX_CLI` to the installed BoxBox `dist/cli.js` before invoking the standard shim.
 The npm installer configures its own local Node launcher, including native Windows hooks.
 Requirements: Node.js 22.22.3 or later, npm and the chosen host CLI (Codex or Claude Code). Python fixes additionally need a runnable `python3`.
 
 ## What this plugin runs and writes
 
-- **Engine:** the standard launcher requires an explicit local `BOXBOX_CLI` and refuses to run when it is missing. It never resolves the occupied registry package. The npm installer installs its included engine tarball and downloads the pinned `typescript@7.0.2` dependency and its platform package from npm.
+- **Engine:** the standard launcher requires an explicit local `BOXBOX_CLI`. When it is missing, commands exit 2 with a setup message, and hooks exit 0 so they do not block the host; the session hook prints that message. It never resolves the occupied registry package. The npm installer installs its included engine tarball and downloads the pinned `typescript@7.0.2` dependency and its platform package from npm.
 - **Hooks:** at session start, after edits and when a response ends, they check TypeScript, Python, JSON and YAML files changed
   during the session, read-only. They never fix anything automatically. Records are written only to the host's plugin
   data folder (`CLAUDE_PLUGIN_DATA`) and are deleted with the plugin. No files are created in the target project.

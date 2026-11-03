@@ -1,6 +1,8 @@
 import      { lstatSync, readFileSync, realpathSync } from "node:fs"   ;
 import      { dirname, join, resolve                } from "node:path" ;
 
+const UPSTREAM = /^(?:https:\/\/github\.com\/|git@github\.com:)?Woo-JongHo\/boxbox(?:\.git)?\/?$/iu;
+
 /** Check before repair copies can erase evidence of a foreign or shared catalog. */
 export function assertClaudeCatalog(root, metadata, allowMissing = false) {
 	const directory = join(root     , ".claude-plugin"  ) ;
@@ -29,6 +31,11 @@ export function claudeRegistration(root, metadata, invoke) {
 	function marketplace(exact) {
 		const entries = json(["plugin", "marketplace", "list", "--json"]).filter(value => value.name === metadata.marketplace);
 		if (!entries.length && !exact) return;
+		if (!exact && entries.length === 1 && entries[0].source !== "directory") {
+			const shared = json(["plugin", "list", "--json"]).some(value => typeof value.id === "string" && value.id.endsWith(`@${metadata.marketplace}`) && value.id !== id);
+			if (UPSTREAM.test(entries[0].repo ?? entries[0].url ?? "") && !shared) throw new Error(`Claude marketplace ${metadata.marketplace} was added from this project's repository (${entries[0].source}), which has no engine. Remove it, then rerun the BoxBox installer:\n  claude plugin uninstall ${id} --scope user\n  claude plugin marketplace remove ${metadata.marketplace}`);
+			throw new Error(`A different Claude marketplace is already named ${metadata.marketplace}, or it has other plugins. Removing a marketplace also removes its plugins, so BoxBox will not suggest it. Inspect it with "claude plugin marketplace list" and decide before rerunning the installer.`);
+		}
 		if (entries.length !== 1 || entries[0].source !== "directory" || typeof entries[0].path !== "string" || typeof entries[0].installLocation !== "string") throw new Error("Claude marketplace is missing, ambiguous or not an owned local directory.");
 		const source = realpathSync(entries[0].path);
 		if (realpathSync(entries[0].installLocation) !== source) throw new Error("Claude marketplace installLocation does not match its source.");

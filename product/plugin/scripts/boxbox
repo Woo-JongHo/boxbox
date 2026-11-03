@@ -2,7 +2,14 @@
 # The npm identity is not owned by this project. Run only an explicitly configured local engine.
 # The BoxBox npm installer configures its own Node launcher during installation.
 if [ -z "${BOXBOX_CLI:-}" ]; then
-	printf '%s\n' 'BoxBox: no local engine configured. Install the BoxBox npm installer or set BOXBOX_CLI to the installed BoxBox dist/cli.js path.' >&2
+	message='BoxBox: no local engine configured. A marketplace install contains only the plugin, and no npm package is published yet. Finish setup: https://github.com/Woo-JongHo/boxbox#install-the-plugin (or set BOXBOX_CLI to the installed BoxBox dist/cli.js path).'
+	# No engine means no check ran, so there is no finding to block on. Exit 2 would stop every edit and response.
+	# With an engine, hook decisions are unchanged; running without one disables the hook checks.
+	if [ "${1:-}" = "hook" ]; then
+		if [ "${2:-}" = "session" ]; then printf '%s\n' "$message"; fi
+		exit 0
+	fi
+	printf '%s\n' "$message" >&2
 	exit 2
 fi
 exec node "$BOXBOX_CLI" "$@"

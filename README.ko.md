@@ -10,17 +10,17 @@ BoxBox는 반복되는 코드를 스프레드시트처럼 다룹니다. 같은 �
 
 ```typescript
 // Before
-const name = "deploy";
-const retries = 3;
-const timeoutMs = 1000;
+const users = load("users");
+const orders = load("orders");
+const invoices = load("invoices");
 
 // After
-const name      = "deploy" ;
-const retries   = 3        ;
-const timeoutMs = 1000     ;
+const users    = load("users"   ) ;
+const orders   = load("orders"  ) ;
+const invoices = load("invoices") ;
 ```
 
-위 정렬 예시는 실제 TypeScript 엔진의 출력입니다. 이름, 값, 실행 순서는 유지하면서 대응하는 구문을 더 쉽게 비교할 수 있게 합니다.
+위 정렬 예시는 실제 TypeScript 엔진의 출력이며, 테스트로 이를 유지합니다. 현재 자동 쓰기 범위는 승인된 규칙 2개로 의도적으로 좁아서, 그 밖의 패턴은 대부분 변경하지 않고 보고만 합니다. 이름, 값, 실행 순서는 유지하면서 대응하는 구문을 더 쉽게 비교할 수 있게 합니다.
 
 제품명은 **BoxBox**이며, 핵심 CLI·스킬·플러그인 ID는 `boxbox`입니다(2026-10-16 확정). npm 설치 패키지 후보는 `boxbox-plugin`이며, 확인 당시에는 등록되지 않은 이름이었습니다. 목표 설치 명령은 `npx boxbox-plugin`입니다. 패키지 게시에는 유효한 npm 인증과 최종 릴리스 결정이 필요합니다. [Windows 플러그인 설치 안내](product/installer/README.md)를 참고하세요.
 
@@ -78,19 +78,26 @@ CLI는 이제 TypeScript, Python, 엄격한 JSON, YAML 1.2를 검사하며 구�
 
 ## 플러그인 설치
 
-공개 npm 설치 패키지는 `boxbox-plugin`이라는 이름으로 준비 중이며, 레지스트리 게시는 아직 대기 중입니다.
-Codex와 Claude Code용 플러그인 및 로컬 Node 엔진을 설치합니다. 현재 미리보기 상태와 호스트 요구 사항은
+아직 명령 하나로 설치할 수는 없습니다. npm 패키지 `boxbox-plugin`이 게시되지 않았기 때문입니다. 소스에서 설치 패키지를 빌드하세요. git, [Bun](https://bun.sh), Node.js 22.22.3 이상, npm, Codex 또는 Claude Code CLI가 필요합니다. 감지된 모든 호스트에 플러그인과 로컬 Node 엔진을 설치합니다. 자세한 내용은
 [설치 안내](product/installer/README.md)를 참고하세요.
 
-로컬에서 빌드한 설치 패키지를 사용하려면:
-
 ```sh
+git clone https://github.com/Woo-JongHo/boxbox.git
+cd boxbox
 bun install
 bun run pack:installer
-npm exec --yes --package '/absolute/path/to/dist/installer/boxbox-plugin-<version>.tgz' -- boxbox --codex
+npm exec --yes --package "$PWD"/dist/installer/boxbox-plugin-*.tgz -- boxbox
 ```
 
-`<version>`을 `package.json`의 버전으로 바꾸거나, `pack:installer`가 출력한 정확한 아카이브 경로를 사용하세요. 로컬 패키지를 빌드하려면 저장소 체크아웃이 필요합니다. 설치된 플러그인은 영구 설치된 자체 Node 엔진을 사용합니다.
+호스트를 다시 시작한 뒤 BoxBox로 파일을 정렬해 달라고 요청하세요. 이 저장소를 Claude나 Codex 마켓플레이스로 추가하면 엔진 없이 플러그인만 설치됩니다. 이 경우 명령은 설정 안내를 내고 멈추며 검사는 실행되지 않습니다. 훅은 차단하지 않고, 세션 시작 훅만 그 안내를 출력합니다. 이미 그렇게 추가했다면 사용하는 호스트의 줄을 실행해 등록을 먼저 지운 뒤 설치 프로그램을 실행하세요.
+
+```sh
+claude plugin uninstall boxbox@boxbox-plugins --scope user
+claude plugin marketplace remove boxbox-plugins
+codex plugin marketplace remove boxbox-plugins
+```
+
+Windows에서는 와일드카드 대신 아카이브 전체 경로를 쓰세요. 설치 안내를 참고하세요. 저장소 체크아웃은 빌드할 때만 필요합니다. 설치된 플러그인은 영구 설치된 자체 Node 엔진을 사용합니다.
 공개 설치 프로그램에는 Node.js 22.22.3 이상과 npm이 필요하며, Python 포맷에는 `python3`가 추가로 필요합니다.
 
 ## BoxBox 개발
