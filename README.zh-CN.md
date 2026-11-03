@@ -96,7 +96,9 @@ claude plugin marketplace remove boxbox-plugins
 codex plugin marketplace remove boxbox-plugins
 ```
 
-在 Windows 上，请将通配符替换为压缩包的完整路径，详见安装指南。检出仓库只在构建时需要。安装后的插件使用其永久安装的 Node 引擎。
+在 Windows 上，请将通配符替换为压缩包的完整路径，详见安装指南。**如果你的项目使用代码格式化工具：** Prettier、Black 和 Ruff 的格式化器会在其重写的文件中撤销 BoxBox 的对齐。BoxBox 的设计是在格式化工具之后运行，并由编辑器、钩子和 CI 调用 BoxBox，但多文件的钩子和 CI 支持尚未实现。在此之前，下一次格式化会撤销这些文件的对齐，格式检查也会报告这些文件。当项目根目录的配置显示存在格式化工具时，`doctor`、`init`、`align` 和 `format` 会发出警告。
+
+检出仓库只在构建时需要。安装后的插件使用其永久安装的 Node 引擎。
 公开安装器需要 Node.js 22.22.3 或更高版本以及 npm；Python 格式化还需要 `python3`。
 
 ## 开发 BoxBox

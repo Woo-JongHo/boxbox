@@ -9,6 +9,12 @@ release documentation when preparing a version.
 
 ### Added
 
+- `doctor`, `init`, `align` and `format` detect Prettier, Black and Ruff's
+  formatter from configuration at the project root and warn that they revert
+  alignment. A hook or script that rewrites files is reported as running; a
+  configuration alone, or check mode, is reported as possibly in use. `align` and
+  `format` warn only for a formatter of the file's language. Detection only reads
+  files and changes no exit code.
 - Three approved TypeScript rules for top-level declarations: simple values
   (`ts-sourcefile-value-declarations`), direct calls with arguments
   (`ts-sourcefile-call-envelope-declarations`) and empty calls

@@ -148,11 +148,11 @@ Design section 3.5 (status: draft) says BoxBox overrides the formatter, that for
 |---|---|
 | A configured formatter runs before BoxBox in `format` | Built. `align` never runs it |
 | `check` computes `boxbox(formatter(file))` | Not built. `check` inspects the file as it is |
-| `init` and `doctor` detect formatter configs and print hook and CI changes | Not built. In `click`, which runs `ruff format`, `doctor` reports "no external formatter required", and `init` writes a config with no formatter or guidance |
-| The README states this up front | Not done |
+| `init` and `doctor` detect formatter configs and print hook and CI changes | Warnings added in [#39](https://github.com/Woo-JongHo/boxbox/issues/39). When this was measured, `doctor` in `click` reported "no external formatter required" |
+| The README states this up front | Added in [#39](https://github.com/Woo-JongHo/boxbox/issues/39) |
 | Hooks and CI can check a project | Not practical. The CLI accepts one file at a time |
 
-So a formatter project today gets a result that its next format run reverts, with no warning.
+So a formatter project gets a result that its next format run reverts.
 
 Alternatives, if the maintainer does not want to keep this decision:
 

@@ -97,7 +97,9 @@ claude plugin marketplace remove boxbox-plugins
 codex plugin marketplace remove boxbox-plugins
 ```
 
-On Windows, replace the wildcard with the full archive path; see the installation guide. The checkout is needed only for building. The installed plugin uses its permanent Node engine.
+On Windows, replace the wildcard with the full archive path; see the installation guide. **If your project runs a code formatter:** Prettier, Black and Ruff's formatter revert BoxBox's alignment in the files they rewrite. BoxBox is designed to run after the formatter, with your editor, hooks and CI calling BoxBox instead, but multi-file hook and CI support is not built yet. Until then, expect the next format run to undo alignment in those files, and a format check to report them. `doctor`, `init`, `align` and `format` warn when a project-root configuration shows a formatter.
+
+The checkout is needed only for building. The installed plugin uses its permanent Node engine.
 The public installer needs Node.js 22.22.3 or later and npm; Python formatting additionally needs `python3`.
 
 ## Develop BoxBox
