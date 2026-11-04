@@ -255,16 +255,17 @@ export function analyzeStructured(source: string, language: StructuredLanguage, 
 	catch (error) {
 		const refusals = [{ line: 1, reason: error instanceof Error ? error.message : String(error) }] ;
 		const groups: ResultGroup[] = [{
-			kind: "mapping",
-			startLine: 1,
-			endLine: 1,
-			rows: 0,
-			axes: ["key-colon", "value"],
-			state: "REFUSE",
-			edits: 0,
-			context: language === "json" ? "object" : "block-map",
-			depth: 0
+			kind      : "mapping"                                    ,
+			startLine : 1                                            ,
+			endLine   : 1                                            ,
+			rows      : 0                                            ,
+			axes      : ["key-colon", "value"]                       ,
+			state     : "REFUSE"                                     ,
+			edits     : 0                                            ,
+			context   : language === "json" ? "object" : "block-map" ,
+			depth     : 0
 		}] ;
+
 		return {
 			output : source ,
 			refusals        ,
@@ -278,6 +279,7 @@ export function analyzeStructured(source: string, language: StructuredLanguage, 
 			}
 		};
 	}
+
 	const lines = source.split("\n"), runs: Run[] = runsOf(parsed.rows).map(rows => {
 		const width = Math.max(...rows.map(row => displayWidth(row.key))) ;
 		let edits   = 0                                                   ;
