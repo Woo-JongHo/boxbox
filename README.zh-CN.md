@@ -88,7 +88,9 @@ bun run pack:installer
 npm exec --yes --package "$PWD"/dist/installer/boxbox-plugin-*.tgz -- boxbox
 ```
 
-重启宿主，然后让它用 BoxBox 对齐文件。将本仓库添加为 Claude 或 Codex 市场时，只会安装插件而没有引擎：命令会显示设置提示并停止，检查也不会运行：钩子不会阻止操作，只有会话钩子会输出该提示。如果已经这样添加，请先运行你所用宿主对应的命令删除该注册，再运行安装器：
+安装器会验证永久安装的引擎，并在 `python3` 可用时对临时 Python 示例执行只读检查，保持源文件不变。它分别报告 Python 就绪状态和仍需审核的自动钩子状态。Python 不可用或运行失败时，安装器会报告未验证状态，并继续安装其他语言所需的功能。重启宿主，在 Codex 的 `/hooks` 或 Settings > Hooks（Claude 使用钩子设置）中审核钩子，选择 BoxBox，然后明确请求 Check 一个项目文件。宿主实际接收钩子结果以及源文件写入权限仍需单独验证。
+
+将本仓库添加为 Claude 或 Codex 市场时，只会安装插件而没有引擎：命令会显示设置提示并停止，钩子报告 `NOT_RUN`，不会阻止操作。如果已经这样添加，请先运行你所用宿主对应的命令删除该注册，再运行安装器：
 
 ```sh
 claude plugin uninstall boxbox@boxbox-plugins --scope user

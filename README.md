@@ -89,7 +89,9 @@ bun run pack:installer
 npm exec --yes --package "$PWD"/dist/installer/boxbox-plugin-*.tgz -- boxbox
 ```
 
-Restart the host, then ask it to align a file with BoxBox. Adding this repository as a Claude or Codex marketplace installs only the plugin, without the engine: commands stop with a setup message, and checks do not run: hooks do not block, and only the session hook prints that message. If you already did that, remove that registration first, using the lines for your host, then run the installer:
+The installer verifies its permanent engine and, when `python3` is available, checks a disposable Python example without changing its source. It reports Python readiness separately from automatic hooks, which still require review. An unavailable or failing Python is reported as unverified and does not block other languages. Restart the host, review hooks in Codex `/hooks` or Settings > Hooks (or the Claude hook settings), select BoxBox, and request an explicit Check of one project file. Native hook delivery and source write permission remain separate checks.
+
+Adding this repository as a Claude or Codex marketplace installs only the plugin, without the engine: commands stop with a setup message, and hooks report `NOT_RUN` without blocking. If you already did that, remove that registration first, using the lines for your host, then run the installer:
 
 ```sh
 claude plugin uninstall boxbox@boxbox-plugins --scope user

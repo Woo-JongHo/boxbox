@@ -60,20 +60,24 @@ test("hooks.json commands run the configured local CLI through the shim and leav
 	expect(readFileSync(log, "utf8").trim().split("\n")[0]                           ).toBe(ENTRY) ;
 }, 60_000);
 
-test("without an engine, hooks never block the host and only the session hook explains the setup", () => {
+test("without an engine, every hook reports NOT_RUN without blocking the host", () => {
 	const env = { ...process.env };
 	delete env.BOXBOX_CLI;
 	const hook = (mode: string) => spawnSync("sh", [join(PLUGIN, "scripts/boxbox"), "hook", mode], { env, encoding: "utf8" });
 
-	const session = hook("session");
-	expect(session.status).toBe     (0                                        ) ;
-	expect(session.stdout).toContain("no local engine configured"             ) ;
-	expect(session.stdout).toContain("boxbox#install-the-plugin"              ) ;
-	for (const mode of ["post", "stop"]) {
+	for (const [mode, event] of [["session", "SessionStart"], ["post", "PostToolUse"], ["stop", "Stop"]]) {
 		const result = hook(mode);
-		expect(result.status).toBe(0 ) ;
-		expect(result.stdout).toBe("") ;
-		expect(result.stderr).toBe("") ;
+		expect(result.status).toBe(0);
+		expect(result.stderr).toBe("");
+
+		const output  = JSON.parse(result.stdout)                                                            ;
+		const message = mode === "stop" ? output.systemMessage : output.hookSpecificOutput.additionalContext ;
+
+		expect(output.decision).toBeUndefined();
+		expect(message).toContain("NOT_RUN"                   ) ;
+		expect(message).toContain("no local engine configured") ;
+		expect(message).toContain("boxbox#install-the-plugin" ) ;
+		if (mode !== "stop") expect(output.hookSpecificOutput.hookEventName).toBe(event);
 	}
 });
 

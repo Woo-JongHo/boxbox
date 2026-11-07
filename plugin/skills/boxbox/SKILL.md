@@ -1,6 +1,6 @@
 ---
 name: boxbox
-description: Write or refactor TypeScript/Python, or align or check TypeScript, Python, JSON or YAML when the user requests BoxBox or spreadsheet-style readability, comparing same-role rows in minimum-width columns.
+description: Install or verify BoxBox, write or refactor TypeScript/Python, or align or check TypeScript, Python, JSON or YAML when the user requests BoxBox or spreadsheet-style readability, comparing same-role rows in minimum-width columns.
 ---
 
 # BoxBox Code Readability
@@ -24,6 +24,16 @@ Preview is an execution option for every workflow: present a proposed diff witho
 Work one file at a time within the user's authorized scope; continue across authorized files without requiring fresh feedback for each file.
 
 ## Running the engine
+
+Before the first workflow in a session, run `doctor --json` through the launcher below, then run an explicit
+`check --file <file> --json` for the user's first existing target. Report the engine's syntax, findings and coverage;
+plugin installation or discovery alone does not establish that a check ran. Read individual doctor checks: a missing
+Python does not prevent an explicit TypeScript, JSON or YAML Check. If the engine is unavailable, report
+`NOT_RUN` and the setup diagnostic. When installation is the authorized task, finish the engine setup using the
+[installation instructions](https://github.com/Woo-JongHo/boxbox#install-the-plugin), then repeat the first check.
+Report automatic hook activation separately: Codex requires review in `/hooks` or Settings > Hooks. Until native
+delivery is observed, mark it unverified. The user reviews hook trust; preserve existing trust choices during setup.
+A host's read-only sandbox can allow Check while preventing agent edits.
 
 Every check and fix goes through the bundled launcher. Resolve `<PLUGIN_ROOT>` from this skill location (`../..`) and run it from the root of the target repository. The standard shim requires `BOXBOX_CLI` to point to a locally installed engine; the BoxBox npm installer configures its own launcher during installation. Never fetch `boxbox` from npm: that registry name is owned by an unrelated package.
 
@@ -127,5 +137,6 @@ Read the documents in this folder when a judgment is needed.
 ## Authoring hooks
 
 The plugin hooks check TypeScript, Python, JSON and YAML files changed during the session, read-only, and report the result. They never fix anything automatically.
+Without an engine, hooks report `NOT_RUN` without blocking the host; that state is not a passing check.
 The npm-installed launcher requires the host's plugin data folder and writes receipts there. Direct CLI hooks installed
 with `hooks install` can fall back to `.boxbox/hooks` when the host provides no data folder. Source files stay read-only.

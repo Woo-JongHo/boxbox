@@ -12,6 +12,7 @@ import      {
 
 import      { installationState                                                } from "./install-state.mjs"       ;
 import      { claudeRegistration                                               } from "./claude-registration.mjs" ;
+import      { verifyRuntime                                                    } from "./readiness.mjs"           ;
 
 const root       = fileURLToPath(new URL("./", import.meta.url))                    ;
 const windows    = process.platform === "win32"                                     ;
@@ -75,6 +76,13 @@ if (!existsSync(cli)) fail("The local engine did not install correctly. Keep the
 const version = run(node, [cli, "--version"], { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] }).stdout.trim();
 if (version !== metadata.version) fail(`Installed engine version mismatch: ${version}`);
 
+let readiness;
+try {
+	readiness = verifyRuntime(node, cli);
+} catch (error) {
+	fail(error.message);
+}
+
 const plugin        = join(root, "plugin")                                                                                                                          ;
 const launcher      = join(plugin, "scripts/boxbox.mjs")                                                                                                            ;
 const configuration = join(plugin, "runtime.json")                                                                                                                  ;
@@ -113,4 +121,8 @@ claude?.verify();
 state.advance("verified");
 console.log(engineOnly ? "BoxBox local engine is ready; host checks and registration were skipped." : `BoxBox is installed for ${metadata.host === "codex" ? "Codex" : "Claude Code"}. Restart that host and select the BoxBox skill. Review the current hooks manually before relying on them.`);
 console.log(`Permanent installation: ${root}`);
+console.log(`Python check: ${readiness.python.status}. ${readiness.python.detail}`);
+console.log(engineOnly
+	? "Automatic hooks: not registered; native delivery not verified."
+	: "Automatic hooks: review required; native delivery not verified. In Codex, open /hooks or Settings > Hooks to review the current definitions. In Claude Code, review the plugin hooks in its settings.");
 console.log("Approved TypeScript call and value declarations and Python simple assignments can format without an external formatter. Run check and guide, then format --dry-run before an explicit format request; other patterns require approval.");

@@ -1,0 +1,198 @@
+{
+  "$schema"      : "../issue.schema.json",
+  "schemaVersion": 1,
+  "id"           : "BBX-20261106-027",
+  "title"        : "A GitHub plugin installation can finish without a runnable Python check",
+  "category"     : "installation",
+  "tags": [
+    "codex",
+    "first-use",
+    "engine-readiness",
+    "hook-trust",
+    "NOT_RUN",
+    "python"
+  ],
+  "status": "verifying",
+  "symptom": "A user delegated GitHub BoxBox plugin installation to Codex on another computer, then saw read-only behavior and no apparent Python inspection or style application. Exact destination installation commands, effective sandbox and hook trust were not available.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "Confirmed for the reproducible marketplace-only route on Codex 0.166.0: marketplace and plugin add succeed, but the thin plugin has no configured local engine, so an explicit Python check exits 2. Codex discovers three enabled but untrusted hooks; installing a plugin does not trust them. Previously, no-engine post/stop hooks exited 0 silently. Attribution to the originally reported computer remains unconfirmed; missing engine, untrusted hooks and host read-only permissions remain separate states."
+  },
+  "requestedOutcome": "A GitHub-assisted installation must continue through the included-engine installer and an actual first file check. Engine readiness, Python verification, automatic hook review and source write permission must remain distinguishable.",
+  "decisions": [
+    "Keep the thin marketplace payload and existing included-engine installer; no runtime registry engine lookup or publication is introduced.",
+    "Probe the permanent engine and default approval data before host registration; check a disposable Python fixture when Python exists.",
+    "Missing or nonfunctional Python is reported as unavailable and does not block other languages; engine/config/approval faults, malformed reports and source mutations still refuse installation.",
+    "Preserve user hook trust and source files; no-engine hooks report NOT_RUN without blocking.",
+    "Keep Python coverage expansion and automatic source fixing outside this change."
+  ],
+  "actions": [
+    {
+      "description": "Reproduce real Codex GitHub marketplace installation and inspect native hook discovery/trust.",
+      "status": "done"
+    },
+    {
+      "description": "Add installed runtime/Python verification, explicit inactive hook context, and first-use setup instructions.",
+      "status": "done"
+    },
+    {
+      "description": "Verify fresh/repair readiness refusal before host registration, optional missing Python, native Codex feedback and explicit alignment.",
+      "status": "done"
+    },
+    {
+      "description": "Complete final full-candidate checks, real installer repair and independent Opus fix verification.",
+      "status": "done"
+    },
+    {
+      "description": "Inspect the originally reported macOS installation transcript, exact client and effective hook/permission state.",
+      "status": "pending"
+    }
+  ],
+  "verification": [
+    {
+      "name"  : "Actual marketplace-only installation",
+      "status": "passed",
+      "scope" : "Codex 0.166.0, GitHub main 5a09427, isolated macOS profile.",
+      "evidence": [
+        "docs/development/issue-library/evidence/first-run-readiness/verification.json"
+      ],
+      "result": "Both install commands succeeded; installed Python check exited 2 without a report, and hooks/list reported three untrusted handlers."
+    },
+    {
+      "name"  : "Installed candidate first-use and native hooks",
+      "status": "passed",
+      "scope" : "Local archive identified by artifactSha256 in the evidence; current installer plus byte-identical native runtime core reused under impact scope.",
+      "evidence": [
+        "docs/development/issue-library/evidence/first-run-readiness/verification.json"
+      ],
+      "result": "35 helper tests and 11 artifact tests passed, including unavailable/version/parser-failing optional Python with a valid TypeScript Check, and corrupt engine refusal before registration with repair preservation. Native delivery used one-invocation audited-hook trust bypass. The separate no-tool default control completed with zero receipts. Two Stop FAIL receipts were followed by native completion; explicit Align/check/re-run passed. Read-only native control denied edits. Ordinary user-reviewed delivery remains unverified."
+    },
+    {
+      "name"  : "Final candidate checks and audit",
+      "status": "passed",
+      "scope" : "Frozen implementation after independent Sonnet review followups.",
+      "evidence": [
+        "docs/development/issue-library/evidence/first-run-readiness/verification.json"
+      ],
+      "result": "Final bun run check exited 0: 727 tests, TypeScript and shell syntax passed. Opus fix-verification PASS condition was satisfied by this full result. Actual Codex installer refresh verified Python and unchanged native runtime hashes. Plugin guard passed; final changed-file lint is recorded in the evidence."
+    },
+    {
+      "name"  : "Destination and other native platforms",
+      "status": "not-run",
+      "scope" : "Originally reported computer, native Windows, Linux/WSL and desktop UI.",
+      "evidence": [
+        "docs/development/issue-library/evidence/first-run-readiness/verification.json"
+      ],
+      "result": "No original installation transcript or destination access was available. CLI macOS results do not establish these cells."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "product/installer/readiness.mjs",
+      "note": "Read-only installed runtime/Python probe."
+    },
+    {
+      "kind": "code",
+      "path": "product/installer/install.mjs",
+      "note": "Probe before registration and report separate readiness states."
+    },
+    {
+      "kind": "code",
+      "path": "product/plugin/scripts/boxbox",
+      "note": "Explicit nonblocking NOT_RUN hook context."
+    },
+    {
+      "kind": "test",
+      "path": "test/installer-artifact.test.ts",
+      "note": "Installed first-use, optional Python, refusal and repair preservation."
+    },
+    {
+      "kind": "test",
+      "path": "test/installer-readiness.test.ts",
+      "note": "Probe failures and cleanup."
+    },
+    {
+      "kind": "test",
+      "path": "test/plugin-hook.test.ts",
+      "note": "Inactive hook JSON and source read-only contract."
+    },
+    {
+      "kind": "contract",
+      "path": "product/installer/README.md",
+      "note": "Canonical first-use and hook trust instructions."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/issue-library/evidence/first-run-readiness/verification.json",
+      "note": "Bounded results, archive identity and explicit exclusions."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date"    : "2026-11-06",
+      "event"   : "reported",
+      "summary" : "Recorded the user symptom without assuming that read-only behavior proves engine absence.",
+      "evidence": []
+    },
+    {
+      "sequence": 2,
+      "date"    : "2026-11-06",
+      "event"   : "diagnosed",
+      "summary" : "A fresh real Codex GitHub installation reproduced no configured engine and three untrusted hooks; original-machine attribution remains unknown.",
+      "evidence": [
+        "docs/development/issue-library/evidence/first-run-readiness/verification.json"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date"    : "2026-11-06",
+      "event"   : "implemented",
+      "summary" : "Added NOT_RUN visibility and permanent-runtime/Python verification before registration; preserved existing installer and human trust boundaries.",
+      "evidence": [
+        "docs/development/issue-library/evidence/first-run-readiness/verification.json"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date"    : "2026-11-06",
+      "event"   : "verification-failed",
+      "summary" : "Excluded a model timeout and an invalid Delete+Add probe patch from native edit claims. The corrected exact Update File probe subsequently exercised the real hook flow.",
+      "evidence": [
+        "docs/development/issue-library/evidence/first-run-readiness/verification.json"
+      ],
+      "status": "failed"
+    },
+    {
+      "sequence": 5,
+      "date"    : "2026-11-06",
+      "event"   : "verified",
+      "summary" : "Focused helper/artifact and macOS native positive/inactive cases passed; final suite/audit and original destination remain separate.",
+      "evidence": [
+        "docs/development/issue-library/evidence/first-run-readiness/verification.json"
+      ],
+      "status": "passed"
+    },
+    {
+      "sequence": 6,
+      "date"    : "2026-11-08",
+      "event"   : "reopened",
+      "summary" : "Opus audit rejected treating an installed but nonfunctional optional Python as fatal for every language. Revised the preflight policy, added parser/version failure and corruption/repair cases, and clarified that native delivery evidence uses one-invocation trust bypass rather than user approval.",
+      "evidence": [
+        "docs/development/issue-library/evidence/first-run-readiness/verification.json"
+      ],
+      "status": "pending"
+    },
+    {
+      "sequence": 7,
+      "date"    : "2026-11-08",
+      "event"   : "verified",
+      "summary" : "Optional Python health/parser failures now remain unavailable without blocking other languages; corrupted engine still refuses and restores prior data. Final suite passed 727 tests with tsc/shell checks; Opus fix-verification condition was satisfied. Native delivery trust-bypass and read-only controls are explicitly scoped; original destination attribution remains open.",
+      "evidence": [
+        "docs/development/issue-library/evidence/first-run-readiness/verification.json"
+      ],
+      "status": "passed"
+    }
+  ]
+}

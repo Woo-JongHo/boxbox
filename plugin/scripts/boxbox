@@ -6,7 +6,17 @@ if [ -z "${BOXBOX_CLI:-}" ]; then
 	# No engine means no check ran, so there is no finding to block on. Exit 2 would stop every edit and response.
 	# With an engine, hook decisions are unchanged; running without one disables the hook checks.
 	if [ "${1:-}" = "hook" ]; then
-		if [ "${2:-}" = "session" ]; then printf '%s\n' "$message"; fi
+		case "${2:-}" in
+			session|post)
+				event=SessionStart
+				if [ "$2" = "post" ]; then event=PostToolUse; fi
+				printf '{"hookSpecificOutput":{"hookEventName":"%s","additionalContext":"[boxbox] NOT_RUN: %s"}}\n' "$event" "$message"
+				;;
+			stop)
+				printf '{"systemMessage":"[boxbox] NOT_RUN: %s"}\n' "$message"
+				;;
+			*) printf '%s\n' "$message" >&2 ;;
+		esac
 		exit 0
 	fi
 	printf '%s\n' "$message" >&2

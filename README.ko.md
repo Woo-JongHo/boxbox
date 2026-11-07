@@ -89,7 +89,9 @@ bun run pack:installer
 npm exec --yes --package "$PWD"/dist/installer/boxbox-plugin-*.tgz -- boxbox
 ```
 
-호스트를 다시 시작한 뒤 BoxBox로 파일을 정렬해 달라고 요청하세요. 이 저장소를 Claude나 Codex 마켓플레이스로 추가하면 엔진 없이 플러그인만 설치됩니다. 이 경우 명령은 설정 안내를 내고 멈추며 검사는 실행되지 않습니다. 훅은 차단하지 않고, 세션 시작 훅만 그 안내를 출력합니다. 이미 그렇게 추가했다면 사용하는 호스트의 줄을 실행해 등록을 먼저 지운 뒤 설치 프로그램을 실행하세요.
+설치 프로그램은 영구 설치된 엔진을 확인하고, `python3`를 사용할 수 있으면 임시 Python 예제를 변경 없이 검사합니다. Python 준비 상태와 별도 승인이 필요한 자동 훅 상태를 구분해 안내합니다. Python을 사용할 수 없거나 실행에 실패하면 검증하지 못한 상태로 안내하고 다른 언어의 설치는 계속합니다. 호스트를 다시 시작하고 Codex의 `/hooks` 또는 Settings > Hooks(Claude는 훅 설정)에서 검토한 뒤, BoxBox를 선택해 프로젝트 파일 하나를 명시적으로 Check해 달라고 요청하세요. 실제 훅 결과 수용과 소스 쓰기 권한은 별도로 확인해야 합니다.
+
+이 저장소를 Claude나 Codex 마켓플레이스로 추가하면 엔진 없이 플러그인만 설치됩니다. 이 경우 명령은 설정 안내를 내고 멈추며, 훅은 작업을 차단하지 않고 `NOT_RUN`을 보고합니다. 이미 그렇게 추가했다면 사용하는 호스트의 줄을 실행해 등록을 먼저 지운 뒤 설치 프로그램을 실행하세요.
 
 ```sh
 claude plugin uninstall boxbox@boxbox-plugins --scope user

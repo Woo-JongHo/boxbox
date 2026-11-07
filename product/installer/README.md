@@ -103,6 +103,18 @@ BoxBox skill from its skill list. Name one TypeScript or Python file and request
 three hook definitions in the host before relying on them. Codex skips untrusted plugin hooks: use `/hooks` to review and
 explicitly trust their exact current definitions. Claude Code uses its own hook/settings review workflow.
 
+Before registering a host, the installer probes the permanent engine and bundled approval data. When `python3` is
+available, it also checks a disposable Python assignment example, requiring valid syntax, an approved fixable group
+and unchanged source bytes. `Python check: verified` means this read-only first-use check ran. Missing Python,
+a failing version probe or a reported Python parser error is reported as `unavailable`; other language checks remain
+usable. Install or repair Python before relying on Python checks. Engine/config/approval health failures, malformed
+or inconsistent reports and source mutations still stop installation before host registration.
+
+`Automatic hooks: review required; native delivery not verified` is separate from engine readiness. In the Codex
+desktop app use Settings > Hooks; in the CLI use `/hooks`. Hook review remains a user action. A Check can run in a
+read-only host session; Write and Refactor also require source write permission. Verify one actual project file after
+restarting the host and report its findings or refusal, rather than treating plugin registration as a passing check.
+
 Codex hooks use the documented Windows PowerShell override. Claude hooks use direct `command` plus `args` execution,
 including variable expansion of `${CLAUDE_PLUGIN_ROOT}`, avoiding Windows shell parsing. Both adapters inspect changes
 without formatting, store receipts in host plugin data, and refuse a hook when the host omits its data directory.

@@ -1,0 +1,145 @@
+{
+  "kind"          : "derived-verification-summary",
+  "baseCommit"    : "5a09427e44af9f05dfe0acac090f6ea13febd8c0",
+  "artifactSha256": "57cf120871ed11bb25667ef22be8421872394f4fe954e16c52c0a3cee39b0226",
+  "platform"      : "macOS",
+  "codexVersion"  : "0.166.0",
+  "baseline": {
+    "realGitHubMarketplaceInstall": "succeeded",
+    "installedPythonCheckExit"    : 2,
+    "reason"                      : "no local engine configured",
+    "discoveredHooks"             : 3,
+    "trustStatuses": [
+      "untrusted"
+    ]
+  },
+  "candidate": {
+    "runtimeUnitTests": {
+      "passed": 35,
+      "failed": 0
+    },
+    "installerArtifactTests": {
+      "passed": 11,
+      "failed": 0
+    },
+    "fullCheck": {
+      "passed"     : 727,
+      "failed"     : 0,
+      "typeCheck"  : "passed",
+      "shellSyntax": "passed"
+    },
+    "pluginGuard": "passed; changed preflight is outside the unchanged raw-plugin registration surface",
+    "nativeInstalledEngine": {
+      "sessionStart"         : "delivered into native developer context",
+      "postToolUse"          : "FAIL accepted as tool feedback for apply_patch",
+      "stop"                 : "two Stop FAIL receipts; native run exit 0",
+      "automaticFixPerformed": false,
+      "explicitAlignment": [
+        "preview preserves bytes",
+        "application changes approved whitespace",
+        "check passes",
+        "second alignment writes nothing"
+      ],
+      "trustBypass": true
+    },
+    "nativeInactiveEngine": {
+      "startup"      : "NOT_RUN delivered into native developer context",
+      "exit"         : 0,
+      "checkReceipts": 0,
+      "trustBypass"  : true
+    },
+    "persistentHookTrustAfterTrials": "all three hooks remain untrusted",
+    "credentialCopiesRemoved": true,
+    "defaultUntrustedControl": {
+      "trustBypass"  : false,
+      "exit"         : 0,
+      "checkReceipts": 0,
+      "scope"        : "No-tool control completed with zero receipts; not proof of every event being suppressed."
+    },
+    "nativeUserReviewedDefaultDelivery": "not-verified",
+    "nativeReadOnlyControl": {
+      "effectivePolicy"  : "read-only",
+      "writeAttempt"     : "denied",
+      "sourceUnchanged"  : true,
+      "credentialRemoved": true
+    },
+    "independentReview": {
+      "sonnet": "claude-sonnet-5-5 reviewed source; findings followed up",
+      "opus": "claude-opus-5-5 fix review PASS, full-suite condition satisfied"
+    },
+    "finalActualCodexInstaller": {
+      "exit"                        : 0,
+      "pythonVerified"              : true,
+      "nativeRuntimeHashesUnchanged": true
+    },
+    "nativeReuseScope": {
+      "priorArchiveSha256": "a9dddc529fba8df60b3de2f170510f630c7cb863963d569eff7cb908cb738c2a",
+      "runtimeHashes": {
+        "engine"  : "950ab159aa91ae757fdf4c9b9070dee274da541f816a37c7234667943e29b66c",
+        "launcher": "60b6e8363193232eb770c17dafaf121408b25fb3d8928da835756611bf2b027e",
+        "skill"   : "277ec9929eb35c4be8781faea161a8ad3fca1a5886c6077d05f5c4d53f710f8e",
+        "hooks"   : "150abf838467005ed6d650c9ed8ba245932b779cbb8b3eabbbc1fd3716974202"
+      },
+      "reason": "Only installer preflight and its documentation/tests changed. Engine, launcher, projected skill and hooks match byte-for-byte."
+    },
+    "lintChanged": {
+      "status"                : "passed",
+      "base"                  : "github/main",
+      "targets"               : 6,
+      "excludedGeneratedFiles": 3,
+      "scope"                 : "TypeScript and JSON targets; MJS/Markdown/shell files are verified through runtime tests and syntax/host checks, not supported by this readability checker."
+    },
+    "sameProfileGitHubRecovery": {
+      "installerExit"   : 0,
+      "firstCheckExit"  : 1,
+      "syntax"          : "valid",
+      "misalignedGroups": 1,
+      "sourceUnchanged" : true,
+      "trust"           : "review still required"
+    }
+  },
+  "excludedNativeAttempts": [
+    {
+      "outcome": "180-second model timeout before tool execution",
+      "established": "SessionStart developer context delivery only"
+    },
+    {
+      "outcome": "invalid Delete+Add patch rejected before source mutation",
+      "established": "NO_CHANGES only; excluded from edit acceptance"
+    }
+  ],
+  "limits": [
+    "The original destination is macOS, but its installation transcript and effective permissions remain uninspected.",
+    "Native Windows, Linux/WSL and Codex desktop UI were not exercised for this candidate.",
+    "GitHub marketplace-only installation still needs explicit engine setup through the installer.",
+    "One-off audited-hook invocations do not establish persistent user hook approval.",
+    "No npm or GitHub release was published.",
+    "Positive native hook delivery used one-invocation audited-hook trust bypass; user-reviewed default delivery remains unverified.",
+    "Only installer-preflight cells were rerun after the optional-Python fix; native engine/hook delivery was reused because their actual installed hashes were unchanged."
+  ],
+  "sourceEvidenceSha256": {
+    "marketplace-install.json"       : "3b8e656c7fc7ab08692716c5113a1e79600a931eb13961b0087c41527c38e91b",
+    "installed-check-red.json"       : "64027d58408d2c9496b30eff5a1a8c26d40fe8dd39c18e0b4a3279d7333980b9",
+    "marketplace-hooks.json"         : "24b04357fb8d7a0c8a90a1025820305c7fbd19866e1c2e438790ca6805a15248",
+    "native-exact-proof.json"        : "09fa9e84d675db99940ee9b3d1fc90bfa0de3d5d0fbbcc9e8536a320b61a3fe9",
+    "native-inactive-proof.json"     : "94d9c31fc4b73a565797b861e6faaeb2ba5064a0a65ce9635352ce44399c50d6",
+    "native-binding.json"            : "45a55ee66971ab0b41dbf86a00a58927f0523b7bec42c7547a9813c3f0ed1d3b",
+    "installer-focused-final.log"    : "e39d67df2c22f18ee1a9f443d908aeffff0fdff184de5f9d36cb684fe91c3d9a",
+    "full-check-approved-policy.log" : "0ad7b358020f8cb02e14bf997ff45fcd10b43345f0232d97554bc73a91798cbe",
+    "optional-python-artifact.log"   : "6cf5edc0270046e2ec72958515da00d89d9a18864357657a6f2e7fdc0dc49952",
+    "native-final-refresh.json"      : "2187131166d1d9033954f977693e51768624292557093119d31c5f9de500c8f6",
+    "native-readonly-proof.json"     : "1185402f132579d2fc1b9101e4703239a5ab175114b278c2b3c5bf83ac973288",
+    "native-scope-clarification.json": "61b108316d8aa3d375244a1c76a26417f243a7d5a7bd116751cef99b397f23ea",
+    "opus-fix.json"                  : "e7af044b41127bf93d65f730d146acebdc3ceda2d1956bda148ca79c1edceed0",
+    "same-profile-recovery.json"     : "6eda0011c02ac20de648b1b2b54fa8840f3b767b6108f6e056c5e3321f4a85f5"
+  },
+  "priorCandidate": {
+    "artifactSha256": "a9dddc529fba8df60b3de2f170510f630c7cb863963d569eff7cb908cb738c2a",
+    "fullCheck": {
+      "passed": 724,
+      "failed": 0
+    },
+    "pluginGuard": "passed",
+    "supersededReason": "Opus audit found optional nonfunctional Python should not block other language installation."
+  }
+}
