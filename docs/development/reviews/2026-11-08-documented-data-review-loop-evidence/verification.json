@@ -1,0 +1,323 @@
+{
+  "schemaVersion": 1,
+  "status": "verifying",
+  "baseline": "b132b571b90744cbb14c81ef0cd94a97da60e227",
+  "issue": "https://github.com/Woo-JongHo/boxbox/issues/42",
+  "reproduction": {
+    "exitCode": 0,
+    "groups": 0,
+    "misaligned": 0
+  },
+  "positiveRegressionBeforeFix": {
+    "passed": 0,
+    "failed": 2
+  },
+  "focused": {
+    "passed": 55,
+    "failed": 0,
+    "assertions": 379,
+    "extraBoundaryTests": {
+      "passed": 2,
+      "failed": 0,
+      "assertions": 39
+    },
+    "surfaceMappingDelta": {
+      "passed": 10,
+      "failed": 0,
+      "assertions": 93
+    }
+  },
+  "snapshotTests": {
+    "passed": 15,
+    "failed": 0
+  },
+  "forwardTesting": {
+    "initial": "failed: colon anchor omitted and capture scheduled after checks",
+    "corrected": {
+      "status": "passed",
+      "model": "claude-sonnet-5-5",
+      "scope": "Read-only text simulation: aligned colon/type anchors, unchanged Port, correct remote, unrelated notes excluded, pre-check capture and no false execution claims."
+    }
+  },
+  "fullCheck": {
+    "status": "passed",
+    "history": [
+      {
+        "passed": 781,
+        "failed": 1,
+        "assertions": 4667,
+        "failure": "Missing DESCRIBE surface-form mapping for documented-data-members; fixed before next source freeze."
+      },
+      {
+        "sourceVersion": "0.2.6",
+        "passed": 782,
+        "failed": 0,
+        "assertions": 4680,
+        "durationSeconds": 328.62,
+        "note": "Passed and source snapshot matched before the user requested the 0.2.7 version bump."
+      }
+    ],
+    "sourceVersion": "0.2.7",
+    "command": "BOXBOX_REQUIRE_PARSERS=1 bun run check",
+    "passed": 782,
+    "failed": 0,
+    "assertions": 4680,
+    "durationSeconds": 333.67,
+    "snapshotHelperTests": 15,
+    "includes": "Issue-library/layout/catalog/product checks, helper tests, Bun tests, tsc and shell syntax."
+  },
+  "changedFileLint": {
+    "status": "not-run"
+  },
+  "independentReview": {
+    "status": "source-audits-passed-pin-pending",
+    "model": "claude-sonnet-5-5",
+    "scope": "Sonnet code/forward review; fixed Opus source, mapping/helper/inventory and version delta audits. Reviewers reasoned read-only; executions were performed separately.",
+    "finalSourceAudit": {
+      "status": "conditional-pass",
+      "model": "claude-opus-5-5",
+      "conditions": "Explicit inventory and baseline accounting; mapping/Git-test delta audit; full/lint/pin gates still pending."
+    },
+    "deltaAudit": {
+      "status": "passed",
+      "model": "claude-opus-5-5",
+      "scope": "Surface-form mapping, temporary Git configuration and explicit C1 inventory accounting; source freeze/full/lint/pin gates remain separate."
+    },
+    "versionAudit": {
+      "status": "passed",
+      "model": "claude-opus-5-5",
+      "scope": "0.2.7 metadata coherence only; source bytes/identity and subsequent pin gates verified separately."
+    }
+  },
+  "nativeMatrix": "not run",
+  "publication": {
+    "status": "not-pushed"
+  },
+  "candidateScope": {
+    "issueBaseline": "b132b571b90744cbb14c81ef0cd94a97da60e227",
+    "lintBase": "c1f9993cbbf08a5e9c01fb82ed8ca1dd588577c0",
+    "selectedFiles": [
+      {
+        "path": ".claude-plugin/marketplace.json",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "development/skills/boxbox-issue-loop/SKILL.md",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "development/skills/boxbox-issue-loop/references/checker-pin.md",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "development/skills/boxbox-issue-loop/scripts/snapshot.py",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "development/skills/boxbox-issue-loop/tests/test_snapshot.py",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "development/skills/boxbox/SKILL.md",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "docs/development/README.md",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "docs/development/inspection-process.md",
+        "differsFromIssueBaseline": false
+      },
+      {
+        "path": "docs/development/issue-library/README.md",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "package.json",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "plugin/.claude-plugin/plugin.json",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "plugin/.codex-plugin/plugin.json",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "plugin/skills/boxbox/SKILL.md",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "plugin/skills/boxbox/references/readability-contract.md",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "product/engine/00_cli.ts",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "product/engine/common/06_table-engine.ts",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "product/engine/python/00_group-regions.ts",
+        "differsFromIssueBaseline": false
+      },
+      {
+        "path": "product/engine/python/01_measure-columns.ts",
+        "differsFromIssueBaseline": false
+      },
+      {
+        "path": "product/engine/python/02_align-tables.ts",
+        "differsFromIssueBaseline": false
+      },
+      {
+        "path": "product/engine/python/03_profile.ts",
+        "differsFromIssueBaseline": false
+      },
+      {
+        "path": "product/engine/python/04_assignment-envelope.ts",
+        "differsFromIssueBaseline": false
+      },
+      {
+        "path": "product/engine/python/05_analysis.ts",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "product/engine/python/06_analysis-script.ts",
+        "differsFromIssueBaseline": false
+      },
+      {
+        "path": "product/engine/python/07_string-ranges.ts",
+        "differsFromIssueBaseline": false
+      },
+      {
+        "path": "product/engine/typescript/12_align.ts",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "product/engine/typescript/13_grid-kinds.ts",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "product/engine/typescript/14_layout-policy.ts",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "product/plugin/skills/boxbox/SKILL.md",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "product/rules/base/typescript-layout.json",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "product/rules/base/typescript.json",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "product/rules/references/readability-contract.md",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "test/b-layout-public.test.ts",
+        "differsFromIssueBaseline": true
+      },
+      {
+        "path": "test/cli.test.ts",
+        "differsFromIssueBaseline": false
+      },
+      {
+        "path": "test/engine.test.ts",
+        "differsFromIssueBaseline": false
+      },
+      {
+        "path": "test/python-align.test.ts",
+        "differsFromIssueBaseline": false
+      },
+      {
+        "path": "test/python-source-analysis.test.ts",
+        "differsFromIssueBaseline": false
+      },
+      {
+        "path": "test/typescript-b-layout.test.ts",
+        "differsFromIssueBaseline": true
+      }
+    ],
+    "firstOpusAudit": {
+      "base": "b132b571b90744cbb14c81ef0cd94a97da60e227",
+      "regularFiles": 20,
+      "intentionalSymlinks": 1,
+      "scope": "Issue delta as pasted before the surface-form mapping and temporary-Git configuration fixes; follow-up review covers that delta and the explicit selection."
+    },
+    "initialChangedSupportedInputs": {
+      "base": "c1f9993cbbf08a5e9c01fb82ed8ca1dd588577c0",
+      "count": 23,
+      "paths": [
+        "development/skills/boxbox-issue-loop/scripts/snapshot.py",
+        "development/skills/boxbox-issue-loop/tests/test_snapshot.py",
+        "docs/development/issue-library/records/BBX-20261108-027-documented-data-review-loop.json",
+        "package.json",
+        "product/engine/common/06_table-engine.ts",
+        "product/engine/python/00_group-regions.ts",
+        "product/engine/python/01_measure-columns.ts",
+        "product/engine/python/02_align-tables.ts",
+        "product/engine/python/03_profile.ts",
+        "product/engine/python/04_assignment-envelope.ts",
+        "product/engine/python/05_analysis.ts",
+        "product/engine/python/06_analysis-script.ts",
+        "product/engine/python/07_string-ranges.ts",
+        "product/engine/typescript/12_align.ts",
+        "product/engine/typescript/13_grid-kinds.ts",
+        "product/engine/typescript/14_layout-policy.ts",
+        "product/rules/base/typescript-layout.json",
+        "test/b-layout-public.test.ts",
+        "test/cli.test.ts",
+        "test/engine.test.ts",
+        "test/python-align.test.ts",
+        "test/python-source-analysis.test.ts",
+        "test/typescript-b-layout.test.ts"
+      ]
+    },
+    "auditedDeltaComparison": {
+      "oldSelected": 32,
+      "newSelected": 33,
+      "added": [
+        "product/rules/base/typescript.json"
+      ],
+      "removed": [],
+      "changed": [
+        "development/skills/boxbox-issue-loop/tests/test_snapshot.py"
+      ]
+    },
+    "snapshotSha256": "38f2a1104b976881ca2228df62fde2efef9470b144763d04ae57dede08fdba7b",
+    "selectedRegularFiles": 37,
+    "versionDelta": {
+      "oldSelected": 33,
+      "newSelected": 37,
+      "added": [
+        ".claude-plugin/marketplace.json",
+        "plugin/.claude-plugin/plugin.json",
+        "plugin/.codex-plugin/plugin.json",
+        "product/engine/00_cli.ts"
+      ],
+      "removed": [],
+      "changed": [
+        "package.json"
+      ]
+    }
+  },
+  "openIntegrationFollowUp": "Re-pin to retained merged main commit or tag before deleting/rebasing the feature source branch; hosted CI has not run.",
+  "sourceVersion": "0.2.7",
+  "syntaxEdgeObservation": {
+    "input": "Interface property with initializer (semantically invalid TypeScript)",
+    "checkExitCode": 1,
+    "syntaxReported": "valid",
+    "previewExitCode": 2,
+    "previewError": "ALIGN_NOT_ELIGIBLE",
+    "sourceUnchanged": true,
+    "limit": "Parse/layout checks do not provide semantic TypeScript validation; no unsupported-axis crash was observed."
+  }
+}

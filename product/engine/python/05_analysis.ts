@@ -7,24 +7,24 @@ export type PythonRowKind = "statement" | "parameter" | "keyword" | "dictionary"
 /** Physical source row tied to an internal owner. */
 export interface PythonRow {
 	/** Zero-based physical line. */
-	readonly line: number;
+	readonly line  : number       ;
 	/** Internal AST container identity. */
-	readonly owner: number;
+	readonly owner : number       ;
 	/** Row's existing grammar category. */
-	readonly kind: PythonRowKind;
+	readonly kind  : PythonRowKind;
 	/** Start offset in original UTF-16 source. */
-	readonly start: number;
+	readonly start : number       ;
 	/** Exclusive end offset in original UTF-16 source. */
-	readonly end: number;
+	readonly end   : number       ;
 }
 /** Original-source UTF-16 token interval. */
 export interface PythonToken {
 	/** CPython token type. */
-	readonly type: number;
+	readonly type  : number;
 	/** Start offset in original UTF-16 source. */
-	readonly start: number;
+	readonly start : number;
 	/** Exclusive end offset in original UTF-16 source. */
-	readonly end: number;
+	readonly end   : number;
 }
 /** Document-local AST, token and preservation evidence. */
 export interface PythonAnalysis {

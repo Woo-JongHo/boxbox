@@ -74,7 +74,10 @@ Every check and fix goes through the bundled launcher. Resolve `<PLUGIN_ROOT>` f
    Then build a boundary inventory for the requested rows: name each cell, its syntax boundary and its comparison region.
    For a member call, inspect `receiver | final . | method | ( | arguments | )`; for a guard, inspect `condition | return | value`.
    Match roles and nesting depth before matching punctuation. Function signatures, bodies and call sites have separate
-   regions. For member calls, early returns or nested type members, read
+   regions. Per-field JSDoc alone does not change the role of ordinary data properties: same-role fields
+   share one name/colon/type table. The bounded `documented-data-members` kind handles required properties in data-only
+   interfaces; documented Port methods and optional capabilities retain their separate boundaries. Read the rule's
+   actual scope and a counterexample before applying an exception. For member calls, early returns or nested type members, read
    [column-sharing regions](references/readability-contract.md#column-sharing-regions) before choosing widths or moving rows.
 3. Author the requested implementation or structural improvement. Preserve execution order, public contracts and meaningful
    differences. An overlong exception is a reason to inspect responsibility and data flow, not permission to add abstractions

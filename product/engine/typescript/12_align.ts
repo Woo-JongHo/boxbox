@@ -354,7 +354,7 @@ function collect(
 	const childPath   = isContainer ? [...path, syntaxKindName(node)] : path              ;
 	for (const kind of ROW_KINDS) {
 		const contained = kind.containers(node, seen);
-		const siblings = kind.name === "return-guards" && contained !== undefined
+		const siblings = (kind.name === "return-guards" || kind.name === "interface-members") && contained !== undefined
 			? contained.filter(sibling => !seen.has(sibling))
 			: contained;
 		if (!siblings) continue;
@@ -366,6 +366,7 @@ function collect(
 		for (const run of runsOf(source, siblings, kind)) {
 			if (kind.name === "object-rows") for (const row of run) seen.add(row.node);
 			if (run.length < (kind.minRows?.(run) ?? minRows)) continue;
+			if (kind.name === "documented-data-members") for (const row of run) seen.add(row.node);
 			if (kind.name === "object-properties") seen.add(node);
 			if (kind.name === "if-headers-return") for (const row of run) seen.add(row.node);
 			result.groups.push(buildGroup(source, kind.name, kind.groupName ? kind.groupName(run) : kind.name, run, syntaxKindName(node), path.length, result.observe));

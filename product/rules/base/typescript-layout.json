@@ -31,6 +31,7 @@
 		"method-signature": { "gap": [], "insert": ["open-paren", "close-paren", "colon", "comment"] },
 		"class-method": { "gap": [], "insert": ["open-paren", "close-paren", "colon", "comment"] },
 		"interface-members": { "gap": ["colon", "equals", "semicolon"], "insert": ["comment"] },
+		"documented-data-members": { "gap": ["colon", "member-type"], "insert": ["semicolon", "comment"] },
 		"type-members": { "gap": ["colon", "equals", "semicolon"], "insert": ["comment"] },
 		"class-members": { "gap": ["colon", "equals", "semicolon"], "insert": ["comment"] },
 		"enum-member": { "gap": ["equals", "comma"], "insert": ["comment"] },

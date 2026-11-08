@@ -54,6 +54,63 @@ describe("public B-layout boundaries", () => {
 		expect(readFileSync(path.target, "utf8")).not.toBe   (source                             ) ;
 	}, 60_000);
 
+	test("denies documented DATA members beside approved declarations without writing", async () => {
+		const source = [
+			"const first=load(1);",
+			"const second=load(22);",
+			"const third=load(333);",
+			"",
+			"interface Slot {",
+			"\t/** Comparison axis. */",
+			"\treadonly axis: string;",
+			"\t/** Original cell text. */",
+			"\treadonly text: string;",
+			"\t/** Required padding before the cell. */",
+			"\treadonly gapBefore: boolean;",
+			"}",
+			"",
+		].join("\n");
+		const path   = workspace("documented.ts", source)                                     ;
+		const groups = await inspect(path)                                                    ;
+		const data   = groups.find(candidate => candidate.kind === "documented-data-members") ;
+		const legacy = groups.find(candidate => candidate.kind === "declaration-equals")      ;
+
+		expect(data).toBeDefined();
+		expect(legacy).toBeDefined();
+		expect(data!.state                                                     ).toBe("FIXABLE") ;
+		expect(groups.some(candidate => candidate.kind === "interface-members")).toBe(false    ) ;
+		expect(readFileSync(path.target, "utf8")                               ).toBe(source   ) ;
+
+		const approvals = approval        ()                                                                                 ;
+		const dataKey   = lookupKeyOf     ("typescript", data!.context, data!.kind, data!.axes                             ) ;
+		const legacyKey = lookupKeyOf     ("typescript", legacy!.context, legacy!.kind, legacy!.axes                       ) ;
+		const decision  = evaluateApproval(approvals.registry, { key: dataKey, file: path.file }, approvals.resolveDocument) ;
+
+		expect(dataKey                                                                                             ).toBe         ("v1|typescript|InterfaceDeclaration|documented-data-members|colon>member-type>semicolon"       ) ;
+		expect(legacyKey                                                                                           ).toBe         ("v1|typescript|SourceFile|declaration-equals|equals>call-open-paren>call-close-paren>semicolon") ;
+		expect(evaluateApproval(approvals.registry, { key: legacyKey, file: path.file }, approvals.resolveDocument)).toMatchObject({ status: "approved", writable: true }                                                         ) ;
+		expect(decision                                                                                            ).toMatchObject({ status: "unknown", writable: false }                                                         ) ;
+
+		const ordinary = workspace("ordinary.ts", [
+			"interface Slot {",
+			"\treadonly axis: string;",
+			"\treadonly text: string;",
+			"\treadonly gapBefore: boolean;",
+			"}",
+			"",
+		].join("\n"));
+		const ordinaryGroup = (await inspect(ordinary)).find(candidate => candidate.kind === "interface-members");
+
+		expect(ordinaryGroup).toBeDefined();
+		const ordinaryKey = lookupKeyOf("typescript", ordinaryGroup!.context, ordinaryGroup!.kind, ordinaryGroup!.axes);
+
+		expect(ordinaryKey).toBe("v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon");
+		expect(dataKey).not.toBe(ordinaryKey);
+
+		await expect(runFormatPipeline({ ...path, language: "typescript", alignmentOnly: true, ...approvals })).rejects.toThrow("approval denied");
+		expect(readFileSync(path.target, "utf8")).toBe(source);
+	}, 60_000);
+
 	test("denies a newly detected kind without borrowing the legacy approval key", async () => {
 		const source = [
 			"const detail = 'value';",

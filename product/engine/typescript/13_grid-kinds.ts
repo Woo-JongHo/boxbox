@@ -227,18 +227,18 @@ function nestedExpressionBoundaries(source: SourceFile, node: Node, argument: nu
 				readonly colonToken    : Node ;
 				readonly whenFalse     : Node ;
 			};
-		conditional += 1;
-		const suffix = `${argument}-${conditional}`;
-		boundaries.push(
-			{ axis: `conditional-question${suffix}`, from: expression.condition.getEnd(), at: expression.questionToken.getStart(source), layer: "nested-expression" },
-			{ axis: `conditional-true${suffix}`, from: expression.questionToken.getEnd(), at: expression.whenTrue.getStart(source), layer: "nested-expression" }     ,
-			{ axis: `conditional-colon${suffix}`, from: expression.whenTrue.getEnd(), at: expression.colonToken.getStart(source), layer: "nested-expression" }       ,
-			{ axis: `conditional-false${suffix}`, from: expression.colonToken.getEnd(), at: expression.whenFalse.getStart(source), layer: "nested-expression" }      ,
-		);
-		visit(expression.condition);
-		visit(expression.whenTrue);
-		visit(expression.whenFalse);
-		return;
+			conditional += 1;
+			const suffix = `${argument}-${conditional}`;
+			boundaries.push(
+				{ axis: `conditional-question${suffix}`, from: expression.condition.getEnd(), at: expression.questionToken.getStart(source), layer: "nested-expression" },
+				{ axis: `conditional-true${suffix}`, from: expression.questionToken.getEnd(), at: expression.whenTrue.getStart(source), layer: "nested-expression" }     ,
+				{ axis: `conditional-colon${suffix}`, from: expression.whenTrue.getEnd(), at: expression.colonToken.getStart(source), layer: "nested-expression" }       ,
+				{ axis: `conditional-false${suffix}`, from: expression.colonToken.getEnd(), at: expression.whenFalse.getStart(source), layer: "nested-expression" }      ,
+			);
+			visit(expression.condition);
+			visit(expression.whenTrue);
+			visit(expression.whenFalse);
+			return;
 		}
 		if (kind !== "BinaryExpression") return;
 		const expression = current as unknown as { readonly left: Node; readonly operatorToken: Node; readonly right: Node } ;
@@ -453,6 +453,58 @@ function detectMember(source: SourceFile, node: Node): readonly RowBoundary[] | 
 	const comment = trailingComment(source, semicolon + 1);
 	if (comment) boundaries.push(comment);
 	return boundaries;
+}
+
+const DATA_TYPE_BARRIERS = new Set([
+	SyntaxKind.FunctionType,
+	SyntaxKind.ConstructorType,
+	SyntaxKind.TypeLiteral,
+	SyntaxKind.MappedType,
+]);
+
+/** Required data fields form one record; callable or nested object types retain their own role boundaries. */
+function dataFieldType(node: Node): boolean {
+	if (DATA_TYPE_BARRIERS.has(node.kind)) return false;
+	let supported = true;
+	node.forEachChild(child => {
+		if (!dataFieldType(child)) supported = false;
+		return undefined;
+	});
+	return supported;
+}
+
+function detectDocumentedDataMember(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
+	if (
+		   !isPropertySignatureDeclaration(node)
+		|| !isIdentifier(node.name)
+		||  node.postfixToken
+		|| !node.type
+	) return undefined;
+	if (node.modifiers?.some(modifier => modifier.kind !== SyntaxKind.ReadonlyKeyword)) return undefined;
+	if (!dataFieldType(node.type))                                                      return undefined;
+	const boundaries = detectMember(source, node)                              ;
+	const colon      = boundaries?.find(boundary => boundary.axis === "colon") ;
+	if (!boundaries || !colon)                                                          return undefined;
+	const start = node.type.getStart(source);
+	if (!spacesOnly(source, colon.at + 1, start))                                       return undefined;
+	return [
+		boundaries[0]!,
+		{ axis: "member-type", from: colon.at + 1, at: start },
+		...boundaries.slice(1).map(boundary => boundary.axis === "semicolon" ? { ...boundary, insert: true } : boundary),
+	];
+}
+
+/** Mixed Port interfaces keep the legacy comment barriers; only an entirely data-shaped interface opts in. */
+function documentedDataMembers(node: Node): readonly Node[] | undefined {
+	if (!isInterfaceDeclaration(node)) return undefined;
+	const source = node.getSourceFile();
+	return node.members.every(member => detectDocumentedDataMember(source, member) !== undefined) ? node.members : undefined;
+}
+
+/** Readonly and writable properties belong to separate comparison runs. */
+function dataFieldKey(_source: SourceFile, node: Node): string | undefined {
+	if (!isPropertySignatureDeclaration(node)) return undefined;
+	return node.modifiers?.some(modifier => modifier.kind === SyntaxKind.ReadonlyKeyword) ? "readonly" : "mutable";
 }
 
 function detectMethod(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
@@ -1060,119 +1112,126 @@ function detectDeclarationCallSubgroup(source: SourceFile, node: Node): readonly
  */
 export const ROW_KINDS: readonly RowKind[] = [
 	{
-		name       : "logical-chains",
-		gap        : "blank",
-		containers : node => logicalOperands(node),
-		detect     : detectLogicalRow,
+		name       : "logical-chains"              ,
+		gap        : "blank"                       ,
+		containers : node => logicalOperands(node) ,
+		detect     : detectLogicalRow              ,
 	},
 	{
-		name       : "vertical-call-arguments",
-		gap        : "comma",
-		containers : node => isCallExpression(node) ? verticalCallArguments(node.getSourceFile(), node) : undefined,
-		detect     : detectVerticalCallArgument,
+		name       : "vertical-call-arguments"                                                                      ,
+		gap        : "comma"                                                                                        ,
+		containers : node => isCallExpression(node) ? verticalCallArguments(node.getSourceFile(), node) : undefined ,
+		detect     : detectVerticalCallArgument                                                                     ,
 	},
 	{
-		name       : "declaration-call-expressions",
-		gap        : TYPESCRIPT_LAYOUT_POLICY.rowKinds["declaration-call-expressions"].gap,
-		containers : node => declarationCallSubgroupMembers(node),
-		detect     : detectDeclarationCallSubgroup,
-		runKey     : (source, node) => declarationCallSubgroup(source, node)?.key,
-		minRows    : run => minimumRowsOf(TYPESCRIPT_LAYOUT_POLICY.rowKinds["declaration-call-expressions"], run.map(row => row.boundaries.map(boundary => boundary.axis))),
-		layerCall  : declarationCall,
+		name       : "declaration-call-expressions"                                                                                                                         ,
+		gap        : TYPESCRIPT_LAYOUT_POLICY.rowKinds["declaration-call-expressions"].gap                                                                                  ,
+		containers : node => declarationCallSubgroupMembers(node)                                                                                                           ,
+		detect     : detectDeclarationCallSubgroup                                                                                                                          ,
+		runKey     : (source, node) => declarationCallSubgroup(source, node)?.key                                                                                           ,
+		minRows    : run => minimumRowsOf(TYPESCRIPT_LAYOUT_POLICY.rowKinds["declaration-call-expressions"], run.map(row => row.boundaries.map(boundary => boundary.axis))) ,
+		layerCall  : declarationCall                                                                                                                                        ,
 	},
 	{
-		name       : "declaration",
-		gap        : TYPESCRIPT_LAYOUT_POLICY.rowKinds.declaration.gap,
-		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
-		detect     : detectDeclaration,
-		groupName  : declarationGroupName,
-		minRows    : run => minimumRowsOf(TYPESCRIPT_LAYOUT_POLICY.rowKinds.declaration, run.map(row => row.boundaries.map(boundary => boundary.axis))),
-		layerCall  : node => kindLayerCall("declaration", node),
+		name       : "declaration"                                                                                                                      ,
+		gap        : TYPESCRIPT_LAYOUT_POLICY.rowKinds.declaration.gap                                                                                  ,
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined                                                        ,
+		detect     : detectDeclaration                                                                                                                  ,
+		groupName  : declarationGroupName                                                                                                               ,
+		minRows    : run => minimumRowsOf(TYPESCRIPT_LAYOUT_POLICY.rowKinds.declaration, run.map(row => row.boundaries.map(boundary => boundary.axis))) ,
+		layerCall  : node => kindLayerCall("declaration", node)                                                                                         ,
 	},
 	{
-		name       : "type-alias",
-		gap        : "blank",
-		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
-		detect     : detectTypeAlias,
+		name       : "type-alias"                                                                ,
+		gap        : "blank"                                                                     ,
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined ,
+		detect     : detectTypeAlias                                                             ,
 	},
 	{
-		name       : "type-members",
-		gap        : "blank",
-		containers : node => isTypeLiteralNode(node) ? node.members : undefined,
-		detect     : detectMember,
+		name       : "type-members"                                             ,
+		gap        : "blank"                                                    ,
+		containers : node => isTypeLiteralNode(node) ? node.members : undefined ,
+		detect     : detectMember                                               ,
 	},
 	{
-		name       : "method-signature",
-		gap        : "blank",
-		containers : node => isInterfaceDeclaration(node) ? node.members : undefined,
-		detect     : detectMethod,
+		name       : "method-signature"                                              ,
+		gap        : "blank"                                                         ,
+		containers : node => isInterfaceDeclaration(node) ? node.members : undefined ,
+		detect     : detectMethod                                                    ,
 	},
 	{
-		name       : "interface-members",
-		gap        : "blank",
-		containers : node => isInterfaceDeclaration(node) ? node.members : undefined,
-		detect     : detectMember,
+		name       : "documented-data-members"  ,
+		gap        : "blank"                    ,
+		containers : documentedDataMembers      ,
+		detect     : detectDocumentedDataMember ,
+		runKey     : dataFieldKey               ,
 	},
 	{
-		name       : "class-method",
-		gap        : "blank",
-		containers : node => isClassDeclaration(node) ? node.members : undefined,
-		detect     : detectMethod,
+		name       : "interface-members"                                             ,
+		gap        : "blank"                                                         ,
+		containers : node => isInterfaceDeclaration(node) ? node.members : undefined ,
+		detect     : detectMember                                                    ,
 	},
 	{
-		name       : "class-members",
-		gap        : "blank",
-		containers : node => isClassDeclaration(node) ? node.members : undefined,
-		detect     : detectMember,
+		name       : "class-method"                                              ,
+		gap        : "blank"                                                     ,
+		containers : node => isClassDeclaration(node) ? node.members : undefined ,
+		detect     : detectMethod                                                ,
 	},
 	{
-		name       : "assignments",
-		gap        : "blank",
-		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
-		detect     : detectAssignments,
+		name       : "class-members"                                             ,
+		gap        : "blank"                                                     ,
+		containers : node => isClassDeclaration(node) ? node.members : undefined ,
+		detect     : detectMember                                                ,
 	},
 	{
-		name       : "call-statements",
-		gap        : "blank",
-		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
-		detect     : detectCallStatement,
-		layerCall  : node => kindLayerCall("call-statements", node),
+		name       : "assignments"                                                               ,
+		gap        : "blank"                                                                     ,
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined ,
+		detect     : detectAssignments                                                           ,
 	},
 	{
-		name       : "if-headers-braced",
-		gap        : "blank",
-		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
-		detect     : (source, node) => detectIfHeader(source, node, "braced"),
+		name       : "call-statements"                                                           ,
+		gap        : "blank"                                                                     ,
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined ,
+		detect     : detectCallStatement                                                         ,
+		layerCall  : node => kindLayerCall("call-statements", node)                              ,
 	},
 	{
-		name       : "if-headers-return",
-		gap        : "blank",
-		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
-		detect     : (source, node) => detectIfHeader(source, node, "return"),
+		name       : "if-headers-braced"                                                         ,
+		gap        : "blank"                                                                     ,
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined ,
+		detect     : (source, node) => detectIfHeader(source, node, "braced")                    ,
 	},
 	{
-		name       : "return-guards",
-		gap        : "blank",
-		containers : node => isBlock(node) ? node.statements : undefined,
-		detect     : detectReturnGuard,
+		name       : "if-headers-return"                                                         ,
+		gap        : "blank"                                                                     ,
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined ,
+		detect     : (source, node) => detectIfHeader(source, node, "return")                    ,
 	},
 	{
-		name       : "guard-statements",
-		gap        : "blank",
-		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
-		detect     : detectGuard,
+		name       : "return-guards"                                     ,
+		gap        : "blank"                                             ,
+		containers : node => isBlock(node) ? node.statements : undefined ,
+		detect     : detectReturnGuard                                   ,
 	},
 	{
-		name       : "enum-member",
-		gap        : "comma",
-		containers : node => isEnumDeclaration(node) ? node.members : undefined,
-		detect     : detectEnumMember,
+		name       : "guard-statements"                                                          ,
+		gap        : "blank"                                                                     ,
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined ,
+		detect     : detectGuard                                                                 ,
 	},
 	{
-		name       : "case-clause",
-		gap        : "blank",
-		containers : node => isSwitchStatement(node) ? node.caseBlock.clauses : undefined,
-		detect     : detectCaseClause,
+		name       : "enum-member"                                              ,
+		gap        : "comma"                                                    ,
+		containers : node => isEnumDeclaration(node) ? node.members : undefined ,
+		detect     : detectEnumMember                                           ,
+	},
+	{
+		name       : "case-clause"                                                        ,
+		gap        : "blank"                                                              ,
+		containers : node => isSwitchStatement(node) ? node.caseBlock.clauses : undefined ,
+		detect     : detectCaseClause                                                     ,
 	},
 	{
 		name       : "object-rows"   ,
@@ -1185,10 +1244,10 @@ export const ROW_KINDS: readonly RowKind[] = [
 		detect     : detectObjectRow ,
 	},
 	{
-		name       : "object-properties",
-		gap        : "comma",
-		containers : node => extendedObjectProperties(node),
-		detect     : detectObjectProperty,
+		name       : "object-properties"                    ,
+		gap        : "comma"                                ,
+		containers : node => extendedObjectProperties(node) ,
+		detect     : detectObjectProperty                   ,
 	},
 	{
 		name       : "registration"        ,
@@ -1207,6 +1266,8 @@ export const AXIS_NOTES: Readonly<Record<string, string>> = {
 		"final receiver/method dot of a supported member call; inner receiver dots remain inside the receiver cell",
 	"colon"                  :
 		"`:` separating a name or identifier from its type or expression",
+	"member-type"            :
+		"start of the opaque type cell in a documented data-field record",
 	"equals"                 :
 		"`=` of a declaration, alias or enum member",
 	"semicolon"              :
@@ -1343,25 +1404,44 @@ export interface DetectedRow {
 	readonly vertical?  : Node;
 }
 
-/** Ordinary rows must be contiguous; return guards share a region of immediate block siblings without crossing section barriers. */
+/** Attached field documentation is transparent only inside the dedicated data-record kind. */
+const DOCUMENTED_DATA_GAP = /^[ \t]*\r?\n(?:[ \t]*\/\*\*(?:[^*]|\*(?!\/))*\*\/[ \t]*\r?\n)*[ \t]*$/u;
+
+const ROW_GAPS: Readonly<Record<GapRule, RegExp>> = {
+	blank: /^[ \t]*\r?\n[ \t]*$/u,
+	comma: /^[ \t]*,?[ \t]*\r?\n[ \t]*$/u,
+};
+
+/** A bridged field document needs the new identity; uninterrupted ordinary fields retain their legacy identity. */
+function hasFieldDocumentation(source: SourceFile, run: readonly DetectedRow[]): boolean {
+	return run.some((row, index) => {
+		if (index === 0) return false;
+		const previous = run[index - 1]!.node                                            ;
+		const gap      = source.text.slice(previous.getEnd(), row.node.getStart(source)) ;
+		return gap.includes("/**");
+	});
+}
+
+/** Ordinary rows remain contiguous; documented data fields and return guards have separate bounded gap policies. */
 export function runsOf(source: SourceFile, siblings: readonly Node[], kind: RowKind): readonly (readonly DetectedRow[])[] {
 	if (kind.name === "return-guards") return returnGuardRuns(source, siblings, kind);
 	if (kind.name === "logical-chains") {
 		const rows = siblings.map(node => ({ node, boundaries: kind.detect(source, node) })).filter(row => row.boundaries !== undefined) as readonly DetectedRow[];
 		return rows.length === siblings.length ? [rows] : [];
 	}
-	const commaGap                    = kind.gap === "comma" ;
-	const runs      : DetectedRow[][] = []                   ;
-	let current     : DetectedRow[]   = []                   ;
-	let currentKey  : string | undefined                     ;
-	let previousEnd : number | undefined                     ;
+	const gapPattern = kind.name === "documented-data-members" ? DOCUMENTED_DATA_GAP : ROW_GAPS[kind.gap];
+
+	const runs      : DetectedRow[][] = [] ;
+	let current     : DetectedRow[]   = [] ;
+	let currentKey  : string | undefined   ;
+	let previousEnd : number | undefined   ;
 	for (const sibling of siblings) {
 		const boundaries = kind.detect(source, sibling)                                                                                                 ;
 		const gap        = previousEnd === undefined || boundaries === undefined ? undefined : source.text.slice(previousEnd, sibling.getStart(source)) ;
 		const key        = boundaries === undefined ? undefined : kind.runKey?.(source, sibling)                                                        ;
 		const continues  = boundaries !== undefined
 			&& (current.length === 0 || kind.runKey === undefined || key === currentKey)
-			&& (previousEnd === undefined || (commaGap ? /^[ \t]*,?[ \t]*\r?\n[ \t]*$/u : /^[ \t]*\r?\n[ \t]*$/u).test(gap ?? ""));
+			&& (previousEnd === undefined || gapPattern.test(gap ?? ""));
 		if (continues) current.push({ node: sibling, boundaries });
 		else {
 			if (current.length > 0) runs.push(current);
@@ -1371,7 +1451,10 @@ export function runsOf(source: SourceFile, siblings: readonly Node[], kind: RowK
 		previousEnd = sibling.getEnd();
 	}
 	if (current.length > 0) runs.push(current);
-	return runs.filter(run => run.length > 0).map(run => withCallEnvelope(source, kind, withLayers(source, kind, run)));
+	return runs
+		.filter(run => run.length > 0)
+		.filter(run => kind.name !== "documented-data-members" || hasFieldDocumentation(source, run))
+		.map(run => withCallEnvelope(source, kind, withLayers(source, kind, run)));
 }
 
 /** Terminal statements and unrelated declaration/control-flow forms end a guard region. */

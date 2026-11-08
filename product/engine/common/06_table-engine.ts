@@ -111,19 +111,19 @@ export interface PairGroup {
 }
 
 export interface AlignResult {
-	readonly output: string;
+	readonly output     : string                  ;
 	/** Number of contiguous same-signature runs of 2+ rows. */
-	readonly groups: number;
+	readonly groups     : number                  ;
 	/** Number of tables actually aligned (minRows or more). */
-	readonly tables: number;
+	readonly tables     : number                  ;
 	/** Number of rows that alignment would change. */
-	readonly misaligned: number;
+	readonly misaligned : number                  ;
 	/** Number of rows actually changed when apply=true. */
-	readonly edits   : number                   ;
-	readonly details : readonly DetectedTable[] ;
-	readonly pairs   : readonly PairGroup[]     ;
+	readonly edits      : number                  ;
+	readonly details    : readonly DetectedTable[];
+	readonly pairs      : readonly PairGroup[]    ;
 	/** Tables whose edits failed the whitespace-only check or whose columns would follow wide characters; never applied. */
-	readonly refused: readonly DetectedTable[];
+	readonly refused    : readonly DetectedTable[];
 }
 
 export interface AlignOptions {

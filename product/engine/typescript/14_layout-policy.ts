@@ -13,6 +13,7 @@ export const IMPLEMENTED_LAYOUT_KINDS          = [
 	"method-signature",
 	"class-method",
 	"interface-members",
+	"documented-data-members",
 	"type-members",
 	"class-members",
 	"enum-member",

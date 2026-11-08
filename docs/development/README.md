@@ -19,6 +19,7 @@ public documentation lifecycle and evidence-retention policy; [repository layout
 | How are diverse patterns, exceptions and rule authority managed? | [Pattern management](pattern-management.md) |
 | What is stored, who can approve it, and would SQLite help? | [Storage and validation](storage.md) |
 | How do I implement and verify a change consistently? | [Change patterns](change-patterns.md) |
+| How do I close a recurring implementation or readability failure? | [Developer issue loop](../../development/skills/boxbox-issue-loop/SKILL.md), discovered through `.agents/skills/boxbox-issue-loop` |
 | Have we seen this failure before, and why did it happen? | [Issue library: categories, JSON records and template](issue-library/README.md) |
 | Where are authored and generated files? | [Repository layout](layout.md) |
 | What rules and vocabulary do we enforce? | [Charter](../../product/rules/references/charter.md), [grammar](../../product/rules/references/grammar.md), [readability contract](../../product/rules/references/readability-contract.md) |
