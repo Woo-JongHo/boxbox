@@ -30,6 +30,9 @@ export interface Slot {
 }
 
 export interface RowProfile {
+	/** This terminal may be absent only when both profiles declare it. Omit this property for strict terminal matching. */
+	readonly optionalTerminalAxis?: string;
+
 	readonly indent : string;
 	readonly slots  : readonly Slot[];
 }
@@ -57,24 +60,24 @@ export interface PreparedSource {
 export interface LineProfiler {
 	/** Prepare one source document; absent for legacy profilers. */
 	prepareSource?(source: string): PreparedSource;
-	readonly language      : string;
-	readonly syntax        : CodeSyntax;
+	readonly language: string;
+	readonly syntax: CodeSyntax;
 	/** Cells on these axes are right-padded to the column width (compared columns). */
-	readonly columnAxes    : readonly string[];
+	readonly columnAxes: readonly string[];
 	/** Canonical gap per axis used for reassembly. Axes not listed use " ". */
-	readonly canonicalGaps : Readonly<Record<string, string>>;
+	readonly canonicalGaps: Readonly<Record<string, string>>;
 	/** Returns the decomposition if the line is a table row, otherwise null. code is the source with the trailing comment cut; masked is the mask at the same coordinates. */
 	profile(code: string, masked: string): RowProfile | null;
 	/**
 	 * Rows whose axes are a prefix of the run's longest axes join that run (`name : type` beside `name : type = value`).
 	 * Off by default; each language opts in only where a shorter row is the same role with fewer trailing cells.
 	 */
-	readonly prefixRuns?   : boolean;
+	readonly prefixRuns?: boolean;
 	/**
 	 * Axes that close a row (a parameter list's `,`). In a prefix run whose rows all end with the same terminal axis,
 	 * prefixes are compared without it and it forms its own column after the longest row, like a trailing comment.
 	 */
-	readonly terminalAxes? : readonly string[];
+	readonly terminalAxes?: readonly string[];
 	/** Marker lines that sit inside a table without cells of their own (a parameter list's `*,`); they do not break a run. */
 	transparentRow?(masked: string): boolean;
 	/** Optional outer rows by zero-based physical line. Detailed tables keep priority; every projection must reconstruct its original code exactly. */
@@ -108,25 +111,25 @@ export interface PairGroup {
 }
 
 export interface AlignResult {
-	readonly output     : string;
+	readonly output: string;
 	/** Number of contiguous same-signature runs of 2+ rows. */
-	readonly groups     : number;
+	readonly groups: number;
 	/** Number of tables actually aligned (minRows or more). */
-	readonly tables     : number;
+	readonly tables: number;
 	/** Number of rows that alignment would change. */
-	readonly misaligned : number;
+	readonly misaligned: number;
 	/** Number of rows actually changed when apply=true. */
 	readonly edits   : number                   ;
 	readonly details : readonly DetectedTable[] ;
 	readonly pairs   : readonly PairGroup[]     ;
 	/** Tables whose edits failed the whitespace-only check or whose columns would follow wide characters; never applied. */
-	readonly refused : readonly DetectedTable[];
+	readonly refused: readonly DetectedTable[];
 }
 
 export interface AlignOptions {
-	readonly minRows : number;
+	readonly minRows: number;
 	/** When false, only report and leave output identical to the source. */
-	readonly apply   : boolean;
+	readonly apply: boolean;
 	/** Optional read-only observation of the selected rows and actual alignment plan. */
 	readonly observe?: (groups: readonly PlannedMeasurement[]) => void;
 }
@@ -137,7 +140,7 @@ export interface PlannedMeasurement {
 	readonly alignedCodes : readonly string[] | null                                           ;
 	readonly edits        : readonly TableEdit[]                                               ;
 	/** Explains a pair or preservation refusal when no safe plan is available. */
-	readonly reason?      : string                                                             ;
+	readonly reason?: string;
 }
 
 const canonicalGap = (aligner: LineProfiler, axis: string): string => aligner.canonicalGaps[axis] ?? " ";
@@ -196,13 +199,19 @@ function withoutTerminal(profile: RowProfile, terminalAxes: readonly string[]): 
 	return last && terminalAxes.includes(last.axis) ? { indent: profile.indent, slots: profile.slots.slice(0, -1) } : profile;
 }
 
-/** True when one row's axes are a prefix of the other's at the same indentation; a terminal cell must match on both. */
+/** A terminal cell matches on both rows unless both explicitly admit that axis as optional. */
 function prefixRelated(left: RowProfile, right: RowProfile, terminalAxes: readonly string[]): boolean {
 	if (left.indent !== right.indent) return false;
 	const leftEnd  = left.slots.at(-1)?.axis ?? ""                                     ;
 	const rightEnd = right.slots.at(-1)?.axis ?? ""                                    ;
 	const terminal = terminalAxes.includes(leftEnd) || terminalAxes.includes(rightEnd) ;
-	if (terminal && leftEnd !== rightEnd) return false;
+	if (terminal && leftEnd !== rightEnd) {
+		const optional = left.optionalTerminalAxis;
+		if (optional === undefined || optional !== right.optionalTerminalAxis) return false;
+		if (!terminalAxes.includes(optional)                                 ) return false;
+		if (leftEnd !== optional && rightEnd !== optional                    ) return false;
+		if (terminalAxes.includes(leftEnd) && terminalAxes.includes(rightEnd)) return false;
+	}
 	const bodies         = [withoutTerminal(left, terminalAxes), withoutTerminal(right, terminalAxes)] ;
 	const [short, long]  = bodies[0].slots.length <= bodies[1].slots.length ? bodies : [bodies[1], bodies[0]] ;
 	return short.slots.every((slot, position) => slot.axis === long.slots[position].axis);

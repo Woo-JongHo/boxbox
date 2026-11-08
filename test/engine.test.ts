@@ -160,6 +160,53 @@ describe("alignSource", () => {
 	});
 });
 
+describe("optional terminal ownership", () => {
+	const cases = [
+		{ name : "strict profiles"                     , mode : "strict"       , last : ""  , tables : 0 },
+		{ name : "both profiles opt in"                , mode : "all"          , last : ""  , tables : 1 },
+		{ name : "one profile omits the capability"    , mode : "partial"      , last : ""  , tables : 0 },
+		{ name : "different explicit terminals"        , mode : "all"          , last : ";" , tables : 0 },
+		{ name : "a non-terminal axis marked optional" , mode : "invalid-axis" , last : ""  , tables : 0 },
+	];
+	test.each(cases)("respects $name", ({ mode, last, tables }) => {
+		const profiler: LineProfiler = {
+			language      : "test"                                               ,
+			syntax        : SYNTAX                                               ,
+			columnAxes    : ["name", "value"]                                    ,
+			canonicalGaps : { colon: " ", value: " ", comma: "", semicolon: "" } ,
+			prefixRuns    : true                                                 ,
+			terminalAxes  : ["comma", "semicolon"]                               ,
+			profile(code) {
+				const match = /^(\w+)([ \t]*):([ \t]*)(\d+)([,;]?)$/u.exec(code);
+				if (!match) return null;
+				const slots = [
+					{ axis : "name"  , text : match[1]! , gapBefore : ""        },
+					{ axis : "colon" , text : ":"       , gapBefore : match[2]! },
+					{ axis : "value" , text : match[4]! , gapBefore : match[3]! },
+				];
+				if (match[5]) slots.push({
+					axis      : match[5] === "," ? "comma" : "semicolon" ,
+					text      : match[5]                                 ,
+					gapBefore : ""
+				});
+				const optional = mode !== "strict" && (mode !== "partial" || match[1] !== "mid");
+				return {
+					indent : "" ,
+					slots       ,
+					...(optional ? { optionalTerminalAxis: mode === "invalid-axis" ? "value" : "comma" } : {})
+				};
+			},
+		};
+		const source = `first:1,\nlonger:2,\nmid:3${last}`                        ;
+		const result = alignSource(source, profiler, { minRows: 3, apply: true }) ;
+		expect(result.tables                                                           ).toBe(tables                       ) ;
+		expect(result.output.replace(/[ \t]/gu, "")                                    ).toBe(source.replace(/[ \t]/gu, "")) ;
+		expect(result.output.split("\n").every(line => !/[ \t]+$/u.test(line))         ).toBe(true                         ) ;
+		expect(alignSource(result.output, profiler, { minRows: 3, apply: true }).output).toBe(result.output                ) ;
+		if (!tables) expect(result.output).toBe(source);
+	});
+});
+
 /** Expand ASCII fixture tabs as a terminal would, independently of the engine width utility. */
 function fixtureColumn(line: string, marker: string): number {
 	let expanded = line;
@@ -173,29 +220,29 @@ function fixtureColumn(line: string, marker: string): number {
 describe("tab-bearing lossless cells", () => {
 	const cases = [
 		{
-			name: "middle annotation cells",
-			source: "a: X\t| Y = 1\nbb: Z | Y = 2\nccc: X | Y = 3",
-			columns: [[":", 4], ["=", 12]],
+			name    : "middle annotation cells"                      ,
+			source  : "a: X\t| Y = 1\nbb: Z | Y = 2\nccc: X | Y = 3" ,
+			columns : [[":", 4], ["=", 12]]                          ,
 		},
 		{
-			name: "first cells after mixed indentation",
-			source: '\t "a\tb": 1,\n\t "cc": 22,\n\t "ddd": 333,',
-			columns: [[":", 11], [",", 16]],
+			name    : "first cells after mixed indentation"         ,
+			source  : '\t "a\tb": 1,\n\t "cc": 22,\n\t "ddd": 333,' ,
+			columns : [[":", 11], [",", 16]]                        ,
 		},
 		{
-			name: "last cells before comments",
-			source: 'a = "x\ty" # one\nbb = "z" # two\nccc = "w" # three',
-			columns: [["=", 4], ["#", 15]],
+			name    : "last cells before comments"                          ,
+			source  : 'a = "x\ty" # one\nbb = "z" # two\nccc = "w" # three' ,
+			columns : [["=", 4], ["#", 15]]                                 ,
 		},
 		{
-			name: "prefix rows with optional defaults",
-			source: " a: Long\t| Y\n bb: X\t| Y = 2\n ccc: Z | Y = 3",
-			columns: [[":", 5], ["=", 16]],
+			name    : "prefix rows with optional defaults"              ,
+			source  : " a: Long\t| Y\n bb: X\t| Y = 2\n ccc: Z | Y = 3" ,
+			columns : [[":", 5], ["=", 16]]                             ,
 		},
 		{
-			name: "prefix terminal rows with tab-bearing bodies and comments",
-			source: ' a: Z | Y, # one\n bb: X\t| Y = "u\tv", # two\n ccc: Z | Y = "z", # three',
-			columns: [[":", 5], ["=", 16], [",", 26], ["#", 28]],
+			name    : "prefix terminal rows with tab-bearing bodies and comments"                 ,
+			source  : ' a: Z | Y, # one\n bb: X\t| Y = "u\tv", # two\n ccc: Z | Y = "z", # three' ,
+			columns : [[":", 5], ["=", 16], [",", 26], ["#", 28]]                                 ,
 		},
 	] as const;
 

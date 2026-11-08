@@ -562,4 +562,28 @@ describe("public CLI", () => {
 		expect(inferred.status).toBe(0);
 		expect(JSON.parse(inferred.stdout).results[0].language).toBe("typescript");
 	});
+
+	test("dictionary calls and a missing final comma are detected without gaining write approval", () => {
+		const root        = workspace()                                                                                               ;
+		const source      = 'a=1\nlonger=2\nmid=3\n\ndata = {\n "a": len("x"),\n "longer": list((1, 2)),\n "mid": {"nested": 3}\n}\n' ;
+		const path        = join(root, "dictionary.py")                                                                               ;
+		const environment = { XDG_CONFIG_HOME: join(root, "user-config") }                                                            ;
+		writeFileSync(path, source);
+		const checked = invoke(root, ["check", "--file", "dictionary.py", "--json"], environment);
+		expect(checked.status).toBe(1);
+		const value = JSON.parse(checked.stdout);
+		expect(value.syntax.status).toBe("valid");
+		expect(value.results[0].groups).toMatchObject([
+			{ rows: 3, axes: ["name", "equal", "value"] },
+			{ rows: 3, axes: ["key", "colon", "value", "comma"] },
+		]);
+		expect(value.formatReadiness.approvalEligible).toBe(false);
+		expect(value.formatReadiness.approvalFacts).toMatchObject([{ status: "approved" }, { status: "unknown" }]);
+		for (const flags of [["--dry-run"], []]) {
+			const denied = invoke(root, ["align", "--file", "dictionary.py", ...flags, "--json"], environment);
+			expect(denied.status                       ).toBe(2                   ) ;
+			expect(JSON.parse(denied.stdout).error.code).toBe("ALIGN_NOT_ELIGIBLE") ;
+			expect(readFileSync(path, "utf8")          ).toBe(source              ) ;
+		}
+	});
 });

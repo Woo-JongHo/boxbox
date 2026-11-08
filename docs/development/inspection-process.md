@@ -46,6 +46,9 @@ document-local CPython `ast`/`tokenize` analysis before its profile feeds the sh
 constrains rows, and formatted strings remain opaque original-source slices. AST UTF-8 byte columns and tokenizer
 character columns map separately to original UTF-16 offsets while retaining physical line separators, including
 CRLF. A separate Python AST-structure check guards changed raw/public write candidates; it does not execute source.
+Quoted dictionary entries keep balanced single-line values opaque, including nested calls and containers. Dictionary
+profiles opt in to a missing final comma while other profiles retain strict terminal matching. Nested entries on the
+same physical line cannot displace the line-leading entry's AST owner. This detection does not grant write approval.
 JSON and YAML use a structured-document adapter. These adapters feed the same result lifecycle but retain separate
 parsing, candidate extraction and preservation logic. They emit
 [ResultEnvelope](../../product/engine/common/24_result-json.ts).

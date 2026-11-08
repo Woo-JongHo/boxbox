@@ -85,11 +85,12 @@ test("NUL input is parser-confirmed invalid and never produces rows", () => {
 test("unrelated parser ValueError remains a tool failure", () => {
 	const python = Bun.which("python3");
 	expect(python).not.toBeNull();
-	const altered = PYTHON_ANALYSIS_SCRIPT.replace  ("tree=ast.parse(s)", "raise ValueError('synthetic-non-nul')"                                   ) ;
+	const altered = PYTHON_ANALYSIS_SCRIPT.replace  (/\btree\s*=\s*ast\.parse\(\s*s\s*\)/u, "raise ValueError('synthetic-non-nul')"                 ) ;
 	const child   = Bun                   .spawnSync([python!, "-I", "-c", altered], { stdin: Buffer.from("a=1\n"), stdout: "pipe", stderr: "pipe" }) ;
-	expect(child.exitCode         ).not.toBe     (0                  ) ;
-	expect(child.stderr.toString())    .toContain("synthetic-non-nul") ;
-	expect(child.stdout.toString()).not.toContain("syntax-invalid"   ) ;
+	expect(altered                ).not.toBe     (PYTHON_ANALYSIS_SCRIPT) ;
+	expect(child.exitCode         ).not.toBe     (0                     ) ;
+	expect(child.stderr.toString())    .toContain("synthetic-non-nul"   ) ;
+	expect(child.stdout.toString()).not.toContain("syntax-invalid"      ) ;
 });
 
 test("source token index checks each edited line and preserves every formatted literal", () => {

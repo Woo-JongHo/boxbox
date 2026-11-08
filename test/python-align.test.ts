@@ -1,9 +1,10 @@
-import      { describe, expect, test } from "bun:test"                    ;
-import      { fileURLToPath          } from "node:url"                    ;
-import      { alignSource            } from "@/common/06_table-engine.ts" ;
-import      { maskSource             } from "@/common/00_code-text.ts"    ;
-import      { PYTHON_ALIGNER         } from "@/python/03_profile.ts"      ;
-import      { defineLanguageSuite    } from "./lang-harness.ts"           ;
+import      { describe, expect, test } from "bun:test"                       ;
+import      { fileURLToPath          } from "node:url"                       ;
+import      { alignSource            } from "@/common/06_table-engine.ts"    ;
+import      { maskSource             } from "@/common/00_code-text.ts"       ;
+import      { PYTHON_ALIGNER         } from "@/python/03_profile.ts"         ;
+import      { PYTHON_ANALYSIS_SCRIPT } from "@/python/06_analysis-script.ts" ;
+import      { defineLanguageSuite    } from "./lang-harness.ts"              ;
 
 defineLanguageSuite({
 	aligner     : PYTHON_ALIGNER                                                      ,
@@ -15,6 +16,87 @@ defineLanguageSuite({
 
 describe("python profile specific properties", () => {
 	const align = (source: string): ReturnType<typeof alignSource> => alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true });
+
+	test("dictionary call values and an omitted final comma share their real table", () => {
+		const source = [
+			"values = {",
+			'    "version": 1,',
+			'    "status": "ok",',
+			'    "sourceLength": len("a,b"),',
+			'    "pythonVersion": list((3, 14, 2)),',
+			'    "owners": [],',
+			'    "rows": [],',
+			'    "tokens": [],',
+			'    "formatted": []',
+			"}",
+		].join("\n");
+		const result = align(source);
+		expect(result.details                                                 )    .toHaveLength (1                                                                              ) ;
+		expect(result.details[0]                                              )    .toMatchObject({ startLine: 2, endLine: 9, rows: 8, axes: ["key", "colon", "value", "comma"] }) ;
+		expect(result.output                                                  )    .toContain    ('len("a,b")'                                                                   ) ;
+		expect(result.output                                                  )    .toContain    ('list((3, 14, 2))'                                                             ) ;
+		expect(result.output.split("\n")[8]                                   ).not.toEndWith    (","                                                                            ) ;
+		expect(result.output.split("\n").every(line => !/[ \t]+$/u.test(line)))    .toBe         (true                                                                           ) ;
+		expect(align(result.output).output                                    )    .toBe         (result.output                                                                  ) ;
+	});
+
+	test("dictionary alignment preserves call evaluation order and nested values", () => {
+		const source = [
+			"import json",
+			"events = []",
+			"def capture(value):",
+			"    events.append(value)",
+			"    return value",
+			"values = {",
+			'    "a": capture("a,b"),',
+			'    "longer": capture([1, 2]),',
+			'    "mid": capture({"x": 3})',
+			"}",
+			"print(json.dumps([values, events]))",
+		].join("\n");
+		const result = align(source);
+		expect(result.details[0]?.rows).toBe(3);
+		const execute = (code: string) => {
+			const run = Bun.spawnSync(["python3", "-I", "-c", code], { stdout: "pipe", stderr: "pipe" });
+			expect(run.exitCode, run.stderr.toString()).toBe(0);
+			return run.stdout.toString();
+		};
+		expect(execute(result.output)).toBe(execute(source));
+		expect(align(result.output).output).toBe(result.output);
+	});
+
+	test("the engine's own eight-field Python response is inspected as one dictionary", () => {
+		const lines   = PYTHON_ANALYSIS_SCRIPT.split("\n")                                                  ;
+		const first   = lines.findIndex(line => line.includes("'sourceLength'")) - 1                        ;
+		const last    = lines.findIndex(line => line.includes("'formatted'") && !line.includes("'owners'")) ;
+		const result  = align(PYTHON_ANALYSIS_SCRIPT)                                                       ;
+		const payload = result.details.find(table => table.startLine <= first && table.endLine >= last + 1) ;
+		expect(payload?.rows).toBe(8);
+		expect(payload?.axes).toEqual(["key", "colon", "value", "comma"]);
+	});
+
+	test.each([
+		{ name: "CRLF", indent: "    ", ending: "\r\n" },
+		{ name: "tab indentation", indent: "\t", ending: "\n" },
+	])("dictionary calls without a final comma preserve $name", ({ indent, ending }) => {
+		const source = ["data = {", `${indent}"a": len("x"),`, `${indent}"longer": [1, 2],`, `${indent}"mid": {"x": 3}`, "}"].join(ending) ;
+		const result = align(source)                                                                                                       ;
+		expect(result.details                                                                )    .toMatchObject([{ rows: 3, axes: ["key", "colon", "value", "comma"] }]) ;
+		expect(result.output.split(ending)                                                   )    .toHaveLength (5                                                      ) ;
+		expect(result.output.split(ending)[3]                                                ).not.toEndWith    (","                                                    ) ;
+		expect(result.output.split(ending).slice(1, 4).every(line => line.startsWith(indent)))    .toBe         (true                                                   ) ;
+		expect(result.output.replace(/[ \t]/gu, "")                                          )    .toBe         (source.replace(/[ \t]/gu, "")                          ) ;
+		expect(align(result.output).output                                                   )    .toBe         (result.output                                          ) ;
+	});
+
+	test.each([
+		{ name: "same-line sibling entries", source: 'data = {\n "a": len("x"), "extra": 1,\n "longer": [1, 2], "another": 2,\n "mid": {"x": 3}, "last": 3\n}' },
+		{ name: "multiline values", source: 'data = {\n "a": (\n  len("x")\n ),\n "longer": (\n  [1, 2]\n ),\n "mid": (\n  {"x": 3}\n )\n}' },
+	])("refuses dictionary $name without changing their source", ({ source }) => {
+		const result = align(source);
+		expect(result.tables).toBe(0);
+		expect(result.output).toBe(source);
+	});
 
 	test("dictionary rows decompose into key, colon, value, comma axes and align the colon column", () => {
 		const source = [

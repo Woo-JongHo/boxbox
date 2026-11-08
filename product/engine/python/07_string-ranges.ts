@@ -8,5 +8,6 @@ export class PythonSourceSyntaxError extends SyntaxError {}
 /** Ordinary files retain the low-level masking fast path. */
 export function pythonStringRanges(source: string, timeoutMs = 60_000): readonly ProtectedRange[] {
 	if (!/(?<![\p{ID_Continue}])(?:[ft]r?|r[ft])["']/iu.test(source)) return [];
+
 	return analyzePython(source, timeoutMs).formatted;
 }

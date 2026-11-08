@@ -79,12 +79,18 @@ export function assignment(code: string): RowProfile | null {
  * mismatched delimiters stop new projections for the remainder of the file; detailed profiles are unaffected.
  */
 export function assignmentEnvelopes(source: string): ReadonlyMap<number, RowProfile> {
-	const result                                      = new Map<number, RowProfile>()    ;
-	const brackets : string[]                         = []                               ;
-	const opening  : Readonly<Record<string, string>> = { ")": "(", "]": "[", "}": "{" } ;
-	let quote                                         = ""                               ;
-	let continued                                     = false                            ;
-	let uncertain                                     = false                            ;
+	const result              = new Map<number, RowProfile>() ;
+	const brackets : string[] = []                            ;
+
+	const opening: Readonly<Record<string, string>> = {
+		")" : "(" ,
+		"]" : "[" ,
+		"}" : "{"
+	};
+
+	let quote     = ""    ;
+	let continued = false ;
+	let uncertain = false ;
 
 	for (const [index, raw] of source.split("\n").entries()) {
 		const line        = raw.endsWith("\r") ? raw.slice(0, -1) : raw                       ;
@@ -98,10 +104,17 @@ export function assignmentEnvelopes(source: string): ReadonlyMap<number, RowProf
 			const character = line[position]!;
 			if (quote !== "") {
 				if (character === "\\") position += 1;
-				else if (line.startsWith(quote, position)) { position += quote.length - 1; quote = ""; }
+				else if (line.startsWith(quote, position)) {
+					position += quote.length - 1;
+					quote = "";
+				}
 				continue;
 			}
-			if (character === "#") { comment = position; break; }
+			if (character === "#") {
+				comment = position;
+
+				break;
+			}
 			if (character === '"' || character === "'") {
 				const prefix = /[A-Za-z_][A-Za-z0-9_]*$/u.exec(line.slice(0, position))?.[0] ?? "";
 				if (/^[rubf]+$/iu.test(prefix)) uncertain = true;
