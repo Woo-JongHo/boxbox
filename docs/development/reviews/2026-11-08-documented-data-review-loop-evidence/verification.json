@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "verifying",
+  "status": "source-and-pin-verified-prepublication",
   "baseline": "b132b571b90744cbb14c81ef0cd94a97da60e227",
   "issue": "https://github.com/Woo-JongHo/boxbox/issues/42",
   "reproduction": {
@@ -67,16 +67,38 @@
     "includes": "Issue-library/layout/catalog/product checks, helper tests, Bun tests, tsc and shell syntax."
   },
   "changedFileLint": {
-    "status": "not-run"
+    "status": "passed-before-final-metadata-freeze",
+    "base": "c1f9993cbbf08a5e9c01fb82ed8ca1dd588577c0",
+    "counts": {
+      "targets": 28,
+      "excluded": 5,
+      "deleted": 0,
+      "noGroups": 6,
+      "unsupported": 55
+    },
+    "checker": {
+      "version": "0.2.7",
+      "commit": "3f92bc9e42afae6eec60763d2a0f8fedc5369559",
+      "tree": "405677a47b161313863ad4c2e4498cbb8016f05a",
+      "bundleSha256": "f5cc798404dde92114d3cac84a6e0051b607b6d8dbfd168cf901f4fd09189f77",
+      "bun": "1.4.0"
+    },
+    "note": "The prior stable run passed 28/5/0/6/55 (targets/excluded/deleted/noGroups/unsupported). This receipt does not attest to a later self-check. The final metadata is captured, parsed, validated, linted and source-matched after its last edit; those post-freeze results are posted with actual branch confirmation on issue 42.",
+    "countUnits": {
+      "targets": "Supported files checked.",
+      "excluded": "Paths excluded by existing patterns.",
+      "noGroups": "Checked files with no recognized groups.",
+      "unsupported": "Reported unsupported-layout reasons/ranges across checked inputs, not files."
+    }
   },
   "independentReview": {
-    "status": "source-audits-passed-pin-pending",
+    "status": "passed",
     "model": "claude-sonnet-5-5",
     "scope": "Sonnet code/forward review; fixed Opus source, mapping/helper/inventory and version delta audits. Reviewers reasoned read-only; executions were performed separately.",
     "finalSourceAudit": {
-      "status": "conditional-pass",
+      "status": "passed",
       "model": "claude-opus-5-5",
-      "conditions": "Explicit inventory and baseline accounting; mapping/Git-test delta audit; full/lint/pin gates still pending."
+      "conditions": "C1 closed by the explicit inventory/delta audit; full 0.2.7 and immutable pin/control gates passed. Final-metadata validation/lint/snapshot remain separate post-freeze gates confirmed on GitHub issue 42 before publication is claimed."
     },
     "deltaAudit": {
       "status": "passed",
@@ -91,7 +113,12 @@
   },
   "nativeMatrix": "not run",
   "publication": {
-    "status": "not-pushed"
+    "status": "prepared-not-pushed",
+    "authorized": true,
+    "remote": "github",
+    "branch": "fix/issue-42-documented-data-loop",
+    "sourceCommit": "3f92bc9e42afae6eec60763d2a0f8fedc5369559",
+    "note": "This is a committed pre-publication verification receipt. Actual remote branch/commit confirmation is posted on GitHub issue 42 after push."
   },
   "candidateScope": {
     "issueBaseline": "b132b571b90744cbb14c81ef0cd94a97da60e227",
@@ -319,5 +346,475 @@
     "previewError": "ALIGN_NOT_ELIGIBLE",
     "sourceUnchanged": true,
     "limit": "Parse/layout checks do not provide semantic TypeScript validation; no unsupported-axis crash was observed."
+  },
+  "checkerTransition": {
+    "oldChecker": {
+      "version": "0.2.5",
+      "commit": "9a0406e27fb43241d71f9e5a8815da7e4301e1b1",
+      "tree": "8e81ddadb08a325daa8d7b1e04b2f1cc37f587b8",
+      "bundleSha256": "60dc99364e1e69cb7b22cbef2f7f0736f475b98a5e4181a9c9fbe8696934b898",
+      "bun": "1.4.0"
+    },
+    "newChecker": {
+      "version": "0.2.7",
+      "commit": "3f92bc9e42afae6eec60763d2a0f8fedc5369559",
+      "tree": "405677a47b161313863ad4c2e4498cbb8016f05a",
+      "bundleSha256": "f5cc798404dde92114d3cac84a6e0051b607b6d8dbfd168cf901f4fd09189f77",
+      "bun": "1.4.0"
+    },
+    "exclusionsUnchanged": true,
+    "sourceCheckpoint": "3f92bc9e42afae6eec60763d2a0f8fedc5369559",
+    "oldPinFinalPreflight": {
+      "status": "violation",
+      "counts": {
+        "targets": 26,
+        "excluded": 5,
+        "deleted": 0,
+        "noGroups": 5,
+        "unsupported": 52
+      },
+      "onlyViolation": {
+        "path": "product/engine/common/06_table-engine.ts",
+        "groups": [
+          {
+            "kind": "interface-members",
+            "startLine": 122,
+            "endLine": 124,
+            "rows": 3,
+            "axes": [
+              "colon=21",
+              "semicolon=48"
+            ],
+            "state": "FIXABLE",
+            "edits": 6,
+            "context": "InterfaceDeclaration",
+            "depth": 1
+          }
+        ]
+      },
+      "lookupIdentity": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon"
+    },
+    "controls": [
+      {
+        "label": "previous",
+        "identity": {
+          "version": "0.2.5",
+          "commit": "9a0406e27fb43241d71f9e5a8815da7e4301e1b1",
+          "tree": "8e81ddadb08a325daa8d7b1e04b2f1cc37f587b8",
+          "bundleSha256": "60dc99364e1e69cb7b22cbef2f7f0736f475b98a5e4181a9c9fbe8696934b898",
+          "bun": "1.4.0"
+        },
+        "controls": [
+          {
+            "name": "bad-data",
+            "exitCode": 0,
+            "groups": [],
+            "summary": {
+              "groups": 0,
+              "misaligned": 0,
+              "edits": 0,
+              "refused": 0,
+              "suggested": 0
+            },
+            "inputSha256": "3d077e73c2eae02572fd511c487e2d3b1c666d8b308ad8d49252e734f55afdbb"
+          },
+          {
+            "name": "aligned-data",
+            "exitCode": 0,
+            "groups": [],
+            "summary": {
+              "groups": 0,
+              "misaligned": 0,
+              "edits": 0,
+              "refused": 0,
+              "suggested": 0
+            },
+            "inputSha256": "7903a159204bb3f3e3cb65e18f1324abccb45e5f8301b45183e50c73ca389879"
+          },
+          {
+            "name": "documented-port",
+            "exitCode": 0,
+            "groups": [],
+            "summary": {
+              "groups": 0,
+              "misaligned": 0,
+              "edits": 0,
+              "refused": 0,
+              "suggested": 0
+            },
+            "inputSha256": "4d8ab9c055f40fc3543ea039d0f2d7698d48e8e03cfd41551b41c0a3e10967c7"
+          },
+          {
+            "name": "bad-legacy-members",
+            "exitCode": 1,
+            "groups": [
+              {
+                "kind": "interface-members",
+                "rows": 3,
+                "state": "FIXABLE",
+                "axes": [
+                  "colon=13",
+                  "semicolon=22"
+                ]
+              }
+            ],
+            "summary": {
+              "groups": 1,
+              "misaligned": 1,
+              "edits": 6,
+              "refused": 0,
+              "suggested": 0
+            },
+            "inputSha256": "a5eebd811bd6ffd5c1a80e1859e6fceb3a5d991aabcdad082ac15d85b50627b2"
+          },
+          {
+            "name": "aligned-legacy-members",
+            "exitCode": 0,
+            "groups": [
+              {
+                "kind": "interface-members",
+                "rows": 3,
+                "state": "PASS",
+                "axes": [
+                  "colon=13",
+                  "semicolon=23"
+                ]
+              }
+            ],
+            "summary": {
+              "groups": 1,
+              "misaligned": 0,
+              "edits": 0,
+              "refused": 0,
+              "suggested": 0
+            },
+            "inputSha256": "8ce8a49673e4e8ce533fb10492be23253b54fab95403aaa85037cb38f5b26b5f"
+          },
+          {
+            "name": "bad-declarations",
+            "exitCode": 1,
+            "groups": [
+              {
+                "kind": "declaration-equals",
+                "rows": 3,
+                "state": "FIXABLE",
+                "axes": [
+                  "equals=13",
+                  "call-open-paren=18",
+                  "call-close-paren=20",
+                  "semicolon=22"
+                ]
+              }
+            ],
+            "summary": {
+              "groups": 1,
+              "misaligned": 1,
+              "edits": 6,
+              "refused": 0,
+              "suggested": 0
+            },
+            "inputSha256": "202238e28ebca03bd7c5de6d228e6298c8dad7763255c9d36edb37e1d2304aa5"
+          },
+          {
+            "name": "aligned-declarations",
+            "exitCode": 0,
+            "groups": [
+              {
+                "kind": "declaration-equals",
+                "rows": 3,
+                "state": "PASS",
+                "axes": [
+                  "equals=13",
+                  "call-open-paren=19",
+                  "call-close-paren=21",
+                  "semicolon=23"
+                ]
+              }
+            ],
+            "summary": {
+              "groups": 1,
+              "misaligned": 0,
+              "edits": 0,
+              "refused": 0,
+              "suggested": 0
+            },
+            "inputSha256": "e2ffa6b546faba36c233ad9e94c6ff1a2b7ef286df9689a58ce8584c836082c3"
+          }
+        ],
+        "deniedWrites": []
+      },
+      {
+        "label": "candidate",
+        "identity": {
+          "version": "0.2.7",
+          "commit": "3f92bc9e42afae6eec60763d2a0f8fedc5369559",
+          "tree": "405677a47b161313863ad4c2e4498cbb8016f05a",
+          "bundleSha256": "f5cc798404dde92114d3cac84a6e0051b607b6d8dbfd168cf901f4fd09189f77",
+          "bun": "1.4.0"
+        },
+        "controls": [
+          {
+            "name": "bad-data",
+            "exitCode": 1,
+            "groups": [
+              {
+                "kind": "documented-data-members",
+                "rows": 3,
+                "state": "FIXABLE",
+                "axes": [
+                  "colon=23",
+                  "member-type=25",
+                  "semicolon=31"
+                ]
+              }
+            ],
+            "summary": {
+              "groups": 1,
+              "misaligned": 1,
+              "edits": 6,
+              "refused": 0,
+              "suggested": 0
+            },
+            "inputSha256": "3d077e73c2eae02572fd511c487e2d3b1c666d8b308ad8d49252e734f55afdbb"
+          },
+          {
+            "name": "aligned-data",
+            "exitCode": 0,
+            "groups": [
+              {
+                "kind": "documented-data-members",
+                "rows": 3,
+                "state": "PASS",
+                "axes": [
+                  "colon=23",
+                  "member-type=25",
+                  "semicolon=31"
+                ]
+              }
+            ],
+            "summary": {
+              "groups": 1,
+              "misaligned": 0,
+              "edits": 0,
+              "refused": 0,
+              "suggested": 0
+            },
+            "inputSha256": "7903a159204bb3f3e3cb65e18f1324abccb45e5f8301b45183e50c73ca389879"
+          },
+          {
+            "name": "documented-port",
+            "exitCode": 0,
+            "groups": [],
+            "summary": {
+              "groups": 0,
+              "misaligned": 0,
+              "edits": 0,
+              "refused": 0,
+              "suggested": 0
+            },
+            "inputSha256": "4d8ab9c055f40fc3543ea039d0f2d7698d48e8e03cfd41551b41c0a3e10967c7"
+          },
+          {
+            "name": "bad-legacy-members",
+            "exitCode": 1,
+            "groups": [
+              {
+                "kind": "interface-members",
+                "rows": 3,
+                "state": "FIXABLE",
+                "axes": [
+                  "colon=13",
+                  "semicolon=22"
+                ]
+              }
+            ],
+            "summary": {
+              "groups": 1,
+              "misaligned": 1,
+              "edits": 6,
+              "refused": 0,
+              "suggested": 0
+            },
+            "inputSha256": "a5eebd811bd6ffd5c1a80e1859e6fceb3a5d991aabcdad082ac15d85b50627b2"
+          },
+          {
+            "name": "aligned-legacy-members",
+            "exitCode": 0,
+            "groups": [
+              {
+                "kind": "interface-members",
+                "rows": 3,
+                "state": "PASS",
+                "axes": [
+                  "colon=13",
+                  "semicolon=23"
+                ]
+              }
+            ],
+            "summary": {
+              "groups": 1,
+              "misaligned": 0,
+              "edits": 0,
+              "refused": 0,
+              "suggested": 0
+            },
+            "inputSha256": "8ce8a49673e4e8ce533fb10492be23253b54fab95403aaa85037cb38f5b26b5f"
+          },
+          {
+            "name": "bad-declarations",
+            "exitCode": 1,
+            "groups": [
+              {
+                "kind": "declaration-equals",
+                "rows": 3,
+                "state": "FIXABLE",
+                "axes": [
+                  "equals=13",
+                  "call-open-paren=18",
+                  "call-close-paren=20",
+                  "semicolon=22"
+                ]
+              }
+            ],
+            "summary": {
+              "groups": 1,
+              "misaligned": 1,
+              "edits": 6,
+              "refused": 0,
+              "suggested": 0
+            },
+            "inputSha256": "202238e28ebca03bd7c5de6d228e6298c8dad7763255c9d36edb37e1d2304aa5"
+          },
+          {
+            "name": "aligned-declarations",
+            "exitCode": 0,
+            "groups": [
+              {
+                "kind": "declaration-equals",
+                "rows": 3,
+                "state": "PASS",
+                "axes": [
+                  "equals=13",
+                  "call-open-paren=19",
+                  "call-close-paren=21",
+                  "semicolon=23"
+                ]
+              }
+            ],
+            "summary": {
+              "groups": 1,
+              "misaligned": 0,
+              "edits": 0,
+              "refused": 0,
+              "suggested": 0
+            },
+            "inputSha256": "e2ffa6b546faba36c233ad9e94c6ff1a2b7ef286df9689a58ce8584c836082c3"
+          }
+        ],
+        "deniedWrites": [
+          {
+            "preview": true,
+            "exitCode": 2,
+            "errorCode": "ALIGN_NOT_ELIGIBLE",
+            "sourceUnchanged": true,
+            "input": "bad-data.ts",
+            "inputSha256": "3d077e73c2eae02572fd511c487e2d3b1c666d8b308ad8d49252e734f55afdbb"
+          },
+          {
+            "preview": false,
+            "exitCode": 2,
+            "errorCode": "ALIGN_NOT_ELIGIBLE",
+            "sourceUnchanged": true,
+            "input": "bad-data.ts",
+            "inputSha256": "3d077e73c2eae02572fd511c487e2d3b1c666d8b308ad8d49252e734f55afdbb"
+          }
+        ]
+      }
+    ],
+    "harness": {
+      "status": "passed",
+      "passed": 12,
+      "failed": 0,
+      "assertions": 107,
+      "durationSeconds": 42.95,
+      "initialFailure": "The initial new-pin run passed 11 and failed 1 because the test expected the former SHA/version. Only those 2 pin expectations were updated; the rerun passed 12/0."
+    },
+    "sourceBytesAfterCheckpoint": "match: 37 selected regular files; HEAD provenance changed only",
+    "identityNote": "Built by the full source SHA, with recorded Git tree and bundle digest; neither an existing version tag nor a published npm package was used.",
+    "releaseIdentityObservation": {
+      "githubTag": "v0.2.6",
+      "tagObject": "df3f9d4eeeaf86243a77344ae07f6a944fcb7c67",
+      "npmPackage": "boxbox-plugin@0.2.6",
+      "npmObserved": "E404",
+      "checkerSourceSelection": "Exact feature commit SHA; not the existing tag or an npm release."
+    },
+    "controlInputs": [
+      {
+        "name": "bad-data",
+        "source": "export interface Slot {\n\t/** Role. */\n\treadonly axis:string;\n\t/** Content. */\n\treadonly text:    string;\n\t/** Gap. */\n\treadonly gapBefore:string;\n}\n",
+        "sha256": "3d077e73c2eae02572fd511c487e2d3b1c666d8b308ad8d49252e734f55afdbb"
+      },
+      {
+        "name": "aligned-data",
+        "source": "export interface Slot {\n\t/** Role. */\n\treadonly axis      : string;\n\t/** Content. */\n\treadonly text      : string;\n\t/** Gap. */\n\treadonly gapBefore : string;\n}\n",
+        "sha256": "7903a159204bb3f3e3cb65e18f1324abccb45e5f8301b45183e50c73ca389879"
+      },
+      {
+        "name": "documented-port",
+        "source": "interface Port {\n\t/** Read. */\n\tread(): string;\n\t/** Write. */\n\twrite(value: string): void;\n\t/** Finish. */\n\tclose(): void;\n}\n",
+        "sha256": "4d8ab9c055f40fc3543ea039d0f2d7698d48e8e03cfd41551b41c0a3e10967c7"
+      },
+      {
+        "name": "bad-legacy-members",
+        "source": "interface Legacy {\n\ta:string;\n\tlongName:number;\n\tthird:boolean;\n}\n",
+        "sha256": "a5eebd811bd6ffd5c1a80e1859e6fceb3a5d991aabcdad082ac15d85b50627b2"
+      },
+      {
+        "name": "aligned-legacy-members",
+        "source": "interface Legacy {\n\ta        : string  ;\n\tlongName : number  ;\n\tthird    : boolean ;\n}\n",
+        "sha256": "8ce8a49673e4e8ce533fb10492be23253b54fab95403aaa85037cb38f5b26b5f"
+      },
+      {
+        "name": "bad-declarations",
+        "source": "const first=load(1);\nconst middle=load(2);\nconst third=load(3);\n",
+        "sha256": "202238e28ebca03bd7c5de6d228e6298c8dad7763255c9d36edb37e1d2304aa5"
+      },
+      {
+        "name": "aligned-declarations",
+        "source": "const first  = load(1) ;\nconst middle = load(2) ;\nconst third  = load(3) ;\n",
+        "sha256": "e2ffa6b546faba36c233ad9e94c6ff1a2b7ef286df9689a58ce8584c836082c3"
+      }
+    ],
+    "pinAudit": {
+      "status": "passed",
+      "model": "claude-opus-5-5",
+      "scope": "Read-only pin identity, unchanged exclusions, paired controls, literal-only pin-test delta and honest prepublication receipt. Final metadata gates remain executor steps."
+    },
+    "postPinTypecheck": {
+      "status": "passed",
+      "command": "bunx tsc --noEmit"
+    },
+    "pinTestLayout": {
+      "groups": 25,
+      "misaligned": 0,
+      "edits": 0
+    }
+  },
+  "pluginGuard": {
+    "status": "passed",
+    "command": ".claude/skills/plugin-guard/check.sh",
+    "scope": "Version/template contracts, official strict validators and isolated macOS Claude/Codex installs; not a native GUI or Windows/WSL matrix."
+  },
+  "nativeSkillDiscovery": {
+    "name": "boxbox-issue-loop",
+    "scope": "repo",
+    "enabled": true,
+    "path": "development/skills/boxbox-issue-loop/SKILL.md",
+    "codexVersion": "codex-cli 0.166.0"
+  },
+  "crossProviderClosure": {
+    "status": "passed",
+    "meaning": "Independent Sonnet code/forward reasoning and fixed Opus source, mapping/helper/inventory, version and pin audits; blocking findings were disposed with measured evidence. Executors performed the checks separately.",
+    "limit": "This does not imply hosted CI or native Windows/WSL execution."
   }
 }

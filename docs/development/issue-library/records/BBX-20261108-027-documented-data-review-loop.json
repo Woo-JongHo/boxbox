@@ -38,8 +38,8 @@
       "status": "done"
     },
     {
-      "description": "Complete frozen checks, independent review, explicit-path commits and verified GitHub publication.",
-      "status": "in-progress"
+      "description": "Verify frozen source and immutable checker evidence, then prepare exact-path commits for authorized GitHub publication.",
+      "status": "done"
     }
   ],
   "verification": [
@@ -54,12 +54,12 @@
     },
     {
       "name"  : "Final frozen candidate and independent review",
-      "status": "not-run",
-      "scope" : "The final exact source candidate, developer skill and publication boundaries.",
+      "status": "passed",
+      "scope" : "The 0.2.7 source snapshot, developer skill, immutable new checker and pre-publication boundaries.",
       "evidence": [
         "docs/development/reviews/2026-11-08-documented-data-review-loop-evidence/verification.json"
       ],
-      "result": "0.2.7 source full check and independent source/delta audits passed. Immutable checker pin, stable final lint and verified publication remain pending."
+      "result": "The 0.2.7 source full run passed 782/0, helper 15/0 and pin harness 12/0. Independent source/delta/pin audits passed, as did the stable new-pin lint before final metadata. Final metadata checks and actual push confirmation are reported on GitHub issue 42; hosted/main integration remains open."
     }
   ],
   "related": [
@@ -147,6 +147,16 @@
       "date"    : "2026-11-08",
       "event"   : "implemented",
       "summary" : "Under the subsequent user instruction, bumped coherent source/manifests to 0.2.7; 782 tests, 15 helper tests, types and shell checks passed on the pre-captured 37-file source snapshot. Pin/publication still pending.",
+      "evidence": [
+        "docs/development/reviews/2026-11-08-documented-data-review-loop-evidence/verification.json"
+      ]
+    },
+    {
+      "sequence": 7,
+      "date"    : "2026-11-08",
+      "event"   : "verification-failed",
+      "status"  : "failed",
+      "summary" : "The initial new-pin harness retained the former SHA/version test literals (11 pass, 1 fail). Updated those expectations with the new immutable configuration; the scoped rerun passed 12/0.",
       "evidence": [
         "docs/development/reviews/2026-11-08-documented-data-review-loop-evidence/verification.json"
       ]
