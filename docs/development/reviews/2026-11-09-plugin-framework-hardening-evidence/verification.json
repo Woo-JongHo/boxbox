@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "v4 source/native checks and independent fix audits passed; publication pending",
+  "status": "v4 source/native checks and independent source/evidence audits passed; implementation pushed and remote identity verified",
   "baselineCommit": "329c9c71555e20579fdc8c538f83c3521e3bf3ed",
   "version": "0.2.7",
   "branch": "feat/plugin-framework-hardening",
@@ -443,10 +443,21 @@
     "scope": "Discovery/contract gate; native host consumption is separately recorded."
   },
   "publication": {
-    "state": "not-published",
+    "state": "implementation-pushed; this follow-up finalizes documentation metadata",
+    "remote": "github",
+    "branch": "feat/plugin-framework-hardening",
+    "sourceCommit": "701413d0390b43ad19e4796c98fc25e77e632c09",
+    "sourceCommitUrl": "https://github.com/Woo-JongHo/boxbox/commit/701413d0390b43ad19e4796c98fc25e77e632c09",
+    "sourceTree": "983a2c24a6e9ae7d77dbf8871217a4203116a235",
+    "verifiedRemoteSourceCommit": "701413d0390b43ad19e4796c98fc25e77e632c09",
+    "verifiedAtUtc": "2026-11-08T17:13:17.358486+00:00",
+    "changedRegularFileBlobsMatched": 31,
+    "shippedInputFilesMatched": 119,
     "releasePublished": false,
     "registryPublished": false,
-    "mainMerged": false
+    "mainMerged": false,
+    "hostedCIClaimed": false,
+    "scope": "The source commit and all31selected file blobs were checked against the frozen delivery snapshot. Documentation-only finalization does not create another shipped candidate or trigger source/matrix reruns."
   },
   "limits": [
     "No native Windows/WSL/desktop acceptance.",
