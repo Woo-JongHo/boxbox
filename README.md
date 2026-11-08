@@ -91,7 +91,7 @@ npm exec --yes --package '/absolute/path/to/dist/installer/boxbox-plugin-<versio
 ```
 
 Replace `<version>` with the version in `package.json`, or use the exact archive path printed by `pack:installer`. This local artifact journey requires the checkout for building. The installed plugin uses its permanent Node engine.
-The public installer needs Node.js 22.22.3 or later and npm; Python formatting additionally needs `python3`.
+The public installer needs Node.js 22.22.3 or later and npm; Python inspection and formatting additionally need a runnable `python3`.
 
 ## Develop BoxBox
 

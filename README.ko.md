@@ -91,7 +91,7 @@ npm exec --yes --package '/absolute/path/to/dist/installer/boxbox-plugin-<versio
 ```
 
 `<version>`을 `package.json`의 버전으로 바꾸거나, `pack:installer`가 출력한 정확한 아카이브 경로를 사용하세요. 로컬 패키지를 빌드하려면 저장소 체크아웃이 필요합니다. 설치된 플러그인은 영구 설치된 자체 Node 엔진을 사용합니다.
-공개 설치 프로그램에는 Node.js 22.22.3 이상과 npm이 필요하며, Python 포맷에는 `python3`가 추가로 필요합니다.
+공개 설치 프로그램에는 Node.js 22.22.3 이상과 npm이 필요하며, Python 검사와 포맷에는 실행 가능한 `python3`가 추가로 필요합니다.
 
 ## BoxBox 개발
 

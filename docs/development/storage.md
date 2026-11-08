@@ -38,7 +38,7 @@ rule-proof evaluation and public-distribution policy are three separate validati
 | Corpus observations and candidates | Development manifests and ignored research cache | Provenance/version hashes; candidate staging and rollback | Guarantees vary by tool; research verdict/queue rewrites are not serialized transactions |
 | Shape observations | `.boxbox/cache/shape.jsonl` and previous snapshot | Exclusive lock, temporary write, rotation and caught-error rollback | Stale-lock recovery and power-loss durability not established |
 | Guarded run evidence | `.boxbox/runs/<id>.json` | Temporary file and rename; execution locking | Latest-record read is not a full schema validator |
-| Hook receipts | Host plugin data/root/session, or project fallback | Unique exclusive receipt files; read-only source inspection | No schemaVersion/dedicated receipt validator; concurrent Stop marker acquisition not proved atomic |
+| Hook receipts | Host plugin data/root/session, or project fallback | Schema 1/core-shape validation, 8 MiB bound, exact coverage/state checks, exclusive receipts and Stop claim; read-only source inspection | Unversioned evidence stays legacy; infrastructure errors fail open; no crash durability or race-proof filesystem claim |
 | Development harness | `development/harness/evidence/runs.jsonl` and `latest.json` | Append history, minimal read validation, atomic latest-file replacement | History and latest are separate writes, not one transaction |
 
 Owners: [15_project-config.ts](../../product/engine/common/15_project-config.ts),
@@ -47,6 +47,7 @@ Owners: [15_project-config.ts](../../product/engine/common/15_project-config.ts)
 [public-preset.ts](../../development/tools/public-preset.ts),
 [shape observer](../../product/engine/typescript/10_observe-shapes.ts),
 [27_lifecycle-hook.ts](../../product/engine/common/27_lifecycle-hook.ts),
+[29_lifecycle-receipt.ts](../../product/engine/common/29_lifecycle-receipt.ts),
 [25_guarded-run.ts](../../product/engine/common/25_guarded-run.ts), [harness DB](../../development/harness/db.ts).
 
 ## Data and invariants
@@ -77,7 +78,32 @@ interfaces are deliberately unified.
 
 Atomic replacement of source files is not evidence that all stores are atomic, concurrent-safe or durable after power
 loss. The inspected data writers do not establish an fsync-based durability guarantee. Suspected corpus lost-update
-and hook-marker races are source-review findings; concurrent failure was not reproduced in this audit.
+and hook-marker races were source-review findings in the dated audit. Later hook hardening uses an exclusive Stop
+claim and tests eight concurrent processes; no pre-fix dynamic race failure is claimed.
+
+### Hook evidence contract
+
+Hook receipts are observations, never approval authority. Schema 1 rejects unknown envelope/core-result fields,
+invalid counts, duplicate or overlapping file partitions, and a state inconsistent with checked results. The `files`
+set is partitioned into `checked`, `unsupported` and `deleted`; coverage records their counts, files with detected
+groups and total groups. `SUGGEST` reports advisory groups without blocking or approving a write. `NO_GROUPS` means checked files had no detected table groups. `DELETED_ONLY` records changes
+containing only deletions. `NO_CHANGES` requires no changes. Even `PASS` covers detected groups rather than all syntax.
+
+The dedicated codec validates the envelope and the result fields needed for state/coverage; it is not a second full
+validator for every nested ResultJson group. Unversioned baseline receipts remain readable as legacy evidence and
+are never promoted to schema 1. Encoding and reads are capped at 8 MiB; receipt reads reject symbolic files. Owned
+namespace components reject existing symlinks, while a legitimate symlinked project root remains usable. Namespace
+checks are check-then-use, without protection against a same-user concurrent path swap.
+Fresh host data paths create missing ancestors through the same directory guard, allowing existing unowned ancestor
+aliases. Project roots and receipt exclusions use canonical paths, so an in-project data alias does not inspect its
+own baseline or receipts. Restart the host after upgrading an in-flight session; old alias-based session baselines
+are not migrated.
+
+Each receipt is a unique exclusive file, not a transactional set. Stop uses an exclusive marker claim after checking
+`stop_hook_active`, so cooperating concurrent processes request at most one continuation. A crash after claiming can
+lose that continuation. Validation, size or persistence errors remain non-blocking hook errors and do not claim a
+successful check. Retention/pruning and fsync-based recovery remain unimplemented; bounded reads do not bound total
+disk retention. Local receipt creation does not establish that a native host accepted its output.
 
 ## Change points — proposed hardening and SQLite decision
 

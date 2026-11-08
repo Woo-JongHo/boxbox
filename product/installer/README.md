@@ -9,7 +9,7 @@ Install Node.js **22.22.3 or newer**, npm, and at least one host CLI with plugin
 Check `node --version`, `npm.cmd --version`, and `codex.cmd plugin --help` or `claude plugin --help` in a new PowerShell
 terminal. Use `codex` for a native Codex executable. Standard npm-installed Windows Claude Code is detected through its
 native `claude.exe`; no Bash, WSL, or script execution-policy change is required by this installer.
-BoxBox itself requires no global install, Bun, Python, or source checkout. Python formatting additionally requires `python3`.
+The core CLI requires no global install, Bun, or source checkout. Python inspection and formatting additionally require a runnable `python3`.
 
 If `CODEX_HOME` is set for a Codex installation, it must already be an existing directory. `CLAUDE_CONFIG_DIR` is passed to
 Claude unchanged. Existing host configuration is preserved through normal plugin-management commands. The installer never
@@ -70,7 +70,10 @@ The payload is copied out of npm's temporary cache into permanent, separate host
 - macOS/Linux: `$XDG_DATA_HOME/boxbox/<host>/<version>`, or `~/.local/share/boxbox/<host>/<version>` when unset
 
 Each selected host installs the included private `boxbox` engine tarball with `--ignore-scripts --no-audit --no-fund`.
-The nested engine never comes from the npm registry. Pinned `typescript@7.0.2` and its native platform dependencies still
+Before engine installation or host registration, each copied host payload verifies that tarball against the SHA-256 in its bundle metadata.
+Missing, malformed or mismatched integrity metadata stops installation with instructions to reinstall the installer
+package. This detects mixed archive bytes inside a payload; it is not a publisher signature. The installed CLI version
+is checked separately. The nested engine never comes from the npm registry. Pinned `typescript@7.0.2` and its native platform dependencies still
 need internet access or a primed npm cache. Installed plugins survive npm cache cleanup or deletion of the original
 installer tarball. Rerunning the same version repairs shipped files and runtime while preserving other data in that folder.
 If repair fails before host registration starts, the previous directory is restored. Once registration may have
@@ -96,6 +99,13 @@ explicitly trust their exact current definitions. Claude Code uses its own hook/
 Codex hooks use the documented Windows PowerShell override. Claude hooks use direct `command` plus `args` execution,
 including variable expansion of `${CLAUDE_PLUGIN_ROOT}`, avoiding Windows shell parsing. Both adapters inspect changes
 without formatting, store receipts in host plugin data, and refuse a hook when the host omits its data directory.
+PostToolUse checks all session changes after matched file-edit or shell calls, including read-only shell calls;
+it does not infer which command wrote a file. Codex exposes `exec_command` and a completed `write_stdin` through the
+hook name `Bash`. Shell feedback is advisory: inspection failures add context while preserving the command's output
+and exit status, so guidance, previews and tests remain readable. File-edit feedback retains its existing blocking
+behavior. Stop checks session changes again and requests at most one continuation. Other tool paths may not match.
+A receipt with `NO_GROUPS` means
+the file was inspected but no supported table groups were found, rather than whole-file alignment coverage.
 Claude's generated Windows engine commands use a Node bridge that works from Bash or PowerShell and preserves paths and
 arguments literally, so no shell switch is needed.
 The Claude plugin also includes the canonical read-only inspector; the Codex plugin does not include an agent.

@@ -89,7 +89,9 @@ behavior and relevant performance verification; see [the workflow contract](../u
 | YAML | Guarded structured adapter, YAML 1.2 core | `yaml@2.9.1` strict parse | Engine support; no default approved write rule |
 
 Exact commands and diagnostic normalization are owned by [08_parse-check.ts](../../product/engine/common/08_parse-check.ts).
-External-tool comparison runs isolated temporary files, not a full project build with its dependencies. `compareParse`
+Python syntax and diagnostic comparison send source over stdin to isolated CPython rather than creating temporary
+source files. This keeps the parser step usable in a read-only host sandbox; the separate format pipeline still stages
+approved write candidates in temporary files. The parser check is not a full project build with its dependencies. `compareParse`
 is a diagnostics comparison, not the formatter-admission decision: matching diagnostics do not establish syntax
 validity, behavioral equivalence, or Python AST equality. Public `format` has the separate syntactic-acceptance stage
 above; changed Python write candidates also

@@ -1,5 +1,6 @@
 import      { describe, expect, test                        } from "bun:test"                            ;
 import      { chmodSync, mkdtempSync, rmSync, writeFileSync } from "node:fs"                             ;
+import      { readFileSync, readdirSync                     } from "node:fs"                             ;
 import      { tmpdir                                        } from "node:os"                             ;
 import      { join, resolve                                 } from "node:path"                           ;
 import      {
@@ -30,6 +31,41 @@ describe("syntaxDiagnostics", () => {
 		expect(syntaxDiagnostics("python", "pass\n").diagnostics).toEqual([]);
 		expect(syntaxDiagnostics("python", "if:\n").diagnostics.length).toBeGreaterThan(0);
 	});
+});
+
+test("Python diagnostics and comparisons do not require a writable temporary directory", () => {
+	const root = mkdtempSync(join(tmpdir(), "boxbox-parser-readonly-"));
+	try {
+		const blocked  = join(root, "not-a-directory")                                       ;
+		const valid    = 'label = "caf\u00e9"\r\ncount = 2\r\n'                              ;
+		const broken   = "if:\r\n"                                                           ;
+		const expected = syntaxDiagnostics("python", broken).diagnostics                     ;
+		const module   = join(import.meta.dir, "../product/engine/common/08_parse-check.ts") ;
+		writeFileSync(blocked, "reserved\n");
+		const program = `import { compareParse, syntaxDiagnostics } from ${JSON.stringify(module)};
+process.env.TMPDIR = ${JSON.stringify(blocked)};
+const valid = ${JSON.stringify(valid)};
+const broken = ${JSON.stringify(broken)};
+console.log(JSON.stringify({
+	valid      : syntaxDiagnostics("python", valid),
+	invalid    : syntaxDiagnostics("python", broken),
+	whitespace : compareParse("python", valid, valid.replace(" = ", "   = ")),
+	changed    : compareParse("python", valid, broken),
+	identical  : compareParse("python", valid, valid)
+}));`;
+		const result = Bun.spawnSync([process.execPath, "-e", program], { stdout: "pipe", stderr: "pipe" });
+		expect({ exitCode: result.exitCode, stderr: result.stderr.toString() }).toEqual({ exitCode: 0, stderr: "" });
+		const parsed = JSON.parse(result.stdout.toString());
+		expect(parsed.valid                 ).toEqual({ tool: "python3", diagnostics: [] }                                            ) ;
+		expect(parsed.invalid               ).toEqual({ tool: "python3", diagnostics: expected }                                      ) ;
+		expect(parsed.whitespace            ).toEqual({ status: "ok", tool: "python3", delta: [] }                                    ) ;
+		expect(parsed.identical             ).toEqual({ status: "ok", tool: "python3", delta: [] }                                    ) ;
+		expect(parsed.changed               ).toEqual({ status: "changed", tool: "python3", delta: expected.map(line => `+ ${line}`) }) ;
+		expect(readFileSync(blocked, "utf8")).toBe   ("reserved\n"                                                                    ) ;
+		expect(readdirSync(root)            ).toEqual(["not-a-directory"]                                                             ) ;
+	} finally {
+		rmSync(root, { recursive: true, force: true });
+	}
 });
 
 test("invalid formatted-string input reports a classified syntax error rather than guessed ranges", () => {

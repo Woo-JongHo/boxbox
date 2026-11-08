@@ -3,22 +3,15 @@
  * which alignment can shift, are excluded from the comparison. compareParse closes unverifiable cases as errors; only parserAvailable keeps
  * its role as an optional probe for local tests.
  */
-import      { spawnSync       } from "node:child_process" ;
-import      {
-              mkdtempSync   ,
-              rmSync        ,
-              writeFileSync ,
-                              } from "node:fs"            ;
-import      { tmpdir          } from "node:os"            ;
-import      { join            } from "node:path"          ;
+import { spawnSync } from "node:child_process";
 
 export type ParseStatus = "ok" | "changed" | "skipped";
 
 export interface ParseComparison {
-	readonly status : ParseStatus       ;
-	readonly tool   : string            ;
+	readonly status : ParseStatus      ;
+	readonly tool   : string           ;
 	/** Diagnostics present in only one side, prefixed with `-` (source) or `+` (output). */
-	readonly delta  : readonly string[] ;
+	readonly delta  : readonly string[];
 }
 
 export interface ParseCheckOptions {
@@ -32,17 +25,16 @@ export interface SyntaxDiagnostics {
 }
 
 interface Toolchain {
-	readonly tool      : string                              ;
-	readonly extension : string                              ;
-	readonly command   : (file: string) => readonly string[] ;
+	readonly tool    : string           ;
+	readonly command : readonly string[];
 	/** Keeps only diagnostic lines; everything else in the tool output is noise. */
-	readonly keep      : RegExp                              ;
+	readonly keep    : RegExp           ;
 }
 
-const PYTHON_PARSE = "import ast,sys\nsource=open(sys.argv[1],encoding='utf-8').read()\ntry:\n ast.parse(source)\nexcept SyntaxError as e:\n print(f'{e.lineno}: error: {e.msg}')\nexcept ValueError:\n if '\\x00' not in source: raise\n print('None: error: source code string cannot contain null bytes')";
+const PYTHON_PARSE = "import ast,sys\nsource=sys.stdin.buffer.read().decode('utf-8')\ntry:\n ast.parse(source)\nexcept SyntaxError as e:\n print(f'{e.lineno}: error: {e.msg}')\nexcept ValueError:\n if '\\x00' not in source: raise\n print('None: error: source code string cannot contain null bytes')";
 
 const TOOLCHAINS: Readonly<Record<string, Toolchain>> = {
-	python : { tool: "python3", extension: ".py", keep: /error:/u, command: file => ["python3", "-I", "-c", PYTHON_PARSE, file] },
+	python : { tool: "python3", keep: /error:/u, command: ["python3", "-I", "-c", PYTHON_PARSE] },
 };
 
 const DEFAULT_TIMEOUT_MS = 60_000    ;
@@ -55,27 +47,20 @@ function hasTool(tool: string, timeoutMs = 5_000): boolean {
 }
 
 function diagnostics(toolchain: Toolchain, source: string, timeoutMs: number): readonly string[] {
-	const work = mkdtempSync(join(tmpdir(), "boxbox-parse-"));
-	try {
-		const file = join(work, `Input${toolchain.extension}`);
-		writeFileSync(file, source);
-		const [command, ...args] = toolchain.command(file);
-		const run    = spawnSync(command!, args, { encoding: "utf8", maxBuffer: MAX_OUTPUT_BYTES, timeout: timeoutMs }) ;
-		const output = `${run.stdout ?? ""}\n${run.stderr ?? ""}`                                                       ;
+	const [command, ...args] = toolchain.command;
+	const run    = spawnSync(command!, args, { input: source, encoding: "utf8", maxBuffer: MAX_OUTPUT_BYTES, timeout: timeoutMs }) ;
+	const output = `${run.stdout ?? ""}\n${run.stderr ?? ""}`                                                                      ;
 
-		const parsed = output
-			.split("\n")
-			.filter(line => toolchain.keep.test(line))
-			.map(line => line.replace(/\S*boxbox-parse-[^/\s]*\/Input\.\w+/gu, "<file>").replace(/(:\d+):\d+/gu, "$1").trim());
-		if (run.error !== undefined) throw new Error(`parser execution failed (${toolchain.tool}): ${run.error.message}`);
-		if (run.signal !== null) throw new Error(`parser terminated by signal (${toolchain.tool}): ${run.signal}`);
-		if (run.status === null) throw new Error(`parser exited without a status: ${toolchain.tool}`);
-		// The Python probe prints diagnostics and exits 0; any other status is an unexplained failure.
-		if (run.status !== 0) throw new Error(`parser exited with unrecognized status (${toolchain.tool}): ${run.status}`);
-		return parsed;
-	} finally {
-		rmSync(work, { recursive: true, force: true });
-	}
+	const parsed = output
+		.split("\n")
+		.filter(line => toolchain.keep.test(line))
+		.map(line => line.replace(/\S*boxbox-parse-[^/\s]*\/Input\.\w+/gu, "<file>").replace(/(:\d+):\d+/gu, "$1").trim());
+	if (run.error !== undefined) throw new Error(`parser execution failed (${toolchain.tool}): ${run.error.message}`);
+	if (run.signal !== null) throw new Error(`parser terminated by signal (${toolchain.tool}): ${run.signal}`);
+	if (run.status === null) throw new Error(`parser exited without a status: ${toolchain.tool}`);
+	// The Python probe prints diagnostics and exits 0; any other status is an unexplained failure.
+	if (run.status !== 0) throw new Error(`parser exited with unrecognized status (${toolchain.tool}): ${run.status}`);
+	return parsed;
 }
 
 /** The toolchain for a language, with its validated timeout. Throws when the language has no parser or the tool is not installed. */

@@ -5,6 +5,7 @@ import      {
               test          ,
                               } from "bun:test"           ;
 import      { spawnSync       } from "node:child_process" ;
+import      { createHash      } from "node:crypto"        ;
 import      {
               chmodSync     ,
               cpSync        ,
@@ -189,7 +190,9 @@ test("npm installer name differs from private engine and both host payloads have
 	expect(readFileSync(join(packageRoot, "LICENSE"), "utf8")).toBe(readFileSync(join(ROOT, "LICENSE"), "utf8"));
 	expect(readFileSync(join(ROOT, "LICENSE"), "utf8")).toMatch(/^MIT License/u);
 	expect(manifest.dependencies).toBeUndefined();
-	expect(JSON.parse(readFileSync(join(payload, "bundle.json"), "utf8"))).toMatchObject({ name: "boxbox", npmName: NPM_NAME });
+	const metadata = JSON.parse(readFileSync(join(payload, "bundle.json"), "utf8"));
+	expect(metadata).toMatchObject({ name: "boxbox", npmName: NPM_NAME });
+	expect(metadata.engineSha256).toMatch(/^[0-9a-f]{64}$/u);
 	const expected = ["LICENSE", "README.md", "bin/boxbox.mjs", "package.json", "payload/bundle.json", "payload/platform.mjs", "payload/install-state.mjs", "payload/claude-registration.mjs"];
 	for (const host of ["codex", "claude"]) {
 		const root            = join(payload, host)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ;
@@ -201,7 +204,9 @@ test("npm installer name differs from private engine and both host payloads have
 		expect(readFileSync(join(root, "packages", `boxbox-${VERSION}.tgz`)).equals(readFileSync(join(ROOT, "dist", `boxbox-${VERSION}.tgz`)))).toBe(true);
 		for (const reference of readdirSync(join(ROOT, "plugin/skills/boxbox/references"))) expect(readFileSync(join(plugin, "skills/boxbox/references", reference)).equals(readFileSync(join(ROOT, "plugin/skills/boxbox/references", reference)))).toBe(true);
 		const source = JSON.parse(readFileSync(join(root, marketplacePath), "utf8")).plugins[0].source;
-		expect(source).toEqual(host === "codex" ? { source: "local", path: "./plugin" } : "./plugin");
+		expect(source                                                                                                  ).toEqual(host === "codex" ? { source: "local", path: "./plugin" } : "./plugin") ;
+		expect(JSON.parse(readFileSync(join(root, "bundle.json"), "utf8")).engineSha256                                ).toBe   (metadata.engineSha256                                                ) ;
+		expect(createHash("sha256").update(readFileSync(join(root, "packages", `boxbox-${VERSION}.tgz`))).digest("hex")).toBe   (metadata.engineSha256                                                ) ;
 	}
 	const packed = JSON.parse(readFileSync(join(ROOT, "dist/installer/pack-result.json"), "utf8"));
 	expect(packed[0].files.map((file: { path: string }) => file.path).sort()).toEqual(expected.sort());
@@ -378,6 +383,28 @@ test("explicit host flags install only selected adapters and engine-only does no
 	expect(existsSync(permanent(env, "claude"))                            ).toBe(false) ;
 	expect(existsSync(env.BOXBOX_TEST_LOG!)                                ).toBe(false) ;
 }, 180_000);
+
+test("a corrupt outer payload restores a same-version engine-only installation before host registration", () => {
+	const packageRoot = extract           ()                              ;
+	const workspace   = temporary         ()                              ;
+	const env         = runtimeEnvironment(workspace                    ) ;
+	const entry       = join              (packageRoot, "bin/boxbox.mjs") ;
+	const destination = permanent         (env, "codex"                 ) ;
+	expectStatus(run(node, [entry, "--engine-only"], { env }), 0);
+	const receipt = join(destination, ".boxbox-install-state.json");
+	expect(existsSync(receipt)).toBe(false);
+	const paths   = ["plugin/runtime.json", "runtime/package.json", "runtime/package-lock.json", "runtime/node_modules/boxbox/package.json", "runtime/node_modules/boxbox/dist/cli.js"] ;
+	const before  = paths.map(path => readFileSync(join(destination, path)))                                                                                                            ;
+	const tarball = join(packageRoot, "payload/codex/packages", `boxbox-${VERSION}.tgz`)                                                                                                ;
+	writeFileSync(tarball, Buffer.concat([readFileSync(tarball), Buffer.from("corrupt outer archive\n")]));
+	const result = run(node, [entry, "--engine-only"], { env });
+	expectStatus(result, 1);
+	expect(String(result.stderr)).toContain("Bundled engine integrity check failed");
+	for (const [index, path] of paths.entries()) expect(readFileSync(join(destination, path)).equals(before[index]!)).toBe(true);
+	expect(existsSync(receipt)                                                                       ).toBe   (false) ;
+	expect(existsSync(env.BOXBOX_TEST_LOG!)                                                          ).toBe   (false) ;
+	expect(readdirSync(resolve(destination, "..")).filter(name => name.startsWith(".boxbox-repair-"))).toEqual([]   ) ;
+});
 
 test("repair filesystem failures retain a recovery backup and report its path", () => {
 	for (const fault of ["remove", "restore", "backup", "backup-cleanup", "cleanup"]) {

@@ -6,6 +6,28 @@ GitHub draft pre-release and has not been published.
 
 ## [Unreleased]
 
+### Added
+
+- Versioned, bounded lifecycle receipts with explicit inspection coverage,
+  advisory `SUGGEST`, `NO_GROUPS` and `DELETED_ONLY` states. Legacy receipts
+  remain readable evidence without acquiring rule-approval authority.
+
+### Fixed
+
+- Verify the bundled engine archive's SHA-256 before engine installation or
+  host registration; preserve the previous installation when a prepared
+  repair fails integrity validation.
+- Include host-normalized `Bash` calls in PostToolUse inspection. Hooks remain
+  read-only and recheck session changes rather than identifying the writer.
+  Shell feedback is advisory and preserves command output and exit status;
+  existing edit-tool feedback and the at-most-once Stop continuation remain.
+- Acquire the Stop continuation marker exclusively, support fresh host data
+  ancestors and canonical project aliases, and refuse symbolic owned
+  namespace directories without writing through them.
+- Feed Python syntax validation through stdin, removing a temporary-file
+  dependency that failed in native read-only Codex sessions. Syntax diagnostics,
+  parser-fault rejection and write safeguards retain their existing contract.
+
 ## [0.2.6] - 2026-10-25
 
 ### Added

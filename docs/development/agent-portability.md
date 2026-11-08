@@ -2,6 +2,36 @@
 
 The reference for where the `boxbox` skill and the `readability-inspector` agent live in each coding agent and how they are installed. The content (SKILL.md body, rules, scripts) is agent-agnostic; only "where it goes" in the table below differs. The skill ships tabular alignment checkers for TypeScript (AST + LSP), Python (shared line engine) and JSON/YAML (structured adapter).
 
+## Current distributable plugin boundary
+
+The npm installer targets **Codex and Claude Code only**; the [installer guide](../../product/installer/README.md)
+owns current installation, runtime, trust and removal commands. The development discovery map below is historical
+evidence, not an additional supported-host matrix. Studying Pi, OMP or another framework does not add a shipped adapter.
+Claude's payload includes the read-only inspector; Codex's shipped payload has no agent. The development Codex TOML
+definition is a separate local installation surface.
+
+Both adapters share SessionStart, PostToolUse and Stop. PostToolUse matches file-edit tools and `Bash`; Codex maps
+`exec_command` and a completed `write_stdin` to that hook name. Every matched call rechecks session changes, including
+when the shell call itself was read-only. Unmatched or specialized tools are not a complete enforcement boundary;
+Stop checks changes again. See [Codex tool coverage](https://learn.chatgpt.com/docs/hooks#tool-coverage) and the
+[Claude event contract](https://code.claude.com/docs/en/hooks#posttooluse).
+
+Keep discovery, engine identity/execution, language-parser readiness under actual host permissions, hook trust/event delivery, host acceptance of feedback, and preservation of ordinary command results separate.
+A generated manifest, successful command or local receipt alone establishes neither effective permissions nor
+host-visible context/continuation. Native evidence is scoped to the exact host version and candidate artifact measured.
+
+| Event | Intended host effect | Acceptance observable |
+| --- | --- | --- |
+| SessionStart | Add the short inspection/receipt-location context | The real session receives the generated context; a model can return its previously unknown receipt directory |
+| PostToolUse | Add inspection feedback after a matched completed tool; report a layout failure | A native matched tool produces a receipt and the host delivers feedback. `Bash` is advisory and preserves shell output/exit status; file-edit tools retain blocking feedback, which cannot undo a completed edit |
+| Stop | Request at most one continuation when changed code fails inspection | A native failing session continues once, then can terminate; an active/repeated Stop does not claim another block |
+
+Untrusted Codex hooks are a required negative control, not a healthy activated state. Tests may authorize only their
+reviewed temporary hook definitions for one invocation; installation never grants trust. Read-only native probes let
+the test driver change a fixture after SessionStart, then let the host execute a read-only shell call. This measures
+event delivery and feedback without granting the review model source-writing tools. It does not prove that every edit
+tool, operating system or hosted UI has been tested.
+
 ## Install matrix
 
 | Agent | Skill discovery location | Inspector agent | Install method | Verification status |

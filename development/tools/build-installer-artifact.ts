@@ -1,4 +1,5 @@
 import      { spawnSync       } from "node:child_process" ;
+import      { createHash      } from "node:crypto"        ;
 import      {
               chmodSync     ,
               cpSync        ,
@@ -29,12 +30,13 @@ function projectDocument(source: string): string {
 export function buildInstallerArtifact(): string {
 	run("bun", ["run", "sync:plugin"]);
 	run("bun", ["run", "pack:cli"]);
-	const product     = JSON.parse(readFileSync(join(ROOT, "product.json"), "utf8")) as { displayName: string; npmName: string }                                      ;
-	const manifest    = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")) as { name: string; version: string }                                             ;
-	const marketplace = JSON.parse(readFileSync(join(ROOT, ".agents/plugins/marketplace.json"), "utf8")) as { name: string }                                          ;
-	const output      = join(ROOT, "dist/installer-package")                                                                                                          ;
-	const payload     = join(output, "payload")                                                                                                                       ;
-	const metadata    = { name: manifest.name, npmName: product.npmName, version: manifest.version, displayName: product.displayName, marketplace: marketplace.name } ;
+	const product     = JSON.parse(readFileSync(join(ROOT, "product.json"), "utf8")) as { displayName: string; npmName: string }                                                                                                                         ;
+	const manifest    = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")) as { name: string; version: string }                                                                                                                                ;
+	const marketplace = JSON.parse(readFileSync(join(ROOT, ".agents/plugins/marketplace.json"), "utf8")) as { name: string }                                                                                                                             ;
+	const output      = join(ROOT, "dist/installer-package")                                                                                                                                                                                             ;
+	const payload     = join(output, "payload")                                                                                                                                                                                                          ;
+	const enginePath  = join(ROOT, "dist", `${manifest.name}-${manifest.version}.tgz`)                                                                                                                                                                   ;
+	const metadata    = { name: manifest.name, npmName: product.npmName, version: manifest.version, displayName: product.displayName, marketplace: marketplace.name, engineSha256: createHash("sha256").update(readFileSync(enginePath)).digest("hex") } ;
 	if (!product.npmName) throw new Error("product.json must declare the public installer npmName.");
 	rmSync(output, { recursive: true, force: true });
 	mkdirSync(join(output, "bin"), { recursive: true });
@@ -56,7 +58,7 @@ export function buildInstallerArtifact(): string {
 		mkdirSync(join(plugin, "scripts"), { recursive: true });
 		for (const path of [host === "codex" ? ".codex-plugin" : ".claude-plugin", "skills", "hooks", ...(host === "claude" ? ["agents"] : [])]) cpSync(join(ROOT, "plugin", path), join(plugin, path), { recursive: true });
 		cpSync(join(ROOT, marketplacePath), join(root, marketplacePath));
-		cpSync(join(ROOT, "dist", `${manifest.name}-${manifest.version}.tgz`), join(root, "packages", `${manifest.name}-${manifest.version}.tgz`));
+		cpSync(enginePath, join(root, "packages", `${manifest.name}-${manifest.version}.tgz`));
 		for (const name of ["install.mjs", "platform.mjs", "install-state.mjs", "claude-registration.mjs"]) cpSync(join(ROOT, "product/installer", name), join(root, name));
 		cpSync(join(ROOT, "product/installer/launcher.mjs"), join(plugin, "scripts/boxbox.mjs"));
 		writeFileSync(join(root, "bundle.json"), JSON.stringify({ ...metadata, host }, null, "\t") + "\n");

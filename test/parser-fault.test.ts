@@ -114,7 +114,7 @@ for (const fault of ["parse", "ast"] as const) test(`raw CLI preserves bytes whe
 	const log        = join     (directory, "stages.log"        ) ;
 	const python     = Bun.which("python3"                      ) ;
 	expect(python).not.toBeNull();
-	const wrapper = `#!${BUN}\nimport { appendFileSync, readFileSync } from "node:fs";\nconst args=process.argv.slice(2); const code=args.join(" "); const stage=code.includes("tokenize.generate_tokens") ? "analysis" : code.includes("BOXBOX_AST_EQUAL") ? "ast" : code.includes("source=open(sys.argv[1]") ? "parse" : "other"; appendFileSync(process.env.STAGE_LOG,stage+"\\n"); if(stage===process.env.FAIL_STAGE){console.error("INJECTED_"+stage);process.exit(2)} const child=Bun.spawnSync([${JSON.stringify(python)},...args],{stdin:readFileSync(0),stdout:"pipe",stderr:"pipe"});process.stdout.write(child.stdout);process.stderr.write(child.stderr);process.exit(child.exitCode);\n`;
+	const wrapper = `#!${BUN}\nimport { appendFileSync, readFileSync } from "node:fs";\nconst args=process.argv.slice(2); const code=args.join(" "); const stage=code.includes("tokenize.generate_tokens") ? "analysis" : code.includes("BOXBOX_AST_EQUAL") ? "ast" : code.includes("except SyntaxError as e:") ? "parse" : "other"; appendFileSync(process.env.STAGE_LOG,stage+"\\n"); if(stage===process.env.FAIL_STAGE){console.error("INJECTED_"+stage);process.exit(2)} const child=Bun.spawnSync([${JSON.stringify(python)},...args],{stdin:readFileSync(0),stdout:"pipe",stderr:"pipe"});process.stdout.write(child.stdout);process.stderr.write(child.stderr);process.exit(child.exitCode);\n`;
 	writeFileSync(executable, wrapper);
 	chmodSync(executable, 0o755);
 	writeFileSync(target, "a=1\nlonger=2\nthird=3\n");

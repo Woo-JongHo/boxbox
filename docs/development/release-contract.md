@@ -16,7 +16,7 @@ unapproved. [FORMAT1](plan.md#planned-scope-expansion--format1-json-and-yaml) re
 | OS | macOS, native Windows and Linux/WSL candidate verification | clean CI `ebfe6a…` passed six host lifecycle cells; Linux/Windows hosted smoke passed and hosted macOS smoke is queued |
 | Hosts | Codex and Claude Code | exact unpublished artifacts have real host-manager acceptance; authenticated sessions, UI/hooks and published-registry journeys have separate evidence gates |
 | Other languages | keep the existing development engines | no promise of the same support quality in the first public CLI |
-| Python | a runnable python3 is required for fixes | fixes refused when missing or failing |
+| Python | a runnable python3 is required for inspection and fixes | unavailable syntax checks report errors; fixes are refused when the parser is missing or failing |
 
 The executable Node minimum is `22.22.3`. Supported Linux distributions, architectures and host-version ranges are
 not inferred from that minimum. The corrected local archive `1f1343e9…` and the separate clean CI archive `ebfe6a…` each passed the native

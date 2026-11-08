@@ -1,0 +1,567 @@
+{
+  "schemaVersion": 1,
+  "status": "v4 source/native checks and independent fix audits passed; publication pending",
+  "baselineCommit": "329c9c71555e20579fdc8c538f83c3521e3bf3ed",
+  "version": "0.2.7",
+  "branch": "feat/plugin-framework-hardening",
+  "sourceManifest": "source-final.json",
+  "nativeEvidence": "native.json",
+  "selectionEvidence": "selection.json",
+  "artifacts": [
+    {
+      "sha256": "ce6067469bf8f3714947c2dab55ece467679151d37c4beeddefbd819ac83b94e",
+      "bytes": 123311,
+      "filename": "boxbox-0.2.7.tgz"
+    },
+    {
+      "sha256": "78d9826a4ecff63f95d005e71c63fcae1150d516b16070e1d2c0550f89020532",
+      "bytes": 307242,
+      "filename": "boxbox-plugin-0.2.7.tgz"
+    }
+  ],
+  "postFullArtifactsMatch": [
+    {
+      "file": "boxbox-0.2.7.tgz",
+      "sha256": "ce6067469bf8f3714947c2dab55ece467679151d37c4beeddefbd819ac83b94e",
+      "matchesNativeArtifact": true
+    },
+    {
+      "file": "boxbox-plugin-0.2.7.tgz",
+      "sha256": "78d9826a4ecff63f95d005e71c63fcae1150d516b16070e1d2c0550f89020532",
+      "matchesNativeArtifact": true
+    }
+  ],
+  "fullCheck": {
+    "argv": [
+      "bun",
+      "run",
+      "check"
+    ],
+    "startedAtUtc": "2026-11-08T16:38:59.220070+00:00",
+    "sourceSnapshotSha256": "f15bab8e60d58d5440f58a599ea351a67b341decb3ab7247a5b5d97e7d6eabaf",
+    "environment": {
+      "BOXBOX_REQUIRE_PARSERS": "1",
+      "CLAUDE_PLUGIN_DATA": "",
+      "PLUGIN_DATA": ""
+    },
+    "beforeSnapshot": "match",
+    "selectedFileCount": 119,
+    "finishedAtUtc": "2026-11-08T16:44:35.300964+00:00",
+    "durationSeconds": 336.095,
+    "exitCode": 0,
+    "afterSnapshot": "match",
+    "outputSha256": "b3e28228583a760096b1ed19f6e28fc7701fa7dacd25aa0ebb4ac19d6e2253eb",
+    "testPass": 806,
+    "testFail": 0,
+    "assertions": 4869,
+    "snapshotHelperPass": 15,
+    "localOS": "macOS",
+    "hostedCI": false
+  },
+  "focusedRuns": {
+    "lifecycle": {
+      "pass": 23,
+      "fail": 0,
+      "assertions": 147
+    },
+    "installerIntegrity": {
+      "pass": 2,
+      "fail": 0,
+      "assertions": 26
+    },
+    "installerArtifact": {
+      "pass": 8,
+      "fail": 0,
+      "assertions": 276
+    },
+    "pluginContract": {
+      "pass": 11,
+      "fail": 0,
+      "assertions": 249
+    },
+    "lifecycleHookAfterAdvisory": {
+      "pass": 19,
+      "fail": 0,
+      "assertions": 133
+    },
+    "readonlyParser": {
+      "pass": 34,
+      "fail": 0,
+      "assertions": 104,
+      "oldNewSyntaxCasesEqual": 9,
+      "oldNewComparisonCasesEqual": 4,
+      "additionalBomControl": {
+        "state": "PASS",
+        "syntaxEqual": true,
+        "comparisonEqual": true,
+        "rawResultSha256": "1d13284b3bd228a2c69553265c882a1da18223f3c652c3e4729d8a64ce7f9ad2",
+        "scope": "One additional baseline/current compatibility case, no source edit or full-suite rerun."
+      }
+    }
+  },
+  "secondMac": {
+    "platform": "Darwin 25.5.0 arm64",
+    "node": "24.9.0",
+    "npm": "11.6.0",
+    "python": "3.14.6",
+    "codex": "0.166.0",
+    "claude": "2.1.316",
+    "v1PublicJourneys": {
+      "installerSha256": "5048e85e3bf08e4ce9eb6cdcd627016500cc2e9b942bc332a106494f3b6bf231",
+      "commands": 47,
+      "observations": 17,
+      "rawFilesHashMatched": 94,
+      "freshDataDefectRetained": true
+    },
+    "v2AffectedCells": {
+      "commands": 23,
+      "observations": 7,
+      "rawFilesHashMatched": 46,
+      "retrievalVerification": {
+        "state": "PASS",
+        "artifactSha256": "360109a31ebd515bf4852ecc03d89779b4370afa1e04bd722e4abf07c7fa17f2",
+        "rawHashesMatched": 46,
+        "realManagerVersionsAndPathsMatched": true,
+        "installedEngineChangedFromV1": true,
+        "proofSha256": "fbd25cd8b9b05238d72b3dc5493f1b7a0895a81802728e46a7c3172127f53645",
+        "driverSha256": "9c52a7651ee0455c602e6660742c038d5e8ab711c7778fb7236de6ef7e380dd9"
+      }
+    },
+    "nativeClaude": "UNRUN_AUTH: expired OAuth session could not be refreshed",
+    "unaffectedPublicJourneysRerun": false,
+    "skipReason": "Python transport also feeds write verification, so both v4 permanent launchers reran approved Python preview/apply/check/fixed point. TypeScript/JSON/YAML formatting cells were not repeated because their algorithms, approval data and parser transport did not change. Earlier native authentication failure was not retried.",
+    "v4AffectedCells": {
+      "commands": 33,
+      "observations": 11,
+      "rawFilesHashMatched": 66,
+      "installerSha256": "78d9826a4ecff63f95d005e71c63fcae1150d516b16070e1d2c0550f89020532",
+      "state": "PASS_V4_AFFECTED_CELLS",
+      "rawProofSha256": "3e39eb9324aa5639042f8b7d63beb4f790e0cfb365b6c925ac160b1dfd03bc5f",
+      "transportAndFeedbackPassed": true,
+      "nativeModelSessionRerun": false,
+      "initialCommands": 25,
+      "initialObservations": 9,
+      "additionalPythonWriterCommands": 8,
+      "additionalPythonWriterObservations": 2,
+      "writerProofSha256": "6b34fe0220966529a33de838f5157509fc0e12d186727a7fc57634b2e48b23b0",
+      "proofAdditionsSha256": "3c1925344a7221395434b7fb4a016abfe742a765c06cb46bf00c6533e2a226d9",
+      "writerFlow": "Both permanent Node launchers: approved preview/apply/check/fixed point; token, normalized AST, file mode and project entry preservation; normal TMPDIR."
+    }
+  },
+  "reviews": {
+    "initialImplementation": {
+      "result": "FAIL with findings corrected",
+      "rawResultSha256": "6d40a30536de4e4286ae149ba229c1ac2b2884345641d1c1f830b534e2c469d8",
+      "readOnly": true,
+      "provider": "Claude",
+      "requestedModel": "sonnet",
+      "sourceScope": "phase/fix verification, not an independent test execution"
+    },
+    "implementationFix": {
+      "result": "PASS scoped verification",
+      "rawResultSha256": "b46a646f459596967000140d340446a7d6d2c44d3e38d26d5d1bb92fe3fc0dfe",
+      "readOnly": true,
+      "provider": "Claude",
+      "requestedModel": "sonnet",
+      "sourceScope": "phase/fix verification, not an independent test execution"
+    },
+    "research": {
+      "result": "FAIL with findings corrected",
+      "rawResultSha256": "e8d4405737b70bcac29e897d9e2ca70ac157cede92c2de430a92003393c8166c",
+      "readOnly": true,
+      "provider": "Claude",
+      "requestedModel": "sonnet",
+      "sourceScope": "phase/fix verification, not an independent test execution"
+    },
+    "nativeRegressionFix": {
+      "result": "PASS scoped verification",
+      "rawResultSha256": "adb0199c4aa0eb9786f8494511fa1cded15fc4a842f46da40b27c95b1a75b376",
+      "readOnly": true,
+      "provider": "Claude",
+      "requestedModel": "sonnet",
+      "sourceScope": "phase/fix verification, not an independent test execution"
+    },
+    "finalAudit": {
+      "state": "PASS scoped fix verification",
+      "requestedModel": "opus",
+      "actualModel": "claude-opus-5-5",
+      "readOnly": true,
+      "fallbackAllowed": false,
+      "rawResultSha256": "024bcd9069b66d9928dfad3b1de81a70d94dde701420354889524c243d0968d3",
+      "sourceSnapshotBeforeAfter": "31 changed regular files and119 selected shipped inputs matched",
+      "findings": "F1 Bash output suppression closed; F2 table closed; F3 exact matcher closed; Python stdin delta accepted. One LOW stale v2 reference in the Codex report entry corrected after this audit.",
+      "execution": "Static source and evidence review; no commands/tests/writes or independent execution.",
+      "additionalEvidenceAfterAudit": "The native writer fixture, final-v4 cost observations and BOM compatibility control were added after code fix verification, with separate parent raw-hash/AST/token/median checks. No shipped source changed."
+    },
+    "initialFixedOpus": {
+      "result": "FAIL F1 HIGH plus table rendering and exact-matcher observations",
+      "rawResultSha256": "b62a6b120cad7ce9f9a0bbd151d00f1357563623870f73cc9353a01696dafb47",
+      "requestedModel": "opus",
+      "actualModel": "claude-opus-5-5",
+      "readOnly": true,
+      "disposition": "F1 accepted and corrected; v4 proves output preservation and positive read-only check/guide. F2 table repaired; F3 matcher anchored."
+    },
+    "parserAndAdvisorySonnet": {
+      "result": "PASS scoped delta verification",
+      "rawResultSha256": "3fb80a61537abd1b457e4d5ecf5480be0a66d355b9cbaef96df6e430da7bb3dc",
+      "readOnly": true,
+      "requestedModel": "sonnet"
+    },
+    "finalEvidenceAudit": {
+      "state": "PASS bounded native-writer/cost/BOM evidence integration",
+      "requestedModel": "opus",
+      "actualModel": "claude-opus-5-5",
+      "readOnly": true,
+      "fallbackAllowed": false,
+      "rawResultSha256": "96c84e98083052ee32c5d65b011778e223b66661958dee80b2a360360b7b368a",
+      "sourceSnapshotBeforeAfter": "31changed regular files and119selected shipped inputs matched",
+      "execution": "No independent commands/tests/writes; raw execution evidence cross-checked.",
+      "optionalNotesAddressed": [
+        "Named overlapping native session as background load in cost observation.",
+        "Named nested code-mode tools and explicit ignore-rules/hook-trust admission.",
+        "Scoped AST/token preservation to format step."
+      ]
+    }
+  },
+  "changedLint": {
+    "state": "PASS",
+    "counts": {
+      "targets": 12,
+      "excluded": 7,
+      "deleted": 0,
+      "noGroups": 1,
+      "unsupported": 4
+    },
+    "checker": {
+      "version": "0.2.7",
+      "commit": "3f92bc9e42afae6eec60763d2a0f8fedc5369559",
+      "tree": "405677a47b161313863ad4c2e4498cbb8016f05a",
+      "bundleSha256": "f5cc798404dde92114d3cac84a6e0051b607b6d8dbfd168cf901f4fd09189f77",
+      "bun": "1.4.0"
+    },
+    "configSha256": "44e1c56b0e9777970259a720d0a601b16256406baa7303daf3ee00dd4e10a9ec",
+    "rawReportSha256": "d643e4c6420778a40d0cdedaab2b0c0ef13026d11ba5910ca2e66e0ee8baabf7",
+    "files": [
+      {
+        "path": "CHANGELOG.md",
+        "status": "not-supported-language",
+        "change": "M"
+      },
+      {
+        "path": "README.ko.md",
+        "status": "not-supported-language",
+        "change": "M"
+      },
+      {
+        "path": "README.md",
+        "status": "not-supported-language",
+        "change": "M"
+      },
+      {
+        "path": "README.zh-CN.md",
+        "status": "not-supported-language",
+        "change": "M"
+      },
+      {
+        "path": "development/tools/build-installer-artifact.ts",
+        "status": "pass",
+        "change": "M",
+        "beforeSha256": "979b6797a829e8129f5f2a3da36ea3933e3ea3b0c5a187cba5d14ebf1dd6187a",
+        "afterSha256": "979b6797a829e8129f5f2a3da36ea3933e3ea3b0c5a187cba5d14ebf1dd6187a"
+      },
+      {
+        "path": "docs/development/agent-portability.md",
+        "status": "not-supported-language",
+        "change": "M"
+      },
+      {
+        "path": "docs/development/inspection-process.md",
+        "status": "not-supported-language",
+        "change": "M"
+      },
+      {
+        "path": "docs/development/release-contract.md",
+        "status": "not-supported-language",
+        "change": "M"
+      },
+      {
+        "path": "docs/development/reviews/2026-11-09-plugin-framework-hardening-evidence/hook-cost.json",
+        "status": "excluded",
+        "change": "A"
+      },
+      {
+        "path": "docs/development/reviews/2026-11-09-plugin-framework-hardening-evidence/native.json",
+        "status": "excluded",
+        "change": "A"
+      },
+      {
+        "path": "docs/development/reviews/2026-11-09-plugin-framework-hardening-evidence/selection.json",
+        "status": "excluded",
+        "change": "A"
+      },
+      {
+        "path": "docs/development/reviews/2026-11-09-plugin-framework-hardening-evidence/source-final.json",
+        "status": "excluded",
+        "change": "A"
+      },
+      {
+        "path": "docs/development/reviews/2026-11-09-plugin-framework-hardening-evidence/source-v2.json",
+        "status": "excluded",
+        "change": "A"
+      },
+      {
+        "path": "docs/development/reviews/2026-11-09-plugin-framework-hardening-evidence/verification.json",
+        "status": "excluded",
+        "change": "A"
+      },
+      {
+        "path": "docs/development/reviews/2026-11-09-plugin-framework-hardening.md",
+        "status": "not-supported-language",
+        "change": "A"
+      },
+      {
+        "path": "docs/development/storage.md",
+        "status": "not-supported-language",
+        "change": "M"
+      },
+      {
+        "path": "plugin/hooks/hooks.json",
+        "status": "excluded",
+        "change": "M"
+      },
+      {
+        "path": "product/engine/common/08_parse-check.ts",
+        "status": "pass",
+        "change": "M",
+        "beforeSha256": "fcc404857f119513c32217ccdccd62945e6a3e48945d821abfd41f22c2ea3a1d",
+        "afterSha256": "fcc404857f119513c32217ccdccd62945e6a3e48945d821abfd41f22c2ea3a1d"
+      },
+      {
+        "path": "product/engine/common/27_lifecycle-hook.ts",
+        "status": "pass",
+        "change": "M",
+        "beforeSha256": "73ac47409648c59cda617c1096bf75e2d1bb2c501df12584659fac51485c2dd7",
+        "afterSha256": "73ac47409648c59cda617c1096bf75e2d1bb2c501df12584659fac51485c2dd7"
+      },
+      {
+        "path": "product/engine/common/29_lifecycle-receipt.ts",
+        "status": "pass",
+        "change": "A",
+        "beforeSha256": "9276dc640747ce1f76d1f6921f1929f1c0ef45f9b58a2dec940169facd23d3f9",
+        "afterSha256": "9276dc640747ce1f76d1f6921f1929f1c0ef45f9b58a2dec940169facd23d3f9"
+      },
+      {
+        "path": "product/installer/README.md",
+        "status": "not-supported-language",
+        "change": "M"
+      },
+      {
+        "path": "product/installer/install.mjs",
+        "status": "not-supported-language",
+        "change": "M"
+      },
+      {
+        "path": "product/packages/cli/README.md",
+        "status": "not-supported-language",
+        "change": "M"
+      },
+      {
+        "path": "product/plugin/hooks/hooks.json",
+        "status": "pass",
+        "change": "M",
+        "beforeSha256": "6641c9be3123955a3621b678918081b3a7c8a336c3f9de9fe4d2e3ea7f38f619",
+        "afterSha256": "6641c9be3123955a3621b678918081b3a7c8a336c3f9de9fe4d2e3ea7f38f619"
+      },
+      {
+        "path": "test/installer-artifact.test.ts",
+        "status": "pass",
+        "change": "M",
+        "beforeSha256": "f182f51b104834cf873cb5346dcd8fb691c9b462e469635bddfafb3699ff2874",
+        "afterSha256": "f182f51b104834cf873cb5346dcd8fb691c9b462e469635bddfafb3699ff2874"
+      },
+      {
+        "path": "test/installer-integrity.test.ts",
+        "status": "pass",
+        "change": "A",
+        "beforeSha256": "909e5d676a2f9773bad37ea30862fe3fb8678f589db5074ed4ceed43ed81030b",
+        "afterSha256": "909e5d676a2f9773bad37ea30862fe3fb8678f589db5074ed4ceed43ed81030b"
+      },
+      {
+        "path": "test/lifecycle-hook.test.ts",
+        "status": "pass",
+        "change": "M",
+        "beforeSha256": "09ee28dbbf94a71222c37a3e0a6a3eb4c42d772b23016f56aa39f38bee784030",
+        "afterSha256": "09ee28dbbf94a71222c37a3e0a6a3eb4c42d772b23016f56aa39f38bee784030"
+      },
+      {
+        "path": "test/lifecycle-receipt.test.ts",
+        "status": "pass",
+        "change": "A",
+        "beforeSha256": "657259f3381581ea68fa15828c58ed72b799d64918a6d3162f6ea766f8af6f76",
+        "afterSha256": "657259f3381581ea68fa15828c58ed72b799d64918a6d3162f6ea766f8af6f76"
+      },
+      {
+        "path": "test/parse-check.test.ts",
+        "status": "pass",
+        "change": "M",
+        "beforeSha256": "2af108c22d6e349d5cc3bef1b6fc0212d82cd99cf6d2f79564298518eacd6f47",
+        "afterSha256": "2af108c22d6e349d5cc3bef1b6fc0212d82cd99cf6d2f79564298518eacd6f47"
+      },
+      {
+        "path": "test/parser-fault.test.ts",
+        "status": "pass",
+        "change": "M",
+        "beforeSha256": "789aa02b25ef316e91d5e957808f119ab0e5792f2044b2c757440013e22f1307",
+        "afterSha256": "789aa02b25ef316e91d5e957808f119ab0e5792f2044b2c757440013e22f1307"
+      },
+      {
+        "path": "test/plugin-contract.test.ts",
+        "status": "pass",
+        "change": "M",
+        "beforeSha256": "7e272eebda66d9fcbc0f0833661d60f7075e9206349cf590abaa506a0e52c666",
+        "afterSha256": "7e272eebda66d9fcbc0f0833661d60f7075e9206349cf590abaa506a0e52c666"
+      }
+    ],
+    "coverageLimits": "One no-group result and four unsupported nested hook JSON observations remain explicit; strict schema, focused contracts and native routing cover those hooks. Generated/evidence exclusions were unchanged."
+  },
+  "pluginGuard": {
+    "state": "PASS",
+    "outputSha256": "314886ef0efdd85358db1def548dab76e73a5c3f136e0a94adc37f5f78708413",
+    "focusedPass": 32,
+    "focusedFail": 0,
+    "strictValidation": [
+      "plugin",
+      "marketplace"
+    ],
+    "claudeDiscovery": {
+      "skills": 1,
+      "agents": 1,
+      "hooks": 3
+    },
+    "codexDiscovery": "installed, enabled0.2.7",
+    "npmName": "unregistered response only; no reservation or publication authority claim",
+    "scope": "Discovery/contract gate; native host consumption is separately recorded."
+  },
+  "publication": {
+    "state": "not-published",
+    "releasePublished": false,
+    "registryPublished": false,
+    "mainMerged": false
+  },
+  "limits": [
+    "No native Windows/WSL/desktop acceptance.",
+    "One native Codex apply_patch/approved-format fixture passed; other source-writing tools and delayed write_stdin completion remain unrun.",
+    "Digest binding is not signing or publisher authentication.",
+    "Receipt infrastructure failures remain fail-open; no fsync durability or retention pruning.",
+    "No external framework implementation or new approval rule was adopted."
+  ],
+  "hookCost": {
+    "evidence": "hook-cost.json",
+    "candidateScope": "finalV4 current observation plus immutable historicalV2",
+    "finalV4Calls": 12,
+    "sourceFilesPreserved": 4000,
+    "rawHashesMatched": 59,
+    "nativeHostLatencyMeasured": false,
+    "medianWallMs": [
+      256.845,
+      311.562,
+      828.294,
+      5822.25
+    ],
+    "receiptBytesPerCall": [
+      393,
+      1151,
+      7995,
+      76399
+    ],
+    "comparisonClaim": false
+  },
+  "candidate": "v4",
+  "historicalRejectedSourceManifest": "source-v2.json",
+  "historicalFullCheckV2": {
+    "pass": 804,
+    "fail": 0,
+    "assertions": 4850,
+    "snapshotHelperPass": 15,
+    "selectedFiles": 117,
+    "status": "source tests passed; candidate subsequently rejected by Opus usability audit",
+    "outputSha256": "c514357bee7305ba59c3297ebb4ef2000de697b3c29919ed78348f601fe6672c"
+  },
+  "sameVersionRepair": {
+    "transition": "v2 to v3, both0.2.7",
+    "activeLivePayloadsUpdated": true,
+    "codexCachedFilesMatched": true,
+    "claudeInactiveCachedHookRemainedOld": true,
+    "claudeManagerLiveLoadStatementObserved": true,
+    "userFilePreserved": true,
+    "noBackupOrStateLeak": true,
+    "nativeSessionRun": false,
+    "rawReportSha256": "89070fb36b9f979c5980bdd96bdae02a5900294a39cd7e11839e2cce9c69337a",
+    "scope": "Actual host managers; not repeated for the later parser-only v4 change."
+  },
+  "nativeWriter": {
+    "artifactSha256": "78d9826a4ecff63f95d005e71c63fcae1150d516b16070e1d2c0550f89020532",
+    "verification": {
+      "nativeStatus": "PASS real model write -> hook feedback -> approved format -> recheck/fixed point",
+      "attempts": 1,
+      "maximumAttempts": 2,
+      "sandbox": "workspace-write",
+      "approvalPolicy": "never",
+      "nativeModelToolCalls": 7,
+      "modelApplyPatchCalls": 1,
+      "publicLauncherCommands": 6,
+      "driverMutatedSourceDuringSession": false,
+      "initialMisalignedWriteObserved": true,
+      "nativeApplyPatchPostBlockAccepted": true,
+      "modelRecoveredAfterCompletedWriteFeedback": true,
+      "nativeBashResultsPreserved": 6,
+      "checkBeforeExit": 1,
+      "checkBeforeMisaligned": 1,
+      "guideIdConsumed": "py-simple-assignments-positive",
+      "dryRunWritten": false,
+      "firstFormatWritten": true,
+      "firstFormatBoxBoxChanged": true,
+      "checkAfterExit": 0,
+      "checkAfterMisaligned": 0,
+      "secondFormatWritten": false,
+      "secondFormatBoxBoxChanged": false,
+      "fixedPoint": true,
+      "soleApprovedConvention": "py-simple-assignments",
+      "astPreserved": true,
+      "tokensPreserved": true,
+      "postStates": [
+        "FAIL",
+        "FAIL",
+        "FAIL",
+        "FAIL",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "stopState": "PASS",
+      "stopContinuationCount": 0,
+      "authConfigEndpointsUnchanged": true,
+      "authLinkRemoved": true,
+      "sameThreeHandlersRemainUntrusted": true,
+      "installedBytesUnchanged": true,
+      "finalSourceSha256": "34f9312ad38a021dded1257f897da5a520ce72baa1f7bdf1046ef09ffb209889",
+      "existingReadonlyEvidenceModified": false,
+      "windows": "not-run",
+      "wsl": "not-run",
+      "desktop": "not-run"
+    },
+    "rawVerificationSha256": "519d6941e18381e2565ab786ad7ddaa31a351d7d2b9d9bbf8f30f7a175b156d8",
+    "fullHistorySha256": "c66fee8d7e8913b5c94d97cb16649031fd171307db5a0ae2b0f634d2e94f72cf",
+    "selectedHistorySha256": "215326ab1f300966e952a2e4d046d9bb3cfc0bb31b36157cf0cc05a48d43b243",
+    "parentVerification": {
+      "state": "PASS",
+      "fullSourceSha256": "c66fee8d7e8913b5c94d97cb16649031fd171307db5a0ae2b0f634d2e94f72cf",
+      "selectedSha256": "215326ab1f300966e952a2e4d046d9bb3cfc0bb31b36157cf0cc05a48d43b243",
+      "verifiedProvenanceLines": 25,
+      "hashConvention": "Original JSONL line bytes including LF.",
+      "parentAstAndTokenComparison": "PASS",
+      "currentFinalSourceMatches": true
+    },
+    "limits": "One explicit fixture workflow, one admitted invocation, persistent trust remains untrusted. No arbitrary writer-tool, delayed write_stdin, Windows/WSL/desktop or remote Claude-auth claim."
+  }
+}

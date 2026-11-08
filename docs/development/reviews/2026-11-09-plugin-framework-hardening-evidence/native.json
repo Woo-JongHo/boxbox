@@ -1,0 +1,365 @@
+{
+  "schemaVersion": 1,
+  "candidate": "v4",
+  "candidateInstallerSha256": "78d9826a4ecff63f95d005e71c63fcae1150d516b16070e1d2c0550f89020532",
+  "beforeControl": {
+    "installerSha256": "13524dcbf50a54dd492ce81a1fbaf75b13fd5ac05da2199af96498d9ba96a9c6",
+    "host": "Codex CLI 0.166.0",
+    "postReceipts": 0,
+    "stopReceipts": 2,
+    "stopContinuations": 1,
+    "sourceMutation": "driver only after native SessionStart",
+    "modelTool": "one read-only printf"
+  },
+  "rejectedCandidateV1": {
+    "installerSha256": "5048e85e3bf08e4ce9eb6cdcd627016500cc2e9b942bc332a106494f3b6bf231",
+    "nativeStatus": "FAIL_FIRST_RUN",
+    "cause": "Missing host plugin-data parents caused ENOENT before baseline creation.",
+    "baselineCreated": false,
+    "inspectionReceipts": 0,
+    "driverMutatedFixture": false,
+    "premkdirWorkaround": false
+  },
+  "rejectedCandidateV2": {
+    "installerSha256": "360109a31ebd515bf4852ecc03d89779b4370afa1e04bd722e4abf07c7fa17f2",
+    "status": "REJECTED_USABILITY",
+    "measuredFact": "Blocking Bash feedback replaced normal stdout with a hook error.",
+    "finalAuditFinding": "F1 HIGH; fixed by advisory shell feedback."
+  },
+  "candidateV3": {
+    "installerSha256": "7668d79ec836423ebb2ecf5aef6f52e54d55d2a523bb86e39a99bebb3a7ab47e",
+    "advisoryOutputPreserved": true,
+    "positiveReadonlyPythonGuide": false,
+    "cause": "Read-only Python syntax validation failed at mkdtemp for a temporary source file.",
+    "checkSyntaxStatus": "error",
+    "checkExitStatus": 2,
+    "guideOk": false,
+    "guideExitStatus": 1,
+    "diagnosis": "EPERM at <TMPDIR>/boxbox-parse-XXXXXX; corrected in issue44."
+  },
+  "codex": {
+    "hostVersion": "codex-cli 0.166.0",
+    "nodeVersion": "22.22.3",
+    "verification": {
+      "nativeStatus": "PASS affected read-only Python check/guide and Bash advisory/Stop cell",
+      "sameThreeHandlers": true,
+      "allRemainUntrusted": true,
+      "installedArtifactsUnchanged": true,
+      "authLinkAbsent": true,
+      "authEndpointsUnchanged": true,
+      "globalAndIsolatedConfigUnchanged": true,
+      "freshMissingHostDataParents": true,
+      "noPremkdirWorkaround": true,
+      "TMPDIROverride": false,
+      "sessionStartDeliveredIntoNativeHistory": true,
+      "sessionStartUnknownPathAcknowledged": true,
+      "nativePostToolUseFailContextReceivedCount": 3,
+      "nativeNestedToolPromisesResolved": 3,
+      "printfOutputPreserved": true,
+      "checkNonzeroPayloadAndExitStatusPreserved": true,
+      "checkSyntaxStatus": "valid",
+      "checkGroups": 1,
+      "checkMisaligned": 1,
+      "checkExitStatus": 1,
+      "guidePayloadAndExitStatusPreserved": true,
+      "guideOk": true,
+      "guideExitStatus": 0,
+      "guidePositiveIdConsumed": "py-simple-assignments-positive",
+      "postReceiptSchemaVersion": 1,
+      "postReceiptTool": "Bash",
+      "stopContinuationCount": 1,
+      "stopReceiptCount": 2,
+      "nativeModelToolCallCount": 3,
+      "nativeModelWroteSource": false,
+      "driverChangedFixtureAfterBaseline": true,
+      "fixtureSameAsBeforeControl": true,
+      "sourceUnchangedAfterDriverMutation": true,
+      "projectEntries": [
+        "sample.py"
+      ],
+      "v2Disposition": "REJECTED_USABILITY: blocking Bash hid normal tool output",
+      "v3Disposition": "advisory outputs preserved but read-only Python parser temporary-file EPERM; v4 closes this measured limitation",
+      "nativePostWrite": "not-run",
+      "windows": "not-run",
+      "wsl": "not-run"
+    },
+    "historyProvenance": {
+      "v4-untrusted": {
+        "fullSourceSha256": "e34df2ed0314db1f212f4cdadba5af81b0231c28d6999572305bd53e606fd61b",
+        "fullSourceBytes": 111025,
+        "selectedSha256": "0e557d8a99575457cd335c294efc08cbea346430be69561a0bcc2af2b6b950df",
+        "provenance": [
+          {
+            "sourceLine": 10,
+            "lineSha256": "cb8557a93b99232989af1ed30c87c590443940b98270c5d531c18606978af4aa"
+          },
+          {
+            "sourceLine": 15,
+            "lineSha256": "fe02e4a0a7128a69bdebb709ecf55ac1cfcca22d6011e84de7acf3e1238d33a2"
+          }
+        ]
+      },
+      "v4-reviewed-bash": {
+        "fullSourceSha256": "e03666c6824d351a2d51602e6c26fe6fdfac6bdb0bfa4b6ffe068679d361a294",
+        "fullSourceBytes": 144537,
+        "selectedSha256": "5cecba1c45a6cdccbfaef00e25e7d15130e42419d4ef4dc41668d6822ed2494f",
+        "provenance": [
+          {
+            "sourceLine": 10,
+            "lineSha256": "9d8f41bfeb02fa9b8548d6415e0ce174edb0b4c88916fe85ae5c324eea5525f1"
+          },
+          {
+            "sourceLine": 12,
+            "lineSha256": "67091d9f84ed4bcd2179bf725af16072266da682b6183a2d6c0051dab7dd61e0"
+          },
+          {
+            "sourceLine": 16,
+            "lineSha256": "bbd072d63663c69fa413e0f7b12a4df8c7f0d4b4bc54c2ff3cdbaa0616a4b24b"
+          },
+          {
+            "sourceLine": 17,
+            "lineSha256": "f4f1f68203a9fb40d056b3bbcb978ae4c01598697aa0573234135991548e5298"
+          },
+          {
+            "sourceLine": 20,
+            "lineSha256": "22aa26f87d7e97ba68e66324bc2a9e573bf7d0768b76438afb4f0c50c11e0352"
+          },
+          {
+            "sourceLine": 21,
+            "lineSha256": "12be4435b8089bfd85989f47a3c52770ca5fc7fcb07fc6fd5b748107c03bc33d"
+          },
+          {
+            "sourceLine": 23,
+            "lineSha256": "27b42ebd169d8db8154e8a05748ed6ce3b5f10fb8eeca55233b7b53e797daadf"
+          },
+          {
+            "sourceLine": 26,
+            "lineSha256": "9fd9ab19fe3ca06303b405b7c4952b6d07e3ed5ca86ef99fa6fd4cbaa80332bf"
+          },
+          {
+            "sourceLine": 27,
+            "lineSha256": "a6c7b760c8061159c61533c584332d6dd356cae0317a919264af4af04e105f64"
+          },
+          {
+            "sourceLine": 29,
+            "lineSha256": "8fbca815e830da0104331fbb0223d58a016351229242e962c900ce6c59111250"
+          },
+          {
+            "sourceLine": 32,
+            "lineSha256": "fd1e9d3afd4dbeff11e06b6927762d230cb4b2a656d43f7f1a4627493d7d46a8"
+          },
+          {
+            "sourceLine": 33,
+            "lineSha256": "ab9cf59c8a3875c642d4f726cc91d7ac1fed1710cd25846259be1474a321795c"
+          },
+          {
+            "sourceLine": 38,
+            "lineSha256": "dee30f315c7d452624885b2f8b7a1aaa6c4da90dc3f239caa6a950445df6fd9e"
+          },
+          {
+            "sourceLine": 41,
+            "lineSha256": "b45db8c18a7cc073d5500470adb79616518d0b0b3fe4bfb2dc2b5497af733307"
+          },
+          {
+            "sourceLine": 44,
+            "lineSha256": "b95fe9482cd95754fcde26e37e871f699c3ea1d2031fe8c2954ff81307ce39c1"
+          }
+        ]
+      }
+    },
+    "limits": [
+      "CLI only; model runs three read-only commands and no source-writing tool.",
+      "One-invocation admission of reviewed hooks; persistent trust remains untrusted.",
+      "Endpoint equality is not continuous monitoring or an enforced credential mount."
+    ]
+  },
+  "claude": {
+    "schemaVersion": 1,
+    "host": "Claude Code",
+    "hostVersion": "2.1.286",
+    "model": "claude-sonnet-5-5",
+    "permissionMode": "plan",
+    "tools": [
+      "Bash"
+    ],
+    "artifactSha256": "78d9826a4ecff63f95d005e71c63fcae1150d516b16070e1d2c0550f89020532",
+    "managerRegistrationEnabled": true,
+    "nativeLoad": "explicit installed-cache plugin directory, normal authentication; settings sources disabled",
+    "modelReturnedUnknownReceiptDirectory": true,
+    "postFailureAcknowledgedBeforeFirstStop": true,
+    "postFeedbackAdvisoryNoDecision": true,
+    "normalToolOutputPreserved": true,
+    "normalToolResultIsError": false,
+    "assistantResponseBetweenFirstAndSecondStop": true,
+    "postCoverage": {
+      "changedFiles": 4,
+      "checkedFiles": 4,
+      "unsupportedFiles": 0,
+      "deletedFiles": 0,
+      "filesWithGroups": 4,
+      "groups": 4
+    },
+    "postTool": "Bash",
+    "stopReceipts": 2,
+    "stopBlockDecisions": 1,
+    "modelToolCalls": [
+      {
+        "type": "tool_use",
+        "id": "toolu_01Qd8TTqL6YwxxALPmo7Jbx1",
+        "name": "Bash",
+        "input": {
+          "command": "printf BOXBOX_CLAUDE_NATIVE_PROBE",
+          "description": "Print probe string"
+        },
+        "caller": {
+          "type": "direct"
+        }
+      }
+    ],
+    "driverOnlyFixtureWrites": true,
+    "sourcePreserved": true,
+    "pluginPreserved": true,
+    "projectReceiptDirectoryAbsent": true,
+    "rawStreamSha256": "01479fe2aef7d8dd8deab47b3720b634af2721634e5051bd011542bd08b913e3",
+    "firstResponseSha256": "ce9364c2bb422e0800ed99cc5ab354c2e4e90efe5e5a7c55fbb2f67094e36c42",
+    "continuationResponseSha256": "240aac7163d0bba1923eb88472dc5f0f4ab38a335179b7af3d95e01f084aceac",
+    "limitations": [
+      "macOS only",
+      "normal authentication with temporary inline loading of real isolated-manager cache",
+      "no native source-writing model tool",
+      "no native Windows/WSL or desktop UI"
+    ]
+  },
+  "secondMacClaudeEarlierAuthAttempt": {
+    "hostVersion": "2.1.316 (Claude Code)",
+    "nodeVersion": "24.9.0",
+    "state": "UNRUN_AUTH",
+    "nativeExit": 1,
+    "timedOut": false,
+    "nativeLoad": "explicit already-installed isolated-manager cache payload; normal existing remote authentication, no credential copy/link/transfer",
+    "modelToolsRequested": [
+      "Bash"
+    ],
+    "actualInitTools": [
+      "Bash"
+    ],
+    "actualModel": "claude-sonnet-5-5",
+    "permissionMode": "plan",
+    "observables": {
+      "oneReadonlyPrintf": false,
+      "modelReturnedUnknownDirectoryBeforeStop": false,
+      "modelReceivedPostFailureBeforeStop": false,
+      "modelReceivedFourFileCountsBeforeStop": false,
+      "onePostFailReceipt": false,
+      "fourLanguages": false,
+      "twoStopReceipts": false,
+      "oneStopBlock": false,
+      "nativeAssistantContinuedAfterBlock": false,
+      "sourcePreserved": true,
+      "pluginPreserved": true,
+      "enginePreserved": true,
+      "isolatedRegistryPreserved": true,
+      "projectReceiptDirectoryAbsent": true
+    },
+    "globalSettingsAndRegistryEndpointsMatched": true,
+    "rawStreamSha256": "a790af806ef2c308bd4e6806142eb5b6b0d76d7320815a0ca77e9b89b25b4f90",
+    "authenticationStoreUnchangedClaimed": false,
+    "limitations": [
+      "macOS SSH CLI only",
+      "inline loading of real isolated-manager cache, not that profile's authenticated session",
+      "model called no native write/edit tool",
+      "no native Windows/WSL, desktop UI or registry publication"
+    ]
+  },
+  "retention": "Raw native transcripts remain private; this projection records effects and original log hashes without local paths or authentication material.",
+  "codexV4NativeWriter": {
+    "artifactSha256": "78d9826a4ecff63f95d005e71c63fcae1150d516b16070e1d2c0550f89020532",
+    "engineArchiveSha256": "ce6067469bf8f3714947c2dab55ece467679151d37c4beeddefbd819ac83b94e",
+    "verification": {
+      "nativeStatus": "PASS real model write -> hook feedback -> approved format -> recheck/fixed point",
+      "attempts": 1,
+      "maximumAttempts": 2,
+      "sandbox": "workspace-write",
+      "approvalPolicy": "never",
+      "nativeModelToolCalls": 7,
+      "modelApplyPatchCalls": 1,
+      "publicLauncherCommands": 6,
+      "driverMutatedSourceDuringSession": false,
+      "initialMisalignedWriteObserved": true,
+      "nativeApplyPatchPostBlockAccepted": true,
+      "modelRecoveredAfterCompletedWriteFeedback": true,
+      "nativeBashResultsPreserved": 6,
+      "checkBeforeExit": 1,
+      "checkBeforeMisaligned": 1,
+      "guideIdConsumed": "py-simple-assignments-positive",
+      "dryRunWritten": false,
+      "firstFormatWritten": true,
+      "firstFormatBoxBoxChanged": true,
+      "checkAfterExit": 0,
+      "checkAfterMisaligned": 0,
+      "secondFormatWritten": false,
+      "secondFormatBoxBoxChanged": false,
+      "fixedPoint": true,
+      "soleApprovedConvention": "py-simple-assignments",
+      "astPreserved": true,
+      "tokensPreserved": true,
+      "postStates": [
+        "FAIL",
+        "FAIL",
+        "FAIL",
+        "FAIL",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "stopState": "PASS",
+      "stopContinuationCount": 0,
+      "authConfigEndpointsUnchanged": true,
+      "authLinkRemoved": true,
+      "sameThreeHandlersRemainUntrusted": true,
+      "installedBytesUnchanged": true,
+      "finalSourceSha256": "34f9312ad38a021dded1257f897da5a520ce72baa1f7bdf1046ef09ffb209889",
+      "existingReadonlyEvidenceModified": false,
+      "windows": "not-run",
+      "wsl": "not-run",
+      "desktop": "not-run"
+    },
+    "sourceProof": {
+      "beforeSha256": "418704659ac6d321b2f3d7cdde263c14318fa2fdb4c3a9310bb2356432c09028",
+      "afterSha256": "34f9312ad38a021dded1257f897da5a520ce72baa1f7bdf1046ef09ffb209889",
+      "astEqual": true,
+      "tokenTypeAndTextEqual": true,
+      "tokenCount": 13,
+      "fixedPointUnchangedAfterFirstFormat": true,
+      "observedPatchWriteWithinNativeCall": true,
+      "observedFormatWriteWithinNativeCall": true
+    },
+    "rawVerificationSha256": "519d6941e18381e2565ab786ad7ddaa31a351d7d2b9d9bbf8f30f7a175b156d8",
+    "rawPreservationSha256": "f9c9ccba7528e594776302f30ebec309517b1c0978fb4b51a5c6fd07eedab342",
+    "fullHistorySha256": "c66fee8d7e8913b5c94d97cb16649031fd171307db5a0ae2b0f634d2e94f72cf",
+    "selectedHistorySha256": "215326ab1f300966e952a2e4d046d9bb3cfc0bb31b36157cf0cc05a48d43b243",
+    "selectedHistoryLines": 25,
+    "parentVerification": {
+      "state": "PASS",
+      "fullSourceSha256": "c66fee8d7e8913b5c94d97cb16649031fd171307db5a0ae2b0f634d2e94f72cf",
+      "selectedSha256": "215326ab1f300966e952a2e4d046d9bb3cfc0bb31b36157cf0cc05a48d43b243",
+      "verifiedProvenanceLines": 25,
+      "hashConvention": "Original JSONL line bytes including LF.",
+      "parentAstAndTokenComparison": "PASS",
+      "currentFinalSourceMatches": true
+    },
+    "limits": "One explicit fixture workflow, one admitted invocation, persistent trust remains untrusted. No arbitrary writer-tool, delayed write_stdin, Windows/WSL/desktop or remote Claude-auth claim.",
+    "invocationLimits": {
+      "ignoreRules": true,
+      "oneInvocationHookTrustAdmission": true,
+      "flags": [
+        "--ignore-rules",
+        "--dangerously-bypass-hook-trust"
+      ],
+      "reviewedHandlers": 3,
+      "path": "tools.apply_patch and tools.exec_command nested in code-mode exec",
+      "discoveryScope": "Explicit installed-launcher workflow, not automatic skill selection from a GitHub-only installation.",
+      "preservationScope": "Misaligned post-patch source versus post-format source; the patch intentionally changes a value."
+    }
+  }
+}

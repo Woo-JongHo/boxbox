@@ -97,6 +97,15 @@ describe("plugin distribution contract", () => {
 		expect(pluginDrift()).toEqual([]);
 	});
 
+	test("post-tool inspection includes host-normalized shell calls and excludes unrelated tools", () => {
+		const hooks   = JSON.parse(read("product/plugin/hooks/hooks.json")) as { hooks: { PostToolUse: Array<{ matcher: string }> } } ;
+		const matches = (tool: string): boolean => hooks.hooks.PostToolUse.some(group => new RegExp(group.matcher, "u").test(tool))   ;
+
+		// Codex exec_command and completed write_stdin report the canonical hook name Bash.
+		for (const tool of ["Write", "Edit", "MultiEdit", "apply_patch", "Bash"]) expect(matches(tool), tool).toBe(true);
+		for (const tool of ["Read", "Glob", "Grep", "update_plan", "mcp__fs__read_file", "TodoWrite", "NotebookEdit", "BashOutput"]) expect(matches(tool), tool).toBe(false);
+	});
+
 	test("hooks call only the shim inside the plugin, and the shim requires an explicit local engine", () => {
 		const hooks    = JSON.parse(read("plugin/hooks/hooks.json")) as { hooks: Record<string, Array<{ hooks: Array<{ command: string }> }>> } ;
 		const commands = Object.values(hooks.hooks).flat().flatMap(entry => entry.hooks.map(hook => hook.command))                              ;

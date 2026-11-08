@@ -1,8 +1,10 @@
 import      { createHash, randomUUID                              } from "node:crypto"                ;
-import      { existsSync, mkdirSync, readFileSync, writeFileSync, } from "node:fs"                    ;
-import      { extname, isAbsolute, join, relative, resolve        } from "node:path"                  ;
+import      { closeSync, existsSync, lstatSync, mkdirSync, openSync, readFileSync, realpathSync, statSync, writeFileSync } from "node:fs" ;
+import      { dirname, extname, isAbsolute, join, relative, resolve } from "node:path"                ;
 import      { snapshot, changed, supported                        } from "@/common/25_guarded-run.ts" ;
+import      { encodeLifecycleReceipt                              } from "@/common/29_lifecycle-receipt.ts" ;
 import type { Inspection                                          } from "@/common/25_guarded-run.ts" ;
+import type { LifecycleEvent, LifecycleReceiptV1                  } from "@/common/29_lifecycle-receipt.ts" ;
 
 /** The host event each hook mode answers; one table so the dispatcher and the installer cannot disagree. */
 const HOOK_EVENTS: readonly (readonly [event: string, mode: string])[] = [
@@ -20,17 +22,103 @@ function rootOf(args: readonly string[]): string {
 function projectReceiptNamespace(root: string): string {
 	const data = process.env.CLAUDE_PLUGIN_DATA || process.env.PLUGIN_DATA;
 	if (!data) return join(root, ".boxbox/hooks");
+	if (!isAbsolute(data)) throw new Error("Plugin data must be an absolute path");
 	return resolve(data, "hooks", createHash("sha256").update(root).digest("hex").slice(0, 16));
 }
 
+function missingPath(error: unknown): boolean {
+	return   typeof error === "object"
+		  && error        !== null
+		  && "code" in error
+		  && error.code   === "ENOENT";
+}
+
+function existingPath(error: unknown): boolean {
+	return   typeof error === "object"
+		  && error        !== null
+		  && "code" in error
+		  && error.code   === "EEXIST";
+}
+
+function ensureRealDirectory(path: string, create: boolean): void {
+	try {
+		const status = lstatSync(path);
+		if (!status.isDirectory() || status.isSymbolicLink()) throw new Error(`Unsafe receipt namespace: ${path}`);
+		return;
+	} catch (error) {
+		if (!missingPath(error)) throw error;
+	}
+	if (!create) throw new Error(`Missing receipt namespace: ${path}`);
+	try { mkdirSync(path, { mode: 0o700 }); }
+	catch (error) { if (!existingPath(error)) throw error; }
+	const status = lstatSync(path);
+	if (!status.isDirectory() || status.isSymbolicLink()) throw new Error(`Unsafe receipt namespace: ${path}`);
+}
+
+function ensurePluginDataRoot(path: string): void {
+	const missing: string[] = []   ;
+	let current             = path ;
+	for (;;) {
+		try {
+			const status = lstatSync(current);
+			if (current === path) {
+				if (!status.isDirectory() || status.isSymbolicLink()) throw new Error(`Unsafe receipt namespace: ${path}`);
+
+				return;
+			}
+			if (!statSync(current).isDirectory()) throw new Error(`Plugin data ancestor must be a directory: ${current}`);
+			break;
+		} catch (error) {
+			if (!missingPath(error)) throw error;
+			missing.unshift(current);
+			const parent = dirname(current);
+			if (parent === current) throw new Error(`Missing plugin data ancestor: ${current}`);
+			current = parent;
+		}
+	}
+	for (const component of missing) ensureRealDirectory(component, true);
+}
+
 function stateDirectory(root: string, id: string): string {
-	return join(projectReceiptNamespace(root), id);
+	if (!statSync(root).isDirectory()) throw new Error(`Project root must be a directory: ${root}`);
+	const data = process.env.CLAUDE_PLUGIN_DATA || process.env.PLUGIN_DATA ;
+	if (data && !isAbsolute(data)) throw new Error("Plugin data must be an absolute path");
+	const base = data ? resolve(data) : join(root, ".boxbox")              ;
+	if (data) ensurePluginDataRoot(base);
+	else ensureRealDirectory(base, true);
+	const hooks = join(base, "hooks");
+	ensureRealDirectory(hooks, true);
+	if (data) {
+		const project = join(hooks, createHash("sha256").update(root).digest("hex").slice(0, 16));
+		ensureRealDirectory(project, true);
+		const directory = join(project, id);
+		ensureRealDirectory(directory, true);
+
+		return directory;
+	}
+	const directory = join(hooks, id);
+	ensureRealDirectory(directory, true);
+
+	return directory;
+}
+
+function claimStopBlock(directory: string): boolean {
+	const marker = join(directory, "stop-blocked");
+	let descriptor: number;
+	try { descriptor = openSync(marker, "wx", 0o600); }
+	catch (error) {
+		if (existingPath(error)) return false;
+		throw error;
+	}
+	closeSync(descriptor);
+
+	return true;
 }
 
 function snapshotExclusions(root: string): ReadonlySet<string> {
-	const projectRoot = resolve                (root                  ) ;
-	const namespace   = projectReceiptNamespace(projectRoot           ) ;
-	const path        = relative               (projectRoot, namespace) ;
+	const projectRoot = realpathSync(root                                ) ;
+	const namespace   = realpathSync(projectReceiptNamespace(projectRoot)) ;
+	const path        = relative    (projectRoot, namespace              ) ;
 	if (
 		   path === ""
 		|| path === ".."
@@ -56,27 +144,25 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 		const suppliedRoot = given ?? input.cwd;
 		if (typeof suppliedRoot !== "string" || !isAbsolute(suppliedRoot)) throw new Error("Missing absolute cwd");
 
-		const root = resolve(suppliedRoot);
+		const root = realpathSync(resolve(suppliedRoot));
 
 		const id = createHash("sha256").update(String(input.session_id)).digest("hex");
 
 		const directory  = stateDirectory    (root, id) ;
 		const exclusions = snapshotExclusions(root    ) ;
 
-		mkdirSync(directory, { recursive: true });
-
 		const baseline = join(directory, "baseline.json");
 		if (mode === "session") {
 			if (!existsSync(baseline)) writeFileSync(
 				baseline                                              ,
 				JSON.stringify(snapshot(root, "", {}, [], exclusions)),
-				{ flag: "wx" }
+				{ flag: "wx", mode: 0o600 }
 			);
 
 			console.log(JSON.stringify({
 				hookSpecificOutput: {
 					hookEventName     : event,
-					additionalContext : `[boxbox] Changed code is checked after each edit, and all session changes are checked again on completion. Results are recorded in ${directory}.`
+					additionalContext : `[boxbox] Session changes are checked after matched file-edit and shell tools and again on completion. Results are recorded in ${directory}.`
 				}
 			}));
 
@@ -90,8 +176,9 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 
 		const files = changed(before, after);
 
-		const checked     = [] ;
-		const unsupported = [] ;
+		const checked     = []                                 ;
+		const unsupported = []                                 ;
+		const deleted     = files.filter(file => !after[file]) ;
 
 		for (const file of files) {
 			if (!after[file]) continue;
@@ -110,19 +197,35 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 
 		const failed = checked.some(item => item.result.summary.misaligned || item.result.summary.refused);
 
+		const groups          = checked.reduce((total, item) => total + item.result.summary.groups, 0)    ;
+		const suggested       = checked.reduce((total, item) => total + item.result.summary.suggested, 0) ;
+		const filesWithGroups = checked.filter(item => item.result.summary.groups > 0).length             ;
 		const state =
 			  failed             ? "FAIL"
 			: unsupported.length ? "UNSUPPORTED"
-			: checked.length     ? "PASS"
+			: suggested          ? "SUGGEST"
+			: groups             ? "PASS"
+			: checked.length     ? "NO_GROUPS"
+			: deleted.length     ? "DELETED_ONLY"
 			: "NO_CHANGES";
 
-		const record = {
-			event,
-			state,
+		const record: LifecycleReceiptV1 = {
+			schemaVersion : 1                       ,
+			event         : event as LifecycleEvent ,
+			state                                   ,
 
 			files       ,
 			checked     ,
 			unsupported ,
+			deleted     ,
+			coverage: {
+				changedFiles     : files.length       ,
+				checkedFiles     : checked.length     ,
+				unsupportedFiles : unsupported.length ,
+				deletedFiles     : deleted.length     ,
+				filesWithGroups ,
+				groups          ,
+			},
 
 			tool : input.tool_name ?? null  ,
 			at   : new Date().toISOString() ,
@@ -132,16 +235,15 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 
 		const receipt = join(directory, `${Date.now()}-${randomUUID()}.json`);
 
-		writeFileSync(receipt, JSON.stringify(record, null, 2), { flag: "wx" });
+		writeFileSync(receipt, encodeLifecycleReceipt(record), { flag: "wx", mode: 0o600 });
 
-		const reason = `[boxbox] ${event}: ${state}. ${receipt}`;
+		const reason = `[boxbox] ${event}: ${state}; checked=${checked.length}, groups=${groups}, filesWithGroups=${filesWithGroups}. ${receipt}`;
 
 		// Unsupported files are only reported. Stop blocks at most once per session: this breaks endless continuation
 		// even on Codex, which has no Claude-style stop_hook_active.
-		const stopMarker = join(directory, "stop-blocked");
-
-		const blocked = failed && !(mode === "stop" && (input.stop_hook_active === true || existsSync(stopMarker)));
-		if (blocked && mode === "stop") writeFileSync(stopMarker, "");
+		const blocked = failed
+			&& !(mode === "post" && input.tool_name === "Bash")
+			&& (mode !== "stop" || input.stop_hook_active !== true && claimStopBlock(directory));
 
 		console.log(JSON.stringify(
 			mode === "stop"

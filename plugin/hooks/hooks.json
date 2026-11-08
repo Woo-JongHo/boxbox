@@ -1,11 +1,11 @@
 {
-	"description": "boxbox: checks TypeScript and Python files changed during the session, read-only. Records stay in the plugin data folder; no files are created in the user's project.",
+	"description": "boxbox: inspects TypeScript, Python, JSON, and YAML session changes after matched file-edit and shell tools and at completion, read-only. Records stay in host plugin data.",
 	"hooks": {
 		"SessionStart": [
 			{ "hooks": [ { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/boxbox hook session", "timeout": 120 } ] }
 		],
 		"PostToolUse": [
-			{ "matcher": "Write|Edit|MultiEdit|apply_patch", "hooks": [ { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/boxbox hook post", "timeout": 120 } ] }
+			{ "matcher": "^(Write|Edit|MultiEdit|apply_patch|Bash)$", "hooks": [ { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/boxbox hook post", "timeout": 120 } ] }
 		],
 		"Stop": [
 			{ "hooks": [ { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/boxbox hook stop", "timeout": 120 } ] }

@@ -90,7 +90,7 @@ npm exec --yes --package '/absolute/path/to/dist/installer/boxbox-plugin-<versio
 ```
 
 将 `<version>` 替换为 `package.json` 中的版本号，或使用 `pack:installer` 输出的完整压缩包路径。此本地构建产物的使用流程需要检出仓库进行构建。安装后的插件使用其永久安装的 Node 引擎。
-公开安装器需要 Node.js 22.22.3 或更高版本以及 npm；Python 格式化还需要 `python3`。
+公开安装器需要 Node.js 22.22.3 或更高版本以及 npm；Python 检查和格式化还需要可运行的 `python3`。
 
 ## 开发 BoxBox
 
