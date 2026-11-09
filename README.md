@@ -89,7 +89,7 @@ bun run pack:installer
 npm exec --yes --package "$PWD"/dist/installer/boxbox-plugin-*.tgz -- boxbox
 ```
 
-The installer verifies its permanent engine and, when `python3` is available, checks a disposable Python example without changing its source. It reports Python readiness separately from automatic hooks, which still require review. An unavailable or failing Python is reported as unverified and does not block other languages. Restart the host, review hooks in Codex `/hooks` or Settings > Hooks (or the Claude hook settings), select BoxBox, and request an explicit Check of one project file. Native hook delivery and source write permission remain separate checks.
+The installer verifies its permanent engine and, when `python3` provides Python 3.9 or later, checks a disposable Python example without changing its source. It reports Python readiness separately from automatic hooks, which still require review. An unavailable or failing Python is reported as unverified and does not block other languages. Restart the host, review hooks in Codex `/hooks` or Settings > Hooks (or the Claude hook settings), select BoxBox, and request an explicit Check of one project file. Native hook delivery and source write permission remain separate checks.
 
 Adding this repository as a Claude or Codex marketplace installs only the plugin, without the engine: commands stop with a setup message, and hooks report `NOT_RUN` without blocking. If you already did that, remove that registration first, using the lines for your host, then run the installer:
 
@@ -100,7 +100,7 @@ codex plugin marketplace remove boxbox-plugins
 ```
 
 On Windows, replace the wildcard with the full archive path; see the installation guide. The checkout is needed only for building. The installed plugin uses its permanent Node engine.
-The public installer needs Node.js 22.22.3 or later and npm; Python formatting additionally needs `python3`.
+The public installer needs Node.js 22.22.3 or later and npm; Python checking and formatting additionally need Python 3.9 or later through `python3`.
 
 ## Develop BoxBox
 
@@ -129,7 +129,7 @@ sources; `--copy` creates a managed copy. Development authoring hooks require se
 | Development alignment engines | The same four languages; other line-engine languages were removed on 2026-10-22 |
 | TypeScript detection | TypeScript 7 AST tools and a table-kind registry |
 | JSON/YAML detection | Adjacent same-level runs of 3+ single-line scalar mapping entries |
-| Python detection | The shared line engine with a Python profile (string and comment masking, row slot rules) |
+| Python detection | CPython AST owners and original token ranges feed the shared line engine and Python row profile |
 
 The four supported languages do not have equal release support: only TypeScript and Python have default write approvals. Write checks require the relevant parser tools. See the [implementation map](docs/development/implementation.md) for language-specific boundaries.
 

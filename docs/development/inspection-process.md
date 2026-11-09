@@ -41,10 +41,19 @@ then rechecks configuration/approval provenance. It does not read or create the 
 reports `verification: "not-run"` and `writeAuthorized: false`. See
 [authoring-guide.ts](../../product/engine/common/authoring-guide.ts).
 
-TypeScript uses AST container/kind information and TypeScript scanner preservation. Code-language profiles use
-masking, lossless slot decomposition, adjacent rows with compatible signatures and the shared line engine. JSON and
+TypeScript uses AST container/kind information and TypeScript scanner preservation. Python prepares document-local
+CPython AST owners and original-source token ranges before masking and lossless slot decomposition. Adjacent rows
+must share a real container as well as a compatible signature. JSON and
 YAML use a structured-document adapter. These adapters feed the same result lifecycle but retain separate parsing,
 candidate extraction and preservation logic. They emit [ResultEnvelope](../../product/engine/common/result-json.ts).
+
+### Python document analysis
+
+Python prepares one document-local CPython `ast`/`tokenize` analysis before its profile feeds the shared line planner.
+Container ownership constrains rows; formatted strings remain opaque original-source slices. AST UTF-8 byte columns
+and tokenizer character columns map separately to original UTF-16 offsets, retaining LF/CRLF. Unsupported encoding,
+BOM, lone CR and unpaired surrogates fail explicitly. Parser children run in isolated mode. Changed Python writes
+retain an independent AST-structure comparison; this does not execute source or approve additional rules.
 
 ### Current public write path
 
@@ -77,7 +86,7 @@ behavior and relevant performance verification; see [the workflow contract](../u
 | Language | Detector | Parser tool used by the engine write gate | Public format |
 | --- | --- | --- | --- |
 | TypeScript | AST and kind registry | TypeScript syntactic diagnostics | Yes, approved scope |
-| Python | Shared line engine + profile | `python3` / `ast.parse` | Yes, approved scope |
+| Python | CPython AST/token analysis + shared line profile | `python3` / `ast.parse`, independent AST equality | Yes, approved scope |
 | JSON | Strict structured adapter | `JSON.parse` | Engine support; no default approved write rule |
 | YAML | Guarded structured adapter, YAML 1.2 core | `yaml@2.9.1` strict parse | Engine support; no default approved write rule |
 
@@ -123,6 +132,18 @@ YAML candidates are limited to runs of at least three adjacent, same-parent and 
 mappings. Directives, document markers, complex keys, flow collections, sequence entries, anchors, aliases, tags,
 block scalars and multiline or non-scalar values are unsupported rather than normalized.
 
+Python reports recognized assignment, parameter, keyword, dictionary and bundle rows that its profile cannot
+decompose through the existing `FileResult.unsupported` field. Multiline outer constructs are reported at their
+starting line; their child rows may be inspected separately. This is bounded coverage reporting, not a complete
+catalog of Python statements. Comments and literal contents are never candidate rows. A decomposable single row
+does not reach the three-row table threshold; this is distinct from an unsupported row.
+
+Check retains its existing exit codes: zero means no detected misalignment or refusal, even when unsupported rows
+are reported. Consumers must inspect `unsupported`, syntax and approval separately. Guarded run and lifecycle hooks
+report `UNSUPPORTED` when changed Python files have coverage gaps but no failing groups; failures take precedence. Hooks
+report these gaps without blocking. Supported approved groups can still be aligned while unsupported bytes remain
+unchanged. See the executable [Python user journey](../user/python.md) and `test/python-coverage.test.ts`.
+
 ## Verification and limits
 
 Existing focused commands (run from the repository root):
@@ -130,6 +151,7 @@ Existing focused commands (run from the repository root):
 ```bash
 bun test --timeout 60000 test/parse-check.test.ts test/parser-fault.test.ts test/line-write-safety.test.ts test/typescript-write-safety.test.ts test/format-pipeline.test.ts test/result-json.test.ts
 bun test --timeout 60000 test/surface.test.ts test/recommended-preset.test.ts
+bun test --timeout 60000 test/python-source-analysis.test.ts test/python-coverage.test.ts test/python-user-scenarios.test.ts
 ```
 
 Tool-dependent skips must be reported as such. The above commands test current behavior; they do not prove

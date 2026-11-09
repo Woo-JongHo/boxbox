@@ -1,9 +1,10 @@
-import      { describe, expect, test } from "bun:test"                 ;
-import      { fileURLToPath          } from "node:url"                 ;
-import      { alignSource            } from "@/common/table-engine.ts" ;
-import      { maskSource             } from "@/common/code-text.ts"    ;
-import      { PYTHON_ALIGNER         } from "@/python/profile.ts"      ;
-import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
+import      { describe, expect, test  } from "bun:test"                 ;
+import      { fileURLToPath           } from "node:url"                 ;
+import      { alignSource             } from "@/common/table-engine.ts" ;
+import      { maskSource              } from "@/common/code-text.ts"    ;
+import      { PYTHON_ALIGNER          } from "@/python/profile.ts"      ;
+import      { PythonSourceSyntaxError } from "@/python/analysis.ts"     ;
+import      { defineLanguageSuite     } from "./lang-harness.ts"        ;
 
 defineLanguageSuite({
 	aligner     : PYTHON_ALIGNER                                                      ,
@@ -109,11 +110,11 @@ describe("python profile specific properties", () => {
 
 	test("keyword-argument rows align name, equal, value and the closing comma", () => {
 		const source = [
-			"    return Result(",
+			"result = Result(",
 			"        source_path=local_path,",
 			"        size=len(rows),",
 			"        target_columns=(KEY,),",
-			"    )",
+			")",
 		].join("\n");
 		expect(align(source).output.split("\n").slice(1, 4)).toEqual([
 			"        source_path    = local_path,",
@@ -129,6 +130,7 @@ describe("python profile specific properties", () => {
 			"    file_name: str = FILE_NAME,",
 			"    recursive: bool = False,",
 			") -> Path:",
+			"    pass",
 		].join("\n");
 		const result = align(source);
 		expect(result.tables).toBe(1);
@@ -147,6 +149,7 @@ describe("python profile specific properties", () => {
 			"    base_dir: Path,",
 			"    today: date | None = None,",
 			") -> Path:",
+			"    pass",
 		].join("\n");
 		const result = align(source);
 		expect(result.tables).toBe(1);
@@ -158,15 +161,13 @@ describe("python profile specific properties", () => {
 		]);
 	});
 
-	test("comma rows whose value holds a top-level comma or an open bracket are refused", () => {
+	test("invalid comma rows with damaged brackets fail as source syntax errors", () => {
 		const source = [
 			"    alpha = 1, 2,",
 			"    beta = call(,",
 			"    gamma = x if y else (z,",
 		].join("\n");
-		const result = align(source);
-		expect(result.tables).toBe(0     );
-		expect(result.output).toBe(source);
+		expect(() => align(source)).toThrow(PythonSourceSyntaxError);
 	});
 
 	test("a table whose columns would follow wide characters is refused with a reason and left unchanged", () => {

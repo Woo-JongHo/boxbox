@@ -181,6 +181,12 @@ export async function runFormatPipeline(given: FormatPipelineOptions): Promise<F
 	let first!: Awaited<ReturnType<typeof cycle>>;
 	let alignmentEdits: FormatPipelineResult["alignmentEdits"];
 	const written = await updateFileAtomically(absolute, async ({ initial, working }) => {
+		if (options.language === "python") {
+			const source = initial.toString("utf8");
+			if (!Buffer.from(source, "utf8").equals(initial) || source.startsWith("\uFEFF") || /\r(?!\n)/u.test(source)) {
+				throw new Error("Unsupported Python source encoding or line endings");
+			}
+		}
 		first = await cycle(options, working, display);
 		const firstOutput = readFileSync(working);
 		if (options.alignmentOnly) assertAlignmentOnly(initial, firstOutput, options.language);

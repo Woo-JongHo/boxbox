@@ -88,7 +88,7 @@ bun run pack:installer
 npm exec --yes --package "$PWD"/dist/installer/boxbox-plugin-*.tgz -- boxbox
 ```
 
-安装器会验证永久安装的引擎，并在 `python3` 可用时对临时 Python 示例执行只读检查，保持源文件不变。它分别报告 Python 就绪状态和仍需审核的自动钩子状态。Python 不可用或运行失败时，安装器会报告未验证状态，并继续安装其他语言所需的功能。重启宿主，在 Codex 的 `/hooks` 或 Settings > Hooks（Claude 使用钩子设置）中审核钩子，选择 BoxBox，然后明确请求 Check 一个项目文件。宿主实际接收钩子结果以及源文件写入权限仍需单独验证。
+安装器会验证永久安装的引擎，并在 `python3` 提供 Python 3.9 或更高版本时对临时 Python 示例执行只读检查，保持源文件不变。它分别报告 Python 就绪状态和仍需审核的自动钩子状态。Python 不可用或运行失败时，安装器会报告未验证状态，并继续安装其他语言所需的功能。重启宿主，在 Codex 的 `/hooks` 或 Settings > Hooks（Claude 使用钩子设置）中审核钩子，选择 BoxBox，然后明确请求 Check 一个项目文件。宿主实际接收钩子结果以及源文件写入权限仍需单独验证。
 
 将本仓库添加为 Claude 或 Codex 市场时，只会安装插件而没有引擎：命令会显示设置提示并停止，钩子报告 `NOT_RUN`，不会阻止操作。如果已经这样添加，请先运行你所用宿主对应的命令删除该注册，再运行安装器：
 
@@ -99,7 +99,7 @@ codex plugin marketplace remove boxbox-plugins
 ```
 
 在 Windows 上，请将通配符替换为压缩包的完整路径，详见安装指南。检出仓库只在构建时需要。安装后的插件使用其永久安装的 Node 引擎。
-公开安装器需要 Node.js 22.22.3 或更高版本以及 npm；Python 格式化还需要 `python3`。
+公开安装器需要 Node.js 22.22.3 或更高版本以及 npm；Python 检查和格式化还需要通过 `python3` 运行 Python 3.9 或更高版本。
 
 ## 开发 BoxBox
 
@@ -127,7 +127,7 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 | 开发版对齐引擎 | 与上述相同的四种语言（其他行引擎语言已于 2026-10-22 移除） |
 | TypeScript 检测 | TypeScript 7 AST 工具和表格类型注册表 |
 | JSON/YAML 检测 | 同一层级中至少三个相邻的单行标量映射条目 |
-| Python 检测 | 共享的行引擎与 Python 专用配置（字符串和注释屏蔽、行槽位规则） |
+| Python 检测 | CPython AST 所属关系与原始令牌范围支持的共享行引擎和 Python 行配置 |
 
 所支持的四种语言并不具有相同的发布支持程度：默认预设的写入授权仅覆盖 TypeScript 和 Python。写入前的检查需要相应的解析器工具。各语言的具体边界请参阅[实现映射](docs/development/implementation.md)。
 

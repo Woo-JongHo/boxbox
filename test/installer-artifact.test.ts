@@ -365,6 +365,7 @@ test("real npx infers the boxbox bin from the public installer and installs both
 test.each([
 	["missing", ""],
 	["version failure", "#!/bin/sh\nexit 7\n"],
+	["unsupported version", "#!/bin/sh\nif [ \"$1\" = \"--version\" ]; then echo 'Python 3.8.18'; exit 0; fi\nexit 7\n"],
 	["parser failure", "#!/bin/sh\nif [ \"$1\" = \"--version\" ]; then echo 'Python 3.14.0'; exit 0; fi\nexit 7\n"],
 ])("unavailable Python (%s) does not block other languages or claim readiness", (state, script) => {
 	const workspace   = temporary()                                                                          ;

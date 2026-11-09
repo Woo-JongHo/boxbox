@@ -32,7 +32,7 @@ function snapshotExclusions(root: string): ReadonlySet<string> {
 	const namespace   = projectReceiptNamespace(projectRoot           ) ;
 	const path        = relative               (projectRoot, namespace) ;
 	if (
-		path === ""
+		   path === ""
 		|| path === ".."
 		|| path.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`)
 		|| isAbsolute(path)
@@ -77,7 +77,8 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 		}
 		if (changed(after, snapshot(root, "", {}, [], exclusions)).length) throw new Error("Source changed during check");
 		const failed  = checked.some(item => item.result.summary.misaligned || item.result.summary.refused)                                                      ;
-		const state   = failed ? "FAIL" : unsupported.length ? "UNSUPPORTED" : checked.length ? "PASS" : "NO_CHANGES"                                            ;
+		const partial = unsupported.length > 0 || checked.some(item => item.result.language === "python" && item.result.unsupported?.length)                     ;
+		const state   = failed ? "FAIL" : partial ? "UNSUPPORTED" : checked.length ? "PASS" : "NO_CHANGES"                                                       ;
 		const record  = { event, state, files, checked, unsupported, tool: input.tool_name ?? null, at: new Date().toISOString(), automaticFixPerformed: false } ;
 		const receipt = join(directory, `${Date.now()}-${randomUUID()}.json`)                                                                                    ;
 		writeFileSync(receipt, JSON.stringify(record, null, 2), { flag: "wx" });
@@ -100,7 +101,7 @@ export function installHooks(args: readonly string[]): number {
 	if (args[0] !== "install" || !["codex", "claude"].includes(args[1] ?? "")) throw new Error("Expected hooks install codex|claude --root <absolute-path>");
 	const root     = rootOf(args.slice(2))                                           ;
 	const host     = args[1]                                                         ;
-	const folder   = join(root, host === "codex" ? ".codex" : ".claude")             ;
+	const folder   = join(root  , host === "codex" ? ".codex"     : ".claude"      ) ;
 	const path     = join(folder, host === "codex" ? "hooks.json" : "settings.json") ;
 	const document = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : {}  ;
 	const quote    = (value: string) => "'" + value.replaceAll("'", "'\\''") + "'"   ;

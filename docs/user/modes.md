@@ -72,6 +72,9 @@ The engine requires applicable human-approved rules, parser availability, preser
 replacing the file atomically. A dry-run also verifies the proposal but leaves the target untouched. Python alignment
 requires a runnable `python3`.
 
+The [Python walkthrough](python.md) covers first inspection, approval refusals, partial layout coverage and a
+verified preview/apply/recheck journey using the installed CLI.
+
 The existing `format` command is retained separately. A configured external formatter runs before alignment, including
 during `format --dry-run`. Use it when that broader pipeline is intended; use Align for whitespace-only work.
 

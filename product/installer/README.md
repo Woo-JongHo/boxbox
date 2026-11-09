@@ -9,7 +9,7 @@ Install Node.js **22.22.3 or newer**, npm, and at least one host CLI with plugin
 Check `node --version`, `npm.cmd --version`, and `codex.cmd plugin --help` or `claude plugin --help` in a new PowerShell
 terminal. Use `codex` for a native Codex executable. Standard npm-installed Windows Claude Code is detected through its
 native `claude.exe`; no Bash, WSL, or script execution-policy change is required by this installer.
-BoxBox itself requires no global install, Bun, Python, or source checkout. Python formatting additionally requires `python3`.
+BoxBox itself requires no global install, Bun, Python, or source checkout. Python checking and formatting additionally require Python 3.9 or later through `python3`.
 
 If `CODEX_HOME` is set for a Codex installation, it must already be an existing directory. `CLAUDE_CONFIG_DIR` is passed to
 Claude unchanged. Existing host configuration is preserved through normal plugin-management commands. The installer never
@@ -103,7 +103,7 @@ BoxBox skill from its skill list. Name one TypeScript or Python file and request
 three hook definitions in the host before relying on them. Codex skips untrusted plugin hooks: use `/hooks` to review and
 explicitly trust their exact current definitions. Claude Code uses its own hook/settings review workflow.
 
-Before registering a host, the installer probes the permanent engine and bundled approval data. When `python3` is
+Before registering a host, the installer probes the permanent engine and bundled approval data. When a supported Python 3.9+ `python3` is
 available, it also checks a disposable Python assignment example, requiring valid syntax, an approved fixable group
 and unchanged source bytes. `Python check: verified` means this read-only first-use check ran. Missing Python,
 a failing version probe or a reported Python parser error is reported as `unavailable`; other language checks remain

@@ -89,7 +89,7 @@ bun run pack:installer
 npm exec --yes --package "$PWD"/dist/installer/boxbox-plugin-*.tgz -- boxbox
 ```
 
-설치 프로그램은 영구 설치된 엔진을 확인하고, `python3`를 사용할 수 있으면 임시 Python 예제를 변경 없이 검사합니다. Python 준비 상태와 별도 승인이 필요한 자동 훅 상태를 구분해 안내합니다. Python을 사용할 수 없거나 실행에 실패하면 검증하지 못한 상태로 안내하고 다른 언어의 설치는 계속합니다. 호스트를 다시 시작하고 Codex의 `/hooks` 또는 Settings > Hooks(Claude는 훅 설정)에서 검토한 뒤, BoxBox를 선택해 프로젝트 파일 하나를 명시적으로 Check해 달라고 요청하세요. 실제 훅 결과 수용과 소스 쓰기 권한은 별도로 확인해야 합니다.
+설치 프로그램은 영구 설치된 엔진을 확인하고, Python 3.9 이상인 `python3`를 사용할 수 있으면 임시 Python 예제를 변경 없이 검사합니다. Python 준비 상태와 별도 승인이 필요한 자동 훅 상태를 구분해 안내합니다. Python을 사용할 수 없거나 실행에 실패하면 검증하지 못한 상태로 안내하고 다른 언어의 설치는 계속합니다. 호스트를 다시 시작하고 Codex의 `/hooks` 또는 Settings > Hooks(Claude는 훅 설정)에서 검토한 뒤, BoxBox를 선택해 프로젝트 파일 하나를 명시적으로 Check해 달라고 요청하세요. 실제 훅 결과 수용과 소스 쓰기 권한은 별도로 확인해야 합니다.
 
 이 저장소를 Claude나 Codex 마켓플레이스로 추가하면 엔진 없이 플러그인만 설치됩니다. 이 경우 명령은 설정 안내를 내고 멈추며, 훅은 작업을 차단하지 않고 `NOT_RUN`을 보고합니다. 이미 그렇게 추가했다면 사용하는 호스트의 줄을 실행해 등록을 먼저 지운 뒤 설치 프로그램을 실행하세요.
 
@@ -100,7 +100,7 @@ codex plugin marketplace remove boxbox-plugins
 ```
 
 Windows에서는 와일드카드 대신 아카이브 전체 경로를 쓰세요. 설치 안내를 참고하세요. 저장소 체크아웃은 빌드할 때만 필요합니다. 설치된 플러그인은 영구 설치된 자체 Node 엔진을 사용합니다.
-공개 설치 프로그램에는 Node.js 22.22.3 이상과 npm이 필요하며, Python 포맷에는 `python3`가 추가로 필요합니다.
+공개 설치 프로그램에는 Node.js 22.22.3 이상과 npm이 필요하며, Python 검사·포맷에는 Python 3.9 이상을 실행하는 `python3`가 추가로 필요합니다.
 
 ## BoxBox 개발
 
@@ -129,7 +129,7 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 | 개발용 정렬 엔진 | 위와 같은 4개 언어(그 밖의 라인 엔진 언어는 2026-10-22에 제거) |
 | TypeScript 탐지 | TypeScript 7 AST 도구와 표 종류 레지스트리 |
 | JSON/YAML 탐지 | 같은 단계에서 인접한 단일 행 스칼라 매핑 항목 3개 이상 |
-| Python 탐지 | Python 프로필(문자열·주석 마스킹, 행 슬롯 규칙)을 사용하는 공통 줄 단위 엔진 |
+| Python 탐지 | CPython AST 소유 관계와 원본 토큰 범위를 사용하는 공통 줄 엔진 및 Python 행 프로필 |
 
 지원하는 4개 언어의 배포 지원 수준이 모두 같지는 않습니다. 기본 프리셋의 쓰기 승인은 TypeScript와 Python에만 있습니다. 쓰기 검증에는 해당 언어의 파서 도구가 필요합니다. 언어별 한계는 [구현 현황](docs/development/implementation.md)을 참고하세요.
 

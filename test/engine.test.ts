@@ -1,9 +1,11 @@
-import      { describe, expect, test   } from "bun:test"                 ;
-import      { maskSource               } from "@/common/code-text.ts"    ;
-import type { CodeSyntax               } from "@/common/code-text.ts"    ;
-import      { alignSource              } from "@/common/table-engine.ts" ;
-import type { LineProfiler, RowProfile } from "@/common/table-engine.ts" ;
-import      { PYTHON_SYNTAX            } from "@/python/profile.ts"      ;
+import      { describe, expect, test        } from "bun:test"                 ;
+import      { maskSource                    } from "@/common/code-text.ts"    ;
+import      { syntaxDiagnostics             } from "@/common/parse-check.ts"  ;
+import      { PythonSourceSyntaxError       } from "@/python/analysis.ts"     ;
+import type { CodeSyntax                    } from "@/common/code-text.ts"    ;
+import      { alignSource                   } from "@/common/table-engine.ts" ;
+import type { LineProfiler, RowProfile      } from "@/common/table-engine.ts" ;
+import      { PYTHON_ALIGNER, PYTHON_SYNTAX } from "@/python/profile.ts"      ;
 
 const SYNTAX: CodeSyntax = {
 	lineComments  : ["//"]                                    ,
@@ -157,5 +159,40 @@ describe("alignSource", () => {
 		expect(result.output    ).toBe("a : 1 ;\nb : 22 ;\nc : 333 ;") ;
 		expect(result.misaligned).toBe(2                             ) ;
 		expect(result.edits     ).toBe(0                             ) ;
+	});
+});
+
+describe("Python formatted-string boundaries", () => {
+	const nested = 'text = f"""{ """\na = 1\nlonger = 2\nthird = 3\n""" }"""\n' ;
+	const table  = "alpha=1\nlonger=2\nthird=3\n"                               ;
+	const variants = [
+		'text = f"{1}"\n',
+		nested,
+		nested.replace('f"""', 'rf"""'),
+		nested.replace('f"""', 'Fr"""'),
+		nested.replace('{ """', '{ # a quote " stays inside this replacement field\n """'),
+		'text = f"{"x"}"\n',
+		'text = f"{f"{1}"}"\n',
+		'text = f"""{1:{len("ab")}}"""\n',
+		'label = "\u{1f600}"; ' + nested,
+		nested.replaceAll("\n", "\r\n"),
+	];
+
+	test.each(variants)("protects completed formatted strings and resumes normal tables: %j", (prefix) => {
+		const source = prefix + table                                                   ;
+		if (syntaxDiagnostics("python", source).diagnostics.length) {
+			expect(() => alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true })).toThrow(PythonSourceSyntaxError);
+			return;
+		}
+		const result = alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true }) ;
+		const mask   = maskSource (source, PYTHON_SYNTAX                              ) ;
+
+		expect(result.output.slice(0, prefix.length)                                             ).toBe   (prefix                                ) ;
+		expect(result.tables                                                                     ).toBe   (1                                     ) ;
+		expect(result.details[0]!.startLine                                                      ).toBe   (prefix.split("\n").length             ) ;
+		expect(result.output.slice(prefix.length)                                                ).toBe   ("alpha  = 1\nlonger = 2\nthird  = 3\n") ;
+		expect(mask.text.length                                                                  ).toBe   (source.length                         ) ;
+		expect(mask.text.match(/\r?\n/gu)                                                        ).toEqual(source.match(/\r?\n/gu)               ) ;
+		expect(alignSource(result.output, PYTHON_ALIGNER, { minRows: 3, apply: true }).misaligned).toBe   (0                                     ) ;
 	});
 });

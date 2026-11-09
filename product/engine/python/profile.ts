@@ -18,17 +18,17 @@
  * Its distinct assignment-value axis never inherits approval for the detailed value axis.
  * Refusal is safe; misrecognition is dangerous.
  */
-import type {
-              CodeSyntax        ,
-              LineProfiler      ,
-              RowProfile        ,
-              Slot              ,
-                                  } from "@/common/table-engine.ts"        ;
-import      { assignmentEnvelopes } from "@/python/assignment-envelope.ts" ;
+import type { CodeSyntax, LineProfiler, RowProfile, Slot, } from "@/common/table-engine.ts"        ;
+import      { pythonStringRanges                          } from "@/python/string-ranges.ts"       ;
+import      { assignment, assignmentEnvelopes             } from "@/python/assignment-envelope.ts" ;
+import      { analyzePython                               } from "@/python/analysis.ts"            ;
+import type { PythonRowKind                               } from "@/python/analysis.ts"            ;
+import      { losslessProfile                             } from "@/common/table-engine.ts"        ;
 
 export const PYTHON_SYNTAX: CodeSyntax = {
-	lineComments  : ["#"],
-	blockComments : [],
+	protectedRanges : pythonStringRanges ,
+	lineComments    : ["#"]              ,
+	blockComments   : []                 ,
 	strings       : [
 		{ open : '"""' , close : '"""' , escape : true },
 		{ open : "'''" , close : "'''" , escape : true },
@@ -71,11 +71,11 @@ function isValueCell(masked: string): boolean {
 		else if (character === "," && depth === 0) return false;
 		if (depth < 0) return false;
 	}
-	return depth === 0
-		&& masked.trim() !== ""
-		&& !masked.startsWith("=")
-		&& !/[;\\]/u.test(masked)
-		&& !/\s$/u.test(masked);
+	return    depth         === 0
+		  &&  masked.trim() !== ""
+		  && !masked.startsWith("=")
+		  && !/[;\\]/u.test(masked)
+		  && !/\s$/u.test(masked);
 }
 
 /** Statement starts that cannot be table rows — control flow, declarations, imports. match/case are soft keywords and excluded. */
@@ -250,9 +250,9 @@ function typedProfile(code: string, masked: string): RowProfile | null {
 	if (annotated) {
 		const typeRange  = annotated.indices![5]! ;
 		const valueRange = annotated.indices![8]! ;
-		if (slotAt(code, annotated, 9) !== "")                       return null;
+		if (slotAt(code, annotated, 9) !== ""                      ) return null;
 		if (!isAnnotation(masked.slice(typeRange[0], typeRange[1]))) return null;
-		if (isUnsafe(masked.slice(valueRange[0], valueRange[1])))    return null;
+		if (isUnsafe(masked.slice(valueRange[0], valueRange[1]))   ) return null;
 		const value = valueSlot(code, masked, annotated, 7, 8);
 		if (!value)                                                  return null;
 		return {
@@ -384,9 +384,67 @@ function profilePython(code: string, masked: string): RowProfile | null {
 	return null;
 }
 
+function preparePython(source: string) {
+	const analysis = analyzePython(source) ;
+	const admitted = new Set<string>()     ;
+	// Cache unique row ownership by physical line and grammar kind once per source.
+	const owners = new Map<string, string | null>();
+	for (const row of analysis.rows) {
+		const key = `${row.line}:${row.kind}`;
+		owners.set(key, owners.has(key) ? null : `${row.kind}:${row.owner}`);
+	}
+	const owner   = (index: number, kind: PythonRowKind): string | null => owners.get(`${index}:${kind}`) ?? null ;
+	const admit = (index: number, kind: PythonRowKind, profile: RowProfile | null, code: string) => {
+		const region = owner(index, kind);
+		if (!profile || region === null || !losslessProfile(profile, code)) return null;
+		admitted.add(`${index}:${kind}`);
+		return { profile, region };
+	};
+	const markers = new Map<number, string>()                                                                     ;
+	// Retain stable first-on-line order, exactly as the former stable sorted lookups did.
+	const params   = analysis.rows.filter(row => row.kind === "parameter").sort((a, b) => a.line - b.line) ;
+	const distinct = params.filter((row, index) => index === 0 || params[index - 1]!.line !== row.line)    ;
+	const lines    = source.split("\n")                                                                    ;
+	let cursor     = 0                                                                                     ;
+	for (const [index, line] of lines.entries()) {
+		while (cursor < distinct.length && distinct[cursor]!.line < index) cursor += 1;
+		if (!/^[ \t]*[*/][ \t]*,[ \t]*\r?$/u.test(line)) continue;
+		const before = distinct[cursor - 1] ;
+		const after  = distinct[cursor    ] ;
+		if (before && after && after.line > index && before.owner === after.owner) markers.set(index, `parameter:${before.owner}`);
+	}
+	return {
+		get unsupported() {
+			const reasons = new Map<number, string>();
+			for (const row of analysis.rows) {
+				if (!admitted.has(`${row.line}:${row.kind}`)) reasons.set(row.line + 1, `Python ${row.kind} row is outside automatic layout coverage`);
+			}
+			for (const row of analysis.multiline) reasons.set(row.line + 1, `Multiline Python ${row.kind} is outside automatic layout coverage; child rows are inspected separately`);
+			return [...reasons].sort(([left], [right]) => left - right).map(([line, reason]) => ({ line, reason }));
+		},
+		protectedRanges: analysis.formatted,
+		row(index: number, code: string, masked: string) {
+			const profile = profilePython(code, masked);
+			if (!profile) return null;
+			const axes = profile.slots.map(slot => slot.axis);
+			const kind: PythonRowKind = axes[0] === "key" ? "dictionary"
+				: axes[0]?.startsWith("open") ? "bundle"
+				: axes.at(-1) === "comma" ? axes.includes("colon") ? "parameter" : "keyword"
+				: "statement";
+			return admit(index, kind, profile, code) ?? (kind === "keyword" ? admit(index, "parameter", profile, code) : null);
+		},
+		project(index: number, code: string) {
+			return admit(index, "statement", assignment(code), code);
+		},
+		transparent(index: number) { return markers.get(index) ?? null; },
+		unsafeEditLines: analysis.unsafeEditLines,
+	};
+}
+
 export const PYTHON_ALIGNER: LineProfiler = {
-	language      : "python",
-	syntax        : PYTHON_SYNTAX,
+	prepareSource : preparePython ,
+	language      : "python"      ,
+	syntax        : PYTHON_SYNTAX ,
 	// cell/arg axes of bundle rows are followed by a comma or the close slot, so aligning them never creates trailing whitespace.
 	columnAxes    : ["name", "attribute", "chain-target", "key", "type", "value", "cell", "arg"],
 	// Colon and equal get one space after the longest cell (`name : type = value`), matching the TypeScript tables;

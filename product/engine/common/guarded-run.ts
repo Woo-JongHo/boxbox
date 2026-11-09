@@ -243,8 +243,9 @@ export async function guardedRun(args: readonly string[], preflight: Preflight, 
 		for (const file of record.changed.filter(file => record.after[file] && supported.has(extname(file).toLowerCase()))) {
 			record.checked.push({ file, result: await inspect(root, file) });
 		}
-		const invalid = record.checked.some(item => item.result.summary.misaligned > 0 || item.result.summary.refused > 0);
-		record.validation = invalid ? "FAIL" : record.unsupported.length ? "UNSUPPORTED" : record.checked.length ? "PASS" : "NO_CHANGES";
+		const invalid = record.checked.some(item => item.result.summary.misaligned > 0 || item.result.summary.refused > 0)                                 ;
+		const partial = record.unsupported.length > 0 || record.checked.some(item => item.result.language === "python" && item.result.unsupported?.length) ;
+		record.validation = invalid ? "FAIL" : partial ? "UNSUPPORTED" : record.checked.length ? "PASS" : "NO_CHANGES";
 		if (changed(record.after, snapshot(root)).length) throw new Error("SOURCE_CHANGED_DURING_CHECK");
 		record.state = record.childExitCode !== 0 ? "CHILD_FAILED" : record.validation;
 		exitCode = record.state === "PASS" || record.state === "NO_CHANGES" ? 0 : record.state === "FAIL" ? 1 : 2;

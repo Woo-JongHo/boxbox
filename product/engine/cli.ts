@@ -23,6 +23,7 @@ import      {
 import type { PublicLanguage                                           } from "@/common/project-config.ts"    ;
 import type { FileResult, ResultEnvelope                               } from "@/common/result-json.ts"       ;
 import      { PYTHON_ALIGNER                                           } from "@/python/profile.ts"           ;
+import      { PYTHON_MINIMUM_VERSION, supportsPythonVersion            } from "@/python/analysis.ts"          ;
 import      { analyzeStructured                                        } from "@/structured/index.ts"         ;
 import      { runTypeScriptAlign                                       } from "@/typescript/align.ts"         ;
 import      { AXIS_NOTES, KIND_AXES                                    } from "@/typescript/grid-kinds.ts"    ;
@@ -294,10 +295,12 @@ function doctorReport(root: string) {
 					|| ((nodeParts[1] ?? 0) === 22 && (nodeParts[2] ?? 0) >= 3))),
 		detail: `Node ${process.versions.node} (artifact candidate minimum: 22.22.3)`
 	} ;
-	const pythonProbe = spawnSync("python3", ["--version"], { encoding: "utf8", timeout: 5_000, maxBuffer: 64 * 1024 }) ;
+	const pythonProbe   = spawnSync("python3", ["--version"], { encoding: "utf8", timeout: 5_000, maxBuffer: 64 * 1024 }) ;
+	const pythonDetail  = (pythonProbe.stdout || pythonProbe.stderr || "").trim()                                         ;
+	const pythonVersion = /^Python (\d+)\.(\d+)(?:\.\d+)?\b/u.exec(pythonDetail)?.slice(1).map(Number) ?? []              ;
 	const python = {
-		ok: pythonProbe.status === 0,
-		detail: pythonProbe.status === 0 ? (pythonProbe.stdout || pythonProbe.stderr).trim() : "python3 is unavailable or failed to start"
+		ok: pythonProbe.status === 0 && supportsPythonVersion(pythonVersion),
+		detail: pythonProbe.status === 0 ? `${pythonDetail} (requires Python ${PYTHON_MINIMUM_VERSION} or newer)` : "python3 is unavailable or failed to start"
 	} ;
 	let config: {
 		ok           : boolean            ;

@@ -39,10 +39,10 @@ interface Toolchain {
 	readonly keep      : RegExp                              ;
 }
 
-const PYTHON_PARSE = "import ast,sys\ntry:\n ast.parse(open(sys.argv[1],encoding='utf-8').read())\nexcept SyntaxError as e:\n print(f'{e.lineno}: error: {e.msg}')";
+const PYTHON_PARSE = "import ast,sys\nsource=open(sys.argv[1],encoding='utf-8').read()\ntry:\n ast.parse(source)\nexcept SyntaxError as e:\n print(f'{e.lineno}: error: {e.msg}')\nexcept ValueError:\n if '\\x00' not in source: raise\n print('None: error: source code string cannot contain null bytes')";
 
 const TOOLCHAINS: Readonly<Record<string, Toolchain>> = {
-	python : { tool: "python3", extension: ".py", keep: /error:/u, command: file => ["python3", "-c", PYTHON_PARSE, file] },
+	python : { tool: "python3", extension: ".py", keep: /error:/u, command: file => ["python3", "-I", "-c", PYTHON_PARSE, file] },
 };
 
 const DEFAULT_TIMEOUT_MS = 60_000    ;
@@ -116,4 +116,36 @@ export function parserAvailable(language: string): boolean {
 	const present   = toolchain !== undefined && hasTool(toolchain.tool) ;
 	if (!present && process.env.BOXBOX_REQUIRE_PARSERS === "1") throw new Error(`parser required but not installed: ${toolchain?.tool ?? language}`);
 	return present;
+}
+
+const PYTHON_STRUCTURE = `import ast,json,sys,warnings
+warnings.simplefilter('ignore', SyntaxWarning)
+warnings.simplefilter('ignore', DeprecationWarning)
+before,after=json.loads(sys.stdin.buffer.read().decode('utf-8'))
+def normalized(source):
+ try: return ast.dump(ast.parse(source),include_attributes=False)
+ except ValueError:
+  if '\\x00' not in source: raise
+  return None
+try:
+ left=normalized(before)
+ right=normalized(after)
+ if left is None or right is None: print('BOXBOX_AST_INVALID')
+ else: print('BOXBOX_AST_EQUAL' if left==right else 'BOXBOX_AST_DIFFERENT')
+except SyntaxError:
+ print('BOXBOX_AST_INVALID')`;
+
+/** Independent write safeguard. Diagnostic comparison remains separate because formatters validate unrelated source. */
+export function comparePythonStructure(before: string, after: string, options: ParseCheckOptions = {}): ParseComparison {
+	const { toolchain, timeoutMs } = requireToolchain("python", options);
+	const run = spawnSync(toolchain.tool, ["-I", "-c", PYTHON_STRUCTURE], {
+		input: JSON.stringify([before, after]), encoding: "utf8", timeout: timeoutMs, maxBuffer: MAX_OUTPUT_BYTES,
+	});
+	if (run.error || run.signal || run.status !== 0 || run.stderr !== "") {
+		throw new Error(`Python structure parser failed: ${run.error?.message ?? run.stderr ?? run.signal ?? run.status}`);
+	}
+	if (/^BOXBOX_AST_EQUAL\r?\n$/u.test(run.stdout)    ) return { status: "ok", tool: toolchain.tool, delta: [] };
+	if (/^BOXBOX_AST_DIFFERENT\r?\n$/u.test(run.stdout)) return { status: "changed", tool: toolchain.tool, delta: ["Python AST differs"] };
+	if (/^BOXBOX_AST_INVALID\r?\n$/u.test(run.stdout)  ) return { status: "changed", tool: toolchain.tool, delta: ["Python source is invalid"] };
+	throw new Error("Python structure parser returned an invalid response");
 }

@@ -54,9 +54,9 @@ function normalizeCode(code: string): string {
 }
 
 function lineKeys(source: string, syntax: CodeSyntax): LineKey[] {
-	const mask        = maskSource     (source.replace(/[^\S\n]/gu, SENTINEL), syntax) ;
-	const lines       = source   .split("\n"                                         ) ;
-	const maskedLines = mask.text.split("\n"                                         ) ;
+	const mask        = maskSource     (source.replace(/[^\S\n]/gu, SENTINEL), syntax, syntax.protectedRanges?.(source)) ;
+	const lines       = source   .split("\n"                                                                           ) ;
+	const maskedLines = mask.text.split("\n"                                                                           ) ;
 	return lines.map((line, lineIndex) => {
 		const maskedLine   = maskedLines[lineIndex] ?? ""                                                                             ;
 		const commentStart = mask.commentStarts[lineIndex] ?? -1                                                                      ;

@@ -1,25 +1,26 @@
-import      { afterEach, describe, expect, test                 } from "bun:test"                              ;
-import      { mkdirSync, mkdtempSync, readFileSync, rmSync      } from "node:fs"                               ;
-import      { writeFileSync                                     } from "node:fs"                               ;
-import      { tmpdir                                            } from "node:os"                               ;
-import      { join                                              } from "node:path"                             ;
+import      { afterEach, describe, expect, test            } from "bun:test"                              ;
+import      { mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs"                               ;
+import      { writeFileSync                                } from "node:fs"                               ;
+import      { tmpdir                                       } from "node:os"                               ;
+import      { join                                         } from "node:path"                             ;
 
 import      {
-              APPROVAL_VERSIONS                                ,
-              documentResolver                                 ,
-              evaluateApproval                                 ,
-              loadApprovalRegistry                             ,
-                                                                } from "@/common/approval-gate.ts"             ;
-import      { contentHashOf                                     } from "@/common/examples.ts"                  ;
-import      { runFormatPipeline                                 } from "@/common/format-pipeline.ts"           ;
-import      { compareParse                                      } from "@/common/parse-check.ts"               ;
-import      { changedLines                                      } from "@/common/preservation.ts"              ;
-import type { ResultEnvelope                                    } from "@/common/result-json.ts"               ;
-import      { lookupKeyOf                                       } from "@/common/signature.ts"                 ;
-import      { alignSource                                       } from "@/common/table-engine.ts"              ;
-import      { PYTHON_ALIGNER                                    } from "@/python/profile.ts"                   ;
-import      { preservesTokens                                   } from "@/typescript/token-preservation.ts"   ;
-import      { preparePublicPreset                               } from "../development/tools/public-preset.ts" ;
+              APPROVAL_VERSIONS                          ,
+              documentResolver                           ,
+              evaluateApproval                           ,
+              loadApprovalRegistry                       ,
+                                                           } from "@/common/approval-gate.ts"             ;
+import      { contentHashOf                                } from "@/common/examples.ts"                  ;
+import      { runFormatPipeline                            } from "@/common/format-pipeline.ts"           ;
+import      { compareParse, syntaxDiagnostics              } from "@/common/parse-check.ts"               ;
+import      { changedLines                                 } from "@/common/preservation.ts"              ;
+import type { ResultEnvelope                               } from "@/common/result-json.ts"               ;
+import      { lookupKeyOf                                  } from "@/common/signature.ts"                 ;
+import      { alignSource                                  } from "@/common/table-engine.ts"              ;
+import      { PYTHON_ALIGNER                               } from "@/python/profile.ts"                   ;
+import      { PythonSourceSyntaxError                      } from "@/python/string-ranges.ts"             ;
+import      { preservesTokens                              } from "@/typescript/token-preservation.ts"    ;
+import      { preparePublicPreset                          } from "../development/tools/public-preset.ts" ;
 
 const PRESET          = join(import.meta.dir, "../product/rules/presets/recommended")                                   ;
 const TS_KEY          = "v1|typescript|SourceFile|declaration-equals|equals>call-open-paren>call-close-paren>semicolon" ;
@@ -278,12 +279,19 @@ describe("the approved recommended preset", () => {
 	test("compound assignments and differing indentation never become approved Python tables", () => {
 		for (const source of [
 			"alpha += 1\nmuch_longer += 22\nmid += 333\n",
-			"alpha = 1\n  much_longer = 22\nmid = 333\n",
+			"if outer:\n    alpha = 1\n    if inner:\n        much_longer = 22\n    mid = 333\n",
 		]) {
+			expect(syntaxDiagnostics("python", source).diagnostics).toEqual([]);
 			const aligned = alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true });
 
 			expect(aligned.output).toBe(source);
 			expect(aligned.details).toEqual([]);
 		}
+	});
+
+	test("unexpected indentation is classified as Python syntax invalid", () => {
+		const source = "alpha = 1\n  much_longer = 22\nmid = 333\n";
+		expect(syntaxDiagnostics("python", source).diagnostics.length).toBeGreaterThan(0);
+		expect(() => alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true })).toThrow(PythonSourceSyntaxError);
 	});
 });
