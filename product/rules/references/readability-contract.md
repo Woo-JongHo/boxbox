@@ -68,6 +68,14 @@ then compute minimum widths from the cells in that region. A different expressio
   missing comma. Families are ordered by source: the first uses unsuffixed axes and later families use suffixes `2`,
   `3`, and so on. Only a three-or-more ordinary one-line explicit family exposes `property-value`. Blank lines and
   interstitial comments split the comparison region.
+- **Function parameters:** an already vertical `FunctionDeclaration` list with at least three contiguous one-line
+  identifier parameters is a `vertical-function-parameters` table. Typed rows share `parameter-colon`, defaulted rows
+  share `parameter-equals`, and existing separators share `parameter-comma`. Each axis needs two occurrences within
+  the three-or-more-row table; two defaulted rows do not create a two-row table exception. The last parameter keeps
+  its original comma presence. Optional names and generic declarations keep their syntax. Destructuring, rest,
+  parameter modifiers, comments, multiline types/defaults, blank lines and shared opening/closing lines exclude the
+  whole list rather than exposing a supported subset. Arrow functions and methods are outside this kind. Parameter
+  descriptions map to `DESCRIBE`; detection and guidance do not grant public write approval.
 - **Logical chains:** an existing multiline homogeneous `||` or `&&` chain uses `operator | one space | optional ! |
   operand`. The operator cell is two characters and the negation cell is either one `!` or empty. `!=` and `!==` are
   indivisible comparison operators, and `!!value` stays opaque. A virtual first-row operator/negation prefix is an

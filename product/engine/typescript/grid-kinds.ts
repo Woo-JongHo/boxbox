@@ -14,6 +14,7 @@ import      {
               isClassDeclaration                                          ,
               isEnumDeclaration                                           ,
               isExpressionStatement                                       ,
+              isFunctionDeclaration                                       ,
               isIfStatement                                               ,
               isEnumMember                                                ,
               isIdentifier                                                ,
@@ -22,6 +23,7 @@ import      {
               isMethodSignatureDeclaration                                ,
               isNewExpression                                             ,
               isObjectLiteralExpression                                   ,
+              isParameterDeclaration                                      ,
               isPropertyAssignment                                        ,
               isPropertyAccessExpression                                  ,
               isPropertyDeclaration                                       ,
@@ -1016,6 +1018,76 @@ function detectVerticalCallArgument(source: SourceFile, node: Node): readonly Ro
 	return comma === undefined ? [] : [{ axis: "vertical-call-comma", from: node.getEnd(), at: comma, insert: true }];
 }
 
+const PARAMETER_LITERAL_KINDS = new Set<SyntaxKind>([
+	SyntaxKind.StringLiteral                 ,
+	SyntaxKind.RegularExpressionLiteral      ,
+	SyntaxKind.NoSubstitutionTemplateLiteral ,
+	SyntaxKind.TemplateHead                  ,
+	SyntaxKind.TemplateMiddle                ,
+	SyntaxKind.TemplateTail                  ,
+	SyntaxKind.JsxText                       ,
+]);
+
+/** Validate the whole list before exposing rows, so one unsupported parameter cannot leave an alignable subset. */
+function verticalFunctionParameters(source: SourceFile, node: Node): readonly Node[] | undefined {
+	if (!isFunctionDeclaration(node) || node.parameters.length < 3)                                        return undefined;
+
+	const parameters = node.parameters                                                      ;
+	const open       = parameters.pos - 1                                                   ;
+	const tail       = skipTrivia(source.text, parameters.end)                              ;
+	const close      = source.text[tail] === "," ? skipTrivia(source.text, tail + 1) : tail ;
+	if (source.text[open] !== "(" || source.text[close] !== ")")                                           return undefined;
+
+	const lines = parameters.map(parameter => physicalLine(source, parameter.getStart(source)));
+	if (lines[0]! !== physicalLine(source, open) + 1 || physicalLine(source, close) !== lines.at(-1)! + 1) return undefined;
+	if (lines.some((line, index) => index > 0 && line !== lines[index - 1]! + 1))                          return undefined;
+	if (parameters.some(parameter =>   !isIdentifier(parameter.name)
+		                            ||  parameter.dotDotDotToken !== undefined
+		                            ||  (parameter.modifiers?.length ?? 0) > 0
+		                            || !ownLineOf(source, parameter, /^[ \t]*,?[ \t]*$/u))) return undefined;
+
+	// The AST disambiguates regex literals from division after TypeScript assertions; punctuation scanning cannot.
+	const literals: Node[] = [];
+	const visit = (current: Node): void => {
+		if (PARAMETER_LITERAL_KINDS.has(current.kind)) { literals.push(current); return; }
+
+		current.forEachChild(child => { visit(child); return undefined; });
+	};
+
+	parameters.forEach(visit);
+
+	let cursor = parameters.pos;
+
+	for (const literal of literals) {
+		const start = literal.kind === SyntaxKind.JsxText ? literal.pos : literal.getStart(source);
+		if (start < cursor || /\/[/*]/u.test(source.text.slice(cursor, start))) return undefined;
+
+		cursor = literal.getEnd();
+	}
+
+	if (/\/[/*]/u.test(source.text.slice(cursor, close))) return undefined;
+
+	return [...parameters];
+}
+
+function detectVerticalFunctionParameter(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
+	if (!isParameterDeclaration(node) || !isIdentifier(node.name)) return undefined;
+
+	const nameEnd    = (node.questionToken ?? node.name).getEnd() ;
+	const colon      = tokenAfter(source, nameEnd, ":")           ;
+	const equalsFrom = node.type?.getEnd() ?? nameEnd             ;
+	const equals     = tokenAfter(source, equalsFrom, "=")        ;
+	const comma      = tokenAfter(source, node.getEnd(), ",")     ;
+
+	const boundaries: RowBoundary[] = [];
+
+	if (colon !== undefined)  boundaries.push({ axis: "parameter-colon", from: nameEnd, at: colon });
+	if (equals !== undefined) boundaries.push({ axis: "parameter-equals", from: equalsFrom, at: equals });
+	if (comma !== undefined)  boundaries.push({ axis: "parameter-comma", from: node.getEnd(), at: comma });
+
+	return boundaries;
+}
+
 /** Keep resource declarations and awaited/constructor initializers outside direct-call approval keys. */
 function declarationGroupName(run: readonly DetectedRow[]): string {
 	if (run.some(row => row.boundaries.some(boundary => boundary.layer === "nested-expression"))) return "declaration-call-expressions";
@@ -1107,125 +1179,131 @@ function detectDeclarationCallSubgroup(source: SourceFile, node: Node): readonly
  */
 export const ROW_KINDS: readonly RowKind[] = [
 	{
-		name       : "logical-chains",
-		gap        : "blank",
-		containers : node => logicalOperands(node),
-		detect     : detectLogicalRow,
+		name       : "logical-chains"              ,
+		gap        : "blank"                       ,
+		containers : node => logicalOperands(node) ,
+		detect     : detectLogicalRow              ,
 	},
 	{
-		name       : "vertical-call-arguments",
-		gap        : "comma",
-		containers : node => isCallExpression(node) ? verticalCallArguments(node.getSourceFile(), node) : undefined,
-		detect     : detectVerticalCallArgument,
+		name       : "vertical-call-arguments"                                                                      ,
+		gap        : "comma"                                                                                        ,
+		containers : node => isCallExpression(node) ? verticalCallArguments(node.getSourceFile(), node) : undefined ,
+		detect     : detectVerticalCallArgument                                                                     ,
 	},
 	{
-		name       : "declaration-call-expressions",
-		gap        : TYPESCRIPT_LAYOUT_POLICY.rowKinds["declaration-call-expressions"].gap,
-		containers : node => declarationCallSubgroupMembers(node),
-		detect     : detectDeclarationCallSubgroup,
-		runKey     : (source, node) => declarationCallSubgroup(source, node)?.key,
-		minRows    : run => minimumRowsOf(TYPESCRIPT_LAYOUT_POLICY.rowKinds["declaration-call-expressions"], run.map(row => row.boundaries.map(boundary => boundary.axis))),
-		layerCall  : declarationCall,
+		name       : "vertical-function-parameters"                                 ,
+		gap        : "comma"                                                        ,
+		containers : node => verticalFunctionParameters(node.getSourceFile(), node) ,
+		detect     : detectVerticalFunctionParameter                                ,
 	},
 	{
-		name       : "declaration",
-		gap        : TYPESCRIPT_LAYOUT_POLICY.rowKinds.declaration.gap,
-		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
-		detect     : detectDeclaration,
-		groupName  : declarationGroupName,
-		minRows    : run => minimumRowsOf(TYPESCRIPT_LAYOUT_POLICY.rowKinds.declaration, run.map(row => row.boundaries.map(boundary => boundary.axis))),
-		layerCall  : node => kindLayerCall("declaration", node),
+		name       : "declaration-call-expressions"                                                                                                                         ,
+		gap        : TYPESCRIPT_LAYOUT_POLICY.rowKinds["declaration-call-expressions"].gap                                                                                  ,
+		containers : node => declarationCallSubgroupMembers(node)                                                                                                           ,
+		detect     : detectDeclarationCallSubgroup                                                                                                                          ,
+		runKey     : (source, node) => declarationCallSubgroup(source, node)?.key                                                                                           ,
+		minRows    : run => minimumRowsOf(TYPESCRIPT_LAYOUT_POLICY.rowKinds["declaration-call-expressions"], run.map(row => row.boundaries.map(boundary => boundary.axis))) ,
+		layerCall  : declarationCall                                                                                                                                        ,
 	},
 	{
-		name       : "type-alias",
-		gap        : "blank",
-		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
-		detect     : detectTypeAlias,
+		name       : "declaration"                                                                                                                      ,
+		gap        : TYPESCRIPT_LAYOUT_POLICY.rowKinds.declaration.gap                                                                                  ,
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined                                                        ,
+		detect     : detectDeclaration                                                                                                                  ,
+		groupName  : declarationGroupName                                                                                                               ,
+		minRows    : run => minimumRowsOf(TYPESCRIPT_LAYOUT_POLICY.rowKinds.declaration, run.map(row => row.boundaries.map(boundary => boundary.axis))) ,
+		layerCall  : node => kindLayerCall("declaration", node)                                                                                         ,
 	},
 	{
-		name       : "type-members",
-		gap        : "blank",
-		containers : node => isTypeLiteralNode(node) ? node.members : undefined,
-		detect     : detectMember,
+		name       : "type-alias"                                                                ,
+		gap        : "blank"                                                                     ,
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined ,
+		detect     : detectTypeAlias                                                             ,
 	},
 	{
-		name       : "method-signature",
-		gap        : "blank",
-		containers : node => isInterfaceDeclaration(node) ? node.members : undefined,
-		detect     : detectMethod,
+		name       : "type-members"                                             ,
+		gap        : "blank"                                                    ,
+		containers : node => isTypeLiteralNode(node) ? node.members : undefined ,
+		detect     : detectMember                                               ,
 	},
 	{
-		name       : "interface-members",
-		gap        : "blank",
-		containers : node => isInterfaceDeclaration(node) ? node.members : undefined,
-		detect     : detectMember,
+		name       : "method-signature"                                              ,
+		gap        : "blank"                                                         ,
+		containers : node => isInterfaceDeclaration(node) ? node.members : undefined ,
+		detect     : detectMethod                                                    ,
 	},
 	{
-		name       : "class-method",
-		gap        : "blank",
-		containers : node => isClassDeclaration(node) ? node.members : undefined,
-		detect     : detectMethod,
+		name       : "interface-members"                                             ,
+		gap        : "blank"                                                         ,
+		containers : node => isInterfaceDeclaration(node) ? node.members : undefined ,
+		detect     : detectMember                                                    ,
 	},
 	{
-		name       : "class-members",
-		gap        : "blank",
-		containers : node => isClassDeclaration(node) ? node.members : undefined,
-		detect     : detectMember,
+		name       : "class-method"                                              ,
+		gap        : "blank"                                                     ,
+		containers : node => isClassDeclaration(node) ? node.members : undefined ,
+		detect     : detectMethod                                                ,
 	},
 	{
-		name       : "assignments",
-		gap        : "blank",
-		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
-		detect     : detectAssignments,
+		name       : "class-members"                                             ,
+		gap        : "blank"                                                     ,
+		containers : node => isClassDeclaration(node) ? node.members : undefined ,
+		detect     : detectMember                                                ,
 	},
 	{
-		name       : "call-statements",
-		gap        : "blank",
-		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
-		detect     : detectCallStatement,
-		layerCall  : node => kindLayerCall("call-statements", node),
+		name       : "assignments"                                                               ,
+		gap        : "blank"                                                                     ,
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined ,
+		detect     : detectAssignments                                                           ,
 	},
 	{
-		name       : "if-headers-braced",
-		gap        : "blank",
-		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
-		detect     : (source, node) => detectIfHeader(source, node, "braced"),
+		name       : "call-statements"                                                           ,
+		gap        : "blank"                                                                     ,
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined ,
+		detect     : detectCallStatement                                                         ,
+		layerCall  : node => kindLayerCall("call-statements", node)                              ,
 	},
 	{
-		name       : "if-headers-return",
-		gap        : "blank",
-		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
-		detect     : (source, node) => detectIfHeader(source, node, "return"),
+		name       : "if-headers-braced"                                                         ,
+		gap        : "blank"                                                                     ,
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined ,
+		detect     : (source, node) => detectIfHeader(source, node, "braced")                    ,
 	},
 	{
-		name       : "return-guards",
-		gap        : "blank",
-		containers : node => isBlock(node) ? node.statements : undefined,
-		detect     : detectReturnGuard,
+		name       : "if-headers-return"                                                         ,
+		gap        : "blank"                                                                     ,
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined ,
+		detect     : (source, node) => detectIfHeader(source, node, "return")                    ,
 	},
 	{
-		name       : "guard-statements",
-		gap        : "blank",
-		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined,
-		detect     : detectGuard,
+		name       : "return-guards"                                     ,
+		gap        : "blank"                                             ,
+		containers : node => isBlock(node) ? node.statements : undefined ,
+		detect     : detectReturnGuard                                   ,
 	},
 	{
-		name       : "enum-member",
-		gap        : "comma",
-		containers : node => isEnumDeclaration(node) ? node.members : undefined,
-		detect     : detectEnumMember,
+		name       : "guard-statements"                                                          ,
+		gap        : "blank"                                                                     ,
+		containers : node => (isSourceFile(node) || isBlock(node)) ? node.statements : undefined ,
+		detect     : detectGuard                                                                 ,
 	},
 	{
-		name       : "case-clause",
-		gap        : "blank",
-		containers : node => isSwitchStatement(node) ? node.caseBlock.clauses : undefined,
-		detect     : detectCaseClause,
+		name       : "enum-member"                                              ,
+		gap        : "comma"                                                    ,
+		containers : node => isEnumDeclaration(node) ? node.members : undefined ,
+		detect     : detectEnumMember                                           ,
 	},
 	{
-		name       : "literal-array-rows",
-		gap        : "comma",
-		containers : literalArrayRows,
-		detect     : detectLiteralArrayRow,
+		name       : "case-clause"                                                        ,
+		gap        : "blank"                                                              ,
+		containers : node => isSwitchStatement(node) ? node.caseBlock.clauses : undefined ,
+		detect     : detectCaseClause                                                     ,
+	},
+	{
+		name       : "literal-array-rows"  ,
+		gap        : "comma"               ,
+		containers : literalArrayRows      ,
+		detect     : detectLiteralArrayRow ,
 	},
 	{
 		name       : "object-rows"   ,
@@ -1238,10 +1316,10 @@ export const ROW_KINDS: readonly RowKind[] = [
 		detect     : detectObjectRow ,
 	},
 	{
-		name       : "object-properties",
-		gap        : "comma",
-		containers : node => extendedObjectProperties(node),
-		detect     : detectObjectProperty,
+		name       : "object-properties"                    ,
+		gap        : "comma"                                ,
+		containers : node => extendedObjectProperties(node) ,
+		detect     : detectObjectProperty                   ,
 	},
 	{
 		name       : "registration"        ,
@@ -1374,6 +1452,12 @@ export const AXIS_NOTES: Readonly<Record<string, string>> = {
 		"start of the immediate return in an unbraced if-header family",
 	"vertical-call-comma"    :
 		"existing `,` after one physical row of an already-vertical call",
+	"parameter-colon"        :
+		"existing `:` before a one-line function parameter type",
+	"parameter-equals"       :
+		"existing `=` before a one-line function parameter default",
+	"parameter-comma"        :
+		"existing separator `,` after a one-line function parameter; an absent final comma stays absent",
 };
 
 validateLayoutAxisNotes(TYPESCRIPT_LAYOUT_POLICY, AXIS_NOTES);

@@ -28,6 +28,7 @@
 		{ "kind": "logical-chains", "pattern": "WHEN" },
 		{ "kind": "if-headers-braced", "pattern": "WHEN" },
 		{ "kind": "if-headers-return", "pattern": "WHEN" },
-		{ "kind": "vertical-call-arguments", "pattern": "DO" }
+		{ "kind": "vertical-call-arguments", "pattern": "DO" },
+		{ "kind": "vertical-function-parameters", "pattern": "DESCRIBE" }
 	]
 }
