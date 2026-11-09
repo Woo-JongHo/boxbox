@@ -44,7 +44,7 @@ export function buildInstallerArtifact(): string {
 	rmSync(output, { recursive: true, force: true });
 	mkdirSync(join(output, "bin"), { recursive: true });
 	mkdirSync(payload, { recursive: true });
-	for (const name of ["platform.mjs", "install-state.mjs", "claude-registration.mjs"]) cpSync(join(ROOT, "product/installer", name), join(payload, name));
+	for (const name of ["platform.mjs", "install-state.mjs", "claude-registration.mjs", "codex-registration.mjs"]) cpSync(join(ROOT, "product/installer", name), join(payload, name));
 	cpSync(join(ROOT, "product/installer/entry.mjs"), join(output, "bin/boxbox.mjs"));
 	cpSync(join(ROOT, "product/installer/README.md"), join(output, "README.md"));
 	cpSync(join(ROOT, "LICENSE"), join(output, "LICENSE"));
@@ -62,7 +62,7 @@ export function buildInstallerArtifact(): string {
 		for (const path of [host === "codex" ? ".codex-plugin" : ".claude-plugin", "skills", "hooks", ...(host === "claude" ? ["agents"] : [])]) cpSync(join(ROOT, "plugin", path), join(plugin, path), { recursive: true });
 		cpSync(join(ROOT, marketplacePath), join(root, marketplacePath));
 		cpSync(enginePath, join(root, "packages", `${manifest.name}-${manifest.version}.tgz`));
-		for (const name of ["install.mjs", "platform.mjs", "install-state.mjs", "claude-registration.mjs"]) cpSync(join(ROOT, "product/installer", name), join(root, name));
+		for (const name of ["install.mjs", "platform.mjs", "install-state.mjs", "claude-registration.mjs", "codex-registration.mjs"]) cpSync(join(ROOT, "product/installer", name), join(root, name));
 		cpSync(join(ROOT, "product/installer/launcher.mjs"), join(plugin, "scripts/boxbox.mjs"));
 		writeFileSync(join(root, "bundle.json"), JSON.stringify({ ...metadata, host }, null, "\t") + "\n");
 		const skillPath = join(plugin, "skills", manifest.name, "SKILL.md")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ;

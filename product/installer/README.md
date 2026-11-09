@@ -62,17 +62,16 @@ Disable removes only a still-owned status-line key or launcher. Unrelated settin
 
 ## Updating a local Codex candidate from an earlier version
 
-If the old installation enabled the Codex HUD, disable it first (see above). Codex rejects the same marketplace name
-at a different versioned installation path, so replace the old BoxBox marketplace registration once, then run the new
-installer:
+If the old installation enabled the Codex HUD, disable it first (see above), then run the new installer:
 
 ```powershell
-codex.cmd plugin marketplace remove boxbox-plugins
 npm.cmd exec --yes --package 'C:\path\to\boxbox-plugin-<version>.tgz' -- boxbox --codex
 ```
 
-Use your installed OpenAI Codex CLI (`codex.cmd` is the standard Windows npm entry). Marketplace replacement is a
-manual, non-atomic removal/reinstall operation. The installer does not migrate Codex marketplace sources automatically.
+Use your installed OpenAI Codex CLI (`codex.cmd` is the standard Windows npm entry). For an installer-owned older
+BoxBox marketplace, the installer verifies the previous bundle, removes its plugin and marketplace registration, and
+registers the new versioned source. A failed transition attempts to restore the previous registration. A same-named
+foreign marketplace is refused without removal.
 
 The payload is copied out of npm's temporary cache into permanent, separate host directories before registration:
 

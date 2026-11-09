@@ -62,6 +62,9 @@ release documentation when preparing a version.
 
 - Keep installer capability probes out of normal output while retaining their
   diagnostics on failure.
+- Transition an installer-owned Codex marketplace from an older versioned
+  source to the new source, restoring the previous registration when the new
+  registration fails and refusing same-named foreign marketplaces.
 - Resolve the locally built update archive by an absolute file URL on POSIX
   instead of npm's inherited invocation directory.
 - Direct public update notices to the published installer, infer the active

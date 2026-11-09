@@ -14,6 +14,7 @@ import      {
 
 import      { installationState                                                } from "./install-state.mjs"       ;
 import      { claudeRegistration                                               } from "./claude-registration.mjs" ;
+import      { codexRegistration                                                } from "./codex-registration.mjs"  ;
 
 const root       = fileURLToPath(new URL("./", import.meta.url))                    ;
 const windows    = process.platform === "win32"                                     ;
@@ -72,8 +73,18 @@ if (host) {
 }
 
 const claude = host && metadata.host === "claude" ? claudeRegistration(root, metadata, (args, options) => invoke(host, args, options)) : undefined;
+const codex = host && metadata.host === "codex" ? codexRegistration(root, metadata, (args, options = {}) => {
+	const child = spawnSync(host.executable, [...host.args, ...args], { stdio: "inherit", ...options });
+	if (child.error) throw child.error;
+	if (child.signal || child.status !== 0) {
+		const details = String(child.stderr || child.stdout || "").trim();
+		throw new Error(`Codex ${args.join(" ")} failed${details ? `: ${details}` : ""}`);
+	}
+	return child;
+}) : undefined;
 try {
 	claude?.preflight();
+	codex?.preflight();
 } catch (error) {
 	fail(error.message);
 }
@@ -121,9 +132,16 @@ writeFileSync(hooksPath, JSON.stringify(hooks, null, "\t") + "\n");
 
 if (host) {
 	state.advance("host-registration-started");
-	invoke(host, ["plugin", "marketplace", "add", root]);
-	claude?.marketplace();
-	invoke(host, metadata.host === "codex" ? ["plugin", "add", `${metadata.name}@${metadata.marketplace}`] : ["plugin", "install", `${metadata.name}@${metadata.marketplace}`, "--scope", "user"]);
+	try {
+		if (codex) codex.transition();
+		else {
+			invoke(host, ["plugin", "marketplace", "add", root]);
+			claude?.marketplace();
+			invoke(host, ["plugin", "install", `${metadata.name}@${metadata.marketplace}`, "--scope", "user"]);
+		}
+	} catch (error) {
+		fail(error.message);
+	}
 }
 claude?.verify();
 state.advance("verified");
