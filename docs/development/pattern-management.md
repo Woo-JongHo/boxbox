@@ -112,12 +112,12 @@ rebuild/validation behavior before claiming a SQLite index adds value.
 
 ## Change points
 
-Current sources: [signature.ts](../../product/engine/common/signature.ts) owns normalized keys;
-[grid-kinds.ts](../../product/engine/typescript/grid-kinds.ts) and
-[Python profile](../../product/engine/python/profile.ts) own supported structures;
-[conventions.ts](../../product/engine/common/conventions.ts) and
-[approval-gate.ts](../../product/engine/common/approval-gate.ts) own selection and proof;
-[authoring-guide.ts](../../product/engine/common/authoring-guide.ts) consumes approved guidance.
+Current sources: [02_signature.ts](../../product/engine/common/02_signature.ts) owns normalized keys;
+[13_grid-kinds.ts](../../product/engine/typescript/13_grid-kinds.ts) and
+[Python profile](../../product/engine/python/03_profile.ts) own supported structures;
+[16_conventions.ts](../../product/engine/common/16_conventions.ts) and
+[18_approval-gate.ts](../../product/engine/common/18_approval-gate.ts) own selection and proof;
+[20_authoring-guide.ts](../../product/engine/common/20_authoring-guide.ts) consumes approved guidance.
 
 The first policy experiment uses an existing approved rule without widening its accepted shapes. Guard returns,
 heterogeneous calls, nested members and structured documents provide separate counterpressure on the design;

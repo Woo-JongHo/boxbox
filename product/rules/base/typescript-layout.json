@@ -32,6 +32,7 @@
 		"method-signature": { "gap": [], "insert": ["open-paren", "close-paren", "colon", "comment"] },
 		"class-method": { "gap": [], "insert": ["open-paren", "close-paren", "colon", "comment"] },
 		"interface-members": { "gap": ["colon", "equals", "semicolon"], "insert": ["comment"] },
+		"documented-data-members": { "gap": ["colon", "member-type"], "insert": ["semicolon", "comment"] },
 		"type-members": { "gap": ["colon", "equals", "semicolon"], "insert": ["comment"] },
 		"class-members": { "gap": ["colon", "equals", "semicolon"], "insert": ["comment"] },
 		"enum-member": { "gap": ["equals", "comma"], "insert": ["comment"] },
@@ -45,6 +46,7 @@
 		"logical-chains": { "gap": ["comparison-operator{i}", "comparison-right{i}"], "insert": ["logical-operator", "logical-not", "logical-operand"] },
 		"if-headers-braced": { "gap": ["if-open-brace"], "insert": ["if-close-paren"] },
 		"if-headers-return": { "gap": ["if-return"], "insert": ["if-close-paren"] },
-		"vertical-call-arguments": { "gap": [], "insert": ["vertical-call-comma"] }
+		"vertical-call-arguments": { "gap": [], "insert": ["vertical-call-comma"] },
+		"vertical-function-parameters": { "gap": ["parameter-colon", "parameter-equals", "parameter-comma"], "insert": [] }
 	}
 }

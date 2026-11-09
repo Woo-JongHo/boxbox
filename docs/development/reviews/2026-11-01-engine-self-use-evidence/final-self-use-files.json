@@ -1,0 +1,3310 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "da1e93b36a6ca63a",
+  "sourceHead": "13e9ced56559f14c91766f5e962992a40cd816f9",
+  "parentCandidateId": "7af5b42b29c34e48",
+  "auditConcurrency": 1,
+  "candidateManifestFiles": 75,
+  "auditedFiles": 50,
+  "crosscheck": {
+    "candidateManifestVsAuditBeforeAfterAndCurrent": "50/50 match",
+    "mismatches": 0,
+    "changedDuringAnyCommand": 0,
+    "note": "19 stale and 1 missing initial hash are only comparisons against the original 49-file baseline manifest, not v2 drift."
+  },
+  "totals": {
+    "groups": 592,
+    "misaligned": 0,
+    "edits": 0,
+    "refused": 0,
+    "suggested": 0,
+    "importsChanged": 0,
+    "importsErrors": 0,
+    "publicSupportedTypescriptChecks": 49,
+    "publicSyntaxInvalid": 0,
+    "publicSyntaxUnavailable": 0,
+    "publicCheckExitCodeCounts": {
+      "0": 49
+    },
+    "publicApprovalEligible": 0,
+    "developmentHelperUnsupported": 1
+  },
+  "files": [
+    {
+      "path": "product/engine/common/align-cli.ts",
+      "candidateSha256": "7798ffaf450d9abd4496c7c2208c9f9a00c69d1c76d0ec059367f1354575d894",
+      "auditBeforeSha256": "7798ffaf450d9abd4496c7c2208c9f9a00c69d1c76d0ec059367f1354575d894",
+      "auditAfterSha256": "7798ffaf450d9abd4496c7c2208c9f9a00c69d1c76d0ec059367f1354575d894",
+      "currentSha256": "7798ffaf450d9abd4496c7c2208c9f9a00c69d1c76d0ec059367f1354575d894",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 14,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>call-open-paren>call-comma{i}>call-arg{i}>call-comma{i}>call-arg{i}>call-close-paren>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-member-dot>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/alignment-only.ts",
+      "candidateSha256": "295905f2095a2493200776fdfb13570b7e84bf5fb5ad5c5535cb65f4052d3778",
+      "auditBeforeSha256": "295905f2095a2493200776fdfb13570b7e84bf5fb5ad5c5535cb65f4052d3778",
+      "auditAfterSha256": "295905f2095a2493200776fdfb13570b7e84bf5fb5ad5c5535cb65f4052d3778",
+      "currentSha256": "295905f2095a2493200776fdfb13570b7e84bf5fb5ad5c5535cb65f4052d3778",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 4,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-member-dot>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/approval-gate.ts",
+      "candidateSha256": "6b58d47b7594469b60f868a4ad23ae4cfebd4c4dc57a3ea5d71afe44b879e272",
+      "auditBeforeSha256": "6b58d47b7594469b60f868a4ad23ae4cfebd4c4dc57a3ea5d71afe44b879e272",
+      "auditAfterSha256": "6b58d47b7594469b60f868a4ad23ae4cfebd4c4dc57a3ea5d71afe44b879e272",
+      "currentSha256": "6b58d47b7594469b60f868a4ad23ae4cfebd4c4dc57a3ea5d71afe44b879e272",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 21,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|BinaryExpression|logical-chains|logical-operator>logical-not>logical-operand",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>call-open-paren>call-comma{i}>call-arg{i}>call-comma{i}>call-arg{i}>call-close-paren>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-member-dot>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|return-guards|guard-return",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/authoring-guide.ts",
+      "candidateSha256": "a76fca688e7a92be49b172dcddb51182013ce94f3b427ce50d64b0fe301da45f",
+      "auditBeforeSha256": "a76fca688e7a92be49b172dcddb51182013ce94f3b427ce50d64b0fe301da45f",
+      "auditAfterSha256": "a76fca688e7a92be49b172dcddb51182013ce94f3b427ce50d64b0fe301da45f",
+      "currentSha256": "a76fca688e7a92be49b172dcddb51182013ce94f3b427ce50d64b0fe301da45f",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 7,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/axis-expectations.ts",
+      "candidateSha256": "7489a41b41748378bd12f7ffa1bec7dd3fd17d3e6f40e6372d6698dbd4c97b00",
+      "auditBeforeSha256": "7489a41b41748378bd12f7ffa1bec7dd3fd17d3e6f40e6372d6698dbd4c97b00",
+      "auditAfterSha256": "7489a41b41748378bd12f7ffa1bec7dd3fd17d3e6f40e6372d6698dbd4c97b00",
+      "currentSha256": "7489a41b41748378bd12f7ffa1bec7dd3fd17d3e6f40e6372d6698dbd4c97b00",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 4,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon>property-value>property-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/code-text.ts",
+      "candidateSha256": "80cc753fe2408ce76d7850e0f6ddc5a1d6c3c98968d7b5b53a80af9f35ed1cff",
+      "auditBeforeSha256": "80cc753fe2408ce76d7850e0f6ddc5a1d6c3c98968d7b5b53a80af9f35ed1cff",
+      "auditAfterSha256": "80cc753fe2408ce76d7850e0f6ddc5a1d6c3c98968d7b5b53a80af9f35ed1cff",
+      "currentSha256": "80cc753fe2408ce76d7850e0f6ddc5a1d6c3c98968d7b5b53a80af9f35ed1cff",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 6,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|colon>equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|assignments|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/conventions.ts",
+      "candidateSha256": "5bb2b5dd5a9bd1a6345a493c09bf453ca3631b2707e6c4efaf14ff0334a5d458",
+      "auditBeforeSha256": "5bb2b5dd5a9bd1a6345a493c09bf453ca3631b2707e6c4efaf14ff0334a5d458",
+      "auditAfterSha256": "5bb2b5dd5a9bd1a6345a493c09bf453ca3631b2707e6c4efaf14ff0334a5d458",
+      "currentSha256": "5bb2b5dd5a9bd1a6345a493c09bf453ca3631b2707e6c4efaf14ff0334a5d458",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 7,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/display-width.ts",
+      "candidateSha256": "6bdfc444754fcc4f02ce64108bed00090dd432c7f43f8c68cbd59f7484245aef",
+      "auditBeforeSha256": "6bdfc444754fcc4f02ce64108bed00090dd432c7f43f8c68cbd59f7484245aef",
+      "auditAfterSha256": "6bdfc444754fcc4f02ce64108bed00090dd432c7f43f8c68cbd59f7484245aef",
+      "currentSha256": "6bdfc444754fcc4f02ce64108bed00090dd432c7f43f8c68cbd59f7484245aef",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": []
+      }
+    },
+    {
+      "path": "product/engine/common/examples.ts",
+      "candidateSha256": "bbce0f81c2bab7b09d29f45eea481df2df37041eec0b673c5a25b273ff06230e",
+      "auditBeforeSha256": "bbce0f81c2bab7b09d29f45eea481df2df37041eec0b673c5a25b273ff06230e",
+      "auditAfterSha256": "bbce0f81c2bab7b09d29f45eea481df2df37041eec0b673c5a25b273ff06230e",
+      "currentSha256": "bbce0f81c2bab7b09d29f45eea481df2df37041eec0b673c5a25b273ff06230e",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 11,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|SourceFile|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|TypeLiteral|type-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|SourceFile|declaration-equals|colon>equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-member-dot>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>call-open-paren>call-comma{i}>call-arg{i}>call-comma{i}>call-arg{i}>call-close-paren>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|BinaryExpression|logical-chains|logical-operator>logical-not>logical-operand>comparison-operator{i}-{i}>comparison-right{i}-{i}",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/format-pipeline.ts",
+      "candidateSha256": "a5fe8af631afaffe908f228adb1ee200e04000f0f321ceeb9d1e4d74a4736db0",
+      "auditBeforeSha256": "a5fe8af631afaffe908f228adb1ee200e04000f0f321ceeb9d1e4d74a4736db0",
+      "auditAfterSha256": "a5fe8af631afaffe908f228adb1ee200e04000f0f321ceeb9d1e4d74a4736db0",
+      "currentSha256": "a5fe8af631afaffe908f228adb1ee200e04000f0f321ceeb9d1e4d74a4736db0",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 17,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|TypeLiteral|type-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon>property-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon>property-colon{i}>property-value>property-value{i}>property-comma>property-comma{i}",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/formatter-process.ts",
+      "candidateSha256": "c64065046d61d04d6869e95a1da51c7a6228f9a4ab2288c962ba614ca41e1fa7",
+      "auditBeforeSha256": "c64065046d61d04d6869e95a1da51c7a6228f9a4ab2288c962ba614ca41e1fa7",
+      "auditAfterSha256": "c64065046d61d04d6869e95a1da51c7a6228f9a4ab2288c962ba614ca41e1fa7",
+      "currentSha256": "c64065046d61d04d6869e95a1da51c7a6228f9a4ab2288c962ba614ca41e1fa7",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 10,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon>property-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/grammar-ids.ts",
+      "candidateSha256": "3f6198417f339189e58f5ee2c8bc991e63b8f303eb834d174f510b6dfb3d5e63",
+      "auditBeforeSha256": "3f6198417f339189e58f5ee2c8bc991e63b8f303eb834d174f510b6dfb3d5e63",
+      "auditAfterSha256": "3f6198417f339189e58f5ee2c8bc991e63b8f303eb834d174f510b6dfb3d5e63",
+      "currentSha256": "3f6198417f339189e58f5ee2c8bc991e63b8f303eb834d174f510b6dfb3d5e63",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 1,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|SourceFile|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/guarded-run.ts",
+      "candidateSha256": "971af12e2f8399e0058f9c80549de8c611b63a3bf291d63b800b52f125f3b8d3",
+      "auditBeforeSha256": "971af12e2f8399e0058f9c80549de8c611b63a3bf291d63b800b52f125f3b8d3",
+      "auditAfterSha256": "971af12e2f8399e0058f9c80549de8c611b63a3bf291d63b800b52f125f3b8d3",
+      "currentSha256": "971af12e2f8399e0058f9c80549de8c611b63a3bf291d63b800b52f125f3b8d3",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 19,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|SourceFile|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|SourceFile|type-alias|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|SourceFile|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon{i}>property-value{i}>property-comma{i}",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon>property-value>property-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|assignments|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon>property-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/hook.ts",
+      "candidateSha256": "18bde3cdde61cddadd093a7e26fac63991cafe40718a35a06479e7579539e15b",
+      "auditBeforeSha256": "18bde3cdde61cddadd093a7e26fac63991cafe40718a35a06479e7579539e15b",
+      "auditAfterSha256": "18bde3cdde61cddadd093a7e26fac63991cafe40718a35a06479e7579539e15b",
+      "currentSha256": "18bde3cdde61cddadd093a7e26fac63991cafe40718a35a06479e7579539e15b",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 4,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>call-open-paren>call-close-paren>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/lifecycle-hook.ts",
+      "candidateSha256": "97e4a2d12f38122aea98e017597e1b2fc1c45ecdf67a482bcb6e3c2d135ab090",
+      "auditBeforeSha256": "97e4a2d12f38122aea98e017597e1b2fc1c45ecdf67a482bcb6e3c2d135ab090",
+      "auditAfterSha256": "97e4a2d12f38122aea98e017597e1b2fc1c45ecdf67a482bcb6e3c2d135ab090",
+      "currentSha256": "97e4a2d12f38122aea98e017597e1b2fc1c45ecdf67a482bcb6e3c2d135ab090",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 12,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|BinaryExpression|logical-chains|logical-operator>logical-not>logical-operand>comparison-operator{i}-{i}>comparison-right{i}-{i}",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|CallExpression|vertical-call-arguments|vertical-call-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-expressions|equals>call-open-paren>call-comma{i}>call-arg{i}>comparison-operator{i}-{i}>comparison-right{i}-{i}>conditional-question{i}-{i}>conditional-true{i}-{i}>conditional-colon{i}-{i}>conditional-false{i}-{i}>call-close-paren>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon>property-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/parse-check.ts",
+      "candidateSha256": "0335efc2c1e1d5154620ddc7a11ea1cf02231295fddf12a7940630b24b13feb6",
+      "auditBeforeSha256": "0335efc2c1e1d5154620ddc7a11ea1cf02231295fddf12a7940630b24b13feb6",
+      "auditAfterSha256": "0335efc2c1e1d5154620ddc7a11ea1cf02231295fddf12a7940630b24b13feb6",
+      "currentSha256": "0335efc2c1e1d5154620ddc7a11ea1cf02231295fddf12a7940630b24b13feb6",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 6,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|SourceFile|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>call-open-paren>call-comma{i}>call-arg{i}>call-comma{i}>call-arg{i}>call-close-paren>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|if-headers-return|if-close-paren>if-return",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/preservation.ts",
+      "candidateSha256": "604786024d7fc4437653ef75cbf541f2444ca877fb824630887e06733bd986b7",
+      "auditBeforeSha256": "604786024d7fc4437653ef75cbf541f2444ca877fb824630887e06733bd986b7",
+      "auditAfterSha256": "604786024d7fc4437653ef75cbf541f2444ca877fb824630887e06733bd986b7",
+      "currentSha256": "604786024d7fc4437653ef75cbf541f2444ca877fb824630887e06733bd986b7",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 9,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|SourceFile|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-member-dot>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|colon>equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|BinaryExpression|logical-chains|logical-operator>logical-not>logical-operand>comparison-operator{i}-{i}>comparison-right{i}-{i}",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>call-open-paren>call-comma{i}>call-arg{i}>call-close-paren>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/process-lock.ts",
+      "candidateSha256": "aa1561f1c1ea0007f3a4f26536a96567fff43b155992fdcfe8b814a8b458faa9",
+      "auditBeforeSha256": "aa1561f1c1ea0007f3a4f26536a96567fff43b155992fdcfe8b814a8b458faa9",
+      "auditAfterSha256": "aa1561f1c1ea0007f3a4f26536a96567fff43b155992fdcfe8b814a8b458faa9",
+      "currentSha256": "aa1561f1c1ea0007f3a4f26536a96567fff43b155992fdcfe8b814a8b458faa9",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 5,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|SourceFile|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|BinaryExpression|logical-chains|logical-operator>logical-not>logical-operand>comparison-operator{i}-{i}>comparison-right{i}-{i}",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/project-config.ts",
+      "candidateSha256": "524f04d1c869d2f412c67516e3d5981b55f093fcfd7e0c14f48f13fac9f94096",
+      "auditBeforeSha256": "524f04d1c869d2f412c67516e3d5981b55f093fcfd7e0c14f48f13fac9f94096",
+      "auditAfterSha256": "524f04d1c869d2f412c67516e3d5981b55f093fcfd7e0c14f48f13fac9f94096",
+      "currentSha256": "524f04d1c869d2f412c67516e3d5981b55f093fcfd7e0c14f48f13fac9f94096",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 26,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|SourceFile|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ArrayLiteralExpression|object-rows|open-brace>property{i}>colon{i}>value{i}>comma{i}>property{i}>colon{i}>value{i}>close-brace>tail",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|SourceFile|declaration-equals|colon>equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|BinaryExpression|logical-chains|logical-operator>logical-not>logical-operand>comparison-operator{i}-{i}>comparison-right{i}-{i}",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>call-open-paren>call-comma{i}>call-arg{i}>call-close-paren>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon>property-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/report.ts",
+      "candidateSha256": "361ad6df6b783d3d1542fe79a4e32f9878f537f332b155722e93bd8db5d43bdd",
+      "auditBeforeSha256": "361ad6df6b783d3d1542fe79a4e32f9878f537f332b155722e93bd8db5d43bdd",
+      "auditAfterSha256": "361ad6df6b783d3d1542fe79a4e32f9878f537f332b155722e93bd8db5d43bdd",
+      "currentSha256": "361ad6df6b783d3d1542fe79a4e32f9878f537f332b155722e93bd8db5d43bdd",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 29,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|return-guards|guard-return",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ArrayLiteralExpression|object-rows|open-brace>property{i}>colon{i}>value{i}>comma{i}>property{i}>colon{i}>value{i}>comma{i}>property{i}>colon{i}>value{i}>comma{i}>property{i}>colon{i}>value{i}>close-brace>tail",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-member-dot>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon>property-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|colon>equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/result-json.ts",
+      "candidateSha256": "fc791a830e5431916562143267740571e4735fe5fdb739590a15d7eea9ef08aa",
+      "auditBeforeSha256": "fc791a830e5431916562143267740571e4735fe5fdb739590a15d7eea9ef08aa",
+      "auditAfterSha256": "fc791a830e5431916562143267740571e4735fe5fdb739590a15d7eea9ef08aa",
+      "currentSha256": "fc791a830e5431916562143267740571e4735fe5fdb739590a15d7eea9ef08aa",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 7,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/runtime-record-validation.ts",
+      "candidateSha256": "6d3f57389801cdb610de1524e927750b07b3b97a1df637a32891ac094ccd5f8b",
+      "auditBeforeSha256": "6d3f57389801cdb610de1524e927750b07b3b97a1df637a32891ac094ccd5f8b",
+      "auditAfterSha256": "6d3f57389801cdb610de1524e927750b07b3b97a1df637a32891ac094ccd5f8b",
+      "currentSha256": "6d3f57389801cdb610de1524e927750b07b3b97a1df637a32891ac094ccd5f8b",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": []
+      }
+    },
+    {
+      "path": "product/engine/common/safe-file.ts",
+      "candidateSha256": "ddc81949b3c0c481f64124659b33eaa848b8025f5a3dab53434617279cdd711e",
+      "auditBeforeSha256": "ddc81949b3c0c481f64124659b33eaa848b8025f5a3dab53434617279cdd711e",
+      "auditAfterSha256": "ddc81949b3c0c481f64124659b33eaa848b8025f5a3dab53434617279cdd711e",
+      "currentSha256": "ddc81949b3c0c481f64124659b33eaa848b8025f5a3dab53434617279cdd711e",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 6,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>call-open-paren>call-comma{i}>call-arg{i}>call-close-paren>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/signature.ts",
+      "candidateSha256": "958a206fa54e709a735c3305726b49e2811ad5074c78e12208766e5087067e4d",
+      "auditBeforeSha256": "958a206fa54e709a735c3305726b49e2811ad5074c78e12208766e5087067e4d",
+      "auditAfterSha256": "958a206fa54e709a735c3305726b49e2811ad5074c78e12208766e5087067e4d",
+      "currentSha256": "958a206fa54e709a735c3305726b49e2811ad5074c78e12208766e5087067e4d",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 1,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/surface.ts",
+      "candidateSha256": "46bb1a44a08ec621b0d0f6c6d103e9eeed2bc23762e713084b747ba0b9391fe5",
+      "auditBeforeSha256": "46bb1a44a08ec621b0d0f6c6d103e9eeed2bc23762e713084b747ba0b9391fe5",
+      "auditAfterSha256": "46bb1a44a08ec621b0d0f6c6d103e9eeed2bc23762e713084b747ba0b9391fe5",
+      "currentSha256": "46bb1a44a08ec621b0d0f6c6d103e9eeed2bc23762e713084b747ba0b9391fe5",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 3,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/syntax-validation.ts",
+      "candidateSha256": "f7e16000b009bbad70854a9034afc3cd3436849734f568c998c417608f55fae1",
+      "auditBeforeSha256": "f7e16000b009bbad70854a9034afc3cd3436849734f568c998c417608f55fae1",
+      "auditAfterSha256": "f7e16000b009bbad70854a9034afc3cd3436849734f568c998c417608f55fae1",
+      "currentSha256": "f7e16000b009bbad70854a9034afc3cd3436849734f568c998c417608f55fae1",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 5,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/table-engine.ts",
+      "candidateSha256": "b704756f3ea205ac78e1b12d6056f0056d7d9ce79e5b6f0cfa2e3da348f2fe50",
+      "auditBeforeSha256": "b704756f3ea205ac78e1b12d6056f0056d7d9ce79e5b6f0cfa2e3da348f2fe50",
+      "auditAfterSha256": "b704756f3ea205ac78e1b12d6056f0056d7d9ce79e5b6f0cfa2e3da348f2fe50",
+      "currentSha256": "b704756f3ea205ac78e1b12d6056f0056d7d9ce79e5b6f0cfa2e3da348f2fe50",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 30,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|BinaryExpression|logical-chains|logical-operator>logical-not>logical-operand",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|colon>equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-member-dot>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|colon>equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/common/usage.ts",
+      "candidateSha256": "71608ae8c0d8625ca583eab656151c6646774ba308d34119e70108a3d2191958",
+      "auditBeforeSha256": "71608ae8c0d8625ca583eab656151c6646774ba308d34119e70108a3d2191958",
+      "auditAfterSha256": "71608ae8c0d8625ca583eab656151c6646774ba308d34119e70108a3d2191958",
+      "currentSha256": "71608ae8c0d8625ca583eab656151c6646774ba308d34119e70108a3d2191958",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 3,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/python/01_group-regions.ts",
+      "candidateSha256": "4bcb66f0db690fa951771c6fb6b5c3dd2895748d36e2516543813ceae2ed2910",
+      "auditBeforeSha256": "4bcb66f0db690fa951771c6fb6b5c3dd2895748d36e2516543813ceae2ed2910",
+      "auditAfterSha256": "4bcb66f0db690fa951771c6fb6b5c3dd2895748d36e2516543813ceae2ed2910",
+      "currentSha256": "4bcb66f0db690fa951771c6fb6b5c3dd2895748d36e2516543813ceae2ed2910",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": []
+      }
+    },
+    {
+      "path": "product/engine/python/06_align-tables.ts",
+      "candidateSha256": "0c2e3faf041cee5e3469ea68121eb58ec1937770f1b663f0406f0e1f484d775e",
+      "auditBeforeSha256": "0c2e3faf041cee5e3469ea68121eb58ec1937770f1b663f0406f0e1f484d775e",
+      "auditAfterSha256": "0c2e3faf041cee5e3469ea68121eb58ec1937770f1b663f0406f0e1f484d775e",
+      "currentSha256": "0c2e3faf041cee5e3469ea68121eb58ec1937770f1b663f0406f0e1f484d775e",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": []
+      }
+    },
+    {
+      "path": "product/engine/python/assignment-envelope.ts",
+      "candidateSha256": "4d7a36834add5cc6f3a7fe1cebaedeb8e6860089270f4a011cde31c5516fb1b4",
+      "auditBeforeSha256": "4d7a36834add5cc6f3a7fe1cebaedeb8e6860089270f4a011cde31c5516fb1b4",
+      "auditAfterSha256": "4d7a36834add5cc6f3a7fe1cebaedeb8e6860089270f4a011cde31c5516fb1b4",
+      "currentSha256": "4d7a36834add5cc6f3a7fe1cebaedeb8e6860089270f4a011cde31c5516fb1b4",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 6,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|SourceFile|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ArrayLiteralExpression|object-rows|open-brace>property{i}>colon{i}>value{i}>comma{i}>property{i}>colon{i}>value{i}>comma{i}>property{i}>colon{i}>value{i}>close-brace>tail",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|colon>equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|BinaryExpression|logical-chains|logical-operator>logical-not>logical-operand>comparison-operator{i}-{i}>comparison-right{i}-{i}",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/python/profile.ts",
+      "candidateSha256": "8309572705519917ebd3ffa171d75806a5394244756f1892df80c32010acb965",
+      "auditBeforeSha256": "8309572705519917ebd3ffa171d75806a5394244756f1892df80c32010acb965",
+      "auditAfterSha256": "8309572705519917ebd3ffa171d75806a5394244756f1892df80c32010acb965",
+      "currentSha256": "8309572705519917ebd3ffa171d75806a5394244756f1892df80c32010acb965",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 30,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon>property-value>property-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ArrayLiteralExpression|object-rows|open-brace>property{i}>colon{i}>value{i}>comma{i}>property{i}>colon{i}>value{i}>comma{i}>property{i}>colon{i}>value{i}>close-brace>tail",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|SourceFile|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|BinaryExpression|logical-chains|logical-operator>logical-not>logical-operand>comparison-operator{i}-{i}>comparison-right{i}-{i}",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|SourceFile|declaration-extended-equals|equals>call-open-paren>call-comma{i}>call-arg{i}>call-close-paren>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>subscript-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|return-guards|guard-return",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|TypeLiteral|type-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon{i}>property-value{i}>property-comma{i}",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|if-headers-return|if-close-paren>if-return",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/python/string-ranges.ts",
+      "candidateSha256": "ac5d87c0bd292c2e078013869b6f23ce4d1f8e1344af4c3ff022212ac1f195df",
+      "auditBeforeSha256": "ac5d87c0bd292c2e078013869b6f23ce4d1f8e1344af4c3ff022212ac1f195df",
+      "auditAfterSha256": "ac5d87c0bd292c2e078013869b6f23ce4d1f8e1344af4c3ff022212ac1f195df",
+      "currentSha256": "ac5d87c0bd292c2e078013869b6f23ce4d1f8e1344af4c3ff022212ac1f195df",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": []
+      }
+    },
+    {
+      "path": "product/engine/typescript/00_expand-interface-members.ts",
+      "candidateSha256": "04146c5fa9cc5a67f568eb6f55d1c627138d130335fc2350ea50d1b6a2c31518",
+      "auditBeforeSha256": "04146c5fa9cc5a67f568eb6f55d1c627138d130335fc2350ea50d1b6a2c31518",
+      "auditAfterSha256": "04146c5fa9cc5a67f568eb6f55d1c627138d130335fc2350ea50d1b6a2c31518",
+      "currentSha256": "04146c5fa9cc5a67f568eb6f55d1c627138d130335fc2350ea50d1b6a2c31518",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 5,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>subscript-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|SourceFile|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/typescript/00_normalize-imports.ts",
+      "candidateSha256": "b4f27014e127a285c3a2c1e98b0c3c5cb6eb85094cadb53fbcb3c29e760a8ba6",
+      "auditBeforeSha256": "b4f27014e127a285c3a2c1e98b0c3c5cb6eb85094cadb53fbcb3c29e760a8ba6",
+      "auditAfterSha256": "b4f27014e127a285c3a2c1e98b0c3c5cb6eb85094cadb53fbcb3c29e760a8ba6",
+      "currentSha256": "b4f27014e127a285c3a2c1e98b0c3c5cb6eb85094cadb53fbcb3c29e760a8ba6",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 30,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>subscript-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|if-headers-braced|if-close-paren>if-open-brace",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|guard-statements|guard-close-paren>guard-semi{i}>guard-continue",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|return-guards|guard-return",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon{i}>property-comma>property-value{i}>property-comma{i}",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|BinaryExpression|logical-chains|logical-operator>logical-not>logical-operand",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-member-dot>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|SourceFile|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/typescript/01_group-regions.ts",
+      "candidateSha256": "61040802114652f764b370696fc08689b2cca69cc923abd298fa2cd6eed3a080",
+      "auditBeforeSha256": "61040802114652f764b370696fc08689b2cca69cc923abd298fa2cd6eed3a080",
+      "auditAfterSha256": "61040802114652f764b370696fc08689b2cca69cc923abd298fa2cd6eed3a080",
+      "currentSha256": "61040802114652f764b370696fc08689b2cca69cc923abd298fa2cd6eed3a080",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 8,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|if-headers-return|if-close-paren>if-return",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|BinaryExpression|logical-chains|logical-operator>logical-not>logical-operand",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/typescript/02_audit-type-uncertainty.ts",
+      "candidateSha256": "245b409d5e2934932d8500f7b46e3a5d28957961d839604567c3d7954ab45fa2",
+      "auditBeforeSha256": "245b409d5e2934932d8500f7b46e3a5d28957961d839604567c3d7954ab45fa2",
+      "auditAfterSha256": "245b409d5e2934932d8500f7b46e3a5d28957961d839604567c3d7954ab45fa2",
+      "currentSha256": "245b409d5e2934932d8500f7b46e3a5d28957961d839604567c3d7954ab45fa2",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 7,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|BinaryExpression|logical-chains|logical-operator>logical-not>logical-operand>comparison-operator{i}-{i}>comparison-right{i}-{i}",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon{i}>property-value{i}>property-comma{i}",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/typescript/03_audit-optional-types.ts",
+      "candidateSha256": "4fd3ea121b63a67ba44fca9a7b0c795762db25b729a294eb0efc0ac6af08c94a",
+      "auditBeforeSha256": "4fd3ea121b63a67ba44fca9a7b0c795762db25b729a294eb0efc0ac6af08c94a",
+      "auditAfterSha256": "4fd3ea121b63a67ba44fca9a7b0c795762db25b729a294eb0efc0ac6af08c94a",
+      "currentSha256": "4fd3ea121b63a67ba44fca9a7b0c795762db25b729a294eb0efc0ac6af08c94a",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 11,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>subscript-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|BinaryExpression|logical-chains|logical-operator>logical-not>logical-operand",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon>property-comma{i}>property-value>property-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|SourceFile|declaration-call-envelope|equals>call-envelope-open>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|SourceFile|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/typescript/05_inspect-hover.mjs",
+      "candidateSha256": "1a3bdf8231fdbef90d050220f02d0214d3fc7bfe168445f34158cc1040a1d2ec",
+      "auditBeforeSha256": "1a3bdf8231fdbef90d050220f02d0214d3fc7bfe168445f34158cc1040a1d2ec",
+      "auditAfterSha256": "1a3bdf8231fdbef90d050220f02d0214d3fc7bfe168445f34158cc1040a1d2ec",
+      "currentSha256": "1a3bdf8231fdbef90d050220f02d0214d3fc7bfe168445f34158cc1040a1d2ec",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 12,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "status": "unsupported",
+        "reason": "UNSUPPORTED_LANGUAGE",
+        "developmentHelper": "development-helper; raw engine observations only; no public CLI admission claim",
+        "nodeSyntax": "node-check-pass",
+        "nodeCheckExitCode": 0
+      }
+    },
+    {
+      "path": "product/engine/typescript/06_align-tables.ts",
+      "candidateSha256": "016804dbe77871dbd3524962368e2c66ed2db457efa76c5ecaec87ab3a6f8d53",
+      "auditBeforeSha256": "016804dbe77871dbd3524962368e2c66ed2db457efa76c5ecaec87ab3a6f8d53",
+      "auditAfterSha256": "016804dbe77871dbd3524962368e2c66ed2db457efa76c5ecaec87ab3a6f8d53",
+      "currentSha256": "016804dbe77871dbd3524962368e2c66ed2db457efa76c5ecaec87ab3a6f8d53",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": []
+      }
+    },
+    {
+      "path": "product/engine/typescript/07_wrap-conditions.ts",
+      "candidateSha256": "489d37549277dbd39fadadd718c8c884412778658f2fe7d731b3e8f8349f3fe1",
+      "auditBeforeSha256": "489d37549277dbd39fadadd718c8c884412778658f2fe7d731b3e8f8349f3fe1",
+      "auditAfterSha256": "489d37549277dbd39fadadd718c8c884412778658f2fe7d731b3e8f8349f3fe1",
+      "currentSha256": "489d37549277dbd39fadadd718c8c884412778658f2fe7d731b3e8f8349f3fe1",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 28,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|colon>equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|if-headers-return|if-close-paren>if-return",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|return-guards|guard-return",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-member-dot>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>call-open-paren>call-comma{i}>call-arg{i}>call-close-paren>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|BinaryExpression|logical-chains|logical-operator>logical-not>logical-operand",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/typescript/08_function-map.ts",
+      "candidateSha256": "ba8073f83c02ddeda48deae95ae0170dd620df8f9a1cb21039fd169c7875016f",
+      "auditBeforeSha256": "ba8073f83c02ddeda48deae95ae0170dd620df8f9a1cb21039fd169c7875016f",
+      "auditAfterSha256": "ba8073f83c02ddeda48deae95ae0170dd620df8f9a1cb21039fd169c7875016f",
+      "currentSha256": "ba8073f83c02ddeda48deae95ae0170dd620df8f9a1cb21039fd169c7875016f",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 10,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-member-dot>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/typescript/09_observe-shapes.ts",
+      "candidateSha256": "7d5dc43b45df4168cfd4a691359586087544d6eaba4e3301eb39cffbf3f7f60a",
+      "auditBeforeSha256": "7d5dc43b45df4168cfd4a691359586087544d6eaba4e3301eb39cffbf3f7f60a",
+      "auditAfterSha256": "7d5dc43b45df4168cfd4a691359586087544d6eaba4e3301eb39cffbf3f7f60a",
+      "currentSha256": "7d5dc43b45df4168cfd4a691359586087544d6eaba4e3301eb39cffbf3f7f60a",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 24,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|SourceFile|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|SwitchStatement|case-clause|case-colon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|colon>equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>subscript-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/typescript/align.ts",
+      "candidateSha256": "147211bb9fd08dc1b9dece3ad62a2dbfa99519c96f51f4fce6064d914ad1bc55",
+      "auditBeforeSha256": "147211bb9fd08dc1b9dece3ad62a2dbfa99519c96f51f4fce6064d914ad1bc55",
+      "auditAfterSha256": "147211bb9fd08dc1b9dece3ad62a2dbfa99519c96f51f4fce6064d914ad1bc55",
+      "currentSha256": "147211bb9fd08dc1b9dece3ad62a2dbfa99519c96f51f4fce6064d914ad1bc55",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 37,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|registration|colon>value>comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|colon>equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon>property-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>call-open-paren>call-close-paren>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-member-dot>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon{i}>property-value{i}>property-comma{i}",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|if-headers-return|if-close-paren>if-return",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/typescript/grid-kinds.ts",
+      "candidateSha256": "8b0435be9644735c5836536a7263b14a80f0233b369796a51a5313f9d8b5d5b5",
+      "auditBeforeSha256": "8b0435be9644735c5836536a7263b14a80f0233b369796a51a5313f9d8b5d5b5",
+      "auditAfterSha256": "8b0435be9644735c5836536a7263b14a80f0233b369796a51a5313f9d8b5d5b5",
+      "currentSha256": "8b0435be9644735c5836536a7263b14a80f0233b369796a51a5313f9d8b5d5b5",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 101,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|SourceFile|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|return-guards|guard-return",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|TypeLiteral|type-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|CallExpression|vertical-call-arguments|vertical-call-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|BinaryExpression|logical-chains|logical-operator>logical-not>logical-operand>comparison-operator{i}-{i}>comparison-right{i}-{i}",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ArrayLiteralExpression|object-rows|open-brace>property{i}>colon{i}>value{i}>comma{i}>property{i}>colon{i}>value{i}>comma{i}>property{i}>colon{i}>value{i}>comma{i}>property{i}>colon{i}>value{i}>close-brace>tail",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|if-headers-return|if-close-paren>if-return",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|colon>equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon>property-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|ObjectLiteralExpression|object-properties|property-colon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|BinaryExpression|logical-chains|logical-operator>logical-not>logical-operand",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|if-headers-braced|if-close-paren>if-open-brace",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-member-dot>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/typescript/grid-tokens.ts",
+      "candidateSha256": "4e3ce312784b505696ba338cd569da2b501fa6ddba40603ca139855e68074fdc",
+      "auditBeforeSha256": "4e3ce312784b505696ba338cd569da2b501fa6ddba40603ca139855e68074fdc",
+      "auditAfterSha256": "4e3ce312784b505696ba338cd569da2b501fa6ddba40603ca139855e68074fdc",
+      "currentSha256": "4e3ce312784b505696ba338cd569da2b501fa6ddba40603ca139855e68074fdc",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 5,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|if-headers-braced|if-close-paren>if-open-brace",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|if-headers-return|if-close-paren>if-return",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|CallExpression|vertical-call-arguments|vertical-call-comma",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/typescript/layout-policy.ts",
+      "candidateSha256": "9410aceca2d22350df45e3c0cfa922a1f94a47f763f11a396ada017c0e431e00",
+      "auditBeforeSha256": "9410aceca2d22350df45e3c0cfa922a1f94a47f763f11a396ada017c0e431e00",
+      "auditAfterSha256": "9410aceca2d22350df45e3c0cfa922a1f94a47f763f11a396ada017c0e431e00",
+      "currentSha256": "9410aceca2d22350df45e3c0cfa922a1f94a47f763f11a396ada017c0e431e00",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 3,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-call-envelope|equals>call-envelope-open>call-envelope-close>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/typescript/layout-preservation.ts",
+      "candidateSha256": "c2a0afe226b15d2f257ae915def82b2077f0ca6f636dc564c66b5326378c8c87",
+      "auditBeforeSha256": "c2a0afe226b15d2f257ae915def82b2077f0ca6f636dc564c66b5326378c8c87",
+      "auditAfterSha256": "c2a0afe226b15d2f257ae915def82b2077f0ca6f636dc564c66b5326378c8c87",
+      "currentSha256": "c2a0afe226b15d2f257ae915def82b2077f0ca6f636dc564c66b5326378c8c87",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 1,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/typescript/load-source-file.ts",
+      "candidateSha256": "006b6eed41146170a9c1d5fc7979b9ded5e4064500fa3a732c98346db38dbdf3",
+      "auditBeforeSha256": "006b6eed41146170a9c1d5fc7979b9ded5e4064500fa3a732c98346db38dbdf3",
+      "auditAfterSha256": "006b6eed41146170a9c1d5fc7979b9ded5e4064500fa3a732c98346db38dbdf3",
+      "currentSha256": "006b6eed41146170a9c1d5fc7979b9ded5e4064500fa3a732c98346db38dbdf3",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 4,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-extended-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "product/engine/typescript/token-preservation.ts",
+      "candidateSha256": "ed4b33cdbc941c4c7fad7883336f298b6250d8cb72cfef6e87e718c39b96e643",
+      "auditBeforeSha256": "ed4b33cdbc941c4c7fad7883336f298b6250d8cb72cfef6e87e718c39b96e643",
+      "auditAfterSha256": "ed4b33cdbc941c4c7fad7883336f298b6250d8cb72cfef6e87e718c39b96e643",
+      "currentSha256": "ed4b33cdbc941c4c7fad7883336f298b6250d8cb72cfef6e87e718c39b96e643",
+      "candidateAndCurrentHashesMatch": true,
+      "changedDuringCommands": false,
+      "alignment": {
+        "groups": 3,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      },
+      "alignmentExitCode": 0,
+      "importLayout": "import-declarations files=1 changed=0 errors=0",
+      "publicCheck": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "approvalEligible": false,
+        "approvalFacts": [
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          },
+          {
+            "key": "v1|typescript|Block|declaration-equals|equals>call-open-paren>call-close-paren>semicolon",
+            "status": "unknown",
+            "proofComplete": false,
+            "reasons": [
+              "no matching convention"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,667 @@
+{
+  "schemaVersion": 2,
+  "finalV4": {
+    "scope": "Frozen v4 direct installed Node launcher, engine-only install; not native host latency.",
+    "environment": {
+      "observedAtUtc": "2026-11-08T17:03:20.270929+00:00",
+      "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+      "machine": "arm64",
+      "logicalCpuCount": 8,
+      "node": "v22.22.3",
+      "npm": "10.9.8",
+      "python": "Python 3.14.2",
+      "installerSha256": "78d9826a4ecff63f95d005e71c63fcae1150d516b16070e1d2c0550f89020532",
+      "engineTarballSha256": "ce6067469bf8f3714947c2dab55ece467679151d37c4beeddefbd819ac83b94e",
+      "cpuBrand": "Apple M1",
+      "installedCliSha256": "1c845826524bcdbafa1c8c5ffb68fba128ee5dff4c21d8d23cb51da6a891b1fc",
+      "finishedAtUtc": "2026-11-08T17:07:20.115859+00:00"
+    },
+    "experiment": {
+      "totalFilesPerCase": 1000,
+      "changedFiles": [
+        0,
+        1,
+        10,
+        100
+      ],
+      "callsPerCase": 3,
+      "calls": 12,
+      "sourceFilesPreserved": 4000,
+      "ordering": "Increasing changed-file count; no further edits between three calls.",
+      "timer": "Process launch through driver completion; Python timed-wait polling cap50ms.",
+      "caches": "Filesystem/package caches not flushed; background load not isolated."
+    },
+    "observations": [
+      {
+        "changedFiles": 0,
+        "totalProjectFiles": 1000,
+        "samples": [
+          {
+            "trial": 1,
+            "wallMs": 255.35,
+            "receiptBytes": 393,
+            "receiptSha256": "4840031c362b76f82c67eca14862a86eb37638bbfe8422bbbf3c6052864a6b9c",
+            "coverage": {
+              "changedFiles": 0,
+              "checkedFiles": 0,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 0,
+              "groups": 0
+            },
+            "state": "NO_CHANGES"
+          },
+          {
+            "trial": 2,
+            "wallMs": 294.617,
+            "receiptBytes": 393,
+            "receiptSha256": "74467386037d4c6ef37d94f96d364e45007b96ac90c66f466b8c2c6dcebcb47b",
+            "coverage": {
+              "changedFiles": 0,
+              "checkedFiles": 0,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 0,
+              "groups": 0
+            },
+            "state": "NO_CHANGES"
+          },
+          {
+            "trial": 3,
+            "wallMs": 256.845,
+            "receiptBytes": 393,
+            "receiptSha256": "255f558b5be0285d8a9653b9f52ec11cb64df82397587b214564625f94ff55c6",
+            "coverage": {
+              "changedFiles": 0,
+              "checkedFiles": 0,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 0,
+              "groups": 0
+            },
+            "state": "NO_CHANGES"
+          }
+        ],
+        "medianWallMs": 256.845,
+        "minWallMs": 255.35,
+        "maxWallMs": 294.617,
+        "receiptBytesPerCall": [
+          393,
+          393,
+          393
+        ],
+        "sourcePreserved": true,
+        "freshDataAncestorsCreatedByEngine": true
+      },
+      {
+        "changedFiles": 1,
+        "totalProjectFiles": 1000,
+        "samples": [
+          {
+            "trial": 1,
+            "wallMs": 311.562,
+            "receiptBytes": 1151,
+            "receiptSha256": "d615adccbba6510be1cb3b8f97733123f73058e98955902e25da4ebfea584465",
+            "coverage": {
+              "changedFiles": 1,
+              "checkedFiles": 1,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 1,
+              "groups": 1
+            },
+            "state": "FAIL",
+            "decision": "absent (Bash advisory)",
+            "recoveredAfterObsoleteExpectationFix": true
+          },
+          {
+            "trial": 2,
+            "wallMs": 363.538,
+            "receiptBytes": 1151,
+            "receiptSha256": "a7e6999c1ad07027f45174d76ae82d12d61241f5a0d298a6199559fe1b1aa6be",
+            "coverage": {
+              "changedFiles": 1,
+              "checkedFiles": 1,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 1,
+              "groups": 1
+            },
+            "state": "FAIL",
+            "decision": "absent (Bash advisory)"
+          },
+          {
+            "trial": 3,
+            "wallMs": 306.604,
+            "receiptBytes": 1151,
+            "receiptSha256": "b3c73df417e392ca2063d1d97d0938f802f65c62bb018a46bb3aef05ae96f0a8",
+            "coverage": {
+              "changedFiles": 1,
+              "checkedFiles": 1,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 1,
+              "groups": 1
+            },
+            "state": "FAIL",
+            "decision": "absent (Bash advisory)"
+          }
+        ],
+        "medianWallMs": 311.562,
+        "minWallMs": 306.604,
+        "maxWallMs": 363.538,
+        "receiptBytesPerCall": [
+          1151,
+          1151,
+          1151
+        ],
+        "sourcePreserved": true,
+        "freshDataAncestorsCreatedByEngine": true
+      },
+      {
+        "changedFiles": 10,
+        "totalProjectFiles": 1000,
+        "samples": [
+          {
+            "trial": 1,
+            "wallMs": 805.707,
+            "receiptBytes": 7995,
+            "receiptSha256": "7d313787f658f9f208c48ce833e18b03dbcc88dd3d401047c773440fc8404be6",
+            "coverage": {
+              "changedFiles": 10,
+              "checkedFiles": 10,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 10,
+              "groups": 10
+            },
+            "state": "FAIL",
+            "decision": "absent (Bash advisory)"
+          },
+          {
+            "trial": 2,
+            "wallMs": 832.877,
+            "receiptBytes": 7995,
+            "receiptSha256": "11edd41bf8bb0d1cadce1cede54506dc03ee7ac8d80841dd03e9f4f34b5a2726",
+            "coverage": {
+              "changedFiles": 10,
+              "checkedFiles": 10,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 10,
+              "groups": 10
+            },
+            "state": "FAIL",
+            "decision": "absent (Bash advisory)"
+          },
+          {
+            "trial": 3,
+            "wallMs": 828.294,
+            "receiptBytes": 7995,
+            "receiptSha256": "ce437ae38c8ba4f077886a21dcbf46b7bb197c4e3c58ae1925db1b2f08c6bb32",
+            "coverage": {
+              "changedFiles": 10,
+              "checkedFiles": 10,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 10,
+              "groups": 10
+            },
+            "state": "FAIL",
+            "decision": "absent (Bash advisory)"
+          }
+        ],
+        "medianWallMs": 828.294,
+        "minWallMs": 805.707,
+        "maxWallMs": 832.877,
+        "receiptBytesPerCall": [
+          7995,
+          7995,
+          7995
+        ],
+        "sourcePreserved": true,
+        "freshDataAncestorsCreatedByEngine": true
+      },
+      {
+        "changedFiles": 100,
+        "totalProjectFiles": 1000,
+        "samples": [
+          {
+            "trial": 1,
+            "wallMs": 5787.853,
+            "receiptBytes": 76399,
+            "receiptSha256": "a9069c1c086a58c85a9fccfef7bb6479169fdeac5551b8e291754b0890b330e5",
+            "coverage": {
+              "changedFiles": 100,
+              "checkedFiles": 100,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 100,
+              "groups": 100
+            },
+            "state": "FAIL",
+            "decision": "absent (Bash advisory)"
+          },
+          {
+            "trial": 2,
+            "wallMs": 5822.25,
+            "receiptBytes": 76399,
+            "receiptSha256": "c8bf26c4e5ef8beb98c81936bb8d73d149d1d6554a570b4af566626058a4ceed",
+            "coverage": {
+              "changedFiles": 100,
+              "checkedFiles": 100,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 100,
+              "groups": 100
+            },
+            "state": "FAIL",
+            "decision": "absent (Bash advisory)"
+          },
+          {
+            "trial": 3,
+            "wallMs": 5964.526,
+            "receiptBytes": 76399,
+            "receiptSha256": "119d423ed4526577f2a2d439b15e1d9ef0c180e150e21bcf1875d0aea81858fe",
+            "coverage": {
+              "changedFiles": 100,
+              "checkedFiles": 100,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 100,
+              "groups": 100
+            },
+            "state": "FAIL",
+            "decision": "absent (Bash advisory)"
+          }
+        ],
+        "medianWallMs": 5822.25,
+        "minWallMs": 5787.853,
+        "maxWallMs": 5964.526,
+        "receiptBytesPerCall": [
+          76399,
+          76399,
+          76399
+        ],
+        "sourcePreserved": true,
+        "freshDataAncestorsCreatedByEngine": true
+      }
+    ],
+    "result": {
+      "state": "complete",
+      "postCalls": 12,
+      "cases": 4,
+      "sourcePreserved": true,
+      "installedFilesPreservedDuringContinuation": true,
+      "engineArchiveIdentityMatches": true,
+      "hostRegistration": "not-run (--engine-only)",
+      "nativeHostLatency": "not-measured",
+      "driverExpectationCorrection": "v2 expected Bash block; v4 Bash FAIL intentionally advisory; initial failure preserved and first sample recovered without re-invocation",
+      "measurementResumedWithoutRepeatingProductCalls": true,
+      "elapsedSecondsIncludingDiagnosis": 157.213,
+      "totalMeasuredPostWallMs": 21830.023,
+      "comparativeClaim": "No controlled v2-v4 speed comparison, regression or SLA claim",
+      "candidate": "v4",
+      "installerSha256": "78d9826a4ecff63f95d005e71c63fcae1150d516b16070e1d2c0550f89020532",
+      "engineTarballSha256": "ce6067469bf8f3714947c2dab55ece467679151d37c4beeddefbd819ac83b94e",
+      "installedCliSha256": "1c845826524bcdbafa1c8c5ffb68fba128ee5dff4c21d8d23cb51da6a891b1fc",
+      "sourceFilesVerified": 4000,
+      "sourceVerificationCases": 4,
+      "v2EvidenceUnchanged": true,
+      "bashPostDecision": "absent; advisory additionalContext retained",
+      "totalInspectionReceiptBytes": 257814,
+      "method": "fresh Node launcher and engine process per call; Python timed wait with50ms pollingcap; filesystem caches uncontrolled",
+      "sourcePreservationNote": "Initial first1-file sample was endpoint-verified before continuation; no product call repeated"
+    },
+    "sourceVerification": [
+      {
+        "changedFiles": 0,
+        "files": 1000,
+        "totalBytes": 36000,
+        "allExpectedSourceHashesMatch": true,
+        "sourceManifestSha256": "9c4c1b4fb077cff43a749b208e7d14f9f6be0f995bfce69e1c88eed9c1aa3cd7",
+        "projectBoxboxDirectoryAbsent": true
+      },
+      {
+        "changedFiles": 1,
+        "files": 1000,
+        "totalBytes": 35993,
+        "allExpectedSourceHashesMatch": true,
+        "sourceManifestSha256": "089bd0735a634552b2d9bfb1c03434a86a20b537bce7d5b82dd82f99817f540a",
+        "projectBoxboxDirectoryAbsent": true
+      },
+      {
+        "changedFiles": 10,
+        "files": 1000,
+        "totalBytes": 35930,
+        "allExpectedSourceHashesMatch": true,
+        "sourceManifestSha256": "ddd719f7effd1559a98c79f78ef117c5b4020da23dd7adb23f82eddeb23c7b42",
+        "projectBoxboxDirectoryAbsent": true
+      },
+      {
+        "changedFiles": 100,
+        "files": 1000,
+        "totalBytes": 35300,
+        "allExpectedSourceHashesMatch": true,
+        "sourceManifestSha256": "d1bc2fb0470e70b29139d1f5fcae28840059b07687249516f651c9f8e20185d9",
+        "projectBoxboxDirectoryAbsent": true
+      }
+    ],
+    "rawOutputManifestSha256": "11d933b500d4cc0139e3e7a5ea25eeb885d4a57eafe14c0e8785afaf549a3b2b",
+    "rawOutputCount": 59,
+    "parentVerification": {
+      "state": "PASS",
+      "rawHashesMatched": 59,
+      "sourceFilesHashMatched": 4000,
+      "medianRecalculationMatched": true,
+      "postCalls": 12
+    },
+    "limits": [
+      "Three ordered samples per case; coarse local observation, not SLA/native latency.",
+      "Initial inherited Bash-block expectation was corrected to v4 advisory, retaining the first sample and running only remaining8calls. No actual Post call was repeated.",
+      "Different timestamps/load and diagnostic pause preclude a controlled v2-v4 comparison.",
+      "No optimization, retention, >100changed-files, large-file, concurrent-agent or non-macOS claim.",
+      "The measured window overlaps the native Codex writer session; background load was not isolated."
+    ]
+  },
+  "historicalV2": {
+    "schemaVersion": 1,
+    "scope": "Direct permanent Node hook launcher; no native host latency measured",
+    "environment": {
+      "observedAtUtc": "2026-11-08T16:00:07.434884+00:00",
+      "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+      "machine": "arm64",
+      "processor": "arm",
+      "logicalCpuCount": 8,
+      "node": "v22.22.3",
+      "npm": "10.9.8",
+      "python": "Python 3.14.2",
+      "installerSha256": "360109a31ebd515bf4852ecc03d89779b4370afa1e04bd722e4abf07c7fa17f2",
+      "totalFilesPerCase": 1000,
+      "alignedSourceSha256": "674d4bffc3636d08d66c317889e311c6f05d1a6328ccbe911f6003bd08232539",
+      "changedSourceSha256": "418704659ac6d321b2f3d7cdde263c14318fa2fdb4c3a9310bb2356432c09028",
+      "engineTarballSha256": "fba2d239dc30b843f41e43452bc217df3fda193c51582a0d3dd29462123cd7eb",
+      "cpuBrand": "Apple M1",
+      "cpuBrandProbeExit": 0,
+      "installedCliSha256": "bd3f477ab3c0167bcf80fc8030482dbf67b4ebdfe815ed8b9d0a7f1d8a4f3561"
+    },
+    "experiment": {
+      "totalFiles": 1000,
+      "language": "python",
+      "changedFiles": [
+        0,
+        1,
+        10,
+        100
+      ],
+      "samplesPerCase": 3,
+      "calls": 12,
+      "processModel": "fresh launcher/engine process per call; filesystem/package caches not flushed",
+      "sameSessionChangesRemainChecked": true
+    },
+    "observations": [
+      {
+        "changedFiles": 0,
+        "totalProjectFiles": 1000,
+        "samples": [
+          {
+            "trial": 1,
+            "wallMs": 254.525,
+            "receiptBytes": 393,
+            "receiptSha256": "f37ac012e54afa336a335dcb6223d73e391a52a04ab6d48fa3be68da4423d12c",
+            "coverage": {
+              "changedFiles": 0,
+              "checkedFiles": 0,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 0,
+              "groups": 0
+            },
+            "state": "NO_CHANGES"
+          },
+          {
+            "trial": 2,
+            "wallMs": 241.457,
+            "receiptBytes": 393,
+            "receiptSha256": "58f72d4f0545a1acf8d4635b672490539ad334de8e9d25ebfed703cef1cc4c96",
+            "coverage": {
+              "changedFiles": 0,
+              "checkedFiles": 0,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 0,
+              "groups": 0
+            },
+            "state": "NO_CHANGES"
+          },
+          {
+            "trial": 3,
+            "wallMs": 251.129,
+            "receiptBytes": 393,
+            "receiptSha256": "b618064f350bd173036d8475c5e79cb72a7a56a2ffc3081ee27d7e2ab33e1e55",
+            "coverage": {
+              "changedFiles": 0,
+              "checkedFiles": 0,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 0,
+              "groups": 0
+            },
+            "state": "NO_CHANGES"
+          }
+        ],
+        "medianWallMs": 251.129,
+        "minWallMs": 241.457,
+        "maxWallMs": 254.525,
+        "receiptBytesPerCall": [
+          393,
+          393,
+          393
+        ],
+        "sourcePreserved": true,
+        "freshDataAncestorsCreatedByEngine": true
+      },
+      {
+        "changedFiles": 1,
+        "totalProjectFiles": 1000,
+        "samples": [
+          {
+            "trial": 1,
+            "wallMs": 313.056,
+            "receiptBytes": 1151,
+            "receiptSha256": "f604130018b00d94b7329e970bdf4578c2925303aaae819ee899f2d94c06a65d",
+            "coverage": {
+              "changedFiles": 1,
+              "checkedFiles": 1,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 1,
+              "groups": 1
+            },
+            "state": "FAIL"
+          },
+          {
+            "trial": 2,
+            "wallMs": 311.311,
+            "receiptBytes": 1151,
+            "receiptSha256": "f55943680cfaf7b639ff88543ff4202acb7e57505ffc094ed7b9e8498e6ea432",
+            "coverage": {
+              "changedFiles": 1,
+              "checkedFiles": 1,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 1,
+              "groups": 1
+            },
+            "state": "FAIL"
+          },
+          {
+            "trial": 3,
+            "wallMs": 418.784,
+            "receiptBytes": 1151,
+            "receiptSha256": "4e10716d3734d40848d3a1f351c96b345decf9e6f505899b71a506fb06c18785",
+            "coverage": {
+              "changedFiles": 1,
+              "checkedFiles": 1,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 1,
+              "groups": 1
+            },
+            "state": "FAIL"
+          }
+        ],
+        "medianWallMs": 313.056,
+        "minWallMs": 311.311,
+        "maxWallMs": 418.784,
+        "receiptBytesPerCall": [
+          1151,
+          1151,
+          1151
+        ],
+        "sourcePreserved": true,
+        "freshDataAncestorsCreatedByEngine": true
+      },
+      {
+        "changedFiles": 10,
+        "totalProjectFiles": 1000,
+        "samples": [
+          {
+            "trial": 1,
+            "wallMs": 880.324,
+            "receiptBytes": 7995,
+            "receiptSha256": "1b0d62f744e6bd63defe5fab00e0eb4082b57d5820624ed9e083489689a2e99a",
+            "coverage": {
+              "changedFiles": 10,
+              "checkedFiles": 10,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 10,
+              "groups": 10
+            },
+            "state": "FAIL"
+          },
+          {
+            "trial": 2,
+            "wallMs": 837.281,
+            "receiptBytes": 7995,
+            "receiptSha256": "eebbaa648e757117b0e662fec7ad0dc4e81f0e0ddb5d80a5b82903c4bbfba379",
+            "coverage": {
+              "changedFiles": 10,
+              "checkedFiles": 10,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 10,
+              "groups": 10
+            },
+            "state": "FAIL"
+          },
+          {
+            "trial": 3,
+            "wallMs": 868.404,
+            "receiptBytes": 7995,
+            "receiptSha256": "7dea0b77e3acb549cceeaa92b6e534d24afe30ab55165cf4c0d70e5e6c857ea8",
+            "coverage": {
+              "changedFiles": 10,
+              "checkedFiles": 10,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 10,
+              "groups": 10
+            },
+            "state": "FAIL"
+          }
+        ],
+        "medianWallMs": 868.404,
+        "minWallMs": 837.281,
+        "maxWallMs": 880.324,
+        "receiptBytesPerCall": [
+          7995,
+          7995,
+          7995
+        ],
+        "sourcePreserved": true,
+        "freshDataAncestorsCreatedByEngine": true
+      },
+      {
+        "changedFiles": 100,
+        "totalProjectFiles": 1000,
+        "samples": [
+          {
+            "trial": 1,
+            "wallMs": 6070.088,
+            "receiptBytes": 76399,
+            "receiptSha256": "f5d55a44982b221060ac92cc740bf4585e20db80b47543a85427ca7aab67fac7",
+            "coverage": {
+              "changedFiles": 100,
+              "checkedFiles": 100,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 100,
+              "groups": 100
+            },
+            "state": "FAIL"
+          },
+          {
+            "trial": 2,
+            "wallMs": 6047.865,
+            "receiptBytes": 76399,
+            "receiptSha256": "c618a6766e4135586cc7054d55edc2793afa90b1f47f07997eae1e9b605a5416",
+            "coverage": {
+              "changedFiles": 100,
+              "checkedFiles": 100,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 100,
+              "groups": 100
+            },
+            "state": "FAIL"
+          },
+          {
+            "trial": 3,
+            "wallMs": 6126.05,
+            "receiptBytes": 76399,
+            "receiptSha256": "672be3b056f60b3b4407fe295c29bebb306876e627ab2e01c5282aaddd7216c0",
+            "coverage": {
+              "changedFiles": 100,
+              "checkedFiles": 100,
+              "unsupportedFiles": 0,
+              "deletedFiles": 0,
+              "filesWithGroups": 100,
+              "groups": 100
+            },
+            "state": "FAIL"
+          }
+        ],
+        "medianWallMs": 6070.088,
+        "minWallMs": 6047.865,
+        "maxWallMs": 6126.05,
+        "receiptBytesPerCall": [
+          76399,
+          76399,
+          76399
+        ],
+        "sourcePreserved": true,
+        "freshDataAncestorsCreatedByEngine": true
+      }
+    ],
+    "result": {
+      "state": "complete",
+      "postCalls": 12,
+      "cases": 4,
+      "sourcePreserved": true,
+      "installedFilesPreserved": true,
+      "hostRegistration": "not-run (--engine-only)",
+      "nativeHostLatency": "not-measured",
+      "elapsedSeconds": 26.21
+    },
+    "rawOutputManifestSha256": "61bab63ffe6844925e31afeaada9bd9387549fa8eab56706c4561e51d9ce9901",
+    "rawOutputCount": 45,
+    "limits": [
+      "Three samples per case; order not randomized; background machine activity not isolated.",
+      "Python timed process waiting can add up to roughly 50 ms granularity.",
+      "No mixed languages, large files, concurrent agents, native host overhead, timeout behavior or upstream framework benchmark.",
+      "No incremental cache or receipt retention implementation."
+    ]
+  }
+}

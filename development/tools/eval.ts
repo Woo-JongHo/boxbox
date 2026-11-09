@@ -75,8 +75,8 @@ function cmdBuild(): void {
 
 	// Layer A — reference items: fixture golden pairs. The answer is structurally correct.
 	for (const [dir, ext, lang] of ANCHOR_LANGS) {
-		const base       = join(ROOT, "test/fixtures", dir)    ;
-		const beforePath = join(base, `tables.${ext}`)         ;
+		const base       = join(ROOT, "test/fixtures", dir   ) ;
+		const beforePath = join(base, `tables.${ext}`        ) ;
 		const afterPath  = join(base, `tables.aligned.${ext}`) ;
 		if (!existsSync(beforePath) || !existsSync(afterPath)) continue;
 		items.push({
@@ -92,25 +92,25 @@ function cmdBuild(): void {
 		id: "C-hand-ts-role", layer: "C", lang: "ts",
 		source: "hand-made (different-role trap)",
 		kind: "mixed declaration proposal", axes: "colon,semicolon",
-		before: [
+		before   : [
 			"type FetchPort = (id: string) => Promise<Doc>;",
 			`type RenderMode = "grid" | "list";`,
 			"const fetchDoc = (id: string) => api.get(`/doc/${id}`);",
 			"const renderGrid = (doc: Doc) => doc.toGrid();",
 		].join("\n"),
-		after: [
+		after    : [
 			"type FetchPort  = (id: string) => Promise<Doc>;",
 			`type RenderMode = "grid" | "list";`,
 			"const fetchDoc  = (id: string) => api.get(`/doc/${id}`);",
 			"const renderGrid = (doc: Doc) => doc.toGrid();",
 		].join("\n"),
-		expected: "different-role",
+		expected : "different-role",
 	});
 	items.push({
 		id: "C-hand-py-role", layer: "C", lang: "py",
 		source: "hand-made (different-role trap)",
 		kind: "mixed declaration proposal", axes: "equal,value",
-		before: [
+		before   : [
 			"WIDTH = 120",
 			'INDENT = "    "',
 			"def load(path):",
@@ -118,7 +118,7 @@ function cmdBuild(): void {
 			"class Reader:",
 			"    ...",
 		].join("\n"),
-		after: [
+		after    : [
 			"WIDTH  = 120",
 			'INDENT = "    "',
 			"def    load(path):",
@@ -126,7 +126,7 @@ function cmdBuild(): void {
 			"class  Reader:",
 			"    ...",
 		].join("\n"),
-		expected: "different-role",
+		expected : "different-role",
 	});
 
 	// Layers B + C (mined) — mined from the eval/corpus snapshot with 01_group-regions.
@@ -262,22 +262,22 @@ function cmdRun(): void {
 		cli: "codex exec", cli_version: cliVersion,
 		template_version: "v1", instructions_sha256: sha256(instructions),
 		template_sha256: sha256(template), schema_sha256: sha256(schema),
-		order_seed: seed,
-		stability_design: {
+		order_seed       : seed,
+		stability_design : {
 			subsample: sub.map((i) => i.id), strata: { A: nA, B: nB, C: sub.length - nA - nB },
 			reps, note: "Repeats are separate from the main run and never majority-voted (manuscript section 7.5). Repeats are interleaved into the overall run order (proposition 3).",
 		},
-		isolation: {
+		isolation        : {
 			codex_home: "temporary home — only auth.json (no AGENTS.md, config, memory or skills). A pre-probe confirmed AGENTS.md is not loaded (2026-10-01)",
 			workdir: "empty dedicated folder + canary file",
 			sandbox: "read-only", git_repo_check: "skip (the work folder is not a repository)",
 		},
-		workdir_sha256               : workHash,
-		model_identifier_in_response : "not exposed by the CLI — only the requested model id is recorded (limit of the model-update clause in manuscript section 4)",
-		uncontrollable               : ["provider randomness (no seed control)", "hidden CLI system instructions (proposition 1 — conclusions limited to the CLI combination)"],
-		cost_basis                   : "CLI subscription — not converted to API list price (token usage recorded only)",
-		started_at                   : new Date().toISOString(),
-		plan                         : plan.map(({ item, attempt }) => ({ id: item.id, attempt })),
+		workdir_sha256               : workHash                                                                                                                                 ,
+		model_identifier_in_response : "not exposed by the CLI — only the requested model id is recorded (limit of the model-update clause in manuscript section 4)"            ,
+		uncontrollable               : ["provider randomness (no seed control)", "hidden CLI system instructions (proposition 1 — conclusions limited to the CLI combination)"] ,
+		cost_basis                   : "CLI subscription — not converted to API list price (token usage recorded only)"                                                         ,
+		started_at                   : new Date().toISOString()                                                                                                                 ,
+		plan                         : plan.map(({ item, attempt }) => ({ id: item.id, attempt }))                                                                              ,
 	}, null, "\t") + "\n");
 
 	const manifestPath = join(runDir, "manifest.jsonl");
@@ -414,22 +414,22 @@ function cmdGrade(): void {
 		const gold = itemsById.get(id)?.expected ?? null;
 		stabRows.push({
 			id, k, labels,
-			mode_ratio        : modeRatio,
-			pair_disagreement : dis / ((k * (k - 1)) / 2),
-			flipped           : modeRatio < 1,
+			mode_ratio        : modeRatio                 ,
+			pair_disagreement : dis / ((k * (k - 1)) / 2) ,
+			flipped           : modeRatio < 1             ,
 			gold,
-			miss_direction  : gold != null && RISK.has(gold) && labels.some((t) => !RISK.has(t)),
-			false_alarm     : gold != null && !RISK.has(gold) && labels.some((t) => RISK.has(t)),
-			direction_known : gold != null,
+			miss_direction  : gold != null && RISK.has(gold) && labels.some((t) => !RISK.has(t)) ,
+			false_alarm     : gold != null && !RISK.has(gold) && labels.some((t) => RISK.has(t)) ,
+			direction_known : gold != null                                                       ,
 		});
 	}
 	const noiseFloor           = totalPairs > 0 ? flipPairs / totalPairs : null              ;
 	const nRaters              = stabRows.length ? Math.max(...stabRows.map((r) => r.k)) : 0 ;
 	let fleissK: number | null = null                                                        ;
 	if (stabRows.length > 0 && nRaters >= 2) {
-		const totalRatings = stabRows.reduce((s, r) => s + r.k, 0)                                                                                               ;
-		const pj           = CATEGORIES.map((c) => stabRows.reduce((s: number, r: any) => s + r.labels.filter((t: string) => t === c).length, 0) / totalRatings) ;
-		const Pe           = pj.reduce((s, v) => s + v * v, 0)                                                                                                   ;
+		const totalRatings = stabRows  .reduce((s, r) => s + r.k, 0                                                                                               ) ;
+		const pj           = CATEGORIES.map   ((c) => stabRows.reduce((s: number, r: any) => s + r.labels.filter((t: string) => t === c).length, 0) / totalRatings) ;
+		const Pe           = pj        .reduce((s, v) => s + v * v, 0                                                                                             ) ;
 		const Pbar = stabRows.reduce((s: number, r: any) => {
 			let sum = 0;
 			for (const c of CATEGORIES) { const n = r.labels.filter((t: string) => t === c).length; sum += n * (n - 1); }
@@ -438,35 +438,35 @@ function cmdGrade(): void {
 		fleissK = Pe < 1 ? (Pbar - Pe) / (1 - Pe) : 1;
 	}
 
-	const invalid = lines.filter((l: any) => !l.valid)                                                                   ;
-	const canary  = lines.filter((l: any) => l.canary_leak)                                                              ;
-	const inputT  = lines.reduce((s: number, l: any) => s + (l.usage?.input_tokens ?? 0), 0)                             ;
-	const outputT = lines.reduce((s: number, l: any) => s + (l.usage?.output_tokens ?? 0), 0)                            ;
-	const cachedT = lines.reduce((s: number, l: any) => s + (l.usage?.cached_input_tokens ?? 0), 0)                      ;
-	const wallAvg = Math.round(lines.reduce((s: number, l: any) => s + (l.wall_ms ?? 0), 0) / Math.max(1, lines.length)) ;
+	const invalid = lines.filter((l: any) => !l.valid                                                                    ) ;
+	const canary  = lines.filter((l: any) => l.canary_leak                                                               ) ;
+	const inputT  = lines.reduce((s: number, l: any) => s + (l.usage?.input_tokens ?? 0), 0                              ) ;
+	const outputT = lines.reduce((s: number, l: any) => s + (l.usage?.output_tokens ?? 0), 0                             ) ;
+	const cachedT = lines.reduce((s: number, l: any) => s + (l.usage?.cached_input_tokens ?? 0), 0                       ) ;
+	const wallAvg = Math .round (lines.reduce((s: number, l: any) => s + (l.wall_ms ?? 0), 0) / Math.max(1, lines.length)) ;
 
 	const summary = {
-		run: runDir,
-		scores: scoreRows,
-		score_ok: okN, score_total: scoreRows.length,
-		risk_recall_attempt1: risk,
-		B_distribution: bDist,
-		stability: {
-			noise_floor: noiseFloor,
-			fleiss_kappa_reps: fleissK,
-			flip_directions: {
-				miss         : stabRows.filter((r) => r.miss_direction).length,
-				false_alarm  : stabRows.filter((r) => r.false_alarm).length,
-				unknown_gold : stabRows.filter((r) => !r.direction_known && r.flipped).length,
+		run      : runDir    ,
+		scores   : scoreRows ,
+		score_ok : okN       , score_total: scoreRows.length,
+		risk_recall_attempt1 : risk  ,
+		B_distribution       : bDist ,
+		stability            : {
+			noise_floor       : noiseFloor ,
+			fleiss_kappa_reps : fleissK    ,
+			flip_directions   : {
+				miss         : stabRows.filter((r) => r.miss_direction).length                ,
+				false_alarm  : stabRows.filter((r) => r.false_alarm).length                   ,
+				unknown_gold : stabRows.filter((r) => !r.direction_known && r.flipped).length ,
 			},
-			rows: stabRows,
+			rows              : stabRows   ,
 		},
-		invalid_count     : invalid.length,
-		invalid_detail    : invalid.map((l: any) => ({ id: l.id, attempt: l.attempt, error: l.parse_error })),
-		canary_leak_count : canary.length,
-		tokens            : { input_total: inputT, cached_input_total: cachedT, output_total: outputT },
-		wall_ms_avg       : wallAvg,
-		cost_note         : "CLI subscription run — not converted to API list price. Token usage recorded only (manuscript appendix B uses API pricing).",
+		invalid_count     : invalid.length                                                                                                                ,
+		invalid_detail    : invalid.map((l: any) => ({ id: l.id, attempt: l.attempt, error: l.parse_error }))                                             ,
+		canary_leak_count : canary.length                                                                                                                 ,
+		tokens            : { input_total: inputT, cached_input_total: cachedT, output_total: outputT }                                                   ,
+		wall_ms_avg       : wallAvg                                                                                                                       ,
+		cost_note         : "CLI subscription run — not converted to API list price. Token usage recorded only (manuscript appendix B uses API pricing)." ,
 	};
 	writeFileSync(join(runDir, "grade.json"), JSON.stringify(summary, null, "\t") + "\n");
 
@@ -535,8 +535,8 @@ function shuffle<T>(arr: readonly T[], rnd: () => number): T[] {
 function walk(dir: string): string[] {
 	const out: string[] = [];
 	for (const name of readdirSync(dir)) {
-		const p = join(dir, name) ;
-		const s = statSync(p)     ;
+		const p = join    (dir, name) ;
+		const s = statSync(p        ) ;
 		if (s.isDirectory()) out.push(...walk(p));
 		else out.push(p);
 	}
@@ -550,10 +550,10 @@ function listWork(dir: string): Record<string, string> {
 }
 
 function groupRegions(rel: string): Occ[] {
-	const lang : "ts" | "py" = extname(rel) === ".py" ? "py" : "ts"                                                                           ;
-	const script             = join(ROOT, "product/engine", lang === "py" ? "python" : "typescript", "01_group-regions.ts")                   ;
-	const r                  = spawnSync("bun", ["run", script, "--file", rel], { cwd: ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }) ;
-	const occs : Occ[]       = []                                                                                                             ;
+	const lang : "ts" | "py" = extname(rel) === ".py" ? "py" : "ts"                                                                                                 ;
+	const script             = join(ROOT, "product/engine", lang === "py" ? "python" : "typescript", lang === "py" ? "00_group-regions.ts" : "02_group-regions.ts") ;
+	const r                  = spawnSync("bun", ["run", script, "--file", rel], { cwd: ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 })                       ;
+	const occs : Occ[]       = []                                                                                                                                   ;
 	for (const line of (r.stdout ?? "").split("\n")) {
 		let m = line.match(/^\s+(\d+)(?:-(\d+))?\s+(\S+)\s+(\S+)\s+rows=\s*(\d+)\s+(pair|table)\s+axes=(\S+)\s*$/);
 		if (m) {
@@ -579,7 +579,7 @@ function alignFileCopy(rel: string, tmpDir: string): string | null {
 	const tmp = join(tmpDir, sha256(rel).slice(0, 8) + "-" + basename(rel));
 	cpSync(join(ROOT, rel), tmp);
 	const lang = extname(rel) === ".py" ? "python" : "typescript";
-	spawnSync("bun", ["run", join(ROOT, "product/engine", lang, "06_align-tables.ts"), "--file", tmp, "--write"], { cwd: ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+	spawnSync("bun", ["run", join(ROOT, "product/engine", lang, lang === "typescript" ? "07_align-tables.ts" : "02_align-tables.ts"), "--file", tmp, "--write"], { cwd: ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
 	// 06 reports "alignment needed" with exit 1 too, so judge by the output, not the status code.
 	return existsSync(tmp) ? read(tmp) : null;
 }
@@ -592,8 +592,8 @@ function extractAfter(aligned: string, before: string, start: number): string | 
 	const exact  = squash(before.split("\n")[0])        ;
 	const head   = exact.slice(0, 20)                   ;
 	if (!exact) return null;
-	const al   = aligned.split("\n")    ;
-	const from = Math.max(0, start - 6) ;
+	const al   = aligned.split("\n"        ) ;
+	const from = Math   .max  (0, start - 6) ;
 	for (let i = from; i < Math.min(al.length, start + rows + 15); i++) {
 		const t = squash(al[i] ?? "");
 		if (t === exact || (head.length >= 8 && (t.startsWith(head) || (t.length >= 10 && exact.startsWith(t))))) {

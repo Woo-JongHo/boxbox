@@ -1,14 +1,14 @@
-import      { afterEach, describe, expect, test } from "bun:test"                           ;
+import      { afterEach, describe, expect, test } from "bun:test"                              ;
 import      {
               existsSync                      ,
               mkdtempSync                     ,
               readFileSync                    ,
               rmSync                          ,
               writeFileSync
-                                                } from "node:fs"                            ;
-import      { join, relative, resolve           } from "node:path"                          ;
+                                                } from "node:fs"                               ;
+import      { join, relative, resolve           } from "node:path"                             ;
 
-import      { preservesTokensWithBreaks         } from "@/typescript/token-preservation.ts" ;
+import      { preservesTokensWithBreaks         } from "@/typescript/16_token-preservation.ts" ;
 
 const root                 = resolve(import.meta.dir, "..")                                     ;
 const script               = resolve(root, "product/engine/typescript/00_normalize-imports.ts") ;
@@ -194,7 +194,7 @@ describe("import table cells", () => {
 		expect(normalize([
 			'import { afterEach, describe, expect, test } from "bun:test";',
 			'import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";',
-			'import { preservesTokens } from "@/typescript/token-preservation.ts";',
+			'import { preservesTokens } from "@/typescript/16_token-preservation.ts";',
 		]).split("\n").every(line => line.length <= 120)).toBe(true);
 	});
 

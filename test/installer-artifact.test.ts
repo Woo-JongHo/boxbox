@@ -5,6 +5,7 @@ import      {
               test          ,
                               } from "bun:test"           ;
 import      { spawnSync       } from "node:child_process" ;
+import      { createHash      } from "node:crypto"        ;
 import      {
               chmodSync     ,
               cpSync        ,
@@ -75,8 +76,22 @@ import { join, resolve } from "node:path";
 const host = ${JSON.stringify(host)};
 const args = process.argv.slice(2);
 appendFileSync(process.env.BOXBOX_TEST_LOG, JSON.stringify({host,args,codexHome:process.env.CODEX_HOME,claudeHome:process.env.CLAUDE_CONFIG_DIR}) + "\\n");
+if (args.join(" ") === "--version") console.log("BOXBOX_PREFLIGHT_VERSION");
+if (args.at(-1) === "--help" && args[1] !== "update") console.log("BOXBOX_PREFLIGHT_HELP");
+if (process.env.BOXBOX_TEST_STDOUT_FAILURE && args.at(-1) === "--help" && args[1] !== "update") { console.log("stdout-only capability failure"); process.exit(41); }
 if (host === process.env.BOXBOX_TEST_FAIL_HOST && args[0] === "plugin" && ["add","install"].includes(args[1]) && args[2] !== "--help") process.exit(Number(process.env.BOXBOX_TEST_EXIT || 31));
-if (host !== "claude") process.exit(0);
+if (host === "codex") {
+ const statePath = process.env.BOXBOX_TEST_LOG + ".codex.json";
+ const state = existsSync(statePath) ? JSON.parse(readFileSync(statePath,"utf8")) : {};
+ if (args.join(" ") === "plugin marketplace list --json") console.log(JSON.stringify({marketplaces:state.root?[{name:"boxbox-plugins",root:state.root,marketplaceSource:{sourceType:"local",source:state.root}}]:[]}));
+ else if (args.join(" ") === "plugin list --json") console.log(JSON.stringify({installed:state.plugin?[{pluginId:"boxbox@boxbox-plugins",installed:true}]:[]}));
+ else if (args[1] === "marketplace" && args[2] === "add") state.root = resolve(args[3]);
+ else if (args[1] === "marketplace" && args[2] === "remove") { delete state.root; delete state.plugin; }
+ else if (args[1] === "add") state.plugin = true;
+ else if (args[1] === "remove") state.plugin = false;
+ writeFileSync(statePath,JSON.stringify(state));
+ process.exit(0);
+}
 if (args.join(" ") === "plugin update --help") { console.log(process.env.BOXBOX_TEST_NO_SCOPE ? "Update a plugin" : "--scope <scope>"); process.exit(0); }
 const statePath = process.env.BOXBOX_TEST_LOG + ".claude.json";
 const state = existsSync(statePath) ? JSON.parse(readFileSync(statePath,"utf8")) : {};
@@ -192,19 +207,23 @@ test("npm installer name differs from private engine and both host payloads have
 	expect(readFileSync(join(packageRoot, "LICENSE"), "utf8")).toBe(readFileSync(join(ROOT, "LICENSE"), "utf8"));
 	expect(readFileSync(join(ROOT, "LICENSE"), "utf8")).toMatch(/^MIT License/u);
 	expect(manifest.dependencies).toBeUndefined();
-	expect(JSON.parse(readFileSync(join(payload, "bundle.json"), "utf8"))).toMatchObject({ name: "boxbox", npmName: NPM_NAME });
-	const expected = ["LICENSE", "README.md", "bin/boxbox.mjs", "package.json", "payload/bundle.json", "payload/platform.mjs", "payload/install-state.mjs", "payload/claude-registration.mjs"];
+	const metadata = JSON.parse(readFileSync(join(payload, "bundle.json"), "utf8"));
+	expect(metadata).toMatchObject({ name: "boxbox", npmName: NPM_NAME });
+	expect(metadata.engineSha256).toMatch(/^[0-9a-f]{64}$/u);
+	const expected = ["LICENSE", "README.md", "bin/boxbox.mjs", "package.json", "payload/bundle.json", "payload/platform.mjs", "payload/install-state.mjs", "payload/claude-registration.mjs", "payload/codex-registration.mjs"];
 	for (const host of ["codex", "claude"]) {
-		const root            = join(payload, host)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ;
-		const plugin          = join(root, "plugin")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ;
-		const marketplacePath = host === "codex" ? ".agents/plugins/marketplace.json" : ".claude-plugin/marketplace.json"                                                                                                                                                                                                                                                                                                                                                                                                                                                     ;
-		const hostFiles       = [marketplacePath, "bundle.json", "install.mjs", "install-state.mjs", "claude-registration.mjs", `packages/boxbox-${VERSION}.tgz`, "platform.mjs", `plugin/.${host === "codex" ? "codex" : "claude"}-plugin/plugin.json`, "plugin/hooks/hooks.json", "plugin/scripts/boxbox.mjs", "plugin/skills/boxbox/SKILL.md", ...["charter.md", "grammar.md", "readability-contract.md", "typescript-grid-template.md"].map(name => `plugin/skills/boxbox/references/${name}`), ...(host === "claude" ? ["plugin/agents/readability-inspector.md"] : [])] ;
+		const root            = join(payload, host)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ;
+		const plugin          = join(root, "plugin")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ;
+		const marketplacePath = host === "codex" ? ".agents/plugins/marketplace.json" : ".claude-plugin/marketplace.json"                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ;
+		const hostFiles       = [marketplacePath, "bundle.json", "install.mjs", "install-state.mjs", "claude-registration.mjs", "codex-registration.mjs", `packages/boxbox-${VERSION}.tgz`, "platform.mjs", `plugin/.${host === "codex" ? "codex" : "claude"}-plugin/plugin.json`, "plugin/hooks/hooks.json", "plugin/scripts/boxbox.mjs", "plugin/skills/boxbox/SKILL.md", ...["charter.md", "grammar.md", "readability-contract.md", "typescript-grid-template.md"].map(name => `plugin/skills/boxbox/references/${name}`), ...(host === "claude" ? ["plugin/agents/readability-inspector.md"] : [])] ;
 		expected.push(...hostFiles.map(path => `payload/${host}/${path}`));
 		expect(readdirSync(plugin).sort()).toEqual((host === "codex" ? [".codex-plugin", "hooks", "scripts", "skills"] : [".claude-plugin", "agents", "hooks", "scripts", "skills"]).sort());
 		expect(readFileSync(join(root, "packages", `boxbox-${VERSION}.tgz`)).equals(readFileSync(join(ROOT, "dist", `boxbox-${VERSION}.tgz`)))).toBe(true);
 		for (const reference of readdirSync(join(ROOT, "plugin/skills/boxbox/references"))) expect(readFileSync(join(plugin, "skills/boxbox/references", reference)).equals(readFileSync(join(ROOT, "plugin/skills/boxbox/references", reference)))).toBe(true);
 		const source = JSON.parse(readFileSync(join(root, marketplacePath), "utf8")).plugins[0].source;
-		expect(source).toEqual(host === "codex" ? { source: "local", path: "./plugin" } : "./plugin");
+		expect(source                                                                                                  ).toEqual(host === "codex" ? { source: "local", path: "./plugin" } : "./plugin") ;
+		expect(JSON.parse(readFileSync(join(root, "bundle.json"), "utf8")).engineSha256                                ).toBe   (metadata.engineSha256                                                ) ;
+		expect(createHash("sha256").update(readFileSync(join(root, "packages", `boxbox-${VERSION}.tgz`))).digest("hex")).toBe   (metadata.engineSha256                                                ) ;
 	}
 	const packed = JSON.parse(readFileSync(join(ROOT, "dist/installer/pack-result.json"), "utf8"));
 	expect(packed[0].files.map((file: { path: string }) => file.path).sort()).toEqual(expected.sort());
@@ -250,7 +269,11 @@ test("real npx infers the boxbox bin from the public installer and installs both
 	writeFileSync(settingsPath, '{"existing":true}\n');
 	expect(run("/bin/sh", ["-c", "command -v bun"], { env }).status).not.toBe(0);
 	// The file: package spec avoids npm treating a bare absolute filename as an existing command.
-	expectStatus(run(npx, ["--yes", `file:${staged}`], { cwd: project, env }), 0);
+	const installation = run(npx, ["--yes", `file:${staged}`], { cwd: project, env });
+	expectStatus(installation, 0);
+	expect(String(installation.stdout)).not.toContain("BOXBOX_PREFLIGHT_VERSION") ;
+	expect(String(installation.stdout)).not.toContain("BOXBOX_PREFLIGHT_HELP"   ) ;
+	expect(String(installation.stdout)).not.toMatch  (/^\d+\.\d+\.\d+$/m        ) ;
 	const calls = readFileSync(env.BOXBOX_TEST_LOG!, "utf8").trim().split("\n").map(line => JSON.parse(line));
 	expect(calls.filter(call => !call.args.includes("list")).map(call => [call.host, call.args])).toEqual([
 		["codex", ["--version"]], ["codex", ["plugin", "add", "--help"]], ["codex", ["plugin", "marketplace", "add", permanent(env, "codex") + "/"]], ["codex", ["plugin", "add", "boxbox@boxbox-plugins"]],
@@ -318,11 +341,8 @@ test("real npx infers the boxbox bin from the public installer and installs both
 	const paths  = ["plugin/skills/boxbox/SKILL.md", "plugin/hooks/hooks.json", "plugin/runtime.json", "preserved.txt"] ;
 	const before = paths.map(path => readFileSync(join(codex, path)))                                                   ;
 	cpSync(join(npmCache, "_cacache"), join(cache, "_cacache"), { recursive: true });
-	expectStatus(run(npm, ["exec", "--offline", "--yes", "--package", artifact, "--", "boxbox", "--codex"], { cwd: project, env: { ...env, BOXBOX_TEST_FAIL_HOST: "codex", BOXBOX_TEST_EXIT: "31" } }), 31);
-	expect(JSON.parse(readFileSync(join(codex, ".boxbox-install-state.json"), "utf8")).phase).toBe("host-registration-started");
-	expect(readdirSync(resolve(codex, "..")).some(name => name.startsWith(".boxbox-repair-"))).toBe(true);
-	for (const [index, path] of paths.entries()) expect(readFileSync(join(codex, path)).equals(before[index]!)).toBe(true);
 	expectStatus(run(npm, ["exec", "--offline", "--yes", "--package", artifact, "--", "boxbox", "--codex"], { cwd: project, env }), 0);
+	for (const [index, path] of paths.entries()) expect(readFileSync(join(codex, path)).equals(before[index]!)).toBe(true);
 	expect(readFileSync(join(codex, "preserved.txt"), "utf8")).toBe("user data\n");
 }, 300_000);
 
@@ -381,6 +401,42 @@ test("explicit host flags install only selected adapters and engine-only does no
 	expect(existsSync(permanent(env, "claude"))                            ).toBe(false) ;
 	expect(existsSync(env.BOXBOX_TEST_LOG!)                                ).toBe(false) ;
 }, 180_000);
+
+test("a quiet capability probe replays stdout diagnostics when it fails", () => {
+	const packageRoot = extract           ()          ;
+	const workspace   = temporary         ()          ;
+	const env         = runtimeEnvironment(workspace) ;
+	fakeHost(workspace, "codex");
+
+	const result = run(node, [join(packageRoot, "bin/boxbox.mjs"), "--codex"], {
+		env: { ...env, BOXBOX_TEST_STDOUT_FAILURE: "1" },
+	});
+	expectStatus(result, 41);
+	expect(String(result.stderr)).toContain("stdout-only capability failure");
+	expect(String(result.stdout)).not.toContain("stdout-only capability failure");
+}, 60_000);
+
+test("a corrupt outer payload restores a same-version engine-only installation before host registration", () => {
+	const packageRoot = extract           ()                              ;
+	const workspace   = temporary         ()                              ;
+	const env         = runtimeEnvironment(workspace                    ) ;
+	const entry       = join              (packageRoot, "bin/boxbox.mjs") ;
+	const destination = permanent         (env, "codex"                 ) ;
+	expectStatus(run(node, [entry, "--engine-only"], { env }), 0);
+	const receipt = join(destination, ".boxbox-install-state.json");
+	expect(existsSync(receipt)).toBe(false);
+	const paths   = ["plugin/runtime.json", "runtime/package.json", "runtime/package-lock.json", "runtime/node_modules/boxbox/package.json", "runtime/node_modules/boxbox/dist/cli.js"] ;
+	const before  = paths.map(path => readFileSync(join(destination, path)))                                                                                                            ;
+	const tarball = join(packageRoot, "payload/codex/packages", `boxbox-${VERSION}.tgz`)                                                                                                ;
+	writeFileSync(tarball, Buffer.concat([readFileSync(tarball), Buffer.from("corrupt outer archive\n")]));
+	const result = run(node, [entry, "--engine-only"], { env });
+	expectStatus(result, 1);
+	expect(String(result.stderr)).toContain("Bundled engine integrity check failed");
+	for (const [index, path] of paths.entries()) expect(readFileSync(join(destination, path)).equals(before[index]!)).toBe(true);
+	expect(existsSync(receipt)                                                                       ).toBe   (false) ;
+	expect(existsSync(env.BOXBOX_TEST_LOG!)                                                          ).toBe   (false) ;
+	expect(readdirSync(resolve(destination, "..")).filter(name => name.startsWith(".boxbox-repair-"))).toEqual([]   ) ;
+});
 
 test("repair filesystem failures retain a recovery backup and report its path", () => {
 	for (const fault of ["remove", "restore", "backup", "backup-cleanup", "cleanup"]) {

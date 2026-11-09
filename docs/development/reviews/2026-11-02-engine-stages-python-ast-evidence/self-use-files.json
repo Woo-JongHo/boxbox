@@ -1,0 +1,2350 @@
+[
+  {
+    "file": "product/engine/cli.ts",
+    "beforeSha256": "122c2c67b3b7737cd7b0c1f32db423630b992db1609f02c5936e513af56d64df",
+    "afterSha256": "122c2c67b3b7737cd7b0c1f32db423630b992db1609f02c5936e513af56d64df",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 43,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 43,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/align-cli.ts",
+    "beforeSha256": "fcb88519ddce28578ab37bac430c5f73d068ef499586d4eaeeda02f56646b33a",
+    "afterSha256": "fcb88519ddce28578ab37bac430c5f73d068ef499586d4eaeeda02f56646b33a",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 14,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 14,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/alignment-only.ts",
+    "beforeSha256": "8690f43ae3660ca3d178a246b3c90dc11f32e69099d0f62efb41b4db459da0ae",
+    "afterSha256": "8690f43ae3660ca3d178a246b3c90dc11f32e69099d0f62efb41b4db459da0ae",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 4,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 4,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/approval-gate.ts",
+    "beforeSha256": "6b58d47b7594469b60f868a4ad23ae4cfebd4c4dc57a3ea5d71afe44b879e272",
+    "afterSha256": "6b58d47b7594469b60f868a4ad23ae4cfebd4c4dc57a3ea5d71afe44b879e272",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 21,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 21,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/authoring-guide.ts",
+    "beforeSha256": "a76fca688e7a92be49b172dcddb51182013ce94f3b427ce50d64b0fe301da45f",
+    "afterSha256": "a76fca688e7a92be49b172dcddb51182013ce94f3b427ce50d64b0fe301da45f",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 7,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 7,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/axis-expectations.ts",
+    "beforeSha256": "7489a41b41748378bd12f7ffa1bec7dd3fd17d3e6f40e6372d6698dbd4c97b00",
+    "afterSha256": "7489a41b41748378bd12f7ffa1bec7dd3fd17d3e6f40e6372d6698dbd4c97b00",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 4,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 4,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/code-text.ts",
+    "beforeSha256": "80cc753fe2408ce76d7850e0f6ddc5a1d6c3c98968d7b5b53a80af9f35ed1cff",
+    "afterSha256": "80cc753fe2408ce76d7850e0f6ddc5a1d6c3c98968d7b5b53a80af9f35ed1cff",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 6,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 6,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/column-measurement.ts",
+    "beforeSha256": "8510c3b2630b70ae65e95701fc19b769438e864db596223a20f238ece3d184b7",
+    "afterSha256": "8510c3b2630b70ae65e95701fc19b769438e864db596223a20f238ece3d184b7",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 4,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 4,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/conventions.ts",
+    "beforeSha256": "5bb2b5dd5a9bd1a6345a493c09bf453ca3631b2707e6c4efaf14ff0334a5d458",
+    "afterSha256": "5bb2b5dd5a9bd1a6345a493c09bf453ca3631b2707e6c4efaf14ff0334a5d458",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 7,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 7,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/display-width.ts",
+    "beforeSha256": "6bdfc444754fcc4f02ce64108bed00090dd432c7f43f8c68cbd59f7484245aef",
+    "afterSha256": "6bdfc444754fcc4f02ce64108bed00090dd432c7f43f8c68cbd59f7484245aef",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 0,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/examples.ts",
+    "beforeSha256": "bbce0f81c2bab7b09d29f45eea481df2df37041eec0b673c5a25b273ff06230e",
+    "afterSha256": "bbce0f81c2bab7b09d29f45eea481df2df37041eec0b673c5a25b273ff06230e",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 11,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 11,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/format-pipeline.ts",
+    "beforeSha256": "9f5cc4b97bdd2553034bfbb795c479055e71463e3508db60d11f95acda079c65",
+    "afterSha256": "9f5cc4b97bdd2553034bfbb795c479055e71463e3508db60d11f95acda079c65",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 17,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 17,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/formatter-process.ts",
+    "beforeSha256": "c64065046d61d04d6869e95a1da51c7a6228f9a4ab2288c962ba614ca41e1fa7",
+    "afterSha256": "c64065046d61d04d6869e95a1da51c7a6228f9a4ab2288c962ba614ca41e1fa7",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 10,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 10,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/grammar-ids.ts",
+    "beforeSha256": "3f6198417f339189e58f5ee2c8bc991e63b8f303eb834d174f510b6dfb3d5e63",
+    "afterSha256": "3f6198417f339189e58f5ee2c8bc991e63b8f303eb834d174f510b6dfb3d5e63",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 1,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 1,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/guarded-run.ts",
+    "beforeSha256": "971af12e2f8399e0058f9c80549de8c611b63a3bf291d63b800b52f125f3b8d3",
+    "afterSha256": "971af12e2f8399e0058f9c80549de8c611b63a3bf291d63b800b52f125f3b8d3",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 19,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 19,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/hook.ts",
+    "beforeSha256": "18bde3cdde61cddadd093a7e26fac63991cafe40718a35a06479e7579539e15b",
+    "afterSha256": "18bde3cdde61cddadd093a7e26fac63991cafe40718a35a06479e7579539e15b",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 4,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 4,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/lifecycle-hook.ts",
+    "beforeSha256": "97e4a2d12f38122aea98e017597e1b2fc1c45ecdf67a482bcb6e3c2d135ab090",
+    "afterSha256": "97e4a2d12f38122aea98e017597e1b2fc1c45ecdf67a482bcb6e3c2d135ab090",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 12,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 12,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/parse-check.ts",
+    "beforeSha256": "a68123570d2e4c712258ab3ce708e475b1c31ab00a387e17399380837fb3fb0e",
+    "afterSha256": "a68123570d2e4c712258ab3ce708e475b1c31ab00a387e17399380837fb3fb0e",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 6,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 6,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/preservation.ts",
+    "beforeSha256": "604786024d7fc4437653ef75cbf541f2444ca877fb824630887e06733bd986b7",
+    "afterSha256": "604786024d7fc4437653ef75cbf541f2444ca877fb824630887e06733bd986b7",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 9,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 9,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/process-lock.ts",
+    "beforeSha256": "aa1561f1c1ea0007f3a4f26536a96567fff43b155992fdcfe8b814a8b458faa9",
+    "afterSha256": "aa1561f1c1ea0007f3a4f26536a96567fff43b155992fdcfe8b814a8b458faa9",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 5,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 5,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/project-config.ts",
+    "beforeSha256": "524f04d1c869d2f412c67516e3d5981b55f093fcfd7e0c14f48f13fac9f94096",
+    "afterSha256": "524f04d1c869d2f412c67516e3d5981b55f093fcfd7e0c14f48f13fac9f94096",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 26,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 26,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/report.ts",
+    "beforeSha256": "aa48bffdb7bac9dd48835be18fa690439fea70b39158876e6413fbfcaf39e264",
+    "afterSha256": "aa48bffdb7bac9dd48835be18fa690439fea70b39158876e6413fbfcaf39e264",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 29,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 29,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/result-json.ts",
+    "beforeSha256": "fc791a830e5431916562143267740571e4735fe5fdb739590a15d7eea9ef08aa",
+    "afterSha256": "fc791a830e5431916562143267740571e4735fe5fdb739590a15d7eea9ef08aa",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 7,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 7,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/runtime-record-validation.ts",
+    "beforeSha256": "6d3f57389801cdb610de1524e927750b07b3b97a1df637a32891ac094ccd5f8b",
+    "afterSha256": "6d3f57389801cdb610de1524e927750b07b3b97a1df637a32891ac094ccd5f8b",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 0,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/safe-file.ts",
+    "beforeSha256": "ddc81949b3c0c481f64124659b33eaa848b8025f5a3dab53434617279cdd711e",
+    "afterSha256": "ddc81949b3c0c481f64124659b33eaa848b8025f5a3dab53434617279cdd711e",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 6,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 6,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/signature.ts",
+    "beforeSha256": "958a206fa54e709a735c3305726b49e2811ad5074c78e12208766e5087067e4d",
+    "afterSha256": "958a206fa54e709a735c3305726b49e2811ad5074c78e12208766e5087067e4d",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 1,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 1,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/surface.ts",
+    "beforeSha256": "46bb1a44a08ec621b0d0f6c6d103e9eeed2bc23762e713084b747ba0b9391fe5",
+    "afterSha256": "46bb1a44a08ec621b0d0f6c6d103e9eeed2bc23762e713084b747ba0b9391fe5",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 3,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 3,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/syntax-validation.ts",
+    "beforeSha256": "dd5a5a24a8d074ab48848e25eab5d33f0f299cbcf8fdcaccbd525ef32d5bdfc1",
+    "afterSha256": "dd5a5a24a8d074ab48848e25eab5d33f0f299cbcf8fdcaccbd525ef32d5bdfc1",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 5,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 5,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/table-engine.ts",
+    "beforeSha256": "2f87e5b830e884af9dd529e15160db00ce46a82cf835f049e71b0ce259671b75",
+    "afterSha256": "2f87e5b830e884af9dd529e15160db00ce46a82cf835f049e71b0ce259671b75",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 32,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 32,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/common/usage.ts",
+    "beforeSha256": "71608ae8c0d8625ca583eab656151c6646774ba308d34119e70108a3d2191958",
+    "afterSha256": "71608ae8c0d8625ca583eab656151c6646774ba308d34119e70108a3d2191958",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 3,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 3,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/hook.ts",
+    "beforeSha256": "0aaf359a4d941cc64bbccbd90339acfc4b34f44cd8a7e2676568cffedfb11487",
+    "afterSha256": "0aaf359a4d941cc64bbccbd90339acfc4b34f44cd8a7e2676568cffedfb11487",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 5,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 5,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/internal-runner.ts",
+    "beforeSha256": "97f2267a8c0a17b163aee4b15ce9e201d30fb8f9c31c70561ea3aac3784614ed",
+    "afterSha256": "97f2267a8c0a17b163aee4b15ce9e201d30fb8f9c31c70561ea3aac3784614ed",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 0,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/measure-layout.ts",
+    "beforeSha256": "6dcbd0ab6462731d0e45ea5c1a10a48846106019e93c28f8ce52f1c7be08a59d",
+    "afterSha256": "6dcbd0ab6462731d0e45ea5c1a10a48846106019e93c28f8ce52f1c7be08a59d",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 8,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 8,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/python/01_assignment-envelope.ts",
+    "beforeSha256": "808fead52a43024ed4a805a2742bfed99ca17c395e0bcbf841ec80fbea5881bf",
+    "afterSha256": "808fead52a43024ed4a805a2742bfed99ca17c395e0bcbf841ec80fbea5881bf",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 6,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 6,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/python/01_group-regions.ts",
+    "beforeSha256": "7f1181fb2a63f07b671cd61895a24212ed202780ad2d921e33f69841be94f3df",
+    "afterSha256": "7f1181fb2a63f07b671cd61895a24212ed202780ad2d921e33f69841be94f3df",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 0,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/python/01_profile.ts",
+    "beforeSha256": "5889bf0298799a3ce654f47c2a2b2c87b3038e12bb6f959e59b08c6f362ef021",
+    "afterSha256": "5889bf0298799a3ce654f47c2a2b2c87b3038e12bb6f959e59b08c6f362ef021",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 35,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 35,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/python/04_measure-columns.ts",
+    "beforeSha256": "3f8654ac275040773a42a9e1c2e65ee49fa2665b5a8a02cad29cdae545cfc054",
+    "afterSha256": "3f8654ac275040773a42a9e1c2e65ee49fa2665b5a8a02cad29cdae545cfc054",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 6,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 6,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/python/06_align-tables.ts",
+    "beforeSha256": "9ebbc716969419712ad803ad863b1d7124a7f7abbeb7ea962c600b54060e3284",
+    "afterSha256": "9ebbc716969419712ad803ad863b1d7124a7f7abbeb7ea962c600b54060e3284",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 0,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/python/shared_analysis-script.ts",
+    "beforeSha256": "8d3a643df758ed44f41e1846449dd8b56bbc09b919e3ac5f1cdcfe9428ea3fd9",
+    "afterSha256": "8d3a643df758ed44f41e1846449dd8b56bbc09b919e3ac5f1cdcfe9428ea3fd9",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 0,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/python/shared_analysis.ts",
+    "beforeSha256": "2b9972b39c34735618c7faed492b5dbbf3568065e0de4c336a5c0b10258908e9",
+    "afterSha256": "2b9972b39c34735618c7faed492b5dbbf3568065e0de4c336a5c0b10258908e9",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 5,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 5,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/python/shared_string-ranges.ts",
+    "beforeSha256": "08d7e71e8b86535cc709d0bf4e0a91ae6b2d6f32e172a5ff6a2bcd7d1f8c8188",
+    "afterSha256": "08d7e71e8b86535cc709d0bf4e0a91ae6b2d6f32e172a5ff6a2bcd7d1f8c8188",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 0,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/report.ts",
+    "beforeSha256": "4a751963776919744aff91dee034387f1235901da91da8dc81275f87c8998df2",
+    "afterSha256": "4a751963776919744aff91dee034387f1235901da91da8dc81275f87c8998df2",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 3,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 3,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/rule-data.ts",
+    "beforeSha256": "14fd27395a78f4bd6ef38e434afc5524faa3b1d2502325c0756e8a47e2c2c526",
+    "afterSha256": "14fd27395a78f4bd6ef38e434afc5524faa3b1d2502325c0756e8a47e2c2c526",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 0,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/structured/index.ts",
+    "beforeSha256": "8b1020b54aa199c7821ede7242fe6fa7b332ca55c7843d6c19302d0dd64ae6f4",
+    "afterSha256": "8b1020b54aa199c7821ede7242fe6fa7b332ca55c7843d6c19302d0dd64ae6f4",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 21,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 21,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/00_expand-interface-members.ts",
+    "beforeSha256": "201203fe7ee7b4b32b2c74b64dc3a460be62958b4edcfb099705440128502043",
+    "afterSha256": "201203fe7ee7b4b32b2c74b64dc3a460be62958b4edcfb099705440128502043",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 5,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 5,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/00_normalize-imports.ts",
+    "beforeSha256": "54afd7998abee08038bf769e8dc5f8eae8ab39e02259b2eb0c0e45efef767b75",
+    "afterSha256": "54afd7998abee08038bf769e8dc5f8eae8ab39e02259b2eb0c0e45efef767b75",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 30,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 30,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/01_grid-tokens.ts",
+    "beforeSha256": "4e3ce312784b505696ba338cd569da2b501fa6ddba40603ca139855e68074fdc",
+    "afterSha256": "4e3ce312784b505696ba338cd569da2b501fa6ddba40603ca139855e68074fdc",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 5,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 5,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/01_group-regions.ts",
+    "beforeSha256": "dc0a15cf0c98bbf2cd716c1df716b3659365955f86f80ab578eda567496933a7",
+    "afterSha256": "dc0a15cf0c98bbf2cd716c1df716b3659365955f86f80ab578eda567496933a7",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 8,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 8,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/02_audit-type-uncertainty.ts",
+    "beforeSha256": "245b409d5e2934932d8500f7b46e3a5d28957961d839604567c3d7954ab45fa2",
+    "afterSha256": "245b409d5e2934932d8500f7b46e3a5d28957961d839604567c3d7954ab45fa2",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 7,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 7,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/03_audit-optional-types.ts",
+    "beforeSha256": "4fd3ea121b63a67ba44fca9a7b0c795762db25b729a294eb0efc0ac6af08c94a",
+    "afterSha256": "4fd3ea121b63a67ba44fca9a7b0c795762db25b729a294eb0efc0ac6af08c94a",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 11,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 11,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/04_measure-columns.ts",
+    "beforeSha256": "1978419105b02fafc7b2d1ef4401ae6d2ae7b030cd8a16bd33b84e039eeb4b29",
+    "afterSha256": "1978419105b02fafc7b2d1ef4401ae6d2ae7b030cd8a16bd33b84e039eeb4b29",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 3,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 3,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/05_inspect-hover.mjs",
+    "beforeSha256": "1a3bdf8231fdbef90d050220f02d0214d3fc7bfe168445f34158cc1040a1d2ec",
+    "afterSha256": "1a3bdf8231fdbef90d050220f02d0214d3fc7bfe168445f34158cc1040a1d2ec",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 12,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 2,
+      "syntax": null,
+      "error": {
+        "code": "UNSUPPORTED_LANGUAGE",
+        "message": "cannot infer a supported language from: product/engine/typescript/05_inspect-hover.mjs"
+      },
+      "approvalEligible": null,
+      "resultSummaries": []
+    },
+    "nodeSyntaxExit": 0
+  },
+  {
+    "file": "product/engine/typescript/06_align-tables.ts",
+    "beforeSha256": "371f6fb74e831158171a9181fa132e5639579846ba67ad83ff227b4c2a3abda0",
+    "afterSha256": "371f6fb74e831158171a9181fa132e5639579846ba67ad83ff227b4c2a3abda0",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 0,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 0,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/06_align.ts",
+    "beforeSha256": "8a9936972aa28d493378dcc1b9605be8c80ca459572c89549a05da6b1b2c2ea5",
+    "afterSha256": "8a9936972aa28d493378dcc1b9605be8c80ca459572c89549a05da6b1b2c2ea5",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 40,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 40,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/06_grid-kinds.ts",
+    "beforeSha256": "90e2bd7ec79c4cab8e3e14a6477e26c8cd4e7f86dc3bee132e854661315d5223",
+    "afterSha256": "90e2bd7ec79c4cab8e3e14a6477e26c8cd4e7f86dc3bee132e854661315d5223",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 101,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 101,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/06_layout-policy.ts",
+    "beforeSha256": "9410aceca2d22350df45e3c0cfa922a1f94a47f763f11a396ada017c0e431e00",
+    "afterSha256": "9410aceca2d22350df45e3c0cfa922a1f94a47f763f11a396ada017c0e431e00",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 3,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 3,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/07_wrap-conditions.ts",
+    "beforeSha256": "449e59b63513e14e0b33d07e6a4b638b58fd22e9265aa693808bf15207ad51d5",
+    "afterSha256": "449e59b63513e14e0b33d07e6a4b638b58fd22e9265aa693808bf15207ad51d5",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 28,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 28,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/08_function-map.ts",
+    "beforeSha256": "052bb9a0b86994a3f38233ee076d204eff4a2815c68e3769a9d8a67462abe642",
+    "afterSha256": "052bb9a0b86994a3f38233ee076d204eff4a2815c68e3769a9d8a67462abe642",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 10,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 10,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/09_observe-shapes.ts",
+    "beforeSha256": "f0de0df7c0974cb17740ea7a1ce8be05e64b572e7f5511b883fef2bf43f01936",
+    "afterSha256": "f0de0df7c0974cb17740ea7a1ce8be05e64b572e7f5511b883fef2bf43f01936",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 24,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 24,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/shared_layout-preservation.ts",
+    "beforeSha256": "d025688b7e6773dcce8fb23fcc26cb063a7810415b014be55dc177b112bf8967",
+    "afterSha256": "d025688b7e6773dcce8fb23fcc26cb063a7810415b014be55dc177b112bf8967",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 1,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 1,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/shared_load-source-file.ts",
+    "beforeSha256": "006b6eed41146170a9c1d5fc7979b9ded5e4064500fa3a732c98346db38dbdf3",
+    "afterSha256": "006b6eed41146170a9c1d5fc7979b9ded5e4064500fa3a732c98346db38dbdf3",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 4,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 4,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  },
+  {
+    "file": "product/engine/typescript/shared_token-preservation.ts",
+    "beforeSha256": "ed4b33cdbc941c4c7fad7883336f298b6250d8cb72cfef6e87e718c39b96e643",
+    "afterSha256": "ed4b33cdbc941c4c7fad7883336f298b6250d8cb72cfef6e87e718c39b96e643",
+    "alignment": {
+      "exitCode": 0,
+      "summary": {
+        "groups": 3,
+        "misaligned": 0,
+        "edits": 0,
+        "refused": 0,
+        "suggested": 0
+      }
+    },
+    "imports": {
+      "exitCode": 0,
+      "result": "import-declarations files=1 changed=0 errors=0"
+    },
+    "publicCheck": {
+      "exitCode": 0,
+      "syntax": {
+        "status": "valid",
+        "tool": "typescript",
+        "diagnostics": []
+      },
+      "error": null,
+      "approvalEligible": false,
+      "resultSummaries": [
+        {
+          "groups": 3,
+          "misaligned": 0,
+          "edits": 0,
+          "refused": 0,
+          "suggested": 0
+        }
+      ]
+    }
+  }
+]

@@ -3,7 +3,7 @@
 ## Purpose and scope
 
 This document describes the current inspection and write paths, then proposes a consistent maintenance contract.
-The shared contract is stage responsibility and result meaning; parsing and row decomposition remain language-specific.
+The shared contract is tool responsibility and result meaning; parsing and row decomposition remain language-specific.
 Source baseline: `07f568c`, inspected 2026-10-21. The [audit](reviews/2026-10-21-maintainer-docs.md) records that
 historical execution evidence. Current-state additions below describe the later READINESS1 source and are outside
 that earlier audit's coverage.
@@ -12,13 +12,15 @@ that earlier audit's coverage.
 
 | Existing entry | Supported scope | What it proves | What it does not prove |
 | --- | --- | --- | --- |
-| `boxbox check --file <file> --json` | Public TypeScript/Python/JSON/YAML | Separate syntax result, alignment results and effective approval facts | Formatter fixed point or authorization to write |
+| `boxbox check --source --file <file> --json` | Public TypeScript/Python/JSON/YAML | Original-source syntax/findings and approval facts without a formatter or working copy | Formatter canonical verification, whole-file coverage or write authorization |
+| `boxbox check --file <file> --json` | Public TypeScript/Python/JSON/YAML | Source syntax/findings and approval facts; configured formatter canonical verification | Whole-file style coverage or authorization to write |
 | `boxbox guide --file <file> --json` | Public TypeScript/Python/JSON/YAML | Guidance from applicable approved records after syntax acceptance | That the input passed the write pipeline |
 | `boxbox guide --file <file> --authoring --json` | Public TypeScript/Python/JSON/YAML, including missing/empty targets | Scoped approval proof, contract and examples | Write authorization or verification of target contents |
 | `boxbox align --file <file> [--dry-run] --json` | Four-language engine; writes only approved exact keys | Approved horizontal whitespace changes, parser and fixed point; preview includes actual line edits | Approval for currently unapproved JSON/YAML rules, structural improvement, behavioral equivalence or performance |
 | `boxbox format --file <file> --dry-run --json` | Four-language engine; candidates require exact approval | Full working-copy pipeline and fixed point for that invocation | A target write; it preserves original bytes |
 | `boxbox format --file <file> --json` | Four-language engine; candidates require exact approval | Verified pipeline and whether a replacement occurred | Future file/config stability or approval beyond the effective registry |
-| `product/engine/<language>/06_align-tables.ts` | Ten development engines | Raw check or engine write safety | Public approval policy; raw writers are excluded from the public CLI artifact |
+| `boxbox check` / `format` with repeated `--file` or `--directory` | Bounded multiple-file selection across supported languages | Per-file results and aggregate exit status; format is atomic per file | A project-wide transaction or per-group approval |
+| TypeScript `product/engine/typescript/07_align-tables.ts` and Python `product/engine/python/02_align-tables.ts` | TypeScript and Python development wrappers | Raw check or engine write safety | Public approval policy; raw writers are excluded from the public CLI artifact |
 
 The dated DOC1 audit reproduced an invalid no-table Python file that passed the old Check path; invalid TypeScript
 was not probed. READINESS1 closed that gap by running read-only syntax validation before inspection and returning a
@@ -31,27 +33,47 @@ also requires at least one `PASS`/`FIXABLE` group and verified approval for ever
 ### Current read path
 
 Public `check` parses arguments, selects TypeScript, Python, JSON or YAML, validates syntax, resolves configuration,
-runs the applicable adapter, then attaches `approvalFacts` from the effective layered registry. It does not run the
-external formatter or the write pipeline. Invalid syntax and validator execution errors stop inspection explicitly.
-`guide` uses the detected groups and approval records to render guidance. See [cli.ts](../../product/engine/cli.ts).
+runs the applicable adapter, then attaches `approvalFacts` from the effective layered registry. With no configured
+formatter, it stops there. Explicit `check --source` always stops at those source observations, with no formatter,
+formatting working copy or write attempt; it supports the same file/directory selection and expected-axis output.
+Default Check with a configured formatter also runs the guarded pipeline in dry-run mode and compares
+the final canonical bytes with the original. The source report remains under `results`, `syntax` and `formatReadiness`;
+`canonical` separately reports the formatter-then-BoxBox verification or refusal. Intermediate formatter/alignment
+changes are not the canonical difference. Exit codes are 0 for unchanged canonical bytes, 1 for differences and 2 for
+errors/refusals. Invalid syntax and validator execution errors stop inspection explicitly.
+`guide` uses the detected groups and approval records to render guidance. See [00_cli.ts](../../product/engine/00_cli.ts).
 
 `guide --authoring` instead enumerates current language/scope keys and evaluates them through the same approval
 gate, including higher-layer rejections and conflicts. It resolves the verified decision section and examples,
-then rechecks configuration/approval provenance. It does not read or create the target. Its response explicitly
+then rechecks configuration/approval provenance. TypeScript vocabulary marks kinds with any approved variant and lists
+their exact `approvedKeys`; neither that aggregate flag nor the kind's complete column catalog approves an additional
+context or axis combination. Python column sets are source-free representative variants with
+exact legacy axes, not family-wide approvals; display-only `semanticKind` and `sourceContext` do not change `table`/`pair`
+lookup identities. It does not read or create the target. Its response explicitly
 reports `verification: "not-run"` and `writeAuthorized: false`. See
-[authoring-guide.ts](../../product/engine/common/authoring-guide.ts).
+[20_authoring-guide.ts](../../product/engine/common/20_authoring-guide.ts).
 
-TypeScript uses AST container/kind information and TypeScript scanner preservation. Code-language profiles use
-masking, lossless slot decomposition, adjacent rows with compatible signatures and the shared line engine. JSON and
-YAML use a structured-document adapter. These adapters feed the same result lifecycle but retain separate parsing,
-candidate extraction and preservation logic. They emit [ResultEnvelope](../../product/engine/common/result-json.ts).
+TypeScript uses AST container/kind information and TypeScript scanner preservation. Python prepares one
+document-local CPython `ast`/`tokenize` analysis before its profile feeds the shared line planner. Container ownership
+constrains rows, and formatted strings remain opaque original-source slices. AST UTF-8 byte columns and tokenizer
+character columns map separately to original UTF-16 offsets while retaining physical line separators, including
+CRLF. A separate Python AST-structure check guards changed raw/public write candidates; it does not execute source.
+Quoted dictionary entries keep balanced single-line values opaque, including nested calls and containers. Dictionary
+profiles opt in to a missing final comma while other profiles retain strict terminal matching. Nested entries on the
+same physical line cannot displace the line-leading entry's AST owner. Bounded import/guard tables cover whole-line
+`from ... import ...` and sibling inline `if condition: return value` rows; plain or multiline/parenthesized imports
+and guards with `else`, bare returns or additional statements remain unsupported. This structural AST analysis adds
+no compile-time or enclosing-function semantic validation, and detection does not grant write approval.
+JSON and YAML use a structured-document adapter. These adapters feed the same result lifecycle but retain separate
+parsing, candidate extraction and preservation logic. They emit
+[ResultEnvelope](../../product/engine/common/24_result-json.ts).
 
 ### Current public write path
 
-[runFormatPipeline](../../product/engine/common/format-pipeline.ts) performs the following sequence:
+[runFormatPipeline](../../product/engine/common/21_format-pipeline.ts) performs the following sequence:
 
 1. Resolve the real root and target; validate formatter settings; snapshot configuration/approval provenance.
-2. Enter [updateFileAtomically](../../product/engine/common/safe-file.ts), which creates a working copy and checks target identity.
+2. Enter [updateFileAtomically](../../product/engine/common/12_safe-file.ts), which creates a working copy and checks target identity.
 3. Run the configured formatter on the copy if present; reject timeout, failure or executable drift.
 4. Assert syntactic acceptance of the formatter/standalone output.
 5. Inspect candidate groups and verify approval proof for every `PASS`/`FIXABLE` group; refuse if any group is
@@ -60,12 +82,14 @@ candidate extraction and preservation logic. They emit [ResultEnvelope](../../pr
 6. Run the language writer on the copy, including its preservation and parser-comparison gates.
 7. Repeat the entire formatter/parse/approval/alignment cycle; require byte equality with the first output.
 8. Recheck provenance. For dry-run, restore initial bytes in the copy. Otherwise replace the original once after identity/conflict checks.
-9. Return formatter changes, BoxBox changes, approvals, fixed-point status and whether a write occurred.
+9. Return formatter changes, BoxBox changes, the final original-versus-canonical difference, approvals, fixed-point status and whether a write occurred.
 
-The atomic replacement helper does not make all databases transactional. See [storage.md](storage.md).
+Repeated `--file` selections and `--directory` traversal use the same per-file pipeline. Selection is resolved before
+execution, and results retain completed writes and later errors. There is no project-wide rollback or new per-group
+writer. The atomic replacement helper does not make all databases transactional. See [storage.md](storage.md).
 
 `align` uses this pipeline with `alignmentOnly: true` and no formatter. The pipeline rejects a supplied formatter
-before execution. After the first cycle, [alignment-only.ts](../../product/engine/common/alignment-only.ts) compares
+before execution. After the first cycle, [10_alignment-only.ts](../../product/engine/common/10_alignment-only.ts) compares
 the original and proposed bytes: UTF-8 round-trip, physical line separators, BOM, indentation, trailing whitespace,
 non-whitespace content and language-specific token/protected-text preservation. A broader proposal is refused.
 Dry-run records changed lines as `{line, before, after}` before restoring the working copy. The second cycle and
@@ -81,11 +105,20 @@ behavior and relevant performance verification; see [the workflow contract](../u
 | JSON | Strict structured adapter | `JSON.parse` | Engine support; no default approved write rule |
 | YAML | Guarded structured adapter, YAML 1.2 core | `yaml@2.9.1` strict parse | Engine support; no default approved write rule |
 
-Exact commands and diagnostic normalization are owned by [parse-check.ts](../../product/engine/common/parse-check.ts).
-External-tool comparison runs isolated temporary files, not a full project build with its dependencies. Raw write gates
-compare diagnostics before/after; matching pre-existing errors do not mean the input is valid. `compareParse` probes
-availability even for identical bytes, then returns early for identical input/output. Public format has the additional
-syntactic-acceptance stage above. TypeScript diagnostics are syntactic, not a full semantic type check.
+Exact commands and diagnostic normalization are owned by [08_parse-check.ts](../../product/engine/common/08_parse-check.ts).
+Python syntax and diagnostic comparison send source over stdin to isolated CPython rather than creating temporary
+source files. This keeps Python source inspection (`check --source`) usable in a read-only host sandbox. Configured
+canonical Check and the format pipeline still stage candidates in temporary files and need working-copy write permission.
+The parser check is not a full project build with its dependencies. `compareParse`
+is a diagnostics comparison, not the formatter-admission decision: matching diagnostics do not establish syntax
+validity, behavioral equivalence, or Python AST equality. Public `format` has the separate syntactic-acceptance stage
+above; changed Python write candidates also
+have the independent AST-structure guard. TypeScript diagnostics are syntactic, not a full semantic type check.
+Python formatted-string range extraction and the AST guard are fail-closed; they do not widen the set of approved
+rules. Historical verification for candidate `da1e93b36a6ca63a` is retained in the
+[2026-11-01 self-use review](reviews/2026-11-01-engine-self-use.md). The later document-local analysis and its bounded
+verification are described in the [Python AST review](reviews/2026-11-02-engine-stages-python-ast.md). Those dated
+results are separate from current public source status and do not establish whole-checkout approval.
 
 ## Data and invariants
 
@@ -96,11 +129,16 @@ an emitted state in this contract. Command-specific public envelopes add their o
 `FIXABLE` describes an alignment candidate, not human authorization. The approved TypeScript declaration rule has
 a two-row exception; the shared line engine has a three-row floor. Uniform process must preserve these policies.
 The grammar prose's three-row default must be read with the explicit approved exception, not generalized silently.
+An empty result or zero detected groups is not a `PASS`: it may mean that no supported table was found, and it does
+not establish row coverage. A `PASS` applies only to groups the current detector emitted; it is not a completeness
+claim or a substitute for checking the minimum-width behavior of the relevant syntax boundaries. `syntax.status` establishes syntax acceptance only. Public language support remains TypeScript, Python, JSON and YAML, while
+the raw line-engine development wrappers are TypeScript and Python; documented unsupported syntax remains excluded
+or refused rather than treated as an aligned table.
 
 There are three different meanings of grammar validation:
 
 - **Source syntax:** language parser checks, with the limitations above.
-- **BoxBox grammar:** role/pattern IDs and surface mappings. [grammar-ids.ts](../../product/engine/common/grammar-ids.ts)
+- **BoxBox grammar:** role/pattern IDs and surface mappings. [04_grammar-ids.ts](../../product/engine/common/04_grammar-ids.ts)
   is checked against [grammar.md](../../product/rules/references/grammar.md) by `test/surface.test.ts`; current base
   mappings cover TypeScript and Python. Role ambiguity is not a full semantic analysis.
 - **Stored data shape:** schema and approval validation, documented in [storage.md](storage.md).
@@ -108,7 +146,8 @@ There are three different meanings of grammar validation:
 ## Common lifecycle and adapter boundaries
 
 The implemented common lifecycle is **resolve → validate syntax → inspect through an adapter → evaluate effective
-approval policy → verify a write candidate → commit or report**. Check stops before candidate verification and commit.
+approval policy → verify a write candidate → commit or report**. `check --source` stops before candidate verification;
+configured-formatter Check verifies the canonical candidate without committing it.
 The format pipeline performs two complete working-copy cycles and commits once after fixed-point and provenance checks.
 
 1. Cover all four public language adapters in the common result contract suite. It currently enumerates TypeScript and

@@ -1,0 +1,7 @@
+# Invalid formatted-string source response correction
+
+A read-only fix-review reproduction found that invalid Python containing an f/t-string prefix could reach range extraction first, throw, and omit the raw JSON response. The write remained refused and bytes unchanged; the defect was the response contract. The frozen correction uses a dedicated `PythonSourceSyntaxError` only after parser classification confirms invalid source. It returns no guessed ranges. The raw align path maps that classified case to its existing versioned refusal envelope with `parse.status=changed` and zero edits; the public entry keeps its existing `ALIGN_NOT_ELIGIBLE` refusal. Other child errors and malformed protocol remain fail-closed.
+
+The author report records `bun test --timeout 60000 test/line-write-safety.test.ts test/parse-check.test.ts test/preservation.test.ts test/alignment-only.test.ts`: 69 passed, 0 failed, 209 expectations; `bunx tsc --noEmit` passed. It covers invalid f-string and ordinary invalid Python, supported prefixes, real Python 3.9 behavior, warnings, tokenizer faults, classified errors, unchanged bytes and no staged residue. This is author evidence; the later frozen full check is recorded separately. The earlier fix-only Claude Sonnet review returned FINDINGS, not PASS; the frozen code still requires final Opus review.
+
+Private complete author report and command transcripts remain in the task scratch area. This compact note excludes machine-specific paths and credentials.

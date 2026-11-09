@@ -1,6 +1,6 @@
-import      { afterEach, describe, expect, test                          } from "bun:test"                  ;
-import      { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs"                   ;
-import      { join                                                       } from "node:path"                 ;
+import      { afterEach, describe, expect, test                          } from "bun:test"                     ;
+import      { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs"                      ;
+import      { join                                                       } from "node:path"                    ;
 
 import      {
               APPROVAL_VERSIONS                                        ,
@@ -9,10 +9,10 @@ import      {
               evaluateDetected                                         ,
               loadApprovalRegistry                                     ,
               type ApprovalRegistry                                    ,
-                                                                         } from "@/common/approval-gate.ts" ;
-import      { sectionHash, contentHashOf, type Decision, type Example    } from "@/common/examples.ts"      ;
-import      { type LoadedConvention                                      } from "@/common/conventions.ts"   ;
-import      { lookupKeyOf                                                } from "@/common/signature.ts"     ;
+                                                                         } from "@/common/18_approval-gate.ts" ;
+import      { sectionHash, contentHashOf, type Decision, type Example    } from "@/common/17_examples.ts"      ;
+import      { type LoadedConvention                                      } from "@/common/16_conventions.ts"   ;
+import      { lookupKeyOf                                                } from "@/common/02_signature.ts"     ;
 
 const KEY                  = lookupKeyOf("typescript", "SourceFile", "declaration-equals", ["equals", "semicolon"]) ;
 const workspaces: string[] = []                                                                                     ;
@@ -51,12 +51,12 @@ function decision(root: string, partial: Partial<Decision> = {}): Decision {
 
 function registry(root: string, partial: Partial<ApprovalRegistry> = {}): ApprovalRegistry {
 	return {
-		conventions: [convention()],
-		examples: new Map([
+		conventions : [convention()]                         ,
+		examples    : new Map([
 			["ts-rule-positive", example("ts-rule-positive", "after-better")],
 			["ts-rule-counter", example("ts-rule-counter", "bad")],
 		]),
-		decisions: new Map([["ts-rule", decision(root)]]),
+		decisions   : new Map([["ts-rule", decision(root)]]) ,
 		...partial,
 	};
 }
@@ -99,7 +99,7 @@ describe("approval write gate", () => {
 
 	for (const [status, expected] of [["candidate", "unknown"], ["rejected", "rejected"]] as const) {
 		test(`a ${status} convention refuses writing`, () => {
-			const root   = workspace()                                                                                                                     ;
+			const root   = workspace       ()                                                                                                              ;
 			const result = evaluateApproval(registry(root, { conventions: [convention({ status })] }), { key: KEY, file: "a.ts" }, documentResolver(root)) ;
 			expect(result.status  ).toBe(expected) ;
 			expect(result.writable).toBe(false)    ;
@@ -107,17 +107,17 @@ describe("approval write gate", () => {
 	}
 
 	test("an unknown key and duplicate conventions of equal priority are unknown/conflict respectively", () => {
-		const root = workspace()                                                                  ;
-		const data = registry(root, { conventions: [convention(), convention({ id: "other" })] }) ;
+		const root = workspace()                                                                   ;
+		const data = registry (root, { conventions: [convention(), convention({ id: "other" })] }) ;
 
 		expect(evaluateApproval(data, { key: lookupKeyOf("typescript", "Block", "x", []), file: "a.ts" }, documentResolver(root)).status).toBe("unknown")  ;
 		expect(evaluateApproval(data, { key: KEY, file: "a.ts" }, documentResolver(root)).status).toBe("conflict") ;
 	});
 
 	test("picks the highest layer in project → user → preset order", () => {
-		const root    = workspace()                                                          ;
-		const preset  = convention({ id: "preset", layer: "preset", status: "rejected" })    ;
-		const user    = convention({ id: "user", layer: "user", status: "rejected" })        ;
+		const root    = workspace ()                                                         ;
+		const preset  = convention({ id: "preset", layer: "preset", status: "rejected" }   ) ;
+		const user    = convention({ id: "user", layer: "user", status: "rejected" }       ) ;
 		const project = convention({ id: "project", layer: "project", status: "candidate" }) ;
 
 		const result = evaluateApproval(registry(root, { conventions: [preset, user, project] }), { key: KEY, file: "a.ts" }, documentResolver(root));
@@ -126,7 +126,7 @@ describe("approval write gate", () => {
 	});
 
 	test("blocks a missing decision, a stale document hash, a wrong version and a missing human approval", () => {
-		const root     = workspace()            ;
+		const root     = workspace       ()     ;
 		const resolver = documentResolver(root) ;
 
 		expect(evaluateApproval(registry(root, { decisions: new Map() }), { key: KEY, file: "a.ts" }, resolver).reasons                                                           ).toContain("matching decision is missing"       ) ;
@@ -151,16 +151,16 @@ describe("approval write gate", () => {
 	});
 
 	test("refuses a document ref that escapes the root", () => {
-		const root   = workspace()                                                                                                                                                                           ;
+		const root   = workspace       ()                                                                                                                                                                    ;
 		const result = evaluateApproval(registry(root, { decisions: new Map([["ts-rule", decision(root, { ref: "../outside.md#Table alignment" })]]) }), { key: KEY, file: "a.ts" }, documentResolver(root)) ;
 		expect(result.writable  ).toBe(false)                    ;
 		expect(result.reasons[0]).toContain("document is invalid") ;
 	});
 
 	test("resolves the same relative ref in the document root matching the convention layer", () => {
-		const base    = workspace()           ;
-		const project = join(base, "project") ;
-		const user    = join(base, "user")    ;
+		const base    = workspace()                ;
+		const project = join     (base, "project") ;
+		const user    = join     (base, "user"   ) ;
 		mkdirSync(join(project, "docs"), { recursive: true });
 		mkdirSync(join(user, "docs"), { recursive: true });
 		writeFileSync(join(project, "docs", "rules.md"), "# Rules\n\n## Table alignment\nproject text\n");
@@ -194,9 +194,9 @@ describe("registry loader", () => {
 	});
 
 	test("refuses registry override root escapes and symbolic/non-regular files", () => {
-		const base     = workspace()                 ;
-		const registry = join(base, "registry")      ;
-		const outside  = join(base, "outside.jsonl") ;
+		const base     = workspace()                      ;
+		const registry = join     (base, "registry"     ) ;
+		const outside  = join     (base, "outside.jsonl") ;
 		mkdirSync(registry);
 		writeFileSync(outside, "");
 		symlinkSync(outside, join(registry, "linked.jsonl"));

@@ -1,9 +1,9 @@
 {
-  "$schema": "../issue.schema.json",
+  "$schema"      : "../issue.schema.json",
   "schemaVersion": 1,
-  "id": "BBX-20261021-006",
-  "title": "Report treated every line inside a guard region as a table row",
-  "category": "verification-gap",
+  "id"           : "BBX-20261021-006",
+  "title"        : "Report treated every line inside a guard region as a table row",
+  "category"     : "verification-gap",
   "tags": [
     "typescript",
     "return-guards",
@@ -41,18 +41,18 @@
   ],
   "verification": [
     {
-      "name": "Final repository check",
+      "name"  : "Final repository check",
       "status": "passed",
-      "scope": "All current repository suites, TypeScript type checking and installer shell syntax",
+      "scope" : "All current repository suites, TypeScript type checking and installer shell syntax",
       "evidence": [
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log"
       ],
       "result": "bun run check exited 0: 571 pass, 5 existing unavailable Rust/Kotlin parser skips, 0 fail, 2799 assertions. Skipped parsers were not verified."
     },
     {
-      "name": "Independent review closure",
+      "name"  : "Independent review closure",
       "status": "passed",
-      "scope": "Static review of the implemented correction and its documented limits",
+      "scope" : "Static review of the implemented correction and its documented limits",
       "evidence": [
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet-metadata.md",
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/glm-closure.md"
@@ -60,9 +60,9 @@
       "result": "The scoped independent review passed. Prior BLOCKED reviews and corrections remain in history. Reviewers did not execute tests."
     },
     {
-      "name": "Installed host compatibility",
+      "name"  : "Installed host compatibility",
       "status": "passed",
-      "scope": "Isolated Codex and Claude registrations and bundled launchers",
+      "scope" : "Isolated Codex and Claude registrations and bundled launchers",
       "evidence": [
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/installed.json",
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/installed-transcript.json",
@@ -74,17 +74,17 @@
   "related": [
     {
       "kind": "code",
-      "path": "product/engine/common/report.ts",
+      "path": "product/engine/common/23_report.ts",
       "note": "rowLinesOf and group-at-line membership."
     },
     {
       "kind": "code",
-      "path": "product/engine/common/result-json.ts",
+      "path": "product/engine/common/24_result-json.ts",
       "note": "Optional exact row membership in result metadata."
     },
     {
       "kind": "code",
-      "path": "product/engine/typescript/align.ts",
+      "path": "product/engine/typescript/12_align.ts",
       "note": "Group construction."
     },
     {
@@ -106,32 +106,32 @@
   "history": [
     {
       "sequence": 1,
-      "date": "2026-10-21",
-      "event": "reported",
-      "summary": "Initial Sonnet review identified false table membership from a broad return-guard span.",
+      "date"    : "2026-10-21",
+      "event"   : "reported",
+      "summary" : "Initial Sonnet review identified false table membership from a broad return-guard span.",
       "evidence": [
         "docs/development/issue-library/evidence/initial-sonnet-review.md"
       ]
     },
     {
       "sequence": 2,
-      "date": "2026-10-21",
-      "event": "diagnosed",
-      "summary": "Report consumers assumed every line in a range belonged to the table.",
+      "date"    : "2026-10-21",
+      "event"   : "diagnosed",
+      "summary" : "Report consumers assumed every line in a range belonged to the table.",
       "evidence": []
     },
     {
       "sequence": 3,
-      "date": "2026-10-21",
-      "event": "decision",
-      "summary": "Carry exact rowLines and retain the range only as a location envelope; verification remains pending.",
+      "date"    : "2026-10-21",
+      "event"   : "decision",
+      "summary" : "Carry exact rowLines and retain the range only as a location envelope; verification remains pending.",
       "evidence": []
     },
     {
       "sequence": 4,
-      "date": "2026-10-21",
-      "event": "implemented",
-      "summary": "Propagated exact rowLines through group results and used them for advisory-alarm membership; contiguous fallback remains.",
+      "date"    : "2026-10-21",
+      "event"   : "implemented",
+      "summary" : "Propagated exact rowLines through group results and used them for advisory-alarm membership; contiguous fallback remains.",
       "evidence": [
         "product/engine/common/result-json.ts",
         "product/engine/common/report.ts"
@@ -139,37 +139,37 @@
     },
     {
       "sequence": 5,
-      "date": "2026-10-21",
-      "event": "verified",
-      "summary": "Targeted report and TypeScript suites passed 44 tests with 187 assertions. Final integrated evidence is still pending.",
+      "date"    : "2026-10-21",
+      "event"   : "verified",
+      "summary" : "Targeted report and TypeScript suites passed 44 tests with 187 assertions. Final integrated evidence is still pending.",
       "evidence": [
         "docs/development/issue-library/evidence/report-membership-tests.log"
       ]
     },
     {
       "sequence": 6,
-      "date": "2026-10-21",
-      "event": "diagnosed",
-      "summary": "Independent initial diagnosis: Sonnet reported no blocking defects and identified the report-range overlap as an advisory defect. It did not execute tests or review the later fix. This entry preserves diagnosis evidence, not a passing fix verification.",
+      "date"    : "2026-10-21",
+      "event"   : "diagnosed",
+      "summary" : "Independent initial diagnosis: Sonnet reported no blocking defects and identified the report-range overlap as an advisory defect. It did not execute tests or review the later fix. This entry preserves diagnosis evidence, not a passing fix verification.",
       "evidence": [
         "docs/development/issue-library/evidence/initial-sonnet-review.md"
       ]
     },
     {
       "sequence": 7,
-      "date": "2026-10-21",
-      "event": "decision",
-      "summary": "Previous current-verification entries are preserved in the linked snapshot. The current list below records the final checked state; earlier failures remain searchable in history.",
+      "date"    : "2026-10-21",
+      "event"   : "decision",
+      "summary" : "Previous current-verification entries are preserved in the linked snapshot. The current list below records the final checked state; earlier failures remain searchable in history.",
       "evidence": [
         "docs/development/issue-library/evidence/records-before-final-closure.json"
       ]
     },
     {
       "sequence": 8,
-      "date": "2026-10-21",
-      "event": "verified",
-      "status": "passed",
-      "summary": "Closed for the documented supported scope after final repository checks, applicable installed-artifact evidence and independent review. No new public preset approvals or live profile installation is implied.",
+      "date"    : "2026-10-21",
+      "event"   : "verified",
+      "status"  : "passed",
+      "summary" : "Closed for the documented supported scope after final repository checks, applicable installed-artifact evidence and independent review. No new public preset approvals or live profile installation is implied.",
       "evidence": [
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/check-verified.log",
         "docs/development/reviews/2026-10-21-matrix-columns-evidence/sonnet-metadata.md",

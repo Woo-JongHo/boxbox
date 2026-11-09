@@ -1,5 +1,10 @@
-import { describe, expect, test } from "bun:test";
-import { categoriesOf, categoryOf, formatUsage, sessionUsage } from "../development/tools/session-usage.ts";
+import      { describe, expect, test } from "bun:test"                              ;
+import      {
+              categoriesOf         ,
+              categoryOf           ,
+              formatUsage          ,
+              sessionUsage
+                                     } from "../development/tools/session-usage.ts" ;
 
 const SECRET = "SECRET-PROMPT-TEXT";
 
@@ -11,13 +16,29 @@ const bridge     = (...subs: string[]) => `cd "C:/p"; B='const [n,l]=JSON.parse(
 const launcher   = (sub: string) => `'/usr/bin/node' '/home/x/plugin/scripts/boxbox.mjs' ${sub} --file a.ts --json`                                                                                                                                                                       ;
 
 describe("categoryOf", () => {
+	test.each([
+		"bun product/engine/typescript/06_align-tables.ts --file a.ts",
+		"bun product/engine/typescript/06_align-tables/index.ts --file a.ts",
+		"bun C:\\engine\\python\\06_align-tables\\index.ts --file a.py",
+		"bun product/engine/typescript/07_align-tables.ts --file a.ts",
+		"bun product/engine/python/02_align-tables.ts --file a.py",
+		"bun C:\\engine\\python\\02_align-tables.ts --file a.py",
+	])("recognizes current and recorded aligner commands: %s", command => {
+		expect(categoryOf("Bash", { command })).toBe("boxbox:aligner");
+	});
+
 	test("names the BoxBox step a tool call belongs to", () => {
 		expect(categoryOf("Bash" , { command: launcher("guide") }                                             )).toBe("boxbox:guide"    ) ;
 		expect(categoryOf("Bash" , { command: launcher("check") }                                             )).toBe("boxbox:check"    ) ;
 		expect(categoryOf("Bash" , { command: "bun product/packages/cli/entry.ts format --file a.ts" }        )).toBe("boxbox:format"   ) ;
-		expect(categoryOf("Bash" , { command: "bun product/engine/typescript/06_align-tables.ts --file a.ts" })).toBe("boxbox:aligner"  ) ;
+		expect(categoryOf("Bash" , { command: "bun product/engine/typescript/07_align-tables.ts --file a.ts" })).toBe("boxbox:aligner"  ) ;
 		expect(categoryOf("Skill", { skill: "boxbox:boxbox" }                                                 )).toBe("boxbox:skill"    ) ;
 		expect(categoryOf("Agent", { subagent_type: "boxbox:readability-inspector" }                          )).toBe("boxbox:inspector") ;
+	});
+
+	test("recognizes the numbered source CLI while retaining recorded source CLI commands", () => {
+		expect(categoryOf("Bash", { command: "bun product/engine/00_cli.ts check --file a.ts" })).toBe("boxbox:check");
+		expect(categoryOf("Bash", { command: "bun product/engine/cli.ts check --file a.ts" })).toBe("boxbox:check");
 	});
 
 	test("everything else, including a different subcommand word or a malformed input, is other", () => {

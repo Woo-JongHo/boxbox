@@ -1,0 +1,18 @@
+{
+  "requestedModel": "opencode/glm-5.3-flash-free",
+  "actualModels": [
+    "opencode/glm-5.3-flash-free"
+  ],
+  "exitCode": 0,
+  "isError": false,
+  "wallDurationSeconds": 242.623,
+  "observedToolUse": {
+    "read": 7
+  },
+  "eventsSha256": "4907c217fb27fb4fed7965164db920344652746b6414246c15b8b17fc4ffbb8a",
+  "packetSha256": "f9654d4741504bda97df6cd9c4a964218974223872bf7d5710f99a404fc39d88",
+  "permissionsFileSha256": "6f475bb741d9dbd4b4ab0be39f6a56cc37a017625efc65063cd576c86197b50d",
+  "originalReceiptSha256": "b6cbfb135d92551c18171609e7cbf677c2bd8f24fb6342b7bda2e57fbe462a80",
+  "completeSessionExportSha256": "e22b431e284ab85104dc756f03811699d8ff29eda01176a80d0928965a552eb4",
+  "note": "Initial pipe export was truncated at65536bytes; regular-file stdout export is complete. Original raw export and receipt retained."
+}

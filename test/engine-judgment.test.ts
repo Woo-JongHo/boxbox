@@ -1,13 +1,13 @@
-import { afterEach, describe, expect, test } from "bun:test";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
-import { columnSetGuide } from "@/common/authoring-guide.ts";
-import { axisExpectation, baseAxis } from "@/common/axis-expectations.ts";
-import { AXIS_NOTES, KIND_AXES } from "@/typescript/grid-kinds.ts";
+import      { afterEach, describe, expect, test  } from "bun:test"                         ;
+import      { mkdtempSync, rmSync, writeFileSync } from "node:fs"                          ;
+import      { tmpdir                             } from "node:os"                          ;
+import      { join, resolve                      } from "node:path"                        ;
+import      { columnSetGuide                     } from "@/common/20_authoring-guide.ts"   ;
+import      { axisExpectation, baseAxis          } from "@/common/05_axis-expectations.ts" ;
+import      { AXIS_NOTES, KIND_AXES              } from "@/typescript/13_grid-kinds.ts"    ;
 
-const cli                  = resolve(import.meta.dir, "../product/engine/cli.ts") ;
-const workspaces: string[] = []                                                   ;
+const cli                  = resolve(import.meta.dir, "../product/engine/00_cli.ts") ;
+const workspaces: string[] = []                                                      ;
 
 function workspace(): string {
 	const root = mkdtempSync(join(tmpdir(), "boxbox-engine-judgment-"));
@@ -74,8 +74,10 @@ describe("columnSetGuide", () => {
 	test("marks a kind approved only when an approved rule key names it, and explains every column", () => {
 		const key    = "v1|typescript|SourceFile|declaration-equals|equals>call-open-paren>call-close-paren>semicolon" ;
 		const result = columnSetGuide(KIND_AXES, AXIS_NOTES, [key])                                                    ;
-		expect(result.columnSets.filter(set => set.approved).map(set => set.kind)).toEqual(["declaration-equals"]);
-		expect(result.columnSets.map(set => set.kind)                            ).toEqual(Object.keys(KIND_AXES));
+		expect(result.columnSets.filter(set => set.approved).map(set => set.kind)            ).toEqual(["declaration-equals"]) ;
+		expect(result.columnSets.find(set => set.kind === "declaration-equals")?.approvedKeys).toEqual([key]                 ) ;
+		expect(result.columnSets.find(set => set.kind === "declaration-values")?.approvedKeys).toEqual([]                    ) ;
+		expect(result.columnSets.map(set => set.kind)                                        ).toEqual(Object.keys(KIND_AXES)) ;
 		for (const set of result.columnSets) {
 			for (const column of set.columns) expect(result.axisNotes[column.replaceAll("{i}", "")], `${set.kind}.${column}`).toBeString();
 		}
@@ -87,16 +89,22 @@ describe("columnSetGuide", () => {
 });
 
 describe("CLI", () => {
-	test("guide --authoring lists TypeScript column sets as vocabulary and nothing for other languages", () => {
+	test("guide --authoring returns language-specific vocabulary without authorizing writes", () => {
 		const root       = workspace()                                                                  ;
 		const typescript = invoke   (root, ["guide", "--file", "new/code.ts", "--authoring", "--json"]) ;
 		const python     = invoke   (root, ["guide", "--file", "new/code.py", "--authoring", "--json"]) ;
 		expect(typescript.code                                                                                                          ).toBe           (0                                                                        ) ;
 		expect(typescript.value.writeAuthorized                                                                                         ).toBe           (false                                                                    ) ;
+
+		const exactKeys = typescript.value.columnSets.flatMap((set: { approvedKeys: string[] }) => set.approvedKeys);
+
+		expect(exactKeys.sort()                                                                                                         ).toEqual        (typescript.value.rules.map((rule: { key: string }) => rule.key).sort()   ) ;
 		expect(typescript.value.columnSets.filter((set: { approved: boolean }) => set.approved).map((set: { kind: string }) => set.kind)).toEqual        (["declaration-equals", "declaration-values", "declaration-call-envelope"]) ;
 		expect(Object.keys(typescript.value.axisNotes).length                                                                           ).toBeGreaterThan(30                                                                       ) ;
-		expect(python.value.columnSets                                                                                                  ).toEqual        ([]                                                                       ) ;
-		expect(python.value.axisNotes                                                                                                   ).toEqual        ({}                                                                       ) ;
+		expect(python.code                                                                                                              ).toBe           (0                                                                        ) ;
+		expect(python.value.writeAuthorized                                                                                             ).toBe           (false                                                                    ) ;
+		expect(python.value.columnSets.some((set: { kind: string }) => set.kind === "assignments")                                      ).toBe           (true                                                                     ) ;
+		expect(python.value.axisNotes                                                                                                   ).toHaveProperty ("name"                                                                   ) ;
 	});
 
 	test("check --expect-axis reports coverage and does not change the exit status", () => {

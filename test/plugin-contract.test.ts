@@ -2,7 +2,7 @@ import      { existsSync, lstatSync, readdirSync    } from "node:fs"            
 import      { readFileSync, statSync                } from "node:fs"                             ;
 import      { join, resolve                         } from "node:path"                           ;
 import      { describe, expect, test                } from "bun:test"                            ;
-import      { AXIS_NOTES, KIND_AXES                 } from "@/typescript/grid-kinds.ts"          ;
+import      { AXIS_NOTES, KIND_AXES                 } from "@/typescript/13_grid-kinds.ts"       ;
 import      { pluginDrift, stampMarketplaceVersions } from "../development/tools/sync-plugin.ts" ;
 
 const ROOT                    = resolve(import.meta.dir, "..")                                                               ;
@@ -95,6 +95,15 @@ describe("plugin distribution contract", () => {
 
 	test("the plugin folder does not drift from the single source", () => {
 		expect(pluginDrift()).toEqual([]);
+	});
+
+	test("post-tool inspection includes host-normalized shell calls and excludes unrelated tools", () => {
+		const hooks   = JSON.parse(read("product/plugin/hooks/hooks.json")) as { hooks: { PostToolUse: Array<{ matcher: string }> } } ;
+		const matches = (tool: string): boolean => hooks.hooks.PostToolUse.some(group => new RegExp(group.matcher, "u").test(tool))   ;
+
+		// Codex exec_command and completed write_stdin report the canonical hook name Bash.
+		for (const tool of ["Write", "Edit", "MultiEdit", "apply_patch", "Bash"]) expect(matches(tool), tool).toBe(true);
+		for (const tool of ["Read", "Glob", "Grep", "update_plan", "mcp__fs__read_file", "TodoWrite", "NotebookEdit", "BashOutput"]) expect(matches(tool), tool).toBe(false);
 	});
 
 	test("hooks call only the shim inside the plugin, and the shim requires an explicit local engine", () => {

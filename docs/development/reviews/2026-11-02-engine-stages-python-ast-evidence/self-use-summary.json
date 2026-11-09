@@ -1,0 +1,24 @@
+{
+  "files": 62,
+  "typescriptFiles": 61,
+  "summaries": {
+    "groups": 700,
+    "misaligned": 0,
+    "edits": 0,
+    "refused": 0,
+    "suggested": 0
+  },
+  "failures": [],
+  "zeroGroups": [
+    "product/engine/common/display-width.ts",
+    "product/engine/common/runtime-record-validation.ts",
+    "product/engine/internal-runner.ts",
+    "product/engine/python/01_group-regions.ts",
+    "product/engine/python/06_align-tables.ts",
+    "product/engine/python/shared_analysis-script.ts",
+    "product/engine/python/shared_string-ranges.ts",
+    "product/engine/rule-data.ts",
+    "product/engine/typescript/06_align-tables.ts"
+  ],
+  "note": "Counts cover emitted groups only; NO_GROUPS and unsupported mjs are not public PASS."
+}

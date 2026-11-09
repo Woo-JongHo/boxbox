@@ -28,10 +28,10 @@ function workspace(): string {
 
 function run(command: string, args: readonly string[], options: { readonly cwd: string; readonly env?: NodeJS.ProcessEnv; readonly timeout?: number }) {
 	return spawnSync(command, args, {
-		cwd      : options.cwd,
-		env      : options.env,
-		encoding : "utf8",
-		timeout  : options.timeout ?? 120_000,
+		cwd      : options.cwd                ,
+		env      : options.env                ,
+		encoding : "utf8"                     ,
+		timeout  : options.timeout ?? 120_000 ,
 	});
 }
 
@@ -47,9 +47,9 @@ afterEach(() => {
 
 describe("Node-only local package artifact", () => {
 	test("the isolated installed tarball fixes and rechecks TypeScript/Python without Bun or the repository", () => {
-		const temporary = workspace()                ;
-		const project   = join(temporary, "project") ;
-		const packs     = join(temporary, "packs")   ;
+		const temporary = workspace()                     ;
+		const project   = join     (temporary, "project") ;
+		const packs     = join     (temporary, "packs"  ) ;
 		mkdirSync(project);
 		mkdirSync(packs);
 
@@ -64,8 +64,8 @@ describe("Node-only local package artifact", () => {
 		]);
 
 		writeFileSync(join(project, "package.json"), '{"private":true,"type":"module"}\n');
-		const tarball = join(packs, packResult[0]!.filename)                                                                           ;
-		const install = run("npm", ["install", "--offline", "--ignore-scripts", "--no-audit", "--no-fund", tarball], { cwd: project }) ;
+		const tarball = join(packs, packResult[0]!.filename                                                                           ) ;
+		const install = run ("npm", ["install", "--offline", "--ignore-scripts", "--no-audit", "--no-fund", tarball], { cwd: project }) ;
 		expectSuccess(install);
 
 		const installed = join(project, "node_modules/boxbox")                                                                                                                                      ;
@@ -83,7 +83,7 @@ describe("Node-only local package artifact", () => {
 		const nodeLookup = run("node", ["-p", "process.execPath"], { cwd: project });
 		expectSuccess(nodeLookup);
 		const runtimeNode = realpathSync(nodeLookup.stdout.trim()) ;
-		const runtimeBin  = join(temporary, "runtime-bin")         ;
+		const runtimeBin  = join        (temporary, "runtime-bin") ;
 		mkdirSync(runtimeBin);
 		symlinkSync(runtimeNode, join(runtimeBin, "node"));
 		symlinkSync(realpathSync(pythonLookup.stdout.trim()), join(runtimeBin, "python3"));
@@ -115,8 +115,8 @@ describe("Node-only local package artifact", () => {
 
 		const noPython = join(project, "no-python.py");
 		writeFileSync(noPython, "class Example:\n    a: int = 1\n    much_longer: str = 'x'\n    mid: bool = True\n");
-		const beforeFailure = readFileSync(noPython)           ;
-		const nodeOnlyBin   = join(temporary, "node-only-bin") ;
+		const beforeFailure = readFileSync(noPython                  ) ;
+		const nodeOnlyBin   = join        (temporary, "node-only-bin") ;
 		mkdirSync(nodeOnlyBin);
 		symlinkSync(runtimeNode, join(nodeOnlyBin, "node"));
 		const failure = run(runtimeNode, [runner, "python", "--file", noPython, "--write"], {
@@ -127,7 +127,7 @@ describe("Node-only local package artifact", () => {
 		expect(readFileSync(noPython).equals(beforeFailure)).toBe(true);
 
 		const bundle = readFileSync(runner, "utf8");
-		for (const forbidden of ["Bun.", "bun:", "@/", root, "00_normalize-imports", "07_wrap-conditions", "08_function-map", "09_observe-shapes"]) {
+		for (const forbidden of ["Bun.", "bun:", "@/", root, "00_normalize-imports", "08_wrap-conditions", "09_function-map", "10_observe-shapes"]) {
 			expect(bundle).not.toContain(forbidden);
 		}
 	}, 180_000);

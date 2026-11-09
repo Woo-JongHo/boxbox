@@ -1,4 +1,5 @@
 import      { spawnSync       } from "node:child_process" ;
+import      { createHash      } from "node:crypto"        ;
 import      {
               chmodSync     ,
               cpSync        ,
@@ -20,9 +21,11 @@ function run(command: string, args: readonly string[]): string {
 	return child.stdout;
 }
 
-function projectDocument(source: string): string {
-	const projected = source.replaceAll(/"<PLUGIN_ROOT>\/scripts\/boxbox"/gu, "@BOXBOX_ENGINE_COMMAND@");
-	if (!projected.includes("@BOXBOX_ENGINE_COMMAND@") || /npx\s|scripts\/boxbox["\s]/u.test(projected)) throw new Error("Canonical plugin launcher changed; update the installer projection before shipping.");
+function projectDocument(source: string, installerName: string): string {
+	const projected = source.replaceAll(/"<PLUGIN_ROOT>\/scripts\/boxbox"/gu, "@BOXBOX_ENGINE_COMMAND@")
+		.replace(/^Resolve `<PLUGIN_ROOT>` from this skill location.*$/mu, "Run the configured local launcher from the target repository root.");
+	const guarded = projected.replaceAll(`npx ${installerName}`, "");
+	if (!projected.includes("@BOXBOX_ENGINE_COMMAND@") || /<PLUGIN_ROOT>|npx\s|scripts\/boxbox["\s]/u.test(guarded)) throw new Error("Canonical plugin launcher changed; update the installer projection before shipping.");
 	return projected;
 }
 
@@ -30,17 +33,18 @@ function projectDocument(source: string): string {
 export function buildInstallerArtifact(): string {
 	run("bun", ["run", "sync:plugin"]);
 	run("bun", ["run", "pack:cli"]);
-	const product     = JSON.parse(readFileSync(join(ROOT, "product.json"), "utf8")) as { displayName: string; npmName: string }                                      ;
-	const manifest    = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")) as { name: string; version: string }                                             ;
-	const marketplace = JSON.parse(readFileSync(join(ROOT, ".agents/plugins/marketplace.json"), "utf8")) as { name: string }                                          ;
-	const output      = join(ROOT, "dist/installer-package")                                                                                                          ;
-	const payload     = join(output, "payload")                                                                                                                       ;
-	const metadata    = { name: manifest.name, npmName: product.npmName, version: manifest.version, displayName: product.displayName, marketplace: marketplace.name } ;
+	const product     = JSON.parse(readFileSync(join(ROOT, "product.json"), "utf8")) as { displayName: string; npmName: string }                                                                                                                         ;
+	const manifest    = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")) as { name: string; version: string }                                                                                                                                ;
+	const marketplace = JSON.parse(readFileSync(join(ROOT, ".agents/plugins/marketplace.json"), "utf8")) as { name: string }                                                                                                                             ;
+	const output      = join(ROOT, "dist/installer-package")                                                                                                                                                                                             ;
+	const payload     = join(output, "payload")                                                                                                                                                                                                          ;
+	const enginePath  = join(ROOT, "dist", `${manifest.name}-${manifest.version}.tgz`)                                                                                                                                                                   ;
+	const metadata    = { name: manifest.name, npmName: product.npmName, version: manifest.version, displayName: product.displayName, marketplace: marketplace.name, engineSha256: createHash("sha256").update(readFileSync(enginePath)).digest("hex") } ;
 	if (!product.npmName) throw new Error("product.json must declare the public installer npmName.");
 	rmSync(output, { recursive: true, force: true });
 	mkdirSync(join(output, "bin"), { recursive: true });
 	mkdirSync(payload, { recursive: true });
-	for (const name of ["platform.mjs", "install-state.mjs", "claude-registration.mjs"]) cpSync(join(ROOT, "product/installer", name), join(payload, name));
+	for (const name of ["platform.mjs", "install-state.mjs", "claude-registration.mjs", "codex-registration.mjs"]) cpSync(join(ROOT, "product/installer", name), join(payload, name));
 	cpSync(join(ROOT, "product/installer/entry.mjs"), join(output, "bin/boxbox.mjs"));
 	cpSync(join(ROOT, "product/installer/README.md"), join(output, "README.md"));
 	cpSync(join(ROOT, "LICENSE"), join(output, "LICENSE"));
@@ -57,16 +61,16 @@ export function buildInstallerArtifact(): string {
 		mkdirSync(join(plugin, "scripts"), { recursive: true });
 		for (const path of [host === "codex" ? ".codex-plugin" : ".claude-plugin", "skills", "hooks", ...(host === "claude" ? ["agents"] : [])]) cpSync(join(ROOT, "plugin", path), join(plugin, path), { recursive: true });
 		cpSync(join(ROOT, marketplacePath), join(root, marketplacePath));
-		cpSync(join(ROOT, "dist", `${manifest.name}-${manifest.version}.tgz`), join(root, "packages", `${manifest.name}-${manifest.version}.tgz`));
-		for (const name of ["install.mjs", "platform.mjs", "install-state.mjs", "claude-registration.mjs"]) cpSync(join(ROOT, "product/installer", name), join(root, name));
+		cpSync(enginePath, join(root, "packages", `${manifest.name}-${manifest.version}.tgz`));
+		for (const name of ["install.mjs", "platform.mjs", "install-state.mjs", "claude-registration.mjs", "codex-registration.mjs"]) cpSync(join(ROOT, "product/installer", name), join(root, name));
 		cpSync(join(ROOT, "product/installer/launcher.mjs"), join(plugin, "scripts/boxbox.mjs"));
 		writeFileSync(join(root, "bundle.json"), JSON.stringify({ ...metadata, host }, null, "\t") + "\n");
-		const skillPath = join(plugin, "skills", manifest.name, "SKILL.md")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ;
-		const skill     = projectDocument(readFileSync(skillPath, "utf8")).replace(/^Every check and fix goes through.*$/mu, "Every check and fix goes through this plugin's permanent local Node launcher, already configured by the installer. Run the commands below from the root of the target repository. No BOXBOX_CLI setup is needed. Never fetch a separate registry package for the engine. " + (host === "claude" ? "On Windows, the generated Node bridge works from Bash or PowerShell." : "On Windows, run these commands through PowerShell.")) ;
+		const skillPath = join(plugin, "skills", manifest.name, "SKILL.md")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ;
+		const skill     = projectDocument(readFileSync(skillPath, "utf8"), product.npmName).replace(/^Every check and fix goes through.*$/mu, "Every check and fix goes through this plugin's permanent local Node launcher, already configured by the installer. Run the commands below from the root of the target repository. No BOXBOX_CLI setup is needed. Never fetch a separate registry package for the engine. " + (host === "claude" ? "On Windows, the generated Node bridge works from Bash or PowerShell." : "On Windows, run these commands through PowerShell.")) ;
 		writeFileSync(skillPath, skill);
 		if (host === "claude") {
 			const inspector = join(plugin, "agents/readability-inspector.md");
-			writeFileSync(inspector, projectDocument(readFileSync(inspector, "utf8")) + "\nOn Windows, the generated Node bridge works from Bash or PowerShell.\n");
+			writeFileSync(inspector, projectDocument(readFileSync(inspector, "utf8"), product.npmName) + "\nOn Windows, the generated Node bridge works from Bash or PowerShell.\n");
 		}
 		const hooksPath = join      (plugin, "hooks/hooks.json"     ) ;
 		const hooks     = JSON.parse(readFileSync(hooksPath, "utf8")) ;

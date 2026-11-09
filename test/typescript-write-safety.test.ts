@@ -1,4 +1,4 @@
-import      { afterEach, describe, expect, test              } from "bun:test"              ;
+import      { afterEach, describe, expect, test              } from "bun:test"                 ;
 import      {
               chmodSync                                    ,
               linkSync                                     ,
@@ -9,14 +9,14 @@ import      {
               rmSync                                       ,
               symlinkSync                                  ,
               writeFileSync                                ,
-                                                             } from "node:fs"               ;
-import      { join, relative, resolve                        } from "node:path"             ;
+                                                             } from "node:fs"                  ;
+import      { join, relative, resolve                        } from "node:path"                ;
 
-import      { updateFileAtomically, updateFileAtomicallySync } from "@/common/safe-file.ts" ;
-import      { runStagedPasses, writeDiagnosedOutput          } from "@/typescript/align.ts" ;
+import      { updateFileAtomically, updateFileAtomicallySync } from "@/common/12_safe-file.ts" ;
+import      { runStagedPasses, writeDiagnosedOutput          } from "@/typescript/12_align.ts" ;
 
 const root                 = resolve(import.meta.dir, "..")                                ;
-const script               = resolve(root, "product/engine/typescript/06_align-tables.ts") ;
+const script               = resolve(root, "product/engine/typescript/07_align-tables.ts") ;
 const workspaces: string[] = []                                                            ;
 
 function workspace(): string {
@@ -85,10 +85,10 @@ describe("atomic file replacement helper", () => {
 	});
 
 	test("refuses symbolic and hard link targets conservatively", async () => {
-		const directory = workspace()                    ;
-		const source    = join(directory, "source.ts")   ;
-		const symbolic  = join(directory, "symbolic.ts") ;
-		const hard      = join(directory, "hard.ts")     ;
+		const directory = workspace()                         ;
+		const source    = join     (directory, "source.ts"  ) ;
+		const symbolic  = join     (directory, "symbolic.ts") ;
+		const hard      = join     (directory, "hard.ts"    ) ;
 		writeFileSync(source, "source\n");
 		symlinkSync(source, symbolic);
 		linkSync(source, hard);
@@ -123,7 +123,7 @@ describe("TS multi-pass working copy", () => {
 		const file = relative(root, target);
 
 		const first   = Bun.spawnSync(["bun", script, "--file", file, "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" }) ;
-		const aligned = readFileSync(target)                                                                                     ;
+		const aligned = readFileSync (target                                                                                   ) ;
 		const second  = Bun.spawnSync(["bun", script, "--file", file, "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" }) ;
 
 		expect(first.exitCode                      ).toBe   (0   ) ;

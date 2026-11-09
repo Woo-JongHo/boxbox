@@ -1,9 +1,9 @@
 {
-  "$schema": "../issue.schema.json",
+  "$schema"      : "../issue.schema.json",
   "schemaVersion": 1,
-  "id": "BBX-20261022-021",
-  "title": "No way to see a session's token use and the code's growth against its starting point",
-  "category": "host-integration",
+  "id"           : "BBX-20261022-021",
+  "title"        : "No way to see a session's token use and the code's growth against its starting point",
+  "category"     : "host-integration",
   "tags": [
     "monitor",
     "token-usage",
@@ -47,9 +47,9 @@
   ],
   "verification": [
     {
-      "name": "Monitor reports volume without leaking content or changing hook behavior",
+      "name"  : "Monitor reports volume without leaking content or changing hook behavior",
       "status": "not-run",
-      "scope": "Acceptance criteria in the proposal.",
+      "scope" : "Acceptance criteria in the proposal.",
       "evidence": [],
       "result": "Not implemented."
     }
@@ -67,7 +67,7 @@
     },
     {
       "kind": "code",
-      "path": "product/engine/common/lifecycle-hook.ts",
+      "path": "product/engine/common/27_lifecycle-hook.ts",
       "note": "Owns the SessionStart baseline and the hook receipts."
     },
     {
@@ -79,16 +79,16 @@
   "history": [
     {
       "sequence": 1,
-      "date": "2026-10-22",
-      "event": "reported",
-      "summary": "User asked for a /boxbox -monitor page per plugin that shows token use and, against the earlier state, the increase in lines and bytes.",
+      "date"    : "2026-10-22",
+      "event"   : "reported",
+      "summary" : "User asked for a /boxbox -monitor page per plugin that shows token use and, against the earlier state, the increase in lines and bytes.",
       "evidence": []
     },
     {
       "sequence": 2,
-      "date": "2026-10-22",
-      "event": "diagnosed",
-      "summary": "The baseline holds only hashes, so the footprint needs a new baseline shape; session-record token reading already works on real Claude sessions (usage counted once per message id); a Codex rollout carries token_count events but has no reader yet.",
+      "date"    : "2026-10-22",
+      "event"   : "diagnosed",
+      "summary" : "The baseline holds only hashes, so the footprint needs a new baseline shape; session-record token reading already works on real Claude sessions (usage counted once per message id); a Codex rollout carries token_count events but has no reader yet.",
       "evidence": [
         "docs/development/proposals/2026-10-22-boxbox-monitor.md",
         "docs/development/issue-library/evidence/session-usage-measurements.txt"

@@ -1,0 +1,103 @@
+{
+  "status": "passed",
+  "candidateId": "58071284368e7e9b",
+  "tarballSha256": "4107f2227cb495d03d30065bb1ca17a1d0889fffc0eefd7bd4977d9042d805bf",
+  "runtime": {
+    "node": "v22.22.3",
+    "python": "Python 3.14.2",
+    "npm": "10.9.8"
+  },
+  "bunAbsentFromChildPath": true,
+  "scenarios": {
+    "pep701": {
+      "status": "passed",
+      "before": {
+        "exitCode": 1,
+        "syntax": "valid",
+        "misaligned": 1,
+        "approvalEligible": true,
+        "approvals": [
+          "py-simple-assignments"
+        ]
+      },
+      "after": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "misaligned": 0,
+        "approvalEligible": true,
+        "approvals": [
+          "py-simple-assignments"
+        ]
+      },
+      "literalBytesPreserved": true,
+      "previewEditLines": [
+        6,
+        7,
+        8
+      ],
+      "applyWritten": true,
+      "repeatWritten": false
+    },
+    "typescriptApproved": {
+      "status": "passed",
+      "before": {
+        "exitCode": 1,
+        "syntax": "valid",
+        "misaligned": 1,
+        "approvalEligible": true,
+        "approvals": [
+          "ts-sourcefile-call-declarations"
+        ]
+      },
+      "after": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "misaligned": 0,
+        "approvalEligible": true,
+        "approvals": [
+          "ts-sourcefile-call-declarations"
+        ]
+      },
+      "previewEdits": 3,
+      "applyWritten": true,
+      "repeatWritten": false
+    },
+    "pythonApproved": {
+      "status": "passed",
+      "before": {
+        "exitCode": 1,
+        "syntax": "valid",
+        "misaligned": 1,
+        "approvalEligible": true,
+        "approvals": [
+          "py-simple-assignments"
+        ]
+      },
+      "after": {
+        "exitCode": 0,
+        "syntax": "valid",
+        "misaligned": 0,
+        "approvalEligible": true,
+        "approvals": [
+          "py-simple-assignments"
+        ]
+      },
+      "previewEdits": 2,
+      "applyWritten": true,
+      "repeatWritten": false
+    },
+    "typescriptUnapproved": {
+      "status": "passed",
+      "syntax": "valid",
+      "approvalEligible": false,
+      "groups": [
+        "object-properties"
+      ],
+      "refusalExitCode": 2,
+      "originalBytesPreserved": true
+    }
+  },
+  "commandExitCode": 0,
+  "inputDrift": [],
+  "receiptSha256": "9800b531ddd1033aedd63199b22f3086ba1be5c7b626eb029269851d72020d90"
+}

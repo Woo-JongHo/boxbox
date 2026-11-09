@@ -1,0 +1,165 @@
+{
+  "$schema"      : "../issue.schema.json",
+  "schemaVersion": 1,
+  "id"           : "BBX-20261108-027",
+  "title"        : "A Port documentation exception overrides same-role data-field alignment",
+  "category"     : "verification-gap",
+  "tags": [
+    "typescript",
+    "jsdoc",
+    "data-fields",
+    "rule-scope",
+    "review",
+    "issue-loop"
+  ],
+  "status": "verifying",
+  "symptom": "A self-use review accepted compact Slot fields despite a confirmed same-role data table. The source checker separately reported groups=0 and misaligned=0 for three per-field-JSDoc readonly properties.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "The ordinary run builder rejects JSDoc gaps, and an author/reviewer generalized a scoped Port exception to all documented properties. The prior contract also gave the checker overly broad authority over accepted examples. Preservation and zero detected groups did not verify the requested layout."
+  },
+  "requestedOutcome": "Keep the accepted Slot table, detect the bounded documented-data case without widening approvals, and retain reproduction/rule/counterexample/evidence through an issue-driven repair and authorized publication.",
+  "decisions": [
+    "The user confirmed the aligned Slot fields with attached semicolons; per-field documentation alone does not create separate roles.",
+    "Keep new documented-data detection under a separate approval identity; optional/callable/mixed Port interfaces retain their boundaries.",
+    "Version one developer issue-loop skill with selected-file snapshots and validate its behavior before publication."
+  ],
+  "actions": [
+    {
+      "description": "Implement bounded documented-data-member detection, overlap ownership and real public denial regressions.",
+      "status": "done"
+    },
+    {
+      "description": "Correct the raw contract and development/shipped skill guidance without creating preset approval.",
+      "status": "done"
+    },
+    {
+      "description": "Create the developer loop and validate file snapshots plus independent forward behavior.",
+      "status": "done"
+    },
+    {
+      "description": "Verify frozen source and immutable checker evidence, then prepare exact-path commits for authorized GitHub publication.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name"  : "Documented-data regressions",
+      "status": "passed",
+      "scope" : "LF/CRLF accepted data records, legacy identity/overlap, excluded member shapes and public no-write denial.",
+      "evidence": [
+        "docs/development/reviews/2026-11-08-documented-data-review-loop-evidence/verification.json"
+      ],
+      "result": "Two positive regressions failed before implementation; 55 focused tests plus 2 additional boundary tests passed. The final 0.2.7 full run passed 782 tests."
+    },
+    {
+      "name"  : "Final frozen candidate and independent review",
+      "status": "passed",
+      "scope" : "The 0.2.7 source snapshot, developer skill, immutable new checker and pre-publication boundaries.",
+      "evidence": [
+        "docs/development/reviews/2026-11-08-documented-data-review-loop-evidence/verification.json"
+      ],
+      "result": "The 0.2.7 source full run passed 782/0, helper 15/0 and pin harness 12/0. Independent source/delta/pin audits passed, as did the stable new-pin lint before final metadata. Final metadata checks and actual push confirmation are reported on GitHub issue 42; hosted/main integration remains open."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "product/engine/typescript/13_grid-kinds.ts",
+      "note": "Scoped data-member eligibility and JSDoc gap policy."
+    },
+    {
+      "kind": "code",
+      "path": "product/engine/typescript/12_align.ts",
+      "note": "Accepted new rows retain exclusive ownership over legacy member groups."
+    },
+    {
+      "kind": "test",
+      "path": "test/typescript-b-layout.test.ts",
+      "note": "Canonical data fields and excluded role/comment shapes."
+    },
+    {
+      "kind": "contract",
+      "path": "product/rules/references/readability-contract.md",
+      "note": "Human-confirmed layout and exact exception scope."
+    },
+    {
+      "kind": "contract",
+      "path": "development/skills/boxbox-issue-loop/SKILL.md",
+      "note": "Repository-local repeatable repair and delivery process."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-11-08-documented-data-review-loop.md",
+      "note": "Reproduction, cause, GitHub issue 42 and verification limits."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date"    : "2026-11-08",
+      "event"   : "reported",
+      "summary" : "User corrected the compacted Slot declaration; three matching documented fields should retain aligned columns.",
+      "evidence": [
+        "docs/development/reviews/2026-11-08-documented-data-review-loop.md"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date"    : "2026-11-08",
+      "event"   : "diagnosed",
+      "summary" : "Confirmed the separate JSDoc run-builder omission and the author/reviewer scope inversion.",
+      "evidence": [
+        "docs/development/reviews/2026-11-08-documented-data-review-loop.md"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date"    : "2026-11-08",
+      "event"   : "implemented",
+      "summary" : "Added the bounded new kind and developer loop with conservative negative cases and unchanged public approval policy.",
+      "evidence": [
+        "docs/development/reviews/2026-11-08-documented-data-review-loop.md"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date"    : "2026-11-08",
+      "event"   : "verification-failed",
+      "status"  : "failed",
+      "summary" : "The initial independent skill forward simulation omitted colon alignment and placed capture after checks; corrected the instructions before freezing.",
+      "evidence": [
+        "docs/development/reviews/2026-11-08-documented-data-review-loop.md"
+      ]
+    },
+    {
+      "sequence": 5,
+      "date"    : "2026-11-08",
+      "event"   : "verification-failed",
+      "status"  : "failed",
+      "summary" : "The first frozen full run found the new kind missing from the DESCRIBE surface-form map (781 pass, 1 fail); added the mapping and refroze after focused verification.",
+      "evidence": [
+        "docs/development/reviews/2026-11-08-documented-data-review-loop-evidence/verification.json"
+      ]
+    },
+    {
+      "sequence": 6,
+      "date"    : "2026-11-08",
+      "event"   : "implemented",
+      "summary" : "Under the subsequent user instruction, bumped coherent source/manifests to 0.2.7; 782 tests, 15 helper tests, types and shell checks passed on the pre-captured 37-file source snapshot. Pin/publication still pending.",
+      "evidence": [
+        "docs/development/reviews/2026-11-08-documented-data-review-loop-evidence/verification.json"
+      ]
+    },
+    {
+      "sequence": 7,
+      "date"    : "2026-11-08",
+      "event"   : "verification-failed",
+      "status"  : "failed",
+      "summary" : "The initial new-pin harness retained the former SHA/version test literals (11 pass, 1 fail). Updated those expectations with the new immutable configuration; the scoped rerun passed 12/0.",
+      "evidence": [
+        "docs/development/reviews/2026-11-08-documented-data-review-loop-evidence/verification.json"
+      ]
+    }
+  ]
+}

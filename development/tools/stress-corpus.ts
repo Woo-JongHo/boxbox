@@ -7,21 +7,21 @@
  * Output is third-party code and is never committed (stress/ in .gitignore).
  */
 import      {
-              mkdirSync        ,
-              readdirSync      ,
-              readFileSync     ,
-              statSync         ,
-              writeFileSync    ,
-                                 } from "node:fs"                  ;
-import      { homedir            } from "node:os"                  ;
-import      { basename, join     } from "node:path"                ;
-import      { spawnSync          } from "node:child_process"       ;
-import type { CodeSyntax         } from "@/common/code-text.ts"    ;
-import      { changedLines       } from "@/common/preservation.ts" ;
-import      { PYTHON_ALIGNER     } from "@/python/profile.ts"      ;
+              mkdirSync     ,
+              readdirSync   ,
+              readFileSync  ,
+              statSync      ,
+              writeFileSync ,
+                              } from "node:fs"                     ;
+import      { homedir         } from "node:os"                     ;
+import      { basename, join  } from "node:path"                   ;
+import      { spawnSync       } from "node:child_process"          ;
+import type { CodeSyntax      } from "@/common/00_code-text.ts"    ;
+import      { changedLines    } from "@/common/09_preservation.ts" ;
+import      { PYTHON_ALIGNER  } from "@/python/03_profile.ts"      ;
 
-const ROOT   = join(import.meta.dir, "..", "..")                    ;
-const OUT    = join(ROOT, "stress")                                 ;
+const ROOT   = join(import.meta.dir, "..", ".."                   ) ;
+const OUT    = join(ROOT, "stress"                                ) ;
 const CLONES = join(homedir(), ".cache", "boxbox", "stress-clones") ;
 
 interface LanguageConfig {
@@ -40,10 +40,10 @@ const GENERATED_MARK = /code generated|do not edit|auto-?generated|machine gener
 
 const LANGUAGES: Readonly<Record<string, LanguageConfig>> = {
 	python     : {
-		repo : "django/django",
-		ext  : ".py",
-		dirs : [],
-		decl : /^\s*[A-Za-z_]\w*\s*(?::\s*[^=;\n]+)?=(?!=)/,
+		repo : "django/django"                              ,
+		ext  : ".py"                                        ,
+		dirs : []                                           ,
+		decl : /^\s*[A-Za-z_]\w*\s*(?::\s*[^=;\n]+)?=(?!=)/ ,
 	},
 };
 
@@ -64,8 +64,8 @@ function git(target: string, args: readonly string[]): void {
 }
 
 function ensureClone(config: LanguageConfig): string {
-	const slug   = config.repo.replaceAll("/", "__") ;
-	const target = join(CLONES, slug)                ;
+	const slug   = config.repo.replaceAll("/", "__"   ) ;
+	const target = join                  (CLONES, slug) ;
 	if (spawnSync("git", ["-C", target, "rev-parse", "HEAD"], { encoding: "utf8" }).status === 0) {
 		// Fill the worktree if it is empty (e.g. after --no-checkout; compatible with reused clones). Ignore the collector's temp files.
 		const hasWorktree = readdirSync(target).some(entry => entry !== ".git" && entry !== ".boxbox-ls-tree.txt");
@@ -90,8 +90,8 @@ function collectCandidates(config: LanguageConfig, target: string): readonly Can
 		const scopeDir = scope === "" ? target : join(target, scope);
 		const walk = (dir: string): void => {
 			for (const entry of readdirSync(dir)) {
-				const path = join(dir, entry) ;
-				const stat = statSync(path)   ;
+				const path = join    (dir, entry) ;
+				const stat = statSync(path      ) ;
 				if (stat.isDirectory()) { walk(path); continue; }
 				if (!entry.endsWith(config.ext)) continue;
 				const relative = scope === "" ? path.slice(target.length + 1) : path.slice(target.length + 1);
@@ -130,10 +130,10 @@ interface FileResult {
 async function processLanguage(language: string, config: LanguageConfig): Promise<readonly FileResult[]> {
 	const dir  = join(OUT, language);
 	mkdirSync(dir, { recursive: true });
-	const target                = ensureClone(config)                                         ;
-	const results: FileResult[] = []                                                          ;
-	const alignerPath           = join(ROOT, `product/engine/${language}/06_align-tables.ts`) ;
-	const spawnOptions          = { encoding: "utf8", timeout: 120_000, cwd: ROOT } as const  ;
+	const target                = ensureClone(config)                                                                                                 ;
+	const results: FileResult[] = []                                                                                                                  ;
+	const alignerPath           = join(ROOT, `product/engine/${language}/${language === "typescript" ? "07_align-tables.ts" : "02_align-tables.ts"}`) ;
+	const spawnOptions          = { encoding: "utf8", timeout: 120_000, cwd: ROOT } as const                                                          ;
 	for (const [index, candidate] of collectCandidates(config, target).entries()) {
 		const tag      = `${String(index + 1).padStart(2, "0")}-${basename(candidate.path)}` ;
 		const original = join(dir, tag)                                                      ;
@@ -150,13 +150,13 @@ async function processLanguage(language: string, config: LanguageConfig): Promis
 			const diffOutput = spawnSync("diff", ["-u", original, aligned], { encoding: "utf8" }).stdout ?? "" ;
 			writeFileSync(`${aligned}.diff`, diffOutput);
 			results.push({
-				file   : tag,
-				origin : `${config.repo} ${candidate.path}`,
-				lines  : candidate.lines,
+				file   : tag                                ,
+				origin : `${config.repo} ${candidate.path}` ,
+				lines  : candidate.lines                    ,
 				edits,
-				diffLines  : diffOutput.split("\n").filter(line => (line.startsWith("+") || line.startsWith("-")) && !line.startsWith("+++") && !line.startsWith("---")).length,
-				preserved  : changedLines(source, readFileSync(aligned, "utf8"), SYNTAX[language]!).length === 0,
-				idempotent : verify.status === 0,
+				diffLines  : diffOutput.split("\n").filter(line => (line.startsWith("+") || line.startsWith("-")) && !line.startsWith("+++") && !line.startsWith("---")).length ,
+				preserved  : changedLines(source, readFileSync(aligned, "utf8"), SYNTAX[language]!).length === 0                                                                ,
+				idempotent : verify.status === 0                                                                                                                                ,
 			});
 		} catch (error) {
 			results.push({ file: tag, origin: candidate.path, lines: candidate.lines, edits: 0, diffLines: 0, preserved: false, idempotent: false, error: error instanceof Error ? error.message : String(error) });

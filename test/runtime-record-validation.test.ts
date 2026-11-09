@@ -1,12 +1,12 @@
-import      { describe, expect, test               } from "bun:test"                ;
+import      { describe, expect, test               } from "bun:test"                   ;
 
-import      { parseConventions, validateConvention } from "@/common/conventions.ts" ;
+import      { parseConventions, validateConvention } from "@/common/16_conventions.ts" ;
 import      {
               contentHashOf                      ,
               parseRecords                       ,
               validateDecision                   ,
               validateExample                    ,
-                                                   } from "@/common/examples.ts"    ;
+                                                   } from "@/common/17_examples.ts"    ;
 
 const convention = {
 	schemaVersion : 1                                                              ,
@@ -31,8 +31,8 @@ const example = {
 	regime        : "table"        ,
 	patterns      : ["DEFINE"]     ,
 	rules         : ["rule"]       ,
-	before,
-	after,
+	before ,
+	after  ,
 	contentHash : contentHashOf(before, after)                    ,
 	verdict     : "after-better"                                  ,
 	asserts     : { after: { fixedPoint: true, lacks: ["A12"] } } ,

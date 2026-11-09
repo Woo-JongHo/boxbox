@@ -1,9 +1,9 @@
 {
-  "$schema": "../issue.schema.json",
+  "$schema"      : "../issue.schema.json",
   "schemaVersion": 1,
-  "id": "BBX-20261021-012",
-  "title": "Lifecycle hook treated its own JSON receipts as source changes",
-  "category": "host-integration",
+  "id"           : "BBX-20261021-012",
+  "title"        : "Lifecycle hook treated its own JSON receipts as source changes",
+  "category"     : "host-integration",
   "tags": [
     "hooks",
     "json",
@@ -40,9 +40,9 @@
   ],
   "verification": [
     {
-      "name": "Focused lifecycle/HUD remediation",
+      "name"  : "Focused lifecycle/HUD remediation",
       "status": "passed",
-      "scope": "Lifecycle snapshot exclusion, HUD real-writer scenario, exact owned namespace, ordinary project-local plugin JSON and unrelated hook namespace JSON.",
+      "scope" : "Lifecycle snapshot exclusion, HUD real-writer scenario, exact owned namespace, ordinary project-local plugin JSON and unrelated hook namespace JSON.",
       "evidence": [
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/hook-json-remediation-report.md",
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-post-native-fix.log"
@@ -50,9 +50,9 @@
       "result": "Focused lifecycle and HUD suites passed 9 tests with 57 assertions and no failures; TypeScript and diff checks passed. This does not replace the pending final integrated check or audit."
     },
     {
-      "name": "Final integrated and independent closure",
+      "name"  : "Final integrated and independent closure",
       "status": "passed",
-      "scope": "Frozen current candidate repository check and final independent audit.",
+      "scope" : "Frozen current candidate repository check and final independent audit.",
       "evidence": [
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-post-native-fix.log",
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/glm-final-result.md",
@@ -64,12 +64,12 @@
   "related": [
     {
       "kind": "code",
-      "path": "product/engine/common/lifecycle-hook.ts",
+      "path": "product/engine/common/27_lifecycle-hook.ts",
       "note": "Computes and applies the exact current-project receipt namespace exclusion."
     },
     {
       "kind": "code",
-      "path": "product/engine/common/guarded-run.ts",
+      "path": "product/engine/common/25_guarded-run.ts",
       "note": "Provides snapshot recursion with an optional explicit directory exclusion set."
     },
     {
@@ -86,39 +86,39 @@
   "history": [
     {
       "sequence": 1,
-      "date": "2026-10-21",
-      "event": "verification-failed",
-      "status": "failed",
-      "summary": "The integrated suite found a self-caused PASS where the real HUD writer expected NO_CHANGES after project-local BoxBox receipt JSON entered the source snapshot.",
+      "date"    : "2026-10-21",
+      "event"   : "verification-failed",
+      "status"  : "failed",
+      "summary" : "The integrated suite found a self-caused PASS where the real HUD writer expected NO_CHANGES after project-local BoxBox receipt JSON entered the source snapshot.",
       "evidence": [
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-initial.log"
       ]
     },
     {
       "sequence": 2,
-      "date": "2026-10-21",
-      "event": "implemented",
-      "summary": "Lifecycle snapshots now exclude only the exact current-project BoxBox receipt namespace through an explicit snapshot parameter.",
+      "date"    : "2026-10-21",
+      "event"   : "implemented",
+      "summary" : "Lifecycle snapshots now exclude only the exact current-project BoxBox receipt namespace through an explicit snapshot parameter.",
       "evidence": [
         "docs/development/issue-library/records/BBX-20261021-012-hook-json-self-observation.json"
       ]
     },
     {
       "sequence": 3,
-      "date": "2026-10-21",
-      "event": "verified",
-      "status": "passed",
-      "summary": "Focused lifecycle and HUD tests passed while ordinary and unrelated plugin-data JSON remained visible; final integrated and independent closure remains pending.",
+      "date"    : "2026-10-21",
+      "event"   : "verified",
+      "status"  : "passed",
+      "summary" : "Focused lifecycle and HUD tests passed while ordinary and unrelated plugin-data JSON remained visible; final integrated and independent closure remains pending.",
       "evidence": [
         "docs/development/issue-library/records/BBX-20261021-012-hook-json-self-observation.json"
       ]
     },
     {
       "sequence": 4,
-      "date": "2026-10-22",
-      "event": "verified",
-      "status": "passed",
-      "summary": "Closed the bounded implementation with the post-native-fix 632-pass repository check, scoped GLM final audit and supplementary hash/test review. Prior failures and pre-closure verification lists are retained; native host acceptance, rule approvals and publication are separate.",
+      "date"    : "2026-10-22",
+      "event"   : "verified",
+      "status"  : "passed",
+      "summary" : "Closed the bounded implementation with the post-native-fix 632-pass repository check, scoped GLM final audit and supplementary hash/test review. Prior failures and pre-closure verification lists are retained; native host acceptance, rule approvals and publication are separate.",
       "evidence": [
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/records-before-readiness-closure.json",
         "docs/development/reviews/2026-10-21-readiness-loop-evidence/full-check-post-native-fix.log",
@@ -128,9 +128,9 @@
     },
     {
       "sequence": 5,
-      "date": "2026-10-22",
-      "event": "decision",
-      "summary": "The opt-in terminal HUD was removed on 2026-10-22 (user decision). Related test test/hud.test.ts was deleted with it; this resolution and its evidence are unchanged.",
+      "date"    : "2026-10-22",
+      "event"   : "decision",
+      "summary" : "The opt-in terminal HUD was removed on 2026-10-22 (user decision). Related test test/hud.test.ts was deleted with it; this resolution and its evidence are unchanged.",
       "evidence": []
     }
   ]

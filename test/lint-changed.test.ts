@@ -39,8 +39,8 @@ test("the pinned checker detects actual violations and accepts aligned full file
 	const before = inspect("a = 1\nlonger = 2\nmid = 3\n"        , "py", "python") ;
 	const after  = inspect("a      = 1\nlonger = 2\nmid    = 3\n", "py", "python") ;
 
-	expect(checker.identity.commit ).toBe("9a0406e27fb43241d71f9e5a8815da7e4301e1b1") ;
-	expect(checker.identity.version).toBe("0.2.5"                                   ) ;
+	expect(checker.identity.commit ).toBe("3f92bc9e42afae6eec60763d2a0f8fedc5369559") ;
+	expect(checker.identity.version).toBe("0.2.7"                                   ) ;
 	expect(before.result.status    ).toBe(1                                         ) ;
 	expect(before.judgment.status  ).toBe("violation"                               ) ;
 	expect(after.result.status     ).toBe(0                                         ) ;

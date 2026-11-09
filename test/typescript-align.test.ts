@@ -1,11 +1,12 @@
-import      { afterEach, describe, expect, test                } from "bun:test"                           ;
-import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                            ;
-import      { join, relative, resolve                          } from "node:path"                          ;
-import      { preservesTokens                                  } from "@/typescript/token-preservation.ts" ;
+import      { afterEach, describe, expect, test                } from "bun:test"                              ;
+import      { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                    ;
+import      { join, relative, resolve                          } from "node:path"                             ;
+import      { preservesTokens                                  } from "@/typescript/16_token-preservation.ts" ;
 
 const root                 = resolve(import.meta.dir, "..")                                ;
-const script               = resolve(root, "product/engine/typescript/06_align-tables.ts") ;
+const script               = resolve(root, "product/engine/typescript/07_align-tables.ts") ;
 const workspaces: string[] = []                                                            ;
+mkdirSync(join(root, ".boxbox"), { recursive: true });
 
 /** Every test here spawns the aligner, which starts a TypeScript 7 server — a busy machine can push one invocation past Bun's 5 s default. */
 const CLI_TIMEOUT = 60_000                                                              ;
@@ -17,7 +18,7 @@ afterEach(() => {
 
 describe("typescript call statement alignment", () => {
 	slowTest("aligns subject/matcher parentheses, dots and semicolons of consecutive call statements", () => {
-		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
+		const workspace = mkdtempSync(join(root, ".boxbox", "typescript-align-")) ;
 		const target    = join       (workspace, "calls.ts"                     ) ;
 		workspaces.push(workspace);
 		writeFileSync(target, [
@@ -40,7 +41,7 @@ describe("typescript call statement alignment", () => {
 
 describe("typescript object row alignment", () => {
 	slowTest("aligns braces, properties, colons, values and commas of object rows", () => {
-		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
+		const workspace = mkdtempSync(join(root, ".boxbox", "typescript-align-")) ;
 		const target    = join       (workspace, "objects.ts"                   ) ;
 		workspaces.push(workspace);
 		writeFileSync(target, [
@@ -70,8 +71,36 @@ describe("typescript object row alignment", () => {
 });
 
 describe("typescript literal array row alignment", () => {
+	slowTest("recognizes numeric and boolean literals by kind and preserves their value text", () => {
+		const workspace = mkdtempSync(join(root, ".boxbox", "typescript-align-")) ;
+		const target    = join       (workspace, "literal-array.ts"             ) ;
+		const cases = [
+			["true", "false", "true"],
+			["1", "222", "33"],
+			['"text"', "1", "false"],
+		];
+
+		workspaces.push(workspace);
+
+		for (const values of cases) {
+			const before = `const values = [\n${values.map(value => `\t${value},`).join("\n")}\n] as const;\n`;
+
+			writeFileSync(target, before);
+
+			const result = Bun.spawnSync(["bun", script, "--file", relative(root, target), "--write"], { cwd: root, stderr: "pipe", stdout: "pipe" }) ;
+			const after  = readFileSync(target, "utf8")                                                                                               ;
+			const rows   = after.split("\n").slice(1, 4)                                                                                              ;
+
+			expect(result.exitCode                                  ).toBe     (0                               ) ;
+			expect(result.stdout.toString()                         ).toContain("literal-array-rows"            ) ;
+			expect(rows.map(row => row.trim().replace(/\s*,/u, ","))).toEqual  (values.map(value => `${value},`)) ;
+			expect(new Set(rows.map(row => row.indexOf(","))).size  ).toBe     (1                               ) ;
+			expect(preservesTokens(before, after)                   ).toBe     (true                            ) ;
+		}
+	});
+
 	slowTest("aligns existing commas in a multiline literal array without changing its lines or tokens", () => {
-		const workspace = mkdtempSync (join(import.meta.dir, "typescript-align-")                  ) ;
+		const workspace = mkdtempSync (join(root, ".boxbox", "typescript-align-")                  ) ;
 		const target    = join        (workspace, "literal-array.ts"                               ) ;
 		const fixture   = readFileSync(resolve(root, "test/fixtures/literal-array-rows.ts"), "utf8") ;
 		workspaces.push(workspace);
@@ -92,7 +121,7 @@ describe("typescript literal array row alignment", () => {
 	});
 
 	slowTest("keeps missing commas, compact arrays, mixed arrays and shared bracket rows out of the new kind", () => {
-		const workspace = mkdtempSync (join(import.meta.dir, "typescript-align-")                  ) ;
+		const workspace = mkdtempSync (join(root, ".boxbox", "typescript-align-")                  ) ;
 		const target    = join        (workspace, "literal-array.ts"                               ) ;
 		const fixture   = readFileSync(resolve(root, "test/fixtures/literal-array-rows.ts"), "utf8") ;
 		workspaces.push(workspace);
@@ -124,7 +153,7 @@ describe("typescript literal array row alignment", () => {
 
 describe("typescript whitespace-only guarantee", () => {
 	slowTest("the fixture aligns with an identical token stream and no refused table", () => {
-		const workspace = mkdtempSync (join(import.meta.dir, "typescript-align-")           ) ;
+		const workspace = mkdtempSync (join(root, ".boxbox", "typescript-align-")           ) ;
 		const target    = join        (workspace, "table-kinds.ts"                          ) ;
 		const before    = readFileSync(resolve(root, "test/fixtures/table-kinds.ts"), "utf8") ;
 		workspaces.push(workspace);
@@ -140,7 +169,7 @@ describe("typescript whitespace-only guarantee", () => {
 
 describe("typescript row floors", () => {
 	slowTest("a 2-row = declaration table is aligned; a 2-row group of another kind is not", () => {
-		const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
+		const workspace = mkdtempSync(join(root, ".boxbox", "typescript-align-")) ;
 		const target    = join       (workspace, "floors.ts"                    ) ;
 		workspaces.push(workspace);
 		writeFileSync(target, [
@@ -169,7 +198,7 @@ describe("typescript row floors", () => {
 
 /** Writes `lines` to a temporary file, runs the aligner with --write, and returns the file's lines. */
 function alignLines(lines: readonly string[]): readonly string[] {
-	const workspace = mkdtempSync(join(import.meta.dir, "typescript-align-")) ;
+	const workspace = mkdtempSync(join(root, ".boxbox", "typescript-align-")) ;
 	const target    = join       (workspace, "layer.ts"                     ) ;
 	workspaces.push(workspace);
 	writeFileSync(target, `${lines.join("\n")}\n`);
@@ -333,7 +362,7 @@ describe("typescript hand-made samples", () => {
 		]);
 	});
 
-	slowTest("keeps the hand-aligned guard sample of 00_normalize-imports unchanged", () => {
+	slowTest("keeps the hand-aligned guard sample of normalize-imports unchanged", () => {
 		const sample = [
 			'\t\t\tif (value === "/" && next === "/") { state = "line"    ; chars[index] = chars[index + 1] = " "; index += 1; continue; }',
 			'\t\t\tif (value === "/" && next === "*") { state = "block"   ; chars[index] = chars[index + 1] = " "; index += 1; continue; }',

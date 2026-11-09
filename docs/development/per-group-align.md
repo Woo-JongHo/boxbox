@@ -1,17 +1,20 @@
 # Per-group `align`: design and recommendation
 
-2026-11-03 · Phase 3 of [#35](https://github.com/Woo-JongHo/boxbox/issues/35). Design only: nothing here is implemented or prototyped.
+2026-11-03 · Phase 3 of [#35](https://github.com/Woo-JongHo/boxbox/issues/35). The selective writer remains a deferred
+design, not an implemented or prototyped operation. Measurements below describe the recorded 2026-11-03 source;
+the formatter section distinguishes the later whole-file implementation.
 
 ## Recommendation
 
-**Do not implement this next.** First give formatter projects a way to keep a result.
+**Per-group writes remain deferred.** The maintainer retained whole-file approval and prioritized the separate
+formatter workflow. Multiple-file execution does not change that approval boundary.
 
 - It adds at most 14 candidate files out of 179, on top of the 3 that write today. Real write success for those 14 is unverified.
 - 13 of the 14 are in `click`, `typer` and `requests`. All three run `ruff format` in pre-commit, and `ruff format` reverts this alignment, as does `black`.
 - It adds 1 TypeScript candidate out of 111 files.
 - The approved surface is the larger limit: 30 of 1,091 fixable groups are approved, and 91 files contain fixable groups with none approved.
 
-The design draft already decided this: BoxBox runs after the formatter and overrides it, and hooks and CI call BoxBox instead of the formatter directly ([design section 3.5](design.md#35-formatter-coexistence--boxbox-runs-last)). Most of that is not built. See [Formatter decision and gaps](#formatter-decision-and-gaps).
+The design draft already decided this: BoxBox runs after the formatter and overrides it, and hooks and CI call BoxBox instead of the formatter directly ([design section 3.5](design.md#35-formatter-coexistence--boxbox-runs-last)). Current implementation and remaining limits are recorded in [Formatter decision and gaps](#formatter-decision-and-gaps).
 
 ## Evidence
 
@@ -49,10 +52,10 @@ No `REFUSE` group appears in any of the 179 files. The sample is small and chose
 
 ## Today's behavior
 
-- `approvedGroups` in `product/engine/common/format-pipeline.ts` rejects a file if any `PASS` or `FIXABLE` group lacks approval, then `write` rewrites the file.
+- `approvedGroups` in `product/engine/common/21_format-pipeline.ts` rejects a file if any `PASS` or `FIXABLE` group lacks approval, then `write` rewrites the file.
 - The pipeline checks approval once per `cycle`, and each writer then applies every eligible edit it finds.
-- The TypeScript writer (`runStagedPasses` in `product/engine/typescript/align.ts`) re-detects groups on up to five internal passes with no approval check.
-- `check.formatReadiness` and `guide` in `product/engine/cli.ts` evaluate approval separately.
+- The TypeScript writer (`runStagedPasses` in `product/engine/typescript/12_align.ts`) re-detects groups on up to five internal passes with no approval check.
+- `check.formatReadiness` and `guide` in `product/engine/00_cli.ts` evaluate approval separately.
 
 A byte fixed point does not prove that only approved edits were applied. Two reproduced cases:
 
@@ -142,34 +145,29 @@ The baseline is the original file, because `align` never runs a formatter:
 
 ## Formatter decision and gaps
 
-Design section 3.5 (status: draft) says BoxBox overrides the formatter, that format-on-save, hooks and CI call `boxbox format` and `boxbox check` instead of the formatter, and that the README and `boxbox init` must state this up front. Checked at `7409d47`:
+Design section 3.5 keeps BoxBox after the configured formatter. The later implementation adds the following whole-file
+workflow; it does not implement the selective writer proposed above. See [workflow commands](../user/modes.md#formatter-projects-and-multiple-files)
+for current invocation and result semantics.
 
-| Decision in section 3.5 | Today |
+| Decision in section 3.5 | Current source behavior |
 |---|---|
-| A configured formatter runs before BoxBox in `format` | Built. `align` never runs it |
-| `check` computes `boxbox(formatter(file))` | Not built. `check` inspects the file as it is |
-| `init` and `doctor` detect formatter configs and print hook and CI changes | Not built. In `click`, which runs `ruff format`, `doctor` reports "no external formatter required", and `init` writes a config with no formatter or guidance |
-| The README states this up front | Not done |
-| Hooks and CI can check a project | Not practical. The CLI accepts one file at a time |
+| A configured formatter runs before BoxBox in `format` | Implemented, including dry-run; `align` never runs it |
+| `check` computes `boxbox(formatter(file))` | Implemented on working copies with the same approval and fixed-point gates; source observations remain separate |
+| `init` and `doctor` detect formatter configs | Advisory warnings distinguish evidence that a formatter runs from evidence that it may be configured |
+| The README states formatter coexistence up front | The three root READMEs explain invoking BoxBox from editor, hook and CI commands |
+| Hooks and CI can select multiple files | `check` and `format` accept repeated `--file` and bounded recursive `--directory`; formats are atomic per file |
 
-So a formatter project today gets a result that its next format run reverts, with no warning.
+Running the external formatter directly afterward can still remove alignment. Configure project hook/CI commands to
+invoke BoxBox; automatic plugin hooks retain their separate session-change scope. Each selected file must still pass
+the existing whole-file approval gate. A partial batch failure reports earlier completed writes rather than claiming a
+project-wide rollback. A fixture-backed command path is not evidence that a real project's hooks or every native host
+accepted it; those journeys need their own recorded verification.
 
-Alternatives, if the maintainer does not want to keep this decision:
-
-- **Target projects without a formatter.** Say so plainly and keep the engine as it is.
-- **Read-only reporting for formatter projects.** `check` and agent guidance only.
-
-Users can also exempt code with Prettier and Ruff ignore comments or file exclusion settings, without BoxBox doing anything. BoxBox inserting such comments itself would add non-whitespace text, which conflicts with the whitespace-only guarantee.
-
-Whichever is chosen, stating the behavior in the README and having `doctor` detect a formatter is the cheapest honest first step.
-
-If per-group proceeds after that, build Python first, and decide draft PR #34 first. It changes 236 files, including engine modules, and currently conflicts with `main`, so work on those modules could need redoing.
-
-Rule expansion is a separate lever. Before approving more rules, count the files they would reach using `lookupKeyOf` from `product/engine/common/signature.ts` and the selection above, and check whether those files run a formatter.
+Rule expansion is a separate lever. Before approving more rules, count the files they would reach using `lookupKeyOf` from `product/engine/common/02_signature.ts` and the selection above, and check whether those files run a formatter.
 
 ## Not verified
 
 - `alignApproved` has not been built or run, so the 14 candidates are not proven writable.
 - Whether selection stability refuses so often in real files that the gain shrinks further.
-- The cost of rebasing on PR #34.
-- Windows and native host behavior.
+- How a future selective writer integrates with the numbered, hardened engine.
+- Per-group behavior on Windows and native hosts.

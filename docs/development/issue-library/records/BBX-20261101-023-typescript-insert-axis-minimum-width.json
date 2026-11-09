@@ -1,0 +1,204 @@
+{
+  "$schema"      : "../issue.schema.json",
+  "schemaVersion": 1,
+  "id"           : "BBX-20261101-023",
+  "title"        : "TypeScript insert axes preserve excess whitespace before the inserted token",
+  "category"     : "syntax-boundary",
+  "tags": [
+    "typescript",
+    "insert-axis",
+    "minimum-width",
+    "whitespace-boundary"
+  ],
+  "status": "resolved",
+  "symptom": "Several TypeScript insert axes can report PASS while retaining an over-wide column because the axis interval starts at the inserted token, after pre-existing whitespace that should be available to the alignment calculation. In the `headers.ts` reproduction, `if` closing parentheses remain at column 18 although the longest condition requires column 15; the checker reports PASS with zero edits. Inspection also found the same boundary pattern in method-signature open/close parens and case-clause colons.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "Several insert-axis boundaries started at the inserted token and excluded available pre-existing horizontal whitespace. Candidate v2 retains the bounded correction and regressions; final full check/self-use and the Opus fix-only review passed. The observed defect does not establish that every TypeScript insert axis or syntax form is covered."
+  },
+  "requestedOutcome": "For supported insert-axis forms, compute the shared token column from the actual preceding expression/name/label content and minimum required gap, removing excess existing whitespace without changing tokens, comments, or neighboring unsupported syntax.",
+  "decisions": [
+    "Treat the issue as one shared boundary-selection mechanism across the inspected axis families, not as evidence that every insert axis is defective.",
+    "Do not infer new public approval or support for uninspected TypeScript syntax."
+  ],
+  "actions": [
+    {
+      "description": "Move the inspected insert-axis starts to the preceding token ends, restricted to horizontal whitespace, and retain comments, optional names, rest parameters and empty-paren behavior.",
+      "status": "done"
+    },
+    {
+      "description": "Complete the frozen candidate self-use audit and parser-required full check; both passed with the scope recorded in the linked evidence.",
+      "status": "done"
+    },
+    {
+      "description": "Complete the v2 frozen checks and required fixed-model Opus fix-only review before closure; both are now recorded as passed.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name"  : "Author-reported TypeScript minimum-width suites",
+      "status": "passed",
+      "scope" : "Six focused TypeScript alignment, write-safety, boundary and public-layout suites.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/author-reported-results.md"
+      ],
+      "result": "The author report records 74 passed, 0 failed and 384 assertions, plus zero misaligned/refused in the changed source/test files."
+    },
+    {
+      "name"  : "Bounded independent TypeScript diff review",
+      "status": "passed",
+      "scope" : "Submitted grid-kinds.ts change and supplied caller excerpts; the reviewer did not inspect the full aligner, layout policy, or writer and did not run tests.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/sonnet-typescript-review.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/sonnet-typescript-metadata.json"
+      ],
+      "result": "Claude Sonnet 5.5 returned PASS for this bounded diff. This is not the final Opus audit or a repository-level approval."
+    },
+    {
+      "name"  : "Candidate v1 historical self-use and full check",
+      "status": "passed",
+      "scope" : "Historical content ID 7af5b42b29c34e48; its source state was superseded after the first Opus FINDINGS.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/candidate-v1-verification-history.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/candidate-v1-self-use-files.json"
+      ],
+      "result": "Historical candidate v1 reported 50 files / 592 groups / 0 misaligned and full check 677 pass / 0 fail. It was not final closure because Opus found three code findings and evidence gaps; candidate v2 supersedes it."
+    },
+    {
+      "name"  : "Candidate v2 fix-only Opus review",
+      "status": "passed",
+      "scope" : "Read-only review of all three prior Opus code findings, the v2 source/test deltas, and candidate/build/full-check/artifact receipts. Reviewer executed no tests or CLI.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-initial-review.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-initial-review-metadata.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-fix-only-review.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-fix-only-review-metadata.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-fix-only-v2.md"
+      ],
+      "result": "Claude Opus actual model claude-opus-5-5 returned PASS, process exit 0, is_error false. It closed the three code findings and evidence gate. The review did not certify all blocks or a native host matrix."
+    },
+    {
+      "name"  : "Candidate v2 final evidence and Opus fix-only review",
+      "status": "passed",
+      "scope" : "Candidate da1e93b36a6ca63a, parent 7af5b42b29c34e48; frozen source, issue regressions, artifact provenance and read-only final finding closure.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/candidate-manifest.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/final-self-use-files.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/final-candidate-verification.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-initial-review.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-initial-review-metadata.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-fix-only-review.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-fix-only-review-metadata.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-fix-only-v2.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/python39-runtime-and-tests.log"
+      ],
+      "result": "Candidate v2 da1e93b36a6ca63a passed: 75-file manifest/full-check receipt drift 0; 50 audited files/592 emitted groups/0 misaligned/0 edits/0 import changes; 49 supported TypeScript public Checks passed, with the .mjs helper unsupported by public Check and separately node --check passing; full check 679 pass/0 fail/4,159 expectations; build/artifact/installed-smoke SHA linked and all four smoke scenarios passed. Claude Opus actual model claude-opus-5-5 returned fix-only PASS without running tests/CLI. Counts are emitted-group evidence, not semantic completeness or host-matrix proof."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "product/engine/typescript/13_grid-kinds.ts",
+      "note": "Defines the inspected insert-axis `from` and insertion boundaries."
+    },
+    {
+      "kind": "test",
+      "path": "test/typescript-align.test.ts",
+      "note": "Target suite for TypeScript row alignment and preservation regressions."
+    },
+    {
+      "kind": "contract",
+      "path": "product/rules/references/typescript-grid-template.md",
+      "note": "Describes TypeScript syntax axes and expected columns."
+    },
+    {
+      "kind": "contract",
+      "path": "product/rules/references/readability-contract.md",
+      "note": "Requires minimum-width columns."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-11-01-engine-self-use.md",
+      "note": "Records the self-use finding, current verification state, support limits, and follow-up gate."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/reviews/2026-11-01-engine-self-use-evidence/author-reported-results.md",
+      "note": "Compact, explicitly author-reported focused test outcomes and source-snapshot limits."
+    },
+    {
+      "kind": "review",
+      "path": "docs/development/reviews/2026-11-01-engine-self-use-evidence/sonnet-typescript-review.md",
+      "note": "Bounded Claude Sonnet 5.5 PASS review of the submitted TypeScript diff; reviewer executed no tests."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date"    : "2026-11-01",
+      "event"   : "reported",
+      "summary" : "Raw checker PASS with zero edits retained over-wide if closing-parenthesis, method-signature and case-clause insert-axis columns.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use.md"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date"    : "2026-11-01",
+      "event"   : "implemented",
+      "summary" : "The inspected axes were changed to start at the preceding token end when only horizontal whitespace separates it from the inserted token; focused exact-minimum regressions were added.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/author-reported-results.md"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date"    : "2026-11-01",
+      "event"   : "verified",
+      "summary" : "Author-reported focused tests passed. A separate bounded Sonnet diff review returned PASS without executing tests; whole-tree and final audit remain pending.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/author-reported-results.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/sonnet-typescript-review.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/sonnet-typescript-metadata.json"
+      ],
+      "status": "passed"
+    },
+    {
+      "sequence": 4,
+      "date"    : "2026-11-01",
+      "event"   : "verified",
+      "summary" : "Frozen-candidate per-file self-use and parser-required full check passed with the scoped results in the linked evidence. This is not semantic-completeness proof and does not replace the required final Opus review.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/final-candidate-verification.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/final-self-use-files.json"
+      ],
+      "status": "passed"
+    },
+    {
+      "sequence": 5,
+      "date"    : "2026-11-01",
+      "event"   : "verified",
+      "summary" : "Fixed-model Opus 5.5 found this issue-specific tab/axis boundary sound but identified other candidate findings; record remains verifying until those are corrected and candidate evidence is refreshed.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-initial-review.md"
+      ],
+      "status": "passed"
+    },
+    {
+      "sequence": 6,
+      "date"    : "2026-11-01",
+      "event"   : "verified",
+      "summary" : "Candidate v2 final checks and the fixed-model Opus fix-only review passed for this scoped record. The first Opus FINDINGS, first full-check failure, and transient ENOSPC report remain in history; this record is resolved without implying semantic completeness or host-matrix coverage.",
+      "evidence": [
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/candidate-manifest.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/final-candidate-verification.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/final-self-use-files.json",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-fix-only-review.md",
+        "docs/development/reviews/2026-11-01-engine-self-use-evidence/opus-fix-only-review-metadata.json"
+      ],
+      "status": "passed"
+    }
+  ]
+}

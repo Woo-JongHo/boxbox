@@ -4,6 +4,15 @@
 requirements without per-step confirmation. See the [phase table and acceptance gate](plan.md#completion-loop--readiness1-2026-10-21).
 Earlier sections below preserve their scoped results; they are not a final release verdict.
 
+Latest publication checkpoint (2026-11-10): npm accepted the public installer
+[`boxbox-plugin@0.2.7`](https://www.npmjs.com/package/boxbox-plugin) from source
+`f8f8a08259a4f6aa656109d19342f4f789f44b45`. The published tarball has npm SHA-1
+`33154c64c63ed85d1683acb10cbf824948014ee1`, local SHA-256
+`ce6f4cc42b15fa43c5909fed2805110e367b52d30d9b57131acc9fee71c4a366` and 42 files.
+A clean isolated registry journey installed both Codex and Claude adapters with `npx`, then the installed engines
+reported 0.2.7 and detected a TypeScript alignment group. The local active Codex profile also completed a native
+read-only Check journey; Claude's model request still ended before inference with an external `api_error`.
+
 Latest engineering checkpoint (2026-10-22): the Claude stale-version transition was corrected with pre-copy
 ownership checks, exact scoped update, post-install identity verification and recoverable partial-state retention.
 Independent source review and GLM review closed all mandatory findings. The full local check passed **672 tests,

@@ -1,0 +1,1527 @@
+[
+  {
+    "step": "imports",
+    "file": "product/engine/00_cli.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/00_cli.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/00_cli.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/00_cli.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/01_report.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/01_report.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/01_report.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/01_report.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/02_hook.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/02_hook.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/02_hook.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/02_hook.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/03_measure-layout.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/03_measure-layout.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/03_measure-layout.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/03_measure-layout.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/04_internal-runner.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/04_internal-runner.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/04_internal-runner.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/04_internal-runner.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/05_rule-data.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/05_rule-data.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/05_rule-data.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/05_rule-data.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/00_code-text.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/00_code-text.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/00_code-text.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/00_code-text.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/01_display-width.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/01_display-width.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/01_display-width.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/01_display-width.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/02_signature.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/02_signature.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/02_signature.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/02_signature.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/03_surface.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/03_surface.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/03_surface.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/03_surface.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/04_grammar-ids.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/04_grammar-ids.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/04_grammar-ids.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/04_grammar-ids.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/05_axis-expectations.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/05_axis-expectations.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/05_axis-expectations.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/05_axis-expectations.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/06_table-engine.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/06_table-engine.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/06_table-engine.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/06_table-engine.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/07_column-measurement.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/07_column-measurement.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/07_column-measurement.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/07_column-measurement.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/08_parse-check.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/08_parse-check.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/08_parse-check.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/08_parse-check.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/09_preservation.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/09_preservation.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/09_preservation.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/09_preservation.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/10_alignment-only.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/10_alignment-only.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/10_alignment-only.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/10_alignment-only.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/11_syntax-validation.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/11_syntax-validation.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/11_syntax-validation.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/11_syntax-validation.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/12_safe-file.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/12_safe-file.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/12_safe-file.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/12_safe-file.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/13_process-lock.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/13_process-lock.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/13_process-lock.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/13_process-lock.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/14_formatter-process.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/14_formatter-process.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/14_formatter-process.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/14_formatter-process.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/15_project-config.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/15_project-config.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/15_project-config.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/15_project-config.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/16_conventions.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/16_conventions.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/16_conventions.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/16_conventions.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/17_examples.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/17_examples.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/17_examples.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/17_examples.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/18_approval-gate.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/18_approval-gate.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/18_approval-gate.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/18_approval-gate.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/19_runtime-record-validation.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/19_runtime-record-validation.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/19_runtime-record-validation.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/19_runtime-record-validation.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/20_authoring-guide.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/20_authoring-guide.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/20_authoring-guide.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/20_authoring-guide.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/21_format-pipeline.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/21_format-pipeline.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/21_format-pipeline.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/21_format-pipeline.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/22_align-cli.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/22_align-cli.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/22_align-cli.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/22_align-cli.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/23_report.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/23_report.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/23_report.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/23_report.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/24_result-json.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/24_result-json.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/24_result-json.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/24_result-json.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/25_guarded-run.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/25_guarded-run.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/25_guarded-run.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/25_guarded-run.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/26_hook.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/26_hook.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/26_hook.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/26_hook.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/27_lifecycle-hook.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/27_lifecycle-hook.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/27_lifecycle-hook.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/27_lifecycle-hook.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/common/28_usage.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/common/28_usage.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/common/28_usage.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/common/28_usage.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/python/00_group-regions.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/python/00_group-regions.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/python/00_group-regions.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/python/00_group-regions.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/python/01_measure-columns.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/python/01_measure-columns.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/python/01_measure-columns.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/python/01_measure-columns.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/python/02_align-tables.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/python/02_align-tables.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/python/02_align-tables.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/python/02_align-tables.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/python/03_profile.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/python/03_profile.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/python/03_profile.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/python/03_profile.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/python/04_assignment-envelope.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/python/04_assignment-envelope.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/python/04_assignment-envelope.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/python/04_assignment-envelope.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/python/05_analysis.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/python/05_analysis.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/python/05_analysis.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/python/05_analysis.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/python/06_analysis-script.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/python/06_analysis-script.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/python/06_analysis-script.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/python/06_analysis-script.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/python/07_string-ranges.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/python/07_string-ranges.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/python/07_string-ranges.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/python/07_string-ranges.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/structured/00_index.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/structured/00_index.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/structured/00_index.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/structured/00_index.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/00_normalize-imports.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/00_normalize-imports.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/00_normalize-imports.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/01_expand-interface-members.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/01_expand-interface-members.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/01_expand-interface-members.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/01_expand-interface-members.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/02_group-regions.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/02_group-regions.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/02_group-regions.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/02_group-regions.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/03_audit-type-uncertainty.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/03_audit-type-uncertainty.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/03_audit-type-uncertainty.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/03_audit-type-uncertainty.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/04_audit-optional-types.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/04_audit-optional-types.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/04_audit-optional-types.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/04_audit-optional-types.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/05_measure-columns.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/05_measure-columns.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/05_measure-columns.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/05_measure-columns.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/07_align-tables.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/07_align-tables.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/07_align-tables.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/07_align-tables.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/08_wrap-conditions.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/08_wrap-conditions.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/08_wrap-conditions.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/08_wrap-conditions.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/09_function-map.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/09_function-map.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/09_function-map.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/09_function-map.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/10_observe-shapes.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/10_observe-shapes.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/10_observe-shapes.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/10_observe-shapes.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/11_grid-tokens.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/11_grid-tokens.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/11_grid-tokens.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/11_grid-tokens.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/12_align.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/12_align.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/12_align.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/12_align.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/13_grid-kinds.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/13_grid-kinds.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/13_grid-kinds.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/13_grid-kinds.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/14_layout-policy.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/14_layout-policy.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/14_layout-policy.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/14_layout-policy.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/15_load-source-file.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/15_load-source-file.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/15_load-source-file.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/15_load-source-file.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/16_token-preservation.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/16_token-preservation.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/16_token-preservation.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/16_token-preservation.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "imports",
+    "file": "product/engine/typescript/17_layout-preservation.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/00_normalize-imports.ts",
+      "--layout-only",
+      "product/engine/typescript/17_layout-preservation.ts"
+    ],
+    "exit": 0,
+    "changed": false
+  },
+  {
+    "step": "align",
+    "file": "product/engine/typescript/17_layout-preservation.ts",
+    "command": [
+      "bun",
+      "product/engine/typescript/07_align-tables.ts",
+      "--file",
+      "product/engine/typescript/17_layout-preservation.ts",
+      "--json"
+    ],
+    "exit": 0,
+    "changed": false
+  }
+]

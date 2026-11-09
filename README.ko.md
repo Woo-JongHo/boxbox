@@ -22,7 +22,7 @@ const timeoutMs = 1000     ;
 
 위 정렬 예시는 실제 TypeScript 엔진의 출력이며, 테스트로 이를 유지합니다. 현재 자동 쓰기 범위는 승인된 규칙 몇 개로 의도적으로 좁아서, 그 밖의 패턴은 대부분 변경하지 않고 보고만 합니다. 이름, 값, 실행 순서는 유지하면서 대응하는 구문을 더 쉽게 비교할 수 있게 합니다.
 
-제품명은 **BoxBox**이며, 핵심 CLI·스킬·플러그인 ID는 `boxbox`입니다(2026-10-16 확정). npm 설치 패키지 후보는 `boxbox-plugin`이며, 확인 당시에는 등록되지 않은 이름이었습니다. 목표 설치 명령은 `npx boxbox-plugin`입니다. 패키지 게시에는 유효한 npm 인증과 최종 릴리스 결정이 필요합니다. [Windows 플러그인 설치 안내](product/installer/README.md)를 참고하세요.
+제품명은 **BoxBox**이며, 핵심 CLI·스킬·플러그인 ID는 `boxbox`입니다(2026-10-16 확정). 공개 npm 설치 패키지는 [`boxbox-plugin`](https://www.npmjs.com/package/boxbox-plugin)이며 `npx boxbox-plugin`으로 설치합니다. [Windows 플러그인 설치 안내](product/installer/README.md)를 참고하세요.
 
 ## 코드를 표로 읽는 이유
 
@@ -55,7 +55,7 @@ const timeoutMs = 1000     ;
 
 ## 작성·구조 개선·정렬·검사
 
-0.2.6 소스 후보는 에이전트 작업과 엔진의 변경 범위를 구분합니다.
+0.2.7 소스 후보는 에이전트 작업과 엔진의 변경 범위를 구분합니다.
 
 - **Write — 작성:** 에이전트가 승인된 작성 안내를 참고하여 요청한 기능을 구현합니다.
 - **Refactor — 구조 개선:** 에이전트가 기존 구조를 개선하고 동작과 필요한 성능을 별도로 검증합니다.
@@ -66,6 +66,11 @@ const timeoutMs = 1000     ;
 예제는 작성 안내이며 해당 파일의 쓰기 승인 증거가 아닙니다. `align --file <file> --dry-run --json`으로 정렬을 미리 보고,
 `align --file <file> --json`으로 적용합니다. Write와 Refactor는 CLI 생성 명령이 아니라 호스트 에이전트의 작업입니다.
 미리보기는 대상을 변경하지 않으며, 기존 `format` 파이프라인은 별도 작업으로 유지합니다.
+Check와 Format은 반복 `--file` 또는 범위가 제한된 재귀 `--directory` 선택도 받습니다. 포매터가 설정되어 있으면
+Check는 작업 사본에서 포매터 다음 BoxBox를 실행한 최종 바이트를 검증하고, 원본 소스의 조사 결과와 `canonical`
+검증을 구분합니다. 여러 파일의 포맷은 파일마다 원자적으로 적용하며, 다른 파일이 실패해도 앞서 완료한 쓰기를
+보고합니다. 그룹별 선택 쓰기는 계속 보류합니다. 세션 훅의 기본 `check`는 읽기 전용이며, 명시적인
+`boxbox mode align` 선택만 일치하는 도구 호출 뒤 승인된 가로 공백 정렬을 허용합니다. Stop은 읽기 전용입니다.
 통합 검증과 독립 검토는 진행 중입니다. [작업 모드 선택과 검증의 한계](docs/user/modes.md)를 참고하세요.
 
 CLI는 이제 TypeScript, Python, 엄격한 JSON, YAML 1.2를 검사하며 구문 상태를 valid, invalid, parser error로
@@ -78,15 +83,11 @@ CLI는 이제 TypeScript, Python, 엄격한 JSON, YAML 1.2를 검사하며 구�
 
 ## 플러그인 설치
 
-아직 명령 하나로 설치할 수는 없습니다. npm 패키지 `boxbox-plugin`이 게시되지 않았기 때문입니다. 소스에서 설치 패키지를 빌드하세요. git, [Bun](https://bun.sh), Node.js 22.22.3 이상, npm, Codex 또는 Claude Code CLI가 필요합니다. 감지된 모든 호스트에 플러그인과 로컬 Node 엔진을 설치합니다. 자세한 내용은
+Node.js 22.22.3 이상, npm, Codex 또는 Claude Code CLI가 필요합니다. 공개 설치 프로그램은 감지된 모든 호스트에 플러그인과 로컬 Node 엔진을 설치합니다. 자세한 내용은
 [설치 안내](product/installer/README.md)를 참고하세요.
 
 ```sh
-git clone https://github.com/Woo-JongHo/boxbox.git
-cd boxbox
-bun install
-bun run pack:installer
-npm exec --yes --package "$PWD"/dist/installer/boxbox-plugin-*.tgz -- boxbox
+npx boxbox-plugin
 ```
 
 호스트를 다시 시작한 뒤 BoxBox로 파일을 정렬해 달라고 요청하세요. 이 저장소를 Claude나 Codex 마켓플레이스로 추가하면 엔진 없이 플러그인만 설치됩니다. 이 경우 명령은 설정 안내를 내고 멈추며 검사는 실행되지 않습니다. 훅은 차단하지 않고, 세션 시작 훅만 그 안내를 출력합니다. 이미 그렇게 추가했다면 사용하는 호스트의 줄을 실행해 등록을 먼저 지운 뒤 설치 프로그램을 실행하세요.
@@ -97,8 +98,10 @@ claude plugin marketplace remove boxbox-plugins
 codex plugin marketplace remove boxbox-plugins
 ```
 
-Windows에서는 와일드카드 대신 아카이브 전체 경로를 쓰세요. 설치 안내를 참고하세요. 저장소 체크아웃은 빌드할 때만 필요합니다. 설치된 플러그인은 영구 설치된 자체 Node 엔진을 사용합니다.
-공개 설치 프로그램에는 Node.js 22.22.3 이상과 npm이 필요하며, Python 포맷에는 `python3`가 추가로 필요합니다.
+Windows에서는 와일드카드 대신 아카이브 전체 경로를 쓰세요. 설치 안내를 참고하세요. **프로젝트에서 코드 포매터를 쓴다면:** Prettier, Black, Ruff 포매터는 자신이 다시 쓰는 파일에서 BoxBox의 정렬을 되돌립니다. 언어에 포매터 하나를 설정한 뒤 에디터, 훅, CI가 포매터를 직접 실행하는 대신 BoxBox의 `format`과 `check`를 호출하도록 구성하세요. 반복 `--file` 또는 `--directory`로 여러 파일을 선택할 수 있으며, 파일마다 전체 파일 승인 조건을 유지합니다. 이후 포매터를 직접 실행하면 정렬이 다시 없어질 수 있습니다. `doctor`, `init`, `align`, `format`은 프로젝트 루트 설정에서 포매터가 확인되면 경고합니다.
+
+저장소 체크아웃은 빌드할 때만 필요합니다. 설치된 플러그인은 영구 설치된 자체 Node 엔진을 사용합니다.
+공개 설치 프로그램에는 Node.js 22.22.3 이상과 npm이 필요하며, Python 검사와 포맷에는 실행 가능한 `python3`가 추가로 필요합니다.
 
 ## BoxBox 개발
 
@@ -127,7 +130,7 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 | 개발용 정렬 엔진 | 위와 같은 4개 언어(그 밖의 라인 엔진 언어는 2026-10-22에 제거) |
 | TypeScript 탐지 | TypeScript 7 AST 도구와 표 종류 레지스트리 |
 | JSON/YAML 탐지 | 같은 단계에서 인접한 단일 행 스칼라 매핑 항목 3개 이상 |
-| Python 탐지 | Python 프로필(문자열·주석 마스킹, 행 슬롯 규칙)을 사용하는 공통 줄 단위 엔진 |
+| Python 탐지 | 문서별 CPython AST·토큰 분석을 공통 줄 엔진과 제한된 행 프로필에 전달 |
 
 지원하는 4개 언어의 배포 지원 수준이 모두 같지는 않습니다. 기본 프리셋의 쓰기 승인은 TypeScript와 Python에만 있습니다. 쓰기 검증에는 해당 언어의 파서 도구가 필요합니다. 언어별 한계는 [구현 현황](docs/development/implementation.md)을 참고하세요.
 
@@ -152,6 +155,6 @@ bun install
 bun run check
 ```
 
-`check`는 제품 식별 정보와 의존 관계 검사, 테스트, TypeScript 타입 검사, 개발용 설치 스크립트의 셸 문법 검사를 실행합니다. 기여와 저작 규칙은 [AGENTS.md](AGENTS.md)를 따릅니다. BoxBox는 [MIT 라이선스](LICENSE)로 배포되며, 설치 패키지와 엔진 패키지도 `MIT`를 선언하고 라이선스 파일을 포함합니다. 합성 프리셋 예제 4개에는 별도로 CC0-1.0이 표시되어 있습니다.
+`check`는 제품 식별 정보와 의존 관계 검사, 테스트, TypeScript 타입 검사, 개발용 설치 스크립트의 셸 문법 검사를 실행합니다. 기여와 저작 규칙은 [AGENTS.md](AGENTS.md)를 따릅니다. BoxBox는 [MIT 라이선스](LICENSE)로 배포되며, 설치 패키지와 엔진 패키지도 `MIT`를 선언하고 라이선스 파일을 포함합니다. 합성 프리셋 예제 10개에는 별도로 CC0-1.0이 표시되어 있습니다.
 
 제품 이름은 [`product.json`](product.json)에서 관리합니다. [이름 변경 절차와 코드 길이 기준](docs/development/product-identity.md)을 참고하세요.

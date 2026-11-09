@@ -22,7 +22,7 @@ const timeoutMs = 1000     ;
 
 上面的对齐示例是 TypeScript 引擎的实际输出，并由测试保证。目前自动写入的范围有意保持狭窄：只有少数已批准的规则，其他大多数模式只报告，不修改。名称、值和执行顺序保持不变；对应的语法元素变得更容易比较。
 
-产品名称是 **BoxBox**；核心 CLI、技能和插件的 ID 为 `boxbox`（于 2026-10-16 确认）。npm 安装器的候选包名是 `boxbox-plugin`，检查时尚未被注册。目标命令为 `npx boxbox-plugin`；发布需要有效的 npm 身份验证和最终发布决定。请参阅 [Windows 插件安装指南](product/installer/README.md)。
+产品名称是 **BoxBox**；核心 CLI、技能和插件的 ID 为 `boxbox`（于 2026-10-16 确认）。公开 npm 安装包是 [`boxbox-plugin`](https://www.npmjs.com/package/boxbox-plugin)，使用 `npx boxbox-plugin` 安装。请参阅 [Windows 插件安装指南](product/installer/README.md)。
 
 ## 为什么将代码组织成网格？
 
@@ -55,7 +55,7 @@ const timeoutMs = 1000     ;
 
 ## 编写、重构、对齐与检查
 
-0.2.6 源码候选版本区分智能体工作流程与引擎修改范围：
+0.2.7 源码候选版本区分智能体工作流程与引擎修改范围：
 
 - **Write — 编写：** 智能体参考已批准的编写指导，实现所请求的功能。
 - **Refactor — 重构：** 智能体改进现有结构，并单独验证行为以及相关性能。
@@ -66,6 +66,10 @@ const timeoutMs = 1000     ;
 示例是编写指导，不是该文件的写入批准证据。`align --file <file> --dry-run --json` 预览对齐结果，
 `align --file <file> --json` 应用对齐。Write 和 Refactor 由宿主智能体执行，不是 CLI 代码生成命令。
 预览不会修改目标；现有的 `format` 流程仍是独立操作。
+Check 和 Format 还支持重复的 `--file` 或有界递归 `--directory` 选择。配置格式化器后，Check 在工作副本上
+验证“格式化器之后再运行 BoxBox”的最终字节，并区分原始源码检查结果与 `canonical` 验证。批量格式化对每个
+文件分别原子执行；其他文件失败时，仍报告此前已完成的写入。按分组选择写入仍暂缓实现。会话钩子默认使用只读
+`check`；只有显式选择 `boxbox mode align`，才会在匹配的工具调用后执行已批准的水平空白对齐。Stop 保持只读。
 集成验证和独立审查正在进行。参见[工作流程选择与验证限制](docs/user/modes.md)。
 
 CLI 现在可以检查 TypeScript、Python、严格 JSON 和 YAML 1.2，并将语法状态报告为 valid、invalid 或
@@ -77,15 +81,11 @@ JSON/YAML 写入需要完整的本地批准证据或未来单独批准的预设�
 
 ## 安装插件
 
-目前还不能用一条命令安装：npm 包 `boxbox-plugin` 尚未发布。请从源码构建安装器；需要 git、[Bun](https://bun.sh)、Node.js 22.22.3 或更高版本、npm，以及 Codex 或 Claude Code CLI。它会为检测到的每个宿主安装插件和本地 Node 引擎。详情请参阅
+需要 Node.js 22.22.3 或更高版本、npm，以及 Codex 或 Claude Code CLI。公开安装器会为检测到的每个宿主安装插件和本地 Node 引擎。详情请参阅
 [安装指南](product/installer/README.md)。
 
 ```sh
-git clone https://github.com/Woo-JongHo/boxbox.git
-cd boxbox
-bun install
-bun run pack:installer
-npm exec --yes --package "$PWD"/dist/installer/boxbox-plugin-*.tgz -- boxbox
+npx boxbox-plugin
 ```
 
 重启宿主，然后让它用 BoxBox 对齐文件。将本仓库添加为 Claude 或 Codex 市场时，只会安装插件而没有引擎：命令会显示设置提示并停止，检查也不会运行：钩子不会阻止操作，只有会话钩子会输出该提示。如果已经这样添加，请先运行你所用宿主对应的命令删除该注册，再运行安装器：
@@ -96,8 +96,10 @@ claude plugin marketplace remove boxbox-plugins
 codex plugin marketplace remove boxbox-plugins
 ```
 
-在 Windows 上，请将通配符替换为压缩包的完整路径，详见安装指南。检出仓库只在构建时需要。安装后的插件使用其永久安装的 Node 引擎。
-公开安装器需要 Node.js 22.22.3 或更高版本以及 npm；Python 格式化还需要 `python3`。
+在 Windows 上，请将通配符替换为压缩包的完整路径，详见安装指南。**如果你的项目使用代码格式化工具：** Prettier、Black 和 Ruff 的格式化器会在其重写的文件中撤销 BoxBox 的对齐。为语言配置一个格式化器，再让编辑器、钩子和 CI 调用 BoxBox 的 `format` 和 `check`，而不是直接运行格式化器。它们支持重复的 `--file` 或 `--directory` 选择，并为每个文件保留整文件批准条件。之后直接运行格式化器仍可能撤销对齐。当项目根目录的配置显示存在格式化工具时，`doctor`、`init`、`align` 和 `format` 会发出警告。
+
+检出仓库只在构建时需要。安装后的插件使用其永久安装的 Node 引擎。
+公开安装器需要 Node.js 22.22.3 或更高版本以及 npm；Python 检查和格式化还需要可运行的 `python3`。
 
 ## 开发 BoxBox
 
@@ -125,7 +127,7 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 | 开发版对齐引擎 | 与上述相同的四种语言（其他行引擎语言已于 2026-10-22 移除） |
 | TypeScript 检测 | TypeScript 7 AST 工具和表格类型注册表 |
 | JSON/YAML 检测 | 同一层级中至少三个相邻的单行标量映射条目 |
-| Python 检测 | 共享的行引擎与 Python 专用配置（字符串和注释屏蔽、行槽位规则） |
+| Python 检测 | 按文档进行 CPython AST/令牌分析，再交给共享行引擎和有界行配置 |
 
 所支持的四种语言并不具有相同的发布支持程度：默认预设的写入授权仅覆盖 TypeScript 和 Python。写入前的检查需要相应的解析器工具。各语言的具体边界请参阅[实现映射](docs/development/implementation.md)。
 
@@ -150,6 +152,6 @@ bun install
 bun run check
 ```
 
-`check` 会运行产品标识与依赖检查、测试套件、TypeScript 类型检查，以及开发安装器的 Shell 语法检查。贡献和创作规则请遵循 [AGENTS.md](AGENTS.md)。BoxBox 以 [MIT 许可证](LICENSE)发布；安装器包和引擎包也声明 `MIT` 并随附许可证文件。四个合成预设示例单独标记为 CC0-1.0。
+`check` 会运行产品标识与依赖检查、测试套件、TypeScript 类型检查，以及开发安装器的 Shell 语法检查。贡献和创作规则请遵循 [AGENTS.md](AGENTS.md)。BoxBox 以 [MIT 许可证](LICENSE)发布；安装器包和引擎包也声明 `MIT` 并随附许可证文件。十个合成预设示例单独标记为 CC0-1.0。
 
 产品命名由 [`product.json`](product.json) 管理；请参阅[重命名流程与代码长度边界](docs/development/product-identity.md)。

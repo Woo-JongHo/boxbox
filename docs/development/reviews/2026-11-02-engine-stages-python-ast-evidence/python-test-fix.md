@@ -1,0 +1,9 @@
+# Full gate test-only contract fixes
+
+Only `test/edge-inputs.test.ts` and `test/recommended-preset.test.ts` were changed; no product, rule or approval file was changed. Preimages: `baseline/`; final diff: `final.diff`; final SHA-256: `final-hashes.txt`. Writer released after this report. The actual runtime model is not independently visible to this worker.
+
+The BOM test now asserts the explicit unsupported-source refusal; the existing raw/public CLI tests continue to cover disk bytes. The compound-assignment exclusion is preserved. The previous invalid differing-indent snippet is replaced by a valid nested-if specimen; a real Python syntax diagnostic must be empty before no table/no edit is asserted. The original unexpected-indentation input has a separate real syntax-diagnostic and `PythonSourceSyntaxError` assertion. No approvals, minimum-row policies or parser behavior changed.
+
+Evidence: private pre-apply probe and test copy `private-probe.log`, `private-suites.log` (19 pass); after APPLY `focused.log` (`BOXBOX_REQUIRE_PARSERS=1`, 19 pass, 0 fail), `tsc.log` exit 0, both individual 00 layout and 06 checks exit 0 (`import-check-*`, `align-check-*`), `format-preservation.log` confirms exact token/comment/newline preservation through 00/06 for both files, and scoped `git diff --check` exit 0. No added TODO/skip/only in `final.diff` (`added-placeholders.log` empty). Actual formatter edits were direct and unwrapped as Root instructed to avoid overlapping global guards; no wrapped invocation is claimed.
+
+Cycle accounting: one private author/verification cycle, one shared-worktree author/verification cycle. The old full check (718 pass, 2 fail) remains historical; no full check or artifact rebuild was run by this worker. These are test-only fixture and token-equivalent formatting changes, not a shipped-candidate change; Root owns the revised full gate.

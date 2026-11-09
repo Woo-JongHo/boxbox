@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "status": "verified; full-check, mechanical audit, artifact smoke and Opus fix-only review passed",
+  "candidate": {
+    "contentId": "da1e93b36a6ca63a",
+    "contentSha256": "da1e93b36a6ca63a7c629edd17ca57f6e24617b39a602038e1e9cf4d75b136a8",
+    "parentContentId": "7af5b42b29c34e48",
+    "sourceHead": "13e9ced56559f14c91766f5e962992a40cd816f9",
+    "manifestFileCount": 75,
+    "manifestDriftPaths": [],
+    "changedShippedFiles": [
+      "product/engine/common/align-cli.ts",
+      "product/engine/common/report.ts"
+    ]
+  },
+  "fullCheck": {
+    "argv": [
+      "bun",
+      "run",
+      "check"
+    ],
+    "environment": {
+      "BOXBOX_REQUIRE_PARSERS": "1"
+    },
+    "exitCode": 0,
+    "durationSeconds": 306.512,
+    "testSeconds": 305.68,
+    "passed": 679,
+    "failed": 0,
+    "expectations": 4159,
+    "testFiles": 75,
+    "inputsBeforeAfterDrift": [],
+    "candidateInputsMatchReceipt": true,
+    "logSha256": "98c5b659dd8bde5a0776069346d3dd463d19db27236f9447e0f54c37c5f844d7",
+    "receiptSha256": "53c7f3b07f53ffb57d710364dc55938eeb77b77a33766e82bc52bffb63fd6323",
+    "typescriptNoEmit": "passed",
+    "shellSyntax": "passed"
+  },
+  "mechanicalSelfUse": {
+    "files": 50,
+    "groups": 592,
+    "misaligned": 0,
+    "edits": 0,
+    "refused": 0,
+    "suggested": 0,
+    "importChanges": 0,
+    "importErrors": 0,
+    "supportedPublicTypescriptCheckPass": 49,
+    "developmentMjsPublicCheck": "UNSUPPORTED_LANGUAGE (not counted as public pass)",
+    "mjsNodeCheck": "pass",
+    "hashCrosscheck": "50/50 candidate manifest, audit before/after, and current tree hashes match"
+  },
+  "artifactProvenance": {
+    "candidateId": "da1e93b36a6ca63a",
+    "candidateSha256": "da1e93b36a6ca63a7c629edd17ca57f6e24617b39a602038e1e9cf4d75b136a8",
+    "buildReceiptSha256": "e1bb542ee5c4d3a0ce70a3d7f03a8c808f64dd9fbbae6045f07eeb9658549912",
+    "buildExit": 0,
+    "buildInputDrift": [],
+    "sourceInputsMatch": true,
+    "artifactSha256": "86ba04237ed5082e6c173010f8f4450620d3f354ff4868a5d6c654294fed0880",
+    "installedArtifactSha256": "86ba04237ed5082e6c173010f8f4450620d3f354ff4868a5d6c654294fed0880",
+    "installedSmokeStatus": "passed",
+    "installedSummarySha256": "1f1b7859d26a97f931b31d123428f98bb4262167044f0df9ab6d9a0c4d3f093f"
+  },
+  "installedSmoke": {
+    "status": "passed",
+    "tarballSha256": "86ba04237ed5082e6c173010f8f4450620d3f354ff4868a5d6c654294fed0880",
+    "runtime": {
+      "node": "v22.22.3",
+      "python": "Python 3.14.2",
+      "npm": "10.9.8"
+    },
+    "installedPackage": {
+      "name": "boxbox",
+      "version": "0.2.6",
+      "bin": "dist/cli.js",
+      "actualInstalledBin": true
+    },
+    "bunOnChildPath": false,
+    "scenarios": {
+      "pep701": "passed",
+      "typescriptApproved": "passed",
+      "pythonApproved": "passed",
+      "typescriptUnapproved": "passed"
+    }
+  },
+  "globalPublicSourceStatus": "STALE, not PASS",
+  "globalStatusNote": "The prior global source status is stale; the historical one-target PASS remains a one-file result. It does not contradict the frozen v2 candidate manifest verification and must not be called a whole-checkout PASS.",
+  "priorCandidateHistory": {
+    "contentId": "7af5b42b29c34e48",
+    "fullCheck": "677 passed, 0 failed, 4130 expectations, 75 files",
+    "status": "historical; first Opus returned FINDINGS and v2 supersedes its mutable source state"
+  },
+  "modelProvenance": {
+    "requestedCodexStages": [
+      "gpt-6-luna collection",
+      "gpt-6.1-terra investigation",
+      "gpt-6.1-sol implementation"
+    ],
+    "actualCodexRuntimeMetadata": "not surfaced",
+    "firstOpusActualModel": "claude-opus-5-5",
+    "firstOpusVerdict": "FINDINGS",
+    "followupRequestedModel": "Claude Opus (opus), fixed/no fallback",
+    "followupActualModel": "claude-opus-5-5",
+    "followupVerdict": "PASS",
+    "followupReviewerTestsExecuted": false,
+    "followupReviewerCliExecuted": false,
+    "followupReviewMetadata": "opus-fix-only-review-metadata.json"
+  },
+  "resolvedIssueIds": [
+    "BBX-20261101-022",
+    "BBX-20261101-023",
+    "BBX-20261101-024",
+    "BBX-20261101-025"
+  ],
+  "buildReceipt": {
+    "argv": [
+      "bun",
+      "run",
+      "pack:cli"
+    ],
+    "cwd": "repository root",
+    "explicitEnvironment": {},
+    "exitCode": 0,
+    "durationSeconds": 0.799,
+    "candidateId": "da1e93b36a6ca63a",
+    "inputManifestEntryCount": 312,
+    "inputsBeforeEqualsAfter": true,
+    "inputDrift": [],
+    "buildLogSha256": "2b776f06ab571d36273fd5ea692b54efdd54735b79c8b757d5e1a9bc60a2d099",
+    "receiptSha256": "e1bb542ee5c4d3a0ce70a3d7f03a8c808f64dd9fbbae6045f07eeb9658549912"
+  }
+}

@@ -1,17 +1,17 @@
-import      { afterEach, describe, expect, test                } from "bun:test"                           ;
-import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                            ;
-import      { tmpdir                                           } from "node:os"                            ;
-import      { join, relative, resolve                          } from "node:path"                          ;
+import      { afterEach, describe, expect, test                } from "bun:test"                              ;
+import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                               ;
+import      { tmpdir                                           } from "node:os"                               ;
+import      { join, relative, resolve                          } from "node:path"                             ;
 
-import type { ResultEnvelope, ResultGroup                      } from "@/common/result-json.ts"            ;
-import      { displayWidth                                     } from "@/common/display-width.ts"          ;
-import      { alignRows                                        } from "@/typescript/align.ts"              ;
-import type { DetectedRow                                      } from "@/typescript/grid-kinds.ts"         ;
-import      { loadSourceFile                                   } from "@/typescript/load-source-file.ts"   ;
-import      { preservesTokensWithBreaks                        } from "@/typescript/token-preservation.ts" ;
+import type { ResultEnvelope, ResultGroup                      } from "@/common/24_result-json.ts"            ;
+import      { displayWidth                                     } from "@/common/01_display-width.ts"          ;
+import      { alignRows                                        } from "@/typescript/12_align.ts"              ;
+import type { DetectedRow                                      } from "@/typescript/13_grid-kinds.ts"         ;
+import      { loadSourceFile                                   } from "@/typescript/15_load-source-file.ts"   ;
+import      { preservesTokensWithBreaks                        } from "@/typescript/16_token-preservation.ts" ;
 
 const ROOT                  = resolve(import.meta.dir, "..")                                ;
-const SCRIPT                = resolve(ROOT, "product/engine/typescript/06_align-tables.ts") ;
+const SCRIPT                = resolve(ROOT, "product/engine/typescript/07_align-tables.ts") ;
 const workspaces : string[] = []                                                            ;
 
 interface Aligned {
@@ -59,6 +59,404 @@ function axisNames(value: ResultGroup): readonly string[] {
 }
 
 describe("TypeScript B-layout regions", () => {
+	test.each([
+		["LF", "\n"],
+		["CRLF", "\r\n"],
+	])("aligns documented DATA members with %s without changing their documentation", (_name, newline) => {
+		const source = [
+			"interface Slot {",
+			"\t/** Comparison axis. */",
+			"\treadonly axis:string;",
+			"\t/**",
+			"\t * Original cell text.",
+			"\t */",
+			"\treadonly text:    string;",
+			"\t/** Required padding before the cell. */",
+			"\treadonly gapBefore: string;",
+			"}",
+			"",
+		].join(newline);
+		const result = run(source)                                                              ;
+		const fields = result.text.split(newline).filter(line => line.startsWith("\treadonly")) ;
+
+		expect(group(result, "documented-data-members").rows).toBe(3);
+		expect(axisNames(group(result, "documented-data-members"))).toEqual(["colon", "member-type", "semicolon"]);
+		expect(result.text).toBe([
+			"interface Slot {",
+			"\t/** Comparison axis. */",
+			"\treadonly axis      : string;",
+			"\t/**",
+			"\t * Original cell text.",
+			"\t */",
+			"\treadonly text      : string;",
+			"\t/** Required padding before the cell. */",
+			"\treadonly gapBefore : string;",
+			"}",
+			"",
+		].join(newline));
+		expect(fields.map(line => displayWidth(line.slice(0, line.indexOf(":"))))).toEqual     ([23, 23, 23]                                                ) ;
+		expect(fields.map(line => displayWidth(/^[^:]+:[ \t]*/u.exec(line)![0])) ).toEqual     ([25, 25, 25]                                                ) ;
+		expect(fields.map(line => displayWidth(line.slice(0, line.indexOf(";"))))).toEqual     ([31, 31, 31]                                                ) ;
+		expect(result.text.match(/\/\*\*[\s\S]*?\*\//gu)                         ).toEqual     (source.match(/\/\*\*[\s\S]*?\*\//gu)                        ) ;
+		expect(result.text.split(newline).map(line => /^[ \t]*/u.exec(line)![0]) ).toEqual     (source.split(newline).map(line => /^[ \t]*/u.exec(line)![0])) ;
+		expect(result.text.split(newline)                                        ).toHaveLength(source.split(newline).length                                ) ;
+		expect(preservesTokensWithBreaks(source, result.text)                    ).toBe        (true                                                        ) ;
+		expect(group(result, "documented-data-members").state                    ).toBe        ("PASS"                                                      ) ;
+
+		const fixed = run(result.text);
+
+		expect(fixed.text).toBe(result.text);
+		expect(group(fixed, "documented-data-members").state).toBe("PASS");
+	}, 60_000);
+
+	test("claims a mixed plain and documented DATA run without a legacy member overlap", () => {
+		const source = [
+			"interface Slot {",
+			"\treadonly axis: string;",
+			"\treadonly text: string;",
+			"\treadonly gapBefore: boolean;",
+			"\t/** Original source. */",
+			"\treadonly source: string;",
+			"\t/** Source line. */",
+			"\treadonly line: number;",
+			"\t/** Whether the cell is enabled. */",
+			"\treadonly enabled: boolean;",
+			"}",
+			"",
+		].join("\n");
+		const result = run(source)                                                           ;
+		const fields = result.text.split("\n").filter(line => line.startsWith("\treadonly")) ;
+
+		expect(group(result, "documented-data-members").rows                          ).toBe   (6                ) ;
+		expect(group(result, "documented-data-members").state                         ).toBe   ("PASS"           ) ;
+		expect(result.groups.some(candidate => candidate.kind === "interface-members")).toBe   (false            ) ;
+		expect(fields.map(line => displayWidth(line.slice(0, line.indexOf(":"))))     ).toEqual(Array(6).fill(23)) ;
+		expect(fields.map(line => displayWidth(line.slice(0, line.indexOf(";"))))     ).toEqual(Array(6).fill(32)) ;
+		expect(preservesTokensWithBreaks(source, result.text)                         ).toBe   (true             ) ;
+	}, 60_000);
+
+	test("sizes readonly and mutable documented DATA runs independently", () => {
+		const source = [
+			"interface Slots {",
+			"\t/** Comparison axis. */",
+			"\treadonly axis:string;",
+			"\t/** Original cell text. */",
+			"\treadonly text:string;",
+			"\t/** Padding before the cell. */",
+			"\treadonly gapBefore:string;",
+			"\t/** First mutable flag. */",
+			"\tx:boolean;",
+			"\t/** Second mutable flag. */",
+			"\tcount:boolean;",
+			"\t/** Third mutable flag. */",
+			"\tenabled:boolean;",
+			"}",
+			"",
+		].join("\n");
+		const result = run(source)                                                                               ;
+		const runs   = result.groups.filter(candidate => candidate.kind === "documented-data-members")           ;
+		const fields = result.text.split("\n").filter(line => /^\t(?:readonly |x |count |enabled )/u.test(line)) ;
+
+		expect(runs.map(candidate => candidate.rows)                                  ).toEqual     ([3, 3]            ) ;
+		expect(runs.map(candidate => candidate.state)                                 ).toEqual     (["PASS", "PASS"]  ) ;
+		expect(runs[0]!.endLine                                                       ).toBeLessThan(runs[1]!.startLine) ;
+		expect(result.groups.some(candidate => candidate.kind === "interface-members")).toBe        (false             ) ;
+		expect(fields).toEqual([
+			"\treadonly axis      : string;",
+			"\treadonly text      : string;",
+			"\treadonly gapBefore : string;",
+			"\tx       : boolean;",
+			"\tcount   : boolean;",
+			"\tenabled : boolean;",
+		]);
+		expect(fields.map(line => displayWidth(line.slice(0, line.indexOf(":"))))).toEqual     ([23, 23, 23, 12, 12, 12]                                 ) ;
+		expect(fields.map(line => displayWidth(/^[^:]+:[ \t]*/u.exec(line)![0])) ).toEqual     ([25, 25, 25, 14, 14, 14]                                 ) ;
+		expect(fields.map(line => displayWidth(line.slice(0, line.indexOf(";"))))).toEqual     ([31, 31, 31, 21, 21, 21]                                 ) ;
+		expect(result.text.match(/\/\*\*[\s\S]*?\*\//gu)                         ).toEqual     (source.match(/\/\*\*[\s\S]*?\*\//gu)                     ) ;
+		expect(result.text.split("\n").map(line => /^[ \t]*/u.exec(line)![0])    ).toEqual     (source.split("\n").map(line => /^[ \t]*/u.exec(line)![0])) ;
+		expect(result.text.split("\n")                                           ).toHaveLength(source.split("\n").length                                ) ;
+		expect(preservesTokensWithBreaks(source, result.text)                    ).toBe        (true                                                     ) ;
+
+		const fixed = run(result.text);
+
+		expect(fixed.text).toBe(result.text);
+		expect(fixed.groups.filter(candidate => candidate.kind === "documented-data-members").map(candidate => candidate.state)).toEqual(["PASS", "PASS"]);
+	}, 60_000);
+
+	test("retains a plain member run after a documented paragraph", () => {
+		const source = [
+			"interface Slots {",
+			"\t/** Comparison axis. */",
+			"\treadonly axis:string;",
+			"\t/** Original cell text. */",
+			"\treadonly text:string;",
+			"\t/** Padding before the cell. */",
+			"\treadonly gapBefore:string;",
+			"",
+			"\treadonly a: string;",
+			"\treadonly bigger: number;",
+			"\treadonly largestName: boolean;",
+			"}",
+			"",
+		].join("\n");
+		const result     = run(source)                                                                     ;
+		const documented = result.groups.filter(candidate => candidate.kind === "documented-data-members") ;
+		const ordinary   = result.groups.filter(candidate => candidate.kind === "interface-members")       ;
+		const fields     = result.text.split("\n").filter(line => line.startsWith("\treadonly"))           ;
+
+		expect(documented.map(candidate => candidate.rows)).toEqual     ([3]                   ) ;
+		expect(ordinary.map(candidate => candidate.rows)  ).toEqual     ([3]                   ) ;
+		expect(documented[0]!.endLine                     ).toBeLessThan(ordinary[0]!.startLine) ;
+		expect(documented[0]!.state                       ).toBe        ("PASS"                ) ;
+		expect(ordinary[0]!.state                         ).toBe        ("PASS"                ) ;
+		expect(fields).toEqual([
+			"\treadonly axis      : string;",
+			"\treadonly text      : string;",
+			"\treadonly gapBefore : string;",
+			"\treadonly a           : string  ;",
+			"\treadonly bigger      : number  ;",
+			"\treadonly largestName : boolean ;",
+		]);
+		expect(fields.map(line => displayWidth(line.slice(0, line.indexOf(":"))))).toEqual     ([23, 23, 23, 25, 25, 25]                                 ) ;
+		expect(fields.map(line => displayWidth(line.slice(0, line.indexOf(";"))))).toEqual     ([31, 31, 31, 35, 35, 35]                                 ) ;
+		expect(result.text.match(/\/\*\*[\s\S]*?\*\//gu)                         ).toEqual     (source.match(/\/\*\*[\s\S]*?\*\//gu)                     ) ;
+		expect(result.text.split("\n").map(line => /^[ \t]*/u.exec(line)![0])    ).toEqual     (source.split("\n").map(line => /^[ \t]*/u.exec(line)![0])) ;
+		expect(result.text.split("\n")                                           ).toHaveLength(source.split("\n").length                                ) ;
+		expect(preservesTokensWithBreaks(source, result.text)                    ).toBe        (true                                                     ) ;
+
+		const fixed = run(result.text);
+
+		expect(fixed.text                                   ).toBe(result.text) ;
+		expect(group(fixed, "documented-data-members").state).toBe("PASS"     ) ;
+		expect(group(fixed, "interface-members").state      ).toBe("PASS"     ) ;
+	}, 60_000);
+
+	test("preserves the legacy identity of ordinary interface data members", () => {
+		const result = run([
+			"interface Slot {",
+			"\treadonly axis: string;",
+			"\treadonly text: string;",
+			"\treadonly gapBefore: boolean;",
+			"}",
+			"",
+		].join("\n"));
+
+		expect(group(result, "interface-members").rows                                      ).toBe(3     ) ;
+		expect(group(result, "interface-members").state                                     ).toBe("PASS") ;
+		expect(result.groups.some(candidate => candidate.kind === "documented-data-members")).toBe(false ) ;
+	}, 60_000);
+
+	test.each([
+		["methods", "interface Example {", ["run(): void;", "list(): string[];", "select(value: string): void;"]],
+		["optional properties", "interface Example {", ["axis?: string;", "text?: string;", "gapBefore?: boolean;"]],
+		["optional capabilities", "interface Example {", ["label?: string;", "readonly axis: string;", "readonly text: string;", "readonly gapBefore: boolean;"]],
+		["function properties", "interface Example {", ["axis: () => string;", "text: string;", "gapBefore: boolean;", "source: string;"]],
+		["constructor properties", "interface Example {", ["axis: new () => Example;", "text: string;", "gapBefore: boolean;", "source: string;"]],
+		["callable unions", "interface Example {", ["axis: string | (() => string);", "text: string;", "gapBefore: boolean;", "source: string;"]],
+		["nested callable types", "interface Example {", ["axis: ReadonlyArray<() => string>;", "text: string;", "gapBefore: boolean;", "source: string;"]],
+		["mapped types", "interface Example {", ['axis: Readonly<{ [Key in "value"]: string }>;', "text: string;", "gapBefore: boolean;", "source: string;"]],
+		["nested object types", "interface Example {", ["axis: Promise<{ value: string }>;", "text: string;", "gapBefore: boolean;", "source: string;"]],
+		["mixed Port and data members", "interface Example {", ["run(): void;", "readonly axis: string;", "readonly text: string;", "readonly gapBefore: boolean;"]],
+		["call signatures", "interface Example {", ["(): string;", "readonly axis: string;", "readonly text: string;", "readonly gapBefore: boolean;"]],
+		["construct signatures", "interface Example {", ["new (): Example;", "readonly axis: string;", "readonly text: string;", "readonly gapBefore: boolean;"]],
+		["index signatures", "interface Example {", ["[key: string]: unknown;", "readonly axis: string;", "readonly text: string;", "readonly gapBefore: boolean;"]],
+		["missing property types", "interface Example {", ["axis;", "text;", "gapBefore;"]],
+		["quoted property names", "interface Example {", ['"axis": string;', '"text": string;', '"gapBefore": boolean;']],
+		["different readonly states", "interface Example {", ["readonly axis: string;", "text: string;", "readonly gapBefore: boolean;"]],
+		["class members", "class Example {", ["readonly axis: string;", "readonly text: string;", "readonly gapBefore: boolean;"]],
+		["type-literal members", "type Example = {", ["readonly axis: string;", "readonly text: string;", "readonly gapBefore: boolean;"]],
+		["two data rows", "interface Example {", ["readonly axis: string;", "readonly gapBefore: boolean;"]],
+		["multiline properties", "interface Example {", ["readonly axis:\n\tstring;", "readonly text: string;", "readonly gapBefore: boolean;"]],
+	])("keeps documented %s outside DATA member alignment", (_name, header, members) => {
+		const source = [
+			header,
+			...members.flatMap(member => ["\t/** Member documentation. */", ...member.split("\n").map(line => `\t${line}`)]),
+			"}",
+			"",
+		].join("\n");
+		const result = run(source);
+
+		expect(result.groups.some(candidate => candidate.kind === "documented-data-members")).toBe(false ) ;
+		expect(result.text                                                                  ).toBe(source) ;
+		expect(preservesTokensWithBreaks(source, result.text)                               ).toBe(true  ) ;
+	}, 60_000);
+
+	test.each([
+		["blank paragraphs", [""], ""],
+		["ordinary block comments", ["\t/* Section boundary. */"], ""],
+		["line comments", ["\t// Section boundary."], ""],
+		["trailing notes", [], " // Field note."],
+		["separated JSDoc blocks", ["\t/** Section documentation. */", ""], ""],
+		["ordinary comments between JSDoc blocks", ["\t/** Section documentation. */", "\t/* Section boundary. */"], ""],
+	])("keeps %s as boundaries between documented DATA members", (_name, separator, suffix) => {
+		const source = [
+			"interface Slot {",
+			"\t/** Comparison axis. */",
+			`\treadonly axis: string;${suffix}`,
+			...separator,
+			"\t/** Original cell text. */",
+			`\treadonly text: string;${suffix}`,
+			...separator,
+			"\t/** Required padding before the cell. */",
+			`\treadonly gapBefore: boolean;${suffix}`,
+			"}",
+			"",
+		].join("\n");
+		const result = run(source);
+
+		expect(result.groups.some(candidate => candidate.kind === "documented-data-members")).toBe(false ) ;
+		expect(result.text                                                                  ).toBe(source) ;
+		expect(preservesTokensWithBreaks(source, result.text)                               ).toBe(true  ) ;
+	}, 60_000);
+
+	test("aligns the fields of a multiline singleton object array", () => {
+		const result = run([
+			"function refusal(language: string) {",
+			"\tconst groups = [{",
+			'\t\tkind: "mapping",',
+			"\t\tstartLine: 1,",
+			"\t\tendLine: 1,",
+			"\t\trows: 0,",
+			'\t\taxes: ["key-colon", "value"],',
+			'\t\tstate: "REFUSE",',
+			"\t\tedits: 0,",
+			'\t\tcontext: language === "json" ? "object" : "block-map",',
+			"\t\tdepth: 0",
+			"\t}];",
+			"\treturn groups;",
+			"}",
+			"",
+		].join("\n"));
+		const fields = result.text.split("\n").slice(2, 11);
+
+		expect(group(result, "registration").rows                                                                       ).toBe   (9                ) ;
+		expect(fields.map(line => displayWidth(line.slice(0, line.indexOf(":"))))                                       ).toEqual(Array(9).fill(18)) ;
+		expect(fields.map(line => displayWidth(/^[^:]+:[ \t]*/u.exec(line)![0]))                                        ).toEqual(Array(9).fill(20)) ;
+		expect(fields.filter(line => line.endsWith(",")).map(line => displayWidth(line.slice(0, line.lastIndexOf(","))))).toEqual(Array(8).fill(65)) ;
+		expect(result.groups.some(candidate => candidate.kind === "object-rows")                                        ).toBe   (false            ) ;
+		expect(preservesTokensWithBreaks(result.before, result.text)                                                    ).toBe   (true             ) ;
+	}, 60_000);
+
+	test("removes excess padding from existing header and case axes", () => {
+		const source = [
+			"function headers(a: boolean, bbbbbbb: boolean, ccc: boolean, x: string) {",
+			"\tif (a         ) { one(); }",
+			"\tif (bbbbbbb   ) { two(); }",
+			"\tif (ccc       ) { three(); }",
+			"",
+			"\tif (a         ) return 1;",
+			"\tif (bbbbbbb   ) return 2;",
+			"\tif (ccc       ) return 3;",
+			"",
+			"\tswitch (x) {",
+			"\t\tcase 'a'       : return 1;",
+			"\t\tcase 'bbb'     : return 2;",
+			"\t\tcase 'cc'      : return 3;",
+			"\t}",
+			"}",
+			"",
+		].join("\r\n");
+		const result = run(source);
+
+		expect(result.text).toBe([
+			"function headers(a: boolean, bbbbbbb: boolean, ccc: boolean, x: string) {",
+			"\tif (a      ) { one(); }",
+			"\tif (bbbbbbb) { two(); }",
+			"\tif (ccc    ) { three(); }",
+			"",
+			"\tif (a      ) return 1;",
+			"\tif (bbbbbbb) return 2;",
+			"\tif (ccc    ) return 3;",
+			"",
+			"\tswitch (x) {",
+			"\t\tcase 'a'  : return 1;",
+			"\t\tcase 'bbb': return 2;",
+			"\t\tcase 'cc' : return 3;",
+			"\t}",
+			"}",
+			"",
+		].join("\r\n"));
+		expect(result.groups.filter(candidate => candidate.kind.startsWith("if-headers-")).map(candidate => candidate.state)).toEqual(["PASS", "PASS"]) ;
+		expect(group(result, "case-clause").state                                                                           ).toBe   ("PASS"          ) ;
+		expect(preservesTokensWithBreaks(source, result.text)                                                               ).toBe   (true            ) ;
+
+		expect(result.passes).toBeGreaterThan(0);
+	}, 60_000);
+
+	test("minimizes method parentheses without detaching empty parameter lists", () => {
+		const source = [
+			"interface Example {",
+			"\tshort        (a: string      ): void;",
+			"\tlongerName   (b: number      ): void;",
+			"\tthird        (c: boolean     ): void;",
+			"\tempty        ()               : void;",
+			"}",
+			"",
+		].join("\n");
+		const result = run(source);
+
+		expect(result.text).toBe([
+			"interface Example {",
+			"\tshort     (a: string ): void;",
+			"\tlongerName(b: number ): void;",
+			"\tthird     (c: boolean): void;",
+			"\tempty     ()          : void;",
+			"}",
+			"",
+		].join("\n"));
+		expect(group(result, "method-signature").state).toBe("PASS");
+		expect(preservesTokensWithBreaks(source, result.text)).toBe(true);
+
+		expect(result.passes).toBeGreaterThan(0);
+	}, 60_000);
+
+	test("preserves comments and unsupported optional or trailing-comma method boundaries", () => {
+		const source = [
+			"interface Example {",
+			"\tfirst? (value: string): void;",
+			"\tsecond?(value: string): void;",
+			"\tthird? (value: string): void;",
+			"\tone(value: string, ): void;",
+			"\ttwo(value: number, ): void;",
+			"\tthree(value: boolean, ): void;",
+			"}",
+			"function guards(a: boolean, b: boolean, c: boolean) {",
+			"\tif (a /* keep */ ) { one(); }",
+			"\tif (b /* keep */ ) { two(); }",
+			"\tif (c /* keep */ ) { three(); }",
+			"}",
+			"",
+		].join("\n");
+		const result = run(source);
+
+		expect(result.text                                                                                                     ).toBe(source) ;
+		expect(result.groups.some(candidate => candidate.kind === "method-signature" || candidate.kind === "if-headers-braced")).toBe(false ) ;
+		expect(preservesTokensWithBreaks(source, result.text)                                                                  ).toBe(true  ) ;
+	}, 60_000);
+
+	test("keeps rest parameters intact while minimizing method axes", () => {
+		const source = [
+			"interface Example {",
+			"\tone     (...values: string[]   ): void;",
+			"\ttwo     (...items: number[]    ): void;",
+			"\tthree   (...flags: boolean[]   ): void;",
+			"}",
+			"",
+		].join("\n");
+		const result = run(source);
+
+		expect(result.text).toBe([
+			"interface Example {",
+			"\tone  (...values: string[]): void;",
+			"\ttwo  (...items: number[] ): void;",
+			"\tthree(...flags: boolean[]): void;",
+			"}",
+			"",
+		].join("\n"));
+		expect(group(result, "method-signature").state).toBe("PASS");
+		expect(preservesTokensWithBreaks(source, result.text)).toBe(true);
+	}, 60_000);
+
 	test("aligns extended object headers without inventing shorthand or multiline punctuation", () => {
 		const result = run([
 			"const formatters = [];",

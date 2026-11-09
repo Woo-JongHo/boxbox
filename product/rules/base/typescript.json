@@ -11,6 +11,7 @@
 		{ "kind": "declaration-call-expressions", "pattern": "DEFINE" },
 		{ "kind": "type-alias", "pattern": "DEFINE" },
 		{ "kind": "interface-members", "pattern": "DESCRIBE" },
+		{ "kind": "documented-data-members", "pattern": "DESCRIBE" },
 		{ "kind": "type-members", "pattern": "DESCRIBE" },
 		{ "kind": "class-members", "pattern": "DESCRIBE" },
 		{ "kind": "method-signature", "pattern": "DESCRIBE" },
@@ -29,6 +30,7 @@
 		{ "kind": "logical-chains", "pattern": "WHEN" },
 		{ "kind": "if-headers-braced", "pattern": "WHEN" },
 		{ "kind": "if-headers-return", "pattern": "WHEN" },
-		{ "kind": "vertical-call-arguments", "pattern": "DO" }
+		{ "kind": "vertical-call-arguments", "pattern": "DO" },
+		{ "kind": "vertical-function-parameters", "pattern": "DESCRIBE" }
 	]
 }

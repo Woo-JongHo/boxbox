@@ -1,0 +1,170 @@
+{
+  "sonnet-core": {
+    "requestedModel": "sonnet",
+    "requestedEffort": "medium",
+    "actualModels": [
+      "claude-sonnet-5-5"
+    ],
+    "runtimeModelUsage": {
+      "claude-sonnet-5-5": {
+        "inputTokens": 40,
+        "outputTokens": 48212,
+        "cacheReadInputTokens": 1626120,
+        "cacheCreationInputTokens": 146848,
+        "webSearchRequests": 0,
+        "costUSD": 1.3948159999999998,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 128000,
+        "thinkingTokens": 39639,
+        "canonicalModel": "claude-sonnet-5-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "verdict": "FINDINGS",
+    "readOnly": true,
+    "reviewerExecutedTests": false,
+    "isError": false,
+    "totalCostUsd": 1.3948159999999998,
+    "numTurns": 35
+  },
+  "sonnet-measurement": {
+    "requestedModel": "sonnet",
+    "requestedEffort": "medium",
+    "actualModels": [
+      "claude-sonnet-5-5"
+    ],
+    "runtimeModelUsage": {
+      "claude-sonnet-5-5": {
+        "inputTokens": 22,
+        "outputTokens": 10114,
+        "cacheReadInputTokens": 353233,
+        "cacheCreationInputTokens": 60501,
+        "webSearchRequests": 0,
+        "costUSD": 0.41383460000000005,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 128000,
+        "thinkingTokens": 4727,
+        "canonicalModel": "claude-sonnet-5-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "verdict": "FINDINGS",
+    "readOnly": true,
+    "reviewerExecutedTests": false,
+    "isError": false,
+    "totalCostUsd": 0.41383460000000005,
+    "numTurns": 20
+  },
+  "glm-final": {
+    "requestedModel": "opencode/glm-5.3-flash-free",
+    "requestedEffort": "provider-default",
+    "actualModels": [
+      "opencode/glm-5.3-flash-free"
+    ],
+    "runtimeAssistantModelMetadata": {
+      "opencode/glm-5.3-flash-free": {
+        "assistantMetadata": [
+          {
+            "providerID": "opencode",
+            "modelID": "glm-5.3-flash-free",
+            "agent": "boxbox-final-review",
+            "cost": 0,
+            "tokens": {
+              "total": 20219,
+              "input": 19925,
+              "output": 157,
+              "reasoning": 137,
+              "cache": {
+                "write": 0,
+                "read": 0
+              }
+            },
+            "finish": "tool-calls"
+          },
+          {
+            "providerID": "opencode",
+            "modelID": "glm-5.3-flash-free",
+            "agent": "boxbox-final-review",
+            "cost": 0,
+            "tokens": {
+              "total": 36410,
+              "input": 16705,
+              "output": 79,
+              "reasoning": 42,
+              "cache": {
+                "write": 0,
+                "read": 19584
+              }
+            },
+            "finish": "tool-calls"
+          },
+          {
+            "providerID": "opencode",
+            "modelID": "glm-5.3-flash-free",
+            "agent": "boxbox-final-review",
+            "cost": 0,
+            "tokens": {
+              "total": 51911,
+              "input": 15850,
+              "output": 134,
+              "reasoning": 23,
+              "cache": {
+                "write": 0,
+                "read": 35904
+              }
+            },
+            "finish": "tool-calls"
+          },
+          {
+            "providerID": "opencode",
+            "modelID": "glm-5.3-flash-free",
+            "agent": "boxbox-final-review",
+            "cost": 0,
+            "tokens": {
+              "total": 66233,
+              "input": 4669,
+              "output": 151,
+              "reasoning": 10277,
+              "cache": {
+                "write": 0,
+                "read": 51136
+              }
+            },
+            "finish": "tool-calls"
+          },
+          {
+            "providerID": "opencode",
+            "modelID": "glm-5.3-flash-free",
+            "agent": "boxbox-final-review",
+            "cost": 0,
+            "tokens": {
+              "total": 68855,
+              "input": 11779,
+              "output": 1165,
+              "reasoning": 423,
+              "cache": {
+                "write": 0,
+                "read": 55488
+              }
+            },
+            "finish": "stop"
+          }
+        ]
+      }
+    },
+    "verdict": "PASS",
+    "readOnly": true,
+    "reviewerExecutedTests": false,
+    "exitCode": 0,
+    "isError": false,
+    "totalCostUsd": 0,
+    "assistantMessages": 5,
+    "resultSha256": "4907c217fb27fb4fed7965164db920344652746b6414246c15b8b17fc4ffbb8a",
+    "inputSha256": "854ccfcf33b37bbe8c43ae5832b141cfa2da99376f389b61fff4e4a6c1a46397",
+    "reviewSha256": "0d78d5ce983740f540f678bdbe45e0d8f51973551c5fc7a9f756ec54655d5f3e",
+    "fallbackAllowed": false,
+    "userSelectedOverride": "GLM replaced Opus for this session"
+  }
+}

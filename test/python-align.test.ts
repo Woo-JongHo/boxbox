@@ -1,9 +1,97 @@
-import      { describe, expect, test } from "bun:test"                 ;
-import      { fileURLToPath          } from "node:url"                 ;
-import      { alignSource            } from "@/common/table-engine.ts" ;
-import      { maskSource             } from "@/common/code-text.ts"    ;
-import      { PYTHON_ALIGNER         } from "@/python/profile.ts"      ;
-import      { defineLanguageSuite    } from "./lang-harness.ts"        ;
+import      { describe, expect, test } from "bun:test"                       ;
+import      { fileURLToPath          } from "node:url"                       ;
+import      { readFileSync           } from "node:fs"                        ;
+import      { alignSource            } from "@/common/06_table-engine.ts"    ;
+import      { maskSource             } from "@/common/00_code-text.ts"       ;
+import      { PYTHON_ALIGNER         } from "@/python/03_profile.ts"         ;
+import      { PYTHON_ANALYSIS_SCRIPT } from "@/python/06_analysis-script.ts" ;
+import      { defineLanguageSuite    } from "./lang-harness.ts"              ;
+
+test("nested comma rows, sibling imports and untyped parameters remain visibly unsupported", () => {
+	const file     = fileURLToPath(new URL("./fixtures/python/review-visibility.py", import.meta.url)) ;
+	const source   = readFileSync(file, "utf8")                                                        ;
+	const expected = [2, 3, 4, 8, 9, 10, 13, 14, 17, 18, 19]                                           ;
+	for (const ending of ["\n", "\r\n"]) {
+		const input  = source.replaceAll("\n", ending                                      ) ;
+		const result = alignSource      (input, PYTHON_ALIGNER, { minRows: 3, apply: true }) ;
+		expect(result.unsupported?.map(row => row.line)).toEqual(expected);
+		expect(result.unsupported?.map(row => row.reason)).toEqual(expected.map(line => line === 13 || line === 14
+			? "Python import layout is not supported" : "Python comma-row layout is not supported"));
+		expect(result.details                                                         ).toEqual([]    ) ;
+		expect(result.output                                                          ).toBe   (input ) ;
+		expect(alignSource(result.output, PYTHON_ALIGNER, { minRows: 3, apply: true })).toEqual(result) ;
+	}
+	const run = Bun.spawnSync([process.execPath, fileURLToPath(new URL("../product/packages/cli/entry.ts", import.meta.url)), "check", "--source", "--file", file, "--json"], { stdout: "pipe", stderr: "pipe" });
+	expect(run.exitCode, run.stderr.toString()).toBe(0);
+	const report = JSON.parse(run.stdout.toString());
+	expect(report.syntax.status                                                  ).toBe   ("valid"                                                         ) ;
+	expect(report.results[0].unsupported.map((row: { line: number }) => row.line)).toEqual(expected                                                        ) ;
+	expect(report.results[0].summary                                             ).toEqual({ groups: 0, misaligned: 0, edits: 0, refused: 0, suggested: 0 }) ;
+	expect(readFileSync(file, "utf8")                                            ).toBe   (source                                                          ) ;
+});
+
+test.each([
+	"f(\n    wrap(a),\n    wrap(b),\n)\n",
+	"f(\n    wrap(a),\n    wrap(b),\n)\ng(\n    wrap(c),\n    wrap(d),\n)\n",
+	"f(\n    wrap(a),\n    # split\n    wrap(b),\n    wrap(c),\n)\n",
+	"result = combine(wrap(first), wrap(second), wrap(third))\n",
+	'text = """\nimport os; import sys\nwrap(a),\nwrap(b),\nwrap(c),\n"""\n',
+	"def f(\n    alpha,\n    beta,\n):\n    pass\n",
+	"def f(\n    alpha,\n    # split\n    beta,\n    gamma,\n):\n    pass\n",
+])("unsupported visibility does not merge short, separate or non-code rows: %s", source => {
+	const result = alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true });
+	expect(result.unsupported ?? []).toEqual([]    ) ;
+	expect(result.details          ).toEqual([]    ) ;
+	expect(result.output           ).toBe   (source) ;
+});
+
+test("bounded from-import rows and unsupported plain imports/comma rows remain visible through checks", () => {
+	const file   = fileURLToPath(new URL("./fixtures/python/coverage-gaps.py", import.meta.url)) ;
+	const before = readFileSync (file                                                          ) ;
+	for (const [entry, args] of [
+		["../product/engine/python/02_align-tables.ts", ["--file", file, "--json"]],
+		["../product/packages/cli/entry.ts", ["check", "--file", file, "--json"]],
+	] as const) {
+		const run = Bun.spawnSync([process.execPath, fileURLToPath(new URL(entry, import.meta.url)), ...args], { stdout: "pipe", stderr: "pipe" });
+		expect(run.exitCode, run.stderr.toString()).toBe(1);
+		const result = JSON.parse(run.stdout.toString()).results[0];
+		expect(result.summary.groups                                                       ).toBe         (1                                       ) ;
+		expect(result.groups[0]                                                            ).toMatchObject({ semanticKind: "import-from", rows: 3 }) ;
+		expect(result.unsupported.map((row: { line: number }) => row.line)                 ).toEqual      ([1, 7, 8, 9, 13, 14, 15, 16]            ) ;
+		expect(result.unsupported.every((row: { reason: string }) => row.reason.length > 0)).toBe         (true                                    ) ;
+		expect(readFileSync(file)                                                          ).toEqual      (before                                  ) ;
+		const text = Bun.spawnSync([process.execPath, fileURLToPath(new URL(entry, import.meta.url)), ...args.slice(0, -1)], { stdout: "pipe", stderr: "pipe" });
+		expect(text.exitCode, text.stderr.toString()).toBe(1);
+		expect(text.stdout.toString()).toContain("unsupported line=1:");
+	}
+});
+
+test("multiline imports and CRLF comma rows expose bounded unsupported lines without edits", () => {
+	const source = 'from package import (\r\n    alpha,\r\n    beta,\r\n    gamma,\r\n)\r\n\r\nitems = [\r\n    first,\r\n    second,\r\n    third,\r\n    fourth\r\n]\r\n' ;
+	const result = alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true })                                                                                         ;
+	expect(result.unsupported?.map(row => row.line)).toEqual([1, 8, 9, 10]) ;
+	expect(result.output                           ).toBe   (source       ) ;
+	expect(result.details                          ).toEqual([]           ) ;
+});
+
+test("dictionary unpacking inside a list remains invalid syntax rather than an unsupported valid table", () => {
+	const source = "items = [\n    *args,\n    **kwargs,\n    plain,\n    another_one,\n]\n";
+	expect(() => alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true })).toThrow("Python source is invalid");
+});
+
+test("unsupported reporting excludes strings, comments, short runs and recognized rows", () => {
+	const source = '# from package import name\ntext = "import os"\n\nitems = [\n    first,\n    second,\n]\n\nrows = [\n    ["a", 1],\n    ["longer", 2],\n    ["mid", 3],\n]\n\nh(\n    a=1,\n    longer=2,\n    mid=3,\n)\n' ;
+	const result = alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true })                                                                                                                                             ;
+	expect(result.unsupported ?? []).toEqual([]);
+	expect(result.tables).toBe(2);
+});
+
+test("unsupported candidates stay in their original AST owner and physical paragraph", () => {
+	const source = 'h(\n    first,\n    second,\n)\ng(\n    third,\n    fourth,\n)\n\nitems = [\n    alpha,\n    # section\n    beta,\n    gamma,\n]\n' ;
+	const result = alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true })                                                                     ;
+	expect(result.unsupported ?? []).toEqual([]);
+	expect(result.output).toBe(source);
+});
 
 defineLanguageSuite({
 	aligner     : PYTHON_ALIGNER                                                      ,
@@ -15,6 +103,87 @@ defineLanguageSuite({
 
 describe("python profile specific properties", () => {
 	const align = (source: string): ReturnType<typeof alignSource> => alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true });
+
+	test("dictionary call values and an omitted final comma share their real table", () => {
+		const source = [
+			"values = {",
+			'    "version": 1,',
+			'    "status": "ok",',
+			'    "sourceLength": len("a,b"),',
+			'    "pythonVersion": list((3, 14, 2)),',
+			'    "owners": [],',
+			'    "rows": [],',
+			'    "tokens": [],',
+			'    "formatted": []',
+			"}",
+		].join("\n");
+		const result = align(source);
+		expect(result.details                                                 )    .toHaveLength (1                                                                              ) ;
+		expect(result.details[0]                                              )    .toMatchObject({ startLine: 2, endLine: 9, rows: 8, axes: ["key", "colon", "value", "comma"] }) ;
+		expect(result.output                                                  )    .toContain    ('len("a,b")'                                                                   ) ;
+		expect(result.output                                                  )    .toContain    ('list((3, 14, 2))'                                                             ) ;
+		expect(result.output.split("\n")[8]                                   ).not.toEndWith    (","                                                                            ) ;
+		expect(result.output.split("\n").every(line => !/[ \t]+$/u.test(line)))    .toBe         (true                                                                           ) ;
+		expect(align(result.output).output                                    )    .toBe         (result.output                                                                  ) ;
+	});
+
+	test("dictionary alignment preserves call evaluation order and nested values", () => {
+		const source = [
+			"import json",
+			"events = []",
+			"def capture(value):",
+			"    events.append(value)",
+			"    return value",
+			"values = {",
+			'    "a": capture("a,b"),',
+			'    "longer": capture([1, 2]),',
+			'    "mid": capture({"x": 3})',
+			"}",
+			"print(json.dumps([values, events]))",
+		].join("\n");
+		const result = align(source);
+		expect(result.details[0]?.rows).toBe(3);
+		const execute = (code: string) => {
+			const run = Bun.spawnSync(["python3", "-I", "-c", code], { stdout: "pipe", stderr: "pipe" });
+			expect(run.exitCode, run.stderr.toString()).toBe(0);
+			return run.stdout.toString();
+		};
+		expect(execute(result.output)).toBe(execute(source));
+		expect(align(result.output).output).toBe(result.output);
+	});
+
+	test("the engine's own eight-field Python response is inspected as one dictionary", () => {
+		const lines   = PYTHON_ANALYSIS_SCRIPT.split("\n")                                                  ;
+		const first   = lines.findIndex(line => line.includes("'sourceLength'")) - 1                        ;
+		const last    = lines.findIndex(line => line.includes("'formatted'") && !line.includes("'owners'")) ;
+		const result  = align(PYTHON_ANALYSIS_SCRIPT)                                                       ;
+		const payload = result.details.find(table => table.startLine <= first && table.endLine >= last + 1) ;
+		expect(payload?.rows).toBe(8);
+		expect(payload?.axes).toEqual(["key", "colon", "value", "comma"]);
+	});
+
+	test.each([
+		{ name: "CRLF", indent: "    ", ending: "\r\n" },
+		{ name: "tab indentation", indent: "\t", ending: "\n" },
+	])("dictionary calls without a final comma preserve $name", ({ indent, ending }) => {
+		const source = ["data = {", `${indent}"a": len("x"),`, `${indent}"longer": [1, 2],`, `${indent}"mid": {"x": 3}`, "}"].join(ending) ;
+		const result = align(source)                                                                                                       ;
+		expect(result.details                                                                )    .toMatchObject([{ rows: 3, axes: ["key", "colon", "value", "comma"] }]) ;
+		expect(result.output.split(ending)                                                   )    .toHaveLength (5                                                      ) ;
+		expect(result.output.split(ending)[3]                                                ).not.toEndWith    (","                                                    ) ;
+		expect(result.output.split(ending).slice(1, 4).every(line => line.startsWith(indent)))    .toBe         (true                                                   ) ;
+		expect(result.output.replace(/[ \t]/gu, "")                                          )    .toBe         (source.replace(/[ \t]/gu, "")                          ) ;
+		expect(align(result.output).output                                                   )    .toBe         (result.output                                          ) ;
+	});
+
+	test.each([
+		{ name: "same-line sibling entries", source: 'data = {\n "a": len("x"), "extra": 1,\n "longer": [1, 2], "another": 2,\n "mid": {"x": 3}, "last": 3\n}' },
+		{ name: "multiline values", source: 'data = {\n "a": (\n  len("x")\n ),\n "longer": (\n  [1, 2]\n ),\n "mid": (\n  {"x": 3}\n )\n}' },
+	])("refuses dictionary $name without changing their source", ({ source }) => {
+		const result = align(source);
+		expect(result.tables).toBe(0);
+		expect(result.output).toBe(source);
+	});
 
 	test("dictionary rows decompose into key, colon, value, comma axes and align the colon column", () => {
 		const source = [
@@ -109,11 +278,11 @@ describe("python profile specific properties", () => {
 
 	test("keyword-argument rows align name, equal, value and the closing comma", () => {
 		const source = [
-			"    return Result(",
+			"result = Result(",
 			"        source_path=local_path,",
 			"        size=len(rows),",
 			"        target_columns=(KEY,),",
-			"    )",
+			")",
 		].join("\n");
 		expect(align(source).output.split("\n").slice(1, 4)).toEqual([
 			"        source_path    = local_path,",
@@ -129,6 +298,7 @@ describe("python profile specific properties", () => {
 			"    file_name: str = FILE_NAME,",
 			"    recursive: bool = False,",
 			") -> Path:",
+			"    pass",
 		].join("\n");
 		const result = align(source);
 		expect(result.tables).toBe(1);
@@ -147,6 +317,7 @@ describe("python profile specific properties", () => {
 			"    base_dir: Path,",
 			"    today: date | None = None,",
 			") -> Path:",
+			"    pass",
 		].join("\n");
 		const result = align(source);
 		expect(result.tables).toBe(1);
@@ -164,9 +335,7 @@ describe("python profile specific properties", () => {
 			"    beta = call(,",
 			"    gamma = x if y else (z,",
 		].join("\n");
-		const result = align(source);
-		expect(result.tables).toBe(0     );
-		expect(result.output).toBe(source);
+		expect(() => align(source)).toThrow();
 	});
 
 	test("a table whose columns would follow wide characters is refused with a reason and left unchanged", () => {

@@ -1,4 +1,5 @@
 import      { spawnSync                                                        } from "node:child_process"        ;
+import      { createHash                                                       } from "node:crypto"               ;
 import      { existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs"                   ;
 import      { join, resolve                                                    } from "node:path"                 ;
 import      { fileURLToPath                                                    } from "node:url"                  ;
@@ -7,11 +8,13 @@ import      {
               engineCommand                                                  ,
               findCommand                                                    ,
               hookCommands                                                   ,
+              pathLaunchers                                                  ,
               supportedNode                                                  ,
                                                                                } from "./platform.mjs"            ;
 
 import      { installationState                                                } from "./install-state.mjs"       ;
 import      { claudeRegistration                                               } from "./claude-registration.mjs" ;
+import      { codexRegistration                                                } from "./codex-registration.mjs"  ;
 
 const root       = fileURLToPath(new URL("./", import.meta.url))                    ;
 const windows    = process.platform === "win32"                                     ;
@@ -26,7 +29,11 @@ function run(executable, args, options = {}) {
 	const child = spawnSync(executable, args, { stdio: "inherit", ...options });
 	if (child.error) fail(`Cannot run ${executable}: ${child.error.message}`);
 	if (child.signal) fail(`${executable} terminated by ${child.signal}`);
-	if (child.status !== 0) process.exit(child.status ?? 1);
+	if (child.status !== 0) {
+		const details = String(child.stderr || child.stdout || "").trim();
+		console.error(`[BoxBox] ${executable} ${args.join(" ")} failed${details ? `:\n${details}` : "."}`);
+		process.exit(child.status ?? 1);
+	}
 	return child;
 }
 
@@ -40,6 +47,14 @@ function invoke(tool, args, options) {
 	return run(tool.executable, [...tool.args, ...args], options);
 }
 
+function bundledEngine(tarball, metadata) {
+	if (typeof metadata.engineSha256 !== "string" || !/^[0-9a-f]{64}$/u.test(metadata.engineSha256)) fail("Bundled engine integrity metadata is missing or invalid. Reinstall this BoxBox installer package, then rerun it.");
+	if (!existsSync(tarball)) fail(`Bundled engine is missing: ${tarball}. Reinstall this BoxBox installer package, then rerun it.`);
+	const actual = createHash("sha256").update(readFileSync(tarball)).digest("hex");
+	if (actual !== metadata.engineSha256) fail("Bundled engine integrity check failed. The bundled engine bytes do not belong to this installer. Reinstall this BoxBox installer package, then rerun it.");
+	return tarball;
+}
+
 if (process.argv.length > 2 && !engineOnly) fail("Usage: node install.mjs [--engine-only]");
 if (!supportedNode(process.versions.node)) fail(`Node.js >=22.22.3 is required; found ${process.versions.node}. Install a supported Node.js release and rerun the BoxBox installer.`);
 
@@ -47,23 +62,33 @@ const metadata = JSON.parse(readFileSync(join(root, "bundle.json"), "utf8"));
 if (!["codex", "claude"].includes(metadata.host)) fail("The installed payload has an invalid host. Rerun the BoxBox installer.");
 const state = installationState(root, metadata);
 if (state.read()?.phase !== "prepared") fail("A fresh parent installation receipt is required. Rerun the BoxBox installer.");
-const npm = command("npm");
-invoke(npm, ["--version"]);
+const tarball = bundledEngine(join(root, "packages", `${metadata.name}-${metadata.version}.tgz`), metadata) ;
+const npm     = command      ("npm"                                                                       ) ;
+const quiet   = { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }                                    ;
+invoke(npm, ["--version"], quiet);
 const host = engineOnly ? undefined : command(metadata.host);
 if (host) {
-	invoke(host, ["--version"]);
-	invoke(host, ["plugin", metadata.host === "codex" ? "add" : "install", "--help"]);
+	invoke(host, ["--version"], quiet);
+	invoke(host, ["plugin", metadata.host === "codex" ? "add" : "install", "--help"], quiet);
 }
 
 const claude = host && metadata.host === "claude" ? claudeRegistration(root, metadata, (args, options) => invoke(host, args, options)) : undefined;
+const codex = host && metadata.host === "codex" ? codexRegistration(root, metadata, (args, options = {}) => {
+	const child = spawnSync(host.executable, [...host.args, ...args], { stdio: "inherit", ...options });
+	if (child.error) throw child.error;
+	if (child.signal || child.status !== 0) {
+		const details = String(child.stderr || child.stdout || "").trim();
+		throw new Error(`Codex ${args.join(" ")} failed${details ? `: ${details}` : ""}`);
+	}
+	return child;
+}) : undefined;
 try {
 	claude?.preflight();
+	codex?.preflight();
 } catch (error) {
 	fail(error.message);
 }
 
-const tarball = join(root, "packages", `${metadata.name}-${metadata.version}.tgz`);
-if (!existsSync(tarball)) fail(`Bundled engine is missing: ${tarball}. Rerun the BoxBox installer to repair the local payload.`);
 const runtimeDirectory = join(root, "runtime");
 mkdirSync(runtimeDirectory, { recursive: true });
 writeFileSync(join(runtimeDirectory, "package.json"), JSON.stringify({ private: true, type: "module", name: `boxbox-${metadata.host}-runtime` }, null, "\t") + "\n");
@@ -89,6 +114,8 @@ for (const path of documents) {
 	}
 }
 writeFileSync(configuration, JSON.stringify({ node, cli, skillCommand }, null, "\t") + "\n");
+mkdirSync(join(plugin, "bin"), { recursive: true });
+for (const [path, text] of Object.entries(pathLaunchers(node, launcher))) writeFileSync(join(plugin, path), text, { mode: 0o755 });
 
 const hooksPath = join      (plugin, "hooks/hooks.json"     ) ;
 const hooks     = JSON.parse(readFileSync(hooksPath, "utf8")) ;
@@ -105,9 +132,16 @@ writeFileSync(hooksPath, JSON.stringify(hooks, null, "\t") + "\n");
 
 if (host) {
 	state.advance("host-registration-started");
-	invoke(host, ["plugin", "marketplace", "add", root]);
-	claude?.marketplace();
-	invoke(host, metadata.host === "codex" ? ["plugin", "add", `${metadata.name}@${metadata.marketplace}`] : ["plugin", "install", `${metadata.name}@${metadata.marketplace}`, "--scope", "user"]);
+	try {
+		if (codex) codex.transition();
+		else {
+			invoke(host, ["plugin", "marketplace", "add", root]);
+			claude?.marketplace();
+			invoke(host, ["plugin", "install", `${metadata.name}@${metadata.marketplace}`, "--scope", "user"]);
+		}
+	} catch (error) {
+		fail(error.message);
+	}
 }
 claude?.verify();
 state.advance("verified");

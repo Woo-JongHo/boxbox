@@ -6,7 +6,7 @@ additionalProperties=false, properties, items, minItems, uniqueItems, minLength,
 pattern, enum, const and minimum. $schema, title and description are annotations.
 Unknown keywords and unsupported type/additionalProperties values are rejected,
 including in optional schema branches. This is not a full Draft 2020-12 validator.
-Repository checks additionally cover stable IDs, references, history and resolution.
+Repository checks additionally cover stable IDs, references, history and resolution. Historical `history[].evidence` paths may resolve only through the exact relocation map below. It confirms a current physical target exists; it does not claim byte identity with the historical source.
 """
 
 import argparse
@@ -17,6 +17,15 @@ from pathlib import Path
 
 LIBRARY = Path(__file__).resolve().parent
 REPOSITORY = LIBRARY.parents[2]
+# Historical evidence uses these exact paths only; current artifacts must use current paths.
+# These exact historical relocations locate the current physical source; they do not prove historical byte identity.
+HISTORICAL_SOURCE_RELOCATIONS = {
+	"product/engine/typescript/grid-kinds.ts" : "product/engine/typescript/13_grid-kinds.ts",
+	"product/engine/python/profile.ts"        : "product/engine/python/03_profile.ts"       ,
+	"product/engine/common/result-json.ts"    : "product/engine/common/24_result-json.ts"   ,
+	"product/engine/common/report.ts"         : "product/engine/common/23_report.ts"        ,
+	"product/engine/common/table-engine.ts"   : "product/engine/common/06_table-engine.ts"  ,
+}
 KEYWORDS = {
 	"$schema", "title", "description", "type", "required", "additionalProperties",
 	"properties", "items", "minItems", "uniqueItems", "minLength", "pattern",
@@ -55,10 +64,10 @@ def validate(value, rule, path):
 		require(any(equal(value, option) for option in rule["enum"]), f"{path}: unsupported value {value!r}")
 	if "type" in rule:
 		matches = {
-			"object": isinstance(value, dict),
-			"array": isinstance(value, list),
-			"string": isinstance(value, str),
-			"integer": type(value) is int or (type(value) is float and value.is_integer()),
+			"object"  : isinstance(value, dict)                                            ,
+			"array"   : isinstance(value, list)                                            ,
+			"string"  : isinstance(value, str)                                             ,
+			"integer" : type(value) is int or (type(value) is float and value.is_integer()),
 		}
 		require(matches[rule["type"]], f"{path}: expected {rule['type']}")
 	count = 1
@@ -85,17 +94,50 @@ def validate(value, rule, path):
 	return count
 
 
+def repository_file(file, path, purpose):
+	relative = Path(path)
+	require(not relative.is_absolute() and ".." not in relative.parts, f"{file}: {purpose} must be repository-relative: {path}")
+	try:
+		resolved = (REPOSITORY / relative).resolve(strict=True)
+	except FileNotFoundError:
+		require(False, f"{file}: missing {purpose}: {path}")
+	try:
+		resolved.relative_to(REPOSITORY.resolve())
+	except ValueError:
+		require(False, f"{file}: {purpose} resolves outside the repository: {path}")
+	require(resolved.is_file(), f"{file}: missing {purpose}: {path}")
+	return resolved
+
+
+def validate_history_evidence(file, path):
+	relative = Path(path)
+	require(not relative.is_absolute() and ".." not in relative.parts, f"{file}: evidence must be repository-relative: {path}")
+	raw = REPOSITORY / relative
+	if raw.exists() or raw.is_symlink():
+		repository_file(file, path, "historical evidence")
+		return False
+	target = HISTORICAL_SOURCE_RELOCATIONS.get(path)
+	require(target is not None, f"{file}: missing historical evidence: {path}")
+	target_path = Path(target)
+	require(not target_path.is_absolute() and ".." not in target_path.parts, f"{file}: invalid historical relocation target: {target}")
+	repository_file(file, target, "relocated historical evidence")
+	return True
+
+
 def validate_record(record, file):
 	require(file.name.startswith(record["id"] + "-"), f"{file}: filename must start with its ID and a hyphen")
 	sequence = [entry["sequence"] for entry in record["history"]]
 	require(sequence == list(range(1, len(sequence) + 1)), f"{file}: history sequence must start at 1 without gaps")
-	paths = [item["path"] for item in record["related"]]
-	paths += [path for item in record["verification"] for path in item["evidence"]]
-	paths += [path for item in record["history"] for path in item["evidence"]]
-	for path in paths:
-		relative = Path(path)
-		require(not relative.is_absolute() and ".." not in relative.parts, f"{file}: reference must be repository-relative: {path}")
-		require((REPOSITORY / relative).is_file(), f"{file}: missing referenced file: {path}")
+	references = [item["path"] for item in record["related"]]
+	references += [path for item in record["verification"] for path in item["evidence"]]
+	for path in references:
+		repository_file(file, path, "reference")
+	relocated = sum(
+		validate_history_evidence(file, path)
+		for entry in record["history"]
+		for path in entry["evidence"]
+	)
+	references += [path for item in record["history"] for path in item["evidence"]]
 	for item in record["verification"]:
 		if item["status"] in ("passed", "failed"):
 			require(bool(item["evidence"]), f"{file}: observed result needs evidence: {item['name']}")
@@ -109,7 +151,7 @@ def validate_record(record, file):
 	if record["status"] == "resolved":
 		require(all(item["status"] == "done" for item in record["actions"]), f"{file}: resolved issue has unfinished actions")
 		require(all(item["status"] == "passed" for item in record["verification"]), f"{file}: resolved issue has unpassed current verification")
-	return len(paths)
+	return len(references) - relocated, relocated
 
 
 def main():
@@ -133,14 +175,19 @@ def main():
 	files = args.records or sorted((LIBRARY / "records").glob("*.json"))
 	require(bool(files), "No records found")
 	identifiers = set()
-	values = 0
-	references = 0
+	values                          = 0
+	references                      = 0
+	existing_references             = 0
+	relocated_historical_references = 0
 	for file in files:
 		record = json.loads(file.read_text())
 		values += validate(record, schema, str(file))
 		canonical = canonical_ids.get(record["id"])
 		require(canonical is None or canonical == file.resolve(), f"{file}: ID {record['id']} already belongs to {canonical}")
-		references += validate_record(record, file)
+		record_references, record_relocated = validate_record(record, file)
+		references += record_references + record_relocated
+		existing_references += record_references
+		relocated_historical_references += record_relocated
 		require(record["id"] not in identifiers, f"{file}: duplicate ID {record['id']}")
 		identifiers.add(record["id"])
 	if not args.records:
@@ -150,13 +197,15 @@ def main():
 		for identifier in identifiers:
 			require(identifier in readme, f"README: missing index entry {identifier}")
 	print(json.dumps({
-		"status": "passed",
-		"method": "Dependency-free Python checker for the documented schema subset; unknown keywords are rejected. Not a full Draft 2020-12 validator.",
-		"records": len(files),
-		"checkedValues": values,
-		"existingReferenceOccurrences": references,
-		"checks": ["schema subset", "template fields and enum drift", "unique IDs including canonical/draft collisions", "filename agreement", "history sequencing and machine-readable failures", "existing repository references", "observed-result evidence", "resolved action/verification state", "README index and links when validating the library"],
-		"excluded": "templates/issue.json is instructional and is not a factual record.",
+		"status"                                  : "passed"                                                                                                                                                                                                                                                                                                                                  ,
+		"method"                                  : "Dependency-free Python checker for the documented schema subset; unknown keywords are rejected. Not a full Draft 2020-12 validator."                                                                                                                                                                                                     ,
+		"records"                                 : len(files)                                                                                                                                                                                                                                                                                                                                ,
+		"checkedValues"                           : values                                                                                                                                                                                                                                                                                                                                    ,
+		"referenceOccurrences"                    : references                                                                                                                                                                                                                                                                                                                                ,
+		"existingReferenceOccurrences"            : existing_references                                                                                                                                                                                                                                                                                                                       ,
+		"relocatedHistoricalReferenceOccurrences" : relocated_historical_references                                                                                                                                                                                                                                                                                                           ,
+		"checks"                                  : ["schema subset", "template fields and enum drift", "unique IDs including canonical/draft collisions", "filename agreement", "history sequencing and machine-readable failures", "existing repository references", "observed-result evidence", "resolved action/verification state", "README index and links when validating the library"],
+		"excluded"                                : "templates/issue.json is instructional and is not a factual record."                                                                                                                                                                                                                                                                      ,
 	}, indent=2))
 
 

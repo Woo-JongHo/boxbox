@@ -6,14 +6,11 @@ BoxBox detects consecutive rows that can be represented as a table, then aligns 
 minimum required widths. Its own rewrite stage preserves content and execution order. Human-approved rule data
 controls public formatting; inspection observations never approve a rule.
 
-The public CLI can inspect TypeScript, Python, strict JSON and guarded YAML. Ten code-language development engines
-also exist. These are different support claims: parser/detector availability does not grant write authorization.
-The default public preset still approves only the existing TypeScript and Python rules; JSON/YAML candidates require
-new approval records before Align or Format may write them. Publication is still pending.
+The public CLI can inspect TypeScript, Python, strict JSON and guarded YAML. TypeScript and Python have code-language engines; JSON and YAML use structured adapters. Parser/detector availability does not grant write authorization. The default public preset still approves only the existing TypeScript and Python rules; JSON/YAML candidates require new approval records before Align or Format may write them. The public installer is published as `boxbox-plugin`.
 
 ## Interface
 
-The product entry is [cli.ts](../../product/engine/cli.ts). Existing commands include `init`, `doctor`, `check`,
+The product entry is [00_cli.ts](../../product/engine/00_cli.ts). Existing commands include `init`, `doctor`, `check`,
 `guide`, `align`, `format`, `db init`, `db status`, `run`, `status` and `hook`. Public file commands recognize
 TypeScript, Python, JSON and YAML (`.yaml` and `.yml`).
 
@@ -27,8 +24,8 @@ Host adapters invoke an installed engine. Host installation/enabling, permission
 and native acceptance of hook output are distinct observations. Hooks inspect; they do not automatically format files.
 
 Engine TypeScript modules import other engine modules through the engine-root `@/` alias. Root and copied-skill
-configurations map that alias to the same source boundary, and Node builds resolve it before emission. The rules-owned
-TypeScript layout JSON and three runtime `import.meta.url` file lookups remain relative by design.
+configurations map that alias to the same source boundary, and Node builds resolve it before emission. Common modules remain flat; their filenames identify responsibilities. The rules-owned TypeScript layout JSON and three runtime
+`import.meta.url` file lookups remain relative by design.
 
 ## Process
 
@@ -60,14 +57,14 @@ the format pipeline. The format pipeline orchestrates repeated inspection and wo
 
 | Module | Responsibility | Canonical source |
 | --- | --- | --- |
-| CLI orchestration | Arguments, supported language selection, command-specific envelopes | [cli.ts](../../product/engine/cli.ts) |
-| Read-only syntax boundary | Per-language valid/invalid/error result before inspection | [syntax-validation.ts](../../product/engine/common/syntax-validation.ts) |
-| Public write pipeline | Optional formatter, syntax acceptance, effective approvals, two full cycles, provenance | [format-pipeline.ts](../../product/engine/common/format-pipeline.ts) |
-| TypeScript adapter | AST grouping, kind-specific alignment, scanner preservation | [typescript/](../../product/engine/typescript/) |
-| Line-engine adapters | Language syntax masking and row decomposition | [common/table-engine.ts](../../product/engine/common/table-engine.ts), `product/engine/<language>/profile.ts` |
+| CLI orchestration | Arguments, supported language selection, command-specific envelopes | [00_cli.ts](../../product/engine/00_cli.ts) |
+| Read-only syntax boundary | Per-language valid/invalid/error result before inspection | [11_syntax-validation.ts](../../product/engine/common/11_syntax-validation.ts) |
+| Public write pipeline | Optional formatter, syntax acceptance, effective approvals, two full cycles, provenance | [21_format-pipeline.ts](../../product/engine/common/21_format-pipeline.ts) |
+| TypeScript adapter | AST grouping, kind-specific alignment, scanner preservation | [engine tool capability map](implementation.md#engine-file-ids-and-tool-roles) |
+| Line-engine adapters | Language syntax masking and row decomposition | [common/06_table-engine.ts](../../product/engine/common/06_table-engine.ts), `product/engine/<language>/01_profile.ts` |
 | Structured adapters | Strict JSON and guarded YAML scalar-mapping inspection/alignment | [structured/](../../product/engine/structured/) |
 | Safety | Parser comparison, token/content preservation, safe replacement | [common/](../../product/engine/common/) |
-| Rule selection | Exact keys, layer/scope selection and approval proof | [conventions.ts](../../product/engine/common/conventions.ts), [approval-gate.ts](../../product/engine/common/approval-gate.ts) |
+| Rule selection | Exact keys, layer/scope selection and approval proof | [16_conventions.ts](../../product/engine/common/16_conventions.ts), [18_approval-gate.ts](../../product/engine/common/18_approval-gate.ts) |
 | Data | Surface forms, references and approved preset | [product/rules/](../../product/rules/) |
 | Advisory pattern catalog | Nine-family design inventory and rebuildable development SQLite index; never runtime approval | [patterns/catalog.json](../../product/rules/patterns/catalog.json), [pattern-catalog.ts](../../development/tools/pattern-catalog.ts) |
 | Distribution | Host templates, launcher and installer | [product/plugin/](../../product/plugin/), [product/installer/](../../product/installer/) |

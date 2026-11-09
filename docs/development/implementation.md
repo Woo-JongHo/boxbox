@@ -34,11 +34,9 @@ Only behavior confirmed in the repository's scripts, tests and manifests counts 
 columns. The product and display names are `boxbox` / `BoxBox`, confirmed on 2026-10-16, and
 [`package.json`](../../package.json) is `private: true`, version `0.2.1`.
 
-The usable surfaces today are the TypeScript 7 AST tools, a shared line engine for the other 9 languages,
-version 1 Result JSON, TypeScript and Python reports, Claude Code observation hooks, corpus verdict and fixture
-promotion tools, and an install script for the skill and inspector on Claude Code, ZCode, Codex and Pi.
+The usable development surfaces include TypeScript 7 AST tools, Python AST-backed source analysis on the shared line engine, strict JSON/YAML adapters, version 1 Result JSON, TypeScript and Python reports, Claude Code observation hooks, corpus verdict and fixture promotion tools, and an install script for the skill and inspector on Claude Code, ZCode, Codex and Pi. Public language support remains TypeScript, Python, JSON and YAML.
 
-A public CLI foundation and the config, approval and formatter cores were added. `init`, `doctor` and `check` in `cli.ts`
+A public CLI foundation and the config, approval and formatter cores were added. `init`, `doctor` and `check` in `00_cli.ts`
 were verified on a Node-only isolated install. Config is Base → recommended Preset → User → Project, and
 schema 1 is interpreted as schema 2 without changing the original. Optional formatter commands are given explicitly per language; absence selects standalone approved alignment.
 
@@ -48,9 +46,9 @@ path, existence, non-empty line count and byte size, without record contents.
 Both commands use only `XDG_CONFIG_HOME/boxbox` (when absolute) or `~/.config/boxbox`. They never copy the preset or
 send data anywhere, and they keep or refuse existing files, symlinks and path components that are not directories.
 
-`common/approval-gate.ts` checks not only a rule's status but also the human approval information, examples and counterexamples,
+`common/18_approval-gate.ts` checks not only a rule's status but also the human approval information, examples and counterexamples,
 versions and document hash of the linked decision. It checks path escapes of per-layer document roots and registry files.
-`common/format-pipeline.ts` applies optional formatter → parser → approval gate → BoxBox to a working copy, then
+`common/21_format-pipeline.ts` applies optional formatter → parser → approval gate → BoxBox to a working copy, then
 runs the whole process again to confirm a byte fixed point. Only a successful result is replaced, once, and dry-run keeps the original.
 The public CLI's `guide` returns only verified after-better examples, and `format` calls the pipeline above.
 `doctor` exits by whether the environment is runnable and reports `formatConfigured` and the undecided `releaseReady` separately.
@@ -67,13 +65,13 @@ These surfaces are not complete yet.
 |---|---|---|
 | Host adapters | discovering the skill and the read-only inspector | [`plugin/`](../../plugin/README.md) (release, Claude Code and Codex), [`agents/`](../../development/agents/readability-inspector.md), [`codex/`](../../development/codex/readability-inspector.toml) (development) |
 | Skill contract | work order, per-language commands, rules for human judgment | [`SKILL.md`](../../development/skills/boxbox/SKILL.md), [`references/`](../../product/rules/references/readability-contract.md) |
-| TypeScript engine | AST sibling groups, per-kind axes, token gate, TS re-parse | [`typescript/06_align-tables.ts`](../../product/engine/typescript/06_align-tables.ts), [`grid-kinds.ts`](../../product/engine/typescript/grid-kinds.ts) |
-| Line engine | masking, row decomposition, consecutive runs, minimum-width alignment | [`common/table-engine.ts`](../../product/engine/common/table-engine.ts), [`common/code-text.ts`](../../product/engine/common/code-text.ts) |
-| Language profiles | the small patterns and slots each language allows | [`python/profile.ts`](../../product/engine/python/profile.ts) and each language's `profile.ts` |
-| Safety boundary | code/string/comment preservation and external parser diagnostic comparison | [`preservation.ts`](../../product/engine/common/preservation.ts), [`parse-check.ts`](../../product/engine/common/parse-check.ts) |
-| Result contract | shared Result JSON schema and summary | [`result-json.ts`](../../product/engine/common/result-json.ts) |
-| Report and DB | S1–S4, alarms, exact pattern lookup | [`report.ts`](../../product/engine/report.ts), [`common/conventions.ts`](../../product/engine/common/conventions.ts) |
-| Observation hooks | pre-edit baseline, new alarms after the edit, usage records | [`hook.ts`](../../product/engine/hook.ts), [`hooks.json`](../../development/hooks/hooks.json); release: [`lifecycle-hook.ts`](../../product/engine/common/lifecycle-hook.ts), [`plugin/hooks/hooks.json`](../../plugin/hooks/hooks.json) |
+| TypeScript engine | AST sibling groups, per-kind axes, token gate, TS re-parse | [`typescript/07_align-tables.ts`](../../product/engine/typescript/07_align-tables.ts), [`13_grid-kinds.ts`](../../product/engine/typescript/13_grid-kinds.ts) |
+| Line engine | masking, row decomposition, consecutive runs, minimum-width alignment | [`common/06_table-engine.ts`](../../product/engine/common/06_table-engine.ts), [`common/00_code-text.ts`](../../product/engine/common/00_code-text.ts) |
+| Language profiles | the small patterns and slots each language allows | [`python/03_profile.ts`](../../product/engine/python/03_profile.ts) and the supported structured adapters |
+| Safety boundary | code/string/comment preservation and external parser diagnostic comparison | [`09_preservation.ts`](../../product/engine/common/09_preservation.ts), [`08_parse-check.ts`](../../product/engine/common/08_parse-check.ts) |
+| Result contract | shared Result JSON schema and summary | [`24_result-json.ts`](../../product/engine/common/24_result-json.ts) |
+| Report and DB | S1–S4, alarms, exact pattern lookup | [`01_report.ts`](../../product/engine/01_report.ts), [`common/16_conventions.ts`](../../product/engine/common/16_conventions.ts) |
+| Observation hooks | pre-edit baseline, new alarms after the edit, usage records | [`02_hook.ts`](../../product/engine/02_hook.ts), [`hooks.json`](../../development/hooks/hooks.json); release: [`27_lifecycle-hook.ts`](../../product/engine/common/27_lifecycle-hook.ts), [`plugin/hooks/hooks.json`](../../plugin/hooks/hooks.json) |
 | Learning tools | verdicts and regression fixtures from the public corpus | [`development/tools/corpus-signatures.ts`](../../development/tools/corpus-signatures.ts), [`development/tools/corpus-promote.ts`](../../development/tools/corpus-promote.ts) |
 
 The two alignment paths merge into the same Result JSON, but detection and safety checks are separate implementations.
@@ -93,8 +91,8 @@ flowchart LR
 
 ### Shared line engine
 
-Each language's `06_align-tables.ts` is a thin wrapper that passes the profile and arguments to
-[`runAlignCli`](../../product/engine/common/align-cli.ts).
+The TypeScript and Python alignment wrappers (`typescript/07_align-tables.ts` and `python/02_align-tables.ts`) are thin wrappers that passes the profile and arguments to
+[`runAlignCli`](../../product/engine/common/22_align-cli.ts). Python prepares AST/token evidence once per source operation; the shared planner receives rows tied to their AST owner, and an optional read-only observer receives the same selected runs and alignment plan.
 The engine builds a mask with the same coordinates as the original and accepts a row only when the slots the profile returns
 reassemble exactly into the original gaps. Accepted rows become one run only when they are adjacent and share indentation and axis
 signature. Blank lines, comments, different indentation, different axes and lines the profile rejects form boundaries.
@@ -107,10 +105,16 @@ Rows whose pattern the profile does not recognize, or that fail lossless reassem
 appearing as `REFUSE` in the Result. So `refused=0` does not mean the whole file was classified.
 A table becomes `REFUSE` only when the edits of a collected candidate table fail the preservation check.
 
+### Python AST source analysis
+
+`python/05_analysis.ts` invokes one `python3` child per prepared source. The embedded script parses the document with `ast.parse`, tokenizes the original text, and returns validated AST-owner rows, token ranges, formatted-string ranges and the detected Python version. The TypeScript side validates the child protocol, owner kinds, UTF-16 source bounds, ordering and source length before the planner sees any row. Original source slices remain authoritative for spelling and comments. Syntax errors are reported separately from child/protocol errors; unsupported source encodings and line endings fail closed.
+
+The implemented AST row owners are statement bodies, function parameters, call keywords, dictionary entries and list/tuple bundles. The Python profile uses those owners to constrain its existing assignment, annotation, bundle, dictionary and call slot shapes; the common line planner still owns adjacency, widths, comments and edits. Candidate rows without a unique AST owner are not admitted. The separate write-path AST comparison remains in place. This analysis supports the existing Python profile and does not claim support for arbitrary Python syntax or add public approval.
+
 ### TypeScript AST engine
 
-The TypeScript path opens the TypeScript 7 API server through [`load-source-file.ts`](../../product/engine/typescript/load-source-file.ts)
-and collects per-kind siblings and axes from [`grid-kinds.ts`](../../product/engine/typescript/grid-kinds.ts).
+The TypeScript path opens the TypeScript 7 API server through [`15_load-source-file.ts`](../../product/engine/typescript/15_load-source-file.ts)
+and collects per-kind siblings and axes from [`13_grid-kinds.ts`](../../product/engine/typescript/13_grid-kinds.ts).
 The file must be a regular file inside the current working folder, and symlinks resolving outside the repository and unsupported
 extensions are refused.
 
@@ -124,38 +128,61 @@ outlier made vertical is adding line breaks allowed, while preserving tokens and
 Write checks overlapping edits, the token stream and TS syntactic diagnostics in a temporary working copy in the same directory.
 After finishing up to 5 passes and the convergence check, it rechecks the original file's identity and bytes and
 renames exactly once. Failed intermediate passes never reach the original.
-The real engine is [`typescript/align.ts`](../../product/engine/typescript/align.ts); the existing `06` is a run shim.
+The real engine is [`12_align.ts`](../../product/engine/typescript/12_align.ts); the existing `07_align-tables.ts` is a run shim.
+
+### Engine file IDs and tool roles
+
+Every engine file has a unique contiguous numeric ID within its folder. IDs follow file order for navigation; they do not imply workflow steps, execution order or dependencies. The tool roles below describe current capabilities; helper files are implementation details, not pipeline stages.
+
+| Language | Tool role | Capability | Entry point |
+|---|---|---|---|
+| TypeScript | Import normalization | Normalize imports; `--layout-only` preserves import tokens | [`00_normalize-imports.ts`](../../product/engine/typescript/00_normalize-imports.ts) |
+| TypeScript | Member expansion | Expand compressed interface members in the separately authorized authoring workflow | [`01_expand-interface-members.ts`](../../product/engine/typescript/01_expand-interface-members.ts) |
+| TypeScript | Candidate grouping | Report coarse AST sibling groups by `SyntaxKind` | [`02_group-regions.ts`](../../product/engine/typescript/02_group-regions.ts) |
+| TypeScript | Type audit | Report type-uncertainty syntax | [`03_audit-type-uncertainty.ts`](../../product/engine/typescript/03_audit-type-uncertainty.ts) |
+| TypeScript | Optional-type audit | Report optional-type diagnostics | [`04_audit-optional-types.ts`](../../product/engine/typescript/04_audit-optional-types.ts) |
+| TypeScript | Measurement | Measure registered groups and planner targets without writing | [`05_measure-columns.ts`](../../product/engine/typescript/05_measure-columns.ts) |
+| TypeScript | Hover inspection | Query TypeScript LSP hovers | [`06_inspect-hover.mjs`](../../product/engine/typescript/06_inspect-hover.mjs) |
+| TypeScript | Alignment | Detect registered table kinds, align boundaries and apply the existing preservation gate | [`07_align-tables.ts`](../../product/engine/typescript/07_align-tables.ts) |
+| TypeScript | Condition authoring | Author homogeneous condition-chain layouts | [`08_wrap-conditions.ts`](../../product/engine/typescript/08_wrap-conditions.ts) |
+| TypeScript | Function-map check | Check or scaffold function maps | [`09_function-map.ts`](../../product/engine/typescript/09_function-map.ts) |
+| TypeScript | Shape observation | Collect development-only function-shape observations | [`10_observe-shapes.ts`](../../product/engine/typescript/10_observe-shapes.ts) |
+| Python | Candidate grouping | Report candidate groups from the AST-backed Python profile | [`00_group-regions.ts`](../../product/engine/python/00_group-regions.ts) |
+| Python | Measurement | Measure Python rows and target columns through the shared planner, read-only | [`01_measure-columns.ts`](../../product/engine/python/01_measure-columns.ts) |
+| Python | Alignment | Align the existing AST-owned Python row/profile shapes | [`02_align-tables.ts`](../../product/engine/python/02_align-tables.ts) |
+
+Measurement returns `MATCH`, `MISMATCH`, `UNMEASURABLE`, `NO_GROUPS` or `ERROR`; JSON mode uses the same result model and exits. `NO_GROUPS` means no registered measurable groups were emitted, not that the source has no unsupported candidates or has passed a coverage check. Measurement is read-only. Python prepares one AST/token analysis per source operation; syntax validation and the final write-path AST comparison remain separate gates. These tools do not change the public result schema, row floors, approvals or CLI support. Final candidate verification is pending.
 
 ## 3. Per-language engines and CLIs
 
 | Language | Engine and representative supported patterns | Parser comparison tool | Entry point |
 |---|---|---|---|
-| TypeScript | AST kind registry: declarations, type/interface/class/enum, case, assignment, call, guard, object, registration | bundled TypeScript 7 | [`typescript/06_align-tables.ts`](../../product/engine/typescript/06_align-tables.ts) |
-| Python | annotation/plain assignment, dataclass field, quoted dict row, bundle, assigned call | `python3` | [`python/06_align-tables.ts`](../../product/engine/python/06_align-tables.ts) |
+| TypeScript | AST kind registry: declarations, type/interface/class/enum, case, assignment, call, guard, object, registration | bundled TypeScript 7 | [`typescript/07_align-tables.ts`](../../product/engine/typescript/07_align-tables.ts) |
+| Python | annotation/plain assignment, dataclass field, quoted dict row, bundle, assigned call | `python3` | [`python/02_align-tables.ts`](../../product/engine/python/02_align-tables.ts) |
 
 A line profile is not a language parser. Nested expressions, closures, compound calls, continuations and control statements
 not in the support table are mostly excluded from candidates. The real allowed scope is set by each language's
-[`profile.ts`](../../product/engine/python/profile.ts) `profile` function and `columnAxes`. Line-engine profiles for
+[`03_profile.ts`](../../product/engine/python/03_profile.ts) `profile` function and `columnAxes`. Line-engine profiles for
 Java, Go, Rust, JavaScript, C, C++, Swift and Kotlin were removed on 2026-10-22 to match the four public languages.
 
 Read-only examples:
 
 ```bash
 # check mode: prints Result JSON without writing the file
-bun product/engine/typescript/06_align-tables.ts \
+bun product/engine/typescript/07_align-tables.ts \
   --file test/fixtures/table-kinds.ts --json
 
-bun product/engine/python/06_align-tables.ts \
+bun product/engine/python/02_align-tables.ts \
   --file test/fixtures/python/tables.aligned.py --json
 
 # the report currently accepts only TypeScript and Python
-bun product/engine/report.ts \
+bun product/engine/01_report.ts \
   --file test/fixtures/python/tables.aligned.py --baseline none --json
 ```
 
 ### Result JSON
 
-The envelope in [`result-json.ts`](../../product/engine/common/result-json.ts) is
+The envelope in [`24_result-json.ts`](../../product/engine/common/24_result-json.ts) is
 `{ schemaVersion: 1, tool: "boxbox", results: FileResult[] }`. Each result has `file`, `language`,
 `mode`, `summary`, `groups` and `parse`. Group states are `PASS`, `FIXABLE`, `SUGGEST` and
 `REFUSE`. `summary.misaligned` is the number of `FIXABLE` groups, not edited rows, and
@@ -174,13 +201,13 @@ Exit meanings differ per implementation.
 
 ## 4. Safety conditions and limits
 
-### What `06_align-tables.ts` guarantees
+### What the alignment entry points guarantee
 
 The line engine preserves the indentation and string/comment byte sequences of changed lines, and allows only horizontal
 whitespace changes that do not merge or split tokens. The TypeScript engine compares scanner tokens and comments.
 The test harness runs golden, trap, preservation, idempotence and, when parsers exist, diagnostic comparisons.
-The grounds are [`preservation.ts`](../../product/engine/common/preservation.ts),
-[`token-preservation.ts`](../../product/engine/typescript/token-preservation.ts) and
+The grounds are [`09_preservation.ts`](../../product/engine/common/09_preservation.ts),
+[`token-preservation.ts`](../../product/engine/typescript/16_token-preservation.ts) and
 [`lang-harness.ts`](../../test/lang-harness.ts).
 
 A write's parse `ok` means the output produced **the same normalized diagnostic list** as the original. It is not proof that
@@ -192,7 +219,7 @@ the CI required-parser contract. The TypeScript parser is a dependency and uses 
 
 The version probe is limited to 5 s, parsing to 60 s by default and at most, and output to 1 MiB per stream.
 Failures are passed on as exceptions and non-zero exits for now; normalizing the Result envelope for `--json` failures is follow-up work.
-TS and the shared line engine replace atomically after working-copy verification through [`safe-file.ts`](../../product/engine/common/safe-file.ts).
+TS and the shared line engine replace atomically after working-copy verification through [`12_safe-file.ts`](../../product/engine/common/12_safe-file.ts).
 They keep the mode, write only single-link regular files, and refuse when an external edit is detected right before commit.
 The lock only coordinates writers using this helper and does not mean a full kernel CAS.
 Symlinks in ancestor directories, preserving ACLs and extended attributes, and recovery from power loss were not verified.
@@ -201,16 +228,16 @@ The [REL2a verification record](reviews/2026-10-04-parser-fail-closed.md) keeps 
 
 ### Boundaries of other write tools
 
-The shared description of token preservation, parsers and Result JSON concerns the `06_align-tables.ts` path.
+The shared description of token preservation, parsers and Result JSON applies to both alignment entry points.
 These tools do not share the same safety gate.
 
 - [`00_normalize-imports.ts`](../../product/engine/typescript/00_normalize-imports.ts) splits and reorders imports
   and switches between one-line and vertical forms.
-- [`00_expand-interface-members.ts`](../../product/engine/typescript/00_expand-interface-members.ts) expands
+- [`01_expand-interface-members.ts`](../../product/engine/typescript/01_expand-interface-members.ts) expands
   compressed interface members into physical rows.
-- [`07_wrap-conditions.ts`](../../product/engine/typescript/07_wrap-conditions.ts) breaks condition chains across
+- [`08_wrap-conditions.ts`](../../product/engine/typescript/08_wrap-conditions.ts) breaks condition chains across
   lines and may add or change parentheses when needed.
-- [`08_function-map.ts`](../../product/engine/typescript/08_function-map.ts) `--scaffold` prints a skeleton with
+- [`09_function-map.ts`](../../product/engine/typescript/09_function-map.ts) `--scaffold` prints a skeleton with
   items to fill to standard output and writes no file. `--write` applies the alignment of an existing
   function-map comment table to the file.
 
@@ -218,7 +245,7 @@ Each of these tools needs its own narrow tests and follow-up verification, and c
 
 ## 5. Report, pattern DB and hooks
 
-[`development/tools/report.ts`](../../product/engine/report.ts) runs the matching aligner on one TypeScript or Python file
+[`product/engine/01_report.ts`](../../product/engine/01_report.ts) runs the matching aligner on one TypeScript or Python file
 and builds S1–S4 and alarms. After `--write` it runs check once more to see idempotence.
 
 - S1: reports the engine's token/string/comment preservation premise. The report does not recompute it independently.
@@ -245,7 +272,7 @@ post compares the report with the baseline, deletes the baseline and records to 
 These hooks only notify. `BOXBOX_HOOKS=off` and internal errors never block the edit. Tests simulate host JSON to check
 the baseline and output contract, but whether real Claude Code accepts the output was not measured.
 Also [`development/install.sh`](../../development/install.sh) does not install hook settings, so hooks cannot be considered active on a manual install path
-that is not a marketplace declaration. The release plugin's hooks (`plugin/hooks/hooks.json` → `lifecycle-hook.ts`) write
+that is not a marketplace declaration. The release plugin's hooks (`plugin/hooks/hooks.json` → `27_lifecycle-hook.ts`) write
 records to the host's plugin data folder instead of the project (2026-10-07).
 
 ## 6. Corpus learning and evaluation path
@@ -273,7 +300,7 @@ The current corpus path is connected through these steps.
    and checks alignment-result drift as a gate.
 
 This promotion does not write the preset convention/example/decision JSONL. The approved-example schema and checks are in
-[`common/examples.ts`](../../product/engine/common/examples.ts), but there is no execution path yet that automatically loads corpus
+[`common/17_examples.ts`](../../product/engine/common/17_examples.ts), but there is no execution path yet that automatically loads corpus
 verdicts into the approval DB or feeds them to the GUIDE hook. The separate public `guide` command serves verified DB examples. So the learning loop
 from verdicts to pattern approval and the automatic-fix policy is not closed.
 
@@ -286,11 +313,11 @@ working tree, not a product contract.
 
 ### TS function structure observation — OBS1
 
-[`09_observe-shapes.ts`](../../product/engine/typescript/09_observe-shapes.ts) is a development collector that observes
+[`10_observe-shapes.ts`](../../product/engine/typescript/10_observe-shapes.ts) is a development collector that observes
 named TypeScript function declarations in an explicit set of files. It is not connected to the integrated public CLI.
 
 ```bash
-bun product/engine/typescript/09_observe-shapes.ts --root /path/to/project --file src/a.ts --file src/b.ts
+bun product/engine/typescript/10_observe-shapes.ts --root /path/to/project --file src/a.ts --file src/b.ts
 ```
 
 The scope is given with `--file`, without automatic directory traversal or glob expansion. It is limited to at most 1,000 files
@@ -332,7 +359,7 @@ package after preflight. Matched directory identities, file hashes and link targ
 stale markers or user-owned replacements. The install script does not create formatters, the project `.boxbox/`, hook
 settings or an integrated CLI executable.
 
-Engine-internal TypeScript imports use `@/`. The rules JSON import in `typescript/layout-policy.ts` stays relative
+Engine-internal TypeScript imports use `@/`. The rules JSON import in `typescript/14_layout-policy.ts` stays relative
 because its target is outside `product/engine/`; three `new URL(..., import.meta.url)` runtime paths likewise retain
 file-relative semantics. Copied-skill checks executed TypeScript, JSON and YAML outside repository ancestry.
 The separate `dist/cli` Node package was run outside the repository after npm pack/offline install, with a PATH without Bun.

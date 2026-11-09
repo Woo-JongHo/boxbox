@@ -1,0 +1,31 @@
+{
+  "candidateId": "58071284368e7e9b",
+  "argv": [
+    "bun",
+    "run",
+    "check"
+  ],
+  "cwd": "<repository-root>",
+  "explicitEnvironment": {
+    "BOXBOX_REQUIRE_PARSERS": "1"
+  },
+  "exitCode": 0,
+  "durationSeconds": 340.972,
+  "tests": {
+    "passed": "735",
+    "failed": "0",
+    "expectations": "4354",
+    "total": "735",
+    "files": "78",
+    "duration": "340.18s"
+  },
+  "inputFiles": 1465,
+  "inputDrift": [],
+  "sourceInputsMatchCandidate": true,
+  "logSha256": "959c55d6d4b77b62739981fcf698888e0e02d7e02ba904993982678daf4a4cca",
+  "receiptSha256": "9ad5375771b0f8cce2613ab6a107de7255e906cc6e9b7f82196ab229daab6dc9",
+  "pythonMutationOutcome": [
+    "python mutation outcomes: valid-aligned=505 invalid-aligned=0 invalid-rejected=495 total=1000"
+  ],
+  "nativeHostMatrix": "not run"
+}

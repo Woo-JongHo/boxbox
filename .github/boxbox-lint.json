@@ -1,8 +1,8 @@
 {
 	"schemaVersion": 1,
 	"checker": {
-		"version": "0.2.5",
-		"commit": "9a0406e27fb43241d71f9e5a8815da7e4301e1b1"
+		"version": "0.2.7",
+		"commit": "3f92bc9e42afae6eec60763d2a0f8fedc5369559"
 	},
 	"exclude": [
 		"plugin/**",

@@ -5,6 +5,9 @@ initial setup and environment diagnostics. `format` aligns approved tables direc
 when configured, it runs before BoxBox in both format and dry-run, and failures stop the operation. Exact human approval proof, parsing, preservation
 and a two-run byte fixed point must all pass before the original file is replaced.
 
+Python inspection and formatting require a runnable `python3`. Syntax validation sends source to isolated CPython
+over stdin, so that parser step does not need a temporary source file or directory.
+
 For horizontal whitespace only, use `align --file path.py --dry-run --json` to inspect line-by-line edits, then
 `align --file path.py --json` to apply them. Align never runs an external formatter and preserves newlines,
 indentation and non-layout content. `guide --file new/path.py --authoring --json` returns scoped approved guidance

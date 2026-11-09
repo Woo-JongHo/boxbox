@@ -1,6 +1,12 @@
 # BoxBox — Design
 
-**Reading note (2026-10-22):** This draft includes historical implementation notes and proposed commands. Use the [maintainer index](README.md), [current inspection process](inspection-process.md) and [storage contract](storage.md) for current behavior. Public `check` now validates the input's syntax; it does not run the formatter or the pre/post-write equivalence and fixed-point pipeline. Raw parser equivalence is not zero-error validation, and the approved TypeScript rule has a two-row exception. The original implementation-status assertions below, including "not implemented yet" and the section 10 table, describe the historical design snapshot rather than the current capability map.
+**Reading note (updated 2026-11-09):** This draft includes historical implementation notes and proposed commands.
+Use the [maintainer index](README.md), [current inspection process](inspection-process.md) and [storage contract](storage.md)
+for current behavior. `check --source` validates original-source syntax and tables without a formatter or working copy.
+Default `check` with a configured formatter verifies the formatter-then-BoxBox canonical result through the guarded
+working-copy pipeline; it needs staging write permission. Raw parser equivalence is not zero-error validation, and the
+approved TypeScript declaration rule retains its two-row exception. Original "not implemented yet" assertions and the
+section 10 table describe the historical design snapshot rather than the current capability map.
 
 Status: Draft
 Date: 2026-09-28
@@ -68,7 +74,8 @@ preset rules or enable automatic refactoring.
 Preview is shared: it presents a proposal without modifying the target. The standalone `align` candidate executes no
 external formatter and refuses changes outside its boundary. The existing `format` pipeline remains a distinct operation
 for projects that intend the optional formatter step. Explicit user requests select the workflow; an ambiguous fix starts
-with inspection and clarification when the change scope matters. Multi-file authorization is executed one file at a time.
+with inspection and clarification when the change scope matters. Agent authoring proceeds one file at a time;
+engine Check and Format can select multiple files, with format atomicity per file rather than per project.
 See [the user contract](../user/modes.md) and [AUTHOR1 acceptance](plan.md#active-task--author1-matrix-first-workflows).
 
 ### What BoxBox is not

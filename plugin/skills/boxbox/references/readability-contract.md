@@ -30,7 +30,7 @@ Therefore the longest code is not always the alignment basis. First decide wheth
 - **Column**: a repeated syntax boundary such as `:`, `( )`, `{ }`, `< >`, `=>`, `from`, `= await`, `//`.
 - **Cell**: the actual identifier, type, value, statement or note between columns.
 - **Sub-table**: an inner grid re-decomposed into name, separator and type when a repeated structure such as `:` appears again inside a cell.
-- **Alignment policy**: align contiguous repeated blocks of three or more comparable rows at minimum width. User-confirmed exceptions: `=` declaration tables and imports align from two rows. Other two-row groups are reported as pairs and never fixed automatically. Methods of a public Port split by JSDoc or different lifecycle responsibilities are not merged into one table. Preserve the `import`, `:`, `=>` and `case` axes of a reference file accepted by the user. The inner width of `( )` in a repeated function table is set by the actual longest argument, not by existing spaces; only short values are centered within that minimum width.
+- **Alignment policy**: align contiguous repeated blocks of three or more comparable rows at minimum width. User-confirmed exceptions: `=` declaration tables and imports align from two rows. Other two-row groups are reported as pairs and never fixed automatically. Methods of a public Port split by JSDoc or different lifecycle responsibilities are not merged into one table. Per-field JSDoc does not by itself split same-role data fields: a required data record keeps its fields in one table. This authoring principle also applies beyond the implemented detector; record unsupported regions separately. Preserve the `import`, `:`, `=>` and `case` axes of a reference file accepted by the user. The inner width of `( )` in a repeated function table is set by the actual longest argument, not by existing spaces; only short values are centered within that minimum width.
 
 The public B-layout Align path changes horizontal layout only. It preserves non-whitespace tokens, comments, identifiers, their
 order, leading indentation, physical line count and the structural TypeScript AST. It may align an existing function
@@ -68,6 +68,16 @@ then compute minimum widths from the cells in that region. A different expressio
   missing comma. Families are ordered by source: the first uses unsuffixed axes and later families use suffixes `2`,
   `3`, and so on. Only a three-or-more ordinary one-line explicit family exposes `property-value`. Blank lines and
   interstitial comments split the comparison region.
+- **Function parameters:** an already vertical `FunctionDeclaration` list with at least three contiguous one-line
+  identifier parameters is a `vertical-function-parameters` table. Typed rows share `parameter-colon`, defaulted rows
+  share `parameter-equals`, and existing separators share `parameter-comma`. Each axis needs two occurrences within
+  the three-or-more-row table; two defaulted rows do not create a two-row table exception. The last parameter keeps
+  its original comma presence. Optional names and generic declarations keep their syntax. Destructuring, rest,
+  parameter modifiers, comments, multiline types/defaults, blank lines and shared opening/closing lines exclude the
+  whole list rather than exposing a supported subset. A declaration spanning at least three distinct parameter rows
+  reports that exclusion as `REFUSE` with its original parameter range; shorter and single-line lists are not candidates.
+  Arrow functions and methods are outside this kind. Parameter
+  descriptions map to `DESCRIBE`; detection and guidance do not grant public write approval.
 - **Logical chains:** an existing multiline homogeneous `||` or `&&` chain uses `operator | one space | optional ! |
   operand`. The operator cell is two characters and the negation cell is either one `!` or empty. `!=` and `!==` are
   indivisible comparison operators, and `!!value` stays opaque. A virtual first-row operator/negation prefix is an
@@ -127,10 +137,10 @@ still require their own proof. Report checked columns and unsupported regions se
 26. Judge each foreign element as one of `required domain information`, `boundary-only information`, `implementation detail`, `duplicate expression`. Keep boundary information near the boundary, implementation details inside, and remove duplicate expressions.
 27. Do not accept a structural change just because it looks shorter. Accept it as simplification only when the base form actually became more uniform and behavior, type safety and layer responsibility were preserved.
 28. With `exactOptionalPropertyTypes` off, `property?: T` also accepts an explicit `property: undefined`. Inspect property omission and explicit `undefined` at call sites separately, and unify on omission when they mean the same absence. Keep `| undefined` as an explicit contract only when a different meaning is confirmed.
-29. For optional tightening, first run `audit-optional-types.ts` as a read-only migration gate. The default run requires zero errors, and `--max-errors <current baseline>` fails on any increase. `--file <target file>` keeps the global verdict while separately reporting line, column, error code and diagnostic message for that file. Enable it in `tsconfig.json` only after confirming zero total errors and passing related behavior tests; never pass the gate by appending `| undefined` wholesale.
-30. The population for the uncertainty audit is extracted from the TypeScript AST by `audit-type-uncertainty.ts --file <target file>`. It reports optional properties, parameters, methods, tuples and types, `null`, `undefined`, non-null assertions, definite assignments, `as` and angle-bracket assertions as distinct kinds. Logical negation and the conditional operator are not listed; the output is not an automatic removal list, and each item is judged from definitions, callers and tests.
-31. A feature implementation file may carry a function map at the top (`GROUP | FUNCTION | INPUT | RETURN | CALLS | ROLE`). FUNCTION maps 1:1 to declarations in the file, the INPUT count must match the parameters, and names listed in CALLS must exist in the file. Drift between map and code is locked by the `08_function-map.ts` check. GROUP and ROLE follow the sections and roles of the reading flow. The repository-wide flow summary is still owned by audit documents under `docs/`.
-32. Public Port and Domain contracts default to compact TypeScript notation. Do not add role comments to a method list that mixes JSDoc, optional capabilities and lifecycle responsibilities to create a fake table, and do not pad type internals to align the closing `>` of `Promise< >`.
+29. For optional tightening, first run `04_audit-optional-types.ts` as a read-only migration gate. The default run requires zero errors, and `--max-errors <current baseline>` fails on any increase. `--file <target file>` keeps the global verdict while separately reporting line, column, error code and diagnostic message for that file. Enable it in `tsconfig.json` only after confirming zero total errors and passing related behavior tests; never pass the gate by appending `| undefined` wholesale.
+30. The population for the uncertainty audit is extracted from the TypeScript AST by `03_audit-type-uncertainty.ts --file <target file>`. It reports optional properties, parameters, methods, tuples and types, `null`, `undefined`, non-null assertions, definite assignments, `as` and angle-bracket assertions as distinct kinds. Logical negation and the conditional operator are not listed; the output is not an automatic removal list, and each item is judged from definitions, callers and tests.
+31. A feature implementation file may carry a function map at the top (`GROUP | FUNCTION | INPUT | RETURN | CALLS | ROLE`). FUNCTION maps 1:1 to declarations in the file, the INPUT count must match the parameters, and names listed in CALLS must exist in the file. Drift between map and code is locked by the `09_function-map.ts` check. GROUP and ROLE follow the sections and roles of the reading flow. The repository-wide flow summary is still owned by audit documents under `docs/`.
+32. Public Port and Domain contracts default to compact TypeScript notation. Do not add role comments to a method list that mixes JSDoc, optional capabilities and lifecycle responsibilities to create a fake table, and do not pad type internals to align the closing `>` of `Promise< >`. This exception does not apply merely because an ordinary data field has JSDoc; same-role data fields retain their common name, colon and type columns.
 33. In a same-role object array, each object is one row. When omitting an optional property is merely a presentational default, normalize every row to the same property cells and align `{`, each `:`, each `,` and `}` to the actual longest value. When the omission itself carries domain meaning, do not overwrite it with an explicit value; split it into a separate table.
 34. An object-based column specification and the generation of data rows for those columns are independent tables. Do not nest the two tables inside complex call arguments; split each into a named local value and keep the call site minimal, as in `{ columns, rows }`.
 35. The terminating `;` is no longer attached as an exception. Within a table, align its column to the actual longest value like any other column. One-line execution blocks where `}` immediately follows `;` (rule 9) remain a separate case and are not overridden by this rule.
@@ -166,7 +176,7 @@ Proceed to the next step only after the current one passes. Do not adjust a late
 
 ## Authoring axis contract — the single basis for prompts and checks
 
-Code is written **from the moment of authoring** with the axis columns below already aligned. Before completion, the checker applies a second lock. This table maps 1:1 to the `KIND_AXES` registry in `grid-kinds.ts`; when document examples and checker output differ, **the checker wins**.
+Code is written **from the moment of authoring** with the axis columns below already aligned. Before completion, the checker applies a second lock. This table maps 1:1 to the `KIND_AXES` registry in `13_grid-kinds.ts`. The registry owns implemented axis identifiers; the accepted readability contract and the user's confirmed reference own the intended layout. When they differ, investigate detector coverage and rule scope. Zero registered groups and reviewer agreement do not override an accepted reference.
 
 Each newly supported shape or axis set has a new kind and suppresses any overlapping legacy region. Detection never
 widens an older approval key: approval remains exact to kind and ordered axes. Public whole-file writes are denied when
@@ -175,8 +185,11 @@ an applicable changed group lacks approval, even when a legacy kind covering nea
 - **Gap axis** — leave at least one space before the token. Within a table, pad with spaces up to the actual longest value to align the column.
 - **Insert axis** — preserve existing TypeScript conventions. Do not pry apart attached tokens (`)`, `):`, `":`); padding goes outside.
 - A table normally needs three or more contiguous same-role rows, with the documented declaration/import pair exceptions.
-  The scoped return-guard exception is defined in [column-sharing regions](#column-sharing-regions). Other kinds still
-  stop at blank lines, comments and JSDoc. Conditional-type `:`, `for` header `;`, empty statements and unsupported one-line
+  The scoped return-guard exception is defined in [column-sharing regions](#column-sharing-regions). The bounded
+  `documented-data-members` kind also permits attached per-field JSDoc in an interface made entirely of required,
+  identifier-named data properties on their own physical lines, with JSDoc on preceding comment lines. Blank paragraphs, ordinary comments and different readonly modifiers split its runs.
+  Methods, optional capabilities, explicitly callable types, nested object/mapped types, classes and type literals retain their existing
+  boundaries. Other kinds stop at blank lines, comments and JSDoc. Conditional-type `:`, `for` header `;`, empty statements and unsupported one-line
   execution blocks are not alignment targets.
 - Axis names use the checker registry identifiers verbatim. Core names include `colon` (`:` after a name), `equals` (`=`), `semicolon` (`;`), `comma` (`,`), `comment` (trailing `//`), `open-paren` (`(`), `close-paren` (`)`), `case-colon` (case label `:`), `call-paren` (first call `(` in a case row), `subject-close-paren` (call-statement subject `)`), `matcher-dot` (right-hand matcher `.`), `matcher-open-paren` / `matcher-close-paren` (matcher argument cell), `return-tail` (start of a bare `return;`), `value` (expression start), and `open-brace` / `close-brace` (object row `{ }`). New-kind identifiers appear verbatim in the table below.
 
@@ -195,6 +208,7 @@ an applicable changed group lacks approval, even when a legacy kind covering nea
 | type-alias | `=` , `;` | `//` |
 | method-signature · class-method | — | `(` , `)` , return `:` , `//` |
 | interface-members · class-members · type-members (`type X = { ... }`) | `:` , `=` , `;` | `//` |
+| documented-data-members (bounded required interface data fields with attached JSDoc) | `colon`, `member-type` | `semicolon`, `comment` |
 | enum-member | `=` , `,` | `//` |
 | case-clause | — | case `:` |
 | object-rows (`{i}` per property position) | property start `{i}` , `:{i}` , `value{i}` start , `,{i}` , `}` | `{` , tail `tail` (`,` `;` `)` `as const`) |
@@ -243,9 +257,10 @@ Insert-axis conventions — things the checker never reverts, however the code i
 Two-point lock:
 
 1. **Authoring time (prompt)** — when an LLM or a person writes code, they write it in the form of the table and examples above. Agent definitions use SKILL.md as their manual, so this section is the prompt.
-2. **Completion time (check)** — every changed file passes the selected import check (`00_normalize-imports.ts
-   --layout-only` for B-layout; the default full normalizer for an authorized Write/Refactor) and
-   `06_align-tables.ts --file` (`misaligned=0`). If you want a form that cannot pass both checks, change this contract first.
+2. **Completion time (check)** — every changed TypeScript file passes the selected import check
+   (`00_normalize-imports.ts --layout-only` for B-layout; the default full normalizer for an authorized
+   Write/Refactor). Every changed TypeScript or Python file passes its language aligner
+   (`typescript/07_align-tables.ts --file` or `python/02_align-tables.ts --file`, `misaligned=0`). If you want a form that cannot pass both checks, change this contract first.
 
 ## Grid-first authoring
 

@@ -1,16 +1,10 @@
-import      { lstatSync, readdirSync, readFileSync, realpathSync } from "node:fs" ;
-import      {
-              dirname                 ,
-              extname                 ,
-              isAbsolute              ,
-              relative                ,
-              resolve                 ,
-                                        } from "node:path"                       ;
-import      { SyntaxKind                } from "typescript/unstable/ast"         ;
-import      { createScanner             } from "typescript/unstable/ast/scanner" ;
+import      { existsSync, lstatSync, readdirSync, readFileSync, realpathSync } from "node:fs"                         ;
+import      { dirname, extname, isAbsolute, relative, resolve,               } from "node:path"                       ;
+import      { SyntaxKind                                                     } from "typescript/unstable/ast"         ;
+import      { createScanner                                                  } from "typescript/unstable/ast/scanner" ;
 
-const ROOT                       = resolve(import.meta.dir, "../..")                                                 ;
-const ENGINE_RELATIVE_EXCEPTIONS = new Set(["typescript/layout-policy.ts\0../../rules/base/typescript-layout.json"]) ;
+const ROOT                       = resolve(import.meta.dir, "../..")                                                    ;
+const ENGINE_RELATIVE_EXCEPTIONS = new Set(["typescript/14_layout-policy.ts\0../../rules/base/typescript-layout.json"]) ;
 
 export function containedRelative(value: string, absolute = isAbsolute(value)): boolean {
 	if (absolute) return false;
@@ -91,8 +85,51 @@ export function layoutViolations(root = ROOT): readonly string[] {
 	return failures;
 }
 
+/** Checks flat engine filenames and contiguous per-directory file IDs; absent and empty engines are valid. */
+export function engineNamingViolations(root = ROOT): readonly string[] {
+	const engine = resolve(root, "product/engine");
+	if (!existsSync(engine)) return [];
+
+	const failures: string[] = []                                                        ;
+	const folders            = new Set(["common", "typescript", "python", "structured"]) ;
+	const ids                = new Map<string, Set<number>>()                            ;
+
+	for (const entry of readdirSync(engine, { recursive: true, withFileTypes: true })) {
+		const path  = resolve(entry.parentPath, entry.name)      ;
+		const label = relative(root, path).replaceAll("\\", "/") ;
+
+		if (entry.isDirectory()) {
+			const folder = relative(engine, path).replaceAll("\\", "/");
+			if (!folders.has(folder)) failures.push(`${label}: unexpected engine directory`);
+			continue;
+		}
+		if (!entry.isFile()) continue;
+
+		const match = /^(\d{2})_[a-z][a-z0-9]*(?:-[a-z0-9]+)*\.(?:ts|mjs)$/u.exec(entry.name);
+		if (!match) {
+			failures.push(`${label}: invalid engine filename; expected NN_descriptive-name.ts or .mjs`);
+			continue;
+		}
+
+		const directory = relative(root, entry.parentPath).replaceAll("\\", "/") ;
+		const group     = ids.get(directory) ?? new Set<number>()                ;
+		const id        = Number(match[1])                                       ;
+		if (group.has(id)) failures.push(`${directory}: duplicate engine filename ID ${match[1]}`);
+
+		group.add(id);
+		ids.set(directory, group);
+	}
+
+	for (const [directory, group] of ids) {
+		const ordered = [...group].sort((left, right) => left - right);
+		if (ordered.some((id, index) => id !== index)) failures.push(`${directory}: engine filename IDs must be contiguous from 00`);
+	}
+
+	return failures;
+}
+
 if (import.meta.main) {
-	const failures = layoutViolations();
+	const failures = [...layoutViolations(), ...engineNamingViolations()];
 	for (const failure of failures) console.error(failure);
 	console.log(`product dependencies: ${failures.length === 0 ? "PASS" : "FAIL"}`);
 	process.exitCode = failures.length ? 1 : 0;

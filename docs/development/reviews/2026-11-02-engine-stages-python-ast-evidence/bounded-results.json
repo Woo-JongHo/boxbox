@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-02",
+  "candidateState": "unfrozen; verifying",
+  "scope": "Numbered TypeScript and Python stage folders, read-only stage 04 measurement, Python AST/token source analysis, invalid UTF-8 formatter preflight, and current source-path references.",
+  "implementationReportedFocusedResults": [
+    {
+      "area": "Python AST source analysis and preservation",
+      "state": "passed for the reported focused scope; final-candidate rerun pending",
+      "suites": 8,
+      "passed": 122,
+      "failed": 0,
+      "assertions": 675,
+      "scopeNotes": "Includes source analysis protocol, parser failures, preservation, a write race, AST-structure bypass, and formatter preflight. The private worker logs retain the per-cycle detail."
+    },
+    {
+      "area": "Stage 04 column measurement",
+      "state": "passed for the reported focused scope; final-candidate rerun pending",
+      "suites": 7,
+      "passed": 126,
+      "failed": 0,
+      "assertions": 710,
+      "scopeNotes": "Six product changes were checked before final test additions; a seventh test-only cycle added exact current/target columns and passed 7/0 with 35 assertions. The full candidate was not checked or packaged."
+    },
+    {
+      "area": "Invalid UTF-8 formatter reproduction and guard",
+      "state": "passed for the focused reproduction and fix tests",
+      "beforeFix": {
+        "test": "Python formatter can replace invalid initial UTF-8 before validation (reproduction)",
+        "passed": 1,
+        "failed": 0,
+        "assertions": 2
+      },
+      "afterFix": {
+        "test": "Python refuses invalid initial UTF-8 before preview or formatter execution",
+        "passed": 1,
+        "failed": 0,
+        "assertions": 6
+      },
+      "scopeNotes": "This proves the formatter could transform invalid initial bytes before validation in the test reproduction; it does not claim that the original user file was written. The fixed regression checks refusal before preview and formatter invocation."
+    }
+  ],
+  "pending": [
+    "Frozen-candidate full repository check and focused mutation rerun",
+    "Final CLI/package or installed-artifact verification",
+    "Independent Sonnet review result and required fixed-model Opus final audit",
+    "Final source hashes and candidate identity"
+  ],
+  "limits": [
+    "No public preset/rule approval or public CLI/schema/version/support change is included.",
+    "NO_GROUPS is absence of registered measurable groups, not a source coverage pass.",
+    "Generated plugin payload contains no moved engine path references and was not regenerated."
+  ]
+}

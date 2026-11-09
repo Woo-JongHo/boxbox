@@ -19,13 +19,14 @@ manifest.version = (await Bun.file(resolve(root, "package.json")).json() as { ve
 await Bun.write(resolve(output, "package.json"), JSON.stringify(manifest, null, "\t") + "\n");
 
 const build = await Bun.build({
-	entrypoints : [resolve(root, "product/engine/internal-runner.ts")] ,
-	outdir      : resolve(output, "dist")                              ,
-	target      : "node"                                               ,
-	format      : "esm"                                                ,
-	external    : ["typescript", "typescript/*"]                       ,
-	minify      : false                                                ,
-	sourcemap   : "none"                                               ,
+	entrypoints : [resolve(root, "product/engine/04_internal-runner.ts")] ,
+	outdir      : resolve(output, "dist")                                 ,
+	target      : "node"                                                  ,
+	format      : "esm"                                                   ,
+	external    : ["typescript", "typescript/*"]                          ,
+	minify      : false                                                   ,
+	naming      : "internal-runner.js"                                    ,
+	sourcemap   : "none"                                                  ,
 });
 if (!build.success) throw new Error(build.logs.map(log => log.message).join("\n"));
 

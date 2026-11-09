@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Corpus census (plan M1.5 D2): runs the aligners over the fetched corpus and collapses every detected table
- * into a signature type — the pattern identity of product/engine/common/signature.ts (language, container context,
+ * into a signature type — the pattern identity of product/engine/common/02_signature.ts (language, container context,
  * kind, ordered axis IDs, nesting depth); result states are counted per type, not keyed (design §4.1). Thousands of tables collapse into a few hundred types, ranked by frequency × risk so the judged
  * representatives of D3 sample the tables that matter first. The report is written to
  * ~/.cache/boxbox/corpus/signatures.json; third-party source never enters this repository.
@@ -25,17 +25,17 @@ import      { createHash                   } from "node:crypto"                 
 import      { homedir                      } from "node:os"                         ;
 import      { join, relative               } from "node:path"                       ;
 import      { API                          } from "typescript/unstable/async"       ;
-import      { alignSource                  } from "@/common/table-engine.ts"        ;
-import      { PYTHON_ALIGNER               } from "@/python/profile.ts"             ;
+import      { alignSource                  } from "@/common/06_table-engine.ts"     ;
+import      { PYTHON_ALIGNER               } from "@/python/03_profile.ts"          ;
 import      {
               indentDepth                ,
               lookupKeyOf                ,
               signatureOf                ,
               SIGNATURE_VERSION          ,
-                                           } from "@/common/signature.ts"           ;
-import      { censusGroups, groupPreserved } from "@/typescript/06_align-tables.ts" ;
+                                           } from "@/common/02_signature.ts"        ;
+import      { censusGroups, groupPreserved } from "@/typescript/07_align-tables.ts" ;
 
-const ROOT  = join(import.meta.dir, "..", "..")             ;
+const ROOT  = join(import.meta.dir, "..", ".."            ) ;
 const CACHE = join(homedir(), ".cache", "boxbox", "corpus") ;
 
 export interface CorpusSource {
@@ -182,17 +182,17 @@ const sha256 = (value: string): string => `sha256:${createHash("sha256").update(
 
 export function observationOf(row: CensusRow, source: CorpusSource): CorpusObservation {
 	const value = {
-		schemaVersion : 1 as const,
-		lookupKey     : row.lookupKey,
-		signature     : row.signature,
-		state         : row.state,
-		rows          : row.rows,
-		edits         : row.edits,
-		source        : { id: source.id, repository: source.repository, commit: source.commit, license: source.license },
-		file          : row.spot.file,
-		startLine     : row.spot.startLine,
-		endLine       : row.spot.endLine,
-		sourceHash    : row.sourceHash,
+		schemaVersion : 1 as const                                                                                       ,
+		lookupKey     : row.lookupKey                                                                                    ,
+		signature     : row.signature                                                                                    ,
+		state         : row.state                                                                                        ,
+		rows          : row.rows                                                                                         ,
+		edits         : row.edits                                                                                        ,
+		source        : { id: source.id, repository: source.repository, commit: source.commit, license: source.license } ,
+		file          : row.spot.file                                                                                    ,
+		startLine     : row.spot.startLine                                                                               ,
+		endLine       : row.spot.endLine                                                                                 ,
+		sourceHash    : row.sourceHash                                                                                   ,
 	};
 	return { ...value, id: sha256(JSON.stringify(value)) };
 }
@@ -245,15 +245,15 @@ async function censusSource(source: CorpusSource, maxFiles: number): Promise<Cen
 							const safe  = groupPreserved(ast, group)                                      ;
 							const state = group.edits.length === 0 ? "PASS" : safe ? "FIXABLE" : "REFUSE" ;
 							batchRows.push({
-								signature  : signatureOf(source.language, group.context, group.kind, group.axes, group.depth),
-								lookupKey  : lookupKeyOf(source.language, group.context, group.kind, group.axes),
-								language   : source.language   ,
-								kind       : group.kind        ,
-								state      : state             ,
-								rows       : group.rowCount    ,
-								edits      : group.edits.length,
-								spot       : { source: source.id, file: label(file), startLine: group.startLine, endLine: group.endLine, rows: group.rowCount },
-								sourceHash : sha256(text),
+								signature  : signatureOf(source.language, group.context, group.kind, group.axes, group.depth)                                   ,
+								lookupKey  : lookupKeyOf(source.language, group.context, group.kind, group.axes)                                                ,
+								language   : source.language                                                                                                    ,
+								kind       : group.kind                                                                                                         ,
+								state      : state                                                                                                              ,
+								rows       : group.rowCount                                                                                                     ,
+								edits      : group.edits.length                                                                                                 ,
+								spot       : { source: source.id, file: label(file), startLine: group.startLine, endLine: group.endLine, rows: group.rowCount } ,
+								sourceHash : sha256(text)                                                                                                       ,
 							});
 						}
 					}
