@@ -331,11 +331,11 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 		let editPath   = typeof edited === "string" ? resolve(editBase, edited) : root             ;
 		try { editPath = realpathSync(editPath); }
 		catch { /* Deleted or unavailable edit targets retain their lexical scope; inspection is unchanged. */ }
-		const editRelative = relative(root, editPath)                                                                                                                                                        ;
-		const outside      = editRelative === ".." || editRelative.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`) || isAbsolute(editRelative)                                                  ;
-		const scope        = outside ? " Edited file is outside the session project; only session changes were checked." : ""                                                                                ;
-		const attention    = checked.filter(item => item.result.summary.misaligned || item.result.summary.refused).map(item => item.file)                                                                     ;
-		const names        = attention.length ? ` attention=${attention.slice(0, 3).join(",")}${attention.length > 3 ? `,+${attention.length - 3}` : ""};` : ""                                             ;
+		const editRelative = relative(root, editPath)                                                                                                                                                                ;
+		const outside      = editRelative === ".." || editRelative.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`) || isAbsolute(editRelative)                                                          ;
+		const scope        = outside ? " Edited file is outside the session project; only session changes were checked." : ""                                                                                        ;
+		const attention    = checked.filter(item => item.result.summary.misaligned || item.result.summary.refused).map(item => item.file)                                                                            ;
+		const names        = attention.length ? ` attention=${attention.slice(0, 3).join(",")}${attention.length > 3 ? `,+${attention.length - 3}` : ""};` : ""                                                      ;
 		const reason       = `[boxbox] ${event}: ${state}; checked=${checked.length}, groups=${groups}, filesWithGroups=${filesWithGroups}. ${receipt} mode=${setting};${names}${alignmentMessage(aligned)}${scope}` ;
 
 		// Unsupported files are only reported. Stop blocks at most once per session: this breaks endless continuation

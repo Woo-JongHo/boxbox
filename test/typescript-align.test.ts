@@ -100,7 +100,7 @@ describe("typescript literal array row alignment", () => {
 	});
 
 	slowTest("aligns existing commas in a multiline literal array without changing its lines or tokens", () => {
-		const workspace = mkdtempSync(join(root, ".boxbox", "typescript-align-")) ;
+		const workspace = mkdtempSync (join(root, ".boxbox", "typescript-align-")                  ) ;
 		const target    = join        (workspace, "literal-array.ts"                               ) ;
 		const fixture   = readFileSync(resolve(root, "test/fixtures/literal-array-rows.ts"), "utf8") ;
 		workspaces.push(workspace);
@@ -121,7 +121,7 @@ describe("typescript literal array row alignment", () => {
 	});
 
 	slowTest("keeps missing commas, compact arrays, mixed arrays and shared bracket rows out of the new kind", () => {
-		const workspace = mkdtempSync(join(root, ".boxbox", "typescript-align-")) ;
+		const workspace = mkdtempSync (join(root, ".boxbox", "typescript-align-")                  ) ;
 		const target    = join        (workspace, "literal-array.ts"                               ) ;
 		const fixture   = readFileSync(resolve(root, "test/fixtures/literal-array-rows.ts"), "utf8") ;
 		workspaces.push(workspace);
@@ -153,7 +153,7 @@ describe("typescript literal array row alignment", () => {
 
 describe("typescript whitespace-only guarantee", () => {
 	slowTest("the fixture aligns with an identical token stream and no refused table", () => {
-		const workspace = mkdtempSync(join(root, ".boxbox", "typescript-align-")) ;
+		const workspace = mkdtempSync (join(root, ".boxbox", "typescript-align-")           ) ;
 		const target    = join        (workspace, "table-kinds.ts"                          ) ;
 		const before    = readFileSync(resolve(root, "test/fixtures/table-kinds.ts"), "utf8") ;
 		workspaces.push(workspace);

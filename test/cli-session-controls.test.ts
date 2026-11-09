@@ -121,8 +121,8 @@ process.exitCode=await runCli(["update","--check","--json"],process.cwd());
 		const result        = { status: processResult.exitCode, stdout: processResult.stdout.toString() }                                                                        ;
 
 		expect(result.status                          ).toBe         (2                                                                                   ) ;
-		expect(JSON.parse(result.stdout)              ).toMatchObject({ command: "update", ok: false, error: { code: "UPDATE_CHECK_FAILED" } }) ;
-		expect(existsSync(join(value.root, ".boxbox"))).toBe         (false                                                                    ) ;
+		expect(JSON.parse(result.stdout)              ).toMatchObject({ command: "update", ok: false, error: { code: "UPDATE_CHECK_FAILED" } }            ) ;
+		expect(existsSync(join(value.root, ".boxbox"))).toBe         (false                                                                               ) ;
 	});
 
 	test("SessionStart passes the actual CLI version to its update-advice dependency", () => {

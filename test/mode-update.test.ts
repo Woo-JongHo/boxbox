@@ -96,9 +96,9 @@ describe("update check", () => {
 	});
 
 	test("an explicit offline update check returns a visible non-success result", () => {
-		const execute = (() => ({ status: 1, stdout: "", stderr: "offline" })) as unknown as typeof spawnSync ;
-		const lines: string[] = []                                                                         ;
-		const original = console.log                                                                       ;
+		const execute         = (() => ({ status: 1, stdout: "", stderr: "offline" })) as unknown as typeof spawnSync ;
+		const lines: string[] = []                                                                                    ;
+		const original        = console.log                                                                           ;
 		console.log = value => { lines.push(String(value)); };
 		try {
 			expect(runUpdate(["--check", "--json"], "0.2.7", execute)).toBe(2);
@@ -193,9 +193,9 @@ describe("update check", () => {
 		process.env.NO_COLOR = "1";
 		const notice  = updateNotice("0.2.5", { probe, force: true });
 		expect(painted?.user  )    .toContain("\x1b[1m\x1b[36mnpx boxbox-plugin") ;
-		expect(notice?.user   )    .toContain("v0.2.5  →  v0.2.6"             ) ;
-		expect(notice?.user   ).not.toContain("\x1b["                         ) ;
-		expect(notice?.context)    .toContain("npx boxbox-plugin"              ) ;
+		expect(notice?.user   )    .toContain("v0.2.5  →  v0.2.6"               ) ;
+		expect(notice?.user   ).not.toContain("\x1b["                           ) ;
+		expect(notice?.context)    .toContain("npx boxbox-plugin"               ) ;
 
 		const snooze = spawnSync(process.execPath, [CLI, "update", "--snooze", "3", "--json"], { encoding: "utf8", env: process.env });
 		expect(JSON.parse(snooze.stdout).ok                   ).toBe(true)                 ;
@@ -403,7 +403,7 @@ catch (error) { console.error(error.message); process.exitCode = 2; }
 				const run = spawnSync(process.execPath, [harness], {
 					encoding: "utf8", env: { ...process.env, XDG_DATA_HOME: data, LOCALAPPDATA: data, CLAUDE_CONFIG_DIR: config },
 				});
-				const npm             = JSON.parse(readFileSync(join(root, "npm-call.json"), "utf8")) ;
+				const npm             = JSON.parse(readFileSync(join(root, "npm-call.json"), "utf8"))                             ;
 				const packageArgument = process.platform === "win32" ? "./boxbox-plugin-99.0.1.tgz" : pathToFileURL(archive).href ;
 				if (process.platform === "win32") {
 					expect(npm.command).toBe(`npm exec --yes --package ${packageArgument} -- boxbox --${host}`);

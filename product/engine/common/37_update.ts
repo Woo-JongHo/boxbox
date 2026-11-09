@@ -38,12 +38,12 @@ export interface UpdateCache {
 }
 
 export interface UpdateStatus {
-	readonly current   : string             ;
-	readonly latest    : string | undefined ;
-	readonly available : boolean            ;
-	readonly snoozed   : boolean            ;
-	readonly probed    : boolean            ;
-	readonly probeSucceeded : boolean       ;
+	readonly current        : string             ;
+	readonly latest         : string | undefined ;
+	readonly available      : boolean            ;
+	readonly snoozed        : boolean            ;
+	readonly probed         : boolean            ;
+	readonly probeSucceeded : boolean            ;
 }
 
 const cachePath = (): string => join(stateDirectory(), "update.json");
@@ -107,19 +107,19 @@ export const updateCheckEnabled = (): boolean => !["0", "off", "false"].includes
 
 /** Uses the cached answer inside the check period; probes only when it is stale or `force` is set. */
 export function checkForUpdate(current: string, options: { readonly now?: number; readonly force?: boolean; readonly probe?: () => string | undefined } = {}): UpdateStatus {
-	const now       = options.now   ?? Date.now()                                                                           ;
-	const probe     = options.probe ?? probeLatest                                                                          ;
-	const cache     = readUpdateCache()                                                                                     ;
-	const checkedAt = Date.parse(cache.checkedAt ?? "")                                                                     ;
-	const stale     = options.force || !Number.isFinite(checkedAt) || checkedAt > now || now - checkedAt >= CHECK_PERIOD_MS ;
-	let   latest    = cache.latest                                                                                          ;
-	let   probeSucceeded = true                                                                                             ;
+	const now            = options.now   ?? Date.now()                                                                           ;
+	const probe          = options.probe ?? probeLatest                                                                          ;
+	const cache          = readUpdateCache()                                                                                     ;
+	const checkedAt      = Date.parse(cache.checkedAt ?? "")                                                                     ;
+	const stale          = options.force || !Number.isFinite(checkedAt) || checkedAt > now || now - checkedAt >= CHECK_PERIOD_MS ;
+	let   latest         = cache.latest                                                                                          ;
+	let   probeSucceeded = true                                                                                                  ;
 	if (stale) {
 		const found = probe();
 		// A failed probe is silent and still counts as a check, so an offline machine does not retry every session.
 		writeUpdateCache({ checkedAt: new Date(now).toISOString(), ...(found ? { latest: found } : {}) });
-		latest = found ?? latest;
-		probeSucceeded = found !== undefined;
+		latest         = found ?? latest     ;
+		probeSucceeded = found !== undefined ;
 	}
 	const snoozed = cache.snoozedUntil !== undefined && now < Date.parse(cache.snoozedUntil);
 
@@ -137,7 +137,7 @@ export interface UpdateNotice {
  * prefix so its output lands in the conversation and the agent never installs on its own.
  */
 export function updateNotice(current: string, options: Parameters<typeof checkForUpdate>[1] = {}): UpdateNotice | undefined {
-	if (!updateCheckEnabled()) return undefined;
+	if (!updateCheckEnabled())                                         return undefined;
 	const status = checkForUpdate(current, options);
 	if (!status.probeSucceeded || !status.available || status.snoozed) return undefined;
 	const rule = "━".repeat(52);
@@ -302,8 +302,8 @@ export function runUpdate(args: readonly string[], current: string, execute: typ
 	}
 	const source = value("--source");
 	if (!source) throw new Error(`Public updates use \`${UPDATE_COMMAND}\`; development checkout updates require --source <absolute boxbox checkout>.`);
-	const root = assertSource(source)        ;
-	const host = value("--host") ?? (process.env.CLAUDE_PLUGIN_DATA ? "claude" : process.env.PLUGIN_DATA ? "codex" : undefined);
+	const root = assertSource(source)                                                                                           ;
+	const host = value("--host") ?? (process.env.CLAUDE_PLUGIN_DATA ? "claude" : process.env.PLUGIN_DATA ? "codex" : undefined) ;
 	if (!host || !["claude", "codex"].includes(host)) throw new Error("--host must be claude or codex when the installed host environment is unavailable");
 	// A checkout on a local branch without upstream (development) is installed as it is; otherwise fast-forward first.
 	const upstream = execute("git", ["rev-parse", "--abbrev-ref", "@{upstream}"], { cwd: root, encoding: "utf8", windowsHide: true }).status === 0;
@@ -326,14 +326,14 @@ export function runUpdate(args: readonly string[], current: string, execute: typ
 	const filename = basename(archive);
 	if (!/^[a-z0-9][a-z0-9._+-]*\.tgz$/u.test(filename)) throw new Error("pack installer reported an unsafe archive filename");
 	// Keep the source path out of cmd.exe's command string: npm resolves this safe relative package from its explicit cwd.
-	const installDirectory = dirname(archive);
-	const packageArgument  = process.platform === "win32" ? `./${filename}` : pathToFileURL(archive).href;
+	const installDirectory = dirname(archive)                                                             ;
+	const packageArgument  = process.platform === "win32" ? `./${filename}` : pathToFileURL(archive).href ;
 	const install = {
-		label   : `install for ${host}`                                                                                     ,
-		command : "npm"                                                                                                     ,
-		args    : ["exec", "--yes", "--package", packageArgument, "--", "boxbox", `--${host}`]                              ,
-		cwd     : installDirectory                                                                                           ,
-		env     : { ...process.env, INIT_CWD: installDirectory }                                                             ,
+		label   : `install for ${host}`                                                        ,
+		command : "npm"                                                                        ,
+		args    : ["exec", "--yes", "--package", packageArgument, "--", "boxbox", `--${host}`] ,
+		cwd     : installDirectory                                                             ,
+		env     : { ...process.env, INIT_CWD: installDirectory }                               ,
 	} ;
 
 	stage("INSTALLING", install.label, () => run(install, execute));

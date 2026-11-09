@@ -212,9 +212,9 @@ test("npm installer name differs from private engine and both host payloads have
 	expect(metadata.engineSha256).toMatch(/^[0-9a-f]{64}$/u);
 	const expected = ["LICENSE", "README.md", "bin/boxbox.mjs", "package.json", "payload/bundle.json", "payload/platform.mjs", "payload/install-state.mjs", "payload/claude-registration.mjs", "payload/codex-registration.mjs"];
 	for (const host of ["codex", "claude"]) {
-		const root            = join(payload, host)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ;
-		const plugin          = join(root, "plugin")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ;
-		const marketplacePath = host === "codex" ? ".agents/plugins/marketplace.json" : ".claude-plugin/marketplace.json"                                                                                                                                                                                                                                                                                                                                                                                                                                                     ;
+		const root            = join(payload, host)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ;
+		const plugin          = join(root, "plugin")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ;
+		const marketplacePath = host === "codex" ? ".agents/plugins/marketplace.json" : ".claude-plugin/marketplace.json"                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ;
 		const hostFiles       = [marketplacePath, "bundle.json", "install.mjs", "install-state.mjs", "claude-registration.mjs", "codex-registration.mjs", `packages/boxbox-${VERSION}.tgz`, "platform.mjs", `plugin/.${host === "codex" ? "codex" : "claude"}-plugin/plugin.json`, "plugin/hooks/hooks.json", "plugin/scripts/boxbox.mjs", "plugin/skills/boxbox/SKILL.md", ...["charter.md", "grammar.md", "readability-contract.md", "typescript-grid-template.md"].map(name => `plugin/skills/boxbox/references/${name}`), ...(host === "claude" ? ["plugin/agents/readability-inspector.md"] : [])] ;
 		expected.push(...hostFiles.map(path => `payload/${host}/${path}`));
 		expect(readdirSync(plugin).sort()).toEqual((host === "codex" ? [".codex-plugin", "hooks", "scripts", "skills"] : [".claude-plugin", "agents", "hooks", "scripts", "skills"]).sort());
@@ -271,9 +271,9 @@ test("real npx infers the boxbox bin from the public installer and installs both
 	// The file: package spec avoids npm treating a bare absolute filename as an existing command.
 	const installation = run(npx, ["--yes", `file:${staged}`], { cwd: project, env });
 	expectStatus(installation, 0);
-	expect(String(installation.stdout)).not.toContain("BOXBOX_PREFLIGHT_VERSION");
-	expect(String(installation.stdout)).not.toContain("BOXBOX_PREFLIGHT_HELP");
-	expect(String(installation.stdout)).not.toMatch(/^\d+\.\d+\.\d+$/m);
+	expect(String(installation.stdout)).not.toContain("BOXBOX_PREFLIGHT_VERSION") ;
+	expect(String(installation.stdout)).not.toContain("BOXBOX_PREFLIGHT_HELP"   ) ;
+	expect(String(installation.stdout)).not.toMatch  (/^\d+\.\d+\.\d+$/m        ) ;
 	const calls = readFileSync(env.BOXBOX_TEST_LOG!, "utf8").trim().split("\n").map(line => JSON.parse(line));
 	expect(calls.filter(call => !call.args.includes("list")).map(call => [call.host, call.args])).toEqual([
 		["codex", ["--version"]], ["codex", ["plugin", "add", "--help"]], ["codex", ["plugin", "marketplace", "add", permanent(env, "codex") + "/"]], ["codex", ["plugin", "add", "boxbox@boxbox-plugins"]],
@@ -403,9 +403,9 @@ test("explicit host flags install only selected adapters and engine-only does no
 }, 180_000);
 
 test("a quiet capability probe replays stdout diagnostics when it fails", () => {
-	const packageRoot = extract()                    ;
-	const workspace   = temporary()                  ;
-	const env         = runtimeEnvironment(workspace);
+	const packageRoot = extract           ()          ;
+	const workspace   = temporary         ()          ;
+	const env         = runtimeEnvironment(workspace) ;
 	fakeHost(workspace, "codex");
 
 	const result = run(node, [join(packageRoot, "bin/boxbox.mjs"), "--codex"], {

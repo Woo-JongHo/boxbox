@@ -51,9 +51,9 @@ function pluginDataHook(root: string, mode: "session" | "post" | "stop", input: 
 }
 
 function receiptOf(output: Record<string, unknown>): Record<string, unknown> {
-	const specific = output.hookSpecificOutput as { additionalContext?: unknown } | undefined ;
+	const specific = output.hookSpecificOutput as { additionalContext?: unknown } | undefined           ;
 	const context  = String(output.reason ?? output.systemMessage ?? specific?.additionalContext ?? "") ;
-	const path     = /filesWithGroups=\d+\. (.+?\.json) mode=/u.exec(context)?.[1] ;
+	const path     = /filesWithGroups=\d+\. (.+?\.json) mode=/u.exec(context)?.[1]                      ;
 	if (!path) throw new Error(`receipt path missing: ${context}`);
 	return readLifecycleReceipt(path) as unknown as Record<string, unknown>;
 }
@@ -109,10 +109,10 @@ test("Stop does not block again with stop_hook_active even when an alignment fai
 	writeFileSync(join(root, "sample.py"), "a = 1\nlonger = 22\nmid = 333\n");
 
 	const firstPost = hook(root, "post", { session_id: "two", tool_name: "Write" });
-	expect(firstPost.decision                                                            ).toBe("block")   ;
-	expect(JSON.stringify(firstPost)                                                     ).toContain("attention=sample.py") ;
-	expect(hook(root, "post", { session_id: "two", tool_name: "Edit" })              ).toEqual({})     ;
-	expect(hook(root, "stop", { session_id: "two" }).decision                         ).toBe("block")   ;
+	expect(firstPost.decision                                          ).toBe     ("block"              ) ;
+	expect(JSON.stringify(firstPost)                                   ).toContain("attention=sample.py") ;
+	expect(hook(root, "post", { session_id: "two", tool_name: "Edit" })).toEqual  ({}                   ) ;
+	expect(hook(root, "stop", { session_id: "two" }).decision          ).toBe     ("block"              ) ;
 	expect(hook(root, "stop", { session_id: "two", stop_hook_active: true }).decision ).toBeUndefined() ;
 	expect(hook(root, "stop", { session_id: "two" }).decision                         ).toBeUndefined() ;
 }, 60_000);
@@ -410,28 +410,28 @@ test("a failing Bash post stays advisory while an edit post still blocks", () =>
 	expect(receipt.state                                                                  ).toBe     ("FAIL"                                  ) ;
 	expect(context                                                                        ).toContain("PostToolUse: FAIL"                     ) ;
 	expect(context                                                                        ).toContain("checked=1, groups=1, filesWithGroups=1") ;
-	expect(hook(root, "post", { session_id: "bash-advisory", tool_name: "Bash" })          ).toEqual  ({}                                      ) ;
+	expect(hook(root, "post", { session_id: "bash-advisory", tool_name: "Bash" })         ).toEqual  ({}                                      ) ;
 	expect(hook(root, "post", { session_id: "bash-advisory", tool_name: "Edit" }).decision).toBe     ("block"                                 ) ;
 }, 60_000);
 
 test("a dangling PostToolUse marker is a losing claim and never creates its external target", () => {
-	const root     = project()                    ;
-	const outside  = project()                    ;
-	const session  = "dangling-post-marker"       ;
-	const external = join(outside, "must-not-exist");
+	const root     = project()                       ;
+	const outside  = project()                       ;
+	const session  = "dangling-post-marker"          ;
+	const external = join(outside, "must-not-exist") ;
 	hook(root, "session", { session_id: session });
 	writeFileSync(join(root, "sample.py"), "a = 1\nlonger = 22\nmid = 333\n");
 
 	expect(hook(root, "post", { session_id: session, tool_name: "Write" }).decision).toBe("block");
-	const directory = stateDirectory(root, session);
-	const marker    = readdirSync(directory).find(name => name.startsWith("post-blocked-"));
+	const directory = stateDirectory(root, session)                                         ;
+	const marker    = readdirSync(directory).find(name => name.startsWith("post-blocked-")) ;
 	expect(marker).toBeDefined();
 	unlinkSync(join(directory, marker!));
 	symlinkSync(external, join(directory, marker!));
 
-	expect(hook(root, "post", { session_id: session, tool_name: "Edit" })).toEqual({});
-	expect(lstatSync(join(directory, marker!)).isSymbolicLink()).toBe(true);
-	expect(existsSync(external)).toBe(false);
+	expect(hook(root, "post", { session_id: session, tool_name: "Edit" })).toEqual({}   ) ;
+	expect(lstatSync(join(directory, marker!)).isSymbolicLink()          ).toBe   (true ) ;
+	expect(existsSync(external)                                          ).toBe   (false) ;
 }, 60_000);
 
 test("concurrent PostToolUse hooks atomically emit one block for an unchanged snapshot", async () => {
