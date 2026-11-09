@@ -1,11 +1,12 @@
 import      { afterEach, describe, expect, test                } from "bun:test"                              ;
-import      { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                               ;
+import      { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"                    ;
 import      { join, relative, resolve                          } from "node:path"                             ;
 import      { preservesTokens                                  } from "@/typescript/16_token-preservation.ts" ;
 
 const root                 = resolve(import.meta.dir, "..")                                ;
 const script               = resolve(root, "product/engine/typescript/07_align-tables.ts") ;
 const workspaces: string[] = []                                                            ;
+mkdirSync(join(root, ".boxbox"), { recursive: true });
 
 /** Every test here spawns the aligner, which starts a TypeScript 7 server — a busy machine can push one invocation past Bun's 5 s default. */
 const CLI_TIMEOUT = 60_000                                                              ;

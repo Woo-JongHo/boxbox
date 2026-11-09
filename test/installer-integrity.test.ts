@@ -55,7 +55,7 @@ function preparedPayload(workspace: string, archive: string, engineSha256: unkno
 	const metadata: Record<string, unknown> = { name: "boxbox", version: VERSION, host: "codex", marketplace: "boxbox-plugins" } ;
 	if (engineSha256 !== undefined) metadata.engineSha256 = engineSha256;
 	mkdirSync(join(root, "packages"), { recursive: true });
-	for (const name of ["install.mjs", "platform.mjs", "install-state.mjs", "claude-registration.mjs"]) cpSync(join(ROOT, "product/installer", name), join(root, name));
+	for (const name of ["install.mjs", "platform.mjs", "install-state.mjs", "claude-registration.mjs", "codex-registration.mjs"]) cpSync(join(ROOT, "product/installer", name), join(root, name));
 	cpSync(archive, join(root, "packages", `boxbox-${VERSION}.tgz`));
 	mkdirSync(join(root, "plugin/scripts"), { recursive: true });
 	mkdirSync(join(root, "plugin/skills/boxbox"), { recursive: true });
