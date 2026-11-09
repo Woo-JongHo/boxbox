@@ -1,8 +1,13 @@
-import      { createHash                                       } from "node:crypto"                ;
-import      { existsSync, mkdirSync, readFileSync, renameSync } from "node:fs"                    ;
-import      { writeFileSync                                    } from "node:fs"                    ;
-import      { dirname, join, resolve                           } from "node:path"                  ;
-import      { userDataRoot                                     } from "@/common/project-config.ts" ;
+import      { createHash             } from "node:crypto"                ;
+import      {
+              existsSync           ,
+              mkdirSync            ,
+              readFileSync         ,
+              renameSync
+                                     } from "node:fs"                    ;
+import      { writeFileSync          } from "node:fs"                    ;
+import      { dirname, join, resolve } from "node:path"                  ;
+import      { userDataRoot           } from "@/common/project-config.ts" ;
 
 /**
  * What the plugin hooks do in a project. Only `align` lets a hook write, and only engine-approved horizontal whitespace;
@@ -35,7 +40,7 @@ function readState(): ModeState {
 	const path = modePath();
 	if (!existsSync(path)) return { default: DEFAULT_MODE, projects: {} };
 	try {
-		const value    = JSON.parse(readFileSync(path, "utf8"))                                                       ;
+		const value    = JSON  .parse      (readFileSync(path, "utf8")                                             ) ;
 		const projects = Object.fromEntries(Object.entries(value.projects ?? {}).filter(([, mode]) => isMode(mode))) ;
 		return { default: isMode(value.default) ? value.default : DEFAULT_MODE, projects: projects as Record<string, Mode> };
 	} catch {
@@ -71,9 +76,9 @@ export function setMode(mode: Mode, root: string | undefined): void {
 
 /** `boxbox mode [off|check|align|refactor] [--global] [--json]`: prints or changes the mode of the current project. */
 export function runMode(args: readonly string[], root: string): number {
-	const json   = args.includes("--json")                                ;
-	const global = args.includes("--global")                              ;
-	const rest   = args.filter(value => value !== "--json" && value !== "--global") ;
+	const json   = args.includes("--json"                                           ) ;
+	const global = args.includes("--global"                                         ) ;
+	const rest   = args.filter  (value => value !== "--json" && value !== "--global") ;
 	if (rest.length > 1 || (rest[0] !== undefined && !isMode(rest[0]))) throw new Error(`Expected mode ${MODES.join("|")} [--global] [--json]`);
 	const before = resolveMode(root);
 	if (rest[0] !== undefined) setMode(rest[0] as Mode, global ? undefined : root);
