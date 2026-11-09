@@ -64,10 +64,10 @@ def validate(value, rule, path):
 		require(any(equal(value, option) for option in rule["enum"]), f"{path}: unsupported value {value!r}")
 	if "type" in rule:
 		matches = {
-			"object": isinstance(value, dict),
-			"array": isinstance(value, list),
-			"string": isinstance(value, str),
-			"integer": type(value) is int or (type(value) is float and value.is_integer()),
+			"object"  : isinstance(value, dict)                                            ,
+			"array"   : isinstance(value, list)                                            ,
+			"string"  : isinstance(value, str)                                             ,
+			"integer" : type(value) is int or (type(value) is float and value.is_integer()),
 		}
 		require(matches[rule["type"]], f"{path}: expected {rule['type']}")
 	count = 1
@@ -197,15 +197,15 @@ def main():
 		for identifier in identifiers:
 			require(identifier in readme, f"README: missing index entry {identifier}")
 	print(json.dumps({
-		"status": "passed",
-		"method": "Dependency-free Python checker for the documented schema subset; unknown keywords are rejected. Not a full Draft 2020-12 validator.",
-		"records": len(files),
-		"checkedValues"                           : values                         ,
-		"referenceOccurrences"                    : references                     ,
-		"existingReferenceOccurrences"            : existing_references            ,
-		"relocatedHistoricalReferenceOccurrences" : relocated_historical_references,
-		"checks": ["schema subset", "template fields and enum drift", "unique IDs including canonical/draft collisions", "filename agreement", "history sequencing and machine-readable failures", "existing repository references", "observed-result evidence", "resolved action/verification state", "README index and links when validating the library"],
-		"excluded": "templates/issue.json is instructional and is not a factual record.",
+		"status"                                  : "passed"                                                                                                                                                                                                                                                                                                                                  ,
+		"method"                                  : "Dependency-free Python checker for the documented schema subset; unknown keywords are rejected. Not a full Draft 2020-12 validator."                                                                                                                                                                                                     ,
+		"records"                                 : len(files)                                                                                                                                                                                                                                                                                                                                ,
+		"checkedValues"                           : values                                                                                                                                                                                                                                                                                                                                    ,
+		"referenceOccurrences"                    : references                                                                                                                                                                                                                                                                                                                                ,
+		"existingReferenceOccurrences"            : existing_references                                                                                                                                                                                                                                                                                                                       ,
+		"relocatedHistoricalReferenceOccurrences" : relocated_historical_references                                                                                                                                                                                                                                                                                                           ,
+		"checks"                                  : ["schema subset", "template fields and enum drift", "unique IDs including canonical/draft collisions", "filename agreement", "history sequencing and machine-readable failures", "existing repository references", "observed-result evidence", "resolved action/verification state", "README index and links when validating the library"],
+		"excluded"                                : "templates/issue.json is instructional and is not a factual record."                                                                                                                                                                                                                                                                      ,
 	}, indent=2))
 
 

@@ -1,21 +1,26 @@
 /**
  * Python line profiler. Structure is judged on `masked` (string contents and comments blanked), and cell text
- * is sliced from `code` at the same coordinates (match.indices from the /d flag). Table rows are limited to six forms.
+ * is sliced from `code` at the same coordinates (match.indices from the /d flag). Additional statement boundaries
+ * below come only from the prepared source's validated AST/token intervals.
  *
  * Table forms:
  * 1. Annotated assignment `name: Type = value` → name, colon, type, equal, value
- * 2. Dataclass field      `name: Type`         → name, colon, type
+ * 2. Class field          `name: Type`         → name, colon, type
  * 3. Dictionary row       `"key": value[,]`    → key (with quotes), colon, value, optional comma
  * 4. Plain assignment     `name = value`       → name, equal, value
  * 5. Bundle row           `["a", 1, "x"],`     → cell/arg columns with open, comma, close separators
  * 6. Assigned call row    `name = call(a, b)`  → name, equal, call cell (callee in the axis name), argument cells;
  *                                                one flat bundle argument folds its cells inside the call
+ * 7. From-import row      `from module import names` → from, module, import, opaque names
+ * 8. Return guard         `if condition: return value` → if, opaque condition, colon, return, opaque value
  *
  * Refused (null) when uncertain: bracket syntax outside the specialized profiles; rows ending in a continuation (\);
- * decorator, def, class, control-flow and import rows; empty values or values starting with =; unsupported statement
+ * decorator, def and class rows; control-flow/import rows outside the bounded AST-backed forms; empty values or
+ * values starting with =; unsupported statement
  * separators and top-level value commas; rows with trailing whitespace.
  * Quoted dictionary values remain opaque balanced expressions and may omit the final entry comma.
- * A separate outer calculation projection can compare unclaimed simple assignments without decomposing their RHS.
+ * A separate bounded outer expression projection compares unclaimed simple assignments, including ordinary strings,
+ * without decomposing their RHS. Unsupported imports, guards and unprofiled comma-row runs are reported separately.
  * Its distinct assignment-value axis never inherits approval for the detailed value axis.
  * Refusal is safe; misrecognition is dangerous.
  */
@@ -23,7 +28,8 @@ import type { CodeSyntax, LineProfiler, RowProfile, Slot, } from "@/common/06_ta
 import      { pythonStringRanges                          } from "@/python/07_string-ranges.ts"       ;
 import      { assignment, assignmentEnvelopes             } from "@/python/04_assignment-envelope.ts" ;
 import      { analyzePython                               } from "@/python/05_analysis.ts"            ;
-import type { PythonRowKind                               } from "@/python/05_analysis.ts"            ;
+import type { PythonRow, PythonRowKind                    } from "@/python/05_analysis.ts"            ;
+import      { describePythonGroup                         } from "@/python/08_kind-vocabulary.ts"     ;
 
 export const PYTHON_SYNTAX: CodeSyntax = {
 	protectedRanges : pythonStringRanges ,
@@ -514,14 +520,33 @@ function preparePython(source: string) {
 		offset += line.length + 1;
 	}
 	// Cache unique row ownership by physical line and grammar kind once per source.
-	const owners = new Map<string, string | null>();
+	const owners      = new Map<string, string | null>() ;
+	const commaOwners = new Map<number, string | null>() ;
+	const rowsByLine  = new Map<number, PythonRow[]>()   ;
 	for (const row of analysis.rows) {
+		const sameLine = rowsByLine.get(row.line) ?? [];
+
+		sameLine.push(row);
+		rowsByLine.set(row.line, sameLine);
+
 		if (row.kind === "dictionary" && row.start !== codeStarts[row.line]) continue;
+
 		const key = `${row.line}:${row.kind}`;
+
 		owners.set(key, owners.has(key) ? null : `${row.kind}:${row.owner}`);
+
+		// Unsupported comma runs belong to the line-leading expression or parameter, never its nested arguments.
+		if ((row.kind === "positional" || row.kind === "parameter") && row.start === codeStarts[row.line]) {
+			const region = `${row.kind}:${row.owner}`;
+
+			commaOwners.set(row.line, commaOwners.has(row.line) && commaOwners.get(row.line) !== region ? null : region);
+		}
 	}
-	const owner   = (index: number, kind: PythonRowKind): string | null => owners.get(`${index}:${kind}`) ?? null ;
-	const markers = new Map<number, string>()                                                                     ;
+	const owner       = (index: number, kind: PythonRowKind): string | null => owners.get(`${index}:${kind}`) ?? null ;
+	const imports     = new Set<number>()                                                                             ;
+	const specialRows = new Map<number, string>()                                                                     ;
+	const commaRows   = new Map<number, string>()                                                                     ;
+	const markers     = new Map<number, string>()                                                                     ;
 	// Retain stable first-on-line order, exactly as the former stable sorted lookups did.
 	const params   = analysis.rows.filter(row => row.kind === "parameter").sort((a, b) => a.line - b.line) ;
 	const distinct = params.filter((row, index) => index === 0 || params[index - 1]!.line !== row.line)    ;
@@ -541,6 +566,28 @@ function preparePython(source: string) {
 	return {
 		protectedRanges: analysis.formatted,
 		row(index: number, code: string, masked: string) {
+			const special = (rowsByLine.get(index) ?? []).filter(row => row.kind === "import-from" || row.kind === "return-guard");
+			for (const row of special) specialRows.set(index, row.kind === "import-from"
+				? "Python from-import layout is unsupported outside a bounded whole-line row run"
+				: "Python return-guard layout is unsupported outside single-line sibling if/return rows with values");
+			if (special.length > 0) {
+				const row    = special.length === 1 ? special[0] : undefined ;
+				const region = row ? owner(index, row.kind) : null           ;
+				if (!row?.slots || row.start !== codeStarts[index] || region === null) return null;
+				const slots = row.slots.map((slot, position) => ({
+					axis      : slot.axis                                                                     ,
+					text      : source.slice(slot.start, slot.end)                                            ,
+					gapBefore : position === 0 ? "" : source.slice(row.slots![position - 1]!.end, slot.start) ,
+				}));
+				return { profile: { indent: /^[ \t]*/u.exec(code)![0], slots }, region };
+			}
+
+			if (/^\s*(?:import|from)\b/u.test(masked) && (rowsByLine.get(index) ?? []).some(row => row.kind === "statement" && row.start === codeStarts[index])) imports.add(index);
+
+			const commaOwner = commaOwners.get(index) ?? owner(index, "bundle");
+
+			if (commaOwner !== null && /,\s*$/u.test(masked)) commaRows.set(index, commaOwner);
+
 			const profile = profilePython(code, masked);
 			if (!profile) return null;
 			const axes = profile.slots.map(slot => slot.axis);
@@ -558,6 +605,27 @@ function preparePython(source: string) {
 		},
 		transparent(index: number) { return markers.get(index) ?? null; },
 		unsafeEditLines: analysis.unsafeEditLines,
+		describeGroup: (rowIndexes: readonly number[], axes: readonly string[]) => describePythonGroup(rowIndexes.flatMap(index => rowsByLine.get(index) ?? []), rowIndexes, axes),
+		unsupported(covered: ReadonlySet<number>) {
+			const unsupported = [
+				...[...imports].filter(index => !covered.has(index)).map(index => ({ line: index + 1, reason: "Python import layout is not supported" })),
+				...[...specialRows].filter(([index]) => !covered.has(index)).map(([index, reason]) => ({ line: index + 1, reason })),
+			];
+			let run: number[] = []                                                                                                ;
+			const flush = () => {
+				if (run.length >= 3) unsupported.push(...run.map(index => ({ line: index + 1, reason: "Python comma-row layout is not supported" })));
+
+				run = [];
+			};
+			for (const [index, region] of commaRows) {
+				const previous = run.at(-1);
+				if (covered.has(index) || previous !== undefined && (index !== previous + 1 || region !== commaRows.get(previous))) flush();
+				if (!covered.has(index)) run.push(index);
+			}
+			flush();
+
+			return unsupported.sort((left, right) => left.line - right.line);
+		},
 	};
 }
 
@@ -566,7 +634,7 @@ export const PYTHON_ALIGNER: LineProfiler = {
 	language      : "python"      ,
 	syntax        : PYTHON_SYNTAX ,
 	// cell/arg axes of bundle rows are followed by a comma or the close slot, so aligning them never creates trailing whitespace.
-	columnAxes    : ["name", "attribute", "chain-target", "key", "type", "value", "cell", "arg"],
+	columnAxes    : ["name", "attribute", "chain-target", "key", "type", "value", "cell", "arg", "module", "condition"],
 	// Colon and equal get one space after the longest cell (`name : type = value`), matching the TypeScript tables;
 	// comma attaches to the cell. Bundle rows attach the
 	// first cell to the opening bracket and attach close too, so the closing bracket shares the last cell's width.

@@ -34,11 +34,14 @@ rule-proof evaluation and public-distribution policy are three separate validati
 | --- | --- | --- | --- |
 | Recommended preset | `product/rules/presets/recommended/`; shipped read-only JSONL | Runtime proof checks plus stricter release field/license/hash/link checks | Generic complete shape validation; publication requirements remain stricter |
 | Configuration | User config root and project `.boxbox/config.json` | Schema 2; unknown fields rejected; schema 1 migrates in memory; fingerprints | Not a general transactional config editor |
+| Session mode state | User configuration root, `state/mode.json` | Known-mode filtering and temporary-file replacement; canonical project keys | Project setting overrides global default; valid `BOXBOX_MODE` overrides both; state grants no rule approval |
 | User/project approval records | User config root or `.boxbox/`; three JSONL files | Exclusive initialization; guarded loader; duplicate proof checks | No transaction covering all three files; no general record writer |
 | Corpus observations and candidates | Development manifests and ignored research cache | Provenance/version hashes; candidate staging and rollback | Guarantees vary by tool; research verdict/queue rewrites are not serialized transactions |
 | Shape observations | `.boxbox/cache/shape.jsonl` and previous snapshot | Exclusive lock, temporary write, rotation and caught-error rollback | Stale-lock recovery and power-loss durability not established |
 | Guarded run evidence | `.boxbox/runs/<id>.json` | Temporary file and rename; execution locking | Latest-record read is not a full schema validator |
-| Hook receipts | Host plugin data/root/session, or project fallback | Schema 1/core-shape validation, 8 MiB bound, exact coverage/state checks, exclusive receipts and Stop claim; read-only source inspection | Unversioned evidence stays legacy; infrastructure errors fail open; no crash durability or race-proof filesystem claim |
+| Session baseline | Host plugin data/root/session, or project fallback | Version 2 preserves file hashes plus optional byte/line/protected-content fingerprints; hash-only legacy input remains readable | Old baselines cannot reconstruct earlier footprints; invalid fingerprints remain unknown |
+| Monitor page | Host plugin data, one owned HTML page per host by default | Sanitized allowed fields, escaped self-contained HTML, guarded output destination | Observed usage/footprints are not correctness or approval evidence; exact Codex step attribution is unavailable |
+| Hook receipts | Host plugin data/root/session, or project fallback | Schema 2 mode/alignment evidence; schema 1 and legacy reads; 8 MiB bound, coverage/state checks, exclusive receipts and Stop claim | Receipts cannot approve rules; infrastructure errors fail open; no crash durability or race-proof filesystem claim |
 | Development harness | `development/harness/evidence/runs.jsonl` and `latest.json` | Append history, minimal read validation, atomic latest-file replacement | History and latest are separate writes, not one transaction |
 
 Owners: [15_project-config.ts](../../product/engine/common/15_project-config.ts),
@@ -48,6 +51,7 @@ Owners: [15_project-config.ts](../../product/engine/common/15_project-config.ts)
 [shape observer](../../product/engine/typescript/10_observe-shapes.ts),
 [27_lifecycle-hook.ts](../../product/engine/common/27_lifecycle-hook.ts),
 [29_lifecycle-receipt.ts](../../product/engine/common/29_lifecycle-receipt.ts),
+[monitor](../../product/engine/common/31_monitor.ts), [baseline codec](../../product/engine/common/32_lifecycle-baseline.ts),
 [25_guarded-run.ts](../../product/engine/common/25_guarded-run.ts), [harness DB](../../development/harness/db.ts).
 
 ## Data and invariants
@@ -83,7 +87,10 @@ claim and tests eight concurrent processes; no pre-fix dynamic race failure is c
 
 ### Hook evidence contract
 
-Hook receipts are observations, never approval authority. Schema 1 rejects unknown envelope/core-result fields,
+Hook receipts are observations, never approval authority. Schema 2 records session `mode`, successful `aligned` files
+and `automaticFixPerformed`; writes are valid only for `align` mode PostToolUse receipts and a checked file with a
+positive edit count. Stop receipts remain read-only. Schema 1 retains its `automaticFixPerformed: false` contract;
+unversioned evidence remains legacy. The versioned codecs reject unknown envelope/core-result fields,
 invalid counts, duplicate or overlapping file partitions, and a state inconsistent with checked results. The `files`
 set is partitioned into `checked`, `unsupported` and `deleted`; coverage records their counts, files with detected
 groups and total groups. `SUGGEST` reports advisory groups without blocking or approving a write. `NO_GROUPS` means checked files had no detected table groups. `DELETED_ONLY` records changes
@@ -91,7 +98,7 @@ containing only deletions. `NO_CHANGES` requires no changes. Even `PASS` covers 
 
 The dedicated codec validates the envelope and the result fields needed for state/coverage; it is not a second full
 validator for every nested ResultJson group. Unversioned baseline receipts remain readable as legacy evidence and
-are never promoted to schema 1. Encoding and reads are capped at 8 MiB; receipt reads reject symbolic files. Owned
+are never promoted to a versioned receipt. Encoding and reads are capped at 8 MiB; receipt reads reject symbolic files. Owned
 namespace components reject existing symlinks, while a legitimate symlinked project root remains usable. Namespace
 checks are check-then-use, without protection against a same-user concurrent path swap.
 Fresh host data paths create missing ancestors through the same directory guard, allowing existing unowned ancestor
@@ -104,6 +111,29 @@ Each receipt is a unique exclusive file, not a transactional set. Stop uses an e
 lose that continuation. Validation, size or persistence errors remain non-blocking hook errors and do not claim a
 successful check. Retention/pruning and fsync-based recovery remain unimplemented; bounded reads do not bound total
 disk retention. Local receipt creation does not establish that a native host accepted its output.
+
+### Baselines and monitor output
+
+Lifecycle baseline version 2 retains the existing change-detection hashes and adds supported regular-file footprints.
+Legacy hash-only baselines still support change detection, but the monitor reports the missing before-size section
+rather than inventing zero growth. A protected-content fingerprint is bounded observation data: invalid or absent
+fingerprints produce unknown classification, not a claim of alignment-only preservation.
+Ambiguous TypeScript slash contexts have no fingerprint. TypeScript fingerprints remain lexical observations,
+not syntax validation: invalid TypeScript can still have one when its tokens are unambiguous. Public Check performs
+its separate parser validation. The conservative slash refusal can also make valid division changes unavailable.
+
+`monitor` consumes session usage and sanitized receipt summaries, without emitting transcript text, commands or source
+content. It makes no model call and shows no dollar cost. Codex exact step attribution remains unavailable; estimates
+and lower-bound measurements remain explicit. `--no-paths` omits relative source filenames, not the returned HTML
+destination. Each invocation writes a self-contained host page, normally `monitor-<host>.html`, under the host-provided
+absolute `CLAUDE_PLUGIN_DATA` or `PLUGIN_DATA`. An explicit HTML destination replaces that default and must be an absolute
+`.html` path inside the same data folder, outside the reserved `hooks` namespace, so it cannot overwrite baseline or receipt JSON;
+project and outside-folder writes are refused. Missing plugin data is a setup error, not permission to select another
+location. These outputs never promote observations to approval records or prove native host-event acceptance.
+
+Monitor reads are bounded per file: a baseline larger than 8 MiB is reported as unreadable, with unavailable
+footprints. Baseline capture has no aggregate file-count/time budget, and Claude child-session reads have no aggregate
+byte budget. The per-file bounds do not establish a repository-size or memory guarantee.
 
 ## Change points — proposed hardening and SQLite decision
 

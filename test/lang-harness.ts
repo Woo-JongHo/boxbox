@@ -12,10 +12,10 @@ import type { LineProfiler                  } from "@/common/06_table-engine.ts"
 export interface LanguageSuiteInput {
 	readonly aligner     : LineProfiler;
 	/** Absolute path to fixtures/<language>/. The new URL("../../..", import.meta.url) form is recommended. */
-	readonly fixturesDir : string ;
-	readonly tableFile   : string ;
-	readonly alignedFile : string ;
-	readonly trickyFile  : string ;
+	readonly fixturesDir : string      ;
+	readonly tableFile   : string      ;
+	readonly alignedFile : string      ;
+	readonly trickyFile  : string      ;
 }
 
 export function defineLanguageSuite(input: LanguageSuiteInput): void {

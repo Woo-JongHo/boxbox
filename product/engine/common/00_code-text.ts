@@ -31,9 +31,9 @@ export interface CodeSyntax {
 
 export interface MaskedSource {
 	/** Copy of the source with string and comment contents replaced by spaces. Same line/column geometry. */
-	readonly text          : string;
+	readonly text          : string            ;
 	/** Per line, start column of a comment beginning outside strings (-1 if none). The line's code part is [0, commentStart). */
-	readonly commentStarts : readonly number[];
+	readonly commentStarts : readonly number[] ;
 	/** Per line, whether the line starts inside a block comment. If true, the line is excluded from row candidates. */
 	readonly opensInBlock  : readonly boolean[];
 }

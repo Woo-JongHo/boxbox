@@ -18,6 +18,7 @@ import      {
               runsOf                                   ,
               syntaxKindName                           ,
               verticalCallText                         ,
+              unsupportedFunctionParameters            ,
                                                          } from "@/typescript/13_grid-kinds.ts"          ;
 import type { DetectedRow, RowBoundary                   } from "@/typescript/13_grid-kinds.ts"          ;
 import type { MeasurementGroup, MeasurementPoint         } from "@/common/07_column-measurement.ts"      ;
@@ -185,7 +186,12 @@ export function alignRows(source: SourceFile, rows: readonly DetectedRow[]): Ali
 					line: boundaryLine(source, boundary)!
 				}))
 		);
-		if (entries.length < 2) continue;
+		if (entries.length < 2) {
+			// A lone axis is not aligned, but it stays in the report so the approval key can tell the row apart; only a lone
+			// call close is part of an approved key's documented scope. Unknown axes therefore fail closed.
+			if (axis !== "call-envelope-close" && entries.length === 1) axes.push(`${axis}=${displayColumn(source, entries[0]!.boundary.at)}`);
+			continue;
+		}
 
 		// The target column is set by the farthest anchor (from). Gap axes keep at least one space;
 		// insert axes align at the existing column — an aligned table is never pushed right again.
@@ -322,10 +328,11 @@ export function censusGroups(source: SourceFile, minRows: number): readonly Tabl
 }
 
 interface CollectResult {
-	readonly groups     : TableGroup[]                                                                   ;
-	readonly candidates : Node[]                                                                         ;
-	readonly compressed : { readonly line: number; readonly members: number }[]                          ;
-	readonly observe?   : (group: TableGroup, run: readonly DetectedRow[], aligned: AlignedRows) => void ;
+	readonly groups                 : TableGroup[]                                                                   ;
+	readonly candidates             : Node[]                                                                         ;
+	readonly compressed             : { readonly line: number; readonly members: number }[]                          ;
+	readonly observe?               : (group: TableGroup, run: readonly DetectedRow[], aligned: AlignedRows) => void ;
+	readonly unsupportedParameters? : ResultGroup[]                                                                  ;
 }
 
 /** Finds interfaces whose member table is compressed onto one physical line. Expanding is a structural change, so it is not fixed automatically. */
@@ -350,6 +357,16 @@ function collect(
 	result      : CollectResult      ,
 	path        : readonly string[] = []
 ): void {
+	const unsupported = result.unsupportedParameters === undefined ? undefined : unsupportedFunctionParameters(source, node);
+	if (unsupported) result.unsupportedParameters!.push({
+		kind      : "vertical-function-parameters",
+		...unsupported,
+		axes    : []                    ,
+		state   : "REFUSE"              ,
+		edits   : 0                     ,
+		context : "FunctionDeclaration" ,
+	});
+
 	const isContainer = ROW_KINDS.some(kind => kind.containers(node, seen) !== undefined) ;
 	const childPath   = isContainer ? [...path, syntaxKindName(node)] : path              ;
 	for (const kind of ROW_KINDS) {
@@ -537,7 +554,7 @@ export async function runTypeScriptAlign(args: readonly string[], options: TypeS
 	const say = (line: string): void => { if (!json) emit(line); };
 	const { source, relative } = await loadSourceFile(root, file);
 
-	const result: CollectResult = { groups: [], candidates: [], compressed: [] };
+	const result: CollectResult = { groups: [], candidates: [], compressed: [], unsupportedParameters: [] };
 	collect(source, source, minRows, new Set<Node>(), explainLine === undefined ? undefined : explainLine, result);
 	collectCompressed(source, source, result);
 	const detected = [...result.groups].sort((left, right) => left.startLine - right.startLine);
@@ -553,8 +570,9 @@ export async function runTypeScriptAlign(args: readonly string[], options: TypeS
 	const compressedMembers = result.compressed.reduce((count, entry) => count + entry.members, 0);
 
 	const totalEdits = groups.reduce((count, group) => count + group.edits.length, 0);
-	say(`align-tables file=${relative} groups=${groups.length} misaligned=${groups.filter(group => group.edits.length > 0).length} edits=${totalEdits} compressed=${result.compressed.length} compressed-members=${compressedMembers} refused=${refused.length}${write ? " write=true" : ""}`);
+	say(`align-tables file=${relative} groups=${groups.length} misaligned=${groups.filter(group => group.edits.length > 0).length} edits=${totalEdits} compressed=${result.compressed.length} compressed-members=${compressedMembers} refused=${refused.length + result.unsupportedParameters!.length}${write ? " write=true" : ""}`);
 	for (const group of refused) say(`  ${String(group.startLine).padStart(4)}-${group.endLine}  ${group.kind} refused — ${group.conflict ?? (overlaps.has(group) ? "alignment edits overlap another group" : "the edit would change more than whitespace between tokens")}`);
+	for (const group of result.unsupportedParameters!) say(`  ${group.startLine}-${group.endLine}  ${group.kind} refused — ${group.reason}`);
 	for (const entry of result.compressed) say(`  compressed  interface-members  line=${entry.line} members=${entry.members} — expanding is a structural change, so it is not fixed automatically`);
 	for (const group of groups) {
 		const range    = group.startLine === group.endLine ? `${group.startLine}` : `${group.startLine}-${group.endLine}` ;
@@ -617,6 +635,7 @@ export async function runTypeScriptAlign(args: readonly string[], options: TypeS
 				context : group.context,
 				depth   : group.depth
 			})),
+			...result.unsupportedParameters!,
 			...result.compressed.map(entry => ({
 				kind : "interface-members-compressed",
 
@@ -632,7 +651,7 @@ export async function runTypeScriptAlign(args: readonly string[], options: TypeS
 
 		emit(JSON.stringify(envelope([{ file: relative, language: "typescript", mode: write ? "write" : "check", summary: summarize(resultGroups), groups: resultGroups, parse }]), null, 2));
 	};
-	if (result.compressed.length > 0) { report({ status: "not-run", tool: "typescript" }); return 1; }
+	if (result.compressed.length > 0 || result.unsupportedParameters!.length > 0) { report({ status: "not-run", tool: "typescript" }); return 1; }
 	if (write && totalEdits > 0) {
 		const target = `${root}/${relative}` ;
 		let passes   = 0                     ;

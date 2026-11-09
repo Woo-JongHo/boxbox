@@ -68,6 +68,16 @@ then compute minimum widths from the cells in that region. A different expressio
   missing comma. Families are ordered by source: the first uses unsuffixed axes and later families use suffixes `2`,
   `3`, and so on. Only a three-or-more ordinary one-line explicit family exposes `property-value`. Blank lines and
   interstitial comments split the comparison region.
+- **Function parameters:** an already vertical `FunctionDeclaration` list with at least three contiguous one-line
+  identifier parameters is a `vertical-function-parameters` table. Typed rows share `parameter-colon`, defaulted rows
+  share `parameter-equals`, and existing separators share `parameter-comma`. Each axis needs two occurrences within
+  the three-or-more-row table; two defaulted rows do not create a two-row table exception. The last parameter keeps
+  its original comma presence. Optional names and generic declarations keep their syntax. Destructuring, rest,
+  parameter modifiers, comments, multiline types/defaults, blank lines and shared opening/closing lines exclude the
+  whole list rather than exposing a supported subset. A declaration spanning at least three distinct parameter rows
+  reports that exclusion as `REFUSE` with its original parameter range; shorter and single-line lists are not candidates.
+  Arrow functions and methods are outside this kind. Parameter
+  descriptions map to `DESCRIBE`; detection and guidance do not grant public write approval.
 - **Logical chains:** an existing multiline homogeneous `||` or `&&` chain uses `operator | one space | optional ! |
   operand`. The operator cell is two characters and the negation cell is either one `!` or empty. `!=` and `!==` are
   indivisible comparison operators, and `!!value` stays opaque. A virtual first-row operator/negation prefix is an
@@ -187,6 +197,7 @@ an applicable changed group lacks approval, even when a legacy kind covering nea
 |---|---|---|
 | declaration | `:` , `;` | `//` |
 | declaration-equals (declaration table with `=`) | `:` , `=` , `;` | `//` |
+| declaration-values (every initializer a string, number, boolean or null) | `:` , `=` , `;` | `//` |
 | declaration-call-envelope | `colon`, `equals`, `semicolon` | `call-member-dot`, `call-envelope-open`, `call-envelope-close`, `comment` |
 | declaration-call-expressions | `colon`, `equals`, `call-arg{i}`, `list-value-comma{i}`, `list-value-el{i}`, `list-arg{i}-comma{i}`, `list-arg{i}-el{i}`, `comparison-operator{i}`, `comparison-right{i}`, `conditional-question{i}`, `conditional-true{i}`, `conditional-colon{i}`, `conditional-false{i}`, `semicolon` | `call-open-paren`, `call-comma{i}`, `call-close-paren`, `list-value-open`, `list-value-close`, `list-arg{i}-open`, `list-arg{i}-close`, `subscript-close`, `comment` |
 | return-guards | `guard-return` | — |
@@ -205,6 +216,7 @@ an applicable changed group lacks approval, even when a legacy kind covering nea
 | registration | `:` , expression start , trailing `,` | — |
 | assignments (`this.x = y;` assignment table) | `=` , `;` | `//` |
 | call-statements (`expect(…).toBe(…);` call-statement table) | `;` | subject `)` , matcher `.` , matcher `(` , matcher `)` , `//` |
+| literal-array-rows (one scalar literal per line in a `const` array asserted `as const`) | existing `,` | — |
 
 Authoring examples — all identical to the checker's `--write` output:
 

@@ -8,10 +8,10 @@ import      { compareTypeScriptLayout     } from "@/typescript/17_layout-preserv
 import      { repositoryFile              } from "@/typescript/15_load-source-file.ts"    ;
 
 interface ImportRow {
-	readonly text  : string ;
-	readonly start : number ;
-	readonly end   : number ;
-	readonly block : number ;
+	readonly text    : string;
+	readonly start   : number;
+	readonly end     : number;
+	readonly block   : number;
 	/** Blocks separated only by blank lines form one section; code between imports starts a new section. */
 	readonly section : number;
 }

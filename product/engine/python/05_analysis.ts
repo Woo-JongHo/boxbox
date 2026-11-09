@@ -3,19 +3,23 @@ import      { PYTHON_ANALYSIS_SCRIPT  } from "@/python/06_analysis-script.ts" ;
 import      { PythonSourceSyntaxError } from "@/python/07_string-ranges.ts"   ;
 
 /** Existing row categories recognized from actual Python containers. */
-export type PythonRowKind = "statement" | "parameter" | "keyword" | "dictionary" | "bundle";
+export type PythonRowKind = "statement" | "parameter" | "keyword" | "dictionary" | "bundle" | "positional" | "import-from" | "return-guard";
 /** Physical source row tied to an internal owner. */
 export interface PythonRow {
 	/** Zero-based physical line. */
-	readonly line  : number       ;
+	readonly line      : number       ;
 	/** Internal AST container identity. */
-	readonly owner : number       ;
+	readonly owner     : number       ;
+	/** Validated CPython container type; descriptive, not a lookup-key context. */
+	readonly ownerType : string       ;
 	/** Row's existing grammar category. */
-	readonly kind  : PythonRowKind;
+	readonly kind      : PythonRowKind;
 	/** Start offset in original UTF-16 source. */
-	readonly start : number       ;
+	readonly start     : number       ;
 	/** Exclusive end offset in original UTF-16 source. */
-	readonly end   : number       ;
+	readonly end       : number       ;
+	/** Validated source intervals for bounded AST/token-backed statement profiles. */
+	readonly slots?: readonly { readonly axis: string; readonly start: number; readonly end: number }[];
 }
 /** Original-source UTF-16 token interval. */
 export interface PythonToken {
@@ -37,7 +41,7 @@ export interface PythonAnalysis {
 	/** Return line indexes whose proposed edits fail original-token preservation. */
 	unsafeEditLines(edits: readonly { index: number; after: string }[]): number[];
 }
-const KINDS   = new Set(["statement", "parameter", "keyword", "dictionary", "bundle"]);
+const KINDS   = new Set(["statement", "parameter", "keyword", "dictionary", "bundle", "positional", "import-from", "return-guard"]);
 const integer = (value: unknown): value is number =>
 	Number.isSafeInteger(value) && (value as number) >= 0;
 function range(a: unknown, b: unknown, length: number): a is number {
@@ -97,7 +101,7 @@ export function analyzePython(source: string, timeoutMs = 60_000): PythonAnalysi
 		    ||  typeof o[2] !== "string"
 		    || !KINDS.has(o[3])
 		) fail();
-		const allowed = o[3] === "statement" ? [
+		const allowed = ["statement", "import-from", "return-guard"].includes(o[3]) ? [
 				"Module",
 				"FunctionDef",
 				"AsyncFunctionDef",
@@ -116,6 +120,7 @@ export function analyzePython(source: string, timeoutMs = 60_000): PythonAnalysi
 			: o[3] === "bundle" ? ["List", "Tuple"].includes(o[1]) && o[2] === "elts"
 			: o[3] === "keyword" ? o[1] === "Call" && o[2] === "keywords"
 			: o[3] === "parameter" ? o[1] === "arguments" && o[2] === "parameters"
+			: o[3] === "positional" ? o[1] === "Call" && o[2] === "args" || ["List", "Tuple"].includes(o[1]) && o[2] === "elts"
 			: o[1] === "Dict" && o[2] === "entries";
 		if (!allowed) fail();
 		return o;
@@ -131,7 +136,7 @@ export function analyzePython(source: string, timeoutMs = 60_000): PythonAnalysi
 	const rows: PythonRow[] = value.rows.map((r: unknown) => {
 		if (
 		       !Array.isArray(r)
-		    ||  r.length         !== 5
+		    || ![5, 6].includes(r.length)
 		    || !integer(r[0])
 		    ||  r[0] >= lines.length
 		    || !integer(r[1])
@@ -141,12 +146,39 @@ export function analyzePython(source: string, timeoutMs = 60_000): PythonAnalysi
 		    || !range(r[3], r[4], source.length)
 		) fail();
 		if (r[3] < offsets[r[0]]! || r[4] > offsets[r[0]]! + lines[r[0]]!.replace(/\r$/u, "").length) fail();
+		const special = r[2] === "import-from" || r[2] === "return-guard";
+		if (r.length === 6 && !special || special && r.length !== 6) fail();
+		let slots: { axis: string; start: number; end: number }[] | undefined;
+		if (special && r[5] !== null) {
+			const axes = r[2] === "import-from" ? ["from", "module", "import", "names"] : ["if", "condition", "colon", "return", "value"];
+			if (!Array.isArray(r[5]) || r[5].length !== axes.length) fail();
+			let previous = r[3];
+			slots = r[5].map((slot: unknown, index: number) => {
+				if (
+					   !Array.isArray(slot)
+					||  slot.length !== 3
+					||  slot[0]     !== axes[index]
+					|| !range(slot[1], slot[2], source.length)
+					||  slot[1] < previous
+					||  slot[2] > r[4]
+					|| !/^[ \t]*$/u.test(source.slice(previous, slot[1]))
+				) fail();
+				if (index === 0 && slot[1] !== r[3]) fail();
+				const keyword = ({ from: "from", import: "import", if: "if", return: "return", colon: ":" } as Record<string, string>)[slot[0]];
+				if (keyword !== undefined && source.slice(slot[1], slot[2]) !== keyword) fail();
+				previous = slot[2];
+				return { axis: slot[0], start: slot[1], end: slot[2] };
+			});
+			if (previous !== r[4]) fail();
+		}
 		return {
-			line  : r[0] ,
-			owner : r[1] ,
-			kind  : r[2] ,
-			start : r[3] ,
-			end   : r[4]
+			line      : r[0]             ,
+			owner     : r[1]             ,
+			ownerType : owners[r[1]]![1] ,
+			kind      : r[2]             ,
+			start     : r[3]             ,
+			end       : r[4]             ,
+			...(slots === undefined ? {} : { slots }),
 		};
 	});
 	let prev = 0;

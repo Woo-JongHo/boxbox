@@ -19,6 +19,10 @@ export interface ResultGroup {
 	readonly edits     : number            ;
 	/** The immediate container of the table (TypeScript: the AST container kind); omitted where unknowable. */
 	readonly context?  : string            ;
+	/** Descriptive family only; never used in a lookup or approval key. */
+	readonly semanticKind?: string;
+	/** Descriptive source owner only; does not replace the legacy context field. */
+	readonly sourceContext?: string;
 	/** How deeply nested the table's container is (0 = top level). */
 	readonly depth?    : number            ;
 	/** Why a REFUSE group was refused (`whitespace-only`, `wide-characters`). */

@@ -18,15 +18,15 @@ export const REPORT_SCHEMA_VERSION = 1;
 /** Alarm thresholds. The numbers are layer-3 convention defaults the user can change. hard/soft are estimates before measurement. */
 export interface ReportLimits {
 	/** Hard limit: the last column before horizontal scrolling starts in the reference environment (docs/development/research/column-width.md, measurement pending) */
-	readonly hard         : number ;
+	readonly hard         : number;
 	/** Soft limit: exceeding it only produces a suggestion */
-	readonly soft         : number ;
+	readonly soft         : number;
 	/** Outlier: alarm when the longest row is this much wider than the second longest (20, same as import rule B) */
-	readonly outlierGap   : number ;
+	readonly outlierGap   : number;
 	/** Wasted padding: alarm when alignment spaces ÷ content characters in a table exceed this ratio */
 	readonly paddingRatio : number;
 	/** Large change: alarm when one group has at least this many pending edits */
-	readonly largeEdits   : number ;
+	readonly largeEdits   : number;
 }
 
 /** Display column of a trailing `;`. undefined if the line does not end with `;`. */
@@ -94,7 +94,7 @@ export const DEFAULT_LIMITS: ReportLimits = {
 };
 
 /** Structural minimum-row exceptions; these do not grant write approval. */
-const TWO_ROW_KINDS = new Set(["declaration-equals", "declaration-call-envelope", "declaration-call-expressions", "import-declarations"]);
+const TWO_ROW_KINDS = new Set(["declaration-equals", "declaration-values", "declaration-call-envelope", "declaration-call-expressions", "import-declarations"]);
 
 export type CheckStatus = "pass" | "fail" | "not-run" | "skipped";
 
@@ -108,14 +108,14 @@ export interface ReportCheck {
 export type AlarmId = "A0" | "A1" | "A2" | "A3" | "A4" | "A5" | "A6" | "A7" | "A8" | "A9" | "A12";
 
 export interface ReportAlarm {
-	readonly id        : AlarmId ;
-	readonly label     : string  ;
-	readonly startLine : number  ;
-	readonly endLine   : number  ;
-	readonly detail    : string  ;
-	readonly hint      : string  ;
+	readonly id        : AlarmId;
+	readonly label     : string ;
+	readonly startLine : number ;
+	readonly endLine   : number ;
+	readonly detail    : string ;
+	readonly hint      : string ;
 	/** Target used to pair with the baseline: the content of the alarm's first line (whitespace collapsed). Stays the same when line numbers or alignment spaces change. */
-	readonly anchor    : string  ;
+	readonly anchor    : string ;
 }
 
 /** Alarm comparison against the baseline (docs/development/authoring-flow.md section 3): paired by kind and target, never compared by count. */
@@ -296,17 +296,18 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 			push("A3", row, row, `longest row is ${sorted[0]! - sorted[1]!} cols wider than the second`, "simplify that row's exceptional element first");
 		}
 
+		const displayKind = group.semanticKind ? `${group.semanticKind} (${group.kind})` : group.kind;
 		const byState: Readonly<Partial<Record<GroupState, readonly [AlarmId, string, string]>>> = {
-			FIXABLE : ["A0", `${group.kind} ${group.rows} rows, pending edits ${group.edits}`, `fixable by whitespace alignment (safe): ${result.language === "typescript" ? "07_align-tables.ts" : result.language === "python" ? "02_align-tables.ts" : "06_align-tables.ts"} --file <file> --write`] ,
+			FIXABLE : ["A0", `${displayKind} ${group.rows} rows, pending edits ${group.edits}`, `fixable by whitespace alignment (safe): ${result.language === "typescript" ? "07_align-tables.ts" : result.language === "python" ? "02_align-tables.ts" : "06_align-tables.ts"} --file <file> --write`] ,
 			REFUSE  : group.reason === "wide-characters"
-				? ["A4", `${group.kind}: a column would follow wide characters`, "move the wide text out of the compared cells, for example into a named constant"]
-				: ["A4", `${group.kind}: cannot split losslessly`              , "check the row structure; if it is an engine bug, add a fixture"                ],
-			SUGGEST : ["A6", `${group.kind} ${group.rows} rows`                              , "a human decides whether to make it a table"                                   ]                                                                                                                         ,
+				? ["A4", `${displayKind}: a column would follow wide characters`, "move the wide text out of the compared cells, for example into a named constant"]
+				: ["A4", `${displayKind}: cannot split losslessly`              , "check the row structure; if it is an engine bug, add a fixture"                ],
+			SUGGEST : ["A6", `${displayKind} ${group.rows} rows`                              , "a human decides whether to make it a table"                                   ]                                                                                                                         ,
 		};
 		const stateAlarm = byState[group.state];
 		if (stateAlarm) push(stateAlarm[0], ...span, stateAlarm[1], stateAlarm[2]);
 
-		if (pattern === undefined) push("A8", ...span, `${group.kind} (axes ${group.axes.map(axis => axis.split("=")[0]).join(">")})`, "add a mapping to the surface-form data");
+		if (pattern === undefined) push("A8", ...span, `${displayKind} (axes ${group.axes.map(axis => axis.split("=")[0]).join(">")})`, "add a mapping to the surface-form data");
 		else if (pattern.includes("|")) push("A5", ...span, `${pattern}`, "pattern the engine cannot distinguish; decided by verdict");
 
 		const padding = rows.map(row => paddingOf(lines[row - 1] ?? "")).reduce((sum, cell) => ({ padding: sum.padding + cell.padding, content: sum.content + cell.content }), { padding: 0, content: 0 });

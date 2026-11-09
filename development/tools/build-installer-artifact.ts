@@ -4,6 +4,7 @@ import      {
               chmodSync     ,
               cpSync        ,
               mkdirSync     ,
+              readdirSync   ,
               readFileSync  ,
               rmSync        ,
               writeFileSync ,
@@ -20,9 +21,11 @@ function run(command: string, args: readonly string[]): string {
 	return child.stdout;
 }
 
-function projectDocument(source: string): string {
-	const projected = source.replaceAll(/"<PLUGIN_ROOT>\/scripts\/boxbox"/gu, "@BOXBOX_ENGINE_COMMAND@");
-	if (!projected.includes("@BOXBOX_ENGINE_COMMAND@") || /npx\s|scripts\/boxbox["\s]/u.test(projected)) throw new Error("Canonical plugin launcher changed; update the installer projection before shipping.");
+function projectDocument(source: string, installerName: string): string {
+	const projected = source.replaceAll(/"<PLUGIN_ROOT>\/scripts\/boxbox"/gu, "@BOXBOX_ENGINE_COMMAND@")
+		.replace(/^Resolve `<PLUGIN_ROOT>` from this skill location.*$/mu, "Run the configured local launcher from the target repository root.");
+	const guarded = projected.replaceAll(`npx ${installerName}`, "");
+	if (!projected.includes("@BOXBOX_ENGINE_COMMAND@") || /<PLUGIN_ROOT>|npx\s|scripts\/boxbox["\s]/u.test(guarded)) throw new Error("Canonical plugin launcher changed; update the installer projection before shipping.");
 	return projected;
 }
 
@@ -63,11 +66,11 @@ export function buildInstallerArtifact(): string {
 		cpSync(join(ROOT, "product/installer/launcher.mjs"), join(plugin, "scripts/boxbox.mjs"));
 		writeFileSync(join(root, "bundle.json"), JSON.stringify({ ...metadata, host }, null, "\t") + "\n");
 		const skillPath = join(plugin, "skills", manifest.name, "SKILL.md")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ;
-		const skill     = projectDocument(readFileSync(skillPath, "utf8")).replace(/^Every check and fix goes through.*$/mu, "Every check and fix goes through this plugin's permanent local Node launcher, already configured by the installer. Run the commands below from the root of the target repository. No BOXBOX_CLI setup is needed. Never fetch a separate registry package for the engine. " + (host === "claude" ? "On Windows, the generated Node bridge works from Bash or PowerShell." : "On Windows, run these commands through PowerShell.")) ;
+		const skill     = projectDocument(readFileSync(skillPath, "utf8"), product.npmName).replace(/^Every check and fix goes through.*$/mu, "Every check and fix goes through this plugin's permanent local Node launcher, already configured by the installer. Run the commands below from the root of the target repository. No BOXBOX_CLI setup is needed. Never fetch a separate registry package for the engine. " + (host === "claude" ? "On Windows, the generated Node bridge works from Bash or PowerShell." : "On Windows, run these commands through PowerShell.")) ;
 		writeFileSync(skillPath, skill);
 		if (host === "claude") {
 			const inspector = join(plugin, "agents/readability-inspector.md");
-			writeFileSync(inspector, projectDocument(readFileSync(inspector, "utf8")) + "\nOn Windows, the generated Node bridge works from Bash or PowerShell.\n");
+			writeFileSync(inspector, projectDocument(readFileSync(inspector, "utf8"), product.npmName) + "\nOn Windows, the generated Node bridge works from Bash or PowerShell.\n");
 		}
 		const hooksPath = join      (plugin, "hooks/hooks.json"     ) ;
 		const hooks     = JSON.parse(readFileSync(hooksPath, "utf8")) ;
@@ -86,6 +89,8 @@ export function buildInstallerArtifact(): string {
 
 	const destination = join(ROOT, "dist/installer");
 	mkdirSync(destination, { recursive: true });
+	// The documented install command expands one archive; an older one would become npm's executable argument.
+	for (const name of readdirSync(destination)) if (name.endsWith(".tgz")) rmSync(join(destination, name));
 	const packed = run("npm", ["pack", output, "--pack-destination", destination, "--json"]);
 	writeFileSync(join(destination, "pack-result.json"), packed);
 	const archive = join(destination, (JSON.parse(packed) as [{ filename: string }])[0].filename);

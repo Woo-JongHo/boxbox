@@ -6,14 +6,16 @@ const KEYWORDS = new Set([
 	"lambda", "nonlocal", "not", "or", "pass", "raise", "return", "try", "while", "with", "yield", "match", "case",
 ]);
 
-const NAME      = /^[A-Za-z_][A-Za-z0-9_]*$/u                    ;
-const NUMBER    = /^(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/u  ;
-const OPERATORS = new Set(["+", "-", "*", "/", "//", "%", "**"]) ;
+const NAME      = /^[A-Za-z_][A-Za-z0-9_]*$/u                          ;
+const NUMBER    = /^(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/u        ;
+const STRING    = /^(?:"(?:\\.|[^"\\\r\n])*"|'(?:\\.|[^'\\\r\n])*')$/u ;
+const OPERATORS = new Set(["+", "-", "*", "/", "//", "%", "**"])       ;
 
-/** A deliberately bounded calculation grammar; all accepted expression bytes remain one opaque cell. */
+/** Bounded calculations, positional calls and ordinary string operands remain one opaque cell. */
 function calculation(text: string): boolean {
-	const tokens = text.match(/[A-Za-z_][A-Za-z0-9_]*|(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?|\*\*|\/\/|[()+\-*/%,.]/gu) ?? [];
-	if (tokens.join("") !== text.replace(/[ \t]/gu, "")) return false;
+	const scanned = text.match(/[ \t]+|"(?:\\.|[^"\\\r\n])*"|'(?:\\.|[^'\\\r\n])*'|[A-Za-z_][A-Za-z0-9_]*|(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?|\*\*|\/\/|[()+\-*/%,.]/gu) ?? [];
+	if (scanned.join("") !== text) return false;
+	const tokens = scanned.filter(token => !/^[ \t]+$/u.test(token));
 
 	let cursor       = 0                                                                    ;
 	const identifier = (token: string): boolean => NAME.test(token) && !KEYWORDS.has(token) ;
@@ -29,7 +31,7 @@ function calculation(text: string): boolean {
 		while (tokens[cursor] === "+" || tokens[cursor] === "-") cursor += 1;
 
 		const token = tokens[cursor] ?? "";
-		if (identifier(token) || NUMBER.test(token)) cursor += 1;
+		if (identifier(token) || NUMBER.test(token) || STRING.test(token)) cursor += 1;
 		else if (token === "(") {
 			cursor += 1;
 			if (!expression(depth + 1) || tokens[cursor] !== ")") return false;

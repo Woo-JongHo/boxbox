@@ -41,10 +41,10 @@ test("hooks.json commands run the configured local CLI through the shim and leav
 	fakeNode(bin, log);
 	const run = (event: string, input: Record<string, unknown>): Record<string, unknown> => {
 		const result = spawnSync("/bin/sh", ["-c", command(event)], {
-			cwd      : project,
-			input    : JSON.stringify({ ...input, cwd: project }),
-			encoding : "utf8",
-			env      : { ...process.env, PATH: `${bin}:${process.env.PATH}`, BOXBOX_CLI: ENTRY, CLAUDE_PLUGIN_ROOT: PLUGIN, CLAUDE_PLUGIN_DATA: data },
+			cwd      : project                                                                                                                         ,
+			input    : JSON.stringify({ ...input, cwd: project })                                                                                      ,
+			encoding : "utf8"                                                                                                                          ,
+			env      : { ...process.env, PATH: `${bin}:${process.env.PATH}`, BOXBOX_CLI: ENTRY, CLAUDE_PLUGIN_ROOT: PLUGIN, CLAUDE_PLUGIN_DATA: data } ,
 		});
 		expect(result.status).toBe(0);
 		return JSON.parse(result.stdout);
@@ -60,6 +60,23 @@ test("hooks.json commands run the configured local CLI through the shim and leav
 	expect(readFileSync(log, "utf8").trim().split("\n")[0]                           ).toBe(ENTRY) ;
 }, 60_000);
 
+test("without an engine, hooks never block the host and only the session hook explains the setup", () => {
+	const env = { ...process.env };
+	delete env.BOXBOX_CLI;
+	const hook = (mode: string) => spawnSync("sh", [join(PLUGIN, "scripts/boxbox"), "hook", mode], { env, encoding: "utf8" });
+
+	const session = hook("session");
+	expect(session.status).toBe     (0                                        ) ;
+	expect(session.stdout).toContain("no local engine configured"             ) ;
+	expect(session.stdout).toContain("boxbox#install-the-plugin"              ) ;
+	for (const mode of ["post", "stop"]) {
+		const result = hook(mode);
+		expect(result.status).toBe(0 ) ;
+		expect(result.stdout).toBe("") ;
+		expect(result.stderr).toBe("") ;
+	}
+});
+
 test("the plugin refuses an unconfigured engine before invoking a runtime or registry", () => {
 	const env = { ...process.env };
 	delete env.BOXBOX_CLI;
@@ -69,4 +86,5 @@ test("the plugin refuses an unconfigured engine before invoking a runtime or reg
 	expect(result.status).toBe     (2                           ) ;
 	expect(result.stdout).toBe     (""                          ) ;
 	expect(result.stderr).toContain("no local engine configured") ;
+	expect(result.stderr).toContain("boxbox#install-the-plugin" ) ;
 });

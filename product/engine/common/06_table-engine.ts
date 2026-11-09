@@ -43,6 +43,12 @@ export interface PreparedRow {
 	readonly region: string;
 }
 
+/** Display-only source labels, excluded from grouping and approval identity. */
+export interface GroupDescription {
+	readonly semanticKind?: string;
+	readonly sourceContext?: string;
+}
+
 /** One invocation's source analysis and edit safety checks. */
 export interface PreparedSource {
 	/** Opaque original-source spans consumed by the shared mask. */
@@ -55,6 +61,10 @@ export interface PreparedSource {
 	transparent(index: number, masked: string): string | null;
 	/** Identify edits that fail the original-source preservation proof. */
 	unsafeEditLines(edits: readonly TableEdit[]): readonly number[];
+	/** Report candidates outside the selected zero-based row indexes; returned line numbers are one-based. */
+	unsupported?(coveredLines: ReadonlySet<number>): readonly { readonly line: number; readonly reason: string }[];
+	/** Describe an already selected run using its actual zero-based rows, including noncontiguous rows. */
+	describeGroup?(rowIndexes: readonly number[], axes: readonly string[]): GroupDescription;
 }
 
 export interface LineProfiler {
@@ -90,7 +100,7 @@ export interface TableEdit {
 	readonly after  : string ;
 }
 
-export interface DetectedTable {
+export interface DetectedTable extends GroupDescription {
 	readonly startLine : number ;
 	readonly endLine   : number ;
 	readonly rows      : number ;
@@ -103,7 +113,7 @@ export interface DetectedTable {
 	readonly refusal? : "whitespace-only" | "wide-characters";
 }
 
-export interface PairGroup {
+export interface PairGroup extends GroupDescription {
 	readonly startLine : number ;
 	readonly endLine   : number ;
 	readonly rows      : number ;
@@ -119,11 +129,13 @@ export interface AlignResult {
 	/** Number of rows that alignment would change. */
 	readonly misaligned : number                  ;
 	/** Number of rows actually changed when apply=true. */
-	readonly edits      : number                  ;
-	readonly details    : readonly DetectedTable[];
-	readonly pairs      : readonly PairGroup[]    ;
+	readonly edits   : number                   ;
+	readonly details : readonly DetectedTable[] ;
+	readonly pairs   : readonly PairGroup[]     ;
 	/** Tables whose edits failed the whitespace-only check or whose columns would follow wide characters; never applied. */
 	readonly refused    : readonly DetectedTable[];
+	/** Valid source candidates outside the profiler's supported shapes; never rewritten. */
+	readonly unsupported?: readonly { readonly line: number; readonly reason: string }[];
 }
 
 export interface AlignOptions {
@@ -369,9 +381,14 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 	const observations : { run: readonly AcceptedRow[]; table?: DetectedTable; alignedCodes: readonly string[] | null; reason?: string }[] = [] ;
 
 	for (const run of runs) {
-		const signature = signatureOf(longestProfile(run));
+		const signature   = signatureOf(longestProfile(run))                                                                       ;
+		const description = prepared?.describeGroup?.(run.map(row => row.index), longestProfile(run).slots.map(slot => slot.axis)) ;
+		const display = {
+			...(description?.semanticKind === undefined ? {} : { semanticKind: description.semanticKind }),
+			...(description?.sourceContext === undefined ? {} : { sourceContext: description.sourceContext }),
+		};
 		if (run.length < minRows) {
-			pairs.push({ startLine: run[0].index + 1, endLine: run[run.length - 1].index + 1, rows: run.length, signature });
+			pairs.push({ startLine: run[0].index + 1, endLine: run[run.length - 1].index + 1, rows: run.length, signature, ...display });
 			if (options.observe) observations.push({ run, alignedCodes: null, reason: "pair below minimum row count" });
 			continue;
 		}
@@ -386,6 +403,7 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 				widths    : columnWidths(aligner, run)                       ,
 				edits     : []                                               ,
 				refusal   : "wide-characters"                                ,
+				...display,
 			});
 			continue;
 		}
@@ -416,6 +434,7 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 			axes      : longestProfile(run).slots.map(slot => slot.axis) ,
 			widths    : widths                                           ,
 			edits     : tableEdits                                       ,
+			...display,
 		};
 		candidates.push(table);
 		if (options.observe) observations.push({ run, table, alignedCodes });
@@ -432,7 +451,8 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 	const output = options.apply
 		? lines.map((line, index) => editsByLine.get(index)?.after ?? line).join("\n")
 		: source;
-	const misaligned = new Set(details.flatMap(table => table.edits.map(edit => edit.index))).size;
+	const misaligned  = new Set(details.flatMap(table => table.edits.map(edit => edit.index))).size            ;
+	const unsupported = prepared?.unsupported?.(new Set(runs.flatMap(run => run.map(row => row.index)))) ?? [] ;
 	return {
 		output     : output                                                                               ,
 		groups     : runs.length                                                                          ,
@@ -442,6 +462,7 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		details    : details                                                                              ,
 		pairs      : pairs                                                                                ,
 		refused    : [...refused, ...wideRefused].sort((left, right) => left.startLine - right.startLine) ,
+		...(unsupported.length ? { unsupported } : {}),
 	};
 }
 

@@ -1,5 +1,5 @@
 {
-	"description": "boxbox: inspects TypeScript, Python, JSON, and YAML session changes after matched file-edit and shell tools and at completion, read-only. Records stay in host plugin data.",
+	"description": "boxbox: inspects TypeScript, Python, JSON, and YAML session changes after matched file-edit and shell tools. Hooks are read-only by default; explicit align mode may apply approved alignment after tools. Stop never writes. Receipts stay in host plugin data; mode and update-cache state use user configuration. SessionStart may check GitHub tags once per day; BOXBOX_UPDATE_CHECK=0 disables that probe.",
 	"hooks": {
 		"SessionStart": [
 			{ "hooks": [ { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/boxbox hook session", "timeout": 120 } ] }

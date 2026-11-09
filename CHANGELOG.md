@@ -1,23 +1,86 @@
 # Changelog
 
 All notable changes to this project are documented here. The format follows
-[Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version 0.2.5 is a
-GitHub draft pre-release and has not been published.
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version 0.2.6 is merged
+and tagged; its GitHub pre-release remains a draft. See the
+release documentation when preparing a version.
 
 ## [Unreleased]
 
 ### Added
 
+- `check` and `format` accept repeated `--file` selectors or `--directory`.
+  Configured-formatter checks compare the complete formatter-then-BoxBox result
+  with original bytes, including when both stages change a file and restore its
+  canonical content. Batch formatting reports each completed or refused file;
+  replacement remains atomic per file.
+- On-demand `monitor` reports recorded Claude/Codex usage and source volume in
+  JSON and a self-contained host-data HTML page. Baseline v2 preserves hash-only
+  baseline compatibility; unavailable fingerprints and legacy footprints remain
+  explicit. Reports omit conversation, command and source text and dollar cost.
+- Session `off`, `check`, `align` and `refactor` modes, source-based updates with
+  installed-version verification, and an optional status-line segment. Check is
+  the default; only explicitly selected align mode can apply approved horizontal
+  changes after a tool call. Stop never writes source.
+- Python descriptive kinds and source-free authoring variants, including bounded
+  whole-line `from` imports and conditional returns. Display names preserve
+  legacy approval identities; unprofiled comma runs and complex forms remain
+  visibly unsupported. No new Python write rule is approved.
+- TypeScript vertical function-parameter detection, retaining existing final
+  commas and refusing bounded unsupported lists. Detection grants no write
+  approval.
+- Required documented data fields retain their name/colon/type/semicolon table
+  across attached JSDoc in bounded data-only interfaces; Port methods and mixed
+  optional interfaces retain their existing boundaries.
+- `doctor`, `init`, `align` and `format` detect Prettier, Black and Ruff's
+  formatter from configuration at the project root and warn that they revert
+  alignment. A hook or script that rewrites files is reported as running; a
+  configuration alone, or check mode, is reported as possibly in use. `align` and
+  `format` warn only for a formatter of the file's language. Detection only reads
+  files and changes no exit code.
 - Versioned, bounded lifecycle receipts with explicit inspection coverage,
   advisory `SUGGEST`, `NO_GROUPS` and `DELETED_ONLY` states. Legacy receipts
   remain readable evidence without acquiring rule-approval authority.
 
+- Three approved TypeScript rules for top-level declarations: simple values
+  (`ts-sourcefile-value-declarations`), direct calls with arguments
+  (`ts-sourcefile-call-envelope-declarations`) and empty calls
+  (`ts-sourcefile-empty-call-declarations`). `align` and `format` can now write
+  these shapes, so the README's value-declaration example works.
+- `check` reports `fixableGroups` and `approvedFixableGroups`. Without a configured
+  formatter, its exit-code policy is unchanged. A file with an unapproved group is still refused as a whole, so an
+  approved count above zero does not mean `align` will write it.
+- The `declaration-values` kind, reported only when every initializer in a run
+  is a string, number, boolean or null. Other initializers keep
+  `declaration-equals`, which stays unapproved.
+
+- Recognize standalone multiline scalar-literal arrays in `const` declarations
+  asserted `as const` as TypeScript `LIST` tables. Align existing commas only;
+  do not insert a missing comma or add automatic write approval.
+
 ### Fixed
 
+- Keep installer capability probes out of normal output while retaining their
+  diagnostics on failure.
+- Resolve the locally built update archive by an absolute file URL on POSIX
+  instead of npm's inherited invocation directory.
+- Direct public update notices to the published installer, infer the active
+  host for installed development updates, require an explicit source checkout,
+  and report failed explicit release checks as non-success.
+- Name affected files in failing hook feedback and suppress duplicate
+  PostToolUse feedback until the observed source snapshot changes. Interrupted
+  TypeScript alignment tests keep temporary workspaces inside BoxBox's excluded
+  project namespace, so hooks do not report test staging files as user edits.
+- Keep the host's fixed session project when payload cwd moves into a nested
+  repository or outside scratch directory; external edits report their scope.
+- Compare bounded mixed Python call/string assignments through their shared outer
+  assignment columns without borrowing the detailed assignment approval.
+- Honor shell escapes, continuations and physical newlines in formatter warnings;
+  verify Codex updates as well as Claude updates and honor both color controls.
 - Verify the bundled engine archive's SHA-256 before engine installation or
   host registration; preserve the previous installation when a prepared
   repair fails integrity validation.
-- Include host-normalized `Bash` calls in PostToolUse inspection. Hooks remain
+- Include host-normalized `Bash` calls in PostToolUse inspection. Default check/refactor hooks remain
   read-only and recheck session changes rather than identifying the writer.
   Shell feedback is advisory and preserves command output and exit status;
   existing edit-tool feedback and the at-most-once Stop continuation remain.
@@ -27,6 +90,34 @@ GitHub draft pre-release and has not been published.
 - Feed Python syntax validation through stdin, removing a temporary-file
   dependency that failed in native read-only Codex sessions. Syntax diagnostics,
   parser-fault rejection and write safeguards retain their existing contract.
+
+- A marketplace-only install no longer blocks the host: without an engine, hooks
+  exit 0 instead of 2 and no checks run. Previously every edit and response
+  reported a blocking hook error, and a one-line file write took 17 turns in a
+  real Claude session. Hook decisions with an engine are unchanged.
+- The missing-engine message now links the setup steps. The installer still
+  refuses a same-named marketplace from another source, now without a stack
+  trace. It gives removal commands only for a registration of this repository
+  with no other plugins, because removing a marketplace removes its plugins.
+- Rebuilding the installer removes older archives, so the documented install
+  command always expands to one archive.
+
+### Changed
+
+- Value-only declaration runs now report `declaration-values` instead of
+  `declaration-equals`, so a project approval of that exact key no longer
+  matches them.
+- An axis present on only one row, such as a member call, type annotation or
+  comment, now stays in the reported axes, so the row no longer shares a lookup
+  key with plain rows. Alignment is unchanged. A same-call declaration run with
+  one such row therefore no longer matches `ts-sourcefile-call-declarations`. A
+  lone `call-envelope-close` stays omitted, as the empty-call rule documents.
+- A declaration row holding a comment that is not reported as its comment axis,
+  such as `/* note */` or a `//` with no space before it, no longer reports
+  `declaration-values` or `declaration-call-envelope`. Comments inside a call's
+  argument list stay part of that opaque cell.
+- An installed-artifact test now pins the output of the README's first example. The install section gives commands
+  that work from a fresh clone and states that no one-command install exists yet.
 
 ## [0.2.6] - 2026-10-25
 

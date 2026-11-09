@@ -49,24 +49,25 @@ afterEach(() => {
 });
 
 describe("the approved recommended preset", () => {
-	test("ships exactly the two human-approved rules with matching dated, versioned proof records", () => {
+	test("ships exactly the human-approved rules with matching dated, versioned proof records", () => {
 		const data = registry();
 
-		expect(data.conventions.map(record => record.id)).toEqual(["ts-sourcefile-call-declarations", "py-simple-assignments"]) ;
-		expect(data.examples.size                       ).toBe   (4                                                           ) ;
-		expect(data.decisions.size                      ).toBe   (2                                                           ) ;
+		expect(data.conventions.map(record => record.id)).toEqual(["ts-sourcefile-call-declarations", "py-simple-assignments", "ts-sourcefile-value-declarations", "ts-sourcefile-call-envelope-declarations", "ts-sourcefile-empty-call-declarations"]) ;
+		expect(data.examples.size                       ).toBe   (10                                                                                                                                                                                   ) ;
+		expect(data.decisions.size                      ).toBe   (5                                                                                                                                                                                    ) ;
 		for (const convention of data.conventions) {
-			expect(convention).toMatchObject({ status: "approved", approvedBy: "maintainer", date: "2026-10-21", versions: APPROVAL_VERSIONS });
+			const date = ["ts-sourcefile-call-declarations", "py-simple-assignments"].includes(convention.id) ? "2026-10-21" : "2026-11-03";
+			expect(convention).toMatchObject({ status: "approved", approvedBy: "maintainer", date, versions: APPROVAL_VERSIONS });
 			const decision = data.decisions.get(convention.id)!;
 
-			expect(decision).toMatchObject({ kind: "rule", layer: "convention", approvedBy: "maintainer", date: "2026-10-21", examples: convention.examples });
+			expect(decision).toMatchObject({ kind: "rule", layer: "convention", approvedBy: "maintainer", date, examples: convention.examples });
 			const { document } = documentResolver(PRESET)(decision.ref, "preset");
 
-			expect(document).toContain("A human maintainer approved this exact scope, the positive example and the excluded boundary on 2026-10-21.");
+			expect(document).toContain(`A human maintainer approved this exact scope, the positive example and the excluded boundary on ${date}.`);
 			for (const id of convention.examples!) {
 				const example = data.examples.get(id)!;
 
-				expect(example).toMatchObject({ status: "approved", approvedBy: "maintainer", date: "2026-10-21", versions: APPROVAL_VERSIONS, source: { kind: "synthetic", license: "CC0-1.0" } });
+				expect(example).toMatchObject({ status: "approved", approvedBy: "maintainer", date, versions: APPROVAL_VERSIONS, source: { kind: "synthetic", license: "CC0-1.0" } });
 				expect(example.contentHash).toBe(contentHashOf(example.before, example.after));
 				if (example.verdict === "bad") expect(example.after).not.toBe(example.before);
 			}
@@ -81,6 +82,9 @@ describe("the approved recommended preset", () => {
 			"conventions.jsonl", "examples.jsonl", "decisions.jsonl",
 			"docs/public/decisions/ts-sourcefile-call-declarations.md",
 			"docs/public/decisions/py-simple-assignments.md",
+			"docs/public/decisions/ts-sourcefile-value-declarations.md",
+			"docs/public/decisions/ts-sourcefile-call-envelope-declarations.md",
+			"docs/public/decisions/ts-sourcefile-empty-call-declarations.md",
 		]);
 		for (const file of files) {
 			const target = join(output, file.path);

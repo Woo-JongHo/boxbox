@@ -42,7 +42,7 @@ test("a copied development skill resolves engine aliases and its TypeScript runt
 		'import { version } from "typescript";',
 		'import { parse } from "yaml";',
 		'import { displayWidth } from "@/common/01_display-width.ts";',
-		'console.log(JSON.stringify({ version, width: displayWidth("가a"), yaml: parse("ready: true").ready }));',
+		'console.log(JSON.stringify({ version, width: displayWidth("가a"), yaml: parse("ready: true").ready }));', // cjk-test-data
 	].join("\n") + "\n");
 	const alias = Bun.spawnSync(["bun", join(skill, "engine/alias-portability-probe.ts")], { cwd: home });
 	expect(alias.exitCode                                                                         ).toBe   (0                                                         ) ;

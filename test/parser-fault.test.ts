@@ -58,6 +58,7 @@ function runCli(path: string, target: string): ReturnType<typeof Bun.spawnSync> 
 
 describe("parser faults close before writing", () => {
 	for (const [mode, message, timeout] of [
+		["empty", "invalid response", 60_000],
 		["failure", "unrecognized status", 60_000],
 		["failure-error", "unrecognized status", 60_000],
 		["signal" , "signal"             , 60_000],
@@ -104,6 +105,29 @@ describe("parser faults close before writing", () => {
 		expect(run.exitCode).toBe(0);
 		expect(readFileSync(target, "utf8")).not.toBe(SOURCE);
 	});
+});
+
+test("a silent syntax-parser success closes public check before analysis", () => {
+	const directory = join(scratch, "silent-syntax");
+	mkdirSync(directory, { recursive: true });
+	const python = Bun.which("python3");
+	expect(python).not.toBeNull();
+	const executable = join(directory, "python3");
+	writeFileSync(executable, `#!${BUN}\nimport { readFileSync } from "node:fs";\nconst args=process.argv.slice(2);if(args.some(arg=>arg.includes("except SyntaxError as e:")))process.exit(0);const child=Bun.spawnSync([${JSON.stringify(python)},...args],{stdin:readFileSync(0),stdout:"pipe",stderr:"pipe"});process.stdout.write(child.stdout);process.stderr.write(child.stderr);process.exit(child.exitCode);\n`);
+	chmodSync(executable, 0o755);
+	const target = join(directory, "sample.py");
+	for (const source of ["if:\n", "pass\n"]) {
+		writeFileSync(target, source);
+		const run = Bun.spawnSync([BUN, join(ROOT, "product/packages/cli/entry.ts"), "check", "--source", "--file", "sample.py", "--json"], {
+			cwd: directory, env: { ...process.env, PATH: directory }, stdout: "pipe", stderr: "pipe",
+		});
+		expect(run.exitCode, run.stderr.toString()).toBe(2);
+		const report = JSON.parse(run.stdout.toString());
+		expect(report.syntax.status                ).toBe     ("error"           ) ;
+		expect(report.syntax.diagnostics.join("\n")).toContain("invalid response") ;
+		expect(report.results[0].parse.status      ).toBe     ("not-run"         ) ;
+		expect(readFileSync(target, "utf8")        ).toBe     (source            ) ;
+	}
 });
 
 for (const fault of ["parse", "ast"] as const) test(`raw CLI preserves bytes when the ${fault} write gate fails after analysis`, () => {

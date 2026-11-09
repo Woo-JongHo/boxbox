@@ -27,11 +27,23 @@ export interface SyntaxDiagnostics {
 interface Toolchain {
 	readonly tool    : string           ;
 	readonly command : readonly string[];
-	/** Keeps only diagnostic lines; everything else in the tool output is noise. */
+	/** Recognizes syntax diagnostic lines inside the validated parser response. */
 	readonly keep    : RegExp           ;
 }
 
-const PYTHON_PARSE = "import ast,sys\nsource=sys.stdin.buffer.read().decode('utf-8')\ntry:\n ast.parse(source)\nexcept SyntaxError as e:\n print(f'{e.lineno}: error: {e.msg}')\nexcept ValueError:\n if '\\x00' not in source: raise\n print('None: error: source code string cannot contain null bytes')";
+const PYTHON_PARSE = `import ast,json,sys,warnings
+warnings.simplefilter('ignore', SyntaxWarning)
+warnings.simplefilter('ignore', DeprecationWarning)
+source=sys.stdin.buffer.read().decode('utf-8')
+diagnostics=[]
+try:
+ ast.parse(source)
+except SyntaxError as e:
+ diagnostics=[f'{e.lineno}: error: {e.msg}']
+except ValueError:
+ if '\\x00' not in source: raise
+ diagnostics=['None: error: source code string cannot contain null bytes']
+print(json.dumps({'version':1,'status':'invalid' if diagnostics else 'valid','diagnostics':diagnostics}))`;
 
 const TOOLCHAINS: Readonly<Record<string, Toolchain>> = {
 	python : { tool: "python3", keep: /error:/u, command: ["python3", "-I", "-c", PYTHON_PARSE] },
@@ -49,18 +61,22 @@ function hasTool(tool: string, timeoutMs = 5_000): boolean {
 function diagnostics(toolchain: Toolchain, source: string, timeoutMs: number): readonly string[] {
 	const [command, ...args] = toolchain.command;
 	const run    = spawnSync(command!, args, { input: source, encoding: "utf8", maxBuffer: MAX_OUTPUT_BYTES, timeout: timeoutMs }) ;
-	const output = `${run.stdout ?? ""}\n${run.stderr ?? ""}`                                                                      ;
-
-	const parsed = output
-		.split("\n")
-		.filter(line => toolchain.keep.test(line))
-		.map(line => line.replace(/\S*boxbox-parse-[^/\s]*\/Input\.\w+/gu, "<file>").replace(/(:\d+):\d+/gu, "$1").trim());
 	if (run.error !== undefined) throw new Error(`parser execution failed (${toolchain.tool}): ${run.error.message}`);
 	if (run.signal !== null) throw new Error(`parser terminated by signal (${toolchain.tool}): ${run.signal}`);
 	if (run.status === null) throw new Error(`parser exited without a status: ${toolchain.tool}`);
-	// The Python probe prints diagnostics and exits 0; any other status is an unexplained failure.
+	// The Python probe emits a typed response and exits 0; any other status is an unexplained failure.
 	if (run.status !== 0) throw new Error(`parser exited with unrecognized status (${toolchain.tool}): ${run.status}`);
-	return parsed;
+	const invalid = new Error(`parser returned an invalid response (${toolchain.tool})`);
+	if (run.stderr !== "") throw invalid;
+	let decoded: unknown;
+	try { decoded = JSON.parse(run.stdout); } catch { throw invalid; }
+	if (typeof decoded !== "object" || decoded === null || Array.isArray(decoded)) throw invalid;
+	const response = decoded as Record<string, unknown>;
+	if (Object.keys(response).length !== 3 || response.version !== 1 || !Array.isArray(response.diagnostics)) throw invalid;
+	const values: unknown[] = response.diagnostics;
+	if (!values.every((value): value is string => typeof value === "string" && toolchain.keep.test(value))) throw invalid;
+	if (response.status !== (values.length === 0 ? "valid" : "invalid")) throw invalid;
+	return values.map(line => line.replace(/\S*boxbox-parse-[^/\s]*\/Input\.\w+/gu, "<file>").replace(/(:\d+):\d+/gu, "$1").trim());
 }
 
 /** The toolchain for a language, with its validated timeout. Throws when the language has no parser or the tool is not installed. */
@@ -73,7 +89,7 @@ function requireToolchain(language: string, options: ParseCheckOptions): { reado
 	return { toolchain, timeoutMs };
 }
 
-/** Parses one input unconditionally. Unlike compareParse's identical-input fast path, this establishes syntax validity. */
+/** Parses one input unconditionally and requires a typed parser response to establish syntax validity. */
 export function syntaxDiagnostics(language: string, source: string, options: ParseCheckOptions = {}): SyntaxDiagnostics {
 	const { toolchain, timeoutMs } = requireToolchain(language, options);
 	return { tool: toolchain.tool, diagnostics: diagnostics(toolchain, source, timeoutMs) };
@@ -82,8 +98,8 @@ export function syntaxDiagnostics(language: string, source: string, options: Par
 /** Parses `before` and `after` with the language's toolchain and compares their diagnostics. */
 export function compareParse(language: string, before: string, after: string, options: ParseCheckOptions = {}): ParseComparison {
 	const { toolchain, timeoutMs } = requireToolchain(language, options);
-	if (before === after) return { status: "ok", tool: toolchain.tool, delta: [] };
 	const left  = diagnostics(toolchain, before, timeoutMs) ;
+	if (before === after) return { status: "ok", tool: toolchain.tool, delta: [] };
 	const right = diagnostics(toolchain, after , timeoutMs) ;
 	const delta = [
 		...left.filter(line => !right.includes(line)).map(line => `- ${line}`),

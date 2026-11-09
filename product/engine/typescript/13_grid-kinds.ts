@@ -4,6 +4,7 @@
  * columns without knowing the kind. To add a case: 01 which kind is it → 02 which axis is missing → 03 register
  * the kind and axes in this file, add rows to test/fixtures/table-kinds.ts, and pin them with test/typescript-align.test.ts.
  */
+import      { createScanner } from "typescript/unstable/ast/scanner" ;
 import      {
               isArrayLiteralExpression                                    ,
               isBlock                                                     ,
@@ -14,6 +15,7 @@ import      {
               isClassDeclaration                                          ,
               isEnumDeclaration                                           ,
               isExpressionStatement                                       ,
+              isFunctionDeclaration                                       ,
               isIfStatement                                               ,
               isEnumMember                                                ,
               isIdentifier                                                ,
@@ -22,6 +24,7 @@ import      {
               isMethodSignatureDeclaration                                ,
               isNewExpression                                             ,
               isObjectLiteralExpression                                   ,
+              isParameterDeclaration                                      ,
               isPropertyAssignment                                        ,
               isPropertyAccessExpression                                  ,
               isPropertyDeclaration                                       ,
@@ -263,11 +266,10 @@ function callExpressionLayers(source: SourceFile, call: Node): readonly RowBound
 
 /** A list item the list layer may pad: a string, number or boolean literal. Identifiers and calls keep the list compact. */
 function isLiteralItem(node: Node): boolean {
-	const name = syntaxKindName(node);
-	return   name === "StringLiteral"
-          || name === "NumericLiteral"
-          || name === "TrueLiteral"
-          || name === "FalseLiteral";
+	return   node.kind === SyntaxKind.StringLiteral
+          || node.kind === SyntaxKind.NumericLiteral
+          || node.kind === SyntaxKind.TrueKeyword
+          || node.kind === SyntaxKind.FalseKeyword;
 }
 
 /** An object item of the list layer: a `name: literal` property whose name text must match across rows. */
@@ -760,6 +762,55 @@ function detectRegistrationRow(source: SourceFile, node: Node): readonly RowBoun
 	return boundaries;
 }
 
+/** A vertical array of scalar literals is a row table; compact and mixed-value arrays stay with their parent syntax. */
+function literalArrayRows(node: Node): readonly Node[] | undefined {
+	if (!isArrayLiteralExpression(node))
+		return undefined;
+	const items = [...node.elements];
+	if (items.length === 0 || !items.every(isLiteralItem))
+		return undefined;
+	const source    = node.getSourceFile()                                   ;
+	const assertion = (node as unknown as { readonly parent?: Node }).parent ;
+	if (assertion === undefined || syntaxKindName(assertion) !== "AsExpression")
+		return undefined;
+	const asserted = assertion as unknown as { readonly parent?: Node; readonly type: Node; readonly expression: Node };
+	if (
+		   syntaxKindName(asserted.type)                                             !== "TypeReference"
+		|| source.text.slice(asserted.type.getStart(source), asserted.type.getEnd()) !== "const"
+		|| asserted.expression                                                       !== node
+	)
+		return undefined;
+	const declaration = asserted.parent as unknown as (Node & { readonly parent?: Node; readonly initializer?: unknown }) | undefined;
+	if (
+		   declaration                 === undefined
+		|| syntaxKindName(declaration) !== "VariableDeclaration"
+		|| declaration.initializer     !== assertion
+	)
+		return undefined;
+	const declarationList = declaration.parent as unknown as (Node & { readonly parent?: Node; readonly flags?: number }) | undefined;
+	if (declarationList === undefined || ((declarationList.flags ?? 0) & NodeFlags.Const) === 0)
+		return undefined;
+	if (declarationList.parent === undefined || !isVariableStatement(declarationList.parent))
+		return undefined;
+	const open  = node.getStart(source) ;
+	const close = node.getEnd() - 1     ;
+	if (physicalLine(source, open) === physicalLine(source, items[0]!.getStart(source)))
+		return undefined;
+	if (physicalLine(source, close) === physicalLine(source, items.at(-1)!.getEnd() - 1))
+		return undefined;
+	if (items.some(item => !onePhysicalLine(source, item) || !ownLineOf(source, item, COMMA_REST)))
+		return undefined;
+	return items;
+}
+
+function detectLiteralArrayRow(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
+	if (!isLiteralItem(node) || !onePhysicalLine(source, node) || !ownLineOf(source, node, COMMA_REST)) return undefined;
+	const parent = (node as unknown as { readonly parent?: Node }).parent;
+	if (parent === undefined || !isArrayLiteralExpression(parent) || !parent.elements.some(item => item === (node as unknown as typeof item))) return undefined;
+	const comma = tokenAfter(source, node.getEnd(), ",");
+	return comma === undefined ? [] : [{ axis: "comma", from: node.getEnd(), at: comma }];
+}
+
 function physicalLine(source: SourceFile, position: number): number {
 	return source.getLineAndCharacterOfPosition(position).line;
 }
@@ -1021,6 +1072,131 @@ function detectVerticalCallArgument(source: SourceFile, node: Node): readonly Ro
 	return comma === undefined ? [] : [{ axis: "vertical-call-comma", from: node.getEnd(), at: comma, insert: true }];
 }
 
+// Compare kinds, not names: SyntaxKind's reverse lookup returns aliases such as FirstLiteralToken.
+const VALUE_INITIALIZERS = new Set<number>([SyntaxKind.StringLiteral, SyntaxKind.NumericLiteral, SyntaxKind.TrueKeyword, SyntaxKind.FalseKeyword, SyntaxKind.NullKeyword]) ;
+const SIGN_OPERATORS     = new Set<number>([SyntaxKind.MinusToken, SyntaxKind.PlusToken])                                                                                  ;
+
+/**
+ * True when the row's lines hold a comment outside the opaque cell that the row does not report as its comment axis,
+ * so its lookup key would hide it. Only the text around the cell is scanned: the cell may hold regular expressions and
+ * templates, which a bare scan misreads as comments.
+ */
+function hasUnreportedComment(source: SourceFile, row: DetectedRow, cell: Node): boolean {
+	const start    = source.getPositionOfLineAndCharacter(source.getLineAndCharacterOfPosition(row.node.getStart(source)).line, 0) ;
+	const lineEnd  = source.text.indexOf("\n", row.node.getEnd())                                                                  ;
+	const end      = lineEnd < 0 ? source.text.length : lineEnd                                                                    ;
+	const reported = new Set(row.boundaries.filter(boundary => boundary.axis === "comment").map(boundary => boundary.at))          ;
+	for (const [from, to] of [[start, cell.getStart(source)], [cell.getEnd(), end]] as const) {
+		const scanner = createScanner(false, undefined, source.text.slice(from, to));
+		for (let token = scanner.scan(); token !== SyntaxKind.EndOfFile; token = scanner.scan()) {
+			const comment = token === SyntaxKind.SingleLineCommentTrivia || token === SyntaxKind.MultiLineCommentTrivia;
+			if (comment && !reported.has(from + scanner.getTokenStart())) return true;
+		}
+	}
+	return false;
+}
+
+/** A string, number, boolean or null, including a signed number; everything else keeps the wider declaration-equals key. */
+function simpleValueInitializer(node: Node): Node | undefined {
+	const value = isVariableStatement(node) ? node.declarationList.declarations[0]?.initializer : undefined;
+	if (value === undefined || value.kind !== SyntaxKind.PrefixUnaryExpression) return value !== undefined && VALUE_INITIALIZERS.has(value.kind) ? value : undefined;
+
+	const unary = value as unknown as { readonly operator: number; readonly operand: Node };
+	return SIGN_OPERATORS.has(unary.operator) && unary.operand.kind === SyntaxKind.NumericLiteral ? value : undefined;
+}
+
+const PARAMETER_LITERAL_KINDS = new Set<SyntaxKind>([
+	SyntaxKind.StringLiteral                 ,
+	SyntaxKind.RegularExpressionLiteral      ,
+	SyntaxKind.NoSubstitutionTemplateLiteral ,
+	SyntaxKind.TemplateHead                  ,
+	SyntaxKind.TemplateMiddle                ,
+	SyntaxKind.TemplateTail                  ,
+	SyntaxKind.JsxText                       ,
+]);
+
+/** Validate the whole list before exposing rows, so one unsupported parameter cannot leave an alignable subset. */
+function verticalFunctionParameters(source: SourceFile, node: Node): readonly Node[] | undefined {
+	if (!isFunctionDeclaration(node) || node.parameters.length < 3)                                        return undefined;
+
+	const parameters = node.parameters                                                      ;
+	const open       = parameters.pos - 1                                                   ;
+	const tail       = skipTrivia(source.text, parameters.end)                              ;
+	const close      = source.text[tail] === "," ? skipTrivia(source.text, tail + 1) : tail ;
+	if (source.text[open] !== "(" || source.text[close] !== ")")                                           return undefined;
+
+	const lines = parameters.map(parameter => physicalLine(source, parameter.getStart(source)));
+	if (lines[0]! !== physicalLine(source, open) + 1 || physicalLine(source, close) !== lines.at(-1)! + 1) return undefined;
+	if (lines.some((line, index) => index > 0 && line !== lines[index - 1]! + 1))                          return undefined;
+	if (parameters.some(parameter =>   !isIdentifier(parameter.name)
+		                            ||  parameter.dotDotDotToken !== undefined
+		                            ||  (parameter.modifiers?.length ?? 0) > 0
+		                            || !ownLineOf(source, parameter, /^[ \t]*,?[ \t]*$/u))) return undefined;
+
+	// The AST disambiguates regex literals from division after TypeScript assertions; punctuation scanning cannot.
+	const literals: Node[] = [];
+	const visit = (current: Node): void => {
+		if (PARAMETER_LITERAL_KINDS.has(current.kind)) { literals.push(current); return; }
+
+		current.forEachChild(child => { visit(child); return undefined; });
+	};
+
+	parameters.forEach(visit);
+
+	let cursor = parameters.pos;
+
+	for (const literal of literals) {
+		const start = literal.kind === SyntaxKind.JsxText ? literal.pos : literal.getStart(source);
+		if (start < cursor || /\/[/*]/u.test(source.text.slice(cursor, start))) return undefined;
+
+		cursor = literal.getEnd();
+	}
+
+	if (/\/[/*]/u.test(source.text.slice(cursor, close))) return undefined;
+
+	return [...parameters];
+}
+
+interface UnsupportedParameterList {
+	readonly startLine : number ;
+	readonly endLine   : number ;
+	readonly rows      : number ;
+	readonly reason    : string ;
+}
+
+/** Reports a vertical candidate whose whole list is deliberately outside the supported parameter boundary. */
+export function unsupportedFunctionParameters(source: SourceFile, node: Node): UnsupportedParameterList | undefined {
+	if (!isFunctionDeclaration(node) || node.parameters.length < 3) return undefined;
+
+	const lines = node.parameters.map(parameter => physicalLine(source, parameter.getStart(source)));
+	if (new Set(lines).size < 3 || verticalFunctionParameters(source, node) !== undefined) return undefined;
+
+	return {
+		startLine : lines[0]! + 1                                                                                                                ,
+		endLine   : physicalLine(source, node.parameters.at(-1)!.getEnd() - 1) + 1                                                               ,
+		rows      : node.parameters.length                                                                                                       ,
+		reason    : "unsupported function parameter layout: requires contiguous single-line identifier rows without rest, modifiers or comments" ,
+	};
+}
+
+function detectVerticalFunctionParameter(source: SourceFile, node: Node): readonly RowBoundary[] | undefined {
+	if (!isParameterDeclaration(node) || !isIdentifier(node.name)) return undefined;
+
+	const nameEnd    = (node.questionToken ?? node.name).getEnd() ;
+	const colon      = tokenAfter(source, nameEnd, ":")           ;
+	const equalsFrom = node.type?.getEnd() ?? nameEnd             ;
+	const equals     = tokenAfter(source, equalsFrom, "=")        ;
+	const comma      = tokenAfter(source, node.getEnd(), ",")     ;
+
+	const boundaries: RowBoundary[] = [];
+
+	if (colon !== undefined)  boundaries.push({ axis: "parameter-colon", from: nameEnd, at: colon });
+	if (equals !== undefined) boundaries.push({ axis: "parameter-equals", from: equalsFrom, at: equals });
+	if (comma !== undefined)  boundaries.push({ axis: "parameter-comma", from: node.getEnd(), at: comma });
+
+	return boundaries;
+}
+
 /** Keep resource declarations and awaited/constructor initializers outside direct-call approval keys. */
 function declarationGroupName(run: readonly DetectedRow[]): string {
 	if (run.some(row => row.boundaries.some(boundary => boundary.layer === "nested-expression"))) return "declaration-call-expressions";
@@ -1032,7 +1208,11 @@ function declarationGroupName(run: readonly DetectedRow[]): string {
 		const initializer = declaration.declarations[0]?.initializer ;
 		return (declaration.flags & NodeFlags.Using) !== 0 || (initializer !== undefined && (isAwaitExpression(initializer) || isNewExpression(initializer)));
 	});
-	return extended ? "declaration-extended-equals" : "declaration-equals";
+	const values = run.every(row => {
+		const value = simpleValueInitializer(row.node);
+		return value !== undefined && !hasUnreportedComment(row.node.getSourceFile(), row, value);
+	});
+	return extended ? "declaration-extended-equals" : values ? "declaration-values" : "declaration-equals";
 }
 
 interface DeclarationCallSubgroup {
@@ -1122,6 +1302,12 @@ export const ROW_KINDS: readonly RowKind[] = [
 		gap        : "comma"                                                                                        ,
 		containers : node => isCallExpression(node) ? verticalCallArguments(node.getSourceFile(), node) : undefined ,
 		detect     : detectVerticalCallArgument                                                                     ,
+	},
+	{
+		name       : "vertical-function-parameters"                                 ,
+		gap        : "comma"                                                        ,
+		containers : node => verticalFunctionParameters(node.getSourceFile(), node) ,
+		detect     : detectVerticalFunctionParameter                                ,
 	},
 	{
 		name       : "declaration-call-expressions"                                                                                                                         ,
@@ -1234,6 +1420,12 @@ export const ROW_KINDS: readonly RowKind[] = [
 		detect     : detectCaseClause                                                     ,
 	},
 	{
+		name       : "literal-array-rows"  ,
+		gap        : "comma"               ,
+		containers : literalArrayRows      ,
+		detect     : detectLiteralArrayRow ,
+	},
+	{
 		name       : "object-rows"   ,
 		gap        : "comma"         ,
 		containers : node => {
@@ -1273,7 +1465,7 @@ export const AXIS_NOTES: Readonly<Record<string, string>> = {
 	"semicolon"              :
 		"statement-terminating `;`",
 	"comma"                  :
-		"row-separating `,` of an enum member or object property (a last row without one is left out of the column)",
+		"row-separating `,` of an enum member, object property, or scalar literal array item (a last row without one is left out of the column)",
 	"comment"                :
 		"start column of a trailing `//` note",
 	"open-paren"             :
@@ -1382,6 +1574,12 @@ export const AXIS_NOTES: Readonly<Record<string, string>> = {
 		"start of the immediate return in an unbraced if-header family",
 	"vertical-call-comma"    :
 		"existing `,` after one physical row of an already-vertical call",
+	"parameter-colon"        :
+		"existing `:` before a one-line function parameter type",
+	"parameter-equals"       :
+		"existing `=` before a one-line function parameter default",
+	"parameter-comma"        :
+		"existing separator `,` after a one-line function parameter; an absent final comma stays absent",
 };
 
 validateLayoutAxisNotes(TYPESCRIPT_LAYOUT_POLICY, AXIS_NOTES);
@@ -1554,6 +1752,9 @@ function withCallEnvelope(source: SourceFile, kind: RowKind, run: readonly Detec
 	const legacyCalls = run.map(row => declarationCall(row.node))                ;
 	const signatures  = new Set(calls.map(call => callSignature(source, call!))) ;
 	if (signatures.size === 1 && legacyCalls.every(call => call !== undefined)) return run;
+
+	// The argument list is one opaque cell, so only comments outside the call are hidden from the key.
+	if (run.some((row, index) => hasUnreportedComment(source, row, calls[index]!))) return run;
 
 	const envelopes = calls.map(call => envelopeBoundaries(source, call!));
 	if (envelopes.some(boundaries => boundaries === undefined))                 return run;

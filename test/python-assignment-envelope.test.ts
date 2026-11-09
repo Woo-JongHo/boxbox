@@ -46,6 +46,29 @@ const EXPECTED = [
 
 const align = (source: string) => alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true });
 
+test("mixed call and string declarations share only their outer assignment columns", () => {
+	const source = 'import logging\nlogger = logging.getLogger(__name__)\n__layer__ = "task"\n__task__ = "p1.t1"\nSettings = load_settings(1, "t1")\n' ;
+	const result = align(source)                                                                                                                       ;
+	expect(result.tables                                             ).toBe         (1                                                                                                                                       ) ;
+	expect(result.pairs                                              ).toEqual      ([]                                                                                                                                      ) ;
+	expect(result.details[0]                                         ).toMatchObject({ startLine: 2, endLine: 5, rows: 4, axes: ["name", "equal", "assignment-value"] }                                                      ) ;
+	expect(result.output                                             ).toBe         ('import logging\nlogger    = logging.getLogger(__name__)\n__layer__ = "task"\n__task__  = "p1.t1"\nSettings  = load_settings(1, "t1")\n') ;
+	expect(changedLines(source, result.output, PYTHON_ALIGNER.syntax)).toEqual      ([]                                                                                                                                      ) ;
+	expect(align(result.output).output                               ).toBe         (result.output                                                                                                                           ) ;
+	expect(result.output.split("\n")                                 ).toHaveLength (source.split("\n").length                                                                                                               ) ;
+});
+
+test("string operands preserve escaped bytes, CRLF, comments and call evaluation order", () => {
+	const source = 'first = capture("a,b") # first\r\nlonger = "quote\\\" and # comma," # second\r\nthird = capture(1, \'x\\\\y\') # third\r\n' ;
+	const result = align(source)                                                                                                                ;
+	expect(result.tables                                             ).toBe        (1                          ) ;
+	expect(changedLines(source, result.output, PYTHON_ALIGNER.syntax)).toEqual     ([]                         ) ;
+	expect(result.output.split("\r\n")                               ).toHaveLength(source.split("\r\n").length) ;
+	expect(align(result.output).output                               ).toBe        (result.output              ) ;
+	const compare = `import json,sys\nresults=[]\nfor source in json.load(sys.stdin):\n events=[]\n def capture(*args):\n  events.append(args)\n  return args\n scope={'capture':capture}\n exec(source,scope)\n results.append(events)\nassert results[0] == results[1]\nprint('same')`;
+	expect(python(compare, JSON.stringify([source, result.output])).trim()).toBe("same");
+});
+
 describe("Python assignment envelopes", () => {
 	test("the exact native quote fixture shares outer assignment columns", () => {
 		expect(new Bun.CryptoHasher("sha256").update(SOURCE).digest("hex")).toBe("bcaa36507954fe1d1933c5e44dbb939bc7540f63377b985c4d38575cb8aa802b");
@@ -195,7 +218,7 @@ test("unsupported targets, values and damaged delimiters never project an outer 
 	const statements = [
 		"self.total = call(x, y)", "items[0] = call(x, y)", "a, b = call(x, y)", "a: int = call(x, y)",
 		"a = b = call(x, y)", "a += call(x, y)", "a == call(x, y)", "a = call(x=y)", "a = (b := 1)",
-		"a = call(x, y); other()", 'a = "text"', "a = f'{value}'", "a = [x, y]", "a = items[index]",
+		"a = call(x, y); other()", "a = f'{value}'", "a = [x, y]", "a = items[index]",
 		"a = [value for value in items]", "a = await call(x, y)", "a = lambda: 1", "a = yield 1",
 		"a = x if flag else y", "a = call(x, y) ", "a = call(x,]", "a = call(x, y", "a = x @ y",
 		"a = .", "a = foo bar", "a = call(x,)", "a = ()", `a = ${"(".repeat(66)}x${")".repeat(66)}`,
@@ -307,7 +330,7 @@ test("a complete synthetic test proof permits preview and apply of the new envel
 		expect(applied.safety                                                       ).toMatchObject({ approvalChecked: true, parserChecked: true }) ;
 		expect(readFileSync(file, "utf8")                                           ).toBe         (EXPECTED                                      ) ;
 		expect((await runFormatPipeline(options)).written                           ).toBe         (false                                         ) ;
-		expect(loadApprovalRegistry([{ root: PRESET, layer: "preset" }]).conventions).toHaveLength (2                                             ) ;
+		expect(loadApprovalRegistry([{ root: PRESET, layer: "preset" }]).conventions).toHaveLength (5                                             ) ;
 	} finally {
 		rmSync(root, { recursive: true, force: true });
 	}

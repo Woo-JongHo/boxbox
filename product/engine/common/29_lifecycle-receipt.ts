@@ -1,7 +1,9 @@
 import      { lstatSync, readFileSync } from "node:fs"                    ;
 import type { FileResult              } from "@/common/24_result-json.ts" ;
+import      { isMode                  } from "@/common/35_mode.ts"        ;
+import type { Mode                    } from "@/common/35_mode.ts"        ;
 
-export const LIFECYCLE_RECEIPT_SCHEMA_VERSION = 1               ;
+export const LIFECYCLE_RECEIPT_SCHEMA_VERSION = 2               ;
 export const LIFECYCLE_RECEIPT_MAX_BYTES      = 8 * 1024 * 1024 ;
 
 export type LifecycleEvent = "PostToolUse" | "Stop";
@@ -38,13 +40,20 @@ export interface LifecycleReceiptV1 {
 	readonly automaticFixPerformed: false;
 }
 
+export interface LifecycleReceiptV2 extends Omit<LifecycleReceiptV1, "schemaVersion" | "automaticFixPerformed"> {
+	readonly schemaVersion         : 2                                                            ;
+	readonly mode                  : Mode                                                         ;
+	readonly aligned               : readonly { readonly file: string; readonly edits: number }[] ;
+	readonly automaticFixPerformed : boolean                                                      ;
+}
+
 /** Receipts written before schema 1 remain readable evidence, but are never returned by the schema-1 validator. */
 export type LegacyLifecycleReceipt = Omit<LifecycleReceiptV1, "schemaVersion" | "coverage" | "deleted"> & {
 	readonly schemaVersion?: undefined;
 	readonly coverage?     : undefined;
 };
 
-export type LifecycleReceipt = LifecycleReceiptV1 | LegacyLifecycleReceipt;
+export type LifecycleReceipt = LifecycleReceiptV1 | LifecycleReceiptV2 | LegacyLifecycleReceipt;
 
 function record(value: unknown, where: string): Record<string, unknown> {
 	if (typeof value !== "object" || value === null || Array.isArray(value)) throw new Error(`${where}: must be a JSON object`);
@@ -140,13 +149,14 @@ function sharedReceipt(value: Record<string, unknown>, where: string, strict: bo
 	};
 }
 
-export function validateLifecycleReceipt(value: unknown, where = "lifecycle receipt"): LifecycleReceiptV1 {
+export function validateLifecycleReceipt(value: unknown, where = "lifecycle receipt"): LifecycleReceiptV1 | LifecycleReceiptV2 {
 	const receipt = record(value, where);
-	unknownKeys(receipt, ["schemaVersion", "event", "state", "files", "checked", "unsupported", "deleted", "coverage", "tool", "at", "automaticFixPerformed"], where);
-	if (receipt.schemaVersion !== LIFECYCLE_RECEIPT_SCHEMA_VERSION) throw new Error(`${where}.schemaVersion: expected 1`);
-	const shared   = sharedReceipt(receipt, where, true                 ) ;
-	const deleted  = strings      (receipt.deleted, `${where}.deleted`  ) ;
-	const coverage = record       (receipt.coverage, `${where}.coverage`) ;
+	if (receipt.schemaVersion !== 1 && receipt.schemaVersion !== 2) throw new Error(`${where}.schemaVersion: expected 1 or 2`);
+	const modeFields = receipt.schemaVersion === 2 ? ["mode", "aligned"] : [];
+	unknownKeys(receipt, ["schemaVersion", "event", "state", "files", "checked", "unsupported", "deleted", "coverage", "tool", "at", "automaticFixPerformed", ...modeFields], where);
+	const shared   = sharedReceipt(receipt.schemaVersion === 2 ? { ...receipt, automaticFixPerformed: false } : receipt, where, true) ;
+	const deleted  = strings      (receipt.deleted, `${where}.deleted`                                                              ) ;
+	const coverage = record       (receipt.coverage, `${where}.coverage`                                                            ) ;
 	unknownKeys(coverage, ["changedFiles", "checkedFiles", "unsupportedFiles", "deletedFiles", "filesWithGroups", "groups"], `${where}.coverage`);
 	const parsedCoverage: LifecycleCoverage = {
 		changedFiles     : count(coverage.changedFiles    , `${where}.coverage.changedFiles`    ) ,
@@ -182,8 +192,23 @@ export function validateLifecycleReceipt(value: unknown, where = "lifecycle rece
 		throw new Error(`${where}: checked, unsupported and deleted files must be a disjoint partition of files`);
 	}
 	if (shared.state !== expectedState) throw new Error(`${where}.state: expected ${expectedState}`);
+	if (receipt.schemaVersion === 1) return { schemaVersion: 1, ...shared, deleted, coverage: parsedCoverage };
+	if (!isMode(receipt.mode)) throw new Error(`${where}.mode: unsupported mode`);
+	if (!Array.isArray(receipt.aligned)) throw new Error(`${where}.aligned: must be an array`);
+	const aligned = receipt.aligned.map((item, index) => {
+		const entry = record(item, `${where}.aligned[${index}]`);
+		unknownKeys(entry, ["file", "edits"], `${where}.aligned[${index}]`);
+		const file  = string(entry.file, `${where}.aligned[${index}].file`  ) ;
+		const edits = count (entry.edits, `${where}.aligned[${index}].edits`) ;
+		if (!checkedFiles.includes(file) || edits === 0) throw new Error(`${where}.aligned[${index}]: requires a checked file and positive edit count`);
 
-	return { schemaVersion: 1, ...shared, deleted, coverage: parsedCoverage };
+		return { file, edits };
+	});
+	if (new Set(aligned.map(item => item.file)).size !== aligned.length) throw new Error(`${where}.aligned: duplicate file`);
+	if (receipt.automaticFixPerformed !== (aligned.length > 0)) throw new Error(`${where}.automaticFixPerformed: must match aligned files`);
+	if (aligned.length > 0 && (receipt.mode !== "align" || shared.event !== "PostToolUse")) throw new Error(`${where}.aligned: writes require align mode and PostToolUse`);
+
+	return { schemaVersion: 2, ...shared, deleted, coverage: parsedCoverage, mode: receipt.mode, aligned, automaticFixPerformed: receipt.automaticFixPerformed };
 }
 
 export function parseLifecycleReceipt(text: string, where = "lifecycle receipt"): LifecycleReceipt {
@@ -205,7 +230,7 @@ export function readLifecycleReceipt(path: string): LifecycleReceipt {
 	return parseLifecycleReceipt(readFileSync(path, "utf8"), path);
 }
 
-export function encodeLifecycleReceipt(value: LifecycleReceiptV1): string {
+export function encodeLifecycleReceipt(value: LifecycleReceiptV1 | LifecycleReceiptV2): string {
 	const text = `${JSON.stringify(validateLifecycleReceipt(value), null, 2)}\n`;
 	if (Buffer.byteLength(text) > LIFECYCLE_RECEIPT_MAX_BYTES) throw new Error(`lifecycle receipt: exceeds ${LIFECYCLE_RECEIPT_MAX_BYTES} bytes`);
 

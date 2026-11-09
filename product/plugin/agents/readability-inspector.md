@@ -9,10 +9,11 @@ Read the boxbox skill's `SKILL.md` to the end and follow it. That document is yo
 Inspect only the one file the parent agent named, read-only. Do not modify product code, tests, configuration or skill
 files, and do not run `format`. Use only commands that do not write.
 
-1. Get the groups and states with `"<PLUGIN_ROOT>/scripts/boxbox" check --file <target file> --json`.
+1. Get original-source groups and states with `"<PLUGIN_ROOT>/scripts/boxbox" check --source --file <target file> --json`. This inspection path does not execute a configured formatter or stage a working copy.
 2. Check the applicable approved rules with `"<PLUGIN_ROOT>/scripts/boxbox" guide --file <target file> --json`.
 3. Read the actual execution flow and separate same-role row candidates from over-alignment risks. Never group rows only because their text looks alike.
 4. Treat `REFUSE` groups and groups without approved rules as things to report, not as fix candidates.
 
-The report contains a verdict and evidence per group, whether approved rules exist, and risks. Leave the full report at
-the path the parent specifies, and return only a 3–5 line verdict and that path to the parent conversation.
+The report contains a verdict and evidence per group, whether approved rules exist, and risks. Return the full report
+through the host result channel to the calling agent or controller. That caller saves it at the specified report path
+and returns only a 3–5 line verdict and that path in the main conversation.

@@ -33,6 +33,53 @@ describe("syntaxDiagnostics", () => {
 	});
 });
 
+test.each([
+	["empty", ""],
+	["untyped", "{}"],
+	["wrong version", '{"version":2,"status":"valid","diagnostics":[]}'],
+	["contradictory validity", '{"version":1,"status":"valid","diagnostics":["1: error: invalid"]}'],
+	["missing invalid diagnostics", '{"version":1,"status":"invalid","diagnostics":[]}'],
+	["wrong diagnostic type", '{"version":1,"status":"invalid","diagnostics":[7]}'],
+	["extra fields", '{"version":1,"status":"valid","diagnostics":[],"extra":true}'],
+	["unrelated output", 'noise\n{"version":1,"status":"valid","diagnostics":[]}'],
+])("Python syntax and comparison reject %s protocol responses", (_name, output) => {
+	const root = mkdtempSync(join(tmpdir(), "boxbox-syntax-response-"));
+	try {
+		const executable = join(root, "python3");
+		writeFileSync(executable, `#!${process.execPath}\nif (!process.argv.includes("--version")) process.stdout.write(${JSON.stringify(output)});\n`);
+		chmodSync(executable, 0o755);
+		const module = join(import.meta.dir, "../product/engine/common/08_parse-check.ts");
+		const program = `import { syntaxDiagnostics, compareParse } from ${JSON.stringify(module)};
+const rejected=[];
+for(const call of [()=>syntaxDiagnostics("python","pass\\n"),()=>compareParse("python","a=1\\n","a = 1\\n"),()=>compareParse("python","pass\\n","pass\\n")]) {
+try { call(); rejected.push(false); } catch(error) { rejected.push(error.message.includes("invalid response")); }
+}
+console.log(JSON.stringify(rejected));`;
+		const result = Bun.spawnSync([process.execPath, "-e", program], { env: { ...process.env, PATH: root }, stdout: "pipe", stderr: "pipe" });
+		expect(result.exitCode, result.stderr.toString()).toBe(0);
+		expect(JSON.parse(result.stdout.toString())).toEqual([true, true, true]);
+	} finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test("Python syntax diagnostics preserve Unicode and CRLF independently of stdout encoding", () => {
+	const root = mkdtempSync(join(tmpdir(), "boxbox-syntax-ascii-"));
+	try {
+		const python = Bun.which("python3");
+		expect(python).not.toBeNull();
+		const executable = join(root, "python3");
+		writeFileSync(executable, `#!${process.execPath}\nimport { readFileSync } from "node:fs";\nconst args=process.argv.slice(2);if(!args.includes("--version"))args[args.length-1]="import sys;sys.stdout.reconfigure(encoding='ascii')\\n"+args.at(-1);const child=Bun.spawnSync([${JSON.stringify(python)},...args],{stdin:readFileSync(0),stdout:"pipe",stderr:"pipe"});process.stdout.write(child.stdout);process.stderr.write(child.stderr);process.exit(child.exitCode);\n`);
+		chmodSync(executable, 0o755);
+		const module   = join(import.meta.dir, "../product/engine/common/08_parse-check.ts")                                                                               ;
+		const source   = "bad \u2603\r\n"                                                                                                                                  ;
+		const expected = syntaxDiagnostics("python", source)                                                                                                               ;
+		const program  = `import { syntaxDiagnostics } from ${JSON.stringify(module)};console.log(JSON.stringify(syntaxDiagnostics("python",${JSON.stringify(source)})));` ;
+		const run      = Bun.spawnSync([process.execPath, "-e", program], { env: { ...process.env, PATH: root }, stdout: "pipe", stderr: "pipe" })                         ;
+		expect(run.exitCode, run.stderr.toString()).toBe(0);
+		expect(JSON.parse(run.stdout.toString())).toEqual(expected);
+		expect(expected.diagnostics.join("\n")).toContain("\u2603");
+	} finally { rmSync(root, { recursive: true, force: true }); }
+});
+
 test("Python diagnostics and comparisons do not require a writable temporary directory", () => {
 	const root = mkdtempSync(join(tmpdir(), "boxbox-parser-readonly-"));
 	try {
@@ -129,10 +176,10 @@ test("structure markers accept CRLF without accepting unrelated output", () => {
 });
 
 test("Python warning overrides do not turn helper parsing into syntax errors", () => {
-	const parseModule = join(import.meta.dir, "../product/engine/common/08_parse-check.ts")                                                                                                                                                                                                                                                ;
-	const rangeModule = join(import.meta.dir, "../product/engine/python/07_string-ranges.ts")                                                                                                                                                                                                                                              ;
-	const program     = `import { comparePythonStructure } from ${JSON.stringify(parseModule)}; import { pythonStringRanges } from ${JSON.stringify(rangeModule)}; const s = ${JSON.stringify('PAT = "\\d+"\ntext = f"{1}"\n')}; if (comparePythonStructure(s, s).status !== "ok" || pythonStringRanges(s).length !== 1) process.exit(7);` ;
-	const result      = Bun.spawnSync([process.execPath, "-e", program], { env: { ...process.env, PYTHONWARNINGS: "error" }, stdout: "pipe", stderr: "pipe" })                                                                                                                                                                             ;
+	const parseModule = join(import.meta.dir, "../product/engine/common/08_parse-check.ts")                                                                                                                                                                                                                                                                                                                              ;
+	const rangeModule = join(import.meta.dir, "../product/engine/python/07_string-ranges.ts")                                                                                                                                                                                                                                                                                                                            ;
+	const program     = `import { comparePythonStructure, syntaxDiagnostics } from ${JSON.stringify(parseModule)}; import { pythonStringRanges } from ${JSON.stringify(rangeModule)}; const s = ${JSON.stringify('PAT = "\\d+"\ntext = f"{1}"\n')}; if (syntaxDiagnostics("python", s).diagnostics.length !== 0 || comparePythonStructure(s, s).status !== "ok" || pythonStringRanges(s).length !== 1) process.exit(7);` ;
+	const result      = Bun.spawnSync([process.execPath, "-e", program], { env: { ...process.env, PYTHONWARNINGS: "error" }, stdout: "pipe", stderr: "pipe" })                                                                                                                                                                                                                                                           ;
 	expect(result.exitCode).toBe(0);
 });
 

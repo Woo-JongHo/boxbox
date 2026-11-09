@@ -84,7 +84,7 @@ describe("check report — safety checks", () => {
 				db                                                                                                                             ,
 			});
 
-			expect(report.conventions?.records                         ).toBe   (2                         ) ;
+			expect(report.conventions?.records                         ).toBe   (5                         ) ;
 			expect(report.conventions?.lookups.map(item => item.status)).toEqual(kinds.map(() => "unknown")) ;
 			expect(report.conventions?.counts.approved                 ).toBe   (0                         ) ;
 		} finally {
@@ -264,7 +264,7 @@ describe("check report — exact noncontiguous row membership", () => {
 			expect(nested[0]                                                                                                      ).toMatchObject({ startLine: 4, endLine: 6, rows: 3 }) ;
 			expect(nested[0]?.axes.map(axis => axis.split("=")[0])                                                                ).toEqual      (["if-close-paren", "if-return"]      ) ;
 			expect(guards.some(entry => entry.rowLines?.includes(4) || entry.rowLines?.includes(5) || entry.rowLines?.includes(6))).toBe         (false                                ) ;
-			expect(groups.some(entry => entry.kind === "declaration-equals")                                                      ).toBe         (true                                 ) ;
+			expect(groups.some(entry => entry.kind === "declaration-values")                                                      ).toBe         (true                                 ) ;
 			expect(groups.filter(entry => entry.kind !== "return-guards").every(entry => !("rowLines" in entry))                  ).toBe         (true                                 ) ;
 		} finally {
 			rmSync(root, { recursive: true, force: true });

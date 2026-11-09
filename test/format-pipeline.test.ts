@@ -59,6 +59,27 @@ afterEach(() => {
 const TS_KEY = "v1|typescript|SourceFile|declaration-equals|equals>call-open-paren>call-close-paren>semicolon" ;
 const PY_KEY = "v1|python|-|table|name>equal>value"                                                            ;
 
+test("canonicalChanged compares the complete output even when both formatting stages change it", async () => {
+	const root   = workspace()                      ;
+	const target = join     (root, "src/sample.py") ;
+	writeFileSync(target, "a=1\nlonger=22\nmid=333\n");
+	const options = {
+		root, file: "src/sample.py", language: "python" as const,
+		formatter: formatter(root, `import { readFileSync, writeFileSync } from "node:fs"; const p=process.argv[2]; writeFileSync(p,readFileSync(p,"utf8").replace(/[ \\t]*=[ \\t]*/gu, " = "));`),
+		registry: registry(root, "python", PY_KEY), resolveDocument: documentResolver(root),
+	};
+	const first     = await runFormatPipeline(options)                      ;
+	const canonical = readFileSync(target)                                  ;
+	const preview   = await runFormatPipeline({ ...options, dryRun: true }) ;
+
+	expect(first.canonicalChanged                ).toBe(true ) ;
+	expect(preview.formatterChanged              ).toBe(true ) ;
+	expect(preview.boxboxChanged                 ).toBe(true ) ;
+	expect(preview.canonicalChanged              ).toBe(false) ;
+	expect(preview.written                       ).toBe(false) ;
+	expect(readFileSync(target).equals(canonical)).toBe(true ) ;
+}, 60_000);
+
 for (const formatted of [false, true]) test(`Python warning literals survive preview, apply and fixed-point recheck with formatted strings ${formatted}`, async () => {
 	const root   = workspace()                                                                     ;
 	const target = join(root, "src/warning.py")                                                    ;

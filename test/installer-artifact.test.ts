@@ -76,6 +76,9 @@ import { join, resolve } from "node:path";
 const host = ${JSON.stringify(host)};
 const args = process.argv.slice(2);
 appendFileSync(process.env.BOXBOX_TEST_LOG, JSON.stringify({host,args,codexHome:process.env.CODEX_HOME,claudeHome:process.env.CLAUDE_CONFIG_DIR}) + "\\n");
+if (args.join(" ") === "--version") console.log("BOXBOX_PREFLIGHT_VERSION");
+if (args.at(-1) === "--help" && args[1] !== "update") console.log("BOXBOX_PREFLIGHT_HELP");
+if (process.env.BOXBOX_TEST_STDOUT_FAILURE && args.at(-1) === "--help" && args[1] !== "update") { console.log("stdout-only capability failure"); process.exit(41); }
 if (host === process.env.BOXBOX_TEST_FAIL_HOST && args[0] === "plugin" && ["add","install"].includes(args[1]) && args[2] !== "--help") process.exit(Number(process.env.BOXBOX_TEST_EXIT || 31));
 if (host !== "claude") process.exit(0);
 if (args.join(" ") === "plugin update --help") { console.log(process.env.BOXBOX_TEST_NO_SCOPE ? "Update a plugin" : "--scope <scope>"); process.exit(0); }
@@ -110,7 +113,10 @@ beforeAll(() => {
 	npm      = realpathSync(String(npmLookup.stdout).trim()) ;
 	npx      = realpathSync(String(npxLookup.stdout).trim()) ;
 	npmCache = String(cacheLookup.stdout).trim()             ;
+	mkdirSync(join(ROOT, "dist/installer"), { recursive: true });
+	writeFileSync(join(ROOT, "dist/installer/boxbox-plugin-0.0.0-stale.tgz"), "");
 	expectStatus(run("bun", ["development/tools/build-installer-artifact.ts"], { cwd: ROOT }), 0);
+	expect(readdirSync(join(ROOT, "dist/installer")).filter(name => name.endsWith(".tgz"))).toHaveLength(1);
 	artifact = join(ROOT, "dist/installer", `${NPM_NAME}-${VERSION}.tgz`);
 }, 120_000);
 
@@ -225,7 +231,7 @@ test("npm installer name differs from private engine and both host payloads have
 		"package/rules/presets/recommended/conventions.jsonl",
 		"package/rules/presets/recommended/decisions.jsonl",
 		"package/rules/presets/recommended/docs/public/decisions/py-simple-assignments.md",
-		"package/rules/presets/recommended/docs/public/decisions/ts-sourcefile-call-declarations.md",
+		"package/rules/presets/recommended/docs/public/decisions/ts-sourcefile-call-declarations.md", "package/rules/presets/recommended/docs/public/decisions/ts-sourcefile-call-envelope-declarations.md", "package/rules/presets/recommended/docs/public/decisions/ts-sourcefile-empty-call-declarations.md", "package/rules/presets/recommended/docs/public/decisions/ts-sourcefile-value-declarations.md",
 		"package/rules/presets/recommended/examples.jsonl",
 	].sort());
 	for (const path of nestedFiles) expect(readFileSync(join(nested, path), "utf8")).not.toContain(ROOT);
@@ -252,7 +258,11 @@ test("real npx infers the boxbox bin from the public installer and installs both
 	writeFileSync(settingsPath, '{"existing":true}\n');
 	expect(run("/bin/sh", ["-c", "command -v bun"], { env }).status).not.toBe(0);
 	// The file: package spec avoids npm treating a bare absolute filename as an existing command.
-	expectStatus(run(npx, ["--yes", `file:${staged}`], { cwd: project, env }), 0);
+	const installation = run(npx, ["--yes", `file:${staged}`], { cwd: project, env });
+	expectStatus(installation, 0);
+	expect(String(installation.stdout)).not.toContain("BOXBOX_PREFLIGHT_VERSION");
+	expect(String(installation.stdout)).not.toContain("BOXBOX_PREFLIGHT_HELP");
+	expect(String(installation.stdout)).not.toMatch(/^\d+\.\d+\.\d+$/m);
 	const calls = readFileSync(env.BOXBOX_TEST_LOG!, "utf8").trim().split("\n").map(line => JSON.parse(line));
 	expect(calls.filter(call => !call.args.includes("list")).map(call => [call.host, call.args])).toEqual([
 		["codex", ["--version"]], ["codex", ["plugin", "add", "--help"]], ["codex", ["plugin", "marketplace", "add", permanent(env, "codex") + "/"]], ["codex", ["plugin", "add", "boxbox@boxbox-plugins"]],
@@ -383,6 +393,20 @@ test("explicit host flags install only selected adapters and engine-only does no
 	expect(existsSync(permanent(env, "claude"))                            ).toBe(false) ;
 	expect(existsSync(env.BOXBOX_TEST_LOG!)                                ).toBe(false) ;
 }, 180_000);
+
+test("a quiet capability probe replays stdout diagnostics when it fails", () => {
+	const packageRoot = extract()                    ;
+	const workspace   = temporary()                  ;
+	const env         = runtimeEnvironment(workspace);
+	fakeHost(workspace, "codex");
+
+	const result = run(node, [join(packageRoot, "bin/boxbox.mjs"), "--codex"], {
+		env: { ...env, BOXBOX_TEST_STDOUT_FAILURE: "1" },
+	});
+	expectStatus(result, 41);
+	expect(String(result.stderr)).toContain("stdout-only capability failure");
+	expect(String(result.stdout)).not.toContain("stdout-only capability failure");
+}, 60_000);
 
 test("a corrupt outer payload restores a same-version engine-only installation before host registration", () => {
 	const packageRoot = extract           ()                              ;

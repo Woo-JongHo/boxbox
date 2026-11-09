@@ -63,6 +63,7 @@ product/                         canonical product sources
     python/                      flat AST-backed Python tools and helpers; every file has a unique numeric ID
       00_group-regions.ts; 01_measure-columns.ts; 02_align-tables.ts; 03_profile.ts
       04_assignment-envelope.ts; 05_analysis.ts; 06_analysis-script.ts; 07_string-ranges.ts
+      08_kind-vocabulary.ts
     structured/                  JSON/YAML parser-backed scalar mapping adapter
     05_rule-data.ts             rule paths shared by source and bundled engines
   models.json                    model and effort per AI-judgment role and host; sync:plugin stamps the agent definitions
@@ -70,7 +71,7 @@ product/                         canonical product sources
     patterns/                    advisory nine-family catalog; never approval authority
     base/                        language surface-form data
     references/                  charter, grammar, readability contract and TS templates
-    presets/recommended/         public approved-rule DB (2 conventions, 4 examples, 2 decisions)
+    presets/recommended/         public approved-rule DB (5 conventions, 10 examples, 5 decisions)
   plugin/                        hand-authored plugin templates; edit here
   installer/                     npm installer, permanent launcher and host installation
   packages/cli/                  public CLI package entry and metadata

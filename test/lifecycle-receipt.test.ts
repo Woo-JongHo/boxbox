@@ -1,15 +1,15 @@
-import      { afterEach, expect, test                           } from "bun:test"     ;
-import      { mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs"      ;
-import      { tmpdir                                           } from "node:os"      ;
-import      { join                                             } from "node:path"    ;
+import      { afterEach, expect, test                         } from "bun:test"                         ;
+import      { mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs"                          ;
+import      { tmpdir                                          } from "node:os"                          ;
+import      { join                                            } from "node:path"                        ;
 import      {
-	LIFECYCLE_RECEIPT_MAX_BYTES,
-	encodeLifecycleReceipt,
-	parseLifecycleReceipt,
-	readLifecycleReceipt,
-	validateLifecycleReceipt,
-} from "@/common/29_lifecycle-receipt.ts";
-import type { LifecycleReceiptV1 } from "@/common/29_lifecycle-receipt.ts";
+              LIFECYCLE_RECEIPT_MAX_BYTES                   ,
+              encodeLifecycleReceipt                        ,
+              parseLifecycleReceipt                         ,
+              readLifecycleReceipt                          ,
+              validateLifecycleReceipt                      ,
+                                                              } from "@/common/29_lifecycle-receipt.ts" ;
+import type { LifecycleReceiptV1, LifecycleReceiptV2          } from "@/common/29_lifecycle-receipt.ts" ;
 
 const workspaces: string[] = [];
 
@@ -150,4 +150,74 @@ test("receipt file reads reject symbolic and oversized files", () => {
 	const oversized = join(root, "oversized.json");
 	writeFileSync(oversized, " ".repeat(LIFECYCLE_RECEIPT_MAX_BYTES + 1));
 	expect(() => readLifecycleReceipt(oversized)).toThrow("exceeds");
+});
+
+
+function modeReceipt(): LifecycleReceiptV2 {
+	const original = receipt();
+	return {
+		...original,
+		schemaVersion         : 2                                   ,
+		state                 : "PASS"                              ,
+		mode                  : "align"                             ,
+		aligned               : [{ file: "sample.json", edits: 2 }] ,
+		automaticFixPerformed : true                                ,
+		checked  : original.checked.map(item => ({ ...item, result: {
+			...item.result,
+			summary: { groups: 1, misaligned: 0, edits: 0, refused: 0, suggested: 0 },
+			groups: [{ kind: "table", startLine: 1, endLine: 3, rows: 3, axes: ["colon"], state: "PASS", edits: 0 }],
+		} })),
+		coverage : { ...original.coverage, filesWithGroups: 1, groups: 1 },
+	};
+}
+
+test("schema-2 mode receipts retain coverage and recorded alignment without weakening schema 1", () => {
+	const value = modeReceipt();
+	expect(validateLifecycleReceipt(value)                                              ).toEqual(value          ) ;
+	expect(parseLifecycleReceipt(JSON.stringify(value))                                 ).toEqual(value          ) ;
+	expect(parseLifecycleReceipt(encodeLifecycleReceipt(value))                         ).toEqual(value          ) ;
+	expect(() => validateLifecycleReceipt({ ...receipt(), mode: "align" })              ).toThrow("unknown field") ;
+	expect(() => validateLifecycleReceipt({ ...receipt(), automaticFixPerformed: true })).toThrow("must be false") ;
+	for (const mode of ["off", "check", "align", "refactor"] as const) {
+		const quiet = { ...value, mode, aligned: [], automaticFixPerformed: false };
+		expect(validateLifecycleReceipt(quiet)).toEqual(quiet);
+	}
+});
+
+test("schema-2 automatic alignment requires matching mode, event, checked files and positive edit evidence", () => {
+	const value = modeReceipt();
+	for (const altered of [
+		{ ...value, mode: "check" },
+		{ ...value, event: "Stop" },
+		{ ...value, automaticFixPerformed: false },
+		{ ...value, aligned: [] },
+		{ ...value, aligned: [{ file: "missing.json", edits: 2 }] },
+		{ ...value, aligned: [{ file: "sample.json", edits: 0 }] },
+		{ ...value, aligned: [{ file: "sample.json", edits: -1 }] },
+		{ ...value, aligned: [{ file: "sample.json", edits: 1.5 }] },
+		{ ...value, aligned: [...value.aligned, ...value.aligned] },
+		{ ...value, aligned: [{ ...value.aligned[0], arbitrary: true }] },
+		{ ...value, mode: "unknown" },
+		{ ...value, unknown: true },
+	]) expect(() => validateLifecycleReceipt(altered)).toThrow();
+});
+
+test("both versioned receipts preserve display-only Python group metadata without changing lookup fields", () => {
+	const mode = modeReceipt();
+	const checked = mode.checked.map(item => ({
+		...item,
+		result: { ...item.result, groups: item.result.groups.map(group => ({
+			...group,
+			semanticKind: "assignments",
+			sourceContext: "Module",
+		})) },
+	}));
+	const current = { ...mode, checked };
+	const { mode: _mode, aligned: _aligned, ...shared } = current;
+	const old: LifecycleReceiptV1 = { ...shared, schemaVersion: 1, automaticFixPerformed: false };
+
+	expect(parseLifecycleReceipt(encodeLifecycleReceipt(current))).toEqual(current) ;
+	expect(parseLifecycleReceipt(encodeLifecycleReceipt(old))    ).toEqual(old    ) ;
+	expect(checked[0]?.result.groups[0]?.kind                    ).toBe   ("table") ;
+	expect(checked[0]?.result.groups[0]?.context).toBeUndefined();
 });

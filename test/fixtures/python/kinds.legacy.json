@@ -1,0 +1,609 @@
+{
+  "alignment": {
+    "output": "import logging\n\nmodule_a      : int = 1\nmodule_longer : int = 2\nmodule_c      : int = 3\n\nclass Record:\n    field_a      : int\n    field_longer : int\n    field_c      : int\n\n    def method(self):\n        local_a      : int = 1\n        local_longer : int = 2\n        local_c      : int = 3\n\ndef parameters(\n    a      : int    ,\n    /,\n    longer : str    ,\n    *,\n    third  : int = 1,\n):\n    pass\n\nplain_a      = 1\nplain_longer = 2\nplain_c      = 3\n\nlogger    = logging.getLogger(__name__)\n__layer__ = \"task\"\n__task__  = \"p1.t1\"\nSettings  = load_settings(1, \"t1\")\n\ncall_a      = same(\"a\"     , 1)\ncall_longer = same(\"longer\", 2)\ncall_c      = same(\"c\"     , 3)\n\nmapping = {\n    \"a\"      : 1,\n    \"longer\" : 2,\n    \"c\"      : 3,\n}\n\nconsume(\n    a      = 1,\n    longer = 2,\n    third  = 3,\n)\n\nbundles = [\n    [\"a\"     , 1],\n    [\"longer\", 2],\n    [\"c\"     , 3],\n]\n\npair_a = 1\npair_longer = 2\n\nwide = {\n    \"한\": 1,\n    \"longer\": 2,\n    \"c\": 3,\n}\n\ndescription = \"\"\"\nclass Fake:\n    text_a: int\n    text_b: int\n    text_c: int\n\"\"\"\n",
+    "groups": 12,
+    "tables": 10,
+    "misaligned": 27,
+    "edits": 27,
+    "details": [
+      {
+        "startLine": 3,
+        "endLine": 5,
+        "rows": 3,
+        "indent": "",
+        "axes": [
+          "name",
+          "colon",
+          "type",
+          "equal",
+          "value"
+        ],
+        "widths": [
+          13,
+          1,
+          3,
+          1,
+          1
+        ],
+        "edits": [
+          {
+            "index": 2,
+            "before": "module_a: int = 1",
+            "after": "module_a      : int = 1"
+          },
+          {
+            "index": 3,
+            "before": "module_longer: int = 2",
+            "after": "module_longer : int = 2"
+          },
+          {
+            "index": 4,
+            "before": "module_c: int = 3",
+            "after": "module_c      : int = 3"
+          }
+        ]
+      },
+      {
+        "startLine": 8,
+        "endLine": 10,
+        "rows": 3,
+        "indent": "    ",
+        "axes": [
+          "name",
+          "colon",
+          "type"
+        ],
+        "widths": [
+          12,
+          1,
+          3
+        ],
+        "edits": [
+          {
+            "index": 7,
+            "before": "    field_a: int",
+            "after": "    field_a      : int"
+          },
+          {
+            "index": 8,
+            "before": "    field_longer: int",
+            "after": "    field_longer : int"
+          },
+          {
+            "index": 9,
+            "before": "    field_c: int",
+            "after": "    field_c      : int"
+          }
+        ]
+      },
+      {
+        "startLine": 13,
+        "endLine": 15,
+        "rows": 3,
+        "indent": "        ",
+        "axes": [
+          "name",
+          "colon",
+          "type",
+          "equal",
+          "value"
+        ],
+        "widths": [
+          12,
+          1,
+          3,
+          1,
+          1
+        ],
+        "edits": [
+          {
+            "index": 12,
+            "before": "        local_a: int = 1",
+            "after": "        local_a      : int = 1"
+          },
+          {
+            "index": 13,
+            "before": "        local_longer: int = 2",
+            "after": "        local_longer : int = 2"
+          },
+          {
+            "index": 14,
+            "before": "        local_c: int = 3",
+            "after": "        local_c      : int = 3"
+          }
+        ]
+      },
+      {
+        "startLine": 18,
+        "endLine": 22,
+        "rows": 3,
+        "indent": "    ",
+        "axes": [
+          "name",
+          "colon",
+          "type",
+          "equal",
+          "value",
+          "comma"
+        ],
+        "widths": [
+          6,
+          1,
+          3,
+          1,
+          1,
+          1
+        ],
+        "edits": [
+          {
+            "index": 17,
+            "before": "    a: int,",
+            "after": "    a      : int    ,"
+          },
+          {
+            "index": 19,
+            "before": "    longer: str,",
+            "after": "    longer : str    ,"
+          },
+          {
+            "index": 21,
+            "before": "    third: int = 1,",
+            "after": "    third  : int = 1,"
+          }
+        ]
+      },
+      {
+        "startLine": 26,
+        "endLine": 28,
+        "rows": 3,
+        "indent": "",
+        "axes": [
+          "name",
+          "equal",
+          "value"
+        ],
+        "widths": [
+          12,
+          1,
+          1
+        ],
+        "edits": [
+          {
+            "index": 25,
+            "before": "plain_a = 1",
+            "after": "plain_a      = 1"
+          },
+          {
+            "index": 27,
+            "before": "plain_c = 3",
+            "after": "plain_c      = 3"
+          }
+        ]
+      },
+      {
+        "startLine": 30,
+        "endLine": 33,
+        "rows": 4,
+        "indent": "",
+        "axes": [
+          "name",
+          "equal",
+          "assignment-value"
+        ],
+        "widths": [
+          9,
+          1,
+          27
+        ],
+        "edits": [
+          {
+            "index": 29,
+            "before": "logger = logging.getLogger(__name__)",
+            "after": "logger    = logging.getLogger(__name__)"
+          },
+          {
+            "index": 31,
+            "before": "__task__ = \"p1.t1\"",
+            "after": "__task__  = \"p1.t1\""
+          },
+          {
+            "index": 32,
+            "before": "Settings = load_settings(1, \"t1\")",
+            "after": "Settings  = load_settings(1, \"t1\")"
+          }
+        ]
+      },
+      {
+        "startLine": 35,
+        "endLine": 37,
+        "rows": 3,
+        "indent": "",
+        "axes": [
+          "name",
+          "equal",
+          "call:same",
+          "open(",
+          "cell",
+          "comma",
+          "arg",
+          "close)"
+        ],
+        "widths": [
+          11,
+          1,
+          4,
+          1,
+          8,
+          1,
+          1,
+          1
+        ],
+        "edits": [
+          {
+            "index": 34,
+            "before": "call_a = same(\"a\", 1)",
+            "after": "call_a      = same(\"a\"     , 1)"
+          },
+          {
+            "index": 36,
+            "before": "call_c = same(\"c\", 3)",
+            "after": "call_c      = same(\"c\"     , 3)"
+          }
+        ]
+      },
+      {
+        "startLine": 40,
+        "endLine": 42,
+        "rows": 3,
+        "indent": "    ",
+        "axes": [
+          "key",
+          "colon",
+          "value",
+          "comma"
+        ],
+        "widths": [
+          8,
+          1,
+          1,
+          1
+        ],
+        "edits": [
+          {
+            "index": 39,
+            "before": "    \"a\": 1,",
+            "after": "    \"a\"      : 1,"
+          },
+          {
+            "index": 40,
+            "before": "    \"longer\": 2,",
+            "after": "    \"longer\" : 2,"
+          },
+          {
+            "index": 41,
+            "before": "    \"c\": 3,",
+            "after": "    \"c\"      : 3,"
+          }
+        ]
+      },
+      {
+        "startLine": 46,
+        "endLine": 48,
+        "rows": 3,
+        "indent": "    ",
+        "axes": [
+          "name",
+          "equal",
+          "value",
+          "comma"
+        ],
+        "widths": [
+          6,
+          1,
+          1,
+          1
+        ],
+        "edits": [
+          {
+            "index": 45,
+            "before": "    a=1,",
+            "after": "    a      = 1,"
+          },
+          {
+            "index": 46,
+            "before": "    longer=2,",
+            "after": "    longer = 2,"
+          },
+          {
+            "index": 47,
+            "before": "    third=3,",
+            "after": "    third  = 3,"
+          }
+        ]
+      },
+      {
+        "startLine": 52,
+        "endLine": 54,
+        "rows": 3,
+        "indent": "    ",
+        "axes": [
+          "open[",
+          "cell",
+          "comma",
+          "arg",
+          "close]"
+        ],
+        "widths": [
+          1,
+          8,
+          1,
+          1,
+          2
+        ],
+        "edits": [
+          {
+            "index": 51,
+            "before": "    [\"a\", 1],",
+            "after": "    [\"a\"     , 1],"
+          },
+          {
+            "index": 53,
+            "before": "    [\"c\", 3],",
+            "after": "    [\"c\"     , 3],"
+          }
+        ]
+      }
+    ],
+    "pairs": [
+      {
+        "startLine": 57,
+        "endLine": 58,
+        "rows": 2,
+        "signature": "|name>equal>value"
+      }
+    ],
+    "refused": [
+      {
+        "startLine": 61,
+        "endLine": 63,
+        "rows": 3,
+        "indent": "    ",
+        "axes": [
+          "key",
+          "colon",
+          "value",
+          "comma"
+        ],
+        "widths": [
+          8,
+          1,
+          1,
+          1
+        ],
+        "edits": [],
+        "refusal": "wide-characters"
+      }
+    ],
+    "unsupported": [
+      {
+        "line": 1,
+        "reason": "Python import layout is not supported"
+      }
+    ]
+  },
+  "report": {
+    "schemaVersion": 1,
+    "tool": "boxbox",
+    "results": [
+      {
+        "file": "test/fixtures/python/kinds.py",
+        "language": "python",
+        "mode": "check",
+        "summary": {
+          "groups": 12,
+          "misaligned": 10,
+          "edits": 27,
+          "refused": 1,
+          "suggested": 1
+        },
+        "groups": [
+          {
+            "kind": "table",
+            "startLine": 3,
+            "endLine": 5,
+            "rows": 3,
+            "axes": [
+              "name",
+              "colon",
+              "type",
+              "equal",
+              "value"
+            ],
+            "state": "FIXABLE",
+            "edits": 3,
+            "depth": 0
+          },
+          {
+            "kind": "table",
+            "startLine": 8,
+            "endLine": 10,
+            "rows": 3,
+            "axes": [
+              "name",
+              "colon",
+              "type"
+            ],
+            "state": "FIXABLE",
+            "edits": 3,
+            "depth": 1
+          },
+          {
+            "kind": "table",
+            "startLine": 13,
+            "endLine": 15,
+            "rows": 3,
+            "axes": [
+              "name",
+              "colon",
+              "type",
+              "equal",
+              "value"
+            ],
+            "state": "FIXABLE",
+            "edits": 3,
+            "depth": 2
+          },
+          {
+            "kind": "table",
+            "startLine": 18,
+            "endLine": 22,
+            "rows": 3,
+            "axes": [
+              "name",
+              "colon",
+              "type",
+              "equal",
+              "value",
+              "comma"
+            ],
+            "state": "FIXABLE",
+            "edits": 3,
+            "depth": 1
+          },
+          {
+            "kind": "table",
+            "startLine": 26,
+            "endLine": 28,
+            "rows": 3,
+            "axes": [
+              "name",
+              "equal",
+              "value"
+            ],
+            "state": "FIXABLE",
+            "edits": 2,
+            "depth": 0
+          },
+          {
+            "kind": "table",
+            "startLine": 30,
+            "endLine": 33,
+            "rows": 4,
+            "axes": [
+              "name",
+              "equal",
+              "assignment-value"
+            ],
+            "state": "FIXABLE",
+            "edits": 3,
+            "depth": 0
+          },
+          {
+            "kind": "table",
+            "startLine": 35,
+            "endLine": 37,
+            "rows": 3,
+            "axes": [
+              "name",
+              "equal",
+              "call:same",
+              "open(",
+              "cell",
+              "comma",
+              "arg",
+              "close)"
+            ],
+            "state": "FIXABLE",
+            "edits": 2,
+            "depth": 0
+          },
+          {
+            "kind": "table",
+            "startLine": 40,
+            "endLine": 42,
+            "rows": 3,
+            "axes": [
+              "key",
+              "colon",
+              "value",
+              "comma"
+            ],
+            "state": "FIXABLE",
+            "edits": 3,
+            "depth": 1
+          },
+          {
+            "kind": "table",
+            "startLine": 46,
+            "endLine": 48,
+            "rows": 3,
+            "axes": [
+              "name",
+              "equal",
+              "value",
+              "comma"
+            ],
+            "state": "FIXABLE",
+            "edits": 3,
+            "depth": 1
+          },
+          {
+            "kind": "table",
+            "startLine": 52,
+            "endLine": 54,
+            "rows": 3,
+            "axes": [
+              "open[",
+              "cell",
+              "comma",
+              "arg",
+              "close]"
+            ],
+            "state": "FIXABLE",
+            "edits": 2,
+            "depth": 1
+          },
+          {
+            "kind": "pair",
+            "startLine": 57,
+            "endLine": 58,
+            "rows": 2,
+            "axes": [
+              "name",
+              "equal",
+              "value"
+            ],
+            "state": "SUGGEST",
+            "edits": 0
+          },
+          {
+            "kind": "table",
+            "startLine": 61,
+            "endLine": 63,
+            "rows": 3,
+            "axes": [
+              "key",
+              "colon",
+              "value",
+              "comma"
+            ],
+            "state": "REFUSE",
+            "edits": 0,
+            "depth": 1,
+            "reason": "wide-characters"
+          }
+        ],
+        "parse": {
+          "status": "not-run",
+          "tool": ""
+        },
+        "unsupported": [
+          {
+            "line": 1,
+            "reason": "Python import layout is not supported"
+          }
+        ]
+      }
+    ]
+  }
+}

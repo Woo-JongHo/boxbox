@@ -8,6 +8,7 @@ import      {
               engineCommand                                                  ,
               findCommand                                                    ,
               hookCommands                                                   ,
+              pathLaunchers                                                  ,
               supportedNode                                                  ,
                                                                                } from "./platform.mjs"            ;
 
@@ -27,7 +28,11 @@ function run(executable, args, options = {}) {
 	const child = spawnSync(executable, args, { stdio: "inherit", ...options });
 	if (child.error) fail(`Cannot run ${executable}: ${child.error.message}`);
 	if (child.signal) fail(`${executable} terminated by ${child.signal}`);
-	if (child.status !== 0) process.exit(child.status ?? 1);
+	if (child.status !== 0) {
+		const details = String(child.stderr || child.stdout || "").trim();
+		console.error(`[BoxBox] ${executable} ${args.join(" ")} failed${details ? `:\n${details}` : "."}`);
+		process.exit(child.status ?? 1);
+	}
 	return child;
 }
 
@@ -58,15 +63,20 @@ const state = installationState(root, metadata);
 if (state.read()?.phase !== "prepared") fail("A fresh parent installation receipt is required. Rerun the BoxBox installer.");
 const tarball = bundledEngine(join(root, "packages", `${metadata.name}-${metadata.version}.tgz`), metadata) ;
 const npm     = command      ("npm"                                                                       ) ;
-invoke(npm, ["--version"]);
+const quiet   = { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }                                    ;
+invoke(npm, ["--version"], quiet);
 const host = engineOnly ? undefined : command(metadata.host);
 if (host) {
-	invoke(host, ["--version"]);
-	invoke(host, ["plugin", metadata.host === "codex" ? "add" : "install", "--help"]);
+	invoke(host, ["--version"], quiet);
+	invoke(host, ["plugin", metadata.host === "codex" ? "add" : "install", "--help"], quiet);
 }
 
 const claude = host && metadata.host === "claude" ? claudeRegistration(root, metadata, (args, options) => invoke(host, args, options)) : undefined;
-claude?.preflight();
+try {
+	claude?.preflight();
+} catch (error) {
+	fail(error.message);
+}
 
 const runtimeDirectory = join(root, "runtime");
 mkdirSync(runtimeDirectory, { recursive: true });
@@ -93,6 +103,8 @@ for (const path of documents) {
 	}
 }
 writeFileSync(configuration, JSON.stringify({ node, cli, skillCommand }, null, "\t") + "\n");
+mkdirSync(join(plugin, "bin"), { recursive: true });
+for (const [path, text] of Object.entries(pathLaunchers(node, launcher))) writeFileSync(join(plugin, path), text, { mode: 0o755 });
 
 const hooksPath = join      (plugin, "hooks/hooks.json"     ) ;
 const hooks     = JSON.parse(readFileSync(hooksPath, "utf8")) ;
@@ -117,4 +129,4 @@ claude?.verify();
 state.advance("verified");
 console.log(engineOnly ? "BoxBox local engine is ready; host checks and registration were skipped." : `BoxBox is installed for ${metadata.host === "codex" ? "Codex" : "Claude Code"}. Restart that host and select the BoxBox skill. Review the current hooks manually before relying on them.`);
 console.log(`Permanent installation: ${root}`);
-console.log("Approved TypeScript call declarations and Python simple assignments can format without an external formatter. Run check and guide, then format --dry-run before an explicit format request; other patterns require approval.");
+console.log("Approved TypeScript call and value declarations and Python simple assignments can format without an external formatter. Run check and guide, then format --dry-run before an explicit format request; other patterns require approval.");

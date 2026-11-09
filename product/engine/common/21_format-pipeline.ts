@@ -27,6 +27,7 @@ export interface FormatPipelineResult {
 	readonly file              : string                       ;
 	readonly formatterChanged  : boolean                      ;
 	readonly boxboxChanged     : boolean                      ;
+	readonly canonicalChanged  : boolean                      ;
 	readonly fixedPoint        : true                         ;
 	readonly written           : boolean                      ;
 	readonly formatter         : PipelineProcessResult | null ;
@@ -183,6 +184,7 @@ export async function runFormatPipeline(given: FormatPipelineOptions): Promise<F
 	const { absolute, display } = targetOf(options.root, options.file);
 	const initialProvenance     = options.provenance?.();
 	let first!: Awaited<ReturnType<typeof cycle>>;
+	let canonicalChanged = false;
 	let alignmentEdits: FormatPipelineResult["alignmentEdits"];
 	const written = await updateFileAtomically(absolute, async ({ initial, working }) => {
 		if (options.language === "python") {
@@ -193,6 +195,7 @@ export async function runFormatPipeline(given: FormatPipelineOptions): Promise<F
 		}
 		first = await cycle(options, working, display);
 		const firstOutput = readFileSync(working);
+		canonicalChanged = !firstOutput.equals(initial);
 		if (options.alignmentOnly) assertAlignmentOnly(initial, firstOutput, options.language);
 		if (options.alignmentOnly && options.dryRun) {
 			const originalLines  = initial.toString("utf8").split(/\r\n|[\r\n\u2028\u2029]/u)     ;
@@ -216,8 +219,9 @@ export async function runFormatPipeline(given: FormatPipelineOptions): Promise<F
 		file             : display                ,
 		formatterChanged : first.formatterChanged ,
 		boxboxChanged    : first.boxboxChanged    ,
-		fixedPoint       : true                   ,
-		written                                                            ,
+		canonicalChanged        ,
+		fixedPoint       : true ,
+		written                 ,
 		formatter         : first.formatter                                ,
 		formatterExecuted : first.formatter !== null                       ,
 		formatMode        : options.formatter ? "formatter" : "standalone" ,

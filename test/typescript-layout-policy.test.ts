@@ -34,6 +34,7 @@ describe("TypeScript layout policy data", () => {
 			gap    : ["property-colon", "property-value", "property-comma", "property-colon{i}", "property-value{i}", "property-comma{i}"],
 			insert : [],
 		});
+		expect(KIND_AXES["literal-array-rows"]).toEqual({ gap: ["comma"], insert: [] });
 		expect(KIND_AXES["logical-chains"]).toEqual({
 			gap    : ["comparison-operator{i}", "comparison-right{i}"],
 			insert : ["logical-operator", "logical-not", "logical-operand"],

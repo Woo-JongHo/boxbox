@@ -5,6 +5,7 @@
 		{ "kind": "import-declarations", "pattern": "IMPORT" },
 		{ "kind": "declaration", "pattern": "DEFINE" },
 		{ "kind": "declaration-equals", "pattern": "DEFINE" },
+		{ "kind": "declaration-values", "pattern": "DEFINE" },
 		{ "kind": "declaration-extended-equals", "pattern": "DEFINE" },
 		{ "kind": "declaration-call-envelope", "pattern": "DEFINE" },
 		{ "kind": "declaration-call-expressions", "pattern": "DEFINE" },
@@ -21,6 +22,7 @@
 		{ "kind": "enum-member", "hasAxis": "equals", "pattern": "MAP" },
 		{ "kind": "enum-member", "pattern": "LIST" },
 		{ "kind": "call-statements", "pattern": "DO" },
+		{ "kind": "literal-array-rows", "pattern": "LIST" },
 		{ "kind": "assignments", "pattern": "CHANGE" },
 		{ "kind": "case-clause", "pattern": "WHEN" },
 		{ "kind": "guard-statements", "pattern": "WHEN" },
@@ -28,6 +30,7 @@
 		{ "kind": "logical-chains", "pattern": "WHEN" },
 		{ "kind": "if-headers-braced", "pattern": "WHEN" },
 		{ "kind": "if-headers-return", "pattern": "WHEN" },
-		{ "kind": "vertical-call-arguments", "pattern": "DO" }
+		{ "kind": "vertical-call-arguments", "pattern": "DO" },
+		{ "kind": "vertical-function-parameters", "pattern": "DESCRIBE" }
 	]
 }

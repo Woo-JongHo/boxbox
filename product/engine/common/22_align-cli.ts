@@ -172,6 +172,8 @@ function toTableGroup(table: DetectedTable, state: GroupState): ResultGroup {
 		edits     : table.edits.length        ,
 		depth     : indentDepth(table.indent) ,
 		...(table.refusal ? { reason: table.refusal } : {}),
+		...(table.semanticKind === undefined ? {} : { semanticKind: table.semanticKind }),
+		...(table.sourceContext === undefined ? {} : { sourceContext: table.sourceContext }),
 	};
 }
 
@@ -184,6 +186,8 @@ function toPairGroup(pair: PairGroup): ResultGroup {
 		axes      : pair.signature.split("|")[1]?.split(">") ?? [] ,
 		state     : "SUGGEST"                                      ,
 		edits     : 0                                              ,
+		...(pair.semanticKind === undefined ? {} : { semanticKind: pair.semanticKind }),
+		...(pair.sourceContext === undefined ? {} : { sourceContext: pair.sourceContext }),
 	};
 }
 
@@ -201,6 +205,7 @@ function toFileResult(aligner: LineProfiler, file: string, write: boolean, resul
 		summary  : summarize(groups)         ,
 		groups   : groups                    ,
 		parse    : parse                     ,
+		...(result.unsupported?.length ? { unsupported: result.unsupported } : {}),
 	};
 }
 
@@ -226,12 +231,13 @@ function formatFileReport(aligner: LineProfiler, label: string, source: string, 
 	const rowHead = (item: { readonly startLine: number; readonly endLine: number; readonly rows: number }): string => `  ${padRange(item.startLine, item.endLine)}  rows=${item.rows}` ;
 	const detail  = groupsOnly ? (table: DetectedTable): string => `axes=${table.axes.join(">")}` : (table: DetectedTable): string => `widths=${table.widths.join(",")}`                ;
 
-	const detailLines  = result.details.map(table => `${rowHead(table)} ${detail(table)}`                                                                                    ) ;
-	const pairLines    = result.pairs  .map(pair  => `${rowHead(pair)} pair — ${pair.rows} rows are promoted to a table only when the user confirms the comparison is useful`) ;
-	const refusedLines = result.refused.map(table => `${rowHead(table)} refused — ${refusalText(table)}`                                                                     ) ;
+	const detailLines      = result.details.map(table => `${rowHead(table)} ${detail(table)}`                                                                                    ) ;
+	const pairLines        = result.pairs  .map(pair  => `${rowHead(pair)} pair — ${pair.rows} rows are promoted to a table only when the user confirms the comparison is useful`) ;
+	const refusedLines     = result.refused.map(table => `${rowHead(table)} refused — ${refusalText(table)}`                                                                     ) ;
+	const unsupportedLines = (result.unsupported ?? []).map(row => `  unsupported line=${row.line}: ${row.reason}`)                                                                ;
 
 	const sourceLines = source.split("\n").length;
-	return [head, ...detailLines, ...pairLines, ...refusedLines, `  lines=${sourceLines} language=${aligner.language}`].join("\n");
+	return [head, ...detailLines, ...pairLines, ...refusedLines, ...unsupportedLines, `  lines=${sourceLines} language=${aligner.language}`].join("\n");
 }
 
 function formatLineExplanation(aligner: LineProfiler, result: AlignResult, line: number): string {

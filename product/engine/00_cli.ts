@@ -1,45 +1,64 @@
-import      { ruleData                                                 } from "@/05_rule-data.ts"                ;
-import      { lifecycleHook, installHooks                              } from "@/common/27_lifecycle-hook.ts"    ;
-import      { createHash                                               } from "node:crypto"                      ;
-import      { spawnSync                                                } from "node:child_process"               ;
-import      { existsSync, lstatSync, readFileSync, realpathSync        } from "node:fs"                          ;
-import      { dirname, extname, isAbsolute, join, relative, resolve    } from "node:path"                        ;
+import      { ruleData                                                   } from "@/05_rule-data.ts"                  ;
+import      { lifecycleHook, installHooks                                } from "@/common/27_lifecycle-hook.ts"      ;
+import      { createHash                                                 } from "node:crypto"                        ;
+import      { spawnSync                                                  } from "node:child_process"                 ;
+import      { existsSync, lstatSync, readFileSync, realpathSync          } from "node:fs"                            ;
+import      { dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path"                          ;
 
-import      { documentResolver, evaluateDetected, loadApprovalRegistry } from "@/common/18_approval-gate.ts"     ;
-import type { ApprovalRegistry, DocumentResolver, RegistrySource       } from "@/common/18_approval-gate.ts"     ;
-import      { runAlignCli                                              } from "@/common/22_align-cli.ts"         ;
-import      { resolveFormatterExecutable                               } from "@/common/14_formatter-process.ts" ;
-import      { runFormatPipeline                                        } from "@/common/21_format-pipeline.ts"   ;
-import      { authoringGuide, columnSetGuide                           } from "@/common/20_authoring-guide.ts"   ;
-import      { axisExpectation, baseAxis                                } from "@/common/05_axis-expectations.ts" ;
-import      { validateSyntax                                           } from "@/common/11_syntax-validation.ts" ;
-import type { SyntaxValidation                                         } from "@/common/11_syntax-validation.ts" ;
+import      { documentResolver, evaluateDetected, loadApprovalRegistry   } from "@/common/18_approval-gate.ts"       ;
+import type { ApprovalRegistry, DocumentResolver, RegistrySource         } from "@/common/18_approval-gate.ts"       ;
+import      { runAlignCli                                                } from "@/common/22_align-cli.ts"           ;
 import      {
-              initializeProjectConfig                                ,
-              initializeUserDatabase                                 ,
-              resolveConfig                                          ,
-              userDatabaseStatus                                     ,
-                                                                       } from "@/common/15_project-config.ts"    ;
-import type { PublicLanguage                                           } from "@/common/15_project-config.ts"    ;
-import type { FileResult, ResultEnvelope                               } from "@/common/24_result-json.ts"       ;
-import      { PYTHON_ALIGNER                                           } from "@/python/03_profile.ts"           ;
-import      { analyzeStructured                                        } from "@/structured/00_index.ts"         ;
-import      { runTypeScriptAlign                                       } from "@/typescript/12_align.ts"         ;
-import      { AXIS_NOTES, KIND_AXES                                    } from "@/typescript/13_grid-kinds.ts"    ;
+              detectFormatters                                         ,
+              formatterAffects                                         ,
+              formatterConfigured                                      ,
+              formatterWarning
+                                                                         } from "@/common/33_formatter-detection.ts" ;
+import      { resolveFormatterExecutable                                 } from "@/common/14_formatter-process.ts"   ;
+import      { runFormatPipeline                                          } from "@/common/21_format-pipeline.ts"     ;
+import type { FormatPipelineResult                                       } from "@/common/21_format-pipeline.ts"     ;
+import      { runProjectCommand, selectProjectTargets                    } from "@/common/34_project-commands.ts"    ;
+import type { ProjectExitCode, ProjectPipelineContext                    } from "@/common/34_project-commands.ts"    ;
+import      { buildMonitorReport, writeMonitorReport                     } from "@/common/31_monitor.ts"             ;
+import      { runMode                                                    } from "@/common/35_mode.ts"                ;
+import      { runStatusline                                              } from "@/common/36_statusline.ts"          ;
+import      { runUpdate                                                  } from "@/common/37_update.ts"              ;
+import      { authoringGuide, columnSetGuide, pythonColumnSetGuide       } from "@/common/20_authoring-guide.ts"     ;
+import      { axisExpectation, baseAxis                                  } from "@/common/05_axis-expectations.ts"   ;
+import      { validateSyntax                                             } from "@/common/11_syntax-validation.ts"   ;
+import type { SyntaxValidation                                           } from "@/common/11_syntax-validation.ts"   ;
+import      {
+              initializeProjectConfig                                  ,
+              initializeUserDatabase                                   ,
+              resolveConfig                                            ,
+              userDatabaseStatus                                       ,
+                                                                         } from "@/common/15_project-config.ts"      ;
+import type { PublicLanguage                                             } from "@/common/15_project-config.ts"      ;
+import type { FileResult, ResultEnvelope                                 } from "@/common/24_result-json.ts"         ;
+import      { PYTHON_ALIGNER                                             } from "@/python/03_profile.ts"             ;
+import      { PYTHON_AXIS_NOTES                                          } from "@/python/08_kind-vocabulary.ts"     ;
+import      { normalizeAxis                                              } from "@/common/02_signature.ts"           ;
+import      { analyzeStructured                                          } from "@/structured/00_index.ts"           ;
+import      { runTypeScriptAlign                                         } from "@/typescript/12_align.ts"           ;
+import      { AXIS_NOTES, KIND_AXES                                      } from "@/typescript/13_grid-kinds.ts"      ;
 
-import      { guardedRun, guardStatus                                  } from "@/common/25_guarded-run.ts"       ;
+import      { guardedRun, guardStatus                                    } from "@/common/25_guarded-run.ts"         ;
 
 export const CLI_VERSION = "0.2.7";
 
 const HELP = `Usage: boxbox <command> [options]
 
 Commands:
-  check   --file <path> [--language typescript|python|json|yaml] [--expect-axis <axis>]... [--json]
+  check   (--file <path> | --directory <path>)... [--source] [--language typescript|python|json|yaml] [--expect-axis <axis>]... [--json]
   align   --file <path> [--language typescript|python|json|yaml] [--dry-run] [--json]
-  format  --file <path> [--language typescript|python|json|yaml] [--dry-run] [--json]
+  format  (--file <path> | --directory <path>)... [--language typescript|python|json|yaml] [--dry-run] [--json]
   guide   --file <path> [--language typescript|python|json|yaml] [--authoring] [--json]
   init    [--json]
   doctor  [--json]
+  mode [off|check|align|refactor] [--global] [--json]
+  update [--check | --snooze [days] | --source <absolute-checkout>] [--host claude|codex] [--json]
+  statusline [--no-color] [--left] [--wrap <command>] | --install-shim
+  monitor [--project | --session <id>] [--host auto|claude|codex] [--no-paths] [--html <absolute-path>] [--json]
   run --root <path> [--json] -- <command> [args...]
   status --root <path> [--json]
   hook session|post|stop --root <path>
@@ -51,13 +70,18 @@ Options:
   --help       Show this help
   --version    Show the development metadata version
 
-The first public stage accepts exactly one TypeScript, Python, JSON or YAML file. format writes only when
+align and guide accept exactly one TypeScript, Python, JSON or YAML file. check and format also accept
+repeated --file selections and bounded --directory traversal. Batch formats are atomic per file, and
+report completed writes when another file fails. format writes only when
 complete human-approval proof passes the fixed-point safety pipeline. An optional configured
 formatter runs before BoxBox; without it BoxBox aligns approved tables directly.
+With a configured formatter, check verifies the complete formatter-then-BoxBox canonical output without replacing the source.
+check --source inspects source syntax and tables without a formatter, working copy or write attempt; it does not grant write approval.
 align preserves line breaks and indentation and never runs the configured formatter.
 guide --authoring provides scoped approved guidance before a file exists; it does not write or verify code. For TypeScript it also lists
 the registered column sets and what each axis means, as row-design vocabulary, not approval.
 check --expect-axis reports which requested axes the detected groups cover, miss, or do not recognize; it never changes the exit code.
+monitor always writes one local HTML page inside absolute CLAUDE_PLUGIN_DATA or PLUGIN_DATA, including with --json.
 Write and Refactor are agent skill workflows, not automatic CLI rewrites.`;
 
 interface ParsedFileCommand {
@@ -66,6 +90,7 @@ interface ParsedFileCommand {
 	readonly json       : boolean           ;
 	readonly dryRun     : boolean           ;
 	readonly authoring  : boolean           ;
+	readonly sourceOnly : boolean           ;
 	readonly expectAxes : readonly string[] ;
 }
 
@@ -167,11 +192,17 @@ function parseFileCommand(args: readonly string[], allowDryRun: boolean, root: s
 	let json                    = false           ;
 	let dryRun                  = false           ;
 	let authoring               = false           ;
+	let sourceOnly              = false           ;
 	const expectAxes : string[] = []              ;
 	for (let index = 0; index < args.length; index += 1) {
 		const argument = args[index]!;
 		if (argument === "--json"                             ) { json = true; continue; }
 		if (argument === "--dry-run" && allowDryRun           ) { dryRun = true; continue; }
+		if (argument === "--source" && allowExpect            ) {
+			if (sourceOnly) throw new CliError("DUPLICATE_OPTION", "--source may be provided only once");
+			sourceOnly = true;
+			continue;
+		}
 		if (argument === "--authoring" && allowAuthoring      ) {
 			if (authoring) throw new CliError("DUPLICATE_OPTION", "--authoring may be provided only once");
 			authoring = true;
@@ -179,7 +210,7 @@ function parseFileCommand(args: readonly string[], allowDryRun: boolean, root: s
 		}
 		if (argument === "--expect-axis" && allowExpect       ) {
 			const value = args[index + 1];
-			if (!value || !/^[a-z][a-z0-9{}-]*(=\d+)?$/u.test(value)) throw new CliError("MISSING_VALUE", "--expect-axis requires an axis name such as call-open-paren");
+			if (!value || (!/^[a-z][a-z0-9{}-]*(=\d+)?$/u.test(value) && !Object.hasOwn(PYTHON_AXIS_NOTES, value))) throw new CliError("MISSING_VALUE", "--expect-axis requires an axis name such as call-open-paren");
 			index += 1;
 			expectAxes.push(value);
 			continue;
@@ -207,11 +238,31 @@ function parseFileCommand(args: readonly string[], allowDryRun: boolean, root: s
 		throw new CliError("UNKNOWN_OPTION", `unknown option: ${argument}`);
 	}
 	if (!file) throw new CliError("MISSING_FILE", "one --file <path> is required");
+	if (sep === "/" && file.includes("\\")) throw new CliError("UNSUPPORTED_FILE_PATH", `POSIX paths containing literal backslashes are unsupported: ${file}`);
 	const absolute = insideRoot      (root, file, authoring) ;
 	const inferred = inferredLanguage(absolute             ) ;
 	if (!inferred) throw new CliError("UNSUPPORTED_LANGUAGE", `cannot infer a supported language from: ${file}`);
 	if (language && language !== inferred) throw new CliError("LANGUAGE_MISMATCH", `--language ${language} does not match ${file}`);
-	return { file: relative(root, absolute), language: language ?? inferred, json, dryRun, authoring, expectAxes };
+	return { file: relative(root, absolute), language: language ?? inferred, json, dryRun, authoring, sourceOnly, expectAxes };
+}
+
+function parseProjectCommand(args: readonly string[], command: "check" | "format", root: string) {
+	const batch = args.includes("--directory") || args.filter(argument => argument === "--file").length > 1;
+	if (!batch) return { batch, files: [parseFileCommand(args, command === "format", root, false, command === "check")] };
+	const inputs : string[] = [] ;
+	const shared : string[] = [] ;
+	for (let index = 0; index < args.length; index += 1) {
+		const argument = args[index]!;
+		if (argument === "--file" || argument === "--directory") {
+			const value = args[index + 1];
+			if (!value || value.startsWith("--")) throw new CliError("MISSING_VALUE", `${argument} requires a value`);
+			inputs.push(value);
+			index += 1;
+		} else shared.push(argument);
+	}
+	const targets = selectProjectTargets(root, inputs                                                                                                          ) ;
+	const files   = targets.map         (target => parseFileCommand(["--file", target.file, ...shared], command === "format", root, false, command === "check")) ;
+	return { batch, files };
 }
 
 function jsonRequested(args: readonly string[]): boolean {
@@ -222,10 +273,73 @@ function assertSimpleFlags(args: readonly string[], allowed: readonly string[]):
 	for (const argument of args) if (!allowed.includes(argument)) throw new CliError("UNKNOWN_OPTION", `unknown option: ${argument}`);
 }
 
+function assertControlOptions(command: "mode" | "update" | "statusline", args: readonly string[]): void {
+	const allowed = command === "mode" ? ["--global", "--json"]
+		: command === "update" ? ["--check", "--snooze", "--source", "--host", "--json"]
+		: ["--install-shim", "--no-color", "--left", "--wrap"];
+	const seen = new Set<string>();
+	for (let index = 0; index < args.length; index += 1) {
+		const argument = args[index]!;
+		if (command === "mode" && !argument.startsWith("--")) continue;
+		if (!allowed.includes(argument)) throw new CliError("UNKNOWN_OPTION", `unknown option: ${argument}`);
+		if (seen.has(argument)) throw new CliError("DUPLICATE_OPTION", `${argument} may be provided only once`);
+		seen.add(argument);
+		if (["--source", "--host", "--wrap"].includes(argument)) {
+			const value = args[index + 1];
+			if (!value || value.startsWith("--")) throw new CliError("MISSING_VALUE", `${argument} requires a value`);
+			if (argument === "--host" && value !== "claude" && value !== "codex") throw new CliError("INVALID_HOST", "--host must be claude or codex");
+			index += 1;
+		} else if (argument === "--snooze" && args[index + 1] !== undefined && !args[index + 1]!.startsWith("--")) {
+			const days = Number(args[index + 1]);
+			if (!Number.isFinite(days) || days <= 0) throw new CliError("INVALID_VALUE", "--snooze days must be a positive number");
+			index += 1;
+		}
+	}
+	if (seen.has("--install-shim") && seen.size > 1) throw new CliError("CONFLICTING_OPTIONS", "--install-shim cannot be combined with statusline display options");
+	if (seen.has("--snooze") && ["--check", "--source", "--host"].some(flag => seen.has(flag))) throw new CliError("CONFLICTING_OPTIONS", "--snooze cannot be combined with update check or installation options");
+}
+
+function monitor(args: readonly string[], root: string): number {
+	const seen = new Set<string>()     ;
+	let sessionId : string | undefined ;
+	let htmlPath  : string | undefined ;
+	let host   = "auto"                ;
+	for (let index = 0; index < args.length; index += 1) {
+		const argument = args[index]!;
+		if (!["--project", "--session", "--host", "--json", "--no-paths", "--html"].includes(argument)) throw new CliError("UNKNOWN_OPTION", `unknown option: ${argument}`);
+		if (seen.has(argument)) throw new CliError("DUPLICATE_OPTION", `${argument} may be provided only once`);
+		seen.add(argument);
+		if (["--session", "--host", "--html"].includes(argument)) {
+			const value = args[index + 1];
+			if (!value || value.startsWith("--")) throw new CliError("MISSING_VALUE", `${argument} requires a value`);
+			if (argument === "--session") sessionId = value;
+			if (argument === "--host") host = value;
+			if (argument === "--html") htmlPath = value;
+			index += 1;
+		}
+	}
+	if (seen.has("--project") && sessionId !== undefined) throw new CliError("CONFLICTING_OPTIONS", "--project and --session are mutually exclusive");
+	if (host !== "auto" && host !== "claude" && host !== "codex") throw new CliError("INVALID_HOST", "--host must be auto, claude or codex");
+	if (htmlPath !== undefined && !isAbsolute(htmlPath)) throw new CliError("INVALID_PATH", "--html requires an absolute path inside plugin data");
+	const data = process.env.CLAUDE_PLUGIN_DATA || process.env.PLUGIN_DATA;
+	if (!data || !isAbsolute(data)) throw new CliError("MISSING_PLUGIN_DATA", "monitor requires absolute CLAUDE_PLUGIN_DATA or PLUGIN_DATA; use the installed host launcher or set the host-owned plugin-data path");
+	const selectedHost = host === "auto" ? process.env.CODEX_THREAD_ID || process.env.CODEX_SESSION_ID ? "codex" : "claude" : host                                              ;
+	const report       = buildMonitorReport({ root, host: selectedHost, pluginData: data, ...(sessionId !== undefined ? { sessionId } : {}), noPaths: seen.has("--no-paths") }) ;
+	const html         = writeMonitorReport(report, { root, pluginData: data, ...(htmlPath !== undefined ? { path: htmlPath } : {}) })                                          ;
+	if (seen.has("--json")) emitJson({ ...report, html });
+	else {
+		console.log(`monitor host=${report.host} sessions=${report.sessions.length} input=${report.totals.input} cache-read=${report.totals.cacheRead} cache-write=${report.totals.cacheWrite} output=${report.totals.output}`);
+		console.log(`HTML: ${html}`);
+		for (const note of report.notes) console.log(`limitation: ${note}`);
+	}
+	return 0;
+}
+
 interface ApprovalContext {
-	readonly registry        : ApprovalRegistry ;
-	readonly resolveDocument : DocumentResolver ;
-	readonly fingerprint     : string           ;
+	readonly registry          : ApprovalRegistry ;
+	readonly resolveDocument   : DocumentResolver ;
+	readonly fingerprint       : string           ;
+	readonly configFingerprint : string           ;
 }
 
 function approvalContext(root: string): ApprovalContext {
@@ -258,7 +372,46 @@ function approvalContext(root: string): ApprovalContext {
 		decisions   : [...registry.decisions.entries()] ,
 		documents,
 	});
-	return { registry, resolveDocument, fingerprint: `sha256:${createHash("sha256").update(evidence).digest("hex")}` };
+	return { registry, resolveDocument, configFingerprint: config.fingerprint, fingerprint: `sha256:${createHash("sha256").update(evidence).digest("hex")}` };
+}
+
+/** Bind the registry and selected configuration to the snapshot used by every later provenance check. */
+export function preparedPipelineContext(root: string, expectedConfigFingerprint?: string): ProjectPipelineContext {
+	const context = approvalContext(root);
+	if (expectedConfigFingerprint !== undefined && context.configFingerprint !== expectedConfigFingerprint) throw new Error("configuration changed before pipeline preparation");
+	return {
+		registry        : context.registry        ,
+		resolveDocument : context.resolveDocument ,
+		provenance      : () => {
+			const current = approvalContext(root).fingerprint;
+			if (current !== context.fingerprint) throw new Error("configuration or approval provenance changed after preparation");
+			return current;
+		},
+	};
+}
+
+/** Hook alignment uses the same approved horizontal-only pipeline as explicit Align, with no formatter or secondary stdout. */
+export async function alignApprovedHook(root: string, file: string): Promise<{ readonly written: boolean; readonly edits: number }> {
+	const project = assertRoot      (root                           ) ;
+	const parsed  = parseFileCommand(["--file", file], true, project) ;
+	const config  = resolveConfig   (project                        ) ;
+	if (!config.effective.languages.includes(parsed.language)) throw new CliError("LANGUAGE_DISABLED", `${parsed.language} is not enabled by the effective configuration`);
+	const context = preparedPipelineContext(project, config.fingerprint) ;
+	const target  = insideRoot             (project, parsed.file       ) ;
+	const initial = readFileSync           (target                     ) ;
+	const unchanged = (): void => {
+		if (!readFileSync(target).equals(initial)) throw new Error("Source changed after alignment preview");
+	};
+	const options = { ...context, root: project, file: parsed.file, language: parsed.language, alignmentOnly: true, beforeCommit: unchanged } ;
+	const preview = await runFormatPipeline({ ...options, dryRun: true })                                                                     ;
+	unchanged();
+	context.provenance?.();
+	if (!preview.canonicalChanged) return { written: false, edits: 0 };
+	const edits = preview.alignmentEdits?.length;
+	if (!edits) throw new Error("Alignment preview did not report changed physical lines");
+	const applied = await runFormatPipeline(options);
+	if (!applied.written) unchanged();
+	return { written: applied.written, edits: applied.written ? edits : 0 };
 }
 
 function syntaxRefusal(parsed: ParsedFileCommand, syntax: SyntaxValidation): FileResult {
@@ -336,7 +489,9 @@ function doctorReport(root: string) {
 	} catch (error) {
 		approval = { ok: false, detail: messageOf(error) };
 	}
-	let formatter = { ok: true, detail: "standalone alignment; no external formatter required" };
+	const detectedFormatters = detectFormatters(root)                                                                                                                                                   ;
+	const warnings           = detectedFormatters.map(formatterWarning)                                                                                                                                 ;
+	let formatter            = { ok: true, detail: detectedFormatters.length > 0 ? "standalone alignment; no formatter configured in BoxBox" : "standalone alignment; no external formatter required" } ;
 	try {
 		const formatters = Object.entries(resolveConfig(root).effective.formatters);
 		for (const [, configured] of formatters) resolveFormatterExecutable(configured.command, root);
@@ -365,6 +520,8 @@ function doctorReport(root: string) {
 		formatConfigured                                                      ,
 		releaseReady : false                                                  ,
 		checks       : { runtime: node, python, config, approval, formatter } ,
+		detectedFormatters                                                    ,
+		warnings                                                              ,
 		limitations
 	} ;
 	return result;
@@ -375,6 +532,7 @@ function doctor(root: string, json: boolean): number {
 	if (json) emitJson(result);
 	else {
 		for (const [name, check] of Object.entries(result.checks)) console.log(`${check.ok ? "ok" : "not-ready"} ${name}: ${check.detail}`);
+		for (const warning of result.warnings) console.log(`warning: ${warning}`);
 		for (const limitation of result.limitations) console.log(`limitation: ${limitation}`);
 	}
 	return result.ok ? 0 : 1;
@@ -418,13 +576,14 @@ function database(args: readonly string[], json: boolean): number {
 }
 
 function formatReadiness(parsed: ParsedFileCommand, root: string, result: FileResult, syntax: SyntaxValidation) {
-	const mode = resolveConfig(root).effective.formatters[parsed.language] ? "formatter" : "standalone";
+	const mode          = resolveConfig(root).effective.formatters[parsed.language] ? "formatter" : "standalone" ;
+	const eligible      = result.groups.filter(group => group.state === "PASS" || group.state === "FIXABLE")     ;
+	const fixableGroups = eligible.filter(group => group.state === "FIXABLE").length                             ;
 	try {
 		const context = approvalContext(root);
 		const groups = evaluateDetected(
 			context.registry,
-			result.groups
-				.filter(group => group.state === "PASS" || group.state === "FIXABLE")
+			eligible
 				.map(group => ({
 					language : result.language ,
 					context  : group.context   ,
@@ -442,7 +601,8 @@ function formatReadiness(parsed: ParsedFileCommand, root: string, result: FileRe
 			proofComplete : group.result.status === "approved" && group.result.writable,
 			reasons       : group.result.reasons,
 		}])).values()];
-		const reasons = groups.flatMap(group => group.result.reasons);
+		const approvedFixableGroups = groups.filter((group, index) => eligible[index]!.state === "FIXABLE" && group.result.status === "approved" && group.result.writable).length ;
+		const reasons               = groups.flatMap(group => group.result.reasons)                                                                                               ;
 		if (syntax.status !== "valid") reasons.push(`syntax ${syntax.status}: ${syntax.diagnostics.join("; ")}`);
 		if (result.groups.some(group => group.state === "REFUSE")) reasons.push("BoxBox safety refusal prevents formatting");
 		if (groups.length === 0) reasons.push("no verified approval rule applies to this file");
@@ -450,46 +610,151 @@ function formatReadiness(parsed: ParsedFileCommand, root: string, result: FileRe
 			mode                                    ,
 			approvalEligible : reasons.length === 0 ,
 			verification     : "not-run"            ,
+			fixableGroups                           ,
+			approvedFixableGroups                   ,
 			approvalFacts                           ,
 			reasons                                 ,
 			next             : "align --dry-run verifies horizontal whitespace only; format --dry-run includes the configured formatter. Both verify parser, preservation and fixed point before writing"
 		};
 	} catch (error) {
 		return {
-			mode,
-			approvalEligible : false              ,
-			verification     : "not-run"          ,
-			approvalFacts    : []                 ,
-			reasons          : [messageOf(error)] ,
-			next             : "repair approval data before formatting"
+			mode                         ,
+			approvalEligible : false     ,
+			verification     : "not-run" ,
+			fixableGroups                ,
+			approvedFixableGroups : 0                  ,
+			approvalFacts         : []                 ,
+			reasons               : [messageOf(error)] ,
+			next                  : "repair approval data before formatting"
 		};
 	}
 }
 
-async function check(parsed: ParsedFileCommand, root: string): Promise<number> {
+async function inspectCheck(parsed: ParsedFileCommand, root: string) {
 	const config = resolveConfig(root).effective;
 	if (!config.languages.includes(parsed.language)) throw new CliError("LANGUAGE_DISABLED", `${parsed.language} is not enabled by the effective configuration`);
 	const syntax = await validateSyntax({ root, file: parsed.file, language: parsed.language });
 	const result = syntax.status === "valid"
 		? await inspectFile(parsed, root, syntax)
 		: { file: parsed.file, language: parsed.language, mode: "check" as const, summary: { groups: 0, misaligned: 0, edits: 0, refused: 0, suggested: 0 }, groups: [], parse: { status: "not-run" as const, tool: "" } };
-	const readiness   = formatReadiness(parsed, root, result, syntax)                                                   ;
-	const known       = parsed.language === "typescript" ? new Set(Object.keys(AXIS_NOTES).map(baseAxis)) : undefined   ;
-	const expectation = parsed.expectAxes.length ? axisExpectation(result.groups, parsed.expectAxes, known) : undefined ;
-	if (parsed.json) emitJson({ schemaVersion: 1, tool: "boxbox", results: [result], syntax, formatReadiness: readiness, ...(expectation ? { axisExpectation: expectation } : {}) });
-	else {
-		console.log(`check file=${result.file} groups=${result.summary.groups} misaligned=${result.summary.misaligned} refused=${result.summary.refused} suggested=${result.summary.suggested} unsupported=${result.unsupported?.length ?? 0}`);
-		for (const unsupported of result.unsupported ?? []) console.log(`unsupported line=${unsupported.line}: ${unsupported.reason}`);
-		console.log(`syntax status=${syntax.status} tool=${syntax.tool} diagnostics=${syntax.diagnostics.length}`);
-		for (const diagnostic of syntax.diagnostics) console.log(`syntax: ${diagnostic}`);
-		console.log(`format mode=${readiness.mode} approval-eligible=${readiness.approvalEligible} verification=${readiness.verification}`);
-		for (const reason of readiness.reasons) console.log(`format: ${reason}`);
-		console.log(readiness.next);
-		if (expectation) {
-			console.log(`expect-axis requested=${expectation.requested.join(",")} covered=${expectation.covered.map(entry => `${entry.axis}x${entry.groups}`).join(",")} missing=${expectation.missing.join(",")} unknown=${expectation.unknown.join(",")}`);
-		}
+	const readiness                 = formatReadiness(parsed, root, result, syntax)                                                                                                                           ;
+	const vocabulary                = parsed.language === "typescript" ? AXIS_NOTES : parsed.language === "python" ? PYTHON_AXIS_NOTES : undefined                                                            ;
+	const known                     = vocabulary ? new Set(Object.keys(vocabulary).map(baseAxis)) : undefined                                                                                                 ;
+	const expectedGroups            = parsed.language === "python" ? result.groups.map(group => ({ ...group, axes: group.axes.map(normalizeAxis) })) : result.groups                                          ;
+	const requestedAxes             = parsed.language === "python" ? parsed.expectAxes.map(normalizeAxis) : parsed.expectAxes                                                                                 ;
+	const expectation               = parsed.expectAxes.length ? axisExpectation(expectedGroups, requestedAxes, known) : undefined                                                                            ;
+	const report                    = { schemaVersion: 1 as const, tool: "boxbox" as const, results: [result], syntax, formatReadiness: readiness, ...(expectation ? { axisExpectation: expectation } : {}) } ;
+	const exitCode: ProjectExitCode = syntax.status !== "valid" || result.summary.refused > 0 ? 2 : result.summary.misaligned > 0 ? 1 : 0                                                                     ;
+	return { report, exitCode };
+}
+
+interface CanonicalCheck {
+	readonly basis        : "formatter-then-boxbox"         ;
+	readonly verification : "passed" | "failed" | "not-run" ;
+	readonly result       : FormatPipelineResult | null     ;
+	readonly error        : string | null                   ;
+}
+
+type SourceCheck = Awaited<ReturnType<typeof inspectCheck>>;
+type CheckReport = SourceCheck["report"] & { readonly basis?: "source"; readonly canonical?: CanonicalCheck };
+
+function canonicalReport(source: SourceCheck, result: FormatPipelineResult | null, error: string | null): CheckReport {
+	return {
+		...source.report, basis: "source",
+		canonical: { basis: "formatter-then-boxbox", verification: result ? "passed" : source.report.syntax.status === "valid" ? "failed" : "not-run", result, error },
+	};
+}
+
+async function checkReport(parsed: ParsedFileCommand, root: string): Promise<{ readonly report: CheckReport; readonly exitCode: ProjectExitCode }> {
+	const source    = await inspectCheck(parsed, root)             ;
+	if (parsed.sourceOnly)                       return { report: { ...source.report, basis: "source" }, exitCode: source.exitCode };
+
+	const config    = resolveConfig(root)                          ;
+	const formatter = config.effective.formatters[parsed.language] ;
+	if (!formatter)                              return source;
+	if (source.report.syntax.status !== "valid") return { report: canonicalReport(source, null, `syntax ${source.report.syntax.status}`), exitCode: 2 };
+	try {
+		const context = preparedPipelineContext(root, config.fingerprint)                                                                    ;
+		const result  = await runFormatPipeline({ ...context, root, file: parsed.file, language: parsed.language, formatter, dryRun: true }) ;
+		return { report: canonicalReport(source, result, null), exitCode: result.canonicalChanged ? 1 : 0 };
+	} catch (error) {
+		return { report: canonicalReport(source, null, messageOf(error)), exitCode: 2 };
 	}
-	return syntax.status !== "valid" || result.summary.refused > 0 ? 2 : result.summary.misaligned > 0 ? 1 : 0;
+}
+
+function printCheck(report: CheckReport): void {
+	const result      = report.results[0]!     ;
+	const syntax      = report.syntax          ;
+	const readiness   = report.formatReadiness ;
+	const expectation = report.axisExpectation ;
+	console.log(`check file=${result.file} groups=${result.summary.groups} misaligned=${result.summary.misaligned} refused=${result.summary.refused} suggested=${result.summary.suggested} unsupported=${result.unsupported?.length ?? 0}`);
+	for (const unsupported of result.unsupported ?? []) console.log(`unsupported line=${unsupported.line}: ${unsupported.reason}`);
+	for (const group of result.groups) if (group.semanticKind) console.log(`group ${group.semanticKind} kind=${group.kind} lines=${group.startLine}-${group.endLine} rows=${group.rows} state=${group.state}`);
+	console.log(`syntax status=${syntax.status} tool=${syntax.tool} diagnostics=${syntax.diagnostics.length}`);
+	for (const diagnostic of syntax.diagnostics) console.log(`syntax: ${diagnostic}`);
+	console.log(`format mode=${readiness.mode} approval-eligible=${readiness.approvalEligible} verification=${readiness.verification} fixable-groups=${readiness.fixableGroups} approved-fixable-groups=${readiness.approvedFixableGroups}`);
+	for (const reason of readiness.reasons) console.log(`format: ${reason}`);
+	console.log(readiness.next);
+	if (expectation) {
+		console.log(`expect-axis requested=${expectation.requested.join(",")} covered=${expectation.covered.map(entry => `${entry.axis}x${entry.groups}`).join(",")} missing=${expectation.missing.join(",")} unknown=${expectation.unknown.join(",")}`);
+	}
+	if (report.canonical) {
+		const canonical = report.canonical;
+		console.log(`canonical basis=${canonical.basis} verification=${canonical.verification}${canonical.result ? ` changed=${canonical.result.canonicalChanged} formatter-changed=${canonical.result.formatterChanged} boxbox-changed=${canonical.result.boxboxChanged} fixed-point=${canonical.result.fixedPoint}` : ` error=${canonical.error}`}`);
+	}
+}
+
+async function check(parsed: ParsedFileCommand, root: string): Promise<number> {
+	const computed = await checkReport(parsed, root);
+	if (parsed.json) emitJson(computed.report);
+	else printCheck(computed.report);
+	return computed.exitCode;
+}
+
+async function projectCommand(files: readonly ParsedFileCommand[], command: "check" | "format", root: string): Promise<number> {
+	const config = resolveConfig(root);
+	for (const file of files) if (!config.effective.languages.includes(file.language)) throw new CliError("LANGUAGE_DISABLED", `${file.language} is not enabled by the effective configuration`);
+	const selected = new Map(files.map(file => [file.file.split(sep).join("/"), file])) ;
+	const sources  = new Map<string, SourceCheck>()                                     ;
+	const computed = await runProjectCommand({
+		root, command, inputs: files.map(file => file.file), formatters: files[0]!.sourceOnly ? {} : config.effective.formatters, dryRun: files[0]!.dryRun,
+		inspect: async target => {
+			const source = await inspectCheck(selected.get(target.file)!, root);
+			return { result: files[0]!.sourceOnly ? { ...source.report, basis: "source" } : source.report, exitCode: source.exitCode };
+		},
+		pipelineContext: async target => {
+			const parsed  = selected.get(target.file)!                        ;
+			const context = preparedPipelineContext(root, config.fingerprint) ;
+			let syntax: SyntaxValidation                                      ;
+			if (command === "check") {
+				const source = await inspectCheck(parsed, root);
+				sources.set(target.file, source);
+				syntax = source.report.syntax;
+			} else syntax = await validateSyntax({ root, file: parsed.file, language: parsed.language });
+			if (syntax.status !== "valid") throw new Error(`syntax ${syntax.status}: ${syntax.diagnostics.join("; ")}`);
+			return context;
+		},
+	});
+	const results = computed.results.map(entry => {
+		const source = sources.get(entry.file);
+		return source ? { ...entry, result: canonicalReport(source, entry.result as FormatPipelineResult | null, entry.error) } : entry;
+	});
+	const warnings = command === "format" ? detectFormatters(root).filter(formatter => files.some(file => formatterAffects(formatter, file.language) && !formatterConfigured(formatter, config.effective.formatters[file.language]))).map(formatterWarning) : [] ;
+	const output   = { schemaVersion: 1, tool: "boxbox", ok: computed.exitCode === 0, dryRun: command === "check" || files[0]!.dryRun, ...computed, results, warnings }                                                                                          ;
+	if (files[0]!.json) emitJson(output);
+	else {
+		for (const entry of results) {
+			console.log(`${command} file=${entry.file} exit=${entry.exitCode}${entry.error ? ` error=${entry.error}` : ""}`);
+			if (command === "check" && entry.result) printCheck(entry.result as CheckReport);
+			if (command === "format" && entry.result) {
+				const result = entry.result as FormatPipelineResult;
+				console.log(`format mode=${result.formatMode} written=${result.written} canonical-changed=${result.canonicalChanged} fixed-point=${result.fixedPoint}`);
+			}
+		}
+		console.log(`${command} files=${results.length} exit=${computed.exitCode} atomicity=per-file`);
+		for (const warning of warnings) console.log(`warning: ${warning}`);
+	}
+	return computed.exitCode;
 }
 
 async function guide(parsed: ParsedFileCommand, root: string): Promise<number> {
@@ -499,7 +764,10 @@ async function guide(parsed: ParsedFileCommand, root: string): Promise<number> {
 		const context = approvalContext(root                                                                   ) ;
 		const advice  = authoringGuide (context.registry, parsed.file, parsed.language, context.resolveDocument) ;
 		if (approvalContext(root).fingerprint !== context.fingerprint) throw new Error("configuration or approval data changed while preparing guidance");
-		const sets   = parsed.language === "typescript" ? columnSetGuide(KIND_AXES, AXIS_NOTES, advice.rules.map(rule => rule.key)) : { columnSets: [], axisNotes: {} } ;
+		const approvedKeys = advice.rules.map(rule => rule.key);
+		const sets = parsed.language === "typescript" ? columnSetGuide(KIND_AXES, AXIS_NOTES, approvedKeys)
+			: parsed.language === "python" ? pythonColumnSetGuide(approvedKeys)
+			: { columnSets: [], axisNotes: {} };
 		const output = {
 			schemaVersion: 1, tool: "boxbox", command: "guide", basis: "authoring", ok: advice.rules.length > 0,
 			file: parsed.file, language: parsed.language, verification: "not-run", writeAuthorized: false, ...advice, ...sets,
@@ -560,8 +828,13 @@ async function format(parsed: ParsedFileCommand, root: string, alignmentOnly = f
 	const resolved  = resolveConfig(root)                                          ;
 	if (!resolved.effective.languages.includes(parsed.language)) throw new CliError("LANGUAGE_DISABLED", `${parsed.language} is not enabled by the effective configuration`);
 	const formatter = alignmentOnly ? undefined : resolved.effective.formatters[parsed.language] ;
-	const context   = approvalContext(root)                                                      ;
+	const context   = preparedPipelineContext(root, resolved.fingerprint)                        ;
 	if (context.registry.conventions.length === 0) throw new CliError(errorCode, `${command} refused: approval registry is empty`);
+	if (!alignmentOnly && formatter) {
+		const syntax = await validateSyntax({ root, file: parsed.file, language: parsed.language });
+		if (syntax.status !== "valid") throw new CliError(errorCode, `format refused: syntax ${syntax.status}: ${syntax.diagnostics.join("; ")}`);
+	}
+	const warnings = detectFormatters(root).filter(detected => formatterAffects(detected, parsed.language) && !formatterConfigured(detected, formatter)).map(formatterWarning);
 	try {
 		const result = await runFormatPipeline({
 			root                       ,
@@ -571,16 +844,17 @@ async function format(parsed: ParsedFileCommand, root: string, alignmentOnly = f
 			registry        : context.registry        ,
 			resolveDocument : context.resolveDocument ,
 			dryRun          : parsed.dryRun           ,
-			alignmentOnly                                             ,
-			provenance      : () => approvalContext(root).fingerprint ,
+			alignmentOnly                        ,
+			provenance      : context.provenance ,
 		});
-		const output = { schemaVersion: 1, tool: "boxbox", command, ok: true, dryRun: parsed.dryRun, formatEligible: true, ...result,
+		const output = { schemaVersion: 1, tool: "boxbox", command, ok: true, dryRun: parsed.dryRun, formatEligible: true, ...result, warnings,
 			...(alignmentOnly ? { mode: "align", horizontalWhitespaceOnly: true } : {}),
 		};
 		if (parsed.json) emitJson(output);
 		else {
 			console.log(`${command} file=${result.file} mode=${result.formatMode} dry-run=${parsed.dryRun} written=${result.written} formatter-changed=${result.formatterChanged} boxbox-changed=${result.boxboxChanged} fixed-point=${result.fixedPoint} approvals=${result.approvals.join(",")}`);
 			for (const edit of result.alignmentEdits ?? []) console.log(`line ${edit.line}\n- ${edit.before}\n+ ${edit.after}`);
+			for (const warning of warnings) console.log(`warning: ${warning}`);
 		}
 		return 0;
 	} catch (error) {
@@ -608,27 +882,39 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 			if (!resolveConfig(project).effective.languages.includes(parsed.language)) throw new Error("LANGUAGE_DISABLED");
 			return inspectFile(parsed, project);
 		}, CLI_VERSION);
-		if (command === "hook"  ) return await lifecycleHook(tail, async (project, file) => inspectFile(parseFileCommand(["--file", file], false, project), project));
+		if (command === "hook"  ) return await lifecycleHook(tail, async (project, file) => inspectFile(parseFileCommand(["--file", file], false, project), project), { version: CLI_VERSION, align: alignApprovedHook });
 		if (command === "hooks" ) return installHooks(tail);
 		if (command === "status") return guardStatus(tail);
 		if (command === "db"    ) return database(tail, json);
+		if (command === "mode" || command === "update" || command === "statusline") {
+			assertControlOptions(command, tail);
+			if (command === "mode") return runMode(tail, assertRoot(root));
+			return command === "update" ? runUpdate(tail, CLI_VERSION) : runStatusline(tail, CLI_VERSION);
+		}
+		if (command === "monitor") return monitor(tail, assertRoot(root));
 		if (command === "init") {
 			const project = assertRoot(root) ;
 			assertSimpleFlags(tail, ["--json"]);
 			const result   = initializeProjectConfig(project) ;
 			const resolved = resolveConfig          (project) ;
+			const detected = detectFormatters       (project) ;
 			const output = {
-				schemaVersion : 1                              ,
-				tool          : "boxbox"                       ,
-				command       : "init"                         ,
-				ok            : true                           ,
-				created       : result.created                 ,
-				config        : relative(project, result.path) ,
-				languages     : resolved.effective.languages   ,
-				fingerprint   : resolved.fingerprint
+				schemaVersion      : 1                              ,
+				tool               : "boxbox"                       ,
+				command            : "init"                         ,
+				ok                 : true                           ,
+				created            : result.created                 ,
+				config             : relative(project, result.path) ,
+				languages          : resolved.effective.languages   ,
+				fingerprint        : resolved.fingerprint           ,
+				detectedFormatters : detected                       ,
+				warnings           : detected.map(formatterWarning)
 			} ;
 			if (json) emitJson(output);
-			else console.log(result.created ? `created ${output.config}` : `kept existing ${output.config}`);
+			else {
+				console.log(result.created ? `created ${output.config}` : `kept existing ${output.config}`);
+				for (const warning of output.warnings) console.log(`warning: ${warning}`);
+			}
 			return 0;
 		}
 		if (command === "doctor") {
@@ -637,10 +923,13 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 			return doctor(project, json);
 		}
 		const project = assertRoot(root);
-		if (command === "check" ) return await check(parseFileCommand(tail, false, project, false, true), project);
+		if (command === "check" || command === "format") {
+			const parsed = parseProjectCommand(tail, command, project);
+			if (parsed.batch) return await projectCommand(parsed.files, command, project);
+			return command === "check" ? await check(parsed.files[0]!, project) : await format(parsed.files[0]!, project);
+		}
 		if (command === "guide" ) return await guide(parseFileCommand(tail, false, project, true), project);
 		if (command === "align" ) return await format(parseFileCommand(tail, true, project), project, true);
-		if (command === "format") return await format(parseFileCommand(tail, true, project), project);
 		throw new CliError("UNKNOWN_COMMAND", `unknown command: ${command}`);
 	} catch (error) {
 		return fail(command, json, error);
