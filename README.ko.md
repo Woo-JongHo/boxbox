@@ -22,7 +22,7 @@ const timeoutMs = 1000     ;
 
 위 정렬 예시는 실제 TypeScript 엔진의 출력이며, 테스트로 이를 유지합니다. 현재 자동 쓰기 범위는 승인된 규칙 몇 개로 의도적으로 좁아서, 그 밖의 패턴은 대부분 변경하지 않고 보고만 합니다. 이름, 값, 실행 순서는 유지하면서 대응하는 구문을 더 쉽게 비교할 수 있게 합니다.
 
-제품명은 **BoxBox**이며, 핵심 CLI·스킬·플러그인 ID는 `boxbox`입니다(2026-10-16 확정). npm 설치 패키지 후보는 `boxbox-plugin`이며, 확인 당시에는 등록되지 않은 이름이었습니다. 목표 설치 명령은 `npx boxbox-plugin`입니다. 패키지 게시에는 유효한 npm 인증과 최종 릴리스 결정이 필요합니다. [Windows 플러그인 설치 안내](product/installer/README.md)를 참고하세요.
+제품명은 **BoxBox**이며, 핵심 CLI·스킬·플러그인 ID는 `boxbox`입니다(2026-10-16 확정). 공개 npm 설치 패키지는 [`boxbox-plugin`](https://www.npmjs.com/package/boxbox-plugin)이며 `npx boxbox-plugin`으로 설치합니다. [Windows 플러그인 설치 안내](product/installer/README.md)를 참고하세요.
 
 ## 코드를 표로 읽는 이유
 
@@ -83,15 +83,11 @@ CLI는 이제 TypeScript, Python, 엄격한 JSON, YAML 1.2를 검사하며 구�
 
 ## 플러그인 설치
 
-아직 명령 하나로 설치할 수는 없습니다. npm 패키지 `boxbox-plugin`이 게시되지 않았기 때문입니다. 소스에서 설치 패키지를 빌드하세요. git, [Bun](https://bun.sh), Node.js 22.22.3 이상, npm, Codex 또는 Claude Code CLI가 필요합니다. 감지된 모든 호스트에 플러그인과 로컬 Node 엔진을 설치합니다. 자세한 내용은
+Node.js 22.22.3 이상, npm, Codex 또는 Claude Code CLI가 필요합니다. 공개 설치 프로그램은 감지된 모든 호스트에 플러그인과 로컬 Node 엔진을 설치합니다. 자세한 내용은
 [설치 안내](product/installer/README.md)를 참고하세요.
 
 ```sh
-git clone https://github.com/Woo-JongHo/boxbox.git
-cd boxbox
-bun install
-bun run pack:installer
-npm exec --yes --package "$PWD"/dist/installer/boxbox-plugin-*.tgz -- boxbox
+npx boxbox-plugin
 ```
 
 호스트를 다시 시작한 뒤 BoxBox로 파일을 정렬해 달라고 요청하세요. 이 저장소를 Claude나 Codex 마켓플레이스로 추가하면 엔진 없이 플러그인만 설치됩니다. 이 경우 명령은 설정 안내를 내고 멈추며 검사는 실행되지 않습니다. 훅은 차단하지 않고, 세션 시작 훅만 그 안내를 출력합니다. 이미 그렇게 추가했다면 사용하는 호스트의 줄을 실행해 등록을 먼저 지운 뒤 설치 프로그램을 실행하세요.

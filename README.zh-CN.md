@@ -22,7 +22,7 @@ const timeoutMs = 1000     ;
 
 上面的对齐示例是 TypeScript 引擎的实际输出，并由测试保证。目前自动写入的范围有意保持狭窄：只有少数已批准的规则，其他大多数模式只报告，不修改。名称、值和执行顺序保持不变；对应的语法元素变得更容易比较。
 
-产品名称是 **BoxBox**；核心 CLI、技能和插件的 ID 为 `boxbox`（于 2026-10-16 确认）。npm 安装器的候选包名是 `boxbox-plugin`，检查时尚未被注册。目标命令为 `npx boxbox-plugin`；发布需要有效的 npm 身份验证和最终发布决定。请参阅 [Windows 插件安装指南](product/installer/README.md)。
+产品名称是 **BoxBox**；核心 CLI、技能和插件的 ID 为 `boxbox`（于 2026-10-16 确认）。公开 npm 安装包是 [`boxbox-plugin`](https://www.npmjs.com/package/boxbox-plugin)，使用 `npx boxbox-plugin` 安装。请参阅 [Windows 插件安装指南](product/installer/README.md)。
 
 ## 为什么将代码组织成网格？
 
@@ -81,15 +81,11 @@ JSON/YAML 写入需要完整的本地批准证据或未来单独批准的预设�
 
 ## 安装插件
 
-目前还不能用一条命令安装：npm 包 `boxbox-plugin` 尚未发布。请从源码构建安装器；需要 git、[Bun](https://bun.sh)、Node.js 22.22.3 或更高版本、npm，以及 Codex 或 Claude Code CLI。它会为检测到的每个宿主安装插件和本地 Node 引擎。详情请参阅
+需要 Node.js 22.22.3 或更高版本、npm，以及 Codex 或 Claude Code CLI。公开安装器会为检测到的每个宿主安装插件和本地 Node 引擎。详情请参阅
 [安装指南](product/installer/README.md)。
 
 ```sh
-git clone https://github.com/Woo-JongHo/boxbox.git
-cd boxbox
-bun install
-bun run pack:installer
-npm exec --yes --package "$PWD"/dist/installer/boxbox-plugin-*.tgz -- boxbox
+npx boxbox-plugin
 ```
 
 重启宿主，然后让它用 BoxBox 对齐文件。将本仓库添加为 Claude 或 Codex 市场时，只会安装插件而没有引擎：命令会显示设置提示并停止，检查也不会运行：钩子不会阻止操作，只有会话钩子会输出该提示。如果已经这样添加，请先运行你所用宿主对应的命令删除该注册，再运行安装器：

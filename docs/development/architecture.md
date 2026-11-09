@@ -6,7 +6,7 @@ BoxBox detects consecutive rows that can be represented as a table, then aligns 
 minimum required widths. Its own rewrite stage preserves content and execution order. Human-approved rule data
 controls public formatting; inspection observations never approve a rule.
 
-The public CLI can inspect TypeScript, Python, strict JSON and guarded YAML. TypeScript and Python have code-language engines; JSON and YAML use structured adapters. Parser/detector availability does not grant write authorization. The default public preset still approves only the existing TypeScript and Python rules; JSON/YAML candidates require new approval records before Align or Format may write them. Publication is still pending.
+The public CLI can inspect TypeScript, Python, strict JSON and guarded YAML. TypeScript and Python have code-language engines; JSON and YAML use structured adapters. Parser/detector availability does not grant write authorization. The default public preset still approves only the existing TypeScript and Python rules; JSON/YAML candidates require new approval records before Align or Format may write them. The public installer is published as `boxbox-plugin`.
 
 ## Interface
 

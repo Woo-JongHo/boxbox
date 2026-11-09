@@ -22,7 +22,7 @@ const timeoutMs = 1000     ;
 
 The aligned example above is actual TypeScript engine output, and a test keeps it that way. Automatic writes are deliberately narrow today: a few approved rules, so most other patterns are reported, not changed. Names, values and execution order stay the same; corresponding syntax becomes easier to compare.
 
-The product is **BoxBox**; core CLI, skill and plugin IDs are `boxbox` (confirmed on 2026-10-16). The npm installer candidate is `boxbox-plugin`, which was unregistered when checked. Its target command is `npx boxbox-plugin`; publication requires valid npm authentication and a final release decision. See the [Windows plugin installation guide](product/installer/README.md).
+The product is **BoxBox**; core CLI, skill and plugin IDs are `boxbox` (confirmed on 2026-10-16). The public npm installer is [`boxbox-plugin`](https://www.npmjs.com/package/boxbox-plugin), installed with `npx boxbox-plugin`. See the [Windows plugin installation guide](product/installer/README.md).
 
 ## Why a code grid?
 
@@ -83,15 +83,11 @@ their own complete local or future preset approval proof.
 
 ## Install the plugin
 
-There is no one-command install yet: the `boxbox-plugin` npm package is not published. Build the installer from source; this needs git, [Bun](https://bun.sh), Node.js 22.22.3 or later, npm, and the Codex or Claude Code CLI. It installs the plugin and a local Node engine for every host it detects. See the
+Node.js 22.22.3 or later, npm, and the Codex or Claude Code CLI are required. The public installer installs the plugin and a local Node engine for every host it detects. See the
 [installation guide](product/installer/README.md) for details.
 
 ```sh
-git clone https://github.com/Woo-JongHo/boxbox.git
-cd boxbox
-bun install
-bun run pack:installer
-npm exec --yes --package "$PWD"/dist/installer/boxbox-plugin-*.tgz -- boxbox
+npx boxbox-plugin
 ```
 
 Restart the host, then ask it to align a file with BoxBox. Adding this repository as a Claude or Codex marketplace installs only the plugin, without the engine: commands stop with a setup message, and checks do not run: hooks do not block, and only the session hook prints that message. If you already did that, remove that registration first, using the lines for your host, then run the installer:
