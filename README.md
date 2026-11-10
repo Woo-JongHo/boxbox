@@ -24,6 +24,17 @@ The aligned example above is actual TypeScript engine output, and a test keeps i
 
 The product is **BoxBox**; core CLI, skill and plugin IDs are `boxbox` (confirmed on 2026-10-16). The public npm installer is [`boxbox-plugin`](https://www.npmjs.com/package/boxbox-plugin), installed with `npx boxbox-plugin`. See the [Windows plugin installation guide](product/installer/README.md).
 
+| What matters | BoxBox 0.2.8 |
+| --- | --- |
+| Deterministic language surfaces | TypeScript, Python, strict JSON and YAML 1.2 |
+| Default write approvals | 5 deliberately narrow conventions |
+| Model calls from the engine and hooks | **0** |
+| npm download | **384,104 bytes** compressed; 607,186 bytes unpacked |
+
+BoxBox is not a general formatter and does not ask a model to decide whether bytes are preserved. The engine measures,
+plans, parses and verifies locally. The agent is used only for the work that actually needs judgment: Write, Refactor,
+and the optional read-only inspector.
+
 ## Why a code grid?
 
 Repeated code often expresses the same operation with different data. Reading it as a paragraph makes each line a separate thing to decode. Reading it as a table makes the differences visible.
@@ -55,7 +66,7 @@ The public `format` command requires complete human-approval evidence. It runs a
 
 ## Write, Refactor, Align and Check
 
-The 0.2.7 source candidate separates agent workflows from engine changes:
+BoxBox 0.2.8 separates agent workflows from engine changes:
 
 - **Write:** the agent implements requested behavior using approved authoring guidance.
 - **Refactor:** the agent improves existing structure and separately verifies behavior and relevant performance.
@@ -71,7 +82,7 @@ formatter, Check verifies the final formatter-then-BoxBox bytes on working copie
 separate from `canonical` verification. Batch formats are atomic per file and report completed writes if another file
 fails; per-group selective writes remain deferred. Session hooks default to read-only `check`; only an explicit
 `boxbox mode align` enables approved horizontal alignment after matched tool calls. Stop remains read-only.
-Integration verification and independent review are in progress. See [workflow selection and verification limits](docs/user/modes.md).
+See [workflow selection and verification limits](docs/user/modes.md).
 
 The CLI now checks TypeScript, Python, strict JSON and YAML 1.2, reporting syntax as valid, invalid or parser error.
 JSON and YAML alignment is deliberately narrow:
@@ -102,6 +113,81 @@ On Windows, replace the wildcard with the full archive path; see the installatio
 
 The checkout is needed only for building. The installed plugin uses its permanent Node engine.
 The public installer needs Node.js 22.22.3 or later and npm; Python inspection and formatting additionally need a runnable `python3`.
+
+## Is BoxBox heavy?
+
+The short answer is: the download is small; the installed TypeScript toolchain is the part that takes space.
+
+These numbers were measured from a clean isolated macOS arm64 installation of the published
+`boxbox-plugin@0.2.8`. They are a footprint snapshot, not a cross-platform promise: npm metadata and native
+TypeScript package sizes can differ by platform.
+
+| Measured item | Size |
+| --- | ---: |
+| npm tarball | 384,104 B (375.1 KiB) |
+| npm-reported unpacked package, 42 files | 607,186 B (0.58 MiB) |
+| Permanent Codex installation | 30,984,814 B (29.55 MiB) |
+| Permanent Claude installation | 30,986,310 B (29.55 MiB) |
+| Plugin cache added by each host | about 0.10 MiB |
+| Fresh npm download cache used during the isolated install | 27.80 MiB |
+| Entire two-host isolated test directory, including npm cache | 87.10 MiB |
+
+About 26.22 MiB of each permanent host installation is the pinned native TypeScript 7 package. Codex and Claude
+receive separate permanent runtimes intentionally, so one host can be repaired or removed without silently changing
+the other. Installing one host therefore costs about 29.55 MiB permanently; installing both costs about 59.1 MiB,
+before npm's reusable download cache.
+
+On the same Apple M1 workstation, ten warm process runs checking one three-line TypeScript file took 248–475 ms,
+with a 266 ms median and 298 ms mean. This is a small-file startup measurement, not a large-project benchmark.
+Hook cost grows with the changed files that are actually inspected.
+
+## How many AI tokens does it use?
+
+BoxBox has two very different cost paths:
+
+- **Engine commands and lifecycle hooks:** `check`, `guide`, `align`, `format`, `doctor`, update checks, status output
+  and session receipts make **no model call**, so their direct AI-token cost is zero.
+- **Agent workflows:** Write and Refactor use the model already running in the host. Their usage depends on the task,
+  repository and host; BoxBox does not claim a fixed token saving.
+- **Optional Claude inspector:** this is a separate read-only subagent and does consume model tokens when delegated.
+  The generated 0.2.8 definition currently names Sonnet with medium effort, but that remains an
+  `unevaluated-default`, not a proven optimum. Codex's shipped plugin has no inspector agent.
+
+The installed `SKILL.md` is 16,644 bytes. The skill plus all four reference documents is 92,343 bytes. A rough
+four-characters-per-token conversion is about 4.2K and 23K tokens respectively, but actual counts depend on the
+host tokenizer, which references are opened and prompt-cache reuse; these are context-size estimates, not billing
+measurements.
+
+A six-run Claude pilot on one 228-line TypeScript file compared inherited Opus 5.5 with a Sonnet 5 inspector:
+
+| Pilot result | Inherited Opus | Sonnet inspector |
+| --- | ---: | ---: |
+| Mean printed session cost | $0.7244 | $0.6107 |
+| Mean wall time | 107 s | 177 s |
+| Mean inspector turns | 4.3 | 8.7 |
+| Mean inspector output tokens | 8,070 | 12,230 |
+| Mean fixable groups pointed at | 6.7 / 8 | 7.7 / 8 |
+
+Sonnet's mean printed-cost ratio was 0.843, missing the pre-registered 0.70 threshold, so the pilot did **not**
+justify Sonnet as a cost-saving selection. It was one file with three runs per condition, and advice quality was not
+graded. See the [protocol, raw runs, errata and limits](docs/development/reviews/2026-10-22-inspector-model-pilot/RESULTS.md).
+Unlike broader optimization plugins such as [Ponytail](https://github.com/DietrichGebert/ponytail) or
+[Caveman](https://github.com/JuliusBrussee/caveman), BoxBox therefore makes no headline claim that it reduces total
+tokens or total cost. Their README discipline—show the benefit, the method and the red rows—was a presentation
+reference; their benchmark results do not transfer to BoxBox.
+
+SessionStart checks GitHub release tags at most once per 24 hours and sends no source content; set
+`BOXBOX_UPDATE_CHECK=0` to disable that probe. Monitor reports stay local and contain no transcript text, commands or
+source content.
+
+## Where does it run?
+
+The npm installer officially supports **Codex and Claude Code**. The development installer can expose the
+agent-agnostic skill to ZCode and Pi / Oh My Pi, and another harness can call the Node CLI directly. Those paths do
+not yet have the same lifecycle-hook, trust and native acceptance matrix as the two official hosts. A wrapper around
+Codex or Claude works when it preserves that host's plugin environment and events; a direct Gajae Code, Pi or other
+orchestrator integration still needs a thin adapter for discovery, plugin data, edit-event mapping and Stop behavior.
+See the [portability contract](docs/development/agent-portability.md).
 
 ## Develop BoxBox
 
@@ -142,7 +228,11 @@ The recommended preset contains five approved conventions, ten synthetic example
 
 ## Development status
 
-This is a development project, not a completed public release. Local CLI artifacts and skill adapters are implemented; public distribution and native host-event acceptance remain open. The standard `plugin/` shim requires an explicit local engine. For the Windows Codex trial, use the [npm installer](product/installer/README.md), which installs its included engine into a permanent local directory. The selected npm installer name is `boxbox-plugin`; publication remains pending.
+The public installer `boxbox-plugin@0.2.8` is published and has clean registry installation evidence for Codex and
+Claude on macOS plus native Windows installation and engine checks. The deterministic engines and host adapters are
+implemented; model selection for the optional inspector remains explicitly unevaluated. The standard `plugin/` shim
+still requires an explicit local engine, while the npm installer carries and installs that engine into a permanent
+local directory.
 
 For verified behavior and remaining work, read [release readiness](docs/development/status.md), the [release contract](docs/development/release-contract.md) and the [plan](docs/development/plan.md). Historical naming and migration details are in the [naming record](docs/development/reviews/2026-10-16-boxbox-rename.md).
 

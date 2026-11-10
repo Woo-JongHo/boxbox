@@ -24,6 +24,16 @@ const timeoutMs = 1000     ;
 
 产品名称是 **BoxBox**；核心 CLI、技能和插件的 ID 为 `boxbox`（于 2026-10-16 确认）。公开 npm 安装包是 [`boxbox-plugin`](https://www.npmjs.com/package/boxbox-plugin)，使用 `npx boxbox-plugin` 安装。请参阅 [Windows 插件安装指南](product/installer/README.md)。
 
+| 关键事项 | BoxBox 0.2.8 |
+| --- | --- |
+| 确定性语言处理范围 | TypeScript、Python、严格 JSON 和 YAML 1.2 |
+| 默认写入批准 | 5 条刻意保持狭窄的约定 |
+| 引擎和钩子的模型调用 | **0 次** |
+| npm 下载 | 压缩后 384,104 字节；解压后 607,186 字节 |
+
+BoxBox 不是通用格式化工具，也不会让模型判断字节是否得到保留。引擎在本地完成测量、规划、解析和
+验证。只有真正需要判断的工作才使用智能体：Write、Refactor，以及可选的只读 inspector。
+
 ## 为什么将代码组织成网格？
 
 重复的代码往往以不同的数据表达相同的操作。按段落阅读时，每一行都需要单独理解。按表格阅读时，差异便一目了然。
@@ -55,7 +65,7 @@ const timeoutMs = 1000     ;
 
 ## 编写、重构、对齐与检查
 
-0.2.7 源码候选版本区分智能体工作流程与引擎修改范围：
+BoxBox 0.2.8 区分智能体工作流程与引擎修改范围：
 
 - **Write — 编写：** 智能体参考已批准的编写指导，实现所请求的功能。
 - **Refactor — 重构：** 智能体改进现有结构，并单独验证行为以及相关性能。
@@ -70,7 +80,7 @@ Check 和 Format 还支持重复的 `--file` 或有界递归 `--directory` 选�
 验证“格式化器之后再运行 BoxBox”的最终字节，并区分原始源码检查结果与 `canonical` 验证。批量格式化对每个
 文件分别原子执行；其他文件失败时，仍报告此前已完成的写入。按分组选择写入仍暂缓实现。会话钩子默认使用只读
 `check`；只有显式选择 `boxbox mode align`，才会在匹配的工具调用后执行已批准的水平空白对齐。Stop 保持只读。
-集成验证和独立审查正在进行。参见[工作流程选择与验证限制](docs/user/modes.md)。
+参见[工作流程选择与验证限制](docs/user/modes.md)。
 
 CLI 现在可以检查 TypeScript、Python、严格 JSON 和 YAML 1.2，并将语法状态报告为 valid、invalid 或
 parser error。JSON/YAML 对齐范围刻意限制为：
@@ -100,6 +110,77 @@ codex plugin marketplace remove boxbox-plugins
 
 检出仓库只在构建时需要。安装后的插件使用其永久安装的 Node 引擎。
 公开安装器需要 Node.js 22.22.3 或更高版本以及 npm；Python 检查和格式化还需要可运行的 `python3`。
+
+## BoxBox 重吗？
+
+简短回答：下载很小，安装后占用空间的主要部分是 TypeScript 工具链。
+
+以下数字来自公开的 `boxbox-plugin@0.2.8` 在干净、隔离的 macOS arm64 环境中的实测快照。
+不同平台的 npm 元数据和原生 TypeScript 包大小可能不同，因此这些数字不是跨平台保证。
+
+| 测量项目 | 大小 |
+| --- | ---: |
+| npm tarball | 384,104 B (375.1 KiB) |
+| npm 报告的解压包，42 个文件 | 607,186 B (0.58 MiB) |
+| Codex 永久安装 | 30,984,814 B (29.55 MiB) |
+| Claude 永久安装 | 30,986,310 B (29.55 MiB) |
+| 每个宿主新增的插件缓存 | 约 0.10 MiB |
+| 隔离安装使用的全新 npm 下载缓存 | 27.80 MiB |
+| 包含 npm 缓存的双宿主隔离测试目录总计 | 87.10 MiB |
+
+每个宿主永久安装中约 26.22 MiB 来自固定版本的原生 TypeScript 7 包。Codex 与 Claude 使用独立的
+永久运行时，因此修复或移除一个宿主时不会暗中改变另一个宿主。安装一个宿主永久占用约 29.55 MiB；
+两个宿主约 59.1 MiB，另加可复用的 npm 下载缓存。
+
+在同一台 Apple M1 工作站上，对一个三行 TypeScript 文件执行 10 次 warm process 检查耗时
+248–475 ms，中位数 266 ms，平均 298 ms。这是小文件的启动成本测量，不是大型项目基准。
+钩子成本会随实际检查的已修改文件数量增长。
+
+## 会消耗多少 AI token？
+
+BoxBox 有两条成本性质完全不同的路径：
+
+- **引擎命令和 lifecycle 钩子：** `check`、`guide`、`align`、`format`、`doctor`、更新检查、状态输出
+  和会话 receipt 都不会调用模型，因此直接 AI token 成本为 **0**。
+- **智能体工作流：** Write 和 Refactor 使用宿主中已经运行的模型。用量取决于任务、仓库和宿主；
+  BoxBox 不宣称固定的 token 节省比例。
+- **可选 Claude inspector：** 只有在委派时才消费模型 token，是独立的只读 subagent。生成的 0.2.8
+  定义目前指定 Sonnet 和 medium effort，但这仍是 `unevaluated-default`，不是经过证明的最优值。
+  发布的 Codex 插件不包含 inspector agent。
+
+安装后的 `SKILL.md` 为 16,644 字节。技能与全部四份参考文档合计 92,343 字节。按每 token
+约四个字符粗略换算，分别约为 4.2K 和 23K token；实际数量取决于宿主 tokenizer、实际打开的
+参考文档和 prompt cache 复用情况。这些是上下文大小估算，不是计费数据。
+
+一项使用单个 228 行 TypeScript 文件的六次 Claude pilot，对比了继承的 Opus 5.5 和
+Sonnet 5 inspector：
+
+| pilot 结果 | 继承的 Opus | Sonnet inspector |
+| --- | ---: | ---: |
+| 平均显示会话成本 | $0.7244 | $0.6107 |
+| 平均耗时 | 107 秒 | 177 秒 |
+| 平均 inspector turn | 4.3 | 8.7 |
+| 平均 inspector 输出 token | 8,070 | 12,230 |
+| 平均指向的可修复分组 | 6.7 / 8 | 7.7 / 8 |
+
+Sonnet 的平均显示成本比为 0.843，高于预先登记的 0.70 阈值，因此该 pilot **不能**证明 Sonnet
+是节省成本的选择。实验只使用一个文件，每种条件运行三次，也没有对建议质量评分。请参阅
+[协议、原始运行、勘误与限制](docs/development/reviews/2026-10-22-inspector-model-pilot/RESULTS.md)。
+与 [Ponytail](https://github.com/DietrichGebert/ponytail) 或
+[Caveman](https://github.com/JuliusBrussee/caveman) 这类覆盖面更广的优化插件不同，BoxBox
+不宣称总体 token 或总体成本必然下降。它们“展示收益、方法和不利结果”的 README 方式只是本文的
+表达参考；它们的基准结果不能直接套用于 BoxBox。
+
+SessionStart 最多每 24 小时检查一次 GitHub release tag，并且不会发送源代码内容。可通过
+`BOXBOX_UPDATE_CHECK=0` 禁用该探测。Monitor 报告保留在本地，不包含 transcript、命令或源代码内容。
+
+## 在哪里可以运行？
+
+npm 安装器正式支持 **Codex 和 Claude Code**。开发安装器可以把与智能体无关的技能暴露给 ZCode
+以及 Pi / Oh My Pi，其他 harness 也可以直接调用 Node CLI。但这些路径尚未拥有与两个正式宿主相同的
+lifecycle hook、trust 和原生验收矩阵。包裹 Codex 或 Claude 的 wrapper 只要保留该宿主的插件环境和
+事件即可工作；Gajae Code、Pi 或其他 orchestrator 的直接集成仍需要一个薄 adapter，负责 discovery、
+plugin data、编辑事件映射和 Stop 行为。参见[可移植性契约](docs/development/agent-portability.md)。
 
 ## 开发 BoxBox
 
@@ -139,7 +220,10 @@ bun product/packages/cli/entry.ts check --file path/to/file.ts --json
 
 ## 开发状态
 
-本项目仍处于开发阶段，尚未完成公开发布。本地 CLI 构建产物和技能适配器已经实现；公开分发和原生宿主事件的接纳仍有待完成。标准 `plugin/` 启动脚本需要显式指定本地引擎。在 Windows 上试用 Codex 时，请使用 [npm 安装器](product/installer/README.md)，它会将随附引擎安装到永久的本地目录。选定的 npm 安装器包名为 `boxbox-plugin`；发布仍待进行。
+公开安装器 `boxbox-plugin@0.2.8` 已发布，并具有 macOS 上 Codex、Claude 的干净 registry 安装证据，
+以及原生 Windows 安装和引擎检查证据。确定性引擎与宿主 adapter 已实现；可选 inspector 的模型选择
+仍明确标记为未评估。标准 `plugin/` 启动脚本仍要求显式的本地引擎，而 npm 安装器会携带该引擎并
+安装到永久本地目录。
 
 已验证的行为和剩余工作请参阅[发布准备状态](docs/development/status.md)、[发布契约](docs/development/release-contract.md)和[计划](docs/development/plan.md)。历史命名及迁移详情见[命名记录](docs/development/reviews/2026-10-16-boxbox-rename.md)。
 
