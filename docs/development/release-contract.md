@@ -14,7 +14,7 @@ unapproved. [FORMAT1](plan.md#planned-scope-expansion--format1-json-and-yaml) re
 | Default write approvals | TypeScript, Python | the recommended preset contains two approved rules and four examples; JSON/YAML writes require a complete separately supplied approval proof and otherwise refuse. Issue #26's additional TypeScript detection and authoring guidance does not add approved rules or widen automatic fixes |
 | Runtime | Node >=22.22.3 with npm | measured Node 22.22.3 on macOS/WSL and 24.12.0 on native Windows; Bun stays a development and build tool |
 | OS | macOS, native Windows and Linux/WSL candidate verification | clean CI `ebfe6a…` passed six host lifecycle cells; Linux/Windows hosted smoke passed and hosted macOS smoke is queued |
-| Hosts | Codex and Claude Code | `boxbox-plugin@0.2.7` has a clean isolated published-registry install for both hosts and a native Codex Check journey; authenticated Claude inference still has a separate evidence gate |
+| Hosts | Codex and Claude Code | `boxbox-plugin@0.2.8` has clean isolated published-registry installation for both hosts, native macOS and Windows engine journeys, and Windows Claude exec-form hook acceptance; authenticated Claude inference still has a separate evidence gate |
 | Other languages | keep the existing development engines | no promise of the same support quality in the first public CLI |
 | Python | a runnable python3 is required for inspection and fixes | unavailable syntax checks report errors; fixes are refused when the parser is missing or failing |
 
@@ -38,7 +38,7 @@ These results do not establish authenticated host UI/hook acceptance or a final 
 - `doctor`: reports the availability of the runtime, parsers, config, approval data and release files. It never reports something unimplemented as healthy.
 
 CLI arguments, exit codes and error JSON are pinned by implementation and tests in REL4. The public npm installer
-`boxbox-plugin@0.2.7` was published on 2026-11-10; npm publication does not publish a GitHub draft or the private
+`boxbox-plugin@0.2.8` was published on 2026-11-10; npm publication does not publish a GitHub draft or the private
 engine package separately. The [release notes template](release-notes-template.md) defines the reusable changelog
 structure; the release workflow extracts the matching version section. Changes to the Result/config schemas must
 come with a version change and a migration policy.
@@ -64,7 +64,7 @@ REL11, approve additional rules, license the preview package or authorize public
 ## Human decisions and freeze points
 
 The product name `boxbox` / `BoxBox` was confirmed on 2026-10-16. The public installer is `boxbox-plugin`, selected
-under the user's authorization and published at 0.2.7. Private engine artifacts retain the core ID `boxbox`. The
+under the user's authorization and published at 0.2.8. Private engine artifacts retain the core ID `boxbox`. The
 existing GitHub MIT LICENSE is retained at the repository root. Installer and engine package metadata declare MIT
 and ship the `LICENSE` (decided 2026-10-22); the local implementation remains `private: true`. npm publication and
 publishing a GitHub draft remain separate operations.
@@ -79,7 +79,7 @@ still requires the planned read-only GLM 5.3 review on frozen source; earlier re
 
 The user selected `boxbox` as the product, CLI and skill name and `boxbox-plugin` as the public npm installer candidate; display names use `BoxBox` and environment variables use `BOXBOX`. The previous `xxx` / `XXX` placeholders are retired. This naming change does not publish either release artifact.
 
-Public npm installer: `boxbox-plugin` (selected on 2026-10-16 and published at 0.2.7 on 2026-11-10); the private
+Public npm installer: `boxbox-plugin` (selected on 2026-10-16 and published at 0.2.8 on 2026-11-10); the private
 engine, core CLI, skill and plugin remain `boxbox`. The standard plugin shim requires an explicit local engine and
 has no registry fallback. The npm installer carries that engine tarball for both host adapters.
 
