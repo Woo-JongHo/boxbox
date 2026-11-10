@@ -19,18 +19,27 @@ export interface FormatterConfig {
 	readonly timeoutMs : number            ;
 }
 
+/**
+ * `refuse` (default) never places a column after Hangul, Han or Kana. `east-asian-width` measures them as two columns,
+ * the convention of monospace CJK fonts and terminals, and still refuses characters whose width is ambiguous.
+ */
+export type WideCharacterPolicy = "refuse" | "east-asian-width";
+
 export interface ProjectConfig {
-	readonly schemaVersion : 2                                                          ;
-	readonly languages?    : readonly PublicLanguage[]                                  ;
-	readonly preset?       : "recommended"                                              ;
-	readonly formatters?   : Readonly<Partial<Record<PublicLanguage, FormatterConfig>>> ;
+	readonly schemaVersion   : 2                                                          ;
+	readonly languages?      : readonly PublicLanguage[]                                  ;
+	readonly preset?         : "recommended"                                              ;
+	readonly formatters?     : Readonly<Partial<Record<PublicLanguage, FormatterConfig>>> ;
+	readonly wideCharacters? : WideCharacterPolicy                                        ;
 }
 
+/** `wideCharacters` is present only when a layer selects `east-asian-width`, so the default stays byte-identical. */
 export interface EffectiveConfig {
-	readonly schemaVersion : 2                                                          ;
-	readonly languages     : readonly PublicLanguage[]                                  ;
-	readonly preset        : "recommended"                                              ;
-	readonly formatters    : Readonly<Partial<Record<PublicLanguage, FormatterConfig>>> ;
+	readonly schemaVersion   : 2                                                          ;
+	readonly languages       : readonly PublicLanguage[]                                  ;
+	readonly preset          : "recommended"                                              ;
+	readonly formatters      : Readonly<Partial<Record<PublicLanguage, FormatterConfig>>> ;
+	readonly wideCharacters? : "east-asian-width"                                         ;
 }
 
 export interface ConfigSource {
@@ -137,13 +146,16 @@ export function validateProjectConfig(value: unknown, where: string): ProjectCon
 		return { schemaVersion: 2, languages: languagesOf(value.languages, where, true) };
 	}
 	if (value.schemaVersion !== PROJECT_CONFIG_SCHEMA_VERSION) throw new Error(`${where}: unsupported schemaVersion ${String(value.schemaVersion)}; expected 1 or 2`);
-	unknownKeys(value, ["schemaVersion", "languages", "preset", "formatters"], where);
+	unknownKeys(value, ["schemaVersion", "languages", "preset", "formatters", "wideCharacters"], where);
 	if (value.preset !== undefined && value.preset !== "recommended") throw new Error(`${where}: preset must be recommended`);
+	if (value.wideCharacters !== undefined && value.wideCharacters !== "refuse" && value.wideCharacters !== "east-asian-width")
+		throw new Error(`${where}: wideCharacters must be refuse or east-asian-width`);
 	return {
 		schemaVersion : 2,
 		...(value.languages === undefined ? {} : { languages: languagesOf(value.languages, where, false) }),
 		...(value.preset === undefined ? {} : { preset: value.preset }),
 		...(value.formatters === undefined ? {} : { formatters: formattersOf(value.formatters, `${where}.formatters`) }),
+		...(value.wideCharacters === undefined ? {} : { wideCharacters: value.wideCharacters }),
 	};
 }
 
@@ -288,16 +300,23 @@ export function userDatabaseStatus(): UserDatabaseStatus {
 	return { root, exists, bytes: files.reduce((total, file) => total + file.bytes, 0), files };
 }
 
+/** Line-engine arguments that carry the effective wide-character policy of `root`. */
+export function wideCharacterArguments(root: string): readonly string[] {
+	return resolveConfig(root).effective.wideCharacters ? ["--wide-characters", "east-asian-width"] : [];
+}
+
 export function readProjectConfig(root: string): ProjectConfig | undefined {
 	return readConfigFile(projectConfigPath(root), "project config")?.config;
 }
 
 function merge(base: EffectiveConfig, layer: ProjectConfig): EffectiveConfig {
+	const wide = layer.wideCharacters ?? base.wideCharacters;
 	return {
 		schemaVersion : 2                                                                                ,
 		languages     : layer.languages ? [...layer.languages] : base.languages                          ,
 		preset        : layer.preset ?? base.preset                                                      ,
 		formatters    : layer.formatters ? { ...base.formatters, ...layer.formatters } : base.formatters ,
+		...(wide === "east-asian-width" ? { wideCharacters: wide } : {}),
 	};
 }
 

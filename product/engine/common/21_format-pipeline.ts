@@ -5,6 +5,7 @@ import type { PipelineProcessResult                           } from "@/common/1
 
 import      { escapesRoot, evaluateApproval                   } from "@/common/18_approval-gate.ts"        ;
 import type { ApprovalRegistry, DocumentResolver              } from "@/common/18_approval-gate.ts"        ;
+import      { wideCharacterArguments                          } from "@/common/15_project-config.ts"       ;
 import type { FormatterConfig, PublicLanguage                 } from "@/common/15_project-config.ts"       ;
 import type { FileResult, ResultEnvelope, ResultGroup         } from "@/common/24_result-json.ts"          ;
 import      { compareParse                                    } from "@/common/08_parse-check.ts"          ;
@@ -100,16 +101,16 @@ const structuredEngine = (language: "json" | "yaml"): LanguageEngine => ({
 });
 
 const pythonEngine: LanguageEngine = {
-	check : async (_root, file) => {
-		const result = runAlignCli(PYTHON_ALIGNER, ["--file", file, "--json"]);
+	check : async (root, file) => {
+		const result = runAlignCli(PYTHON_ALIGNER, ["--file", file, "--json", ...wideCharacterArguments(root)]);
 		return (JSON.parse(result.report) as ResultEnvelope).results[0]!;
 	},
 	parse : async (_root, file) => {
 		const parsed = compareParse("python", "pass\n", readFileSync(file, "utf8"));
 		if (parsed.status !== "ok") throw new Error(`formatter output does not parse: ${parsed.delta.join(",")}`);
 	},
-	write : async (_root, file) => {
-		const result = runAlignCli(PYTHON_ALIGNER, ["--file", file, "--write", "--json"]);
+	write : async (root, file) => {
+		const result = runAlignCli(PYTHON_ALIGNER, ["--file", file, "--write", "--json", ...wideCharacterArguments(root)]);
 		if (result.code !== 0) throw new Error(`BoxBox alignment failed: ${result.report}`);
 	},
 };
