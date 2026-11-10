@@ -5,13 +5,14 @@ requirements without per-step confirmation. See the [phase table and acceptance 
 Earlier sections below preserve their scoped results; they are not a final release verdict.
 
 Latest publication checkpoint (2026-11-10): npm accepted the public installer
-[`boxbox-plugin@0.2.7`](https://www.npmjs.com/package/boxbox-plugin) from source
-`f8f8a08259a4f6aa656109d19342f4f789f44b45`. The published tarball has npm SHA-1
-`33154c64c63ed85d1683acb10cbf824948014ee1`, local SHA-256
-`ce6f4cc42b15fa43c5909fed2805110e367b52d30d9b57131acc9fee71c4a366` and 42 files.
+[`boxbox-plugin@0.2.8`](https://www.npmjs.com/package/boxbox-plugin) from source
+`76eaaefa5454cd31902120a43768a454200aeec5`. The published tarball has npm SHA-1
+`971014250417dcbb0fd7165e6e15e338e885d0ea`, local SHA-256
+`fe8fa46ad78ccf513c5fc9bb1fe6b26f79a109b55d255c7427d5ba2fc85583f4` and 42 files.
 A clean isolated registry journey installed both Codex and Claude adapters with `npx`, then the installed engines
-reported 0.2.7 and detected a TypeScript alignment group. The local active Codex profile also completed a native
-read-only Check journey; Claude's model request still ended before inference with an external `api_error`.
+reported 0.2.8 and detected a TypeScript alignment group. Native Windows also installed both adapters, verified
+Claude exec-form hooks and preserved 12 quoted update arguments. Claude's model request still ended before inference
+with an external `api_error`.
 
 Latest engineering checkpoint (2026-10-22): the Claude stale-version transition was corrected with pre-copy
 ownership checks, exact scoped update, post-install identity verification and recoverable partial-state retention.
