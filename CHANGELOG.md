@@ -12,6 +12,13 @@ documentation when preparing a GitHub release.
 - Advance development to 0.2.8 after publishing the immutable
   `boxbox-plugin@0.2.7` registry artifact.
 
+### Fixed
+
+- Preserve every argument in the generated Windows `update.cmd` launcher instead
+  of dropping arguments after the ninth position.
+- Avoid waiting for stdin when `boxbox statusline` is invoked interactively from
+  a terminal.
+
 ## [0.2.7] - 2026-11-10
 
 ### Added

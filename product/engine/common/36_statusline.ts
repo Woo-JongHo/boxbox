@@ -86,6 +86,12 @@ export function installShim(): string {
 	return shimPath();
 }
 
+/** Interactive invocations have no host payload; never block waiting for terminal input. */
+export function readStatuslineInput(terminal = process.stdin.isTTY): string {
+	if (terminal) return "";
+	try { return readFileSync(0, "utf8"); } catch { return ""; }
+}
+
 /** `boxbox statusline [--wrap "<command>"] [--no-color] [--left] | --install-shim`; the host's JSON arrives on stdin and is passed through. */
 export function runStatusline(args: readonly string[], current: string): number {
 	if (args.includes("--install-shim")) {
@@ -95,9 +101,7 @@ export function runStatusline(args: readonly string[], current: string): number 
 
 		return 0;
 	}
-	let input = "";
-
-	try { input = readFileSync(0, "utf8"); } catch { /* no stdin when run by hand */ }
+	const input = readStatuslineInput();
 	let cwd: string | undefined;
 
 	try {
