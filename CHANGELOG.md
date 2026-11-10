@@ -7,6 +7,11 @@ documentation when preparing a GitHub release.
 
 ## [Unreleased]
 
+### Changed
+
+- Advance development to 0.2.8 after publishing the immutable
+  `boxbox-plugin@0.2.7` registry artifact.
+
 ## [0.2.7] - 2026-11-10
 
 ### Added
