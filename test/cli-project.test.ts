@@ -344,4 +344,22 @@ try {
 		expect(value.results[2].result.written                                   ).toBe         (true                                             ) ;
 		expect(readFileSync(join(root, "src/bad.py"), "utf8")                    ).toBe         (SOURCE                                           ) ;
 	}, 60_000);
+
+	test("reads the nearest nested project layer when a single file is checked from a parent folder", () => {
+		const root    = workspace()                 ;
+		const project = join     (root, "team/app") ;
+		mkdirSync(join(project, "src"), { recursive: true });
+		configure(project, ["typescript"]);
+		writeFileSync(join(project, "src/a.py"), SOURCE);
+		writeFileSync(join(root   , "src/b.py"), SOURCE);
+		const nested  = invoke    (root   , ["check", "--file", "team/app/src/a.py", "--json"]) ;
+		const outside = invoke    (root   , ["check", "--file", "src/b.py"         , "--json"]) ;
+		const escape  = invoke    (project, ["check", "--file", "../../src/b.py"   , "--json"]) ;
+
+		expect(nested.status                             ).toBe         (2                            ) ;
+		expect(JSON.parse(nested.stdout).error           ).toMatchObject({ code: "LANGUAGE_DISABLED" }) ;
+		expect(outside.status                            ).toBe         (1                            ) ;
+		expect(JSON.parse(outside.stdout).results[0].file).toBe         ("src/b.py"                   ) ;
+		expect(JSON.parse(escape.stdout).error           ).toMatchObject({ code: "PATH_ESCAPE" }      ) ;
+	});
 });

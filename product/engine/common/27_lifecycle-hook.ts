@@ -106,6 +106,26 @@ function ensurePluginDataRoot(path: string): void {
 	for (const component of missing) ensureRealDirectory(component, true);
 }
 
+/** Where `stateDirectory` keeps a session baseline, computed without creating directories. */
+function baselinePath(root: string, id: string): string {
+	const data = process.env.CLAUDE_PLUGIN_DATA || process.env.PLUGIN_DATA;
+	return data && isAbsolute(data)
+		? join(resolve(data), "hooks", createHash("sha256").update(root).digest("hex").slice(0, 16), id, "baseline.json")
+		: join(root, ".boxbox", "hooks", id, "baseline.json");
+}
+
+/**
+ * The host may move the hook cwd below the folder where the session started (for example into a nested repository).
+ * Keep using that session's baseline from the nearest ancestor instead of reporting it missing; a session that never
+ * started still has no baseline anywhere and fails as before.
+ */
+function sessionRoot(root: string, id: string): string {
+	for (let current = root; ; current = dirname(current)) {
+		if (existsSync(baselinePath(current, id))) return current;
+		if (dirname(current) === current) return root;
+	}
+}
+
 function stateDirectory(root: string, id: string): string {
 	if (!statSync(root).isDirectory()) throw new Error(`Project root must be a directory: ${root}`);
 	const data = process.env.CLAUDE_PLUGIN_DATA || process.env.PLUGIN_DATA ;
@@ -192,15 +212,15 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 		const suppliedRoot = given ?? (process.env.CLAUDE_PROJECT_DIR || input.cwd);
 		if (typeof suppliedRoot !== "string" || !isAbsolute(suppliedRoot)) throw new Error("Missing absolute cwd");
 
-		const root    = realpathSync(resolve(suppliedRoot)) ;
-		const setting = resolveMode (root                 ) ;
+		const started = realpathSync(resolve(suppliedRoot))                                 ;
+		const id      = createHash("sha256").update(String(input.session_id)).digest("hex") ;
+		const root    = mode === "session" ? started : sessionRoot(started, id)             ;
+		const setting = resolveMode(root)                                                   ;
 		if (mode !== "session" && setting === "off") {
 			console.log("{}");
 
 			return 0;
 		}
-
-		const id = createHash("sha256").update(String(input.session_id)).digest("hex");
 
 		const directory  = stateDirectory    (root, id) ;
 		const exclusions = snapshotExclusions(root    ) ;
