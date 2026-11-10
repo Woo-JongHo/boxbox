@@ -40,8 +40,9 @@ unavailable. Estimates and lower bounds remain labeled. The report is separate f
 
 ## Install for Codex and Claude Code
 
-The intended entry point is the npm installer: `npx boxbox-plugin`. It installs this plugin and its included engine into a permanent user directory.
-The npm `boxbox-plugin` candidate was unregistered when checked; this is not a reservation. npm authentication is complete; publication remains pending.
+The public entry point is `npx boxbox-plugin`. Published `boxbox-plugin@0.2.8` installs this plugin and its included
+engine into a permanent user directory. Codex and Claude receive separate runtimes so either host can be repaired or
+removed independently.
 
 A marketplace install contains only this plugin, not the engine. Until the engine is configured, checks do not run: commands stop with a setup message, hooks exit without blocking the host, and only the session hook prints that message. Build and run the installer as described in the [root README](https://github.com/Woo-JongHo/boxbox#install-the-plugin). If you added this repository as a marketplace first, remove that registration before running the installer.
 
