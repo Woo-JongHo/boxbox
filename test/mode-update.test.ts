@@ -13,7 +13,7 @@ import      { tmpdir                                                  } from "no
 import      { spawnSync                                               } from "node:child_process"        ;
 import      { pathToFileURL                                           } from "node:url"                  ;
 import      { resolveMode, setMode                                    } from "@/common/35_mode.ts"       ;
-import      { compose, firstLine, RIGHT_MARGIN, segment               } from "@/common/36_statusline.ts" ;
+import      { compose, firstLine, readStatuslineInput, RIGHT_MARGIN, segment } from "@/common/36_statusline.ts" ;
 import      {
               CHECK_PERIOD_MS                                       ,
               checkForUpdate                                        ,
@@ -261,6 +261,10 @@ describe("modes", () => {
 });
 
 describe("status line", () => {
+	test("interactive invocation never waits for a host payload", () => {
+		expect(readStatuslineInput(true)).toBe("");
+	});
+
 	test("the segment is one short line and marks an available update", () => {
 		expect(segment("align", "0.2.5", "0.2.6"  , false))    .toBe     ("▣ BB·ALIGN ↑") ;
 		expect(segment("check", "0.2.6", "0.2.6"  , false))    .toBe     ("▣ BB·CHECK"  ) ;

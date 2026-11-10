@@ -102,10 +102,12 @@ test("other native hosts retain discovery without the Codex identity probe", () 
 
 test("PATH launchers forward `update boxbox` to the engine and refuse every other update target", () => {
 	const launchers = platform.pathLaunchers(node, "C:/BoxBox/plugin/scripts/boxbox.mjs");
-	expect(Object.keys(launchers).sort()).toEqual  (["bin/boxbox", "bin/boxbox.cmd", "bin/update", "bin/update.cmd"]) ;
-	expect(launchers["bin/update"]      ).toContain(`if [ "\${1:-}" != boxbox ]; then`                              ) ;
-	expect(launchers["bin/update"]      ).toContain("'C:/BoxBox/plugin/scripts/boxbox.mjs' update \"$@\""           ) ;
-	expect(launchers["bin/update.cmd"]  ).toContain('if /i not "%~1"=="boxbox"'                                     ) ;
+	expect(Object.keys(launchers).sort())    .toEqual  (["bin/boxbox", "bin/boxbox.cmd", "bin/update", "bin/update.cmd"] ) ;
+	expect(launchers["bin/update"]      )    .toContain(`if [ "\${1:-}" != boxbox ]; then`                               ) ;
+	expect(launchers["bin/update"]      )    .toContain("'C:/BoxBox/plugin/scripts/boxbox.mjs' update \"$@\""            ) ;
+	expect(launchers["bin/update.cmd"]  )    .toContain("process.argv.slice(1)"                                          ) ;
+	expect(launchers["bin/update.cmd"]  )    .toContain("-- %*"                                                          ) ;
+	expect(launchers["bin/update.cmd"]  ).not.toContain("%1 %2 %3 %4 %5 %6 %7 %8 %9"                                     ) ;
 	if (process.platform === "win32") return;
 	const update = spawnSync("sh", ["-c", launchers["bin/update"], "update", "brew"], { encoding: "utf8" });
 	expect(update.status                                 ).toBe(2)                                                                ;
@@ -120,8 +122,8 @@ test("the generated native update launcher preserves real engine arguments conta
 		const scripts  = platform.pathLaunchers(process.execPath, fixture) ;
 		writeFileSync(fixture, "process.stdout.write(JSON.stringify(process.argv.slice(2)));");
 		writeFileSync(launcher, scripts[windows ? "bin/update.cmd" : "bin/update"], { mode: 0o755 });
-		const args = ["boxbox", "--check", "--source", join(root, "source checkout")]                                                             ;
-		const run  = spawnSync(windows ? "cmd.exe" : "sh", windows ? ["/d", "/c", launcher, ...args] : [launcher, ...args], { encoding: "utf8" }) ;
+		const args = ["boxbox", "--check", "--source", join(root, "source checkout"), "--host", "codex", "--snooze", "24", "--extra", "quoted value", "--last", "argument"] ;
+		const run  = spawnSync(windows ? "cmd.exe" : "sh", windows ? ["/d", "/c", launcher, ...args] : [launcher, ...args], { encoding: "utf8" })                           ;
 
 		expect(run.status).toBe(0);
 		expect(JSON.parse(run.stdout)).toEqual(["update", ...args.slice(1)]);
