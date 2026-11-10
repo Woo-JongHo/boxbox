@@ -300,6 +300,12 @@ export function userDatabaseStatus(): UserDatabaseStatus {
 	return { root, exists, bytes: files.reduce((total, file) => total + file.bytes, 0), files };
 }
 
+/** Structured-adapter options that carry the effective wide-character policy of `root`. */
+export function structuredOptions(root: string): { readonly wideCharacters?: "east-asian-width" } {
+	const wide = resolveConfig(root).effective.wideCharacters;
+	return wide ? { wideCharacters: wide } : {};
+}
+
 /** Line-engine arguments that carry the effective wide-character policy of `root`. */
 export function wideCharacterArguments(root: string): readonly string[] {
 	return resolveConfig(root).effective.wideCharacters ? ["--wide-characters", "east-asian-width"] : [];

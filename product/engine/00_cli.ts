@@ -32,6 +32,7 @@ import      {
               initializeUserDatabase                                   ,
               resolveConfig                                            ,
               userDatabaseStatus                                       ,
+              structuredOptions                                        ,
               wideCharacterArguments                                   ,
                                                                          } from "@/common/15_project-config.ts"      ;
 import type { PublicLanguage                                             } from "@/common/15_project-config.ts"      ;
@@ -432,7 +433,7 @@ async function inspectFile(parsed: ParsedFileCommand, root: string, knownSyntax?
 		} finally { process.chdir(previous); }
 	}
 	if (parsed.language === "json" || parsed.language === "yaml") {
-		return analyzeStructured(readFileSync(resolve(root, parsed.file), "utf8"), parsed.language, parsed.file).result;
+		return analyzeStructured(readFileSync(resolve(root, parsed.file), "utf8"), parsed.language, parsed.file, structuredOptions(root)).result;
 	}
 	let report = "";
 	await runTypeScriptAlign(["--file", parsed.file, "--json"], { root, emit: value => { report = value; } });

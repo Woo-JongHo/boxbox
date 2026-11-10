@@ -6,7 +6,7 @@ import      {
               visit                 ,
                                       } from "yaml"                         ;
 
-import      { displayWidth            } from "@/common/01_display-width.ts" ;
+import      { displayWidth, hasAmbiguousWidth, hasWideCharacters } from "@/common/01_display-width.ts" ;
 import      { summarize               } from "@/common/24_result-json.ts"   ;
 import type { FileResult, ResultGroup } from "@/common/24_result-json.ts"   ;
 
@@ -35,8 +35,17 @@ interface Parsed {
 }
 
 interface Run {
-	readonly rows : readonly Row[];
-	readonly edits: number;
+	readonly rows  : readonly Row[]    ;
+	readonly edits : number            ;
+	readonly axes  : readonly string[] ;
+}
+
+/** A commented row whose code is this much wider than the median commented row keeps its comment attached. */
+const COMMENT_OUTLIER_GAP = 20;
+
+export interface StructuredOptions {
+	/** `east-asian-width` lets a comment column follow Hangul, Han or Kana values measured as two columns. */
+	readonly wideCharacters? : "refuse" | "east-asian-width" ;
 }
 
 const JSON_ROW = /^(?<indent>[ \t]*)(?<key>"(?:\\[\s\S]|[^"\\])*")(?<before>[ \t]*):(?<after>[ \t]*)(?<tail>"(?:\\[\s\S]|[^"\\])*"|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?|true|false|null)(?<suffix>[ \t]*,?[ \t]*)(?<eol>\r?)$/u ;
@@ -240,8 +249,65 @@ function runsOf(rows: readonly Row[]): readonly Row[][] {
 	return runs;
 }
 
-function alignedLine(row: Row, width: number): string {
-	return `${row.indent}${row.key}${" ".repeat(width - displayWidth(row.key))}: ${row.tail}${row.suffix}${row.eol}`;
+/**
+ * A YAML region keeps the `key : value` house style when its widest key already has exactly one space before the
+ * colon and most of its rows put space there; otherwise the colon attaches to the widest key. The widest row never
+ * moves, so the decision is stable across runs. The style is part of the reported axes, so an approval of one style
+ * never writes the other.
+ */
+function spacedColon(region: readonly Row[], language: StructuredLanguage, width: number): boolean {
+	if (language !== "yaml") return false;
+	const spaced = region.filter(row => row.beforeColon !== "").length;
+	return region.every(row => displayWidth(row.key) < width || row.beforeColon === " ") && spaced * 2 > region.length;
+}
+
+/** A trailing YAML comment split from the value: the gap before `#` and the comment itself. */
+function trailingComment(row: Row): { readonly gap: string; readonly text: string } | null {
+	const match = /^(?<gap>[ \t]+)(?<text>#.*)$/u.exec(row.suffix);
+	return match?.groups ? { gap: match.groups.gap!, text: match.groups.text! } : null;
+}
+
+/**
+ * YAML compares the runs of one block mapping as one region: runs separated by a nested collection, block scalar,
+ * comment or a single scalar pair share the widest key among the mapping's single-line scalar pairs, so a split run
+ * does not shrink below its siblings. JSON keeps run widths.
+ */
+function regionOf(run: readonly Row[], rows: readonly Row[], language: StructuredLanguage): readonly Row[] {
+	const first = run[0]!;
+	return language === "yaml" ? rows.filter(row => row.parent === first.parent && row.indent === first.indent) : run;
+}
+
+function codeOf(row: Row, width: number, spaced: boolean): string {
+	return `${row.indent}${row.key}${" ".repeat(width - displayWidth(row.key))}${spaced ? " " : ""}: ${row.tail}`;
+}
+
+/** The lower middle value, so an even count never averages two widths into a column no row has. */
+function lowerMedian(values: readonly number[]): number {
+	return [...values].sort((left, right) => left - right)[Math.floor((values.length - 1) / 2)]!;
+}
+
+/**
+ * The `#` column of a run: one space after the widest commented code. A row wider than the median commented row by
+ * COMMENT_OUTLIER_GAP keeps its comment attached and does not set the column. A remaining value whose width the
+ * wide-character policy cannot state leaves the whole run's comments unchanged.
+ */
+function commentColumn(rows: readonly Row[], width: number, spaced: boolean, options: StructuredOptions): { readonly column: number; readonly rows: ReadonlySet<Row> } | null {
+	const measured = rows
+		.filter(row => trailingComment(row) !== null                          )
+		.map   (row => ({ row, width: displayWidth(codeOf(row, width, spaced)) }));
+	if (measured.length < 2) return null;
+	const median   = lowerMedian(measured.map(entry => entry.width))                                       ;
+	const kept     = measured.filter(entry => entry.width - median < COMMENT_OUTLIER_GAP)                  ;
+	const unstated = options.wideCharacters === "east-asian-width" ? hasAmbiguousWidth : hasWideCharacters ;
+	if (kept.length < 2 || kept.some(entry => unstated(entry.row.tail))) return null;
+	return { column: Math.max(...kept.map(entry => entry.width)) + 1, rows: new Set(kept.map(entry => entry.row)) };
+}
+
+function alignedLine(row: Row, width: number, spaced: boolean, comments: ReturnType<typeof commentColumn>): string {
+	const code    = codeOf(row, width, spaced)                            ;
+	const comment = comments?.rows.has(row) ? trailingComment(row) : null ;
+	if (!comment) return `${code}${row.suffix}${row.eol}`;
+	return `${code}${" ".repeat(comments!.column - displayWidth(code))}${comment.text}${row.eol}`;
 }
 
 export function structuredDiagnostics(source: string, language: StructuredLanguage): readonly string[] {
@@ -249,7 +315,7 @@ export function structuredDiagnostics(source: string, language: StructuredLangua
 	catch (error) { return [error instanceof Error ? error.message : String(error)]; }
 }
 
-export function analyzeStructured(source: string, language: StructuredLanguage, file = "input"): { result: FileResult; output: string; refusals: readonly StructuredRefusal[] } {
+export function analyzeStructured(source: string, language: StructuredLanguage, file = "input", options: StructuredOptions = {}): { result: FileResult; output: string; refusals: readonly StructuredRefusal[] } {
 	let parsed: Parsed;
 	try { parsed = parse(source, language); }
 	catch (error) {
@@ -281,10 +347,14 @@ export function analyzeStructured(source: string, language: StructuredLanguage, 
 	}
 
 	const lines = source.split("\n"), runs: Run[] = runsOf(parsed.rows).map(rows => {
-		const width = Math.max(...rows.map(row => displayWidth(row.key))) ;
-		let edits   = 0                                                   ;
-		for (const row of rows) { const after = alignedLine(row, width); if (after !== lines[row.line]) { lines[row.line] = after; edits += 1; } }
-		return { rows, edits };
+		const region   = regionOf     (rows, parsed.rows, language                  ) ;
+		const width    = Math.max     (...region.map(row => displayWidth(row.key)))   ;
+		const spaced   = spacedColon  (region, language, width                      ) ;
+		const comments = commentColumn(rows, width, spaced, options                 ) ;
+		let edits      = 0                                                            ;
+		for (const row of rows) { const after = alignedLine(row, width, spaced, comments); if (after !== lines[row.line]) { lines[row.line] = after; edits += 1; } }
+		const axes = [...(spaced ? ["key", "colon"] : ["key-colon"]), "value", ...(comments ? ["comment"] : [])];
+		return { rows, edits, axes };
 	});
 	const output = lines.join("\n");
 	if (!preservesStructured(source, output, language)) throw new Error("structured alignment escaped verified horizontal gap ranges");
@@ -293,7 +363,7 @@ export function analyzeStructured(source: string, language: StructuredLanguage, 
 		startLine : run.rows[0]!.line + 1                        ,
 		endLine   : run.rows.at(-1)!.line + 1                    ,
 		rows      : run.rows.length                              ,
-		axes      : ["key-colon", "value"]                       ,
+		axes      : run.axes                                     ,
 		state     : run.edits > 0 ? "FIXABLE" : "PASS"           ,
 		edits     : run.edits                                    ,
 		context   : language === "json" ? "object" : "block-map" ,
@@ -314,7 +384,8 @@ export function analyzeStructured(source: string, language: StructuredLanguage, 
 	};
 }
 
-function rowSkeleton(row: Row): string { return `${row.indent}${row.key}\u0000:\u0000${row.tail}${row.suffix}${row.eol}`; }
+/** The gap before a trailing comment is horizontal whitespace like the colon gaps, so it is masked too. */
+function rowSkeleton(row: Row): string { return `${row.indent}${row.key}\u0000:\u0000${row.tail}${row.suffix.replace(/^[ \t]+(?=#)/u, "\u0000")}${row.eol}`; }
 
 export function preservesStructured(before: string, after: string, language: StructuredLanguage): boolean {
 	try {
