@@ -10,7 +10,7 @@ import      { relative, resolve                                   } from "node:p
 import      { compareParse, comparePythonStructure                } from "@/common/08_parse-check.ts"   ;
 import      { updateFileAtomicallySync                            } from "@/common/12_safe-file.ts"     ;
 import      { alignSource                                         } from "@/common/06_table-engine.ts"  ;
-import type { AlignResult, DetectedTable, LineProfiler, PairGroup } from "@/common/06_table-engine.ts"  ;
+import type { AlignOptions, AlignResult, DetectedTable, LineProfiler, PairGroup } from "@/common/06_table-engine.ts"  ;
 import      { envelope, summarize                                 } from "@/common/24_result-json.ts"   ;
 import      { indentDepth                                         } from "@/common/02_signature.ts"     ;
 import type { FileResult, GroupState, ResultGroup, ResultParse    } from "@/common/24_result-json.ts"   ;
@@ -48,9 +48,16 @@ function readBoolOption(args: readonly string[], name: string, fallback: boolean
 	return fallback === true || args.includes(name);
 }
 
+type WidePolicy = NonNullable<AlignOptions["wideCharacters"]>;
+
+function readWidePolicy(args: readonly string[]): WidePolicy {
+	return readOptionValues(args, "--wide-characters", []).at(-1) === "east-asian-width" ? "east-asian-width" : "refuse";
+}
+
 interface CliOptions {
 	readonly files      : readonly string[] ;
 	readonly minRows    : number            ;
+	readonly wide       : WidePolicy        ;
 	readonly explain    : readonly number[] ;
 	readonly groupsOnly : boolean           ;
 	readonly json       : boolean           ;
@@ -64,12 +71,15 @@ function readCliOptions(args: readonly string[], overrides: { readonly groupsOnl
 	return {
 		files      : readOptionValues (args, "--file"    , []        ) ,
 		minRows    : readNumberOption (args, "--min-rows", 3         ) ,
+		wide       : readWidePolicy(args)                              ,
 		explain    : readNumberOptions(args, "--explain" , []        ) ,
 		groupsOnly : groupsOnly                                        ,
 		json       : readBoolOption   (args, "--json"    , false     ) ,
 		write      : writeFlag && !groupsOnly                          ,
 	};
 }
+
+type AlignSettings = Pick<AlignOptions, "minRows" | "wideCharacters">;
 
 interface FileRun {
 	readonly source     : string            ;
@@ -96,14 +106,14 @@ function decodeSource(aligner: LineProfiler, bytes: Uint8Array): string {
 	catch { throw new Error("Unsupported Python source encoding: expected UTF-8"); }
 }
 
-function alignOnly(aligner: LineProfiler, absolute: string, minRows: number): FileRun {
+function alignOnly(aligner: LineProfiler, absolute: string, settings: AlignSettings): FileRun {
 	const source = decodeSource(aligner, readFileSync(absolute));
 	try {
 		return {
-			source     : source                                                  ,
-			result     : alignSource(source, aligner, { minRows, apply: false }) ,
-			parsed     : { status: "not-run", tool: "" }                         ,
-			parseLines : []                                                      ,
+			source     : source                                                      ,
+			result     : alignSource(source, aligner, { ...settings, apply: false }) ,
+			parsed     : { status: "not-run", tool: "" }                             ,
+			parseLines : []                                                          ,
 		};
 	} catch (error) {
 		if (aligner.language !== "python" || !(error instanceof PythonSourceSyntaxError)) throw error;
@@ -111,13 +121,13 @@ function alignOnly(aligner: LineProfiler, absolute: string, minRows: number): Fi
 	}
 }
 
-function alignAndWrite(aligner: LineProfiler, absolute: string, minRows: number): FileRun {
+function alignAndWrite(aligner: LineProfiler, absolute: string, settings: AlignSettings): FileRun {
 	let run!: FileRun;
 	updateFileAtomicallySync(absolute, ({ initial, working }) => {
 		const source = decodeSource(aligner, initial);
 		let result: AlignResult;
 		try {
-			result = alignSource(source, aligner, { minRows, apply: true });
+			result = alignSource(source, aligner, { ...settings, apply: true });
 		} catch (error) {
 			if (aligner.language !== "python" || !(error instanceof PythonSourceSyntaxError)) throw error;
 			run = invalidSourceRun(source);
@@ -141,7 +151,7 @@ function runFile(aligner: LineProfiler, file: string, options: CliOptions): File
 	const label     = relative(process.cwd(), absolute).replaceAll("\\", "/") ;
 	const alignFile = options.write ? alignAndWrite : alignOnly               ;
 
-	const { source, result, parsed, parseLines } = alignFile(aligner, absolute, options.minRows);
+	const { source, result, parsed, parseLines } = alignFile(aligner, absolute, { minRows: options.minRows, wideCharacters: options.wide });
 	return {
 		result  : toFileResult(aligner, label, options.write, result, parsed)                                                                                                         ,
 		reports : [formatFileReport(aligner, label, source, result, options.groupsOnly), ...parseLines, ...options.explain.map(line => formatLineExplanation(aligner, result, line))] ,

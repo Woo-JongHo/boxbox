@@ -7,6 +7,14 @@ documentation when preparing a GitHub release.
 
 ## [Unreleased]
 
+### Added
+
+- Project and user config accept `"wideCharacters": "east-asian-width"`. The
+  Python line engine then aligns runs whose columns follow Hangul, Han or Kana,
+  measuring them as two columns, instead of refusing them; runs with
+  ambiguous-width characters stay refused. The default (`refuse`) and existing
+  effective configs are unchanged (#56).
+
 ### Fixed
 
 - A single-file `check`, `guide`, `align` or `format` run from a parent folder

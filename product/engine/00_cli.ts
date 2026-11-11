@@ -32,6 +32,7 @@ import      {
               initializeUserDatabase                                   ,
               resolveConfig                                            ,
               userDatabaseStatus                                       ,
+              wideCharacterArguments                                   ,
                                                                          } from "@/common/15_project-config.ts"      ;
 import type { PublicLanguage                                             } from "@/common/15_project-config.ts"      ;
 import type { FileResult, ResultEnvelope                                 } from "@/common/24_result-json.ts"         ;
@@ -447,7 +448,7 @@ async function inspectFile(parsed: ParsedFileCommand, root: string, knownSyntax?
 		const previous = process.cwd();
 		try {
 			process.chdir(root);
-			const report = runAlignCli(PYTHON_ALIGNER, ["--file", parsed.file, "--json"]).report;
+			const report = runAlignCli(PYTHON_ALIGNER, ["--file", parsed.file, "--json", ...wideCharacterArguments(root)]).report;
 			return (JSON.parse(report) as ResultEnvelope).results[0]!;
 		} finally { process.chdir(previous); }
 	}

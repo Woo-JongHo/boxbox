@@ -83,6 +83,17 @@ describe("config layers", () => {
 		expect(() => validateProjectConfig({ schemaVersion: 2, preset: "custom" }, "config")                    ).toThrow("preset must be recommended"         ) ;
 	});
 
+	test("wideCharacters opts in to east-asian width per layer and stays absent by default", () => {
+		const root = workspace()                         ;
+		const user = join     (root, "user/config.json") ;
+		expect(resolveConfig(root, { userConfigPath: user }).effective.wideCharacters).toBeUndefined();
+		writeConfig(user, { schemaVersion: 2, wideCharacters: "east-asian-width" });
+		expect(resolveConfig(root, { userConfigPath: user }).effective.wideCharacters).toBe("east-asian-width");
+		writeConfig(join(root, ".boxbox/config.json"), { schemaVersion: 2, wideCharacters: "refuse" });
+		expect(resolveConfig(root, { userConfigPath: user }).effective.wideCharacters).toBeUndefined();
+		expect(() => validateProjectConfig({ schemaVersion: 2, wideCharacters: "auto" }, "config")).toThrow("wideCharacters must be refuse or east-asian-width");
+	});
+
 	test("strictly validates the formatter command contract and timeout bounds", () => {
 		const config = (formatter: unknown): unknown => ({ schemaVersion: 2, formatters: { python: formatter } });
 		expect(() => validateProjectConfig(config({ command: "black", args: [] }), "config")                                ).toThrow("exactly one {file}"              ) ;

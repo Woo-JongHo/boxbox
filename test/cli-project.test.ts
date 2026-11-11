@@ -345,6 +345,17 @@ try {
 		expect(readFileSync(join(root, "src/bad.py"), "utf8")                    ).toBe         (SOURCE                                           ) ;
 	}, 60_000);
 
+	test("the project wideCharacters policy reaches the Python check", () => {
+		const root = workspace();
+		writeFileSync(join(root, "src/wide.py"), 'row = {\n    "\uc1a1\uae08": a,\n    "\uc785\uae08\uc99d": bb,\n    "\ud1b5": ccc,\n}\n');
+		const states = () => JSON.parse(invoke(root, ["check", "--source", "--file", "src/wide.py", "--json"]).stdout).results[0].groups.map((group: { state: string }) => group.state);
+
+		expect(states()).toEqual(["REFUSE"]);
+		mkdirSync(join(root, ".boxbox"));
+		writeFileSync(join(root, ".boxbox/config.json"), JSON.stringify({ schemaVersion: 2, wideCharacters: "east-asian-width" }));
+		expect(states()).toEqual(["FIXABLE"]);
+	});
+
 	test("reads the nearest nested project layer when a single file is checked from a parent folder", () => {
 		const root    = workspace()                 ;
 		const project = join     (root, "team/app") ;
