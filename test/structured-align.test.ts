@@ -20,6 +20,73 @@ describe("structured alignment", () => {
 		expect(preservesStructured(before, analyzed.output, language)).toBe   (true                                                                                                   ) ;
 	});
 
+	test("keeps an existing YAML `key : value` house style and reports its own axes", () => {
+		const aligned  = "schema_version  : 1\nkind            : config\ndefault_profile : operation\n"                      ;
+		const ragged   = "schema_version : 1\nkind : config\ndefault_profile : operation\nadded: x\n"                        ;
+		const expected = "schema_version  : 1\nkind            : config\ndefault_profile : operation\nadded           : x\n" ;
+		const fixed    = analyzeStructured(ragged, "yaml")                                                                   ;
+
+		expect(analyzeStructured(aligned, "yaml").result.groups ).toEqual([expect.objectContaining({ axes: ["key", "colon", "value"], state: "PASS" })]) ;
+		expect(fixed.output                                     ).toBe   (expected                                                                     ) ;
+		expect(analyzeStructured(fixed.output, "yaml").output   ).toBe   (fixed.output                                                                 ) ;
+		expect(preservesStructured(ragged, fixed.output, "yaml")).toBe   (true                                                                         ) ;
+	});
+
+	test("aligns trailing YAML comments around the median and leaves outliers attached", () => {
+		const source = [
+			"col_code: 2 # code column",
+			"alert_timeout: 3.0 # alert wait",
+			"last_column: O",
+			"tie_tolerance: 1.0e-09 # tie",
+			"code_pattern: '^[A-Z]{2}[0-9]{12}(?:abcdefghijklmnopqrstuvwxyz)+' # long",
+			"usd_pattern: '^[0-9]{1,3}(?:,[0-9]{3})*(?:[.][0-9]+)?(?:abcdefgh)+' # long too",
+		].join("\n");
+		const expected = [
+			"col_code     : 2       # code column",
+			"alert_timeout: 3.0     # alert wait",
+			"last_column  : O",
+			"tie_tolerance: 1.0e-09 # tie",
+			"code_pattern : '^[A-Z]{2}[0-9]{12}(?:abcdefghijklmnopqrstuvwxyz)+' # long",
+			"usd_pattern  : '^[0-9]{1,3}(?:,[0-9]{3})*(?:[.][0-9]+)?(?:abcdefgh)+' # long too",
+		].join("\n");
+		const analyzed = analyzeStructured(source, "yaml");
+
+		expect(analyzed.output                                     ).toBe   (expected                                                              ) ;
+		expect(analyzed.result.groups                              ).toEqual([expect.objectContaining({ axes: ["key-colon", "value", "comment"] })]) ;
+		expect(analyzeStructured(analyzed.output, "yaml").output   ).toBe   (analyzed.output                                                       ) ;
+		expect(preservesStructured(source, analyzed.output, "yaml")).toBe   (true                                                                  ) ;
+	});
+
+	test("comment columns after wide values follow the wide-character policy", () => {
+		const source = [
+			"origin_file: 기초자료.xlsx # origin", // cjk-test-data
+			"sheet: items # sheet",
+			"limit: 3 # limit",
+		].join("\n");
+		const refused = [
+			"origin_file: 기초자료.xlsx # origin", // cjk-test-data
+			"sheet      : items # sheet",
+			"limit      : 3 # limit",
+		].join("\n");
+		const aligned = [
+			"origin_file: 기초자료.xlsx # origin", // cjk-test-data
+			"sheet      : items         # sheet",
+			"limit      : 3             # limit",
+		].join("\n");
+		const east = analyzeStructured(source, "yaml", "input", { wideCharacters: "east-asian-width" });
+
+		expect(analyzeStructured(source, "yaml").output                                                      ).toBe(refused    ) ;
+		expect(east.output                                                                                   ).toBe(aligned    ) ;
+		expect(analyzeStructured(east.output, "yaml", "input", { wideCharacters: "east-asian-width" }).output).toBe(east.output) ;
+	});
+
+	test("block-mapping runs split by a nested collection share the parent's widest key", () => {
+		const source   = "alpha: 1\nbeta: 2\ngamma: 3\nnested:\n  - x\nlongest_key: 4\nd: 5\ne: 6\n"                                        ;
+		const expected = "alpha      : 1\nbeta       : 2\ngamma      : 3\nnested:\n  - x\nlongest_key: 4\nd          : 5\ne          : 6\n" ;
+
+		expect(analyzeStructured(source, "yaml").output).toBe(expected) ;
+	});
+
 	test("preserves JSON escapes, colons in strings, duplicate keys, CRLF, and nested ownership", () => {
 		const source = "{\r\n  \"outer\": {\r\n    \"a\":\"x:y\",\r\n    \"long\\\"key\" : 2,\r\n    \"a\"  :3\r\n  },\r\n  \"a\":1,\r\n  \"bb\":2,\r\n  \"ccc\":3\r\n}\r\n";
 		const { output, result } = analyzeStructured(source, "json");

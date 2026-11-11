@@ -7,6 +7,22 @@ documentation when preparing a GitHub release.
 
 ## [Unreleased]
 
+### Added
+
+- YAML mappings keep an existing `key : value` house style instead of
+  reporting every aligned run as FIXABLE; such runs report the
+  `key | colon | value` axes, so an approval of one style never writes the
+  other (#51).
+- YAML runs align trailing `#` comments into one column and report a `comment`
+  axis. A row more than 20 columns wider than the median commented row keeps
+  its comment attached; a remaining value with wide characters leaves the run's
+  comments unchanged unless the `east-asian-width` policy applies (#50).
+- Project and user config accept `"wideCharacters": "east-asian-width"`. The
+  Python line engine then aligns runs whose columns follow Hangul, Han or Kana,
+  measuring them as two columns, instead of refusing them; runs with
+  ambiguous-width characters stay refused. The default (`refuse`) and existing
+  effective configs are unchanged (#56).
+
 ### Changed
 
 - Python runs of the same shape inside one bracket (call arguments, literals,
@@ -14,6 +30,20 @@ documentation when preparing a GitHub release.
   undecomposable row splits them, and a same-shape pair in that bracket widens
   them without being rewritten. Statement paragraphs keep their own widths and
   approval keys are unchanged (#52).
+- YAML runs of one block mapping that are split by a nested collection, block
+  scalar, comment or a single pair now share the mapping's widest key instead
+  of shrinking to each run's own minimum width.
+
+### Fixed
+
+- A single-file `check`, `guide`, `align` or `format` run from a parent folder
+  now reads the project layer of the nearest `.boxbox/` directory between the
+  file and the working root, instead of silently using inherited defaults
+  (#53). The search never leaves the working root.
+- PostToolUse and Stop hooks keep the session baseline when the host moves the
+  hook cwd or project directory below the folder where the session started,
+  instead of reporting `Missing SessionStart baseline` on every edit (#54).
+  Hook inspections also read the nearest nested project layer.
 
 ## [0.2.8] - 2026-11-10
 

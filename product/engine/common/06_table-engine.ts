@@ -13,7 +13,7 @@
  *    anything but horizontal whitespace between tokens is refused as a whole and reported in `refused`.
  */
 import      { changedLines                    } from "@/common/09_preservation.ts"  ;
-import      { displayWidth, hasWideCharacters } from "@/common/01_display-width.ts" ;
+import      { displayWidth, hasAmbiguousWidth, hasWideCharacters } from "@/common/01_display-width.ts" ;
 import      { maskSource                      } from "@/common/00_code-text.ts"     ;
 import type { CodeSyntax                      } from "@/common/00_code-text.ts"     ;
 
@@ -149,6 +149,8 @@ export interface AlignOptions {
 	readonly apply: boolean;
 	/** Optional read-only observation of the selected rows and actual alignment plan. */
 	readonly observe?: (groups: readonly PlannedMeasurement[]) => void;
+	/** `east-asian-width` aligns after Hangul, Han and Kana measured as two columns; the default refuses those runs. */
+	readonly wideCharacters?: "refuse" | "east-asian-width";
 }
 
 /** Read-only observation of one selected line-engine run. */
@@ -291,9 +293,10 @@ function alignRun(aligner: LineProfiler, run: readonly AcceptedRow[], terminalAx
 }
 
 /** A row's cells before its last one, and every cell when a trailing comment follows, decide later columns. */
-function columnsFollowWideText(row: AcceptedRow): boolean {
-	const last = row.profile.slots.length - 1;
-	return row.profile.slots.some((slot, position) => (position < last || row.comment !== null) && hasWideCharacters(slot.text));
+function columnsFollowWideText(row: AcceptedRow, policy: AlignOptions["wideCharacters"]): boolean {
+	const last    = row.profile.slots.length - 1                                          ;
+	const refuses = policy === "east-asian-width" ? hasAmbiguousWidth : hasWideCharacters ;
+	return row.profile.slots.some((slot, position) => (position < last || row.comment !== null) && refuses(slot.text));
 }
 
 /** A column is as wide as its longest cell among rows that continue past it; a row's last cell is never padded. */
@@ -324,12 +327,12 @@ function columnWidths(aligner: LineProfiler, run: readonly AcceptedRow[]): numbe
  * columns although a multiline argument or an unsupported row splits its rows into several runs. A same-shape pair in
  * that region contributes its widths but is not rewritten.
  */
-function regionMeasures(runs: readonly AcceptedRow[][], minRows: number, prepared: PreparedSource | undefined): ReadonlyMap<readonly AcceptedRow[], readonly AcceptedRow[]> {
+function regionMeasures(runs: readonly AcceptedRow[][], minRows: number, prepared: PreparedSource | undefined, policy: AlignOptions["wideCharacters"]): ReadonlyMap<readonly AcceptedRow[], readonly AcceptedRow[]> {
 	const families = new Map<string, AcceptedRow[][]>();
 	for (const run of runs) {
 		const region = run[0].region;
 		if (region === null || !run.every(row => row.region === region) || !prepared?.sharesColumns?.(region)) continue;
-		if (run.some(row => columnsFollowWideText(row))) continue;
+		if (run.some(row => columnsFollowWideText(row, policy))) continue;
 		const key = `${region}\u0000${run[0].profile.indent}\u0000${signatureOf(longestProfile(run))}`;
 		families.set(key, [...families.get(key) ?? [], run]);
 	}
@@ -408,7 +411,7 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 	const pairs        : PairGroup[]                                                                                                       = [] ;
 	const observations : { run: readonly AcceptedRow[]; table?: DetectedTable; alignedCodes: readonly string[] | null; reason?: string }[] = [] ;
 
-	const measures = regionMeasures(runs, minRows, prepared);
+	const measures = regionMeasures(runs, minRows, prepared, options.wideCharacters);
 
 	for (const run of runs) {
 		const signature   = signatureOf(longestProfile(run))                                                                       ;
@@ -422,7 +425,7 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 			if (options.observe) observations.push({ run, alignedCodes: null, reason: "pair below minimum row count" });
 			continue;
 		}
-		if (run.some(row => columnsFollowWideText(row))) {
+		if (run.some(row => columnsFollowWideText(row, options.wideCharacters))) {
 			if (options.observe) observations.push({ run, alignedCodes: null, reason: "wide characters" });
 			wideRefused.push({
 				startLine : run[0].index + 1                                 ,

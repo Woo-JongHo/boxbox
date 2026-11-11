@@ -151,6 +151,21 @@ test("the session project root keeps nested repository edits on one baseline whe
 	expect(JSON.stringify(hook(nested, "stop", { session_id: session }, data, root))).not.toContain    ("hook error"                                       ) ;
 }, 60_000);
 
+test("a host project that moves below the session root keeps the session baseline", () => {
+	const root    = project()               ;
+	const nested  = join   (root, "nested") ;
+	const data    = project()               ;
+	const session = "moved-project-dir"     ;
+	mkdirSync(nested);
+	hook(root, "session", { session_id: session }, data, root);
+	writeFileSync(join(nested, "sample.py"), "def answer():\n\treturn 42\n");
+
+	const output = hook(nested, "post", { session_id: session, tool_name: "Edit" }, data, nested);
+	expect(JSON.stringify(output)          ).not.toContain    ("hook error"                            ) ;
+	expect(receiptOf(output)               )    .toMatchObject({ files: [join("nested", "sample.py")] }) ;
+	expect(readdirSync(join(data, "hooks")))    .toHaveLength (1                                       ) ;
+}, 60_000);
+
 test("outside-project edits report scope without creating another project baseline", () => {
 	const root    = project()                         ;
 	const outside = project()                         ;

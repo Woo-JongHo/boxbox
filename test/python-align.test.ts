@@ -102,7 +102,7 @@ defineLanguageSuite({
 });
 
 describe("python profile specific properties", () => {
-	const align = (source: string): ReturnType<typeof alignSource> => alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true });
+	const align = (source: string, wideCharacters?: "east-asian-width"): ReturnType<typeof alignSource> => alignSource(source, PYTHON_ALIGNER, { minRows: 3, apply: true, wideCharacters });
 
 	test("dictionary call values and an omitted final comma share their real table", () => {
 		const source = [
@@ -441,6 +441,42 @@ describe("python profile specific properties", () => {
 		].join("\n");
 
 		expect(align(source).output).toBe(expected) ;
+	});
+
+	test("the east-asian-width policy aligns after Hangul as two columns, preserving tokens and a fixed point", () => {
+		const source = [
+			"row = {",
+			'    "송금번호": wire_value,', // cjk-test-data
+			'    "입금증": deposit_slip,', // cjk-test-data
+			'    "통화": currency,',       // cjk-test-data
+			"}",
+		].join("\n");
+		const expected = [
+			'    "송금번호" : wire_value  ,', // cjk-test-data
+			'    "입금증"   : deposit_slip,', // cjk-test-data
+			'    "통화"     : currency    ,', // cjk-test-data
+		];
+		const result = align(source, "east-asian-width");
+
+		expect(result.refused                                   ).toEqual([]                         ) ;
+		expect(result.output.split("\n").slice(1, 4)            ).toEqual(expected                   ) ;
+		expect(result.output.replace(/\s+/gu, "")               ).toBe   (source.replace(/\s+/gu, "")) ;
+		expect(align(result.output, "east-asian-width").output  ).toBe   (result.output              ) ;
+		expect(align(source).refused.map(table => table.refusal)).toEqual(["wide-characters"]        ) ;
+	});
+
+	test("the east-asian-width policy still refuses columns after ambiguous-width characters", () => {
+		const source = [
+			"names = {",
+			'    "a": "㈜현대",', // cjk-test-data
+			'    "bb": "x",',
+			'    "ccc": "y",',
+			"}",
+		].join("\n");
+		const result = align(source, "east-asian-width");
+
+		expect(result.output                             ).toBe   (source             ) ;
+		expect(result.refused.map(table => table.refusal)).toEqual(["wide-characters"]) ;
 	});
 
 	test("attribute assignments form a table without changing Python syntax or non-whitespace tokens", () => {

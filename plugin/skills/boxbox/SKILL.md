@@ -72,7 +72,9 @@ Every check and fix goes through the bundled launcher. The standard shim require
 - Structured Check accepts `.json`, `.yaml` and `.yml`. It considers only runs of at least three adjacent,
   same-level, single-line scalar mapping entries for alignment. YAML multiline values, block scalars, anchors,
   aliases, tags, complex keys, flow collections, sequences, directives and document markers are unsupported.
-  Report those rows and keep their bytes unchanged.
+  Report those rows and keep their bytes unchanged. YAML runs of one block mapping share its widest key, keep an
+  existing `key : value` style (`key | colon | value` axes) and align trailing `#` comments (`comment` axis),
+  leaving comments after outlier-wide values attached.
 - Engine support is separate from write authorization. The recommended preset contains five approved
   TypeScript/Python conventions. JSON/YAML Align must refuse until a complete applicable approval proof exists.
 - `guide --authoring` reads approved guidance for the target language and scope, including a new or empty file.
