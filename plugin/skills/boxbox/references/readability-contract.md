@@ -59,6 +59,11 @@ then compute minimum widths from the cells in that region. A different expressio
   several runs of the same shape, those runs measure their columns together, and a same-shape pair contributes its
   widths without being rewritten. Statements of one block are not a bracket region: their paragraphs keep their own
   widths. Approval identity is unchanged; only the widths come from the region.
+- **Python call-valued assignments:** consecutive `name = callee(...)` statements of one block (no blank line, no
+  trailing comment) share their `name | =` columns when at least three rows form the block and one of them is a
+  table, although callees differ. Rows calling the same callee keep their own inner argument table. Rows outside every
+  table align on the outer `name | = | assignment-value` projection; callee and argument columns are never shared
+  across callees. Calls that the outer projection does not accept (for example keyword arguments) end the block.
 - **Member-call boundary:** split a supported property callee into `receiver | . | method`, then its call parentheses.
   `call-member-dot` aligns the final receiver/method separator when at least two rows have that role. For example,
   `Array.from` and `rows.filter` share the dot column as well as the parentheses. In `registry.rows.filter`, the receiver
