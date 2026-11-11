@@ -7,6 +7,17 @@ documentation when preparing a GitHub release.
 
 ## [Unreleased]
 
+### Fixed
+
+- A single-file `check`, `guide`, `align` or `format` run from a parent folder
+  now reads the project layer of the nearest `.boxbox/` directory between the
+  file and the working root, instead of silently using inherited defaults
+  (#53). The search never leaves the working root.
+- PostToolUse and Stop hooks keep the session baseline when the host moves the
+  hook cwd or project directory below the folder where the session started,
+  instead of reporting `Missing SessionStart baseline` on every edit (#54).
+  Hook inspections also read the nearest nested project layer.
+
 ## [0.2.8] - 2026-11-10
 
 ### Changed

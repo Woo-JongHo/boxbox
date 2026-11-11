@@ -129,6 +129,27 @@ function assertRoot(root: string): string {
 	return absolute;
 }
 
+/**
+ * A single-file command reads the project layer of the nearest `.boxbox/` directory between the file and the working
+ * root, so a check run from a parent of several projects still honors each project's approvals. The search never leaves
+ * the working root; `--file` is rewritten relative to the selected project.
+ */
+function fileProjectScope(root: string, args: readonly string[]): { root: string; args: readonly string[] } {
+	const positions = args.flatMap((argument, index) => argument === "--file" ? [index] : []);
+	if (positions.length !== 1 || args.includes("--directory")) return { root, args };
+	const value = args[positions[0]! + 1];
+	if (!value || value.startsWith("--")) return { root, args };
+	const absolute = resolve(root, value);
+	for (let directory = dirname(absolute); ; directory = dirname(directory)) {
+		const path = relative(root, directory);
+		if (path === "" || path === ".." || path.startsWith(`..${sep}`) || isAbsolute(path) || directory === dirname(directory)) return { root, args };
+		const marker = lstatSync(join(directory, ".boxbox"), { throwIfNoEntry: false });
+		if (marker?.isDirectory() && !lstatSync(directory).isSymbolicLink()) {
+			return { root: directory, args: args.map((argument, index) => index === positions[0]! + 1 ? relative(directory, absolute) : argument) };
+		}
+	}
+}
+
 function insideRoot(root: string, file: string, allowMissing = false): string {
 	const absolute = resolve (root, file    ) ;
 	const path     = relative(root, absolute) ;
@@ -882,7 +903,15 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 			if (!resolveConfig(project).effective.languages.includes(parsed.language)) throw new Error("LANGUAGE_DISABLED");
 			return inspectFile(parsed, project);
 		}, CLI_VERSION);
-		if (command === "hook"  ) return await lifecycleHook(tail, async (project, file) => inspectFile(parseFileCommand(["--file", file], false, project), project), { version: CLI_VERSION, align: alignApprovedHook });
+		if (command === "hook"  ) return await lifecycleHook(tail, async (project, file) => {
+			const scope  = fileProjectScope(project, ["--file", file])     ;
+			const parsed = parseFileCommand(scope.args, false, scope.root) ;
+			const result = await inspectFile(parsed, scope.root)           ;
+			if (scope.root === project) return result;
+			// Receipts name the file relative to the session root, in the separator style the inspector reported.
+			const original = parseFileCommand(["--file", file], false, project).file;
+			return { ...result, file: result.file === parsed.file ? original : original.split(sep).join("/") };
+		}, { version: CLI_VERSION, align: alignApprovedHook });
 		if (command === "hooks" ) return installHooks(tail);
 		if (command === "status") return guardStatus(tail);
 		if (command === "db"    ) return database(tail, json);
@@ -922,14 +951,14 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 			assertSimpleFlags(tail, ["--json"]);
 			return doctor(project, json);
 		}
-		const project = assertRoot(root);
+		const { root: project, args: options } = fileProjectScope(assertRoot(root), tail);
 		if (command === "check" || command === "format") {
-			const parsed = parseProjectCommand(tail, command, project);
+			const parsed = parseProjectCommand(options, command, project);
 			if (parsed.batch) return await projectCommand(parsed.files, command, project);
 			return command === "check" ? await check(parsed.files[0]!, project) : await format(parsed.files[0]!, project);
 		}
-		if (command === "guide" ) return await guide(parseFileCommand(tail, false, project, true), project);
-		if (command === "align" ) return await format(parseFileCommand(tail, true, project), project, true);
+		if (command === "guide" ) return await guide(parseFileCommand(options, false, project, true), project);
+		if (command === "align" ) return await format(parseFileCommand(options, true, project), project, true);
 		throw new CliError("UNKNOWN_COMMAND", `unknown command: ${command}`);
 	} catch (error) {
 		return fail(command, json, error);
