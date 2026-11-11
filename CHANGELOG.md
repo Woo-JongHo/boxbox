@@ -9,11 +9,25 @@ documentation when preparing a GitHub release.
 
 ### Added
 
+- YAML mappings keep an existing `key : value` house style instead of
+  reporting every aligned run as FIXABLE; such runs report the
+  `key | colon | value` axes, so an approval of one style never writes the
+  other (#51).
+- YAML runs align trailing `#` comments into one column and report a `comment`
+  axis. A row more than 20 columns wider than the median commented row keeps
+  its comment attached; a remaining value with wide characters leaves the run's
+  comments unchanged unless the `east-asian-width` policy applies (#50).
 - Project and user config accept `"wideCharacters": "east-asian-width"`. The
   Python line engine then aligns runs whose columns follow Hangul, Han or Kana,
   measuring them as two columns, instead of refusing them; runs with
   ambiguous-width characters stay refused. The default (`refuse`) and existing
   effective configs are unchanged (#56).
+
+### Changed
+
+- YAML runs of one block mapping that are split by a nested collection, block
+  scalar, comment or a single pair now share the mapping's widest key instead
+  of shrinking to each run's own minimum width.
 
 ### Fixed
 

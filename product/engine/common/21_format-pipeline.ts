@@ -5,7 +5,7 @@ import type { PipelineProcessResult                           } from "@/common/1
 
 import      { escapesRoot, evaluateApproval                   } from "@/common/18_approval-gate.ts"        ;
 import type { ApprovalRegistry, DocumentResolver              } from "@/common/18_approval-gate.ts"        ;
-import      { wideCharacterArguments                          } from "@/common/15_project-config.ts"       ;
+import      { structuredOptions, wideCharacterArguments       } from "@/common/15_project-config.ts"       ;
 import type { FormatterConfig, PublicLanguage                 } from "@/common/15_project-config.ts"       ;
 import type { FileResult, ResultEnvelope, ResultGroup         } from "@/common/24_result-json.ts"          ;
 import      { compareParse                                    } from "@/common/08_parse-check.ts"          ;
@@ -86,14 +86,14 @@ interface LanguageEngine {
 }
 
 const structuredEngine = (language: "json" | "yaml"): LanguageEngine => ({
-	check : async (_root, file) => analyzeStructured(readStructuredUtf8(file), language, file).result,
+	check : async (root, file) => analyzeStructured(readStructuredUtf8(file), language, file, structuredOptions(root)).result,
 	parse : async (_root, file) => {
 		const diagnostics = structuredDiagnostics(readStructuredUtf8(file), language);
 		if (diagnostics.length > 0) throw new Error(`formatter output does not parse: ${diagnostics.join(",")}`);
 	},
-	write : async (_root, file) => {
-		const before   = readStructuredUtf8(file                  ) ;
-		const analyzed = analyzeStructured (before, language, file) ;
+	write : async (root, file) => {
+		const before   = readStructuredUtf8(file                                           ) ;
+		const analyzed = analyzeStructured (before, language, file, structuredOptions(root)) ;
 		if (analyzed.result.summary.refused > 0) throw new Error(`BoxBox alignment failed: ${analyzed.refusals.map(refusal => refusal.reason).join(",")}`);
 		if (!preservesStructured(before, analyzed.output, language)) throw new Error("BoxBox alignment failed: structured preservation refusal");
 		if (analyzed.output !== before) writeFileSync(file, analyzed.output);
