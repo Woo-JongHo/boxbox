@@ -25,6 +25,11 @@ documentation when preparing a GitHub release.
 
 ### Changed
 
+- Python runs of the same shape inside one bracket (call arguments, literals,
+  parameters) now share their columns when a multiline argument or an
+  undecomposable row splits them, and a same-shape pair in that bracket widens
+  them without being rewritten. Statement paragraphs keep their own widths and
+  approval keys are unchanged (#52).
 - YAML runs of one block mapping that are split by a nested collection, block
   scalar, comment or a single pair now share the mapping's widest key instead
   of shrinking to each run's own minimum width.

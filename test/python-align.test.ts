@@ -367,6 +367,82 @@ describe("python profile specific properties", () => {
 		]);
 	});
 
+	test("same-shape tables split inside one bracket share their columns", () => {
+		const source = [
+			"cases = [",
+			'    ("common", "certificate_number", 1),',
+			'    ("common", "tab_timeout", True),',
+			'    ("common", "tab_timeout", -1),',
+			'    ("common", "tab_timeout", float("nan")),',
+			'    ("items", "min_score", 1.1),',
+			'    ("items", "col_code", 2.5),',
+			'    ("extract", "key_pattern", "["),',
+			"]",
+		].join("\n");
+		const expected = [
+			"cases = [",
+			'    ("common" , "certificate_number", 1   ),',
+			'    ("common" , "tab_timeout"       , True),',
+			'    ("common" , "tab_timeout"       , -1  ),',
+			'    ("common", "tab_timeout", float("nan")),',
+			'    ("items"  , "min_score"         , 1.1 ),',
+			'    ("items"  , "col_code"          , 2.5 ),',
+			'    ("extract", "key_pattern"       , "[" ),',
+			"]",
+		].join("\n");
+		const result = align(source);
+
+		expect(result.output                     ).toBe(expected                   ) ;
+		expect(align(result.output).output       ).toBe(result.output              ) ;
+		expect(result.output.replace(/\s+/gu, "")).toBe(source.replace(/\s+/gu, "")) ;
+	});
+
+	test("a same-shape pair in the bracket widens the table's columns without being rewritten", () => {
+		const source = [
+			"spec = Spec(",
+			"    id = str(raw),",
+			"    name = str(raw),",
+			"    control = str(raw),",
+			"    recovery       = Recovery(",
+			"        retryable = True,",
+			"    ),",
+			"    location_label = str(raw),",
+			"    expected = str(raw),",
+			")",
+		].join("\n");
+		const lines = align(source).output.split("\n");
+
+		expect(lines.slice(1, 4)).toEqual(["    id             = str(raw),", "    name           = str(raw),", "    control        = str(raw),"]) ;
+		expect(lines.slice(7, 9)).toEqual(["    location_label = str(raw),", "    expected = str(raw),"]                                       ) ;
+	});
+
+	test("statement paragraphs of one block keep their own columns", () => {
+		const source = [
+			"def f():",
+			"    a = 1",
+			"    bb = 2",
+			"    ccc = 3",
+			"",
+			"    longest_name = 4",
+			"    d = 5",
+			"    e = 6",
+			"",
+		].join("\n");
+		const expected = [
+			"def f():",
+			"    a   = 1",
+			"    bb  = 2",
+			"    ccc = 3",
+			"",
+			"    longest_name = 4",
+			"    d            = 5",
+			"    e            = 6",
+			"",
+		].join("\n");
+
+		expect(align(source).output).toBe(expected) ;
+	});
+
 	test("the east-asian-width policy aligns after Hangul as two columns, preserving tokens and a fixed point", () => {
 		const source = [
 			"row = {",

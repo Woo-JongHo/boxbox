@@ -65,6 +65,11 @@ export interface PreparedSource {
 	unsupported?(coveredLines: ReadonlySet<number>): readonly { readonly line: number; readonly reason: string }[];
 	/** Describe an already selected run using its actual zero-based rows, including noncontiguous rows. */
 	describeGroup?(rowIndexes: readonly number[], axes: readonly string[]): GroupDescription;
+	/**
+	 * Whether same-shape tables of one region compare as one table. A bracket region (call arguments, a literal,
+	 * parameters) answers true, so a multiline argument or an unsupported row does not split its columns.
+	 */
+	sharesColumns?(region: string): boolean;
 }
 
 export interface LineProfiler {
@@ -268,18 +273,19 @@ function contiguousRuns(rows: readonly AcceptedRow[], prefixRuns: boolean, termi
  * Rebuilds a run's code. Rows of one length align cell by cell. A prefix run whose rows all end with the same terminal
  * cell aligns without it and places it in its own column after the longest row (the canonical gap attaches it there).
  */
-function alignRun(aligner: LineProfiler, run: readonly AcceptedRow[], terminalAxes: readonly string[]): string[] {
+function alignRun(aligner: LineProfiler, run: readonly AcceptedRow[], terminalAxes: readonly string[], measure: readonly AcceptedRow[] = run): string[] {
 	const lengths  = new Set(run.map(row => row.profile.slots.length))                                                ;
 	const terminal = run[0].profile.slots.at(-1)?.axis ?? ""                                                          ;
 	const shared   = terminalAxes.includes(terminal) && run.every(row => row.profile.slots.at(-1)?.axis === terminal) ;
 	if (lengths.size === 1 || !shared) {
-		const widths = columnWidths(aligner, run);
+		const widths = columnWidths(aligner, measure);
 		return run.map(row => rebuildCode(aligner, row.profile, widths));
 	}
-	const bodies = run   .map  (row => ({ ...row, profile: withoutTerminal(row.profile, terminalAxes) })) ;
-	const widths = columnWidths(aligner, bodies                                                         ) ;
-	const codes  = bodies.map  (row => rebuildCode(aligner, row.profile, widths)                        ) ;
-	const column = Math  .max  (...codes.map(code => displayWidth(code))                                ) ;
+	const strip    = (row: AcceptedRow): AcceptedRow => ({ ...row, profile: withoutTerminal(row.profile, terminalAxes) }) ;
+	const widths   = columnWidths(aligner, measure.map(strip))                                                            ;
+	const codes    = run.map     (row => rebuildCode(aligner, strip(row).profile, widths))                                ;
+	const measured = measure.map (row => displayWidth(rebuildCode(aligner, strip(row).profile, widths)))                  ;
+	const column   = Math.max    (...measured)                                                                            ;
 	return codes.map((code, position) => {
 		const cell = run[position].profile.slots.at(-1)!;
 		return code + " ".repeat(column - displayWidth(code)) + canonicalGap(aligner, cell.axis) + cell.text;
@@ -314,6 +320,28 @@ function columnWidths(aligner: LineProfiler, run: readonly AcceptedRow[]): numbe
 		});
 		return width;
 	});
+}
+
+/**
+ * Tables of one shared region with the same shape measure their columns together, so one bracket keeps one set of
+ * columns although a multiline argument or an unsupported row splits its rows into several runs. A same-shape pair in
+ * that region contributes its widths but is not rewritten.
+ */
+function regionMeasures(runs: readonly AcceptedRow[][], minRows: number, prepared: PreparedSource | undefined, policy: AlignOptions["wideCharacters"]): ReadonlyMap<readonly AcceptedRow[], readonly AcceptedRow[]> {
+	const families = new Map<string, AcceptedRow[][]>();
+	for (const run of runs) {
+		const region = run[0].region;
+		if (region === null || !run.every(row => row.region === region) || !prepared?.sharesColumns?.(region)) continue;
+		if (run.some(row => columnsFollowWideText(row, policy))) continue;
+		const key = `${region}\u0000${run[0].profile.indent}\u0000${signatureOf(longestProfile(run))}`;
+		families.set(key, [...families.get(key) ?? [], run]);
+	}
+	const measures = new Map<readonly AcceptedRow[], readonly AcceptedRow[]>();
+	for (const family of families.values()) {
+		if (family.length < 2) continue;
+		for (const run of family) if (run.length >= minRows) measures.set(run, family.flat());
+	}
+	return measures;
 }
 
 /** Select one owner per row. A primary table remains reserved even if the preservation gate later refuses it. */
@@ -383,6 +411,8 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 	const pairs        : PairGroup[]                                                                                                       = [] ;
 	const observations : { run: readonly AcceptedRow[]; table?: DetectedTable; alignedCodes: readonly string[] | null; reason?: string }[] = [] ;
 
+	const measures = regionMeasures(runs, minRows, prepared, options.wideCharacters);
+
 	for (const run of runs) {
 		const signature   = signatureOf(longestProfile(run))                                                                       ;
 		const description = prepared?.describeGroup?.(run.map(row => row.index), longestProfile(run).slots.map(slot => slot.axis)) ;
@@ -410,9 +440,10 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 			});
 			continue;
 		}
-		const widths       = columnWidths(aligner, run               ) ;
-		const alignedCodes = alignRun    (aligner, run, terminalAxes ) ;
-		const commentRows  = run.map     (row => row.comment !== null) ;
+		const measure      = measures.get(run) ?? run                           ;
+		const widths       = columnWidths(aligner, measure                    ) ;
+		const alignedCodes = alignRun    (aligner, run, terminalAxes, measure ) ;
+		const commentRows  = run.map     (row => row.comment !== null)          ;
 		const commentColumn = Math.max(
 			0,
 			...run.map((row, position) => commentRows[position] ? displayWidth(alignedCodes[position]) : 0),
