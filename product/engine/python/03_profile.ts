@@ -604,6 +604,8 @@ function preparePython(source: string) {
 			return profile && region !== null ? { profile, region } : null;
 		},
 		transparent(index: number) { return markers.get(index) ?? null; },
+		// Bracket owners (arguments, literals, parameters) are one comparison region; a statement block is not.
+		sharesColumns(region: string) { return !region.startsWith("statement:"); },
 		unsafeEditLines: analysis.unsafeEditLines,
 		describeGroup: (rowIndexes: readonly number[], axes: readonly string[]) => describePythonGroup(rowIndexes.flatMap(index => rowsByLine.get(index) ?? []), rowIndexes, axes),
 		unsupported(covered: ReadonlySet<number>) {

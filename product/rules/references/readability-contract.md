@@ -54,6 +54,11 @@ then compute minimum widths from the cells in that region. A different expressio
   when callee names or arities differ. The argument list is one cell in this outer table; compatible same-call rows can
   additionally share inner argument columns. A trailing non-null assertion stays attached after `)`. Empty `()` stays
   attached and unsupported wrappers keep their own shape. `declaration-call-envelope` has the declaration two-row floor.
+- **Python bracket regions:** rows owned by one bracket (call arguments, a list, tuple, set or dictionary literal,
+  parameters) are one comparison region. When a multiline argument or an undecomposable row splits that region into
+  several runs of the same shape, those runs measure their columns together, and a same-shape pair contributes its
+  widths without being rewritten. Statements of one block are not a bracket region: their paragraphs keep their own
+  widths. Approval identity is unchanged; only the widths come from the region.
 - **Member-call boundary:** split a supported property callee into `receiver | . | method`, then its call parentheses.
   `call-member-dot` aligns the final receiver/method separator when at least two rows have that role. For example,
   `Array.from` and `rows.filter` share the dot column as well as the parentheses. In `registry.rows.filter`, the receiver

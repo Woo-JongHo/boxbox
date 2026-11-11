@@ -7,6 +7,14 @@ documentation when preparing a GitHub release.
 
 ## [Unreleased]
 
+### Changed
+
+- Python runs of the same shape inside one bracket (call arguments, literals,
+  parameters) now share their columns when a multiline argument or an
+  undecomposable row splits them, and a same-shape pair in that bracket widens
+  them without being rewritten. Statement paragraphs keep their own widths and
+  approval keys are unchanged (#52).
+
 ## [0.2.8] - 2026-11-10
 
 ### Changed
