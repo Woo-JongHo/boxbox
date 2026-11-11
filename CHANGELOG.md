@@ -14,6 +14,10 @@ documentation when preparing a GitHub release.
   undecomposable row splits them, and a same-shape pair in that bracket widens
   them without being rewritten. Statement paragraphs keep their own widths and
   approval keys are unchanged (#52).
+- Consecutive Python call-valued assignments of one block share their
+  `name =` columns across different callees when they hold a table; rows
+  outside every table align on the outer `assignment-value` projection, and
+  same-callee rows keep their inner argument table (#55).
 
 ## [0.2.8] - 2026-11-10
 

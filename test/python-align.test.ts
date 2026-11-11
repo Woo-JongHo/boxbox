@@ -416,6 +416,50 @@ describe("python profile specific properties", () => {
 		expect(lines.slice(7, 9)).toEqual(["    location_label = str(raw),", "    expected = str(raw),"]                                       ) ;
 	});
 
+	test("consecutive call-valued assignments share their name columns across callees", () => {
+		const source = [
+			'PATTERN = cfg.pattern("code_pattern")',
+			'COL_CODE = cfg.value("col_code", int)',
+			'COL_NAME = cfg.value("col_name", int)',
+			'COL_STATUS = cfg.value("col_status", int)',
+			'TAB = cfg.selector("tab")',
+			"",
+			"plain = 1",
+		].join("\n");
+		const expected = [
+			'PATTERN    = cfg.pattern("code_pattern")',
+			'COL_CODE   = cfg.value("col_code"  , int)',
+			'COL_NAME   = cfg.value("col_name"  , int)',
+			'COL_STATUS = cfg.value("col_status", int)',
+			'TAB        = cfg.selector("tab")',
+			"",
+			"plain = 1",
+		].join("\n");
+		const result = align(source);
+
+		expect(result.output                     ).toBe(expected                   ) ;
+		expect(align(result.output).output       ).toBe(result.output              ) ;
+		expect(result.output.replace(/\s+/gu, "")).toBe(source.replace(/\s+/gu, "")) ;
+
+		const outer = result.details.filter(table => table.axes.includes("assignment-value"));
+		expect(outer.flatMap(table => table.edits.map(edit => edit.index))).toEqual([0, 4]);
+	});
+
+	test("call envelopes stop at blank lines and non-call values", () => {
+		const source = [
+			'a = cfg.value("a", int)',
+			'bb = cfg.value("bb", int)',
+			'ccc = cfg.value("ccc", int)',
+			"",
+			'longest_name = cfg.pattern("x")',
+			"other_value = 3",
+		].join("\n");
+		const lines = align(source).output.split("\n");
+
+		expect(lines.slice(0, 3)).toEqual(['a   = cfg.value("a"  , int)', 'bb  = cfg.value("bb" , int)', 'ccc = cfg.value("ccc", int)']) ;
+		expect(lines.slice(4)   ).toEqual(['longest_name = cfg.pattern("x")', "other_value = 3"]                                      ) ;
+	});
+
 	test("statement paragraphs of one block keep their own columns", () => {
 		const source = [
 			"def f():",

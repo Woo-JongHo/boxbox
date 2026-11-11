@@ -606,6 +606,10 @@ function preparePython(source: string) {
 		transparent(index: number) { return markers.get(index) ?? null; },
 		// Bracket owners (arguments, literals, parameters) are one comparison region; a statement block is not.
 		sharesColumns(region: string) { return !region.startsWith("statement:"); },
+		callValued(_index: number, code: string) {
+			const value = assignment(code)?.slots[2]?.text;
+			return value !== undefined && /^[A-Za-z_][A-Za-z0-9_.]*[ \t]*\(.*\)$/u.test(value);
+		},
 		unsafeEditLines: analysis.unsafeEditLines,
 		describeGroup: (rowIndexes: readonly number[], axes: readonly string[]) => describePythonGroup(rowIndexes.flatMap(index => rowsByLine.get(index) ?? []), rowIndexes, axes),
 		unsupported(covered: ReadonlySet<number>) {

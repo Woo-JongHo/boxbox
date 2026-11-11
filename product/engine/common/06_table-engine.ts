@@ -70,6 +70,8 @@ export interface PreparedSource {
 	 * parameters) answers true, so a multiline argument or an unsupported row does not split its columns.
 	 */
 	sharesColumns?(region: string): boolean;
+	/** Whether an outer assignment row's value is a call, so consecutive call-valued rows share their `name =` columns. */
+	callValued?(index: number, code: string): boolean;
 }
 
 export interface LineProfiler {
@@ -341,6 +343,56 @@ function regionMeasures(runs: readonly AcceptedRow[][], minRows: number, prepare
 	return measures;
 }
 
+interface CallEnvelope {
+	/** Extra `name =` rows each table in an envelope measures its leading columns with. */
+	readonly measures : ReadonlyMap<readonly AcceptedRow[], readonly AcceptedRow[]> ;
+	/** Envelope rows outside every table, aligned on the outer projection, with the envelope's leading rows. */
+	readonly leftovers : readonly { readonly rows: readonly AcceptedRow[]; readonly lead: readonly AcceptedRow[] }[] ;
+	/** Rows an envelope owns, so their pair suggestions are not reported twice. */
+	readonly claimed  : ReadonlySet<number>                                         ;
+}
+
+/**
+ * Consecutive call-valued assignments of one block share their `name =` columns although their callees differ
+ * (readability contract, "Different callees"); rows calling the same callee keep their own inner argument table.
+ * An envelope needs at least `minRows` rows and at least one table, and rows outside every table are aligned on the
+ * outer projection. Leading columns only: callee and argument columns stay per table.
+ */
+function callEnvelopes(runs: readonly AcceptedRow[][], projected: readonly AcceptedRow[], calls: ReadonlySet<number>, minRows: number): CallEnvelope {
+	const tables = runs.filter(run => run.length >= minRows && !run.some(row => columnsFollowWideText(row))) ;
+	const owner  = new Map(tables.flatMap(run => run.map(row => [row.index, run] as const)))                 ;
+
+	const lead = (row: AcceptedRow): AcceptedRow => ({ ...row, profile: { ...row.profile, slots: row.profile.slots.slice(0, 2) } });
+
+	const blocks: AcceptedRow[][] = [];
+	for (const row of projected.filter(entry => calls.has(entry.index) && entry.comment === null)) {
+		const previous = blocks.at(-1)?.at(-1)                                      ;
+		const adjacent = previous !== undefined && row.index === previous.index + 1 ;
+		if (adjacent && row.region === previous.region && row.profile.indent === previous.profile.indent) blocks.at(-1)!.push(row);
+		else blocks.push([row]);
+	}
+
+	const measures  = new Map<readonly AcceptedRow[], readonly AcceptedRow[]>()                   ;
+	const leftovers = new Array<{ rows: readonly AcceptedRow[]; lead: readonly AcceptedRow[] }>() ;
+	const claimed   = new Set<number>()                                                           ;
+	for (const block of blocks) {
+		const lines   = new Set(block.map(row => row.index))                                                    ;
+		const owned   = [...new Set(block.flatMap(row => owner.has(row.index) ? [owner.get(row.index)!] : []))] ;
+		const rest    = block.filter(row => !owner.has(row.index))                                              ;
+		const inside  = owned.every(run => run.every(row => lines.has(row.index)))                              ;
+		const leading = owned.every(opensWithNameEqual)                                                         ;
+		if (block.length < minRows || owned.length === 0 || owned.length + rest.length < 2 || !inside || !leading) continue;
+		for (const run of owned) measures.set(run, block.map(lead));
+		if (rest.length > 0) leftovers.push({ rows: rest, lead: block.map(lead) });
+		for (const row of block) claimed.add(row.index);
+	}
+	return { measures, leftovers, claimed };
+}
+
+function opensWithNameEqual(run: readonly AcceptedRow[]): boolean {
+	return run[0]!.profile.slots[0]?.axis === "name" && run[0]!.profile.slots[1]?.axis === "equal";
+}
+
 /** Select one owner per row. A primary table remains reserved even if the preservation gate later refuses it. */
 function projectedRuns(primary: AcceptedRow[][], projected: readonly AcceptedRow[], minRows: number, prefixRuns: boolean, terminalAxes: readonly string[], transparent: ReadonlyMap<number, string | null>): AcceptedRow[][] {
 	const primaryTables  = primary.filter(run => run.length >= minRows)                                                             ;
@@ -366,6 +418,7 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 	const accepted  : AcceptedRow[] = []                                               ;
 	const transparent               = new Map<number, string | null>()                 ;
 	const projected : AcceptedRow[] = []                                               ;
+	const calls                     = new Set<number>()                                ;
 
 	lines.forEach((raw, index) => {
 		// CRLF files carry \r at every line end; profiling strips it and the rebuilt line gets it back, so a
@@ -395,7 +448,10 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 			const profile = projections?.get(index);
 			return profile ? { profile, region: null } : null;
 		})();
-		if (projection && losslessProfile(projection.profile, code)) projected.push({ index, profile: projection.profile, comment, region: projection.region });
+		if (projection && losslessProfile(projection.profile, code)) {
+			projected.push({ index, profile: projection.profile, comment, region: projection.region });
+			if (prepared?.callValued?.(index, code)) calls.add(index);
+		}
 	});
 
 	const terminalAxes = aligner.terminalAxes ?? []                                                                                                           ;
@@ -408,7 +464,8 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 	const pairs        : PairGroup[]                                                                                                       = [] ;
 	const observations : { run: readonly AcceptedRow[]; table?: DetectedTable; alignedCodes: readonly string[] | null; reason?: string }[] = [] ;
 
-	const measures = regionMeasures(runs, minRows, prepared);
+	const measures = regionMeasures(runs, minRows, prepared        ) ;
+	const envelope = callEnvelopes (runs, projected, calls, minRows) ;
 
 	for (const run of runs) {
 		const signature   = signatureOf(longestProfile(run))                                                                       ;
@@ -418,6 +475,7 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 			...(description?.sourceContext === undefined ? {} : { sourceContext: description.sourceContext }),
 		};
 		if (run.length < minRows) {
+			if (run.some(row => envelope.claimed.has(row.index))) continue;
 			pairs.push({ startLine: run[0].index + 1, endLine: run[run.length - 1].index + 1, rows: run.length, signature, ...display });
 			if (options.observe) observations.push({ run, alignedCodes: null, reason: "pair below minimum row count" });
 			continue;
@@ -437,10 +495,10 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 			});
 			continue;
 		}
-		const measure      = measures.get(run) ?? run                           ;
-		const widths       = columnWidths(aligner, measure                    ) ;
-		const alignedCodes = alignRun    (aligner, run, terminalAxes, measure ) ;
-		const commentRows  = run.map     (row => row.comment !== null)          ;
+		const measure      = [...measures.get(run) ?? run, ...envelope.measures.get(run) ?? []] ;
+		const widths       = columnWidths(aligner, measure                    )                 ;
+		const alignedCodes = alignRun    (aligner, run, terminalAxes, measure )                 ;
+		const commentRows  = run.map     (row => row.comment !== null)                          ;
 		const commentColumn = Math.max(
 			0,
 			...run.map((row, position) => commentRows[position] ? displayWidth(alignedCodes[position]) : 0),
@@ -469,6 +527,25 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		};
 		candidates.push(table);
 		if (options.observe) observations.push({ run, table, alignedCodes });
+	}
+
+	for (const rest of envelope.leftovers) {
+		const widths = columnWidths(aligner, [...rest.lead, ...rest.rows]);
+		const edits  = rest.rows.flatMap(row => {
+			const raw   = lines[row.index]                                                                ;
+			const after = `${rebuildCode(aligner, row.profile, widths)}${raw.endsWith("\r") ? "\r" : ""}` ;
+			return after === raw ? [] : [{ index: row.index, before: raw, after }];
+		});
+		const first = rest.rows[0]!;
+		candidates.push({
+			startLine : first.index + 1                            ,
+			endLine   : rest.rows.at(-1)!.index + 1                ,
+			rows      : rest.rows.length                           ,
+			indent    : first.profile.indent                       ,
+			axes      : first.profile.slots.map(slot => slot.axis) ,
+			widths    : widths                                     ,
+			edits     : edits                                      ,
+		});
 	}
 
 	const { details, refused } = refuseUnsafeTables(source, lines, candidates, aligner, prepared);
