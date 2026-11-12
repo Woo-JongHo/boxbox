@@ -1,0 +1,80 @@
+{
+  "$schema"      : "../issue.schema.json",
+  "schemaVersion": 1,
+  "id"           : "BBX-20261112-028",
+  "title"        : "Authorized authoring stops behind automatic alignment eligibility",
+  "category"     : "verification-gap",
+  "tags": ["skill", "authoring", "approval", "source-check", "plugin"],
+  "status" : "verifying",
+  "symptom": "A broad user request to bring existing code into BoxBox form stopped after Align reported no matching convention, even though Write and Refactor are independently authorized host-agent workflows.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary"   : "The skill's Check/Align prohibitions were read as a permanent authoring prohibition. Automatic engine approval, host authoring authority and source inspection have different owners."
+  },
+  "requestedOutcome": "Continue explicitly authorized local authoring and its verification without manufacturing reusable approval, widening an Align-only request or bypassing safety.",
+  "decisions": [
+    "Keep exact-key human approval for deterministic Align/Format and retain the whole-file write gate.",
+    "Permit measured local structure and layout authoring within the user's explicit Write/Refactor request; do not report those edits as engine Align.",
+    "Keep source Check, automatic-write readiness, actual write verification and program behavior as separate results.",
+    "Diagnose valid-source parser coverage refusals in the plugin; do not rewrite correct application expressions just to conceal them.",
+    "Enumerate the actual final changed-file candidate and coverage instead of treating a session-hook receipt as whole-commit proof."
+  ],
+  "actions": [
+    {
+      "description": "Clarify the canonical skill, user modes and inspection contracts.",
+      "status"     : "done"
+    },
+    {
+      "description": "Validate generated-plugin synchronization and independent forward behavior.",
+      "status"     : "done"
+    },
+    {
+      "description": "Verify the installed candidate and frozen real-project authoring path before authorized publication.",
+      "status"     : "done"
+    }
+  ],
+  "verification": [
+    {
+      "name"  : "Skill syntax and generated plugin",
+      "status": "passed",
+      "scope" : "Canonical skill frontmatter and generated skill projection, local development candidate.",
+      "evidence": ["product/plugin/skills/boxbox/SKILL.md", "plugin/skills/boxbox/SKILL.md", "test/plugin-contract.test.ts"],
+      "result": "The skill validator, sync:plugin and focused plugin-contract suite passed. These checks do not establish a fresh native host loading the candidate."
+    },
+    {
+      "name"  : "Independent Codex forward-plan evaluation",
+      "status": "passed",
+      "scope" : "An explicit Refactor request and an Align-only request with the same unapproved detected group.",
+      "evidence": ["product/plugin/skills/boxbox/SKILL.md"],
+      "result": "The two requests selected different authoring/stop paths while retaining approval and safety. This was a non-blind read-only plan evaluation, not an executed fixture or final Opus audit."
+    },
+    {
+      "name"  : "Installed real-project completion",
+      "status": "passed",
+      "scope" : "Installed source CLI on 79 authored WWW TypeScript files and a fresh Codex authoring fixture; no release-wide or native-hook receipt claim.",
+      "evidence": ["test/cli.test.ts", "test/installer-artifact.test.ts", "product/plugin/skills/boxbox/SKILL.md"],
+      "result": "The installed candidate authored the unapproved Block declaration table and passed source Check while automatic Align still refused. The three sample inputs kept their results, all 79 selected WWW TypeScript/TSX files passed installed source Check, the installed engine archive matched bundle metadata, and the official host cache matched the permanent skill. No native CLI hook receipt was observed. The initial full suite had 1260 passes and four failures; affected mutation and installer regressions subsequently passed. A broad rerun lost its collector during a host-kernel reset and was stopped, so no successful full-rerun exit is claimed. The user chose to continue without the unavailable Opus audit."
+    }
+  ],
+  "related": [
+    {
+      "kind": "contract",
+      "path": "docs/user/modes.md",
+      "note": "Owns the distinction between local authoring and automatic engine writes."
+    },
+    {
+      "kind": "code",
+      "path": "product/plugin/skills/boxbox/SKILL.md",
+      "note": "Canonical host workflow instructions; generated and installed copies are projections."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date"    : "2026-11-12",
+      "event"   : "diagnosed",
+      "summary" : "An integration task exposed an authoring/approval deadlock; parser coverage and concurrent project edits remain independently tracked.",
+      "evidence": ["docs/development/inspection-process.md", "product/plugin/skills/boxbox/SKILL.md"]
+    }
+  ]
+}

@@ -29,7 +29,7 @@ export const IMPLEMENTED_LAYOUT_KINDS          = [
 	"if-headers-braced"            ,
 	"if-headers-return"            ,
 	"vertical-call-arguments"      ,
-	"vertical-function-parameters",
+	"vertical-function-parameters" ,
 ] as const;
 
 export interface AxisPolicy {

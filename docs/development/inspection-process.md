@@ -174,3 +174,17 @@ bun test --timeout 60000 test/surface.test.ts test/recommended-preset.test.ts
 Tool-dependent skips must be reported as such. The above commands test current behavior; they do not prove
 exhaustive grammar coverage. Full CI installs the required toolchains and uses
 `BOXBOX_REQUIRE_PARSERS=1` to prevent silent parser omissions.
+
+
+## Authoring completion versus engine-write readiness
+
+Write/Refactor is the host agent's authorized authoring workflow. Its completion requires the requested comparison
+boundaries, current source observations, preservation and relevant behavior verification. An ineligible automatic
+Align/Format does not revoke an existing authoring request and does not itself make an aligned source fail Check.
+Conversely, source Check success does not grant reusable convention approval or prove whole-file role classification.
+Keep the source result, automatic-write readiness, actual write verification and behavior checks separate.
+
+When a valid source is refused because a scanner lacks grammar context, retain the refusal and use the parser in the
+language adapter to resolve the source's actual syntax. Preserve the unassisted scanner's fail-closed behavior where
+parser context is unavailable; do not widen a token-prefix heuristic to conceal ambiguity. Whole-file approval,
+token/comment preservation, parser/AST comparison and fixed point remain independent gates.

@@ -43,8 +43,8 @@ afterEach(() => {
 });
 
 const HARNESS = `
-import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { lifecycleHook } from ${JSON.stringify(modulePath("common/27_lifecycle-hook.ts"))};
 import { runFormatPipeline } from ${JSON.stringify(modulePath("common/21_format-pipeline.ts"))};
 import { documentResolver, loadApprovalRegistry } from ${JSON.stringify(modulePath("common/18_approval-gate.ts"))};
@@ -63,6 +63,11 @@ const inspect = async (project, file) => {
  else await runTypeScriptAlign(["--file", file, "--json"], {root: project, emit: text => {report = text;}});
  const result = JSON.parse(report).results[0];
  trace("summary", String(result.summary.edits));
+ if (scenario === "runtime-drift") {
+  const runtime = join(project, process.env.TEST_DRIFT_FILE);
+  mkdirSync(dirname(runtime), {recursive: true});
+  writeFileSync(runtime, "{}\\n");
+ }
  if (scenario === "inspection-drift") writeFileSync(join(project, "concurrent.py"), "external_change = True\\n");
  return {...result, file};
 };
@@ -90,17 +95,18 @@ function hook(value: Fixture, event: "session" | "post" | "stop", mode = "check"
 		encoding : "utf8"                                                                                                                                 ,
 		env      : {
 			...process.env,
-			CLAUDE_PLUGIN_DATA  : value.data                             ,
-			PLUGIN_DATA         : ""                                     ,
-			CLAUDE_PROJECT_DIR  : value.root                             ,
-			XDG_CONFIG_HOME     : value.config                           ,
-			BOXBOX_MODE         : mode                                   ,
-			BOXBOX_UPDATE_CHECK : "0"                                    ,
-			TEST_PROJECT        : value.root                             ,
-			TEST_TRACE          : value.trace                            ,
-			TEST_SCENARIO       : options.scenario ?? ""                 ,
-			TEST_CALLBACK       : options.callback === false ? "0" : "1" ,
-			TEST_VERSION        : options.version ?? ""                  ,
+			GIT_CEILING_DIRECTORIES : join(value.root, "..")                 ,
+			CLAUDE_PLUGIN_DATA      : value.data                             ,
+			PLUGIN_DATA             : ""                                     ,
+			CLAUDE_PROJECT_DIR      : value.root                             ,
+			XDG_CONFIG_HOME         : value.config                           ,
+			BOXBOX_MODE             : mode                                   ,
+			BOXBOX_UPDATE_CHECK     : "0"                                    ,
+			TEST_PROJECT            : value.root                             ,
+			TEST_TRACE              : value.trace                            ,
+			TEST_SCENARIO           : options.scenario ?? ""                 ,
+			TEST_CALLBACK           : options.callback === false ? "0" : "1" ,
+			TEST_VERSION            : options.version ?? ""                  ,
 			...options.env,
 		},
 	});
@@ -264,6 +270,58 @@ test("source drift during inspection prevents any alignment callback", () => {
 	expect(JSON.stringify(output)                                 ).toContain("Source changed during check") ;
 	expect(trace(value).filter(item => item.operation === "align")).toEqual  ([]                           ) ;
 	expect(readFileSync(join(value.root, "sample.py"), "utf8")    ).toBe     (SOURCE                       ) ;
+}, 60_000);
+
+for (const sample of [
+	{ file : ".www/state.json" , present : true  , tracked : false },
+	{ file : ".gjc/state.json" , present : false , tracked : false },
+	{ file : "runtime.json"    , present : true  , tracked : false },
+	{ file : "runtime.json"    , present : false , tracked : false },
+	{ file : ".www/state.json" , present : true  , tracked : true  },
+]) test(`Git lifecycle ${sample.tracked ? "rejects tracked" : "excludes ignored"} runtime drift: ${sample.file}, present=${sample.present}`, () => {
+	const value = fixture();
+	const git = (...args: string[]) => {
+		const run = spawnSync("git", ["-C", value.root, ...args], { encoding: "utf8" });
+		expect(run.status).toBe(0);
+	};
+	git("init", "--quiet");
+	writeFileSync(join(value.root, ".gitignore"), ".www/\n.gjc/\nruntime.json\n");
+	if (sample.present) {
+		mkdirSync(join(value.root, sample.file, ".."), { recursive: true });
+		writeFileSync(join(value.root, sample.file), "{\"initial\":true}\n");
+	}
+	if (sample.tracked) git("add", "--force", sample.file);
+	hook(value, "session");
+	writeFileSync(join(value.root, "sample.py"), "answer = 42\n");
+	const output = hook(value, "post", "check", { scenario: "runtime-drift", env: { TEST_DRIFT_FILE: sample.file } });
+	if (sample.tracked) {
+		expect(JSON.stringify(output)).toContain("Source changed during check");
+		expect(records(value)).toEqual([]);
+	} else {
+		expect(JSON.stringify(output)).not.toContain("hook error" ) ;
+		expect(latest(value).files   )    .toEqual  (["sample.py"]) ;
+		expect(baseline(value)       ).not.toContain( sample.file ) ;
+	}
+}, 60_000);
+
+test("non-Git lifecycle still rejects runtime drift despite a local ignore file", () => {
+	const value = fixture();
+	writeFileSync(join(value.root, ".gitignore"), ".www/\n");
+	hook(value, "session");
+	writeFileSync(join(value.root, "sample.py"), "answer = 42\n");
+	const output = hook(value, "post", "check", { scenario: "runtime-drift", env: { TEST_DRIFT_FILE: ".www/state.json" } });
+	expect(JSON.stringify(output)).toContain("Source changed during check");
+	expect(records(value)).toEqual([]);
+}, 60_000);
+
+test("Git visible source drift during inspection remains rejected", () => {
+	const value = fixture();
+	expect(spawnSync("git", ["-C", value.root, "init", "--quiet"]).status).toBe(0);
+	hook(value, "session", "align");
+	writeFileSync(join(value.root, "sample.py"), SOURCE);
+	const output = hook(value, "post", "align", { scenario: "inspection-drift" });
+	expect(JSON.stringify(output)).toContain("Source changed during check");
+	expect(records(value)).toEqual([]);
 }, 60_000);
 
 test("a callback cannot hide changed bytes by reporting that it wrote nothing", () => {

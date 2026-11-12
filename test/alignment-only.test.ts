@@ -6,6 +6,7 @@ import      {
               readFileSync                                            ,
               readdirSync                                             ,
               rmSync                                                  ,
+              renameSync                                              ,
               writeFileSync
                                                                         } from "node:fs"                        ;
 import      { join                                                      } from "node:path"                      ;
@@ -130,9 +131,9 @@ test("Align retains approval, parser and commit-time configuration safeguards", 
 	expect(readdirSync(options.root)).toEqual([options.file]);
 });
 
-function verticalRegistry(root: string): ApprovalRegistry {
-	const rule     = "synthetic-vertical-test"                                                    ;
-	const document = "# Synthetic rule\n\nTest-only approval for a multi-argument declaration.\n" ;
+function syntheticRegistry(root: string, key = "v1|typescript|SourceFile|declaration-equals|equals>call-open-paren>call-comma{i}>call-arg{i}>call-comma{i}>call-arg{i}>call-close-paren>semicolon", scope = "**/*.ts"): ApprovalRegistry {
+	const rule     = "synthetic-vertical-test"                                                              ;
+	const document = "# Synthetic rule\n\nTest-only approval for the selected declaration key and scope.\n" ;
 	const examples: Example[] = (["after-better", "bad"] as const).map(verdict => ({
 		schemaVersion: 1, id: `${rule}-${verdict}`, status: "approved", versions: APPROVAL_VERSIONS,
 		language: "typescript", regime: "table", patterns: ["DEFINE"], rules: [rule],
@@ -144,16 +145,16 @@ function verticalRegistry(root: string): ApprovalRegistry {
 	mkdirSync(join(root, "docs"));
 	writeFileSync(join(root, "docs/rules.md"), document);
 	return {
-		conventions : [{ schemaVersion: 1, id: rule, key: "v1|typescript|SourceFile|declaration-equals|equals>call-open-paren>call-comma{i}>call-arg{i}>call-comma{i}>call-arg{i}>call-close-paren>semicolon", pattern: "DEFINE", status: "approved", scope: "**/*.ts", examples: ids, versions: APPROVAL_VERSIONS, approvedBy: "synthetic-test-approver", date: "2026-10-21", layer: "project" }] ,
-		examples    : new Map(examples.map(example => [example.id, example]))                                                                                                                                                                                                                                                                                                                      ,
-		decisions   : new Map([[rule, { schemaVersion: 1, id: rule, kind: "rule", layer: "convention", ref: "docs/rules.md#Synthetic rule", docHash: sectionHash(document, "Synthetic rule"), examples: ids, approvedBy: "synthetic-test-approver", date: "2026-10-21" }]])                                                                                                                        ,
+		conventions : [{ schemaVersion: 1, id: rule, key, pattern: "DEFINE", status: "approved", scope, examples: ids, versions: APPROVAL_VERSIONS, approvedBy: "synthetic-test-approver", date: "2026-10-21", layer: "project" }]                                          ,
+		examples    : new Map(examples.map(example => [example.id, example]))                                                                                                                                                                                               ,
+		decisions   : new Map([[rule, { schemaVersion: 1, id: rule, kind: "rule", layer: "convention", ref: "docs/rules.md#Synthetic rule", docHash: sectionHash(document, "Synthetic rule"), examples: ids, approvedBy: "synthetic-test-approver", date: "2026-10-21" }]]) ,
 	};
 }
 
 test("real vertical candidates are refused by Align and remain unapproved after legacy format expansion", () => {
 	const source = "const a = pair(alpha, tiny, gamma);\nconst bb = pair(alpha, small, gamma);\nconst cc = pair(alpha, short, gamma);\nconst dd = pair(alpha, veryLongSecondArgumentHereForVerticalLayout, gamma);\n";
 	const { target, options } = fixture("typescript", source);
-	const registry = verticalRegistry(options.root);
+	const registry = syntheticRegistry(options.root);
 	// Isolate TypeScript server state, as separate CLI invocations do.
 	const script = `
 		import { runFormatPipeline } from ${JSON.stringify(join(import.meta.dir, "../product/engine/common/21_format-pipeline.ts"))};
@@ -230,4 +231,47 @@ test("public Python preview and apply preserve PEP 701 literals and align comple
 	expect(JSON.parse(recheck.stdout.toString()).written                                                                 ).toBe   (false                   ) ;
 	expect(readFileSync(target, "utf8")                                                                                  ).toBe   (output                  ) ;
 	expect(() => assertAlignmentOnly(Buffer.from(literal), Buffer.from(literal.replace("a = 1", "a      = 1")), "python")).toThrow("alignment-only refusal") ;
+}, 60_000);
+
+test("public Align keeps parser-confirmed slash contexts elsewhere in the same file", async () => {
+	const source = 'const a=make(1);\nconst longer=make(22);\nconst mid=make(333);\n\nconst ratio = Number(3) / 1e6;\n\nconst valid = !/a  b/.test("a  b");\n';
+	const { target, options } = fixture("typescript", source);
+	const preview = await runFormatPipeline({ ...options, dryRun: true });
+
+	expect(preview).toMatchObject({ written: false, boxboxChanged: true, fixedPoint: true });
+	expect(readFileSync(target, "utf8")).toBe(source);
+	const applied = await runFormatPipeline(options);
+
+	const aligned = readFileSync(target, "utf8");
+	expect(applied.written).toBe     (true                 ) ;
+	expect(aligned        ).toContain("Number(3) / 1e6"    ) ;
+	expect(aligned        ).toContain('/a  b/.test("a  b")') ;
+
+
+	expect((await runFormatPipeline(options)).canonicalChanged).toBe(false);
+}, 60_000);
+
+test("public TSX Align protects JSX text through preview, apply and fixed point", async () => {
+	const source = 'const a=make(1);\nconst longer=make(22);\nconst mid=make(333);\n\nconst view=<><div title="a \\ b">  hello  world\n</div><br /></>;\n';
+
+	const base = fixture("typescript", source);
+
+	const file   = "sample.tsx"                  ;
+	const target = join(base.options.root, file) ;
+
+	renameSync(base.target, target);
+	const registry = syntheticRegistry(base.options.root, "v1|typescript|SourceFile|declaration-equals|equals>call-open-paren>call-close-paren>semicolon", "**/*.tsx");
+
+	const options = { ...base.options, file, registry, resolveDocument: documentResolver({ project: base.options.root }) };
+
+	const preview = await runFormatPipeline({ ...options, dryRun: true });
+
+	expect(preview).toMatchObject({ written: false, boxboxChanged: true, fixedPoint: true });
+	expect(readFileSync(target, "utf8")).toBe(source);
+
+	const applied = await runFormatPipeline(options);
+	expect(applied.written).toBe(true);
+	expect(readFileSync(target, "utf8")).toContain('<div title="a \\ b">  hello  world\n</div><br /></>');
+
+	expect((await runFormatPipeline(options)).canonicalChanged).toBe(false);
 }, 60_000);

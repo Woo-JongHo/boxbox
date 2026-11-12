@@ -182,17 +182,19 @@ function options(args: readonly string[], run: boolean) {
 }
 
 export function snapshot(
-	root: string,
-	prefix = "",
-	result: Snapshot = {},
-	ignored: string[] = [],
-	excludedDirectories: ReadonlySet<string> = new Set()
+	root                : string                   ,
+	prefix                                    = "" ,
+	result              : Snapshot            = {} ,
+	ignored             : string[]            = [] ,
+	excludedDirectories : ReadonlySet<string> = new Set()
 ): Snapshot {
 	for (const entry of readdirSync(join(root, prefix), { withFileTypes: true })) {
 		const file     = join   (prefix, entry.name) ;
 		const absolute = resolve(root, file        ) ;
 
-		if      (entry.isDirectory() && !excluded.has(entry.name) && !excludedDirectories.has(absolute))
+		if (excludedDirectories.has(absolute)) continue;
+
+		if      (entry.isDirectory() && !excluded.has(entry.name))
 			snapshot(root, file, result, ignored, excludedDirectories);
 		else if (entry.isSymbolicLink() && !code.has(extname(entry.name).toLowerCase())                )
 			ignored.push(file);
@@ -257,10 +259,10 @@ function emit(value: Record<string, unknown>, json: boolean): void {
 }
 
 export async function guardedRun(
-	args: readonly string[],
-	preflight: Preflight,
-	inspect: Inspection,
-	engineVersion: string
+	args          : readonly string[] ,
+	preflight     : Preflight         ,
+	inspect       : Inspection        ,
+	engineVersion : string
 ): Promise<number> {
 	const { root, json, command } = options(args, true);
 	const directory = runDirectory(root) ;

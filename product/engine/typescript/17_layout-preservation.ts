@@ -16,6 +16,7 @@ export interface LayoutPreservationResult {
 }
 
 interface ParsedLayout {
+	readonly source      : SourceFile        ;
 	readonly diagnostics : readonly number[] ;
 	readonly structure   : readonly number[] ;
 }
@@ -45,7 +46,7 @@ async function parseLayouts(root: string, beforePath: string, afterPath: string)
 			const source = await project.program.getSourceFile(path);
 			if (!source) throw new Error(`cannot read the TypeScript AST for layout preservation: ${path}`);
 			const diagnostics = (await project.program.getSyntacticDiagnostics(path)).map(diagnostic => diagnostic.code).sort((left, right) => left - right);
-			return { diagnostics, structure: structureOf(source) };
+			return { source, diagnostics, structure: structureOf(source) };
 		};
 		return [await parse(beforePath), await parse(afterPath)];
 	} finally {
@@ -58,8 +59,6 @@ async function parseLayouts(root: string, beforePath: string, afterPath: string)
  * Temporary sibling files preserve extension-sensitive meanings such as `.d.ts`, `.mts` and `.tsx`.
  */
 export async function compareTypeScriptLayout(root: string, target: string, before: string, after: string): Promise<LayoutPreservationResult> {
-	if (!preservesTokensWithBreaks(before, after)) return { status: "tokens-changed", reason: "token or comment bytes changed" };
-
 	const path       = repositoryFile(root, target).absolute                               ;
 	const directory  = dirname(path)                                                       ;
 	const nonce      = `${process.pid}.${randomUUID()}`                                    ;
@@ -69,11 +68,12 @@ export async function compareTypeScriptLayout(root: string, target: string, befo
 		writeFileSync(beforePath, before);
 		writeFileSync(afterPath , after );
 		const [left, right] = await parseLayouts(root, beforePath, afterPath);
-		if (!same(left.diagnostics, right.diagnostics)) return { status: "parse-changed", reason: "TypeScript syntactic diagnostics changed" };
-		if (!same(left.structure, right.structure)) return { status: "structure-changed", reason: "TypeScript AST structure changed" };
+		if (!preservesTokensWithBreaks(before, after, left.source)) return { status: "tokens-changed", reason: "token or comment bytes changed" };
+		if (!same(left.diagnostics, right.diagnostics)            ) return { status: "parse-changed", reason: "TypeScript syntactic diagnostics changed" };
+		if (!same(left.structure, right.structure)                ) return { status: "structure-changed", reason: "TypeScript AST structure changed" };
 		return { status: "preserved", reason: "tokens, comments, diagnostics and AST structure preserved" };
 	} finally {
-		if (existsSync(beforePath)) unlinkSync(beforePath);
-		if (existsSync(afterPath )) unlinkSync(afterPath );
+		if (existsSync(beforePath)) unlinkSync(beforePath         );
+		if (existsSync(afterPath )) unlinkSync(afterPath          );
 	}
 }

@@ -2,7 +2,7 @@
 
 BoxBox helps an agent compose code as comparable rows and columns, then checks the result. Choose a workflow by the
 change you want to permit. The public engine checks and has alignment implementations for TypeScript, Python, strict
-JSON and YAML 1.2. Write authorization remains rule-specific; the default preset contains only a few approved
+JSON and YAML 1.2. Automatic engine writes remain rule-specific; the default preset contains only a few approved
 TypeScript and Python rules.
 
 | Workflow | Use it for | Who changes the file? |
@@ -27,6 +27,28 @@ and `format` also accept repeated `--file` arguments or a bounded recursive `--d
 Add "preview only" to request a proposed diff without changing the target. For Write and Refactor, the agent prepares
 the proposal; for Align, the engine supports `--dry-run`. A preview is not evidence that the target file was changed or
 that tests passed. An ambiguous "fix this" request starts with inspection; the agent clarifies the change scope when needed.
+
+## Authorized authoring and automatic alignment
+
+An explicit request to bring existing code into BoxBox's row-and-column form selects Refactor within that request's
+scope. A prior Align refusal does not cancel this later authoring request. It also does not grant permission to
+silently broaden an Align-only task. The host agent authors local structure and measured layout, then verifies it;
+the automatic engine still requires exact human-approved conventions.
+
+Missing automatic-write approval is not itself an authoring blocker. Source Check may pass with zero misalignment
+and zero refusals while `formatReadiness.approvalEligible` remains false. This says that the current detected layout
+passes inspection, not that an automatic rewrite is approved. Do not manufacture approval records or use an alternate
+aligner to rewrite unapproved engine groups.
+
+For an authorized authoring task, inspect the comparison purpose and syntax-defined axes before editing each file.
+Keep execution order, meaningful differences and public contracts; do not add work or wrappers just to fill columns.
+A parser coverage refusal requires an engine diagnosis and regression, not a change to correct application expressions
+solely to hide the coverage defect. Invalid syntax, actual preservation failures and unavailable parsers remain blockers.
+
+For a requested full-change result, enumerate staged, unstaged and relevant untracked files. Run source Check on every
+supported selected file, account for requested and undetected axes, and explicitly review documents, generated records,
+vendor material and unsupported files. Freeze the same candidate for project checks and authorized publication.
+A session-hook receipt is evidence for its observed scope, not a whole-commit certificate.
 
 ## Guidance before writing
 
@@ -82,11 +104,12 @@ The engine requires applicable human-approved rules, parser availability, preser
 replacing the file atomically. A dry-run also verifies the proposal but leaves the target untouched. Python alignment
 requires a runnable `python3`.
 
-TypeScript preservation uses explicit value-ending and expression-prefix contexts. It refuses a changed file when
-a slash remains ambiguous, including after `)` or `}`, a line-break-separated value, contextual keywords, non-null
-assertions or generic closing tokens. This also refuses
-otherwise safe division padding and edits on other lines in that file. The refusal protects regex and template
-contents; it is a current coverage limit, not a syntax error or a new formatting rule.
+TypeScript preservation uses the actual parser's regular-expression and division roles when source context is
+available. This distinguishes division after a call from a regex statement after a control header, and a unary
+negated regex from a TypeScript non-null expression. Exact regex/template/comment bytes remain protected.
+The context-free scanner keeps its conservative refusal for ambiguous slashes; parser unavailability is not
+permission to guess. Source inspection, the public write pipeline and its final token/AST preservation checks
+must use the same parser context rather than accepting a source check while refusing the identical write later.
 
 The existing `format` command is retained separately. A configured external formatter runs before alignment, including
 during `format --dry-run`. Use it when that broader pipeline is intended; use Align for whitespace-only work.
@@ -165,6 +188,11 @@ refactor. Automatic plugin inspection still covers session changes, rather than 
 formatter/CI command. A failing PostToolUse report names up to three affected files and suppresses later matched-tool
 feedback while the observed source snapshot is unchanged; a new source change is inspected normally. Stop still
 rechecks and can request at most one continuation; it never writes source.
+
+In a Git working tree, automatic lifecycle snapshots exclude untracked files and directories ignored by Git,
+including generated runtime state. Ignore rules do not remove tracked files from the existing snapshot scope, and
+visible source changes during inspection still fail the check. Outside Git, snapshots retain the existing recursive source
+scan. This exclusion applies only to automatic lifecycle hooks; explicit checks and guarded runs keep their scope.
 
 SessionStart checks GitHub release tags when its cached update check is at least 24 hours old. This sends no source
 content. Set `BOXBOX_UPDATE_CHECK=0` in the host environment to disable the automatic network probe. Its update cache

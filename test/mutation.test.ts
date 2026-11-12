@@ -102,7 +102,8 @@ describe("mutation invariants", () => {
 			expect(outcomes.validAligned  ).toBeGreaterThan(0       ) ;
 			expect(outcomes.invalidAligned).toBe           (0       ) ;
 			console.log(`${name} mutation outcomes: valid-aligned=${outcomes.validAligned} invalid-aligned=${outcomes.invalidAligned} invalid-rejected=${outcomes.invalidRejected} total=${total}`);
-		}, 30_000 + VARIANTS * 150);
+		// Budget real parser startup per seed; all 1000 variants and safety assertions still run.
+		}, 60_000 + VARIANTS * 1_000);
 
 		test(`${name}: sampled variants parse like their aligned output`, () => {
 			for (let sample = 0; sample < PARSE_SAMPLE; sample += 1) {
@@ -145,5 +146,6 @@ describe("mutation invariants (TypeScript aligner)", () => {
 		} finally {
 			rmSync(workspace, { recursive: true, force: true });
 		}
-	}, 30_000 + TS_VARIANTS * 2_000);
+	// Each seed starts two real TypeScript servers; this is not a product parser timeout.
+	}, 30_000 + TS_VARIANTS * 10_000);
 });

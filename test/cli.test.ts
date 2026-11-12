@@ -587,3 +587,43 @@ describe("public CLI", () => {
 		}
 	});
 });
+
+describe("host authoring versus automatic-write eligibility", () => {
+	test("an authored layout passes source Check while unapproved Align stays read-only", () => {
+		const root        = workspace()                             ;
+		const path        = join(root, "local.ts")                  ;
+		const environment = { XDG_CONFIG_HOME: join(root, "user") } ;
+		const original = `function limits(value: number) {
+  const low = value - 1;
+  const middle = value;
+  const high = value + 1;
+  return [low, middle, high];
+}
+`;
+		const authored = `function limits(value: number) {
+  const low    = value - 1 ;
+  const middle = value     ;
+  const high   = value + 1 ;
+  return [low, middle, high];
+}
+`;
+
+		writeFileSync(path, original);
+		const before = invoke(root, ["check", "--source", "--file", path, "--json"], environment);
+		expect(before.status).toBe(1);
+		expect(readFileSync(path, "utf8")).toBe(original);
+
+		writeFileSync(path, authored);
+		const checked = invoke(root, ["check", "--source", "--file", path, "--json"], environment);
+		expect(checked.status).toBe(0);
+		const value = JSON.parse(checked.stdout);
+		expect(value.syntax.status                   ).toBe         (                "valid"                 ) ;
+		expect(value.results[0].summary              ).toMatchObject({ groups: 1, misaligned: 0, refused: 0 }) ;
+		expect(value.formatReadiness.approvalEligible).toBe         (                 false                  ) ;
+
+		const preview = invoke(root, ["align", "--file", path, "--dry-run", "--json"], environment);
+		expect(preview.status                       ).toBe(         2          ) ;
+		expect(JSON.parse(preview.stdout).error.code).toBe("ALIGN_NOT_ELIGIBLE") ;
+		expect(readFileSync(path, "utf8")           ).toBe(      authored      ) ;
+	});
+});

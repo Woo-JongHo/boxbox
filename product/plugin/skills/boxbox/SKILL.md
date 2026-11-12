@@ -42,13 +42,17 @@ A monitor request is not an instruction to align or refactor source. Continue so
 
 Write and Refactor are agent workflows, not CLI generation commands. Follow an explicit mode choice. For an ambiguous
 "fix" request, check first and clarify when the choice between structural changes and alignment affects the result.
+An explicit request to bring code into BoxBox's row-and-column form authorizes Refactor within that request's scope;
+do not turn it into an Align-only task or ask for the same authoring permission again at every finding.
 Preview is an execution option for every workflow: present a proposed diff without modifying the target file.
 Author one file at a time within the user's authorized scope; continue across authorized files without requiring fresh feedback for each file.
 For engine Check or Format, use repeated `--file` or `--directory` for an authorized multi-file selection; Align and Guide remain single-file commands.
 
 ## Running the engine
 
-Every check and fix goes through the bundled launcher. The standard shim requires `BOXBOX_CLI` to point to a locally installed engine; the BoxBox npm installer configures its own launcher during installation. Never fetch `boxbox` from npm: that registry name is owned by an unrelated package.
+Run deterministic checks and engine writes through the bundled launcher. The standard shim requires `BOXBOX_CLI` to point to a locally installed engine; the BoxBox npm installer configures its own launcher during installation. Never fetch `boxbox` from npm: that registry name is owned by an unrelated package.
+
+Write/Refactor edits remain the host agent's responsibility and must be checked afterward.
 
 ```bash
 "<PLUGIN_ROOT>/scripts/boxbox" doctor                      # runtime, parser, config and approval data status
@@ -116,8 +120,10 @@ Every check and fix goes through the bundled launcher. The standard shim require
 3. Author the requested implementation or structural improvement. Preserve execution order, public contracts and meaningful
    differences. An overlong exception is a reason to inspect responsibility and data flow, not permission to add abstractions
    just to shorten a column. Structural guidance is advisory; report unsupported patterns instead of inventing approval data.
-   An explicit user request for a local layout change can guide this authoring pass; it does not create reusable preset
-   approval or bypass the deterministic Align procedure.
+   An explicit user request for local row-and-column authoring permits measured local layout edits in this pass, including
+   kinds without a reusable approved convention. Record the comparison purpose, axes and preservation checks; do not
+   claim that these edits were made by Align or that the request approved a reusable rule. Automatic Align/Format keeps
+   its exact-key approval gate. Do not use an alternate aligner or raw engine writer to perform unapproved engine writes.
    When authoring or normalizing internal imports, follow the target project's import conventions and package
    boundaries; retain relative imports where its current contract requires them. Otherwise use its configured alias
    (such as `@/`) where equivalent resolution is verified. Read its effective compiler configuration, including inherited mappings, and
@@ -139,6 +145,28 @@ Every check and fix goes through the bundled launcher. The standard shim require
    When the user or project instructions require issue-history records, use that schema within the authorized scope to
    retain the reproduction, cause, decision and verification evidence, including failed attempts and unresolved work.
 
+### Continue an authorized authoring task
+
+Read `formatReadiness` as eligibility for automatic Align/Format, not as permission for the host to implement an
+already authorized Write/Refactor request. A source check can pass while automatic alignment remains ineligible.
+For each finding, choose the owner of the next action:
+
+- `FIXABLE`: in Write/Refactor, inspect the actual rows and author their measured layout within the current scope;
+  in Align, use only the approved engine pipeline. A calculated layout is not proof that rows share a role.
+- Missing reusable approval: leave the registry unchanged unless the human has approved the exact proposed convention.
+  It does not by itself stop an authorized local authoring task.
+- `REFUSE`, invalid syntax or parser/tool failure: retain the failure and diagnose it. Do not weaken preservation or
+  alter correct source expressions merely to conceal a parser coverage defect. An engine fix belongs in the plugin's
+  canonical source with a minimized positive case and a counterexample, followed by an installed-artifact check.
+- Unsupported or undetected boundaries: inspect them explicitly and name the coverage gap. Do not report them as PASS.
+
+Before returning a requested full-change result, enumerate the actual changed files, including relevant untracked
+files and generated structured records. Check every supported selected file and reconcile its axes with the requested
+boundaries; review documents and unsupported files separately. Verify behavior for authored structural changes and
+freeze the same candidate before final checks. A hook receipt covers its observed session changes, not the whole
+commit candidate. Follow the repository's commit/push contract when publishing is already authorized, without asking
+for the same permission again. A missing convention, a passing test and a successful push are different facts.
+
 ## Check and Align
 
 When using the read-only `readability-inspector`, give it one target file and a report path owned by the calling agent
@@ -151,9 +179,11 @@ conversation.
    `REFUSE` states. This source-only report does not verify a formatter canonical result or authorize a write. A refused
    group stays unchanged by alignment.
 2. Read `guide --json` for applicable approved rules. With no approved rule, report the candidate and missing evidence;
-   do not align it by hand, auto-approve it or use a raw writer.
+   in the Align workflow, do not align it by hand, auto-approve it or use a raw writer. For an independently authorized
+   Write/Refactor task, use its authoring procedure above; that is not an automatic Align approval.
 3. For Check, report findings. For Align preview, run `align --dry-run --json`. For authorized application, inspect the
-   dry-run result and then run `align --json`; report refusal reasons without falling back to `format` or Refactor.
+   dry-run result and then run `align --json`; report refusal reasons without silently broadening an Align-only request
+   into `format` or Refactor. An existing broader authoring request retains its own scope and verification duties.
 4. After application, rerun `check --source --json`, reconcile user-requested boundaries with the final returned axes, and report
    missing coverage alongside the remaining `misaligned` count. Zero detected groups
    or zero misalignment does not prove that unsupported code follows the requested style. Report only validations actually run.

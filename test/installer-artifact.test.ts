@@ -296,6 +296,10 @@ test("real npx infers the boxbox bin from the public installer and installs both
 		for (const document of documents) {
 			const text = readFileSync(join(plugin, document), "utf8");
 			expect(text).toContain(configuration.skillCommand);
+			if (document === "skills/boxbox/SKILL.md") {
+				expect(text).toContain("Run deterministic checks and engine writes through this plugin's permanent local Node launcher");
+				expect(text).toContain("Write/Refactor edits remain the host agent's responsibility");
+			}
 			for (const forbidden of ["@BOXBOX_ENGINE_COMMAND@", "<PLUGIN_ROOT>", "standard shim requires", cache, staging]) expect(text).not.toContain(forbidden);
 		}
 		if (host === "claude") expect(readFileSync(join(plugin, "agents/readability-inspector.md"), "utf8")).toContain("disallowedTools: Write, Edit, NotebookEdit, Agent, ExitPlanMode");

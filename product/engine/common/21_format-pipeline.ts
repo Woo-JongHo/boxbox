@@ -11,7 +11,7 @@ import      { compareParse                                    } from "@/common/0
 import      { updateFileAtomically                            } from "@/common/12_safe-file.ts"            ;
 import      { lookupKeyOf                                     } from "@/common/02_signature.ts"            ;
 import      { runTypeScriptAlign                              } from "@/typescript/12_align.ts"            ;
-import      { syntacticDiagnostics                            } from "@/typescript/15_load-source-file.ts" ;
+import      { loadSourceFile, syntacticDiagnostics            } from "@/typescript/15_load-source-file.ts" ;
 import      { PYTHON_ALIGNER                                  } from "@/python/03_profile.ts"              ;
 import      { runAlignCli                                     } from "@/common/22_align-cli.ts"            ;
 import      { assertAlignmentOnly                             } from "@/common/10_alignment-only.ts"       ;
@@ -187,6 +187,9 @@ export async function runFormatPipeline(given: FormatPipelineOptions): Promise<F
 	let canonicalChanged = false;
 	let alignmentEdits: FormatPipelineResult["alignmentEdits"];
 	const written = await updateFileAtomically(absolute, async ({ initial, working }) => {
+		const parsedInitial = options.alignmentOnly && options.language === "typescript"
+			? (await loadSourceFile(options.root, working)).source
+			: undefined;
 		if (options.language === "python") {
 			const source = initial.toString("utf8");
 			if (!Buffer.from(source, "utf8").equals(initial) || source.startsWith("\uFEFF") || /\r(?!\n)/u.test(source)) {
@@ -196,7 +199,7 @@ export async function runFormatPipeline(given: FormatPipelineOptions): Promise<F
 		first = await cycle(options, working, display);
 		const firstOutput = readFileSync(working);
 		canonicalChanged = !firstOutput.equals(initial);
-		if (options.alignmentOnly) assertAlignmentOnly(initial, firstOutput, options.language);
+		if (options.alignmentOnly) assertAlignmentOnly(initial, firstOutput, options.language, parsedInitial);
 		if (options.alignmentOnly && options.dryRun) {
 			const originalLines  = initial.toString("utf8").split(/\r\n|[\r\n\u2028\u2029]/u)     ;
 			const candidateLines = firstOutput.toString("utf8").split(/\r\n|[\r\n\u2028\u2029]/u) ;

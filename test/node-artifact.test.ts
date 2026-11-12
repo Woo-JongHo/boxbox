@@ -94,12 +94,14 @@ describe("Node-only local package artifact", () => {
 		expectSuccess(nodeIdentity);
 		expect(nodeIdentity.stdout.trim()).toBe("undefined");
 
-		const typescript = join(project, "sample.ts") ;
-		const python     = join(project, "sample.py") ;
-		writeFileSync(typescript, "const a = make(1);\nconst muchLonger = make(22);\nconst mid = make(333);\n");
+		const typescript = join(project, "sample.ts" ) ;
+		const python     = join(project, "sample.py" ) ;
+		const jsx        = join(project, "sample.tsx") ;
+		writeFileSync(typescript, "const a = make(1);\nconst muchLonger = make(22);\nconst mid = make(333);\n\nconst ratio = Number(3) / 1e6;\n\nconst invalid = !/a  b/.test('a  b');\n");
 		writeFileSync(python, "class Example:\n    a: int = 1\n    much_longer: str = 'x'\n    mid: bool = True\n");
+		writeFileSync(jsx, "const a = make(1);\nconst muchLonger = make(22);\nconst mid = make(333);\n\nconst view = <><div>  hello  world\n</div><br /></>;\n");
 
-		for (const [language, target] of [["typescript", typescript], ["python", python]] as const) {
+		for (const [language, target] of [["typescript", typescript], ["typescript", jsx], ["python", python]] as const) {
 			const original = readFileSync(target);
 			expect(run(runtimeNode, [runner, language, "--file", target], { cwd: project, env: runtimeEnv }).status).toBe(1);
 			expect(readFileSync(target).equals(original)).toBe(true);
@@ -130,5 +132,5 @@ describe("Node-only local package artifact", () => {
 		for (const forbidden of ["Bun.", "bun:", "@/", root, "00_normalize-imports", "08_wrap-conditions", "09_function-map", "10_observe-shapes"]) {
 			expect(bundle).not.toContain(forbidden);
 		}
-	}, 180_000);
+	}, 240_000);
 });

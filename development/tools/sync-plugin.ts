@@ -133,9 +133,8 @@ export function expectedPluginFiles(root = ROOT): ReadonlyMap<string, string> {
 		let text     = versioned(read(source), version) ;
 		if (path === "agents/readability-inspector.md") text = stampClaudeAgent(text, inspector.claude);
 		if (path.endsWith("/plugin.json")) {
-			const manifest = JSON.parse(text) as Record<string, unknown>;
-			manifest.version = version;
-			text = JSON.stringify(manifest, null, "\t") + "\n";
+			text = text.replaceAll("@BOXBOX_VERSION@", version);
+			if ((JSON.parse(text) as Record<string, unknown>).version !== version) throw new Error(`${source} must carry @BOXBOX_VERSION@ as its version`);
 		}
 		expected.set(`plugin/${path}`, text);
 	}

@@ -12,6 +12,7 @@ import      { horizontalWhitespaceRanges, preservesTokens  } from "@/typescript/
 import      { changedLines                                 } from "@/common/09_preservation.ts"           ;
 import      { PYTHON_SYNTAX                                } from "@/python/03_profile.ts"                ;
 import      { PythonSourceSyntaxError                      } from "@/python/07_string-ranges.ts"          ;
+import type { SourceFile                                   } from "typescript/unstable/ast"               ;
 
 export const REPORT_SCHEMA_VERSION = 1;
 
@@ -41,12 +42,12 @@ const indentOf = (line: string): string => /^[ \t]*/u.exec(line)![0];
  * into several columns, or that form a column with a neighbor, may be tables the engine does not know yet, so they are left alone (only when certain). Comments and import lines
  * (handled by 00_normalize-imports.ts) are excluded. `development/tools/strip-stray-padding.ts` also uses this function.
  */
-export function straySemicolonPadding(lines: readonly string[], index: number): number | undefined {
-	return strayPadding(lines, index);
+export function straySemicolonPadding(lines: readonly string[], index: number, parsed?: SourceFile): number | undefined {
+	return strayPadding(lines, index, true, parsed);
 }
 
 /** Checks all candidate gaps in one scanner pass over the original source. */
-export function straySemicolonPaddings(lines: readonly string[]): ReadonlyMap<number, number> {
+export function straySemicolonPaddings(lines: readonly string[], parsed?: SourceFile): ReadonlyMap<number, number> {
 	const candidates = new Map<number, { start: number; end: number; padding: number }>() ;
 	let offset       = 0                                                                  ;
 	for (const [index, line] of lines.entries()) {
@@ -58,11 +59,11 @@ export function straySemicolonPaddings(lines: readonly string[]): ReadonlyMap<nu
 		offset += line.length + 1;
 	}
 	if (candidates.size === 0) return new Map();
-	const whitespace = new Map(horizontalWhitespaceRanges(lines.join("\n")).map(range => [range.start, range.end]));
+	const whitespace = new Map(horizontalWhitespaceRanges(lines.join("\n"), parsed).map(range => [range.start, range.end]));
 	return new Map([...candidates].filter(([, gap]) => whitespace.get(gap.start) === gap.end).map(([index, gap]) => [index, gap.padding]));
 }
 
-function strayPadding(lines: readonly string[], index: number, verify = true): number | undefined {
+function strayPadding(lines: readonly string[], index: number, verify = true, parsed?: SourceFile): number | undefined {
 	const line = lines[index] ?? "";
 	if (/^\s*(\/\/|\*|\/\*|import\b|export\s.*\bfrom\b|\}\s*from\b)/u.test(line)) return undefined;
 
@@ -79,7 +80,7 @@ function strayPadding(lines: readonly string[], index: number, verify = true): n
 
 	const before    = lines.join("\n")                                                                                                     ;
 	const after     = lines.map((value, position) => position === index ? value.replace(/(\S)[ \t]+;(\r?)$/u, "$1;$2") : value).join("\n") ;
-	const preserved = preservesTokens(before, after)                                                                                       ;
+	const preserved = preservesTokens(before, after, parsed)                                                                               ;
 	if (!preserved)                                                               return undefined;
 
 	return padding[1]!.length;
@@ -165,6 +166,8 @@ export interface ReportInput {
 	readonly limits?    : ReportLimits        ;
 	/** Pattern DB. When given, each table is looked up (report only, behavior unchanged). */
 	readonly db?        : ConventionDb        ;
+	/** Parser snapshot of the exact current body, when the caller has already loaded one. */
+	readonly parsedSource?: SourceFile;
 }
 
 const ALARM_LABELS: Readonly<Record<AlarmId, string>> = {
@@ -260,15 +263,16 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 	}
 
 	// Out-of-table padding: with no rows to compare there must be no columns either (grammar section 1, statement regime).
-	const typescriptStray = result.language === "typescript" ? straySemicolonPaddings(lines) : new Map<number, number>();
+	const parsedLanguage  = result.language === "typescript"                                                                          ;
+	const typescriptStray = parsedLanguage ? straySemicolonPaddings(text.split("\n"), input.parsedSource) : new Map<number, number>() ;
 	const stray = lines.flatMap((_, index) => {
 		if (groupAt(index + 1)) return [];
-		const padding = result.language === "typescript" ? typescriptStray.get(index) : result.language === "python" ? strayPadding(lines, index, false) : undefined;
+		const padding = parsedLanguage ? typescriptStray.get(index) : result.language === "python" ? strayPadding(lines, index, false) : undefined;
 		return padding === undefined ? [] : [{ index, padding }];
 	});
 	const strayLines = new Set(stray.map(item => item.index)) ;
 	let changed      = new Set<number>()                      ;
-	if (result.language !== "typescript" && stray.length > 0) {
+	if (!parsedLanguage && stray.length > 0) {
 		try {
 			const candidate = lines.map((line, index) => strayLines.has(index) ? line.replace(/(\S)[ \t]+;(\r?)$/u, "$1;$2") : line).join("\n");
 			changed = new Set(changedLines(lines.join("\n"), candidate, PYTHON_SYNTAX));
@@ -298,11 +302,11 @@ function alarmsOf(input: ReportInput, limits: ReportLimits): readonly ReportAlar
 
 		const displayKind = group.semanticKind ? `${group.semanticKind} (${group.kind})` : group.kind;
 		const byState: Readonly<Partial<Record<GroupState, readonly [AlarmId, string, string]>>> = {
-			FIXABLE : ["A0", `${displayKind} ${group.rows} rows, pending edits ${group.edits}`, `fixable by whitespace alignment (safe): ${result.language === "typescript" ? "07_align-tables.ts" : result.language === "python" ? "02_align-tables.ts" : "06_align-tables.ts"} --file <file> --write`] ,
+			FIXABLE : ["A0", `${displayKind} ${group.rows} rows, pending edits ${group.edits}`, `fixable by whitespace alignment (safe): ${parsedLanguage ? "07_align-tables.ts" : result.language === "python" ? "02_align-tables.ts" : "06_align-tables.ts"} --file <file> --write`] ,
 			REFUSE  : group.reason === "wide-characters"
 				? ["A4", `${displayKind}: a column would follow wide characters`, "move the wide text out of the compared cells, for example into a named constant"]
 				: ["A4", `${displayKind}: cannot split losslessly`              , "check the row structure; if it is an engine bug, add a fixture"                ],
-			SUGGEST : ["A6", `${displayKind} ${group.rows} rows`                              , "a human decides whether to make it a table"                                   ]                                                                                                                         ,
+			SUGGEST : ["A6", `${displayKind} ${group.rows} rows`                              , "a human decides whether to make it a table"                                   ]                                                                                                       ,
 		};
 		const stateAlarm = byState[group.state];
 		if (stateAlarm) push(stateAlarm[0], ...span, stateAlarm[1], stateAlarm[2]);

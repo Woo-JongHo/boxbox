@@ -5,6 +5,8 @@ import {
 	preservesTokensWithBreaks,
 	tokenStream,
 } from "@/typescript/16_token-preservation.ts";
+import { loadSourceFile } from "@/typescript/15_load-source-file.ts";
+import { straySemicolonPadding, straySemicolonPaddings } from "@/common/23_report.ts";
 import { assertAlignmentOnly } from "@/common/10_alignment-only.ts";
 import { SyntaxKind } from "typescript/unstable/ast";
 import { createHash } from "node:crypto";
@@ -261,4 +263,135 @@ describe("TypeScript regex expression endings", () => {
 		expect(preservesTokens(before, after)).toBe(false);
 		expect(preservesTokensWithBreaks(before, after)).toBe(false);
 	});
+});
+
+
+async function parserSnapshot(text: string, file = "sample.ts") {
+	const root = mkdtempSync(join(tmpdir(), "boxbox-parser-slash-"));
+	try {
+		writeFileSync(join(root, file), text);
+		return (await loadSourceFile(root, file)).source;
+	} finally {
+		rmSync(root, { recursive: true, force: true });
+	}
+}
+
+describe("parser-confirmed TypeScript slash roles", () => {
+	for (const [name, before] of [
+		["call division", "const result = Number(3) / 1e6;"],
+		["grouped division", "const result = (3) / 2;"],
+		["unary bang regex", 'const result = !/a  b/.test("a  b");'],
+		["non-null division and regex", 'declare const n:number; const result = n! / /a  b/.test("a  b");'],
+		["regex after if header", 'if (ready) /a  b/.test("a  b"); const result = 1;'],
+		["regex after block", 'if (ready) {} /a  b/.test("a  b"); const result = 1;'],
+	] as const) {
+		test(name, async () => {
+			const parsed = await parserSnapshot(before);
+
+			const after = before.replace("result =", "result  =");
+
+			expect(() => tokenStream(before, parsed)).not.toThrow();
+			expect(preservesTokens(before, after, parsed)).toBe(true);
+			expect(() => assertAlignmentOnly(Buffer.from(before), Buffer.from(after), "typescript", parsed)).not.toThrow();
+			if (before.includes("/a  b/")) {
+				const changed = after.replace("/a  b/", "/a b/");
+
+				const interior = before.indexOf("/a  b/") + 2;
+				expect(preservesTokens(before, changed, parsed)).toBe(false);
+				expect(preservesTokensWithBreaks(before, changed, parsed)).toBe(false);
+
+				expect(horizontalWhitespaceRanges(before, parsed).some(range => range.start <= interior && range.end >= interior + 2)).toBe(false);
+
+				expect(() => assertAlignmentOnly(Buffer.from(before), Buffer.from(changed), "typescript", parsed)).toThrow("alignment-only refusal");
+			}
+		}, 30_000);
+	}
+
+	test("stale parser snapshots do not authorize gaps", async () => {
+		const before = 'const result = !/a  b/.test("a  b");';
+
+		const parsed = await parserSnapshot(before);
+
+		const current  = before .replace( "result =", "result  =" ) ;
+		const extended = current.replace("result  =", "result   =") ;
+
+		expect(() => tokenStream(current, parsed)).toThrow("ambiguous slash");
+
+		expect(horizontalWhitespaceRanges(current, parsed)).toEqual([]);
+
+		expect(preservesTokens(current, extended, parsed)).toBe(false);
+	}, 30_000);
+
+	test("candidate slash roles cannot be added, removed or merged into a comment", async () => {
+		const before = 'const result = Number(2) / /a  b/.test("a  b");';
+
+		const parsed = await parserSnapshot(before);
+
+		for (const after of [before.replace(" / /", " //"), before.replace(" / /a  b/", " /a  b/"), before.replace("Number(2)", "Number(2) / 2")]) {
+			expect(preservesTokens(before, after, parsed)).toBe(false);
+		}
+	}, 30_000);
+});
+
+
+test("parser-aware reports keep code gaps and exclude regex content", async () => {
+	const before = 'function f() {\n\tconst invalid = !/a ;/.test("a ;");\n\n\treturn value  ;\n}\n';
+
+	const parsed = await parserSnapshot(before);
+
+	const lines = before.split("\n");
+
+	expect(straySemicolonPadding(lines, 3, parsed)).toBe(2);
+	expect([...straySemicolonPaddings(lines, parsed)]).toEqual([[3, 2]]);
+	expect(straySemicolonPadding(lines, 1, parsed)).toBeUndefined();
+}, 30_000);
+
+
+describe("parser-confirmed JSX lexical boundaries", () => {
+	for (const before of [
+		'const view = <div>  hello  world\n</div>;',
+		'const view = <><span title="a \\ b">hello  world</span><br /></>;',
+		'const view = <div>{Number(3) / 2} hello  world {!/a  b/.test("a  b")}</div>;',
+		'const view = <div>{\u0060a \${<b> hello  world </b>}\u0060}</div>;',
+		'const view = <div>  /look like regex/ // hello  world &amp; text </div>;',
+	] as const) {
+		test(before, async () => {
+			const parsed = await parserSnapshot(before, "sample.tsx");
+
+			const after = before.replace("view =", "view  =");
+
+			const literalGap = before.indexOf("hello  world") + 5;
+
+			expect(() => tokenStream(before, parsed)).not.toThrow();
+			expect(preservesTokens(before, after, parsed)).toBe(true);
+			expect(() => assertAlignmentOnly(Buffer.from(before), Buffer.from(after), "typescript", parsed)).not.toThrow();
+			expect(preservesTokens(before, after.replace("hello  world", "hello world"), parsed)).toBe(false);
+			expect(horizontalWhitespaceRanges(before, parsed).some(range => range.start <= literalGap && range.end > literalGap)).toBe(false);
+		}, 30_000);
+	}
+
+	test("JSX text leading, trailing, newline and attribute bytes stay protected", async () => {
+		const before = 'const view = <div title="a \\ b">  hello  world\n </div>;';
+
+		const parsed = await parserSnapshot(before, "sample.tsx");
+
+		for (const after of [
+			before.replace(">  hello", "> hello"),
+			before.replace("world\n ", "world\n"),
+			before.replace("world\n ", "world "),
+			before.replace("a \\ b", "a  \\ b"),
+		]) {
+			expect(preservesTokens(before, after, parsed)).toBe(false);
+			expect(preservesTokensWithBreaks(before, after, parsed)).toBe(false);
+		}
+	}, 30_000);
+
+	test("parser-aware reports do not treat JSX text as stray source padding", async () => {
+		const before = 'function f() {\n\tconst view = <div>\nJSX text  ;\n</div>;\n\n\treturn view  ;\n}\n';
+
+		const parsed = await parserSnapshot(before, "sample.tsx");
+
+
+		expect([...straySemicolonPaddings(before.split("\n"), parsed)]).toEqual([[5, 2]]);
+	}, 30_000);
 });

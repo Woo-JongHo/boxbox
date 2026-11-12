@@ -317,7 +317,7 @@ function buildGroup(source: SourceFile, kindName: string, groupName: string, run
 export function groupPreserved(source: SourceFile, group: TableGroup): boolean {
 	if (group.conflict !== undefined) return false;
 	const after = applyEdits(source.text, group.edits);
-	return group.vertical > 0 ? preservesTokensWithBreaks(source.text, after) : preservesTokens(source.text, after);
+	return group.vertical > 0 ? preservesTokensWithBreaks(source.text, after, source) : preservesTokens(source.text, after, source);
 }
 
 /** Every detected table of a loaded file, including the ones whose edits fail the token gate (the corpus census). */
@@ -421,6 +421,11 @@ function overlapConflicts(groups: readonly TableGroup[]): ReadonlySet<TableGroup
 	return conflicts;
 }
 
+/** One diagnostic wording for human output and machine-readable refusal results. */
+function refusalReason(group: TableGroup, overlaps: ReadonlySet<TableGroup>): string {
+	return group.conflict ?? (overlaps.has(group) ? "alignment edits overlap another group" : "token preservation refused the planned edit");
+}
+
 /** Read-only observation of the registered runs and plans used by the aligner. */
 export function measureTypeScriptGroups(source: SourceFile, minRows = 3): readonly MeasurementGroup[] {
 	const observed : { group: TableGroup; run: readonly DetectedRow[]; aligned: AlignedRows }[] = []                                                                                                                       ;
@@ -516,7 +521,9 @@ export async function writeDiagnosedOutput(working: string, beforeText: string, 
 }
 
 /** Applies one pass through the token gate and the re-parse gate to a temporary working file. */
-async function writeGroups(root: string, workingRelative: string, displayRelative: string, text: string, groups: readonly TableGroup[]): Promise<boolean> {
+async function writeGroups(root: string, workingRelative: string, displayRelative: string, source: SourceFile, groups: readonly TableGroup[]): Promise<boolean> {
+	const text = source.text;
+
 	const edits = groups.flatMap(group => group.edits).sort((left, right) => left.start - right.start);
 	for (let index = 1; index < edits.length; index += 1) {
 		if (editsOverlap(edits[index - 1]!, edits[index]!)) throw new Error(`alignment edits overlap: ${displayRelative}`);
@@ -524,7 +531,7 @@ async function writeGroups(root: string, workingRelative: string, displayRelativ
 	const output = applyEdits(text, edits);
 	if (output === text) return false;
 	// Vertical rows may insert line breaks; every other edit is whitespace-only between tokens on one line.
-	const preserved = groups.some(group => group.vertical > 0) ? preservesTokensWithBreaks(text, output) : preservesTokens(text, output);
+	const preserved = groups.some(group => group.vertical > 0) ? preservesTokensWithBreaks(text, output, source) : preservesTokens(text, output, source);
 	if (!preserved) throw new Error(`combined alignment edits change more than whitespace; nothing written: ${displayRelative}`);
 	// Compares before and after with a fresh server while keeping the working copy's original path effects (JSX extension, project settings).
 	const absolute = `${root}/${workingRelative}`                                ;
@@ -571,7 +578,7 @@ export async function runTypeScriptAlign(args: readonly string[], options: TypeS
 
 	const totalEdits = groups.reduce((count, group) => count + group.edits.length, 0);
 	say(`align-tables file=${relative} groups=${groups.length} misaligned=${groups.filter(group => group.edits.length > 0).length} edits=${totalEdits} compressed=${result.compressed.length} compressed-members=${compressedMembers} refused=${refused.length + result.unsupportedParameters!.length}${write ? " write=true" : ""}`);
-	for (const group of refused) say(`  ${String(group.startLine).padStart(4)}-${group.endLine}  ${group.kind} refused — ${group.conflict ?? (overlaps.has(group) ? "alignment edits overlap another group" : "the edit would change more than whitespace between tokens")}`);
+	for (const group of refused) say(`  ${String(group.startLine).padStart(4)}-${group.endLine}  ${group.kind} refused — ${refusalReason(group, overlaps)}`);
 	for (const group of result.unsupportedParameters!) say(`  ${group.startLine}-${group.endLine}  ${group.kind} refused — ${group.reason}`);
 	for (const entry of result.compressed) say(`  compressed  interface-members  line=${entry.line} members=${entry.members} — expanding is a structural change, so it is not fixed automatically`);
 	for (const group of groups) {
@@ -628,9 +635,10 @@ export async function runTypeScriptAlign(args: readonly string[], options: TypeS
 				rows      : group.rowCount  ,
 				rowLines  : group.rowLines  ,
 
-				axes  : group.axes         ,
-				state : "REFUSE" as const  ,
-				edits : group.edits.length ,
+				axes   : group.axes                     ,
+				state  : "REFUSE" as const              ,
+				edits  : group.edits.length             ,
+				reason : refusalReason(group, overlaps) ,
 
 				context : group.context,
 				depth   : group.depth
@@ -661,7 +669,7 @@ export async function runTypeScriptAlign(args: readonly string[], options: TypeS
 				apply: async () => {
 					const next    = await loadSourceFile(root, workingRelative)                              ;
 					const pending = safeGroups(next.source, minRows).filter(group => group.edits.length > 0) ;
-					return writeGroups(root, workingRelative, relative, next.source.text, pending);
+					return writeGroups(root, workingRelative, relative, next.source, pending);
 				},
 				verify: async () => {
 					const final = await loadSourceFile(root, workingRelative);

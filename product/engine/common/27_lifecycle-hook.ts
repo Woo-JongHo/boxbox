@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import      { captureLifecycleBaseline, baselineHashes              } from "@/common/32_lifecycle-baseline.ts" ;
 import      { createHash, randomUUID                                } from "node:crypto"                       ;
 import      {
@@ -150,8 +151,18 @@ export function lifecyclePostFingerprint(setting: string, source: Record<string,
 }
 
 function snapshotExclusions(root: string): ReadonlySet<string> {
-	const projectRoot = realpathSync(root                                ) ;
-	const namespace   = realpathSync(projectReceiptNamespace(projectRoot)) ;
+	const projectRoot = realpathSync(root                                )                                                ;
+	const namespace   = realpathSync(projectReceiptNamespace(projectRoot))                                                ;
+	const exclusions  = new Set<string>()                                                                                 ;
+	const repository  = spawnSync("git", ["-C", projectRoot, "rev-parse", "--is-inside-work-tree"], { encoding: "utf8" }) ;
+	if (repository.status === 0 && repository.stdout.trim() === "true") {
+		const ignored = spawnSync("git", ["-C", projectRoot, "ls-files", "--others", "--ignored", "--exclude-standard", "--directory", "-z"], { encoding: "utf8" });
+		if (ignored.error) throw ignored.error;
+		if (ignored.status !== 0) throw new Error("Cannot determine ignored lifecycle paths");
+		for (const file of ignored.stdout.split("\0")) {
+			if (file) exclusions.add(resolve(projectRoot, file));
+		}
+	}
 	const path        = relative    (projectRoot, namespace              ) ;
 	if (
 		   path === ""
@@ -159,8 +170,10 @@ function snapshotExclusions(root: string): ReadonlySet<string> {
 		|| path.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`)
 		|| isAbsolute(path)
 	)
-		return new Set();
-	return new Set([namespace]);
+		return exclusions;
+	exclusions.add(namespace);
+
+	return exclusions;
 }
 
 function currentFileHash(root: string, file: string): string {
@@ -203,13 +216,15 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 		const id = createHash("sha256").update(String(input.session_id)).digest("hex");
 
 		const directory  = stateDirectory    (root, id) ;
-		const exclusions = snapshotExclusions(root    ) ;
+
+		// Refresh ignored paths so runtime files created during inspection stay outside the source comparison.
+		const sourceSnapshot = () => snapshot(root, "", {}, [], snapshotExclusions(root));
 
 		const baseline = join(directory, "baseline.json");
 		if (mode === "session") {
 			if (!existsSync(baseline)) writeFileSync(
-				baseline                                                                              ,
-				JSON.stringify(captureLifecycleBaseline(root, snapshot(root, "", {}, [], exclusions))),
+				baseline                                                        ,
+				JSON.stringify(captureLifecycleBaseline(root, sourceSnapshot())),
 				{ flag: "wx", mode: 0o600 }
 			);
 			let update: ReturnType<typeof updateNotice> = undefined;
@@ -235,7 +250,7 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 		if (!existsSync(baseline)) throw new Error("Missing SessionStart baseline; start a session in this project");
 
 		const before = baselineHashes(JSON.parse(readFileSync(baseline, "utf8"))) ;
-		const after  = snapshot      (root, "", {}, [], exclusions              ) ;
+		const after  = sourceSnapshot()                                           ;
 
 		const files = changed(before, after);
 
@@ -256,7 +271,7 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 			checked.push({ file, result: await inspect(root, file) });
 		}
 
-		if (changed(after, snapshot(root, "", {}, [], exclusions)).length) throw new Error("Source changed during check");
+		if (changed(after, sourceSnapshot()).length) throw new Error("Source changed during check");
 		if (setting === "align" && mode === "post" && options.align) {
 			for (const item of checked) {
 				if (!item.result.summary.misaligned) continue;
@@ -279,7 +294,7 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 				after[item.file] = fingerprint;
 				item.result = await inspect(root, item.file);
 			}
-			if (changed(after, snapshot(root, "", {}, [], exclusions)).length) throw new Error("Source changed during alignment");
+			if (changed(after, sourceSnapshot()).length) throw new Error("Source changed during alignment");
 		}
 
 		const failed = checked.some(item => item.result.summary.misaligned || item.result.summary.refused);
