@@ -96,6 +96,38 @@ Dry-run records changed lines as `{line, before, after}` before restoring the wo
 atomic replacement checks remain required. Write/Refactor occur in the host agent and use separate syntax/type,
 behavior and relevant performance verification; see [the workflow contract](../user/modes.md).
 
+### Bounded recovery and incremental hook inspection
+
+Check adds `formatReadiness.recovery`; failed Align/Format adds `error.recovery`, canonical Check adds
+`canonical.recovery`, and batch failures add per-file `recovery`. Each report has at most 20 `issues` plus an
+`omitted` count. Issues carry the original file path, candidate line range, kind, category, reason, responsible owner and next action;
+approval findings also carry the exact lookup key. Ranges refer to the text inspected by that stage: source readiness uses original source; a failure after formatter
+execution uses candidate lines, which may differ from original lines. Align preserves physical lines. Categories distinguish alignment, approval, structural
+prerequisites, safety, syntax, unsupported coverage and tool failures. These fields are advisory and grant no
+write authority. The existing JSON schema version and exit statuses are unchanged; consumers must allow additive
+command-specific fields. The core alignment result schema and lifecycle receipt schema 2 are unchanged. Hook and guarded-run parser execution failures
+now use `kind: "syntax-validation-error"`; source syntax rejection remains `kind: "syntax"`. Both remain REFUSE.
+
+Compressed TypeScript interface members remain a structural precondition. Source syntax and complete approval can
+both pass while the writer refuses them. The public pipeline now retains that writer finding rather than only its
+numeric status. Independently authorized Write/Refactor may expand and verify the source before retrying Align;
+an Align-only request does not authorize that structural edit. Unknown or rejected automatic-write keys likewise
+do not revoke an independent authoring request and must not be fabricated or broadened.
+
+PostToolUse may reuse raw TypeScript/JSON/YAML inspection only inside the same session and file/path/source/mode
+identity. Reuse also requires current configuration, approval documents/proof, engine/rule/runtime/parser bytes
+and environment identity. TypeScript filesystem callbacks record actual reads, existence queries, directory
+entries and real paths, including project discovery and external configuration dependencies. The hook revalidates
+those observations and the global context at its boundaries; uncertainty, corruption or an unavailable identity
+falls back to inspection. Parser execution failures (`syntax-validation-error`) are never stored or replayed;
+deterministic syntax and safety refusals remain reusable. BOM reads delegate to the native filesystem and disable reuse; oversized observed
+directories likewise disable reuse. When approved alignment changes a source read by an earlier inspection, only
+reads of the files this operation actually aligned may trigger a fresh final inspection; other dependency races
+remain errors. Python continues to inspect normally. Stop omits cache-context computation and performs a complete fresh read-only
+inspection of session changes. Automatic alignment still uses the public guarded pipeline rather than cached write
+authority. Optional `.json.inspection` sidecars record fresh inspection counts, cache hits/misses and inspection-phase elapsed time without
+changing receipt coverage counts; a reused result is still represented in the receipt's checked-file coverage.
+
 ### Language matrix
 
 | Language | Detector | Parser tool used by the engine write gate | Public format |

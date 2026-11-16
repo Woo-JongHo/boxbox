@@ -44,6 +44,18 @@ import      { AXIS_NOTES, KIND_AXES                                      } from 
 
 import      { guardedRun, guardStatus                                    } from "@/common/25_guarded-run.ts"         ;
 
+import      {
+              PipelineError                                            ,
+              approvalRecovery                                         ,
+              mergeRecovery                                            ,
+              operationRecovery                                        ,
+              renderRecovery                                           ,
+              resultRecovery
+                                                                         } from "@/common/38_recovery.ts"            ;
+import type { RecoveryReport                                             } from "@/common/38_recovery.ts"            ;
+
+import      { inspectionRuntimeIdentity                                  } from "@/common/40_inspection-context.ts"  ;
+
 export const CLI_VERSION = "0.2.8";
 
 const HELP = `Usage: boxbox <command> [options]
@@ -95,15 +107,15 @@ interface ParsedFileCommand {
 }
 
 interface CliErrorEnvelope {
-	readonly schemaVersion : 1                                                   ;
-	readonly tool          : "boxbox"                                            ;
-	readonly command       : string                                              ;
-	readonly ok            : false                                               ;
-	readonly error         : { readonly code: string; readonly message: string } ;
+	readonly schemaVersion : 1                                                                                       ;
+	readonly tool          : "boxbox"                                                                                ;
+	readonly command       : string                                                                                  ;
+	readonly ok            : false                                                                                   ;
+	readonly error         : { readonly code: string; readonly message: string; readonly recovery?: RecoveryReport } ;
 }
 
 class CliError extends Error {
-	constructor(readonly code: string, message: string) { super(message); }
+	constructor(readonly code: string, message: string, readonly recovery?: RecoveryReport) { super(message); }
 }
 
 const messageOf = (value: unknown): string => value instanceof Error ? value.message : String(value);
@@ -115,7 +127,7 @@ function emitJson(value: unknown): void {
 function fail(command: string, json: boolean, error: unknown): number {
 	const known = error instanceof CliError ? error : new CliError("INTERNAL_ERROR", messageOf(error));
 	if (json) {
-		const envelope: CliErrorEnvelope = { schemaVersion: 1, tool: "boxbox", command, ok: false, error: { code: known.code, message: known.message } };
+		const envelope: CliErrorEnvelope = { schemaVersion: 1, tool: "boxbox", command, ok: false, error: { code: known.code, message: known.message, ...(known.recovery ? { recovery: known.recovery } : {}) } };
 		emitJson(envelope);
 	} else console.error(`boxbox ${command}: ${known.message}`);
 	return 2;
@@ -390,6 +402,13 @@ export function preparedPipelineContext(root: string, expectedConfigFingerprint?
 	};
 }
 
+/** A missing dependency identity disables reuse; approval proof is reread at both hook boundaries. */
+function hookInspectionContext(root: string): string | null {
+	const runtime = inspectionRuntimeIdentity();
+	if (runtime === null) return null;
+	return createHash("sha256").update(runtime).update("\0").update(approvalContext(root).fingerprint).digest("hex");
+}
+
 /** Hook alignment uses the same approved horizontal-only pipeline as explicit Align, with no formatter or secondary stdout. */
 export async function alignApprovedHook(root: string, file: string): Promise<{ readonly written: boolean; readonly edits: number }> {
 	const project = assertRoot      (root                           ) ;
@@ -415,7 +434,7 @@ export async function alignApprovedHook(root: string, file: string): Promise<{ r
 }
 
 function syntaxRefusal(parsed: ParsedFileCommand, syntax: SyntaxValidation): FileResult {
-	const groups = [{ kind: "syntax", startLine: 1, endLine: 1, rows: 0, axes: [], state: "REFUSE" as const, edits: 0 }];
+	const groups = [{ kind: syntax.status === "error" ? "syntax-validation-error" : "syntax", reason: syntax.diagnostics.join("; "), startLine: 1, endLine: 1, rows: 0, axes: [], state: "REFUSE" as const, edits: 0 }];
 	return { file: parsed.file, language: parsed.language, mode: "check", summary: { groups: 1, misaligned: 0, edits: 0, refused: 1, suggested: 0 }, groups, parse: { status: "skipped", tool: syntax.tool } };
 }
 
@@ -602,7 +621,17 @@ function formatReadiness(parsed: ParsedFileCommand, root: string, result: FileRe
 			reasons       : group.result.reasons,
 		}])).values()];
 		const approvedFixableGroups = groups.filter((group, index) => eligible[index]!.state === "FIXABLE" && group.result.status === "approved" && group.result.writable).length ;
-		const reasons               = groups.flatMap(group => group.result.reasons)                                                                                               ;
+		const reasons               = [...new Set(groups.flatMap(group => group.result.reasons))]                                                                                 ;
+		const recovery = syntax.status !== "valid"
+			? operationRecovery(parsed.file, syntax.status === "invalid" ? "syntax" : "tool", syntax.diagnostics.join("; "))
+			: mergeRecovery([
+				resultRecovery({ ...result, groups: result.groups.filter(group => group.state !== "PASS" && group.state !== "FIXABLE") }, parsed.file),
+				...groups.flatMap((entry, index) => {
+					const group = eligible[index]!;
+					if (!entry.result.writable || entry.result.status !== "approved") return [{ issues: [approvalRecovery(parsed.file, group, entry.query.key, entry.result)], omitted: 0 }];
+					return [resultRecovery({ ...result, groups: [group], unsupported: [] }, parsed.file)];
+				}),
+			]);
 		if (syntax.status !== "valid") reasons.push(`syntax ${syntax.status}: ${syntax.diagnostics.join("; ")}`);
 		if (result.groups.some(group => group.state === "REFUSE")) reasons.push("BoxBox safety refusal prevents formatting");
 		if (groups.length === 0) reasons.push("no verified approval rule applies to this file");
@@ -613,6 +642,7 @@ function formatReadiness(parsed: ParsedFileCommand, root: string, result: FileRe
 			fixableGroups                           ,
 			approvedFixableGroups                   ,
 			approvalFacts                           ,
+			recovery                                ,
 			reasons                                 ,
 			next             : "align --dry-run verifies horizontal whitespace only; format --dry-run includes the configured formatter. Both verify parser, preservation and fixed point before writing"
 		};
@@ -622,9 +652,10 @@ function formatReadiness(parsed: ParsedFileCommand, root: string, result: FileRe
 			approvalEligible : false     ,
 			verification     : "not-run" ,
 			fixableGroups                ,
-			approvedFixableGroups : 0                  ,
-			approvalFacts         : []                 ,
-			reasons               : [messageOf(error)] ,
+			approvedFixableGroups : 0                                                        ,
+			approvalFacts         : []                                                       ,
+			reasons               : [messageOf(error)]                                       ,
+			recovery              : operationRecovery(parsed.file, "tool", messageOf(error)) ,
 			next                  : "repair approval data before formatting"
 		};
 	}
@@ -653,15 +684,16 @@ interface CanonicalCheck {
 	readonly verification : "passed" | "failed" | "not-run" ;
 	readonly result       : FormatPipelineResult | null     ;
 	readonly error        : string | null                   ;
+	readonly recovery?    : RecoveryReport                  ;
 }
 
 type SourceCheck = Awaited<ReturnType<typeof inspectCheck>>;
 type CheckReport = SourceCheck["report"] & { readonly basis?: "source"; readonly canonical?: CanonicalCheck };
 
-function canonicalReport(source: SourceCheck, result: FormatPipelineResult | null, error: string | null): CheckReport {
+function canonicalReport(source: SourceCheck, result: FormatPipelineResult | null, error: string | null, recovery?: RecoveryReport): CheckReport {
 	return {
 		...source.report, basis: "source",
-		canonical: { basis: "formatter-then-boxbox", verification: result ? "passed" : source.report.syntax.status === "valid" ? "failed" : "not-run", result, error },
+		canonical: { basis: "formatter-then-boxbox", verification: result ? "passed" : source.report.syntax.status === "valid" ? "failed" : "not-run", result, error, ...(recovery ? { recovery } : {}) },
 	};
 }
 
@@ -672,13 +704,13 @@ async function checkReport(parsed: ParsedFileCommand, root: string): Promise<{ r
 	const config    = resolveConfig(root)                          ;
 	const formatter = config.effective.formatters[parsed.language] ;
 	if (!formatter)                              return source;
-	if (source.report.syntax.status !== "valid") return { report: canonicalReport(source, null, `syntax ${source.report.syntax.status}`), exitCode: 2 };
+	if (source.report.syntax.status !== "valid") return { report: canonicalReport(source, null, `syntax ${source.report.syntax.status}`, source.report.formatReadiness.recovery), exitCode: 2 };
 	try {
 		const context = preparedPipelineContext(root, config.fingerprint)                                                                    ;
 		const result  = await runFormatPipeline({ ...context, root, file: parsed.file, language: parsed.language, formatter, dryRun: true }) ;
 		return { report: canonicalReport(source, result, null), exitCode: result.canonicalChanged ? 1 : 0 };
 	} catch (error) {
-		return { report: canonicalReport(source, null, messageOf(error)), exitCode: 2 };
+		return { report: canonicalReport(source, null, messageOf(error), error instanceof PipelineError ? error.recovery : operationRecovery(parsed.file, "tool", messageOf(error))), exitCode: 2 };
 	}
 }
 
@@ -695,6 +727,7 @@ function printCheck(report: CheckReport): void {
 	console.log(`format mode=${readiness.mode} approval-eligible=${readiness.approvalEligible} verification=${readiness.verification} fixable-groups=${readiness.fixableGroups} approved-fixable-groups=${readiness.approvedFixableGroups}`);
 	for (const reason of readiness.reasons) console.log(`format: ${reason}`);
 	console.log(readiness.next);
+	if (readiness.recovery.issues.length) console.log(renderRecovery(readiness.recovery));
 	if (expectation) {
 		console.log(`expect-axis requested=${expectation.requested.join(",")} covered=${expectation.covered.map(entry => `${entry.axis}x${entry.groups}`).join(",")} missing=${expectation.missing.join(",")} unknown=${expectation.unknown.join(",")}`);
 	}
@@ -731,13 +764,13 @@ async function projectCommand(files: readonly ParsedFileCommand[], command: "che
 				sources.set(target.file, source);
 				syntax = source.report.syntax;
 			} else syntax = await validateSyntax({ root, file: parsed.file, language: parsed.language });
-			if (syntax.status !== "valid") throw new Error(`syntax ${syntax.status}: ${syntax.diagnostics.join("; ")}`);
+			if (syntax.status !== "valid") throw new PipelineError(`syntax ${syntax.status}: ${syntax.diagnostics.join("; ")}`, operationRecovery(parsed.file, syntax.status === "invalid" ? "syntax" : "tool", syntax.diagnostics.join("; ")));
 			return context;
 		},
 	});
 	const results = computed.results.map(entry => {
 		const source = sources.get(entry.file);
-		return source ? { ...entry, result: canonicalReport(source, entry.result as FormatPipelineResult | null, entry.error) } : entry;
+		return source ? { ...entry, result: canonicalReport(source, entry.result as FormatPipelineResult | null, entry.error, entry.recovery) } : entry;
 	});
 	const warnings = command === "format" ? detectFormatters(root).filter(formatter => files.some(file => formatterAffects(formatter, file.language) && !formatterConfigured(formatter, config.effective.formatters[file.language]))).map(formatterWarning) : [] ;
 	const output   = { schemaVersion: 1, tool: "boxbox", ok: computed.exitCode === 0, dryRun: command === "check" || files[0]!.dryRun, ...computed, results, warnings }                                                                                          ;
@@ -832,7 +865,7 @@ async function format(parsed: ParsedFileCommand, root: string, alignmentOnly = f
 	if (context.registry.conventions.length === 0) throw new CliError(errorCode, `${command} refused: approval registry is empty`);
 	if (!alignmentOnly && formatter) {
 		const syntax = await validateSyntax({ root, file: parsed.file, language: parsed.language });
-		if (syntax.status !== "valid") throw new CliError(errorCode, `format refused: syntax ${syntax.status}: ${syntax.diagnostics.join("; ")}`);
+		if (syntax.status !== "valid") throw new CliError(errorCode, `format refused: syntax ${syntax.status}: ${syntax.diagnostics.join("; ")}`, operationRecovery(parsed.file, syntax.status === "invalid" ? "syntax" : "tool", syntax.diagnostics.join("; ")));
 	}
 	const warnings = detectFormatters(root).filter(detected => formatterAffects(detected, parsed.language) && !formatterConfigured(detected, formatter)).map(formatterWarning);
 	try {
@@ -858,7 +891,7 @@ async function format(parsed: ParsedFileCommand, root: string, alignmentOnly = f
 		}
 		return 0;
 	} catch (error) {
-		throw new CliError(errorCode, `${command} refused: ${messageOf(error)}`);
+		throw new CliError(errorCode, `${command} refused: ${messageOf(error)}`, error instanceof PipelineError ? error.recovery : operationRecovery(parsed.file, "tool", messageOf(error)));
 	}
 }
 
@@ -882,7 +915,7 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 			if (!resolveConfig(project).effective.languages.includes(parsed.language)) throw new Error("LANGUAGE_DISABLED");
 			return inspectFile(parsed, project);
 		}, CLI_VERSION);
-		if (command === "hook"  ) return await lifecycleHook(tail, async (project, file) => inspectFile(parseFileCommand(["--file", file], false, project), project), { version: CLI_VERSION, align: alignApprovedHook });
+		if (command === "hook"  ) return await lifecycleHook(tail, async (project, file) => inspectFile(parseFileCommand(["--file", file], false, project), project), { version: CLI_VERSION, align: alignApprovedHook, inspectionContext: hookInspectionContext });
 		if (command === "hooks" ) return installHooks(tail);
 		if (command === "status") return guardStatus(tail);
 		if (command === "db"    ) return database(tail, json);

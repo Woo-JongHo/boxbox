@@ -16,6 +16,14 @@ import      { PYTHON_ALIGNER                                  } from "@/python/0
 import      { runAlignCli                                     } from "@/common/22_align-cli.ts"            ;
 import      { assertAlignmentOnly                             } from "@/common/10_alignment-only.ts"       ;
 import      {
+              typeScriptWriteFailure                        ,
+              PipelineError                                 ,
+              approvalRecovery                              ,
+              boundedRecovery                               ,
+              operationRecovery                             ,
+              resultRecovery
+                                                              } from "@/common/38_recovery.ts"             ;
+import      {
               analyzeStructured                             ,
               preservesStructured                           ,
               structuredDiagnostics
@@ -79,16 +87,16 @@ function readStructuredUtf8(file: string): string {
 
 /** What the pipeline needs from each language: its current groups, a parse gate for formatter output, and the engine's own write. */
 interface LanguageEngine {
-	readonly check : (root: string, file: string) => Promise<FileResult> ;
-	readonly parse : (root: string, file: string) => Promise<void>       ;
-	readonly write : (root: string, file: string) => Promise<void>       ;
+	readonly check : (root: string, file: string) => Promise<FileResult>            ;
+	readonly parse : (root: string, file: string, display: string) => Promise<void> ;
+	readonly write : (root: string, file: string, display: string) => Promise<void> ;
 }
 
 const structuredEngine = (language: "json" | "yaml"): LanguageEngine => ({
 	check : async (_root, file) => analyzeStructured(readStructuredUtf8(file), language, file).result,
-	parse : async (_root, file) => {
+	parse : async (_root, file, display) => {
 		const diagnostics = structuredDiagnostics(readStructuredUtf8(file), language);
-		if (diagnostics.length > 0) throw new Error(`formatter output does not parse: ${diagnostics.join(",")}`);
+		if (diagnostics.length > 0) throw new PipelineError(`formatter output does not parse: ${diagnostics.join(",")}`, operationRecovery(display, "syntax", diagnostics.join(",")));
 	},
 	write : async (_root, file) => {
 		const before   = readStructuredUtf8(file                  ) ;
@@ -104,9 +112,9 @@ const pythonEngine: LanguageEngine = {
 		const result = runAlignCli(PYTHON_ALIGNER, ["--file", file, "--json"]);
 		return (JSON.parse(result.report) as ResultEnvelope).results[0]!;
 	},
-	parse : async (_root, file) => {
+	parse : async (_root, file, display) => {
 		const parsed = compareParse("python", "pass\n", readFileSync(file, "utf8"));
-		if (parsed.status !== "ok") throw new Error(`formatter output does not parse: ${parsed.delta.join(",")}`);
+		if (parsed.status !== "ok") throw new PipelineError(`formatter output does not parse: ${parsed.delta.join(",")}`, operationRecovery(display, "syntax", parsed.delta.join(",")));
 	},
 	write : async (_root, file) => {
 		const result = runAlignCli(PYTHON_ALIGNER, ["--file", file, "--write", "--json"]);
@@ -120,13 +128,15 @@ const typescriptEngine: LanguageEngine = {
 		await runTypeScriptAlign(["--file", file, "--json"], { root, emit: value => { report = value; } });
 		return (JSON.parse(report) as ResultEnvelope).results[0]!;
 	},
-	parse : async (root, file) => {
+	parse : async (root, file, display) => {
 		const diagnostics = await syntacticDiagnostics(root, file, readFileSync(file, "utf8"));
-		if (diagnostics.length > 0) throw new Error(`formatter output does not parse: ${diagnostics.join(",")}`);
+		if (diagnostics.length > 0) throw new PipelineError(`formatter output does not parse: ${diagnostics.join(",")}`, operationRecovery(display, "syntax", diagnostics.join(",")));
 	},
-	write : async (root, file) => {
-		const code = await runTypeScriptAlign(["--file", file, "--write", "--json"], { root, emit: () => {} });
-		if (code !== 0) throw new Error(`BoxBox alignment failed with exit code ${code}`);
+	write : async (root, file, display) => {
+		let report = ""                                                                                                            ;
+		const code = await runTypeScriptAlign(["--file", file, "--write", "--json"], { root, emit: value => { report = value; } }) ;
+		if (code === 0) return;
+		throw typeScriptWriteFailure(report, display, code);
 	},
 };
 
@@ -139,14 +149,22 @@ const ENGINES: Readonly<Record<PublicLanguage, LanguageEngine>> = {
 
 function approvedGroups(result: FileResult, registry: ApprovalRegistry, resolveDocument: DocumentResolver, originalPath: string): readonly string[] {
 	const candidates = result.groups.filter(group => group.state === "PASS" || group.state === "FIXABLE");
-	if (result.groups.some(group => group.state === "REFUSE")) throw new Error("BoxBox safety refusal prevents formatting");
-	if (candidates.length === 0) throw new Error("no verified approval rule applies to this file");
+	if (result.groups.some(group => group.state === "REFUSE")) throw new PipelineError("BoxBox safety refusal prevents formatting", resultRecovery({ ...result, groups: result.groups.filter(group => group.state === "REFUSE") }, originalPath));
+	if (candidates.length === 0) throw new PipelineError("no verified approval rule applies to this file", resultRecovery(result, originalPath));
 	const approvals = candidates.map((group: ResultGroup) => evaluateApproval(registry, {
 		key  : lookupKeyOf(result.language, group.context, group.kind, group.axes) ,
 		file : originalPath                                                        ,
 	}, resolveDocument));
-	const denied = approvals.filter(approval => !approval.writable || approval.status !== "approved");
-	if (denied.length > 0) throw new Error(`approval denied: ${denied.flatMap(approval => approval.reasons).join("; ")}`);
+	const denied = approvals.flatMap((approval, index) => {
+		const group = candidates[index]!;
+		return !approval.writable || approval.status !== "approved"
+			? [approvalRecovery(originalPath, group, lookupKeyOf(result.language, group.context, group.kind, group.axes), approval)]
+			: [];
+	});
+	if (denied.length > 0) {
+		const reasons = approvals.filter(approval => !approval.writable || approval.status !== "approved").flatMap(approval => approval.reasons);
+		throw new PipelineError(`approval denied: ${[...new Set(reasons)].slice(0, 20).join("; ")}`, boundedRecovery(denied));
+	}
 	return [...new Set(approvals.map(approval => approval.conventionId!))].sort();
 }
 
@@ -162,10 +180,11 @@ async function cycle(options: FormatPipelineOptions, working: string, display: s
 		if (resolveFormatterExecutable(options.formatter.command, options.root).fingerprint !== executable.fingerprint) throw new Error("formatter executable changed during operation");
 	}
 	const afterFormatter = readFileSync(working);
-	await ENGINES[options.language].parse(options.root, working);
+	try { await ENGINES[options.language].parse(options.root, working, display); }
+	catch (error) { if (error instanceof PipelineError) throw error; throw new PipelineError(error instanceof Error ? error.message : String(error), operationRecovery(display, "tool", "source parser could not complete syntactic acceptance")); }
 	const checked   = await ENGINES[options.language].check(options.root, working)                ;
 	const approvals = approvedGroups(checked, options.registry, options.resolveDocument, display) ;
-	await ENGINES[options.language].write(options.root, working);
+	await ENGINES[options.language].write(options.root, working, display);
 	return {
 		formatter                                                        ,
 		formatterChanged : !beforeFormatter.equals(afterFormatter)       ,
@@ -199,7 +218,10 @@ export async function runFormatPipeline(given: FormatPipelineOptions): Promise<F
 		first = await cycle(options, working, display);
 		const firstOutput = readFileSync(working);
 		canonicalChanged = !firstOutput.equals(initial);
-		if (options.alignmentOnly) assertAlignmentOnly(initial, firstOutput, options.language, parsedInitial);
+		if (options.alignmentOnly) {
+			try { assertAlignmentOnly(initial, firstOutput, options.language, parsedInitial); }
+			catch (error) { throw new PipelineError(error instanceof Error ? error.message : String(error), operationRecovery(display, "safety", "candidate changes more than horizontal whitespace between tokens")); }
+		}
 		if (options.alignmentOnly && options.dryRun) {
 			const originalLines  = initial.toString("utf8").split(/\r\n|[\r\n\u2028\u2029]/u)     ;
 			const candidateLines = firstOutput.toString("utf8").split(/\r\n|[\r\n\u2028\u2029]/u) ;
@@ -209,7 +231,7 @@ export async function runFormatPipeline(given: FormatPipelineOptions): Promise<F
 				: [{ line: index + 1, before, after: candidateLines[index]! }]);
 		}
 		await cycle(options, working, display);
-		if (!readFileSync(working).equals(firstOutput)) throw new Error("format pipeline did not reach a byte fixed point");
+		if (!readFileSync(working).equals(firstOutput)) throw new PipelineError("format pipeline did not reach a byte fixed point", operationRecovery(display, "safety", "the verified pipeline output is not stable"));
 		if (options.provenance && options.provenance() !== initialProvenance) throw new Error("configuration or approval provenance changed before commit");
 		if (options.dryRun) writeFileSync(working, initial);
 	}, {

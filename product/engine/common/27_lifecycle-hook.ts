@@ -1,28 +1,41 @@
-import { spawnSync } from "node:child_process";
-import      { captureLifecycleBaseline, baselineHashes              } from "@/common/32_lifecycle-baseline.ts" ;
-import      { createHash, randomUUID                                } from "node:crypto"                       ;
+import      { spawnSync                                                    } from "node:child_process"                ;
+import      { captureLifecycleBaseline, baselineHashes                     } from "@/common/32_lifecycle-baseline.ts" ;
+import      { createHash, randomUUID                                       } from "node:crypto"                       ;
 import      {
-              closeSync                                           ,
-              existsSync                                          ,
-              lstatSync                                           ,
-              mkdirSync                                           ,
-              openSync                                            ,
-              readFileSync                                        ,
-              realpathSync                                        ,
-              statSync                                            ,
+              closeSync                                                  ,
+              existsSync                                                 ,
+              lstatSync                                                  ,
+              mkdirSync                                                  ,
+              openSync                                                   ,
+              readFileSync                                               ,
+              realpathSync                                               ,
+              statSync                                                   ,
               writeFileSync
-                                                                    } from "node:fs"                           ;
-import      { dirname, extname, isAbsolute, join, relative, resolve } from "node:path"                         ;
-import      { snapshot, changed, supported                          } from "@/common/25_guarded-run.ts"        ;
-import      { encodeLifecycleReceipt                                } from "@/common/29_lifecycle-receipt.ts"  ;
-import type { Inspection                                            } from "@/common/25_guarded-run.ts"        ;
-import type { LifecycleEvent, LifecycleReceiptV2                    } from "@/common/29_lifecycle-receipt.ts"  ;
-import      { resolveMode                                           } from "@/common/35_mode.ts"               ;
-import type { Mode                                                  } from "@/common/35_mode.ts"               ;
-import      { updateNotice                                          } from "@/common/37_update.ts"             ;
+                                                                           } from "node:fs"                           ;
+import      { dirname, extname, isAbsolute, join, relative, resolve        } from "node:path"                         ;
+import      { snapshot, changed, supported                                 } from "@/common/25_guarded-run.ts"        ;
+import      { encodeLifecycleReceipt                                       } from "@/common/29_lifecycle-receipt.ts"  ;
+import type { Inspection                                                   } from "@/common/25_guarded-run.ts"        ;
+import type { LifecycleEvent, LifecycleReceiptV2                           } from "@/common/29_lifecycle-receipt.ts"  ;
+import      { resolveMode                                                  } from "@/common/35_mode.ts"               ;
+import type { Mode                                                         } from "@/common/35_mode.ts"               ;
+import      { updateNotice                                                 } from "@/common/37_update.ts"             ;
+
+import      {
+              inspectionCacheKey                                         ,
+              inspectionDependenciesCurrent                              ,
+              observeInspection                                          ,
+              readInspectionCache                                        ,
+              writeInspectionCache
+                                                                           } from "@/common/39_lifecycle-cache.ts"    ;
+import type { ObservedInspection                                           } from "@/common/39_lifecycle-cache.ts"    ;
+import      { mergeRecovery, PipelineError, renderRecovery, resultRecovery } from "@/common/38_recovery.ts"           ;
+import type { RecoveryIssue                                                } from "@/common/38_recovery.ts"           ;
 
 export interface LifecycleHookOptions {
 	readonly version?: string;
+	/** Complete engine/runtime/parser/config/proof identity; null or absence disables reuse for the file. */
+	readonly inspectionContext?: (root: string) => string | null | Promise<string | null>;
 	readonly align?: (root: string, file: string) => Promise<{ readonly written: boolean; readonly edits: number }>;
 }
 
@@ -254,9 +267,35 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 
 		const files = changed(before, after);
 
-		const checked     = []                                 ;
-		const unsupported = []                                 ;
-		const deleted     = files.filter(file => !after[file]) ;
+		const checked                           = []                                                                                        ;
+		const unsupported                       = []                                                                                        ;
+		const deleted                           = files.filter(file => !after[file])                                                        ;
+		const started                           = performance.now()                                                                         ;
+		const observations                      = new Map<string, { file: string; context: string | null; observed: ObservedInspection }>() ;
+		const alignmentIssues : RecoveryIssue[] = []                                                                                        ;
+		let cacheHits                           = 0                                                                                         ;
+		let cacheMisses                         = 0                                                                                         ;
+		let alignmentOmitted                    = 0                                                                                         ;
+		let inspections                         = 0                                                                                         ;
+		const contextOf = async (): Promise<string | null> => {
+			try {
+				const identity = await options.inspectionContext?.(root);
+				return typeof identity === "string" && identity.length > 0 ? identity : null;
+			} catch { return null; }
+		};
+		const cacheable      = (file: string): boolean => /\.(?:[cm]?tsx?|json|ya?ml)$/iu.test(file)                            ;
+		const initialContext = mode === "post" && files.some(file => after[file] && cacheable(file)) ? await contextOf() : null ;
+		const inspectCurrent = async (file: string, allowCache: boolean) => {
+			const context = cacheable(file) ? initialContext : null                                                  ;
+			const key     = context === null ? null : inspectionCacheKey(root, file, setting, after[file]!, context) ;
+			const cached  = allowCache && key ? readInspectionCache(directory, file, key) : null                     ;
+			if (allowCache && key && !cached) cacheMisses += 1;
+			if (cached) cacheHits += 1;
+			else inspections += 1;
+			const observed = cached ?? (context === null ? { result: await inspect(root, file), dependencies: [], stable: false } : await observeInspection(() => inspect(root, file)));
+			observations.set(file, { file, context, observed });
+			return observed.result;
+		};
 
 		for (const file of files) {
 			if (!after[file]) continue;
@@ -268,7 +307,7 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 				continue;
 			}
 
-			checked.push({ file, result: await inspect(root, file) });
+			checked.push({ file, result: await inspectCurrent(file, mode === "post") });
 		}
 
 		if (changed(after, sourceSnapshot()).length) throw new Error("Source changed during check");
@@ -278,7 +317,9 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 				if (currentFileHash(root, item.file) !== after[item.file]) throw new Error("Source changed before alignment");
 				let outcome: Awaited<ReturnType<NonNullable<LifecycleHookOptions["align"]>>>;
 				try { outcome = await options.align(root, item.file); }
-				catch {
+				catch (error) {
+					if (error instanceof PipelineError) { alignmentIssues.push(...error.recovery.issues); alignmentOmitted += error.recovery.omitted; }
+					else alignmentIssues.push({ file: item.file, startLine: 1, endLine: 1, kind: "alignment-pipeline", category: "tool", reason: String(error).slice(0, 500), owner: "maintainer", next: "Inspect the alignment failure without bypassing approval or safety; continue only independently authorized authoring." });
 					// A refused public pipeline leaves bytes unchanged; the existing failed check remains the result.
 					if (currentFileHash(root, item.file) !== after[item.file]) throw new Error("Source changed during alignment");
 
@@ -292,10 +333,35 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 				aligned.push({ file: item.file, edits: outcome.edits });
 				// Accept only the file the approved callback wrote, never a whole fresh snapshot that could bless another writer.
 				after[item.file] = fingerprint;
-				item.result = await inspect(root, item.file);
+				item.result = await inspectCurrent(item.file, false);
 			}
 			if (changed(after, sourceSnapshot()).length) throw new Error("Source changed during alignment");
 		}
+
+
+		const ownedAlignmentPaths = new Set(aligned.map(item => realpathSync(resolve(root, item.file))));
+		const invalidated = [...observations.values()].flatMap(item => item.observed.dependencies)
+			.filter(dependency => !inspectionDependenciesCurrent([dependency]));
+		// Earlier project AST reads can include a later file that this same approved operation aligned.
+		// Refresh only those owned byte changes; unrelated dependency races retain their original refusal.
+		if (aligned.length > 0 && invalidated.length > 0 && invalidated.every(dependency =>
+			dependency.operation === "readFile" && ownedAlignmentPaths.has(realpathSync(dependency.path)))) {
+			for (const item of checked) item.result = await inspectCurrent(item.file, false);
+			if (changed(after, sourceSnapshot()).length) throw new Error("Source changed during alignment recheck");
+		}
+
+		for (const item of observations.values()) {
+			if (!inspectionDependenciesCurrent(item.observed.dependencies)) throw new Error("Inspection dependencies changed during check");
+		}
+		if (initialContext !== null && await contextOf() !== initialContext) throw new Error("Inspection context changed during check");
+		if (mode === "post") for (const item of observations.values()) {
+			if (item.context !== null && currentFileHash(root, item.file) === after[item.file]) {
+				const key = inspectionCacheKey(root, item.file, setting, after[item.file]!, item.context);
+				writeInspectionCache(directory, item.file, key, item.observed);
+			}
+		}
+
+		if (changed(after, sourceSnapshot()).length) throw new Error("Source changed during check");
 
 		const failed = checked.some(item => item.result.summary.misaligned || item.result.summary.refused);
 
@@ -340,26 +406,32 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 		const receipt = join(directory, `${Date.now()}-${randomUUID()}.json`);
 
 		writeFileSync(receipt, encodeLifecycleReceipt(record), { flag: "wx", mode: 0o600 });
+		try {
+			writeFileSync(`${receipt}.inspection`, JSON.stringify({ schemaVersion: 1, event, cacheHits, cacheMisses, inspections, elapsedMs: performance.now() - started }), { flag: "wx", mode: 0o600 });
+		} catch { /* Optional performance evidence never changes the hook decision. */ }
+		const recovery     = mergeRecovery ([{ issues: alignmentIssues, omitted: alignmentOmitted }, ...checked.map(item => resultRecovery(item.result, item.file))]) ;
+		const recoveryText = renderRecovery({ issues: recovery.issues.slice(0, 3), omitted: recovery.omitted + Math.max(0, recovery.issues.length - 3) }            ) ;
 
 		const edited   = input.tool_input?.file_path                                               ;
 		const editBase = typeof input.cwd === "string" && isAbsolute(input.cwd) ? input.cwd : root ;
 		let editPath   = typeof edited === "string" ? resolve(editBase, edited) : root             ;
 		try { editPath = realpathSync(editPath); }
 		catch { /* Deleted or unavailable edit targets retain their lexical scope; inspection is unchanged. */ }
-		const editRelative = relative(root, editPath)                                                                                                                                                                ;
-		const outside      = editRelative === ".." || editRelative.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`) || isAbsolute(editRelative)                                                          ;
-		const scope        = outside ? " Edited file is outside the session project; only session changes were checked." : ""                                                                                        ;
-		const attention    = checked.filter(item => item.result.summary.misaligned || item.result.summary.refused).map(item => item.file)                                                                            ;
-		const names        = attention.length ? ` attention=${attention.slice(0, 3).join(",")}${attention.length > 3 ? `,+${attention.length - 3}` : ""};` : ""                                                      ;
-		const reason       = `[boxbox] ${event}: ${state}; checked=${checked.length}, groups=${groups}, filesWithGroups=${filesWithGroups}. ${receipt} mode=${setting};${names}${alignmentMessage(aligned)}${scope}` ;
+		const editRelative = relative(root, editPath)                                                                                                                                                                                                          ;
+		const outside      = editRelative === ".." || editRelative.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`) || isAbsolute(editRelative)                                                                                                    ;
+		const scope        = outside ? " Edited file is outside the session project; only session changes were checked." : ""                                                                                                                                  ;
+		const attention    = checked.filter(item => item.result.summary.misaligned || item.result.summary.refused).map(item => item.file)                                                                                                                      ;
+		const names        = attention.length ? ` attention=${attention.slice(0, 3).join(",")}${attention.length > 3 ? `,+${attention.length - 3}` : ""};` : ""                                                                                                ;
+		const reason       = `[boxbox] ${event}: ${state}; checked=${checked.length}, groups=${groups}, filesWithGroups=${filesWithGroups}. ${receipt} mode=${setting};${names}${alignmentMessage(aligned)}${scope}${recoveryText ? `\n${recoveryText}` : ""}` ;
 
 		// Unsupported files are only reported. Stop blocks at most once per session: this breaks endless continuation
 		// even on Codex, which has no Claude-style stop_hook_active.
 		let blocked = false;
 		if (mode === "post" && failed) {
-			const fingerprint = lifecyclePostFingerprint(setting, after)                               ;
-			const report      = join(directory, `post-reported-${fingerprint}`)                        ;
-			const mayBlock    = input.tool_name !== "Bash" && MUTATING_POST_TOOLS.has(input.tool_name) ;
+			const feedbackIdentity = createHash("sha256").update(JSON.stringify({ checked, alignmentIssues })).digest("hex") ;
+			const fingerprint      = lifecyclePostFingerprint(`${setting}:${feedbackIdentity}`, after)                       ;
+			const report           = join(directory, `post-reported-${fingerprint}`)                                         ;
+			const mayBlock         = input.tool_name !== "Bash" && MUTATING_POST_TOOLS.has(input.tool_name)                  ;
 			if (mayBlock) {
 				blocked = claimMarker(join(directory, `post-blocked-${fingerprint}`));
 				if (blocked) claimMarker(report);

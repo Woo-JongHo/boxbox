@@ -59,6 +59,28 @@ afterEach(() => {
 const TS_KEY = "v1|typescript|SourceFile|declaration-equals|equals>call-open-paren>call-close-paren>semicolon" ;
 const PY_KEY = "v1|python|-|table|name>equal>value"                                                            ;
 
+test("approved TypeScript writes retain the compressed-member precondition and leave the source unchanged", async () => {
+	const root    = workspace()                                                                                                                                                   ;
+	const file    = "src/sample.ts"                                                                                                                                               ;
+	const control = "const a=fn(1);\nconst longer=fn(22);\nconst mid=fn(333);\n"                                                                                                  ;
+	const source  = control + "interface Compact { a: string; b: number; c: boolean }\n"                                                                                          ;
+	const options = { root, file, language: "typescript" as const, alignmentOnly: true, registry: registry(root, "typescript", TS_KEY), resolveDocument: documentResolver(root) } ;
+	writeFileSync(join(root, file), source);
+	for (const dryRun of [true, false]) {
+		let failure: unknown;
+		try { await runFormatPipeline({ ...options, dryRun }); }
+		catch (error) { failure = error; }
+		expect(failure                               ).toMatchObject({ recovery: { issues: [expect.objectContaining({ file, startLine: 4, endLine: 4, category: "structural-prerequisite", owner: "agent", kind: "interface-members-compressed" })], omitted: 0 } }) ;
+		expect(String(failure)                       ).toContain    ("Write/Refactor"                                                                                                                                                                              ) ;
+		expect(readFileSync(join(root, file), "utf8")).toBe         (source                                                                                                                                                                                        ) ;
+		expect(leftovers(root)                       ).toEqual      ([]                                                                                                                                                                                            ) ;
+	}
+	writeFileSync(join(root, file), control);
+	expect((await runFormatPipeline({ ...options, dryRun: true })).written).toBe(false) ;
+	expect((await runFormatPipeline(options)).written                     ).toBe(true ) ;
+	expect((await runFormatPipeline(options)).written                     ).toBe(false) ;
+}, 60_000);
+
 test("canonicalChanged compares the complete output even when both formatting stages change it", async () => {
 	const root   = workspace()                      ;
 	const target = join     (root, "src/sample.py") ;

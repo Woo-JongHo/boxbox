@@ -1,8 +1,9 @@
-import      { existsSync, realpathSync, statSync } from "node:fs"                   ;
-import      { relative, resolve                  } from "node:path"                 ;
+import      { existsSync, realpathSync, statSync } from "node:fs"                        ;
+import      { relative, resolve                  } from "node:path"                      ;
 
-import      { API                                } from "typescript/unstable/async" ;
-import type { SourceFile                         } from "typescript/unstable/ast"   ;
+import      { API                                } from "typescript/unstable/async"      ;
+import      { inspectionFileSystem               } from "@/common/39_lifecycle-cache.ts" ;
+import type { SourceFile                         } from "typescript/unstable/ast"        ;
 
 export interface LoadedSource {
 	readonly source   : SourceFile;
@@ -21,8 +22,8 @@ export function repositoryFile(root: string, value: string): { absolute: string;
 }
 
 export async function loadSourceFile(root: string, value: string): Promise<LoadedSource> {
-	const target = repositoryFile(root, value) ;
-	const api    = new API({ cwd: root })      ;
+	const target = repositoryFile(root, value)                            ;
+	const api    = new API({ cwd: root, fs: inspectionFileSystem(root) }) ;
 	// The returned AST is plain client data, so the server closes right away — one unclosed server per call
 	// leaks gigabytes across a test run or a corpus scan.
 	try {
@@ -42,7 +43,7 @@ export async function loadSourceFile(root: string, value: string): Promise<Loade
  * server. Columns are left out because alignment moves columns but never lines.
  */
 export async function syntacticDiagnostics(root: string, absolute: string, text: string): Promise<readonly string[]> {
-	const api = new API({ cwd: root });
+	const api = new API({ cwd: root, fs: inspectionFileSystem(root) });
 	try {
 		const state   = await api.updateSnapshot({ openFiles: [absolute] }) ;
 		const project = await state.getDefaultProjectForFile(absolute)      ;

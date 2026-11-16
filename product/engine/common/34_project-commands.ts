@@ -6,6 +6,9 @@ import      { runFormatPipeline                     } from "@/common/21_format-p
 import type { FormatPipelineOptions                 } from "@/common/21_format-pipeline.ts" ;
 import type { EffectiveConfig, PublicLanguage       } from "@/common/15_project-config.ts"  ;
 
+import      { PipelineError, operationRecovery      } from "@/common/38_recovery.ts"        ;
+import type { RecoveryReport                        } from "@/common/38_recovery.ts"        ;
+
 export type ProjectExitCode = 0 | 1 | 2;
 
 export interface ProjectTarget {
@@ -33,6 +36,8 @@ export interface ProjectCommandOptions {
 
 export interface ProjectFileResult extends ProjectTarget, ProjectInspection {
 	readonly error : string | null ;
+	/** Bounded recovery details for a failed operation; completed results retain their original shape. */
+	readonly recovery?: RecoveryReport;
 }
 
 export interface ProjectCommandResult {
@@ -139,7 +144,7 @@ export async function runProjectCommand(options: ProjectCommandOptions): Promise
 			results.push({ ...target, ...inspected, error: null });
 			if (inspected.exitCode > exitCode) exitCode = inspected.exitCode;
 		} catch (error) {
-			results.push({ ...target, exitCode: 2, result: null, error: error instanceof Error ? error.message : String(error) });
+			results.push({ ...target, exitCode: 2, result: null, error: error instanceof Error ? error.message : String(error), recovery: error instanceof PipelineError ? error.recovery : operationRecovery(target.file, "tool", error instanceof Error ? error.message : String(error)) });
 			exitCode = 2;
 		}
 	}
