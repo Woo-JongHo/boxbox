@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13T22:03:29.283384+00:00",
+  "classification": "Sanitized development observation summary; not an approval registry, engine fix, release result or production completion report.",
+  "sourceBaseline": {
+    "gitCommit": "21b1b52260466b3ad35c3fe6afe76d846e47fe42",
+    "installedCliVersion": "0.2.8",
+    "cliSha256": "3ea6e779c0f1b2442d8d5286a6bdf254db820d4c7a2ff417d0eb31d5639716db"
+  },
+  "privacy": "Private consumer names, absolute machine paths, host session IDs, transcripts and source snippets are omitted. Raw consumer evidence remains private; its hashes identify the inspected inputs, not publicly reproducible fixtures.",
+  "sourceEvidenceSha256": {
+    "diagnosis.md": "318ef5c444ed60ecb73683a09777a284f900c7768974291afd58415c8e53dd00",
+    "human-approvals-20261114.json": "ce18cd60b29d0d13f9bbc8d714c5db749909c5e11fc94aa88879fcce3f707b29",
+    "final-v2-scope-set.json": "bd73fce5c2efd384312671f7f79bd2bdeb79aa9339be09e3988a9295ec063fbd",
+    "v1-registration/registration-manifest.json": "b6942efc062d36824e7a3adee8d1de4200a5691790eff153e2af287f325ab2cc",
+    "v1-registration/actual-scope-pipeline-preview.json": "d50a7ff0b882f32110f9d4c0bc3081ad799d09308d1b31644f67ac792e4e4d36",
+    "hook-noop-public-latency.json": "11b790f06d0a0b894f35666919fc6a3903c2116438532805d9d931c486b72237",
+    "hook-noop-spy.json": "66c4ce17e92f98bce0c422b02564f962578ad1c81df67eff2d422d4e78fb7bb6",
+    "final-freeze-inventory-and-v1-delta.json": "ffcf46fead671f9bd6a585cdb0ea5d5158c450f008e969f38a14b084148b72b4",
+    "initial-session-receipt": "8ea486fa5cfaaf796a8eee6c05f9b5491f90aa2e1a806acddbc6679463409b82",
+    "compressed-precondition-generic-repro": "2646e410230f50155fc275ae0184fe35ed35934958147853e8da92b6648fef8e"
+  },
+  "consumerDiagnosis": {
+    "initialObservedScope": {
+      "checkedFiles": 52,
+      "misaligned": 3460,
+      "jsonMisaligned": 3325,
+      "typescriptMisaligned": 97,
+      "tsxMisaligned": 38,
+      "refused": 0
+    },
+    "separateLaterFrozenScope": {
+      "changedTypeScriptFiles": 88,
+      "selectedJsonFiles": 4,
+      "typeScriptFilesRequiringAlignment": 33,
+      "typeScriptMisaligned": 289,
+      "refused": 0
+    },
+    "scopeWarning": "These are different observation sets. Neither count is a current whole-product completion result.",
+    "jsonProof": "An applicable project JSON scalar-mapping proof already existed and the public source check reported project-layer proofComplete=true. A registry-free fixture refusal was incorrectly generalized, then corrected.",
+    "generatorMechanism": "JSON.stringify(value, null, 2) regenerates bytes that do not share BoxBox scalar columns. Aligning an old output alone does not make the next generated output canonical.",
+    "consumerVerifier": "An overbroad containsTest-based architecture-test classifier was a consumer verifier defect. It is not evidence of a BoxBox engine defect.",
+    "historicalIntegrity": "Historical reports and raw work-record hashes were preserved. Rewriting old reports or repairing hashes to claim currentness was not performed."
+  },
+  "authorizationSnapshot": {
+    "exactTypeScriptKeysApproved": 28,
+    "exactKeyFilePairsApproved": 86,
+    "largerProposalApproved": false,
+    "jsonExistingProofWasNotMissing": true,
+    "reusablePresetApprovalImplied": false
+  },
+  "boundedStaging": {
+    "registrationStatus": "staging-only-authorized-v1-production-hold",
+    "proofEvaluations": 86,
+    "completeWritableProofs": 86,
+    "syntheticExamplesPublicDryRunApplyCheckRedryRunPassed": 28,
+    "syntheticExamplesTotal": 28,
+    "actualSelectedFiles": 19,
+    "actualApprovalEligibleFiles": 15,
+    "actualAppliedFiles": 12,
+    "approvalCompleteDryRunFailures": 3,
+    "failure": {
+      "publicExit": 2,
+      "publicCode": "ALIGN_NOT_ELIGIBLE",
+      "innerMessage": "BoxBox alignment failed with exit code 1",
+      "sourceRefused": 0,
+      "compressedMemberSuggestionsPerFailedInput": [
+        1,
+        2,
+        1
+      ],
+      "classification": "Known structural-authoring precondition plus a public diagnostic gap; not an established safety bug."
+    },
+    "consumerProductionSourceAndRegistryUnchanged": true,
+    "conclusion": "Successful synthetic writes and approval completeness did not establish successful writes on all actual inputs. All three failed inputs had compressed interface-member suggestions (1, 2, 1). The TypeScript writer rejects compressed members before writing; the public wrapper loses this specific precondition in a generic exit-code message.",
+    "minimalGenericReproducer": {
+      "status": "recorded-public-cli-pair-confirmed",
+      "cases": [
+        {
+          "name": "positive-aligned",
+          "source": "interface Result {\n  code            : number  ;\n  stdout          : string  ;\n  outputTruncated : boolean ;\n}\n",
+          "sourceExit": 0,
+          "sourceSummary": {
+            "groups": 1,
+            "misaligned": 0,
+            "edits": 0,
+            "refused": 0,
+            "suggested": 0
+          },
+          "approvalEligible": true,
+          "alignDryRunExit": 0,
+          "alignDryRunOk": true,
+          "alignError": null,
+          "unchanged": true
+        },
+        {
+          "name": "negative-compressed",
+          "source": "interface Result {\n  code            : number  ;\n  stdout          : string  ;\n  outputTruncated : boolean ;\n}\n\ninterface Compact { a: number; b: string; }\n",
+          "sourceExit": 0,
+          "sourceSummary": {
+            "groups": 2,
+            "misaligned": 0,
+            "edits": 0,
+            "refused": 0,
+            "suggested": 1
+          },
+          "approvalEligible": true,
+          "alignDryRunExit": 2,
+          "alignDryRunOk": false,
+          "alignError": {
+            "code": "ALIGN_NOT_ELIGIBLE",
+            "message": "align refused: BoxBox alignment failed with exit code 1"
+          },
+          "unchanged": true
+        }
+      ],
+      "firstFailingPhase": "First TypeScript cycle.write preflight, before writing; not second-cycle approval.",
+      "nestedStatusMeaning": "The inner 1 is the in-process runTypeScriptAlign return status. No nested writer child process was spawned; its emitted JSON report was dropped by the emit no-op."
+    }
+  },
+  "repeatedInspection": {
+    "mode": "check",
+    "capturedFiles": 135,
+    "groups": 4675,
+    "firstPostSeconds": 19.959,
+    "secondPostSeconds": 30.81,
+    "secondPostOutput": "{}",
+    "spyInspectionCallsPerPost": [
+      1,
+      1
+    ],
+    "spyStopInspectionCalls": 1,
+    "limitation": "Staging reused captured source bytes, not the original full baseline/dependency environment. Process load was not controlled. The measurements reproduce repeated work; they are not an exact predictor of every host call.",
+    "cacheImplemented": false,
+    "engineSafetyDefectEstablished": false
+  },
+  "notEstablished": [
+    "No fresh release or native-host matrix was run for this documentation update.",
+    "No current safety bug is established by the earlier remote JSX report; the observed local source refusal count was zero.",
+    "No approved-rule or production apply result is created by these records."
+  ]
+}

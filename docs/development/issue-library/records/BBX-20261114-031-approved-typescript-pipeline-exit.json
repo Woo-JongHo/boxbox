@@ -1,0 +1,191 @@
+{
+  "$schema"      : "../issue.schema.json",
+  "schemaVersion": 1,
+  "id"           : "BBX-20261114-031",
+  "title"        : "Compressed interface members block approved writes behind a generic pipeline error",
+  "category"     : "documentation",
+  "tags": [
+    "typescript",
+    "pipeline",
+    "compressed-interface-members",
+    "suggest",
+    "diagnostic-gap"
+  ],
+  "status": "verifying",
+  "symptom": "A staged registry built only from the actual 28-key/86-pair answer evaluated 86/86 pairs as approved and writable. All 28 synthetic examples passed public dry-run/apply/check/re-dry-run. Of 19 actual scoped files, 15 were approval-eligible; 12 staged applies succeeded while three eligible dry-runs exited 2 with ALIGN_NOT_ELIGIBLE and the inner message BoxBox alignment failed with exit code 1. Source refusal counts were zero and the failed candidates stayed unchanged.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "Original 2026-11-14 mechanism, superseded in the local 2026-11-16 candidate: All three failed staged inputs contain compressed interface members, with SUGGEST counts 1, 2 and 1. The TypeScript alignment runner returns 1 before writing when compressed members or unsupported parameters remain. The public TypeScript writer discards the emitted report and wraps this as a generic alignment exit-code failure. The known case is a structural-authoring precondition plus a diagnostic gap, not missing approval, a second-cycle failure or an established safety bug. A generic public CLI pair confirmed this: the approved aligned control succeeds, while adding one compressed interface leaves source Check at exit 0 and approvalEligible=true but makes Align dry-run fail before writing. The inner 1 is an in-process return status, not a spawned child-process exit."
+  },
+  "requestedOutcome": "Expose the specific compressed-member precondition and direct the authorized owner to Write/Refactor before retrying horizontal Align; verify a minimized add/remove case and preserve refusal, approval and unchanged-source guarantees.",
+  "decisions": [
+    "Keep this separate from missing conventions and the no-op performance mechanism. Approval alone does not resolve all observed failures.",
+    "Do not weaken source, parser, token/AST, fixed-point, whole-file approval or atomic-write safeguards to make the three files pass.",
+    "No private consumer identifiers or source snippets are published. A generic approved control and compressed addition were observed through the public CLI; both retained their input bytes.",
+    "No engine or production source/registry change is implied by the staged results. The larger unapproved key/file set remains outside the recorded answer.",
+    "A complete approval proof does not authorize a structural transformation. Compressed interface members must first be expanded through the authorized Write/Refactor workflow, with its own behavior and source checks. Do not force Align past the precondition."
+  ],
+  "actions": [
+    {
+      "description": "Record complete-proof, successful synthetic and failed actual-input stages separately, including unchanged failure bytes.",
+      "status": "done"
+    },
+    {
+      "description": "Classify compressed interface-member suggestions against the pre-write TypeScript status guard and public error wrapper.",
+      "status": "done"
+    },
+    {
+      "description": "Expose or document the compressed-member precondition and verify any bounded diagnostic correction without weakening the guard.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name"  : "Staged actual-input public write acceptance",
+      "status": "failed",
+      "scope" : "Installed CLI 0.2.8, 19 scoped files, 15 approval-eligible inputs in private isolated staging.",
+      "evidence": [
+        "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json"
+      ],
+      "result": "Twelve staged applies succeeded; three approval-complete dry-runs failed with the recorded exit/code/message. This is a bounded failed acceptance observation, not an engine-safety diagnosis or a production write."
+    },
+    {
+      "name"  : "Generic approved-control and compressed-addition public CLI pair",
+      "status": "passed",
+      "scope" : "Installed CLI 0.2.8 on a synthetic three-row approved interface and the same text plus one inline Compact interface; isolated staging only.",
+      "evidence": [
+        "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json"
+      ],
+      "result": "Both source checks exited 0 with approvalEligible=true and REFUSE 0. The control dry-run exited 0; the compressed addition reported SUGGEST 1 and dry-run exit 2 with the generic inner return-status message. Both input byte sequences were unchanged. This verifies the precondition, not a diagnostic fix or production apply."
+    },
+    {
+      "name"  : "Bounded structural-precondition diagnosis",
+      "status": "passed",
+      "scope" : "Frozen local source plus isolated Node artifact and public-project copy; no publication, production or native-host claim.",
+      "evidence": [
+        "docs/development/reviews/2026-11-16-incremental-recovery-evidence/verification.json",
+        "docs/development/reviews/2026-11-16-incremental-recovery.md"
+      ],
+      "result": "Complete approval still refuses compressed members on preview/apply with original file line 4, structural-prerequisite category and authorized Write/Refactor next action; bytes remain unchanged. Positive preview/apply/fixed-point and installed TSX controls pass; production structural follow-up remains separate."
+    },
+    {
+      "name"  : "Consumer production structural follow-up",
+      "status": "not-run",
+      "scope" : "Authorized Write/Refactor expansion and production application on consumer inputs; local diagnostic correction is verified separately.",
+      "evidence": [],
+      "result": "Not run in this task. No live-profile installation, production source or approval registry was changed."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "product/engine/common/21_format-pipeline.ts",
+      "note": "typescriptEngine.write rejects the nonzero alignment status before the public pipeline can complete."
+    },
+    {
+      "kind": "code",
+      "path": "product/engine/typescript/12_align.ts",
+      "note": "Owns TypeScript alignment analysis and writer status."
+    },
+    {
+      "kind": "code",
+      "path": "product/engine/00_cli.ts",
+      "note": "Reports approval readiness and wraps public ALIGN_NOT_ELIGIBLE separately."
+    },
+    {
+      "kind": "contract",
+      "path": "docs/development/inspection-process.md",
+      "note": "Distinguishes source results, approval and verified pipeline writes."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json",
+      "note": "Sanitized gate and pipeline outcomes without consumer identifiers."
+    },
+    {
+      "kind": "contract",
+      "path": "product/plugin/skills/boxbox/SKILL.md",
+      "note": "Write/Refactor owns structural authoring; Align preserves physical lines and horizontal structure."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date"    : "2026-11-14",
+      "event"   : "diagnosed",
+      "summary" : "Complete writable proof and 28 successful synthetic examples did not generalize to all actual scoped inputs.",
+      "evidence": [
+        "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date"    : "2026-11-14",
+      "event"   : "verification-failed",
+      "summary" : "Three approval-complete actual-input dry-runs failed after eligibility while source/refusal checks were valid; staged and production bytes remained unchanged.",
+      "evidence": [
+        "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json"
+      ],
+      "status": "failed"
+    },
+    {
+      "sequence": 3,
+      "date"    : "2026-11-14",
+      "event"   : "decision",
+      "summary" : "Keep the cause unclassified until a public-safe minimal reproducer and underlying writer diagnostic are available.",
+      "evidence": [
+        "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date"    : "2026-11-14",
+      "event"   : "diagnosed",
+      "summary" : "Source and the three staged summaries corrected the unclassified diagnosis: compressed-member suggestions 1/2/1 trigger the pre-write return-1 guard. The wrapper suppresses the specific report. The generic add/remove CLI reproduction is pending; no engine safety defect or code correction is claimed.",
+      "evidence": [
+        "product/engine/typescript/12_align.ts",
+        "product/engine/common/21_format-pipeline.ts",
+        "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json"
+      ]
+    },
+    {
+      "sequence": 5,
+      "date"    : "2026-11-14",
+      "event"   : "verified",
+      "summary" : "The public CLI control/addition pair confirmed source exit 0 and complete approval in both cases, control dry-run exit 0, and compressed SUGGEST 1 with dry-run exit 2. Both cases remained byte-identical. The first in-process write preflight returns 1; no nested child exit or safety defect is inferred.",
+      "evidence": [
+        "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json"
+      ],
+      "status": "passed"
+    },
+    {
+      "sequence": 6,
+      "date"    : "2026-11-16",
+      "event"   : "implemented",
+      "summary" : "Implemented and locally verified the bounded issue63 correction; retained earlier consumer failures and unrun delivery/host limits.",
+      "evidence": [
+        "docs/development/reviews/2026-11-16-incremental-recovery-evidence/verification.json",
+        "docs/development/reviews/2026-11-16-incremental-recovery.md"
+      ]
+    },
+    {
+      "sequence": 7,
+      "date"    : "2026-11-16",
+      "event"   : "reported",
+      "status"  : "not-run",
+      "summary" : "Historical entry, superseded by the implemented 2026-11-16 source verification. Preserved the earlier documentation-only verification before splitting current local implementation from unrun production/host acceptance. Previous entry: Diagnostic remediation and consumer structural follow-up. Specific public diagnostic and authorized Write/Refactor expansion on consumer inputs. No engine code, consumer production source or active registry was modified by this documentation task.",
+      "evidence": []
+    },
+    {
+      "sequence": 8,
+      "date"    : "2026-11-16",
+      "event"   : "verified",
+      "status"  : "passed",
+      "summary" : "Final parser-recovery candidate full check passed 1310/0 with matched source snapshots. The matching Node artifact rejects prior transient execution-error caches while retaining safety refusals; native-host and production acceptance remain separate.",
+      "evidence": [
+        "docs/development/reviews/2026-11-16-incremental-recovery-evidence/verification.json",
+        "docs/development/reviews/2026-11-16-incremental-recovery.md"
+      ]
+    }
+  ]
+}

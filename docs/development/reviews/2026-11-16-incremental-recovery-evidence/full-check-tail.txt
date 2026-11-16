@@ -1,0 +1,12 @@
+(pass) a dangling Stop marker symlink is a losing claim and never creates its external target [605.53ms]
+(pass) concurrent Stop hooks atomically emit at most one block for a session [1447.73ms]
+(pass) an oversized receipt remains a fail-open infrastructure error [580.73ms]
+(pass) hook errors never block work; they are only reported [386.64ms]
+
+test/public-artifact.test.ts:
+(pass) public CLI local package artifact > the isolated installed boxbox bin ships approved standalone rules and safely honors project overrides [38805.62ms]
+
+ 1310 pass
+ 0 fail
+ 7466 expect() calls
+Ran 1310 tests across 98 files. [605.86s]

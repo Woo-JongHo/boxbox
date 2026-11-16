@@ -1,0 +1,658 @@
+{
+  "schemaVersion": 1,
+  "date"         : "2026-11-16",
+  "issue"        : "https://github.com/Woo-JongHo/boxbox/issues/63",
+  "source": {
+    "baseCommit": "21b1b52260466b3ad35c3fe6afe76d846e47fe42",
+    "state": "frozen and fully checked local candidate; uncommitted",
+    "files": [
+      {
+        "mode"  : "0644",
+        "path"  : "product/engine/00_cli.ts",
+        "sha256": "5cad99d71941a761168b4787cb37815aa82549f2bada2c1a000e7521a8774e1e",
+        "size"  : 57937
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "product/engine/common/21_format-pipeline.ts",
+        "sha256": "cdb66cf5b9653d690df5923f267e2d478416e702693009cb311c246068fa7078",
+        "size"  : 16464
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "product/engine/common/27_lifecycle-hook.ts",
+        "sha256": "dc06fa169d79a02c4de7f73a92ef6e07c1a4258df942553b416cbb16c47dbd55",
+        "size"  : 27251
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "product/engine/common/34_project-commands.ts",
+        "sha256": "a5f43b4cd22bee9e2663a2ea97ca49237335d35d16fdeddb9d5f81fca0277cd6",
+        "size"  : 7901
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "product/engine/common/38_recovery.ts",
+        "sha256": "eef57a6af96409f13b3c2fbd26a342ab4e0e2c19af7131c2d228c44be38d853e",
+        "size"  : 6805
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "product/engine/common/39_lifecycle-cache.ts",
+        "sha256": "9c5bdecbede279e10f2fce245a195d48244186c771e701f9264d899d5230b5e1",
+        "size"  : 11840
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "product/engine/common/40_inspection-context.ts",
+        "sha256": "a578cc0ba54c8f59d2576cfe3d00d2f596cbee9636ffcfd3cde4adddcaca2a15",
+        "size"  : 6160
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "product/engine/typescript/15_load-source-file.ts",
+        "sha256": "58bf561be7d9544ae7d1ad9f9252dbfcb996b0dab9c8beb30fd5d4797ed26905",
+        "size"  : 3243
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "test/cli-recovery.test.ts",
+        "sha256": "3803329d12e29e8b3553c72a4020c3c11bae1e54c6b1aa08683de342935bf90c",
+        "size"  : 9607
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "test/format-pipeline.test.ts",
+        "sha256": "c4684b4eb6394f6971686b3b39de89101fedabd974dfd456fd5ad2a44f4b9de1",
+        "size"  : 21116
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "test/inspection-context.test.ts",
+        "sha256": "b3e0e493432b11f5ad37febead29c4ade1e4a5368c26720b3dd0fe51cac6b547",
+        "size"  : 7899
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "test/lifecycle-cache.test.ts",
+        "sha256": "3da7c1953675159a181c9a9551a88188f7dcae7370c1547ea77fbf92a0e8f508",
+        "size"  : 28785
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "test/recovery.test.ts",
+        "sha256": "e13108038b35c97073cd7834a71145182672e2962f7c9097385db5a173c2c264",
+        "size"  : 3583
+      }
+    ],
+    "snapshot"              : "candidate-v4b.json",
+    "manifestSha256"        : "8eab0b492cb5d9ba566e17b2b01eb9dd82a61337746bab20a5ef08e1602a15de",
+    "manifestHashDefinition": "SHA-256 of UTF-8 json.dumps(source.files, sort_keys=True, separators=(comma, colon)), with default ensure_ascii=True; the ordered 13-entry code/test manifest only, not the complete capture file."
+  },
+  "fullCheck": {
+    "command"                  : "bun run check",
+    "exitCode"                 : 0,
+    "snapshotExitCode"         : 0,
+    "elapsedSeconds"           : 613.1640548706055,
+    "candidate"                : "candidate-v4b.json",
+    "testsPassed"              : 1310,
+    "testsFailed"              : 0,
+    "assertions"               : 7466,
+    "testFiles"                : 98,
+    "sourceSnapshotBeforeAfter": "matched",
+    "fullLogSha256"            : "32241dcd595c5c234dd1ad2f208aa93d3b395fe063857760aef0617fad4339be",
+    "tailExcerpt"              : "docs/development/reviews/2026-11-16-incremental-recovery-evidence/full-check-tail.txt",
+    "tailExcerptSha256"        : "e8e168c3accbfafa7337068b1fd0dfa0729c75f95efdca6696cf57804777a364"
+  },
+  "artifact": {
+    "packageVersion"       : "0.2.8",
+    "status"               : "local development candidate, not published",
+    "tarballSha256"        : "dc47dccb052cdfab2f0cc22eef08920497b9f2d25f300510714c4e6c7f2373d5",
+    "bundleSha256"         : "29ffc28d418b75f053b0f02d4bff1214b60ee5a3db2bfa833134acb441dbc9b9",
+    "sourceManifestSha256" : "8eab0b492cb5d9ba566e17b2b01eb9dd82a61337746bab20a5ef08e1602a15de",
+    "sourceSnapshot"       : "candidate-v4b.json",
+    "install"              : "offline npm install --ignore-scripts into an isolated prefix",
+    "buildSourceCapture"   : "candidate-v4.json",
+    "fullGateSourceCapture": "candidate-v4b.json",
+    "codeManifestsEqual"   : true
+  },
+  "syntheticArtifactJourney": {
+    "schemaVersion": 1,
+    "scope"        : "Isolated Node artifact hook subprocesses; three synthetic TypeScript files; no native host activation",
+    "bundleSha256" : "29ffc28d418b75f053b0f02d4bff1214b60ee5a3db2bfa833134acb441dbc9b9",
+    "first": {
+      "schemaVersion": 1,
+      "event"        : "PostToolUse",
+      "cacheHits"    : 0,
+      "cacheMisses"  : 3,
+      "inspections"  : 3,
+      "elapsedMs"    : 1536.104542
+    },
+    "noOp": {
+      "schemaVersion": 1,
+      "event"        : "PostToolUse",
+      "cacheHits"    : 3,
+      "cacheMisses"  : 0,
+      "inspections"  : 0,
+      "elapsedMs"    : 393.912958
+    },
+    "stop": {
+      "schemaVersion": 1,
+      "event"        : "Stop",
+      "cacheHits"    : 0,
+      "cacheMisses"  : 0,
+      "inspections"  : 3,
+      "elapsedMs"    : 230.160209
+    },
+    "externalTsconfigChange": {
+      "schemaVersion": 1,
+      "event"        : "PostToolUse",
+      "cacheHits"    : 0,
+      "cacheMisses"  : 3,
+      "inspections"  : 3,
+      "elapsedMs"    : 890.78475
+    },
+    "configChange": {
+      "schemaVersion": 1,
+      "event"        : "PostToolUse",
+      "cacheHits"    : 0,
+      "cacheMisses"  : 3,
+      "inspections"  : 3,
+      "elapsedMs"    : 902.5907090000001
+    },
+    "proofChange": {
+      "schemaVersion": 1,
+      "event"        : "PostToolUse",
+      "cacheHits"    : 0,
+      "cacheMisses"  : 3,
+      "inspections"  : 3,
+      "elapsedMs"    : 847.526583
+    },
+    "coverage": {
+      "changedFiles"    : 3,
+      "checkedFiles"    : 3,
+      "unsupportedFiles": 0,
+      "deletedFiles"    : 0,
+      "filesWithGroups" : 3,
+      "groups"          : 3
+    },
+    "sourceUnchanged": true,
+    "wholeInvocationMs": [
+      {
+        "mode": "session",
+        "elapsedMs": 643.546708
+      },
+      {
+        "mode": "post",
+        "elapsedMs": 1685.3295000000003
+      },
+      {
+        "mode": "post",
+        "elapsedMs": 521.2438749999997
+      },
+      {
+        "mode": "stop",
+        "elapsedMs": 347.29508300000043
+      },
+      {
+        "mode": "post",
+        "elapsedMs": 1011.1763750000005
+      },
+      {
+        "mode": "post",
+        "elapsedMs": 1031.4901250000003
+      },
+      {
+        "mode": "post",
+        "elapsedMs": 968.9115830000001
+      }
+    ]
+  },
+  "publicArtifactRecovery": {
+    "schemaVersion"   : 1,
+    "scope"           : "Isolated Node artifact public CLI; synthetic inputs; no host activation or publication",
+    "bundleSha256"    : "29ffc28d418b75f053b0f02d4bff1214b60ee5a3db2bfa833134acb441dbc9b9",
+    "approvalEligible": true,
+    "failures": [
+      {
+        "dryRun": true,
+        "exit": 2,
+        "issue": {
+          "file"     : "sample.ts",
+          "startLine": 4,
+          "endLine"  : 4,
+          "kind"     : "interface-members-compressed",
+          "category" : "structural-prerequisite",
+          "reason"   : "interface members share one physical line",
+          "owner"    : "agent",
+          "next"     : "Within an independently authorized Write/Refactor request, expand the members, verify behavior and source Check, then retry Align. An Align-only request needs structural-edit authorization first."
+        }
+      },
+      {
+        "dryRun": false,
+        "exit": 2,
+        "issue": {
+          "file"     : "sample.ts",
+          "startLine": 4,
+          "endLine"  : 4,
+          "kind"     : "interface-members-compressed",
+          "category" : "structural-prerequisite",
+          "reason"   : "interface members share one physical line",
+          "owner"    : "agent",
+          "next"     : "Within an independently authorized Write/Refactor request, expand the members, verify behavior and source Check, then retry Align. An Align-only request needs structural-edit authorization first."
+        }
+      }
+    ],
+    "positive": {
+      "previewExit"   : 0,
+      "applyExit"     : 0,
+      "fixedPointExit": 0,
+      "secondWrite"   : false
+    },
+    "tsx62": {
+      "exit": 1,
+      "summary": {
+        "groups"    : 1,
+        "misaligned": 1,
+        "edits"     : 8,
+        "refused"   : 0,
+        "suggested" : 0
+      },
+      "syntax": "valid"
+    }
+  },
+  "realProjectJourney": {
+    "schemaVersion": 1,
+    "scope"        : "Isolated git archive of the real BoxBox project plus frozen working-copy overlay; one deliberate whitespace perturbation; actual tsconfig and linked dependencies; no live project/host writes",
+    "bundleSha256" : "29ffc28d418b75f053b0f02d4bff1214b60ee5a3db2bfa833134acb441dbc9b9",
+    "source"       : "product/engine/common/38_recovery.ts",
+    "first": {
+      "schemaVersion": 1,
+      "event"        : "PostToolUse",
+      "cacheHits"    : 0,
+      "cacheMisses"  : 1,
+      "inspections"  : 1,
+      "elapsedMs"    : 1329.9446249999999
+    },
+    "noOp": {
+      "schemaVersion": 1,
+      "event"        : "PostToolUse",
+      "cacheHits"    : 1,
+      "cacheMisses"  : 0,
+      "inspections"  : 0,
+      "elapsedMs"    : 1090.954875
+    },
+    "stop": {
+      "schemaVersion": 1,
+      "event"        : "Stop",
+      "cacheHits"    : 0,
+      "cacheMisses"  : 0,
+      "inspections"  : 1,
+      "elapsedMs"    : 756.7445409999999
+    },
+    "coverage": {
+      "changedFiles"    : 1,
+      "checkedFiles"    : 1,
+      "unsupportedFiles": 0,
+      "deletedFiles"    : 0,
+      "filesWithGroups" : 1,
+      "groups"          : 2
+    },
+    "originalRepositoryUnchanged": true,
+    "perturbedCopyUnchangedByHooks": true
+  },
+  "reviews": {
+    "source": {
+      "model"          : "claude-sonnet-5-5",
+      "initial"        : "FINDINGS",
+      "fixVerification": "PASS",
+      "tools"          : "disabled; read-only supplied-input review"
+    },
+    "final": {
+      "model"                     : "claude-opus-5-5",
+      "initial"                   : "FINDINGS (low documentation)",
+      "sourceFixVerification"     : "all code defects and F1-F3/V1-V4 closed; only G1 evidence-binding update remained",
+      "bindingVerification"       : "PASS",
+      "confirmedModel"            : "claude-opus-5-5",
+      "sourceFixReviewSha256"     : "ef9f3ddc0e6555ae658c1c2f0cd7b76b04183482da70e01dd62d21ca319476e0",
+      "bindingClosureReviewSha256": "6985be97cca9c14e8616fa6fb6eeac9d6f48320c6e05a709520d291389dc413a"
+    }
+  },
+  "lint": {
+    "checkerVersion"              : "0.2.7",
+    "checkerCommit"               : "3f92bc9e42afae6eec60763d2a0f8fedc5369559",
+    "changedTypeScriptFilesPassed": 13,
+    "globalFinalStatus"           : "violation",
+    "unchangedBaselineViolations": [
+      {
+        "path"  : "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json",
+        "sha256": "aed27e5fc53d1d435bb84f364ade62b6176d16adc6ce9e48112942f6b1f858d4",
+        "status": "pre-existing unchanged lint violation"
+      },
+      {
+        "path"  : "docs/development/issue-library/records/BBX-20261114-029-consumer-approval-diagnosis.json",
+        "sha256": "7775eb877d59200804c123a5af0934e3a1e4b14651d5160324716aad1a81736e",
+        "status": "pre-existing unchanged lint violation"
+      }
+    ],
+    "counts": {
+      "targets"    : 17,
+      "excluded"   : 3,
+      "deleted"    : 0,
+      "noGroups"   : 0,
+      "unsupported": 61
+    },
+    "ownedJsonFilesPassed": 2,
+    "globalErrors": [],
+    "excludedPaths": [
+      "docs/development/reviews/2026-11-16-incremental-recovery-evidence/full-check-tail.txt",
+      "docs/development/reviews/2026-11-16-incremental-recovery-evidence/initial-full-check-tail.txt",
+      "docs/development/reviews/2026-11-16-incremental-recovery-evidence/verification.json"
+    ],
+    "notSupportedLanguagePaths": [
+      "docs/development/inspection-process.md",
+      "docs/development/issue-library/README.md",
+      "docs/development/reviews/2026-11-16-incremental-recovery.md"
+    ],
+    "scope"                       : "Final source revision after the full gate. All 13 changed TypeScript and two authored JSON records pass; two initial unchanged JSON violations remain. Default recorded-review-evidence exclusions and unsupported Markdown paths are listed explicitly.",
+    "postMetadataJsonVerification": "Authored JSON was aligned with lossless parse equality and fixed-point checks after metadata updates; issue schema and nine reference tests passed. The immutable source checkpoint remains bound to unchanged code hashes.",
+    "ownedJsonPassScope"          : "Immutable PASS applies to checkpoint hashes. Subsequent history/result metadata updates are covered separately by lossless JSON parse equality, fixed-point alignment, issue schema validation and reference tests; not claimed as a fresh immutable JSON checkpoint."
+  },
+  "limits": [
+    "Python, BOM/native-decoding fallback, oversized or unobservable dependency contexts remain fresh.",
+    "Complete environment identity can conservatively miss on host-specific per-call variables.",
+    "Timing is local and load was uncontrolled; inspection-phase and whole-process times are distinct, with no universal latency claim.",
+    "Native macOS/Windows/Linux-WSL Codex/Claude host acceptance was not run for this candidate.",
+    "No registry publication, live-profile installation, new approval data or automatic structural rewrite.",
+    "Existing root guard status remains STALE; manual edits have explicit per-file/full-check evidence, not a new wrapped authoring run."
+  ],
+  "retainedFailures": [
+    {
+      "case"      : "compressed-member diagnostic",
+      "observed"  : "approved compressed interface failed with only a numeric writer status",
+      "correction": "retained bounded writer report and explicit structural owner/action"
+    },
+    {
+      "case"      : "BOM filesystem observation",
+      "observed"  : "native check found one FIXABLE group while callback text yielded zero",
+      "correction": "delegate native BOM decoding and disable cache eligibility"
+    },
+    {
+      "case"      : "multi-file owned alignment",
+      "observed"  : "earlier project dependency observation became stale after a later approved write",
+      "correction": "refresh checked files only when every stale read belongs to this operation's aligned files; preserve unowned-race errors"
+    },
+    {
+      "case"      : "bundled runtime identity",
+      "observed"  : "unnecessary external YAML resolution returned null identity",
+      "correction": "resolve external YAML only for source execution; actual isolated Node regression passes"
+    },
+    {
+      "case"      : "artifact fixture",
+      "observed"  : "copied preset proof IDs conflicted with project proof IDs and correctly disabled reuse",
+      "correction": "use distinct synthetic IDs; no product guard was relaxed"
+    },
+    {
+      "case"      : "Node strip-only source loading",
+      "observed"  : "new error-class parameter property was unsupported by the existing Node source test",
+      "correction": "use an explicit class field; compiled artifact bytes unchanged"
+    },
+    {
+      "case"      : "transient parser execution failure",
+      "observed"  : "a cached syntax-validation-error remained FAIL after the parser would recover; only fresh Stop reached PASS",
+      "correction": "exclude execution-error results from cache reads and writes, including old correctly-checksummed entries; retain deterministic syntax/safety REFUSE reuse"
+    }
+  ],
+  "initialSource": {
+    "baseCommit": "21b1b52260466b3ad35c3fe6afe76d846e47fe42",
+    "state": "uncommitted working-copy candidate",
+    "files": [
+      {
+        "mode"  : "0644",
+        "path"  : "product/engine/00_cli.ts",
+        "sha256": "5cad99d71941a761168b4787cb37815aa82549f2bada2c1a000e7521a8774e1e",
+        "size"  : 57937
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "product/engine/common/21_format-pipeline.ts",
+        "sha256": "cdb66cf5b9653d690df5923f267e2d478416e702693009cb311c246068fa7078",
+        "size"  : 16464
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "product/engine/common/27_lifecycle-hook.ts",
+        "sha256": "dc06fa169d79a02c4de7f73a92ef6e07c1a4258df942553b416cbb16c47dbd55",
+        "size"  : 27251
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "product/engine/common/34_project-commands.ts",
+        "sha256": "a5f43b4cd22bee9e2663a2ea97ca49237335d35d16fdeddb9d5f81fca0277cd6",
+        "size"  : 7901
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "product/engine/common/38_recovery.ts",
+        "sha256": "eef57a6af96409f13b3c2fbd26a342ab4e0e2c19af7131c2d228c44be38d853e",
+        "size"  : 6805
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "product/engine/common/39_lifecycle-cache.ts",
+        "sha256": "3fb93113311b5bf2d3c95f78e18eb81b437daa7e7e991f644f17bfb974114667",
+        "size"  : 11545
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "product/engine/common/40_inspection-context.ts",
+        "sha256": "a578cc0ba54c8f59d2576cfe3d00d2f596cbee9636ffcfd3cde4adddcaca2a15",
+        "size"  : 6160
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "product/engine/typescript/15_load-source-file.ts",
+        "sha256": "58bf561be7d9544ae7d1ad9f9252dbfcb996b0dab9c8beb30fd5d4797ed26905",
+        "size"  : 3243
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "test/cli-recovery.test.ts",
+        "sha256": "3803329d12e29e8b3553c72a4020c3c11bae1e54c6b1aa08683de342935bf90c",
+        "size"  : 9607
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "test/format-pipeline.test.ts",
+        "sha256": "c4684b4eb6394f6971686b3b39de89101fedabd974dfd456fd5ad2a44f4b9de1",
+        "size"  : 21116
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "test/inspection-context.test.ts",
+        "sha256": "b3e0e493432b11f5ad37febead29c4ade1e4a5368c26720b3dd0fe51cac6b547",
+        "size"  : 7899
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "test/lifecycle-cache.test.ts",
+        "sha256": "2e77cbdb8bcd4a8c64712d672cff01672a489a42ad9b1a528436de4f91f6f245",
+        "size"  : 23766
+      },
+      {
+        "mode"  : "0644",
+        "path"  : "test/recovery.test.ts",
+        "sha256": "e13108038b35c97073cd7834a71145182672e2962f7c9097385db5a173c2c264",
+        "size"  : 3583
+      }
+    ]
+  },
+  "priorFullChecks": [
+    {
+      "command"                  : "bun run check",
+      "exitCode"                 : 0,
+      "snapshotExitCode"         : 0,
+      "elapsedSeconds"           : 845.0803589820862,
+      "candidate"                : "candidate-v3.json",
+      "testsPassed"              : 1307,
+      "testsFailed"              : 0,
+      "assertions"               : 7441,
+      "testFiles"                : 98,
+      "sourceSnapshotBeforeAfter": "matched",
+      "fullLogSha256"            : "f7a1ffb7ca7d2f8f094f4064a2cc158d64be2f4dcb84f084e4efe8d858753869",
+      "tailExcerpt"              : "docs/development/reviews/2026-11-16-incremental-recovery-evidence/initial-full-check-tail.txt",
+      "tailExcerptSha256"        : "529a769d43bf14fcf45057d692322f946c5175ad4d4a1c7bb9e58eee94fda4e2"
+    }
+  ],
+  "priorArtifacts": [
+    {
+      "scope": "pre-transient-parser-recovery revision, not the final candidate",
+      "artifact": {
+        "packageVersion": "0.2.8",
+        "status"        : "local development candidate, not a new public release",
+        "tarballSha256" : "763a167a4e1669f3a743be3b8c61d41d7857cdfdbe0a57b8c7d62eeca8adc3b7",
+        "bundleSha256"  : "b5166d2ee22f19809a3935bc1ec93914480f9d8ef8e785291b9c04f537cc2c9f",
+        "install"       : "offline npm install --ignore-scripts into an isolated prefix"
+      }
+    }
+  ],
+  "toolErrorCacheArtifact": {
+    "schemaVersion": 1,
+    "scope"        : "Isolated Node artifact hook subprocesses; three synthetic TypeScript files; no native host activation",
+    "bundleSha256" : "29ffc28d418b75f053b0f02d4bff1214b60ee5a3db2bfa833134acb441dbc9b9",
+    "first": {
+      "schemaVersion": 1,
+      "event"        : "PostToolUse",
+      "cacheHits"    : 0,
+      "cacheMisses"  : 3,
+      "inspections"  : 3,
+      "elapsedMs"    : 996.0710409999999
+    },
+    "noOp": {
+      "schemaVersion": 1,
+      "event"        : "PostToolUse",
+      "cacheHits"    : 3,
+      "cacheMisses"  : 0,
+      "inspections"  : 0,
+      "elapsedMs"    : 394.92279199999996
+    },
+    "stop": {
+      "schemaVersion": 1,
+      "event"        : "Stop",
+      "cacheHits"    : 0,
+      "cacheMisses"  : 0,
+      "inspections"  : 3,
+      "elapsedMs"    : 219.833
+    },
+    "toolErrorCache": {
+      "schemaVersion": 1,
+      "event"        : "PostToolUse",
+      "cacheHits"    : 2,
+      "cacheMisses"  : 1,
+      "inspections"  : 1,
+      "elapsedMs"    : 548.82975
+    },
+    "externalTsconfigChange": {
+      "schemaVersion": 1,
+      "event"        : "PostToolUse",
+      "cacheHits"    : 0,
+      "cacheMisses"  : 3,
+      "inspections"  : 3,
+      "elapsedMs"    : 842.5455
+    },
+    "configChange": {
+      "schemaVersion": 1,
+      "event"        : "PostToolUse",
+      "cacheHits"    : 0,
+      "cacheMisses"  : 3,
+      "inspections"  : 3,
+      "elapsedMs"    : 852.589667
+    },
+    "proofChange": {
+      "schemaVersion": 1,
+      "event"        : "PostToolUse",
+      "cacheHits"    : 0,
+      "cacheMisses"  : 3,
+      "inspections"  : 3,
+      "elapsedMs"    : 836.5482910000001
+    },
+    "coverage": {
+      "changedFiles"    : 3,
+      "checkedFiles"    : 3,
+      "unsupportedFiles": 0,
+      "deletedFiles"    : 0,
+      "filesWithGroups" : 3,
+      "groups"          : 3
+    },
+    "sourceUnchanged": true,
+    "wholeInvocationMs": [
+      {
+        "mode": "session",
+        "elapsedMs": 658.873916
+      },
+      {
+        "mode": "post",
+        "elapsedMs": 1141.941333
+      },
+      {
+        "mode": "post",
+        "elapsedMs": 512.1389999999999
+      },
+      {
+        "mode": "stop",
+        "elapsedMs": 334.1322500000001
+      },
+      {
+        "mode": "post",
+        "elapsedMs": 664.1103330000001
+      },
+      {
+        "mode": "post",
+        "elapsedMs": 958.2874169999996
+      },
+      {
+        "mode": "post",
+        "elapsedMs": 969.6130839999996
+      },
+      {
+        "mode": "post",
+        "elapsedMs": 955.9842079999999
+      }
+    ],
+    "recoveryObservation": {
+      "stats": {
+        "schemaVersion": 1,
+        "event"        : "PostToolUse",
+        "cacheHits"    : 2,
+        "cacheMisses"  : 1,
+        "inspections"  : 1,
+        "elapsedMs"    : 548.82975
+      },
+      "receiptState": "FAIL",
+      "file": "one.ts",
+      "summary": {
+        "groups"    : 1,
+        "misaligned": 1,
+        "edits"     : 8,
+        "refused"   : 0,
+        "suggested" : 0
+      },
+      "groupStates": [
+        "FIXABLE"
+      ]
+    },
+    "scopeNote": "An injected checksum-valid prior execution-error entry was ignored. Fresh analysis clears the tool refusal; actual source still needs alignment, so the receipt remains FAIL for alignment, not a parser error.",
+    "sourceReceipt": {
+      "path"            : "docs/development/reviews/2026-11-16-incremental-recovery-evidence/tool-error-reinspection-receipt.json.txt",
+      "sha256"          : "cb84e27faacff20677d262b2a0de9c1a22f72ec8b125d4b736a70208e9ab3db5",
+      "originalFilename": "1794808711144-1ae60f3c-3e80-4a34-ad4c-f3bf74eccc15.json",
+      "retention"       : "verbatim machine output with .txt suffix; no content rewriting"
+    },
+    "sourceInspectionStats": {
+      "path"            : "docs/development/reviews/2026-11-16-incremental-recovery-evidence/tool-error-reinspection-stats.json.txt",
+      "sha256"          : "149d36b433fd9342eb5d8d1ab7a8a80213ff6b31b5d9266bf9a770a5fad41042",
+      "originalFilename": "1794808711144-1ae60f3c-3e80-4a34-ad4c-f3bf74eccc15.json.inspection",
+      "retention"       : "verbatim machine output with .txt suffix; no content rewriting"
+    }
+  }
+}

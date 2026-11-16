@@ -1,0 +1,108 @@
+{
+  "$schema": "../issue.schema.json",
+  "schemaVersion": 1,
+  "id": "BBX-20261114-029",
+  "title": "Consumer diagnosis conflated source misalignment with missing write authority",
+  "category": "verification-gap",
+  "tags": [
+    "consumer-integration",
+    "approval",
+    "source-check"
+  ],
+  "status": "investigating",
+  "symptom": "Repeated consumer hook FAIL reports were treated as one missing-rule problem. An isolated registry-free JSON refusal was incorrectly generalized to the real project even though its applicable project JSON proof was already complete. A later full candidate also contained unapproved TypeScript key/file pairs outside an earlier scoped proposal.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "The consumer diagnosis mixed different roots, candidate scopes and state owners. Source misalignment, approval identity, canonical generation, pipeline verification and behavior validation are separate observations. JSON.stringify regeneration can restore unaligned scalar mappings independently of whether a valid JSON rule already exists."
+  },
+  "requestedOutcome": "Identify the actual frozen changed-file candidate and effective proof before asking for approval; preserve the exact human-approved delta, generate future canonical output consistently, and report remaining pipeline and historical-data limits without claiming completion.",
+  "decisions": [
+    "Query existing project/user/preset proof before requesting a reusable convention; keep the earlier false generalization in history with its correction.",
+    "The recorded human TypeScript answer covers only 28 exact keys and 86 exact key/file pairs. A larger proposal is not authorized by that answer. These counts do not approve a public preset.",
+    "Use one canonical output path for a generator and its currentness check; do not silently introduce an installed authoring tool as a product-runtime/report-writer dependency.",
+    "A commit does not reset the session baseline. Whole-file automatic writes inspect approved and unapproved PASS/FIXABLE candidates; a passing source file does not need an otherwise unnecessary Align.",
+    "Preserve immutable reports and hashes of raw work records. Treat stale history explicitly rather than rewriting hashes or old reports to claim currentness.",
+    "The consumer containsTest classifier defect belongs to its own verifier. Neither that failure nor the earlier remote JSX report establishes a current BoxBox engine safety bug."
+  ],
+  "actions": [
+    {
+      "description": "Record the effective-proof correction, exact human authorization and observed candidate boundaries.",
+      "status": "done"
+    },
+    {
+      "description": "Complete only the authorized staged pipeline checks and classify remaining unapproved key/file deltas; do not expand the answer scope.",
+      "status": "in-progress"
+    },
+    {
+      "description": "Verify future canonical generation and unchanged historical records on the consumer final candidate before claiming completion.",
+      "status": "pending"
+    }
+  ],
+  "verification": [
+    {
+      "name": "Consumer completion acceptance",
+      "status": "not-run",
+      "scope": "Final consumer candidate, remaining unapproved exact key/file pairs, canonical generation and immutable history.",
+      "evidence": [
+        "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json"
+      ],
+      "result": "The record separates observations and authorization. Staging-only evidence and a classified compressed-member precondition at the first write are not a completed production integration."
+    }
+  ],
+  "related": [
+    {
+      "kind": "contract",
+      "path": "product/plugin/skills/boxbox/SKILL.md",
+      "note": "Separates Write/Refactor, source Check and exact automatic-write authority."
+    },
+    {
+      "kind": "code",
+      "path": "product/engine/00_cli.ts",
+      "note": "formatReadiness evaluates all PASS/FIXABLE candidates and reports source eligibility separately from write verification."
+    },
+    {
+      "kind": "code",
+      "path": "product/engine/common/18_approval-gate.ts",
+      "note": "Resolves exact key/file scope and complete project/user/preset proof."
+    },
+    {
+      "kind": "issue",
+      "path": "docs/development/issue-library/records/BBX-20261112-028-authoring-eligibility.json",
+      "note": "Related authoring-versus-automatic-write contract; a stricter consumer policy must still be distinguished."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json",
+      "note": "Sanitized observations and provenance without private consumer source or machine paths."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date": "2026-11-14",
+      "event": "reported",
+      "summary": "A consumer integration reported repeated source failures across generated JSON and TypeScript.",
+      "evidence": [
+        "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date": "2026-11-14",
+      "event": "diagnosed",
+      "summary": "A registry-free fixture refusal had been generalized to the consumer. Inspection of its actual project proof corrected that diagnosis; valid JSON authority had already existed.",
+      "evidence": [
+        "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date": "2026-11-14",
+      "event": "decision",
+      "summary": "Preserve the actual 28-key/86-pair answer and keep the larger candidate delta unapproved. Do not manufacture approval or treat staging as production completion.",
+      "evidence": [
+        "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json"
+      ]
+    }
+  ]
+}

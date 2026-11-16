@@ -1,0 +1,150 @@
+{
+  "$schema"      : "../issue.schema.json",
+  "schemaVersion": 1,
+  "id"           : "BBX-20261114-030",
+  "title"        : "No-op post hooks repeat inspection before suppressing duplicate feedback",
+  "category"     : "runtime",
+  "tags": [
+    "hooks",
+    "performance",
+    "session-baseline"
+  ],
+  "status": "verifying",
+  "symptom": "Two consecutive post hooks on the same captured 135-file, 4675-group candidate took 19.959 and 30.810 seconds. The second response was empty JSON, but detector work was repeated. A spy reproduction observed one inspect callback per unchanged post and a fresh callback on Stop.",
+  "rootCause": {
+    "confidence": "confirmed",
+    "summary": "Original 2026-11-14 mechanism, superseded in the local 2026-11-16 candidate: The lifecycle hook compares current content with the original session baseline and inspects all changed supported files before claiming the feedback marker. The marker suppresses duplicate output, not source analysis. No result cache is present. TypeScript loading opens and closes a fresh API server per file; closing it is an existing resource-safety boundary."
+  },
+  "requestedOutcome": "Bound repeated no-op post-hook cost while preserving complete session-change coverage, refusal reporting, source-race checks, effective-context invalidation and a complete read-only Stop check.",
+  "decisions": [
+    "Record this as a measured performance mechanism, not an established safety bug or permission to disable hooks.",
+    "Do not reset the baseline after commit, weaken source checks or remove TypeScript server cleanup.",
+    "At the initial 2026-11-14 observation: A possible post-result cache must bind content, canonical path, mode, effective config, proof/rule documents and engine/runtime/parser/project inputs, with before/after race checks. Stop may conservatively bypass such a cache. This is a proposal, not implemented behavior.",
+    "The staging environment omitted the original full dependency/baseline environment and did not control concurrent load; the two measurements are not universal latency predictions."
+  ],
+  "actions": [
+    {
+      "description": "Preserve unchanged-input timing, inspect-call counts and source-control-flow evidence.",
+      "status": "done"
+    },
+    {
+      "description": "Design an explicit inspection-context identity and cache invalidation matrix before changing lifecycle code.",
+      "status": "done"
+    },
+    {
+      "description": "If implemented, verify no-op reuse, every context/source invalidation, races, refusal reporting and complete Stop coverage on isolated artifacts.",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "name"  : "Conservative reuse and fresh Stop",
+      "status": "passed",
+      "scope" : "Frozen local source plus isolated Node artifact and public-project copy; no publication, production or native-host claim.",
+      "evidence": [
+        "docs/development/reviews/2026-11-16-incremental-recovery-evidence/verification.json",
+        "docs/development/reviews/2026-11-16-incremental-recovery.md"
+      ],
+      "result": "Frozen source full check passed 1310/0. Isolated Node and real-project journeys reuse unchanged analysis, preserve failure coverage and re-inspect on context changes and Stop; native host/platform and production acceptance remain unrun."
+    },
+    {
+      "name"  : "Native host and production acceptance",
+      "status": "not-run",
+      "scope" : "Current candidate in actual Codex/Claude hosts across macOS, Windows and Linux/WSL; production consumer authoring/application remains separate.",
+      "evidence": [],
+      "result": "Not run in this task. No live-profile installation, production source or approval registry was changed."
+    }
+  ],
+  "related": [
+    {
+      "kind": "code",
+      "path": "product/engine/common/27_lifecycle-hook.ts",
+      "note": "The inspection loop precedes duplicate-feedback suppression."
+    },
+    {
+      "kind": "code",
+      "path": "product/engine/common/32_lifecycle-baseline.ts",
+      "note": "Owns the original session source baseline."
+    },
+    {
+      "kind": "code",
+      "path": "product/engine/typescript/15_load-source-file.ts",
+      "note": "Creates and closes a TypeScript API server for each source load."
+    },
+    {
+      "kind": "test",
+      "path": "test/lifecycle-hook.test.ts",
+      "note": "Current lifecycle coverage, concurrent Stop and advisory error boundaries."
+    },
+    {
+      "kind": "issue",
+      "path": "docs/development/issue-library/records/BBX-20261021-012-hook-json-self-observation.json",
+      "note": "Different resolved failure: owned receipt exclusion, not a cache for repeated consumer inputs."
+    },
+    {
+      "kind": "evidence",
+      "path": "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json",
+      "note": "Sanitized recorded timings and callback-count observations."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "date"    : "2026-11-14",
+      "event"   : "reported",
+      "summary" : "Read-only and unchanged-input tools incurred repeated lifecycle latency.",
+      "evidence": [
+        "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json"
+      ]
+    },
+    {
+      "sequence": 2,
+      "date"    : "2026-11-14",
+      "event"   : "diagnosed",
+      "summary" : "The second post still inspected the same candidate before returning empty JSON; Stop independently inspected it as intended.",
+      "evidence": [
+        "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json"
+      ]
+    },
+    {
+      "sequence": 3,
+      "date"    : "2026-11-14",
+      "event"   : "decision",
+      "summary" : "Retain the safety checks and classify context-complete cache work as unimplemented until regression and artifact evidence exists.",
+      "evidence": [
+        "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json"
+      ]
+    },
+    {
+      "sequence": 4,
+      "date"    : "2026-11-16",
+      "event"   : "implemented",
+      "summary" : "Implemented and locally verified the bounded issue63 correction; retained earlier consumer failures and unrun delivery/host limits.",
+      "evidence": [
+        "docs/development/reviews/2026-11-16-incremental-recovery-evidence/verification.json",
+        "docs/development/reviews/2026-11-16-incremental-recovery.md"
+      ]
+    },
+    {
+      "sequence": 5,
+      "date"    : "2026-11-16",
+      "event"   : "reported",
+      "status"  : "not-run",
+      "summary" : "Historical entry, superseded by the implemented 2026-11-16 source verification. Preserved the earlier documentation-only verification before splitting current local implementation from unrun production/host acceptance. Previous entry: Performance remediation and safety regression. No cache or shipped lifecycle change has been authored in this investigation. Recorded repetition is diagnostic evidence only. There is no fixed-latency, cache-correctness, installed-artifact or native-host completion claim.",
+      "evidence": [
+        "docs/development/issue-library/evidence/consumer-integration-observations-20261114.json"
+      ]
+    },
+    {
+      "sequence": 6,
+      "date"    : "2026-11-16",
+      "event"   : "verified",
+      "status"  : "passed",
+      "summary" : "Final parser-recovery candidate full check passed 1310/0 with matched source snapshots. The matching Node artifact rejects prior transient execution-error caches while retaining safety refusals; native-host and production acceptance remain separate.",
+      "evidence": [
+        "docs/development/reviews/2026-11-16-incremental-recovery-evidence/verification.json",
+        "docs/development/reviews/2026-11-16-incremental-recovery.md"
+      ]
+    }
+  ]
+}

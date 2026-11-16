@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 2,
+  "event": "PostToolUse",
+  "state": "FAIL",
+  "files": [
+    "one.ts",
+    "three.ts",
+    "two.ts"
+  ],
+  "checked": [
+    {
+      "file": "one.ts",
+      "result": {
+        "file": "one.ts",
+        "language": "typescript",
+        "mode": "check",
+        "summary": {
+          "groups": 1,
+          "misaligned": 1,
+          "edits": 8,
+          "refused": 0,
+          "suggested": 0
+        },
+        "groups": [
+          {
+            "kind": "declaration-equals",
+            "startLine": 1,
+            "endLine": 3,
+            "rows": 3,
+            "axes": [
+              "equals=13",
+              "call-open-paren=16",
+              "call-close-paren=20",
+              "semicolon=22"
+            ],
+            "state": "FIXABLE",
+            "edits": 8,
+            "context": "SourceFile",
+            "depth": 0
+          }
+        ],
+        "parse": {
+          "status": "not-run",
+          "tool": "typescript"
+        }
+      }
+    },
+    {
+      "file": "three.ts",
+      "result": {
+        "file": "three.ts",
+        "language": "typescript",
+        "mode": "check",
+        "summary": {
+          "groups": 1,
+          "misaligned": 1,
+          "edits": 8,
+          "refused": 0,
+          "suggested": 0
+        },
+        "groups": [
+          {
+            "kind": "declaration-equals",
+            "startLine": 1,
+            "endLine": 3,
+            "rows": 3,
+            "axes": [
+              "equals=13",
+              "call-open-paren=16",
+              "call-close-paren=20",
+              "semicolon=22"
+            ],
+            "state": "FIXABLE",
+            "edits": 8,
+            "context": "SourceFile",
+            "depth": 0
+          }
+        ],
+        "parse": {
+          "status": "not-run",
+          "tool": "typescript"
+        }
+      }
+    },
+    {
+      "file": "two.ts",
+      "result": {
+        "file": "two.ts",
+        "language": "typescript",
+        "mode": "check",
+        "summary": {
+          "groups": 1,
+          "misaligned": 1,
+          "edits": 8,
+          "refused": 0,
+          "suggested": 0
+        },
+        "groups": [
+          {
+            "kind": "declaration-equals",
+            "startLine": 1,
+            "endLine": 3,
+            "rows": 3,
+            "axes": [
+              "equals=13",
+              "call-open-paren=16",
+              "call-close-paren=20",
+              "semicolon=22"
+            ],
+            "state": "FIXABLE",
+            "edits": 8,
+            "context": "SourceFile",
+            "depth": 0
+          }
+        ],
+        "parse": {
+          "status": "not-run",
+          "tool": "typescript"
+        }
+      }
+    }
+  ],
+  "unsupported": [],
+  "tool": "Bash",
+  "at": "2026-11-16T05:58:31.144Z",
+  "automaticFixPerformed": false,
+  "deleted": [],
+  "coverage": {
+    "changedFiles": 3,
+    "checkedFiles": 3,
+    "unsupportedFiles": 0,
+    "deletedFiles": 0,
+    "filesWithGroups": 3,
+    "groups": 3
+  },
+  "mode": "check",
+  "aligned": []
+}
