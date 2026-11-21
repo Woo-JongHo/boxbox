@@ -17,7 +17,7 @@ import      {
 import      { resolveFormatterExecutable                                 } from "@/common/14_formatter-process.ts"   ;
 import      { runFormatPipeline                                          } from "@/common/21_format-pipeline.ts"     ;
 import type { FormatPipelineResult                                       } from "@/common/21_format-pipeline.ts"     ;
-import      { runProjectCommand, selectProjectTargets                    } from "@/common/34_project-commands.ts"    ;
+import      { resolveProjectInput, runProjectCommand, selectProjectTargets } from "@/common/34_project-commands.ts"    ;
 import type { ProjectExitCode, ProjectPipelineContext                    } from "@/common/34_project-commands.ts"    ;
 import      { buildMonitorReport, writeMonitorReport                     } from "@/common/31_monitor.ts"             ;
 import      { runMode                                                    } from "@/common/35_mode.ts"                ;
@@ -96,6 +96,13 @@ check --expect-axis reports which requested axes the detected groups cover, miss
 monitor always writes one local HTML page inside absolute CLAUDE_PLUGIN_DATA or PLUGIN_DATA, including with --json.
 Write and Refactor are agent skill workflows, not automatic CLI rewrites.`;
 
+const FILE_COMMAND_HELP = {
+	check  : "check (--file <path> | --directory <path>)... [--source] [--language <language>] [--expect-axis <axis>]... [--json]\n--source inspects original files without running a formatter or granting write approval." ,
+	guide  : "guide --file <path> [--language <language>] [--authoring] [--json]\n--authoring shows scoped guidance and works before the file exists."                                                                       ,
+	align  : "align --file <path> [--language <language>] [--dry-run] [--json]\n--dry-run previews approved horizontal whitespace changes without touching the source."                                                      ,
+	format : "format (--file <path> | --directory <path>)... [--language <language>] [--dry-run] [--json]\n--dry-run runs the configured formatter and checks the candidate without replacing the source."                   ,
+};
+
 interface ParsedFileCommand {
 	readonly file       : string            ;
 	readonly language   : PublicLanguage    ;
@@ -142,8 +149,8 @@ function assertRoot(root: string): string {
 }
 
 function insideRoot(root: string, file: string, allowMissing = false): string {
-	const absolute = resolve (root, file    ) ;
-	const path     = relative(root, absolute) ;
+	const absolute = resolveProjectInput(root, file    ) ;
+	const path     = relative           (root, absolute) ;
 	if (
 		   path === ""
 		|| path === ".."
@@ -714,12 +721,28 @@ async function checkReport(parsed: ParsedFileCommand, root: string): Promise<{ r
 	}
 }
 
+function checkOutcome(report: CheckReport): string {
+	const { syntax, canonical, formatReadiness: readiness } = report;
+	const result = report.results[0]!;
+	if (syntax.status === "invalid"                                                                                                        ) return "syntax-error";
+	if (syntax.status !== "valid"                                                                                                          ) return "tool-error";
+	if (canonical?.recovery?.issues.some(issue => issue.category === "approval")                                                           ) return "approval-needed";
+	if (canonical?.verification === "failed"                                                                                               ) return "canonical-check-failed";
+	if (result.summary.refused > 0                                                                                                         ) return "refused";
+	if (readiness.fixableGroups > readiness.approvedFixableGroups || readiness.recovery.issues.some(issue => issue.category === "approval")) return "approval-needed";
+	if (result.unsupported?.length                                                                                                         ) return "limited-coverage";
+	if (canonical?.result?.canonicalChanged                                                                                                ) return "canonical-change-needed";
+	if (result.summary.misaligned > 0                                                                                                      ) return "alignment-needed";
+	if (result.summary.suggested > 0                                                                                                       ) return "review-needed";
+	return result.summary.groups > 0 ? "clean" : "no-groups";
+}
+
 function printCheck(report: CheckReport): void {
 	const result      = report.results[0]!     ;
 	const syntax      = report.syntax          ;
 	const readiness   = report.formatReadiness ;
 	const expectation = report.axisExpectation ;
-	console.log(`check file=${result.file} groups=${result.summary.groups} misaligned=${result.summary.misaligned} refused=${result.summary.refused} suggested=${result.summary.suggested} unsupported=${result.unsupported?.length ?? 0}`);
+	console.log(`check file=${result.file} outcome=${checkOutcome(report)} groups=${result.summary.groups} misaligned=${result.summary.misaligned} refused=${result.summary.refused} suggested=${result.summary.suggested} unsupported=${result.unsupported?.length ?? 0}`);
 	for (const unsupported of result.unsupported ?? []) console.log(`unsupported line=${unsupported.line}: ${unsupported.reason}`);
 	for (const group of result.groups) if (group.semanticKind) console.log(`group ${group.semanticKind} kind=${group.kind} lines=${group.startLine}-${group.endLine} rows=${group.rows} state=${group.state}`);
 	console.log(`syntax status=${syntax.status} tool=${syntax.tool} diagnostics=${syntax.diagnostics.length}`);
@@ -908,6 +931,11 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 		if (command === "--version" || command === "-V" || command === "version") {
 			assertSimpleFlags(tail, []);
 			console.log(CLI_VERSION);
+			return 0;
+		}
+		if ((command === "check" || command === "guide" || command === "align" || command === "format")
+			&& tail.length === 1 && (tail[0] === "--help" || tail[0] === "-h")) {
+			console.log("Usage: boxbox " + FILE_COMMAND_HELP[command]);
 			return 0;
 		}
 		if (command === "run") return await guardedRun(tail, doctorReport, async (project, file) => {

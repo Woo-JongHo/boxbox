@@ -84,6 +84,10 @@ but does not automatically justify extraction, parameter changes or new wrappers
 
 ## Align an existing file
 
+Use `boxbox check --help`, `boxbox guide --help`, `boxbox align --help`, or `boxbox format --help` to see the options
+and the action that command takes. A plugin can be available in the host even when your shell cannot find the bare
+`boxbox` name. Use the plugin's configured runtime and launcher from its skill instructions in that case.
+
 ```bash
 boxbox check --source --file src/example.ts --json
 boxbox guide --file src/example.ts --json
@@ -95,6 +99,13 @@ boxbox check --source --file src/example.ts --json
 The `--source` flag keeps preflight and after-alignment checks on original source, even in a formatter project. It
 reads syntax, detected groups and approval facts without executing the formatter or staging a formatting working copy.
 The same flag works with repeated files or a directory selection; it does not approve writes.
+
+Plain-text Check starts with an `outcome` for each inspected file. `clean` means the detected groups need no changes,
+while `no-groups` means no group was found. `alignment-needed`, `approval-needed`, `limited-coverage`, and
+`review-needed` explain what needs attention even when the syntax is valid. Unsupported rows can still produce
+exit code `0` on a source check. Syntax errors and parser failures appear as `syntax-error` and `tool-error`.
+`refused`, `canonical-check-failed`, and `canonical-change-needed` describe a refused group or an issue
+with the formatter-and-BoxBox result. Scripts can use the structured JSON output and existing exit codes.
 
 Align preserves physical line structure, indentation and non-layout content. It does not reorder statements, rename
 symbols, extract functions, wrap lines or execute an external formatter. If an engine proposal requires one of those
@@ -154,9 +165,11 @@ does not create the working copy or writer lock.
 
 Directory selection skips `.git`, `.boxbox`, `node_modules` and `dist`, uses bounded recursive traversal, and rejects
 symbolic links, duplicate targets and paths outside the root. It is path-based rather than a Git-ignore filter; select
-the intended source directories. Supplied POSIX paths containing a literal backslash are refused because they cannot be
-represented consistently by every approval and runtime adapter. Directory preselection validates entries before
-language filtering, so an unsupported non-source name can also stop the batch. A hook inspection error leaves that
+the intended source directories. An absolute path through an alias of a project ancestor is recognized when it resolves
+to the same project root. Paths below that root still follow the usual link checks. Supplied POSIX paths containing a
+literal backslash are refused because they cannot be represented consistently by every approval and runtime adapter.
+Directory preselection validates entries before language filtering, so an unsupported non-source name can also
+stop the batch. A hook inspection error leaves that
 event without a success receipt. Batch formats are atomic **per file**. Results retain successful earlier writes if
 another file fails; the batch is not a project-wide transaction. Every file keeps the whole-file approval gate:
 per-group selective writes remain deferred, and a positive approved-group count does not guarantee a write.

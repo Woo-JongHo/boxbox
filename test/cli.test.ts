@@ -112,6 +112,70 @@ function approvedPythonProject(root: string): void {
 }
 
 describe("public CLI", () => {
+	test("file commands show specific help before opening a project or a file", () => {
+		const root = workspace();
+		mkdirSync(join(root, ".boxbox"));
+		writeFileSync(join(root, ".boxbox/config.json"), "malformed config");
+		for (const command of ["check", "guide", "align", "format"]) {
+			for (const flag of ["--help", "-h"]) {
+				const run = invoke(root, [command, flag]);
+				expect(run.status).toBe     (0                         ) ;
+				expect(run.stdout).toContain("Usage: boxbox " + command) ;
+				expect(run.stdout).toContain("--file"                  ) ;
+			}
+		}
+		expect(invoke(root, ["check", "--help", "--unknown"]).status).toBe(2);
+	});
+
+	test("absolute paths through a project ancestor alias still enforce file boundaries", () => {
+		const home   = workspace(                 ) ;
+		const parent = join     (home, "real"     ) ;
+		const root   = join     (parent, "project") ;
+		const alias  = join     (home, "alias"    ) ;
+		mkdirSync(root, { recursive: true });
+		const file = join(root, "index.ts" ) ;
+		const json = join(root, "data.json") ;
+		writeFileSync(file, "export const value = 1;\n");
+		writeFileSync(json, "{}\n");
+		symlinkSync(parent, alias, process.platform === "win32" ? "junction" : "dir");
+		const fromAlias = join  (alias, "project", "index.ts"                              ) ;
+		const single    = invoke(root, ["check", "--source", "--file", fromAlias, "--json"]) ;
+		expect(single.status).toBe(0);
+		expect(JSON.parse(single.stdout).results[0].file).toBe("index.ts");
+		const batch = invoke(root, ["check", "--source", "--file", fromAlias, "--file", json, "--json"]);
+		expect(batch.status).toBe(0);
+		expect(JSON.parse(batch.stdout).results.map((entry: { file: string }) => entry.file)).toEqual(["index.ts", "data.json"]);
+		writeFileSync(join(parent, "outside.ts"), "export {};\n");
+		const escaped = invoke(root, ["check", "--source", "--file", join(alias, "outside.ts"), "--json"]);
+		expect(escaped.status).toBe(2);
+		expect(JSON.parse(escaped.stdout).error.code).toBe("PATH_ESCAPE");
+		symlinkSync(parent, join(root, "link"), process.platform === "win32" ? "junction" : "dir");
+		const escapedViaLink = invoke(root, ["check", "--source", "--file", join(alias, "project", "link", "outside.ts"), "--json"]);
+		expect(escapedViaLink.status).toBe(2);
+		expect(JSON.parse(escapedViaLink.stdout).error.code).toBe("PATH_ESCAPE");
+		const returnsToRoot = join  (alias, "project", "link", "project", "index.ts"                               ) ;
+		const linkedBatch   = invoke(root, ["check", "--source", "--file", returnsToRoot, "--file", json, "--json"]) ;
+		expect(linkedBatch.status).toBe(2);
+		expect(JSON.parse(linkedBatch.stdout).error.message).toContain("symbolic link");
+	});
+
+	test("plain source checks label outcomes early without changing their exit codes", () => {
+		const root = workspace();
+		for (const [file, source, code, outcome] of [
+			["clean.ts", "const one = 1 ;\nconst two = 2 ;\nconst six = 3 ;\n", 0, "clean"],
+			["align.ts", "const a = 1;\nconst longer = 2;\nconst longest = 3;\n", 1, "alignment-needed"],
+			["approval.json", '{\n "a":1,\n "longer":2,\n "longest":3\n}\n', 1, "approval-needed"],
+			["limited.yaml", "inline: [1, 2]\ntext: |\n  line\n", 0, "limited-coverage"],
+			["bad.ts", "const broken = ;\n", 2, "syntax-error"],
+		] as const) {
+			writeFileSync(join(root, file), source);
+			const result = invoke(root, ["check", "--source", "--file", file]);
+			expect(result.status, file).toBe(code);
+			expect(result.stdout.split("\n")[0], file).toContain("outcome=" + outcome);
+			expect(readFileSync(join(root, file), "utf8")).toBe(source);
+		}
+	});
+
 	test("help and version work through the real entry API", () => {
 		const root    = workspace()                    ;
 		const help    = invoke   (root, ["--help"]   ) ;

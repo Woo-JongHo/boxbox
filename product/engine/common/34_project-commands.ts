@@ -1,5 +1,5 @@
-import      { lstatSync, opendirSync, realpathSync  } from "node:fs"                        ;
-import      { extname, join, relative, resolve, sep } from "node:path"                      ;
+import      { lstatSync, opendirSync, realpathSync                     } from "node:fs"                        ;
+import      { dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path"                      ;
 
 import      { escapesRoot                           } from "@/common/18_approval-gate.ts"   ;
 import      { runFormatPipeline                     } from "@/common/21_format-pipeline.ts" ;
@@ -59,10 +59,27 @@ const LANGUAGES: Readonly<Record<string, PublicLanguage>> = {
 	".yml"  : "yaml"       ,
 };
 
-/** Reject every symbolic component, even when it resolves to another location inside the project. */
-function checkedPath(root: string, input: string): string {
+/** Replace an absolute ancestor alias at the project boundary, preserving the path below it for link checks. */
+export function resolveProjectInput(root: string, input: string): string {
 	const absolute = resolve (root, input   ) ;
 	const display  = relative(root, absolute) ;
+	if (!isAbsolute(input) || isAbsolute(display) || !escapesRoot(display)) return absolute;
+	const physicalRoot = realpathSync(root) ;
+	let resolved       = absolute           ;
+	for (let anchor = absolute; dirname(anchor) !== anchor; anchor = dirname(anchor)) {
+		const status = lstatSync(anchor, { throwIfNoEntry: false });
+		if (status?.isDirectory() && !status.isSymbolicLink() && realpathSync(anchor) === physicalRoot) {
+			// Keep the shallowest match so a link that returns to the root stays in the checked path.
+			resolved = resolve(root, relative(anchor, absolute));
+		}
+	}
+	return resolved;
+}
+
+/** Reject every symbolic component below the project root, even when it resolves inside the project. */
+function checkedPath(root: string, input: string): string {
+	const absolute = resolveProjectInput(root, input   ) ;
+	const display  = relative           (root, absolute) ;
 	if (sep === "/" && display.includes("\\")) throw new Error(`POSIX paths containing literal backslashes are unsupported: ${input}`);
 	if (escapesRoot(display)) throw new Error(`project target escapes root: ${input}`);
 	let current = root;
