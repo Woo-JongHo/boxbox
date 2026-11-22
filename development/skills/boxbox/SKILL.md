@@ -90,6 +90,15 @@ Decide in this order:
 2. Run the narrowest type check, behavioral tests and architecture checks.
 3. Show the user the actual code and measured columns, then wait for feedback.
 4. While waiting, one next candidate file may be investigated read-only by the `readability-inspector` subagent.
+
+For a fixable exact key without an applicable approval, identify a file-scoped request by a digest over the
+project-relative file, exact key, scope, affected groups, fixed before/after and preservation examples. Ask with the
+host's visible question tool using `Approve` and `Keep preview`. Tool acceptance is not visible delivery unless the host
+provides an official observable confirmation; otherwise present the same digest and choices in the conversation and
+disclose that native live-card delivery could not be confirmed. Bind the response to both the proposal digest and the
+one-time correlation ID from the active prompt, and discard that ID after one choice. Only an explicit matching user response may
+continue to proof validation and the existing Align dry-run/apply pipeline. Missing, rejected, stale, replayed and
+mismatched responses fail closed. Never create approval responses programmatically.
 5. Modify the next file only after the current file's rules are accepted. Never author two product files at the same time.
 6. Revert rejected experiments immediately and record them in the contract's discarded rules.
 

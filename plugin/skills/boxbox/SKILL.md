@@ -152,10 +152,21 @@ conversation.
    eligibility; write verification is still `not-run`), `unsupported`, `groups` and their `PASS`, `FIXABLE`,
    `REFUSE` states. This source-only report does not verify a formatter canonical result or authorize a write. A refused
    group stays unchanged by alignment.
-2. Read `guide --json` for applicable approved rules. With no approved rule, report the candidate and missing evidence;
-   do not align it by hand, auto-approve it or use a raw writer.
-3. For Check, report findings. For Align preview, run `align --dry-run --json`. For authorized application, inspect the
-   dry-run result and then run `align --json`. Summarize skipped groups and continue with any other authorized files.
+2. Read `guide --json` for applicable approved rules. With no approved rule for a fixable exact key, prepare one
+   file-scoped approval request with `approval-preview --file ... --key ... --json`, containing the
+   project-relative target and current source hash, exact key, file scope, affected line ranges,
+   fixed before/after and preservation examples, and the proposal digest. Ask with the host's visible question tool
+   using exactly `Approve` and `Keep preview`. Tool acceptance is not proof that the user saw it: unless the host exposes
+   an official observable visible-delivery result, immediately present the same identified request and choices in the
+   conversation and state that native live-card delivery could not be confirmed. Bind the reply to the exact digest
+   and the one-time correlation ID shown by that active prompt, then discard the correlation after one choice;
+   missing, stale, replayed, rejected or mismatched replies do not authorize a write. Do not align by hand, auto-approve
+   the rule, create a response on the user's behalf or use a raw writer. The digest is correlation metadata, never human
+   proof or evidence of response authorship. After the reply, regenerate the preview from current bytes and require the
+   same digest. The CLI is preview-only and does not accept a response or authorize application.
+3. For Check, report findings. For Align preview, run `align --dry-run --json`. After explicit digest-bound approval,
+   validate the existing rule proof, then run that dry-run and `align --json`; the handoff never replaces parser,
+   preservation or fixed-point checks. Summarize applied and skipped groups and continue with other authorized files.
 4. After application, rerun `check --source --json`, reconcile user-requested boundaries with the final returned axes, and report
    missing coverage alongside the remaining `misaligned` count. Zero detected groups
    or zero misalignment does not prove that unsupported code follows the requested style. Report only validations actually run.

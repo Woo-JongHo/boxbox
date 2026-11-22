@@ -1,4 +1,5 @@
 import      { readFileSync, writeFileSync } from "node:fs";
+import      { createHash                  } from "node:crypto";
 
 import      { assertAlignmentOnly        } from "@/common/10_alignment-only.ts"        ;
 import      { comparePythonStructure     } from "@/common/08_parse-check.ts"            ;
@@ -21,7 +22,7 @@ import      { loadSourceFile              } from "@/typescript/15_load-source-fi
 
 import type { Edit                       } from "@/typescript/12_align.ts"                   ;
 
-interface TablePlan {
+export interface TablePlan {
 	readonly group    : ResultGroup     ;
 	readonly edits    : readonly Edit[] ;
 	readonly vertical : boolean         ;
@@ -116,6 +117,68 @@ function applyPlans(source: string, plans: readonly TablePlan[]): string {
 	}
 	chunks.push(source.slice(cursor));
 	return chunks.join("");
+}
+
+export interface AlignmentProposal {
+	readonly key        : string                                                                                                   ;
+	readonly groups     : readonly { readonly startLine: number; readonly endLine: number; readonly kind: string }[]               ;
+	readonly examples   : readonly { readonly label: "fixed" | "preservation"; readonly before: string; readonly after: string }[] ;
+	readonly sourceHash : string                                                                                                   ;
+}
+
+/** Builds a read-only proposal only from an exact fixable engine selection on the current source bytes. */
+export async function prepareAlignmentProposal(options: FormatPipelineOptions, working: string, display: string, key: string): Promise<AlignmentProposal> {
+	const source = readFileSync   (working) ;
+	const text   = source.toString("utf8" ) ;
+	if (!Buffer.from(text, "utf8").equals(source)) throw new Error("approval preview requires valid UTF-8 source bytes");
+	await requireValidSyntax(options, working);
+
+	const plans    = await plansFor(options, working, text)                                                                            ;
+	const matching = plans.filter(plan => lookupKeyOf(options.language, plan.group.context, plan.group.kind, plan.group.axes) === key) ;
+	if (matching.length === 0) throw new Error("exact rule key does not match a detected group");
+	if (matching.some(plan => plan.group.state === "REFUSE" || plan.group.state === "SUGGEST" || plan.vertical)) throw new Error("exact rule key includes a refused or structural group");
+	const selected = matching.filter(plan => plan.group.state === "FIXABLE" && plan.edits.length > 0);
+	if (selected.length === 0) throw new Error("exact rule key has no fixable edit");
+	if (selected.some(plan => plans.some(other => other !== plan && overlaps(plan.group, other.group)))) throw new Error("exact rule key overlaps another detected group");
+
+	const approval = evaluateApproval(options.registry, { key, file: display }, options.resolveDocument);
+	if (approval.status === "approved" && approval.writable) throw new Error("exact rule key is already approved for this file");
+	if (approval.status === "rejected" || approval.status === "conflict") throw new Error(`exact rule key cannot be proposed: ${approval.reasons.join(", ")}`);
+
+	const candidate = applyPlans(text, selected)                                                                           ;
+	const parsed    = options.language === "typescript" ? (await loadSourceFile(options.root, working)).source : undefined ;
+	assertAlignmentOnly(source, Buffer.from(candidate), options.language, parsed);
+	verifyOwnedLines(text, candidate, options.language, selected);
+	if (options.language === "typescript") {
+		const layout = await compareTypeScriptLayout(options.root, working, text, candidate);
+		if (layout.status !== "preserved") throw new Error(`layout preservation failed: ${layout.reason}`);
+	}
+	if (options.language === "python") {
+		const structure = comparePythonStructure(text, candidate);
+		if (structure.status !== "ok") throw new Error(`Python AST preservation failed: ${structure.delta.join(", ")}`);
+	}
+
+	const lines     = text     .split(/\r\n|[\r\n\u2028\u2029]/u) ;
+	const nextLines = candidate.split(/\r\n|[\r\n\u2028\u2029]/u) ;
+	const fixed = selected.map(({ group }) => ({
+		label  : "fixed" as const                                               ,
+		before : lines.slice(group.startLine - 1, group.endLine).join("\n")     ,
+		after  : nextLines.slice(group.startLine - 1, group.endLine).join("\n") ,
+	}));
+	const excerptGroup = selected[0]!.group                                                                     ;
+	const excerptStart = Math.max(0, excerptGroup.startLine - 2)                                                ;
+	const excerptEnd   = Math.min(lines.length, excerptStart + 5)                                               ;
+	const before       = lines.slice(excerptStart, excerptEnd)                                                  ;
+	const after        = nextLines.slice(excerptStart, excerptEnd)                                              ;
+	const unchanged    = before.filter((line, index) => line.trim() !== "" && line === after[index]).join("\n") ;
+	if (!readFileSync(working).equals(source)) throw new Error("source changed while preparing the approval proposal");
+
+	return {
+		key,
+		groups     : selected.map(({ group }) => ({ startLine: group.startLine, endLine: group.endLine, kind: group.kind }))             ,
+		examples   : [...fixed, { label: "preservation", before: unchanged || before.join("\n"), after: unchanged || after.join("\n") }] ,
+		sourceHash : `sha256:${createHash("sha256").update(source).digest("hex")}`                                                       ,
+	};
 }
 
 function verifyOwnedLines(before: string, after: string, language: PublicLanguage, selected: readonly TablePlan[]): void {
