@@ -33,15 +33,15 @@ function projectDocument(source: string, installerName: string): string {
 export function buildInstallerArtifact(): string {
 	run("bun", ["run", "sync:plugin"]);
 	run("bun", ["run", "pack:cli"]);
-	const product     = JSON.parse(readFileSync(join(ROOT, "product.json"), "utf8")) as { displayName: string; npmName: string }                                                                                                                         ;
-	const manifest    = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")) as { name: string; version: string }                                                                                                                                ;
-	const marketplace = JSON.parse(readFileSync(join(ROOT, ".agents/plugins/marketplace.json"), "utf8")) as { name: string }                                                                                                                             ;
-	const output      = join(ROOT, "dist/installer-package")                                                                                                                                                                                             ;
-	const payload     = join(output, "payload")                                                                                                                                                                                                          ;
-	const enginePath  = join(ROOT, "dist", `${manifest.name}-${manifest.version}.tgz`)                                                                                                                                                                   ;
+	const product     = JSON.parse(readFileSync(join(ROOT, "product.json"), "utf8")) as { displayName: string; npmName: string } ;
+	const manifest    = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")) as { name: string; version: string }        ;
+	const marketplace = JSON.parse(readFileSync(join(ROOT, ".agents/plugins/marketplace.json"), "utf8")) as { name: string }     ;
+	const output      = join(ROOT, "dist/installer-package")                                                                     ;
+	const payload     = join(output, "payload")                                                                                  ;
+	const enginePath  = join(ROOT, "dist", `${manifest.name}-${manifest.version}.tgz`)                                           ;
 
-	const provenance  = JSON.parse(readFileSync(join(ROOT, "dist/cli/provenance.json"), "utf8")) as { schemaVersion: number; cliSha256: string; source: { commit: string; ref: string; repository: string | null; dirty: boolean } }                             ;
-	const cliSha256   = createHash("sha256").update(readFileSync(join(ROOT, "dist/cli/dist/cli.js"))).digest("hex")                                                                                                                                      ;
+	const provenance = JSON.parse(readFileSync(join(ROOT, "dist/cli/provenance.json"), "utf8")) as { schemaVersion: number; cliSha256: string; source: { commit: string; ref: string; repository: string | null; dirty: boolean } } ;
+	const cliSha256  = createHash("sha256").update(readFileSync(join(ROOT, "dist/cli/dist/cli.js"))).digest("hex")                                                                                                                  ;
 	if (provenance.schemaVersion !== 1 || provenance.cliSha256 !== cliSha256 || !/^[0-9a-f]{40}$/u.test(provenance.source.commit)) throw new Error("CLI provenance does not match the freshly built engine.");
 
 	const metadata = { name: manifest.name, npmName: product.npmName, version: manifest.version, displayName: product.displayName, marketplace: marketplace.name, engineSha256: createHash("sha256").update(readFileSync(enginePath)).digest("hex"), engineCliSha256: cliSha256, source: provenance.source } ;
