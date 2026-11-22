@@ -1,4 +1,6 @@
-import      { chmodSync, cpSync, mkdirSync, rmSync } from "node:fs"            ;
+import      { spawnSync                              } from "node:child_process" ;
+import      { createHash                             } from "node:crypto"        ;
+import      { chmodSync, cpSync, mkdirSync, rmSync   } from "node:fs"            ;
 import      { resolve                              } from "node:path"          ;
 
 import      { preparePublicPreset                  } from "./public-preset.ts" ;
@@ -8,6 +10,14 @@ const template     = resolve            (root           , "product/packages/cli"
 const output       = resolve            (root           , "dist/cli"                              ) ;
 const preset       = resolve            (root           , "product/rules/presets/recommended"     ) ;
 const publicPreset = preparePublicPreset(preset                                                   ) ;
+
+function git(args: readonly string[]): string {
+	const child = spawnSync("git", args, { cwd: root, encoding: "utf8", timeout: 30_000 });
+	if (child.error) throw child.error;
+	if (child.status !== 0) throw new Error(`git failed: ${child.stderr}`);
+
+	return child.stdout.trim();
+}
 
 rmSync(output, { recursive: true, force: true });
 mkdirSync(resolve(output, "dist"), { recursive: true });
@@ -49,5 +59,16 @@ for (const forbidden of ["Bun.", "bun:", "@/", root, "internal-runner", "00_norm
 }
 if (!bundle.includes("yaml@2.9.1")) throw new Error("public CLI bundle is missing the statically bundled yaml parser identity");
 chmodSync(bundlePath, 0o755);
+const provenance = {
+	schemaVersion : 1                                                                                                ,
+	cliSha256     : createHash("sha256").update(Buffer.from(await Bun.file(bundlePath).arrayBuffer())).digest("hex") ,
+	source        : {
+		commit     : git(["rev-parse", "HEAD"])                                           ,
+		ref        : process.env.GITHUB_REF ?? git(["rev-parse", "--abbrev-ref", "HEAD"]) ,
+		repository : process.env.GITHUB_REPOSITORY ?? null                                ,
+		dirty      : git(["status", "--porcelain"]).length > 0                            ,
+	},
+};
+await Bun.write(resolve(output, "provenance.json"), JSON.stringify(provenance, null, "\t") + "\n");
 
 console.log(output);

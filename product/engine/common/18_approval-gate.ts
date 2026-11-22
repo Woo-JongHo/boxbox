@@ -146,10 +146,13 @@ export function documentResolver(roots: DocumentRoots): DocumentResolver {
 	};
 }
 
-function resolveConvention(registry: ApprovalRegistry, query: ApprovalQuery): { readonly status: ApprovalResult["status"]; readonly convention?: LoadedConvention; readonly reasons: readonly string[] } {
+function resolveConvention(registry: ApprovalRegistry, query: ApprovalQuery, resolveDocument: DocumentResolver): { readonly status: ApprovalResult["status"]; readonly convention?: LoadedConvention; readonly reasons: readonly string[] } {
 	if (!query.key.startsWith(`v${LOOKUP_KEY_VERSION}|`)) return { status: "unknown", reasons: ["stale lookup key"] };
-	const path       = query.file.replaceAll("\\", "/").replace(/^\.\//u, "")                                                   ;
-	const candidates = registry.conventions.filter(record => record.key === query.key && globToRegExp(record.scope).test(path)) ;
+
+	const path       = query.file           .replaceAll("\\", "/").replace(/^\.\//u, "")                 ;
+	const exact      = registry.conventions .filter    (record => record.key === query.key)              ;
+	const candidates = exact                .filter    (record => globToRegExp(record.scope).test(path)) ;
+
 	for (const layer of LAYER_ORDER) {
 		const inLayer = candidates.filter(record => record.layer === layer);
 		if (inLayer.length === 0) continue;
@@ -161,7 +164,11 @@ function resolveConvention(registry: ApprovalRegistry, query: ApprovalQuery): { 
 		if (convention.status === "rejected")  return { status: "rejected", convention, reasons: ["convention is rejected"] };
 		return { status: "approved", convention, reasons: [] };
 	}
-	return { status: "unknown", reasons: ["no matching convention"] };
+
+	const approvedElsewhere = exact.some(record =>
+		record.status === "approved" && verifyProof(registry, record, resolveDocument).reasons.length === 0
+	);
+	return { status: "unknown", reasons: [approvedElsewhere ? "exact convention is approved for a different file scope" : "no matching convention"] };
 }
 
 function versionsMatch(versions: Readonly<Record<string, number>>): boolean {
@@ -222,7 +229,7 @@ function verifyProof(registry: ApprovalRegistry, convention: LoadedConvention, r
 
 /** Checks the exact-key lookup and the approval proof together. writable is true only for an approved entry whose proofs all verify. */
 export function evaluateApproval(registry: ApprovalRegistry, query: ApprovalQuery, resolveDocument: DocumentResolver): ApprovalResult {
-	const found = resolveConvention(registry, query);
+	const found = resolveConvention(registry, query, resolveDocument);
 	if (found.status !== "approved" || !found.convention) {
 		return { status: found.status, writable: false, conventionId: found.convention?.id, layer: found.convention?.layer, reasons: found.reasons, guide: [], text: `Approval denied: ${found.reasons.join("; ")}` };
 	}
