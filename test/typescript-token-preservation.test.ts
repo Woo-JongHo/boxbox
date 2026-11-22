@@ -322,9 +322,9 @@ describe("parser-confirmed TypeScript slash roles", () => {
 	}, 30_000);
 
 	test("one immutable parser snapshot verifies multiple cumulative candidates", async () => {
-		const before = 'const result = !/a  b/.test("a  b");';
-		const parsed = await parserSnapshot(before);
-		const candidates = [before.replace("result =", "result  ="), before.replace("result =", "result   =")];
+		const before     = 'const result = !/a  b/.test("a  b");'                                              ;
+		const parsed     = await parserSnapshot(before)                                                        ;
+		const candidates = [before.replace("result =", "result  ="), before.replace("result =", "result   =")] ;
 
 		for (const candidate of candidates) {
 			expect(preservesTokens(before, candidate, parsed)).toBe(true);
