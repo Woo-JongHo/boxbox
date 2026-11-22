@@ -74,6 +74,9 @@ The `--source` flag keeps preflight and after-alignment checks on original sourc
 reads syntax, detected groups and approval facts without executing the formatter or staging a formatting working copy.
 The same flag works with repeated files or a directory selection; it does not approve writes.
 
+Check distinguishes a missing convention from a verified approval of the exact rule for a different file scope.
+Align skips that group until an applicable approval is available for the current file.
+
 Align preserves physical line structure, indentation and non-layout content. It does not reorder statements, rename
 symbols, extract functions, wrap lines or execute an external formatter. If an engine proposal requires one of those
 changes, that group is skipped. Independently applicable groups with complete approval can still be aligned. The
