@@ -67,11 +67,17 @@ test("approval preview derives an exact fixable proposal from current safe sourc
 	expect(request                     ).toMatchObject({ projectRelativeFile: "pilot.ts", ruleKey: key, fileScope: "pilot.ts", groups: [{ kind: "interface-members" }] }        ) ;
 	expect(request.examples            ).toEqual      (expect.arrayContaining([expect.objectContaining({ label: "fixed" }), expect.objectContaining({ label: "preservation" })])) ;
 	const preservation = request.examples.find((example: { label: string }) => example.label === "preservation");
-	expect(preservation.before.split("\n").length).toBeLessThanOrEqual(5);
-	expect(preservation.before).not.toBe(source);
+	expect(preservation.before.split("\n").length)    .toBeLessThanOrEqual(5                  ) ;
+	expect(preservation.before                   ).not.toBe               (source             ) ;
+	expect(preservation.after                    )    .toBe               (preservation.before) ;
 	writeFileSync(join(root, "pilot.ts"), source.replace("key", "changedKey"));
 	const changed = invoke(root, ["approval-preview", "--file", "pilot.ts", "--key", key, "--json"], environment);
 	expect(JSON.parse(changed.stdout).delivery.request.digest).not.toBe(request.digest);
+
+	writeFileSync(join(root, "pilot.tsx"), `${source}\nconst view = <section>{"value".replace(/\\n$/, "")}<span>Code</span></section>;\n`);
+	const tsx = invoke(root, ["approval-preview", "--file", "pilot.tsx", "--key", key, "--json"], environment);
+	expect(tsx.status).toBe(0);
+	expect(JSON.parse(tsx.stdout).delivery.request.groups).toHaveLength(1);
 
 	writeFileSync(join(root, "invalid.ts"), "interface Broken {\n");
 	expect(invoke(root, ["approval-preview", "--file", "invalid.ts", "--key", key, "--json"], environment).status).toBe(2);
@@ -92,6 +98,20 @@ test("approval preview derives an exact fixable proposal from current safe sourc
 	const mixed = invoke(root, ["approval-preview", "--file", "mixed.ts", "--key", key, "--json"], environment);
 	expect(mixed.status).toBe(0);
 	expect(JSON.parse(mixed.stdout).delivery.request.groups).toHaveLength(1);
+
+	const nested = join(root, "nested"                  ) ;
+	const config = join(nested, ".boxbox", "config.json") ;
+	mkdirSync(join(nested, ".boxbox"), { recursive: true });
+	writeFileSync(join(nested, "pilot.ts"), source);
+	writeFileSync(config, JSON.stringify({ schemaVersion: 2, languages: ["typescript"] }));
+	const nestedArgs   = ["approval-preview", "--file", "nested/pilot.ts", "--key", key, "--json"] ;
+	const nestedResult = invoke(root, nestedArgs, environment)                                     ;
+	expect(nestedResult.status).toBe(0);
+	expect(JSON.parse(nestedResult.stdout).delivery.request).toMatchObject({ projectRelativeFile: "pilot.ts", fileScope: "pilot.ts" });
+	writeFileSync(config, JSON.stringify({ schemaVersion: 2, languages: ["python"] }));
+	const disabled = invoke(root, nestedArgs, environment);
+	expect(disabled.status).toBe(2);
+	expect(JSON.parse(disabled.stdout).error.code).toBe("LANGUAGE_DISABLED");
 
 	pythonFixture(root);
 	approvedPythonProject(root);

@@ -145,8 +145,9 @@ export async function prepareAlignmentProposal(options: FormatPipelineOptions, w
 	if (approval.status === "approved" && approval.writable) throw new Error("exact rule key is already approved for this file");
 	if (approval.status === "rejected" || approval.status === "conflict") throw new Error(`exact rule key cannot be proposed: ${approval.reasons.join(", ")}`);
 
-	const candidate = applyPlans(text, selected);
-	assertAlignmentOnly(source, Buffer.from(candidate), options.language);
+	const candidate = applyPlans(text, selected)                                                                           ;
+	const parsed    = options.language === "typescript" ? (await loadSourceFile(options.root, working)).source : undefined ;
+	assertAlignmentOnly(source, Buffer.from(candidate), options.language, parsed);
 	verifyOwnedLines(text, candidate, options.language, selected);
 	if (options.language === "typescript") {
 		const layout = await compareTypeScriptLayout(options.root, working, text, candidate);
@@ -164,14 +165,19 @@ export async function prepareAlignmentProposal(options: FormatPipelineOptions, w
 		before : lines.slice(group.startLine - 1, group.endLine).join("\n")     ,
 		after  : nextLines.slice(group.startLine - 1, group.endLine).join("\n") ,
 	}));
-	const excerptGroup = selected[0]!.group                       ;
-	const excerptStart = Math.max(0, excerptGroup.startLine - 2)  ;
-	const excerptEnd   = Math.min(lines.length, excerptStart + 5) ;
+	const excerptGroup = selected[0]!.group                                                                     ;
+	const excerptStart = Math.max(0, excerptGroup.startLine - 2)                                                ;
+	const excerptEnd   = Math.min(lines.length, excerptStart + 5)                                               ;
+	const before       = lines.slice(excerptStart, excerptEnd)                                                  ;
+	const after        = nextLines.slice(excerptStart, excerptEnd)                                              ;
+	const unchanged    = before.filter((line, index) => line.trim() !== "" && line === after[index]).join("\n") ;
+	if (!readFileSync(working).equals(source)) throw new Error("source changed while preparing the approval proposal");
+
 	return {
 		key,
-		groups     : selected.map(({ group }) => ({ startLine: group.startLine, endLine: group.endLine, kind: group.kind }))                                                      ,
-		examples   : [...fixed, { label: "preservation", before: lines.slice(excerptStart, excerptEnd).join("\n"), after: nextLines.slice(excerptStart, excerptEnd).join("\n") }] ,
-		sourceHash : `sha256:${createHash("sha256").update(source).digest("hex")}`                                                                                                ,
+		groups     : selected.map(({ group }) => ({ startLine: group.startLine, endLine: group.endLine, kind: group.kind }))             ,
+		examples   : [...fixed, { label: "preservation", before: unchanged || before.join("\n"), after: unchanged || after.join("\n") }] ,
+		sourceHash : `sha256:${createHash("sha256").update(source).digest("hex")}`                                                       ,
 	};
 }
 

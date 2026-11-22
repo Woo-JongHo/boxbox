@@ -99,16 +99,19 @@ Write and Refactor are agent skill workflows, not automatic CLI rewrites.`;
 async function approvalPreview(args: readonly string[], root: string): Promise<number> {
 	const keyAt = args.indexOf("--key");
 	if (keyAt < 0 || !args[keyAt + 1] || args[keyAt + 1]!.startsWith("--")) throw new CliError("APPROVAL_REQUEST_INVALID", "approval-preview requires --key <exact-rule-key>");
-	const key      = args[keyAt + 1]!                                      ;
+	const key      = args[keyAt + 1]!                                                          ;
 	const fileArgs = args.filter((_argument, index) => index !== keyAt && index !== keyAt + 1) ;
 
-	const parsed   = parseFileCommand(fileArgs, false, root)                ;
-	const context  = preparedPipelineContext(root)                          ;
+	const parsed = parseFileCommand(fileArgs, false, root) ;
+	const config = resolveConfig   (root                 ) ;
+	if (!config.effective.languages.includes(parsed.language)) throw new CliError("LANGUAGE_DISABLED", `${parsed.language} is not enabled by the effective configuration`);
 
+	const context  = preparedPipelineContext(root, config.fingerprint)                                                                                                                                                        ;
 	const proposal = await prepareAlignmentProposal({ ...context, root, file: parsed.file, language: parsed.language, alignmentOnly: true, dryRun: true }, resolve(root, parsed.file), parsed.file.split(sep).join("/"), key) ;
+	context.provenance?.();
 
-	const request  = approvalRequest({ projectRelativeFile: parsed.file.split(sep).join("/"), targetSha256: proposal.sourceHash, ruleKey: proposal.key, fileScope: parsed.file.split(sep).join("/"), groups: proposal.groups, examples: proposal.examples }) ;
-	const delivery = approvalDelivery(request, { interactiveControls: false, requestAccepted: false, visibleConfirmed: false }) ;
+	const request  = approvalRequest ({ projectRelativeFile: parsed.file.split(sep).join("/"), targetSha256: proposal.sourceHash, ruleKey: proposal.key, fileScope: parsed.file.split(sep).join("/"), groups: proposal.groups, examples: proposal.examples }) ;
+	const delivery = approvalDelivery(request, { interactiveControls: false, requestAccepted: false, visibleConfirmed: false }                                                                                                                              ) ;
 	emitJson({ schemaVersion: 1, tool: "boxbox", command: "approval-preview", ok: true, delivery, authorization: false, limitation: "Preview only: the CLI cannot observe native live-prompt visibility or accept approval. After a user reply, regenerate from current bytes and require the same digest plus existing human proof before Align." });
 	return 0;
 }
@@ -1084,8 +1087,8 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 			assertSimpleFlags(tail, ["--json"]);
 			return doctor(project, json);
 		}
-		if (command === "approval-preview") return await approvalPreview(tail, assertRoot(root));
 		const { root: project, args: options } = fileProjectScope(assertRoot(root), tail);
+		if (command === "approval-preview") return await approvalPreview(options, project);
 		if (command === "check" || command === "format") {
 			const parsed = parseProjectCommand(options, command, project);
 			if (parsed.batch) return await projectCommand(parsed.files, command, project);
