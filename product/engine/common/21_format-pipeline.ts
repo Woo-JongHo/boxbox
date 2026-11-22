@@ -215,14 +215,14 @@ export async function runFormatPipeline(given: FormatPipelineOptions): Promise<F
 				throw new Error("Unsupported Python source encoding or line endings");
 			}
 		}
-		if (options.alignmentOnly) {
-			const aligned = await alignApproved(options, working, display);
+		const aligned = options.alignmentOnly ? await alignApproved(options, working, display) : undefined;
+		if (aligned) {
 			skippedGroups = aligned.skippedGroups;
 			first = { formatter: null, formatterChanged: false, approvals: aligned.approvals, boxboxChanged: aligned.boxboxChanged };
 		} else first = await cycle(options, working, display);
 		const firstOutput = readFileSync(working);
 		canonicalChanged = !firstOutput.equals(initial);
-		if (options.alignmentOnly) assertAlignmentOnly(initial, firstOutput, options.language);
+		if (aligned) assertAlignmentOnly(initial, firstOutput, options.language, aligned.originalTypeScriptSource);
 		if (options.alignmentOnly && options.dryRun) {
 			const originalLines  = initial.toString("utf8").split(/\r\n|[\r\n\u2028\u2029]/u)     ;
 			const candidateLines = firstOutput.toString("utf8").split(/\r\n|[\r\n\u2028\u2029]/u) ;

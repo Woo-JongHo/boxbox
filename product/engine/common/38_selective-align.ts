@@ -194,14 +194,14 @@ export async function alignApproved(options: FormatPipelineOptions, working: str
 
 		throw new AlignmentSelectionError(`${message}: ${first.reasons.join(", ")}. ${visible.join("; ")}${rest ? `; +${rest} groups` : ""}`, skippedGroups);
 	}
-	const parsed = options.language === "typescript" ? (await loadSourceFile(options.root, working)).source : undefined;
+	const originalTypeScriptSource = options.language === "typescript" ? (await loadSourceFile(options.root, working)).source : undefined;
 
 	let current    = text                    ;
 	const original = [...selection.values()] ;
 	const selected = [...original]           ;
 	for (let pass = 0; pass < 5 && selected.some(plan => plan.edits.length > 0); pass += 1) {
 		const candidate = applyPlans(current, selected)                                                                        ;
-		assertAlignmentOnly(source, Buffer.from(candidate), options.language, parsed);
+		assertAlignmentOnly(source, Buffer.from(candidate), options.language, originalTypeScriptSource);
 		verifyOwnedLines(text, candidate, options.language, original);
 
 		if (options.language === "typescript") {
@@ -239,5 +239,5 @@ export async function alignApproved(options: FormatPipelineOptions, working: str
 	}
 
 	if (selected.some(plan => plan.edits.length > 0)) throw new Error("alignment did not reach a byte fixed point");
-	return { approvals: [...approvals].sort(), skippedGroups, boxboxChanged: current !== text };
+	return { approvals: [...approvals].sort(), skippedGroups, boxboxChanged: current !== text, originalTypeScriptSource };
 }

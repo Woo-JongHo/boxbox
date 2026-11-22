@@ -116,10 +116,11 @@ interface ParsedToken {
 }
 
 interface OpaqueToken {
-	readonly index        : number     ;
-	readonly kind         : SyntaxKind ;
-	readonly text         : string     ;
-	readonly allowCodeGap : boolean    ;
+	readonly index              : number             ;
+	readonly kind               : SyntaxKind         ;
+	readonly text               : string             ;
+	readonly allowCodeGap       : boolean            ;
+	readonly followingCharacter : string | undefined ;
 }
 
 interface ScanTrace {
@@ -203,10 +204,14 @@ function scan(
 			&& !(expected.allowCodeGap && /^[\s\uFEFF]$/u.test(text[cursor] ?? ""))
 			? expected : undefined;
 		if (literal || replayLiteral) {
-			const kind  = literal?.kind ?? replayLiteral!.kind                ;
-			const end   = literal?.end ?? cursor + replayLiteral!.text.length ;
-			const value = text.slice(cursor, end)                             ;
-			opaqueTokens.push({ index: tokenIndex, kind, text: value, allowCodeGap: literal?.allowCodeGap ?? replayLiteral!.allowCodeGap });
+			const kind               = literal?.kind ?? replayLiteral!.kind                 ;
+			const end                = literal?.end ?? cursor + replayLiteral!.text.length  ;
+			const value              = text.slice(cursor, end)                              ;
+			const allowCodeGap       = literal?.allowCodeGap ?? replayLiteral!.allowCodeGap ;
+			const followingCharacter = allowCodeGap ? undefined : text[end]                 ;
+			// JSX text owns whitespace up to the next parser delimiter.
+			if (replayLiteral && followingCharacter !== replayLiteral.followingCharacter) throw new TypeScriptSlashAmbiguityError();
+			opaqueTokens.push({ index: tokenIndex, kind, text: value, allowCodeGap, followingCharacter });
 			emit(kind, value, cursor, end);
 			scanner.resetTokenState(end);
 			lastEnd          = end      ;
