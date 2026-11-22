@@ -146,24 +146,6 @@ export function documentResolver(roots: DocumentRoots): DocumentResolver {
 	};
 }
 
-/** One operation's proof snapshot. A write boundary must validate provenance with a fresh resolver. */
-export function documentSnapshot(roots: DocumentRoots): DocumentResolver {
-	const resolve  = documentResolver(roots)                         ;
-	const captured = new Map<string, ReturnType<DocumentResolver>>() ;
-
-	return (ref, layer) => {
-		const key      = JSON    .stringify([layer ?? null, ref]) ;
-		const previous = captured.get      (key                 ) ;
-		if (previous) return previous;
-
-		const current = resolve(ref, layer);
-
-		captured.set(key, current);
-
-		return current;
-	};
-}
-
 function resolveConvention(registry: ApprovalRegistry, query: ApprovalQuery): { readonly status: ApprovalResult["status"]; readonly convention?: LoadedConvention; readonly reasons: readonly string[] } {
 	if (!query.key.startsWith(`v${LOOKUP_KEY_VERSION}|`)) return { status: "unknown", reasons: ["stale lookup key"] };
 	const path       = query.file.replaceAll("\\", "/").replace(/^\.\//u, "")                                                   ;
@@ -256,4 +238,22 @@ export function evaluateDetected(registry: ApprovalRegistry, detected: readonly 
 		const query = { key: lookupKeyOf(group.language, group.context, group.kind, group.axes), file: group.file };
 		return { query, result: evaluateApproval(registry, query, resolveDocument) };
 	});
+}
+
+/** One operation's proof snapshot. A write boundary must validate provenance with a fresh resolver. */
+export function documentSnapshot(roots: DocumentRoots): DocumentResolver {
+	const resolve  = documentResolver(roots)                         ;
+	const captured = new Map<string, ReturnType<DocumentResolver>>() ;
+
+	return (ref, layer) => {
+		const key      = JSON    .stringify([layer ?? null, ref]) ;
+		const previous = captured.get      (key                 ) ;
+		if (previous) return previous;
+
+		const current = resolve(ref, layer);
+
+		captured.set(key, current);
+
+		return current;
+	};
 }
