@@ -125,10 +125,10 @@ interface ParsedFileCommand {
 }
 
 interface CliErrorEnvelope {
-	readonly schemaVersion : 1                                                                                                              ;
-	readonly tool          : "boxbox"                                                                                                       ;
-	readonly command       : string                                                                                                         ;
-	readonly ok            : false                                                                                                          ;
+	readonly schemaVersion : 1                                                                                                                                                  ;
+	readonly tool          : "boxbox"                                                                                                                                           ;
+	readonly command       : string                                                                                                                                             ;
+	readonly ok            : false                                                                                                                                              ;
 	readonly error         : { readonly code: string; readonly message: string; readonly skippedGroups?: readonly SkippedAlignmentGroup[]; readonly recovery?: RecoveryReport } ;
 }
 
@@ -1040,9 +1040,9 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 			const original = parseFileCommand(["--file", file], false, project).file;
 			return { result: { ...result, file: result.file === parsed.file ? original : original.split(sep).join("/") }, syntax };
 		}, {
-			version           : CLI_VERSION          ,
-			align             : alignApprovedHook    ,
-			inspectionContext : hookInspectionContext,
+			version           : CLI_VERSION           ,
+			align             : alignApprovedHook     ,
+			inspectionContext : hookInspectionContext ,
 		});
 		if (command === "hooks" && tail[0] === "workflow") return runHookWorkflow(tail.slice(1), assertRoot(root));
 		if (command === "hooks"                          ) return installHooks(tail);

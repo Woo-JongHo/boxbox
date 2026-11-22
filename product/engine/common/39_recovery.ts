@@ -101,9 +101,13 @@ export class PipelineError extends Error {
 export function typeScriptWriteFailure(report: string, file: string, code: number): PipelineError {
 	const message = `BoxBox alignment failed with exit code ${code}`;
 	try {
-		const result   = JSON.parse(report).results[0] as FileResult                                                                                       ;
-		const recovery = resultRecovery({ ...result, groups: result.groups.filter(group => group.state === "SUGGEST" || group.state === "REFUSE") }, file) ;
-		return new PipelineError(message, recovery.issues.length ? recovery : operationRecovery(file, "safety", `TypeScript writer verification failed with exit code ${code}`));
+		const result   = JSON.parse(report).results[0] as FileResult                                                                           ;
+		const groups   = result.groups.filter(group => group.state === "SUGGEST" || group.state === "REFUSE")                                  ;
+		const recovery = resultRecovery({ ...result, groups }, file)                                                                           ;
+		const findings = groups.slice(0, 5).map(group => `L${group.startLine}-${group.endLine} ${group.kind}: ${group.reason ?? group.state}`) ;
+		const omitted  = groups.length - findings.length                                                                                       ;
+		const detail   = findings.length ? ` (${findings.join("; ")}${omitted ? `; +${omitted} groups` : ""})` : ""                            ;
+		return new PipelineError(`${message}${detail}`, recovery.issues.length ? recovery : operationRecovery(file, "safety", `TypeScript writer verification failed with exit code ${code}`));
 	} catch {
 		return new PipelineError(message, operationRecovery(file, "tool", `TypeScript writer returned exit code ${code} without a readable result report`));
 	}

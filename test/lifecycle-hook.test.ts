@@ -364,7 +364,7 @@ test("hooks inspect all four supported language boundaries without changing sour
 }, 60_000);
 
 test("unchanged structured posts reuse inspection, corrupt cache recovers, and Stop remains fresh", () => {
-	const root    = project()                    ;
+	const root    = project()                   ;
 	const session = "structured-cache-recovery" ;
 	hook(root, "session", { session_id: session });
 	writeFileSync(join(root, "sample.json"), "{\n  \"a\": 1,\n  \"longer\": 22,\n  \"mid\": 333\n}\n");
@@ -446,11 +446,11 @@ test("Bash and Edit suppress repeated feedback for the same observed source", ()
 	const receipt = receiptOf     (bash                                                            ) ;
 	const context = JSON.stringify(bash.hookSpecificOutput                                         ) ;
 	expect(bash.decision).toBeUndefined();
-	expect(receipt.state                                                         ).toBe     ("FAIL"                                  ) ;
-	expect(context                                                               ).toContain("PostToolUse: FAIL"                     ) ;
+	expect(receipt.state                                                         ).toBe     ("FAIL"                                                         ) ;
+	expect(context                                                               ).toContain("PostToolUse: FAIL"                                            ) ;
 	expect(context                                                               ).toContain("checked=1, inspected=1, reused=0, groups=1, filesWithGroups=1") ;
-	expect(hook(root, "post", { session_id: "bash-advisory", tool_name: "Bash" })).toEqual  ({}                                      ) ;
-	expect(hook(root, "post", { session_id: "bash-advisory", tool_name: "Edit" })).toEqual  ({}                                      ) ;
+	expect(hook(root, "post", { session_id: "bash-advisory", tool_name: "Bash" })).toEqual  ({}                                                             ) ;
+	expect(hook(root, "post", { session_id: "bash-advisory", tool_name: "Edit" })).toEqual  ({}                                                             ) ;
 }, 60_000);
 
 test("a dangling PostToolUse marker is a losing claim and never creates its external target", () => {

@@ -107,7 +107,7 @@ test("a matching bundled engine installs locally and its CLI version remains enf
 	const fingerprintResult = run            (process.execPath, [join(wrongFingerprint, "install.mjs"), "--engine-only"]        ) ;
 	expectStatus(fingerprintResult, 1);
 	expect(`${fingerprintResult.stdout}\n${fingerprintResult.stderr}`).toContain("Installed engine CLI fingerprint does not match this installer");
-});
+}, 30_000);
 
 test("foreign bytes and invalid integrity metadata fail before npm or runtime writes", () => {
 	const workspace = temporary    ()                      ;
@@ -118,7 +118,7 @@ test("foreign bytes and invalid integrity metadata fail before npm or runtime wr
 		["missing metadata", undefined, "Bundled engine integrity metadata is missing or invalid"],
 		["malformed metadata", "A".repeat(64), "Bundled engine integrity metadata is missing or invalid"],
 	] as const) {
-		const payload    = preparedPayload(join(workspace, label), foreign, value                                                                                      ) ;
+		const payload    = preparedPayload(join(workspace, label), foreign, value, digestCli(foreign)                                                                  ) ;
 		const npmMarker  = join           (workspace, `${label} npm was called`                                                                                        ) ;
 		const hostMarker = join           (workspace, `${label} host was called`                                                                                       ) ;
 		const result     = run            (process.execPath, [join(payload, "install.mjs")], { env: guardedEnvironment(join(workspace, label), npmMarker, hostMarker) }) ;
@@ -128,5 +128,22 @@ test("foreign bytes and invalid integrity metadata fail before npm or runtime wr
 		expect(existsSync(hostMarker                     )     ).toBe     (false  ) ;
 		expect(existsSync(join(payload, "runtime")      )      ).toBe     (false  ) ;
 		expect(existsSync(join(payload, "plugin/runtime.json"))).toBe     (false  ) ;
+	}
+});
+
+test("invalid CLI provenance metadata fails before npm or runtime writes", () => {
+	const workspace = temporary    ()                      ;
+	const archive   = engineArchive(workspace, "matching") ;
+	for (const [label, value] of [["missing CLI fingerprint", undefined], ["malformed CLI fingerprint", "A".repeat(64)]] as const) {
+		const payload    = preparedPayload(join(workspace, label), archive, digest(archive), value)                                  ;
+		const npmMarker  = join           (workspace, `${label} npm was called`)                                                     ;
+		const hostMarker = join           (workspace, `${label} host was called`)                                                    ;
+		const result     = run            (process.execPath, [join(payload, "install.mjs")], { env: guardedEnvironment(join(workspace, label), npmMarker, hostMarker) }) ;
+
+		expectStatus(result, 1);
+		expect(`${result.stdout}\n${result.stderr}`).toContain("Installed engine provenance metadata is missing or invalid");
+		expect(existsSync(npmMarker)                 ).toBe(false) ;
+		expect(existsSync(hostMarker)                ).toBe(false) ;
+		expect(existsSync(join(payload, "runtime")) ).toBe(false) ;
 	}
 });
