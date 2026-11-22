@@ -321,6 +321,19 @@ describe("parser-confirmed TypeScript slash roles", () => {
 		expect(preservesTokens(current, extended, parsed)).toBe(false);
 	}, 30_000);
 
+	test("one immutable parser snapshot verifies multiple cumulative candidates", async () => {
+		const before = 'const result = !/a  b/.test("a  b");';
+		const parsed = await parserSnapshot(before);
+		const candidates = [before.replace("result =", "result  ="), before.replace("result =", "result   =")];
+
+		for (const candidate of candidates) {
+			expect(preservesTokens(before, candidate, parsed)).toBe(true);
+			expect(() => assertAlignmentOnly(Buffer.from(before), Buffer.from(candidate), "typescript", parsed)).not.toThrow();
+		}
+		const changedSnapshot = await parserSnapshot(candidates[0]!);
+		expect(preservesTokens(before, candidates[1]!, changedSnapshot)).toBe(false);
+	}, 30_000);
+
 	test("candidate slash roles cannot be added, removed or merged into a comment", async () => {
 		const before = 'const result = Number(2) / /a  b/.test("a  b");';
 
