@@ -111,6 +111,8 @@ export interface DetectedTable extends GroupDescription {
 	readonly startLine : number ;
 	readonly endLine   : number ;
 	readonly rows      : number ;
+	/** Exact membership when transparent rows fall inside the span. */
+	readonly rowLines? : readonly number[] ;
 	/** The shared indentation of the run — the line engine's nesting signal (design §6 L2). */
 	readonly indent : string               ;
 	readonly axes   : readonly string[]    ;
@@ -410,6 +412,16 @@ function projectedRuns(primary: AcceptedRow[][], projected: readonly AcceptedRow
 	return [...primaryTables, ...fallbackTables, ...primaryPairs, ...fallbackPairs].sort((left, right) => left[0].index - right[0].index);
 }
 
+function tableRange(run: readonly AcceptedRow[]): Pick<DetectedTable, "startLine" | "endLine" | "rows" | "rowLines"> {
+	const startLine = run[0]!.index + 1     ;
+	const endLine   = run.at(-1)!.index + 1 ;
+	const rows      = run.length            ;
+
+	return endLine - startLine + 1 === rows
+		? { startLine, endLine, rows }
+		: { startLine, endLine, rows, rowLines: run.map(row => row.index + 1) };
+}
+
 export function alignSource(source: string, aligner: LineProfiler, options: AlignOptions): AlignResult {
 	const prepared    = aligner.prepareSource?.(source)                                    ;
 	const minRows     = Math     .max  (3, options.minRows    )                            ;
@@ -486,14 +498,12 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		if (run.some(row => columnsFollowWideText(row, options.wideCharacters))) {
 			if (options.observe) observations.push({ run, alignedCodes: null, reason: "wide characters" });
 			wideRefused.push({
-				startLine : run[0].index + 1                                 ,
-				endLine   : run[run.length - 1].index + 1                    ,
-				rows      : run.length                                       ,
-				indent    : run[0].profile.indent                            ,
-				axes      : longestProfile(run).slots.map(slot => slot.axis) ,
-				widths    : columnWidths(aligner, run)                       ,
-				edits     : []                                               ,
-				refusal   : "wide-characters"                                ,
+				...tableRange(run),
+				indent  : run[0].profile.indent                            ,
+				axes    : longestProfile(run).slots.map(slot => slot.axis) ,
+				widths  : columnWidths(aligner, run)                       ,
+				edits   : []                                               ,
+				refusal : "wide-characters"                                ,
 				...display,
 			});
 			continue;
@@ -519,13 +529,11 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 			tableEdits.push({ index: row.index, before: raw, after: withCR });
 		});
 		const table: DetectedTable = {
-			startLine : run[0].index + 1                                 ,
-			endLine   : run[run.length - 1].index + 1                    ,
-			rows      : run.length                                       ,
-			indent    : run[0].profile.indent                            ,
-			axes      : longestProfile(run).slots.map(slot => slot.axis) ,
-			widths    : widths                                           ,
-			edits     : tableEdits                                       ,
+			...tableRange(run),
+			indent : run[0].profile.indent                            ,
+			axes   : longestProfile(run).slots.map(slot => slot.axis) ,
+			widths : widths                                           ,
+			edits  : tableEdits                                       ,
 			...display,
 		};
 		candidates.push(table);
@@ -541,13 +549,11 @@ export function alignSource(source: string, aligner: LineProfiler, options: Alig
 		});
 		const first = rest.rows[0]!;
 		candidates.push({
-			startLine : first.index + 1                            ,
-			endLine   : rest.rows.at(-1)!.index + 1                ,
-			rows      : rest.rows.length                           ,
-			indent    : first.profile.indent                       ,
-			axes      : first.profile.slots.map(slot => slot.axis) ,
-			widths    : widths                                     ,
-			edits     : edits                                      ,
+			...tableRange(rest.rows),
+			indent : first.profile.indent                       ,
+			axes   : first.profile.slots.map(slot => slot.axis) ,
+			widths : widths                                     ,
+			edits  : edits                                      ,
 		});
 	}
 

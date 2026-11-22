@@ -33,7 +33,7 @@ that tests passed. An ambiguous "fix this" request starts with inspection; the a
 From the target repository root, using your installed BoxBox CLI or the plugin's configured launcher:
 
 ```bash
-boxbox guide --file src/example.ts --authoring --json
+boxbox guide --file src/example.ts --authoring --brief --json
 ```
 
 This read-only request returns approved guidance for the file's language and scope even when the file is empty or does
@@ -46,7 +46,7 @@ per row, or `.map` rows over comparable lists), instead of aligning an arbitrary
 not approval, and it carries limits: no wrappers added only to fill a column, other roles stay outside the table,
 behavior is preserved, and hot paths are measured. See [grid-first authoring](../../product/rules/references/readability-contract.md#grid-first-authoring).
 
-For TypeScript the same response lists `columnSets` (each registered row kind with its ordered columns, marking the
+Omit `--brief` for rule text and examples. For TypeScript the full response lists `columnSets` (each registered row kind with its ordered columns, marking the
 kinds an approved rule covers), their exact `approvedKeys`, and `axisNotes` (what each column means). The kind-level
 `approved` flag means that an approved variant exists; it does not approve every column or context in that vocabulary.
 Python guidance lists representative variants
@@ -76,7 +76,8 @@ The same flag works with repeated files or a directory selection; it does not ap
 
 Align preserves physical line structure, indentation and non-layout content. It does not reorder statements, rename
 symbols, extract functions, wrap lines or execute an external formatter. If an engine proposal requires one of those
-changes, alignment is refused. Refusal does not authorize a broader workflow or bypass the approval gate.
+changes, that group is skipped. Independently applicable groups with complete approval can still be aligned. The
+result reports skipped groups with line ranges and reasons.
 
 The engine requires applicable human-approved rules, parser availability, preservation and fixed-point checks before
 replacing the file atomically. A dry-run also verifies the proposal but leaves the target untouched. Python alignment
@@ -135,16 +136,17 @@ the intended source directories. Supplied POSIX paths containing a literal backs
 represented consistently by every approval and runtime adapter. Directory preselection validates entries before
 language filtering, so an unsupported non-source name can also stop the batch. A hook inspection error leaves that
 event without a success receipt. Batch formats are atomic **per file**. Results retain successful earlier writes if
-another file fails; the batch is not a project-wide transaction. Every file keeps the whole-file approval gate:
-per-group selective writes remain deferred, and a positive approved-group count does not guarantee a write.
+another file fails. Format continues to require file-level approval for every selected file. A positive approved-group
+count in source Check does not guarantee that Align can safely isolate the group.
 
 ## Session modes and updates
 
-The plugin defaults to `check`. Its session modes control hooks separately from the Write/Refactor/Align/Check
-workflow you ask the agent to perform:
+The plugin defaults to `auto` when no mode preference is saved. Explicit project and global settings are retained.
+The session mode controls how hooks respond to the workflow you request.
 
 | Mode | Hook behavior |
 |---|---|
+| `auto` | Infer Write for new code, Align for explicit layout requests and Quiet for other work. Quiet records results silently. |
 | `off` | Skip inspection |
 | `check` | Inspect and report without changing source |
 | `align` | After a matched tool call, attempt approved horizontal-only alignment and inspect again; Stop remains read-only |
@@ -152,19 +154,23 @@ workflow you ask the agent to perform:
 
 ```bash
 boxbox mode
-boxbox mode align
-boxbox mode check --global
+boxbox mode off
+boxbox mode auto --global
 boxbox update --check
 boxbox update --source /absolute/path/to/boxbox --host codex
 boxbox statusline --install-shim
 ```
 
-Project mode overrides the global default; a valid `BOXBOX_MODE` overrides both for that process. Choosing `align`
-explicitly enables the bounded PostToolUse write path; it does not approve a new rule or let hooks run a structural
-refactor. Automatic plugin inspection still covers session changes, rather than replacing your project's explicit
-formatter/CI command. A failing PostToolUse report names up to three affected files and suppresses later matched-tool
-feedback while the observed source snapshot is unchanged; a new source change is inspected normally. Stop still
-rechecks and can request at most one continuation; it never writes source.
+Project mode overrides the global default. A valid `BOXBOX_MODE` overrides both for that process. An explicit
+`mode align` setting opts into approved alignment after an edit. Align inferred from the conversation only provides
+advisory notes. In automatic Write and Align, edit notes cover groups that intersect new or changed rows from the
+session. Auto stores a private baseline copy of tracked supported files in the hook data folder to compare rows.
+In a project without Git, row notes cover new files. Stop records its read-only check. Off skips snapshots and
+inspection. After turning Off back on, start a fresh session to receive edit notes.
+
+Run these commands through the host's configured plugin launcher if `boxbox` is unavailable in a separate terminal.
+For whole-file diagnostics, run `check --source --file <path>`. Its coverage distinguishes detected groups,
+undetected groups, known unsupported structures and files that could not be inspected.
 
 SessionStart checks GitHub release tags when its cached update check is at least 24 hours old. This sends no source
 content. Set `BOXBOX_UPDATE_CHECK=0` in the host environment to disable the automatic network probe. Its update cache

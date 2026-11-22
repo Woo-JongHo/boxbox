@@ -1,5 +1,5 @@
 import      { ruleData                                                   } from "@/05_rule-data.ts"                  ;
-import      { lifecycleHook, installHooks                                } from "@/common/27_lifecycle-hook.ts"      ;
+import      { lifecycleHook, installHooks, runHookWorkflow                                } from "@/common/27_lifecycle-hook.ts"      ;
 import      { createHash                                                 } from "node:crypto"                        ;
 import      { spawnSync                                                  } from "node:child_process"                 ;
 import      { existsSync, lstatSync, readFileSync, realpathSync          } from "node:fs"                            ;
@@ -17,7 +17,9 @@ import      {
 import      { resolveFormatterExecutable                                 } from "@/common/14_formatter-process.ts"   ;
 import      { runFormatPipeline                                          } from "@/common/21_format-pipeline.ts"     ;
 import type { FormatPipelineResult                                       } from "@/common/21_format-pipeline.ts"     ;
-import      { runProjectCommand, selectProjectTargets                    } from "@/common/34_project-commands.ts"    ;
+import      { AlignmentSelectionError                                   } from "@/common/38_selective-align.ts"     ;
+import type { SkippedAlignmentGroup                                      } from "@/common/38_selective-align.ts"     ;
+import      { projectPath, runProjectCommand, selectProjectTargets                    } from "@/common/34_project-commands.ts"    ;
 import type { ProjectExitCode, ProjectPipelineContext                    } from "@/common/34_project-commands.ts"    ;
 import      { buildMonitorReport, writeMonitorReport                     } from "@/common/31_monitor.ts"             ;
 import      { runMode                                                    } from "@/common/35_mode.ts"                ;
@@ -46,7 +48,7 @@ import      { AXIS_NOTES, KIND_AXES                                      } from 
 
 import      { guardedRun, guardStatus                                    } from "@/common/25_guarded-run.ts"         ;
 
-export const CLI_VERSION = "0.2.8";
+export const CLI_VERSION = "0.2.9";
 
 const HELP = `Usage: boxbox <command> [options]
 
@@ -54,10 +56,10 @@ Commands:
   check   (--file <path> | --directory <path>)... [--source] [--language typescript|python|json|yaml] [--expect-axis <axis>]... [--json]
   align   --file <path> [--language typescript|python|json|yaml] [--dry-run] [--json]
   format  (--file <path> | --directory <path>)... [--language typescript|python|json|yaml] [--dry-run] [--json]
-  guide   --file <path> [--language typescript|python|json|yaml] [--authoring] [--json]
+  guide   --file <path> [--language typescript|python|json|yaml] [--authoring [--brief]] [--json]
   init    [--json]
   doctor  [--json]
-  mode [off|check|align|refactor] [--global] [--json]
+  mode [auto|off|check|align|refactor] [--global] [--json]
   update [--check | --snooze [days] | --source <absolute-checkout>] [--host claude|codex] [--json]
   statusline [--no-color] [--left] [--wrap <command>] | --install-shim
   monitor [--project | --session <id>] [--host auto|claude|codex] [--no-paths] [--html <absolute-path>] [--json]
@@ -65,6 +67,7 @@ Commands:
   status --root <path> [--json]
   hook session|post|stop --root <path>
   hooks install codex|claude --root <path>
+  hooks workflow <session-key> author|align|quiet
   db init [--json]
   db status [--json]
 
@@ -80,7 +83,8 @@ formatter runs before BoxBox; without it BoxBox aligns approved tables directly.
 With a configured formatter, check verifies the complete formatter-then-BoxBox canonical output without replacing the source.
 check --source inspects source syntax and tables without a formatter, working copy or write attempt; it does not grant write approval.
 align preserves line breaks and indentation and never runs the configured formatter.
-guide --authoring provides scoped approved guidance before a file exists; it does not write or verify code. For TypeScript it also lists
+guide --authoring provides scoped approved guidance before a file exists; it does not write or verify code.
+Add --brief for a compact guide with approved axes. For TypeScript the full guide also lists
 the registered column sets and what each axis means, as row-design vocabulary, not approval.
 check --expect-axis reports which requested axes the detected groups cover, miss, or do not recognize; it never changes the exit code.
 monitor always writes one local HTML page inside absolute CLAUDE_PLUGIN_DATA or PLUGIN_DATA, including with --json.
@@ -92,20 +96,21 @@ interface ParsedFileCommand {
 	readonly json       : boolean           ;
 	readonly dryRun     : boolean           ;
 	readonly authoring  : boolean           ;
+	readonly brief      : boolean           ;
 	readonly sourceOnly : boolean           ;
 	readonly expectAxes : readonly string[] ;
 }
 
 interface CliErrorEnvelope {
-	readonly schemaVersion : 1                                                   ;
-	readonly tool          : "boxbox"                                            ;
-	readonly command       : string                                              ;
-	readonly ok            : false                                               ;
-	readonly error         : { readonly code: string; readonly message: string } ;
+	readonly schemaVersion : 1                                                                                                              ;
+	readonly tool          : "boxbox"                                                                                                       ;
+	readonly command       : string                                                                                                         ;
+	readonly ok            : false                                                                                                          ;
+	readonly error         : { readonly code: string; readonly message: string; readonly skippedGroups?: readonly SkippedAlignmentGroup[] } ;
 }
 
 class CliError extends Error {
-	constructor(readonly code: string, message: string) { super(message); }
+	constructor(readonly code: string, message: string, readonly skippedGroups?: readonly SkippedAlignmentGroup[]) { super(message); }
 }
 
 const messageOf = (value: unknown): string => value instanceof Error ? value.message : String(value);
@@ -117,7 +122,7 @@ function emitJson(value: unknown): void {
 function fail(command: string, json: boolean, error: unknown): number {
 	const known = error instanceof CliError ? error : new CliError("INTERNAL_ERROR", messageOf(error));
 	if (json) {
-		const envelope: CliErrorEnvelope = { schemaVersion: 1, tool: "boxbox", command, ok: false, error: { code: known.code, message: known.message } };
+		const envelope: CliErrorEnvelope = { schemaVersion: 1, tool: "boxbox", command, ok: false, error: { code: known.code, message: known.message, ...(known.skippedGroups ? { skippedGroups: known.skippedGroups } : {}) } };
 		emitJson(envelope);
 	} else console.error(`boxbox ${command}: ${known.message}`);
 	return 2;
@@ -141,20 +146,23 @@ function fileProjectScope(root: string, args: readonly string[]): { root: string
 	if (positions.length !== 1 || args.includes("--directory")) return { root, args };
 	const value = args[positions[0]! + 1];
 	if (!value || value.startsWith("--")) return { root, args };
-	const absolute = resolve(root, value);
+	const absolute = projectPath(root, value);
 	for (let directory = dirname(absolute); ; directory = dirname(directory)) {
 		const path = relative(root, directory);
 		if (path === "" || path === ".." || path.startsWith(`..${sep}`) || isAbsolute(path) || directory === dirname(directory)) return { root, args };
 		const marker = lstatSync(join(directory, ".boxbox"), { throwIfNoEntry: false });
 		if (marker?.isDirectory() && !lstatSync(directory).isSymbolicLink()) {
+			const physical = relative(realpathSync(root), realpathSync(directory));
+			if (physical === ".." || physical.startsWith(`..${sep}`) || isAbsolute(physical)) return { root, args };
+
 			return { root: directory, args: args.map((argument, index) => index === positions[0]! + 1 ? relative(directory, absolute) : argument) };
 		}
 	}
 }
 
 function insideRoot(root: string, file: string, allowMissing = false): string {
-	const absolute = resolve (root, file    ) ;
-	const path     = relative(root, absolute) ;
+	const absolute = projectPath(root, file    ) ;
+	const path     = relative   (root, absolute) ;
 	if (
 		   path === ""
 		|| path === ".."
@@ -215,6 +223,7 @@ function parseFileCommand(args: readonly string[], allowDryRun: boolean, root: s
 	let json                    = false           ;
 	let dryRun                  = false           ;
 	let authoring               = false           ;
+	let brief                   = false           ;
 	let sourceOnly              = false           ;
 	const expectAxes : string[] = []              ;
 	for (let index = 0; index < args.length; index += 1) {
@@ -224,6 +233,11 @@ function parseFileCommand(args: readonly string[], allowDryRun: boolean, root: s
 		if (argument === "--source" && allowExpect            ) {
 			if (sourceOnly) throw new CliError("DUPLICATE_OPTION", "--source may be provided only once");
 			sourceOnly = true;
+			continue;
+		}
+		if (argument === "--brief" && allowAuthoring          ) {
+			if (brief) throw new CliError("DUPLICATE_OPTION", "--brief may be provided only once");
+			brief = true;
 			continue;
 		}
 		if (argument === "--authoring" && allowAuthoring      ) {
@@ -260,13 +274,14 @@ function parseFileCommand(args: readonly string[], allowDryRun: boolean, root: s
 		}
 		throw new CliError("UNKNOWN_OPTION", `unknown option: ${argument}`);
 	}
+	if (brief && !authoring) throw new CliError("UNKNOWN_OPTION", "--brief requires --authoring");
 	if (!file) throw new CliError("MISSING_FILE", "one --file <path> is required");
 	if (sep === "/" && file.includes("\\")) throw new CliError("UNSUPPORTED_FILE_PATH", `POSIX paths containing literal backslashes are unsupported: ${file}`);
 	const absolute = insideRoot      (root, file, authoring) ;
 	const inferred = inferredLanguage(absolute             ) ;
 	if (!inferred) throw new CliError("UNSUPPORTED_LANGUAGE", `cannot infer a supported language from: ${file}`);
 	if (language && language !== inferred) throw new CliError("LANGUAGE_MISMATCH", `--language ${language} does not match ${file}`);
-	return { file: relative(root, absolute), language: language ?? inferred, json, dryRun, authoring, sourceOnly, expectAxes };
+	return { file: relative(root, absolute), language: language ?? inferred, json, dryRun, authoring, brief, sourceOnly, expectAxes };
 }
 
 function parseProjectCommand(args: readonly string[], command: "check" | "format", root: string) {
@@ -616,18 +631,28 @@ function formatReadiness(parsed: ParsedFileCommand, root: string, result: FileRe
 				})),
 			context.resolveDocument
 		);
+		const locations = new Map<string, { kind: string; startLine: number; endLine: number }[]>();
+		for (const [index, group] of groups.entries()) {
+			const { kind, startLine, endLine } = eligible[index]!;
+			const ranges = locations.get(group.query.key) ?? [];
+			ranges.push({ kind, startLine, endLine });
+			locations.set(group.query.key, ranges);
+		}
 		const approvalFacts = [...new Map(groups.map(group => [group.query.key, {
 			key           : group.query.key,
 			status        : group.result.status,
 			...(group.result.conventionId ? { conventionId: group.result.conventionId } : {}),
 			...(group.result.layer ? { layer: group.result.layer } : {}),
-			proofComplete : group.result.status === "approved" && group.result.writable,
-			reasons       : group.result.reasons,
+			proofComplete : group.result.status === "approved" && group.result.writable ,
+			reasons       : group.result.reasons                                        ,
+			locations     : locations.get(group.query.key)!                             ,
 		}])).values()];
 		const approvedFixableGroups = groups.filter((group, index) => eligible[index]!.state === "FIXABLE" && group.result.status === "approved" && group.result.writable).length ;
-		const reasons               = groups.flatMap(group => group.result.reasons)                                                                                               ;
+		const reasons               = [...new Set(groups.flatMap(group => group.result.reasons))]                                                                                 ;
 		if (syntax.status !== "valid") reasons.push(`syntax ${syntax.status}: ${syntax.diagnostics.join("; ")}`);
-		if (result.groups.some(group => group.state === "REFUSE")) reasons.push("BoxBox safety refusal prevents formatting");
+		for (const group of result.groups) if (group.state === "REFUSE") {
+			reasons.push(`L${group.startLine}-${group.endLine} ${group.kind}: ${group.reason ?? "BoxBox safety refusal prevents formatting"}`);
+		}
 		if (groups.length === 0) reasons.push("no verified approval rule applies to this file");
 		return {
 			mode                                    ,
@@ -660,14 +685,17 @@ async function inspectCheck(parsed: ParsedFileCommand, root: string) {
 	const result = syntax.status === "valid"
 		? await inspectFile(parsed, root, syntax)
 		: { file: parsed.file, language: parsed.language, mode: "check" as const, summary: { groups: 0, misaligned: 0, edits: 0, refused: 0, suggested: 0 }, groups: [], parse: { status: "not-run" as const, tool: "" } };
-	const readiness                 = formatReadiness(parsed, root, result, syntax)                                                                                                                           ;
-	const vocabulary                = parsed.language === "typescript" ? AXIS_NOTES : parsed.language === "python" ? PYTHON_AXIS_NOTES : undefined                                                            ;
-	const known                     = vocabulary ? new Set(Object.keys(vocabulary).map(baseAxis)) : undefined                                                                                                 ;
-	const expectedGroups            = parsed.language === "python" ? result.groups.map(group => ({ ...group, axes: group.axes.map(normalizeAxis) })) : result.groups                                          ;
-	const requestedAxes             = parsed.language === "python" ? parsed.expectAxes.map(normalizeAxis) : parsed.expectAxes                                                                                 ;
-	const expectation               = parsed.expectAxes.length ? axisExpectation(expectedGroups, requestedAxes, known) : undefined                                                                            ;
-	const report                    = { schemaVersion: 1 as const, tool: "boxbox" as const, results: [result], syntax, formatReadiness: readiness, ...(expectation ? { axisExpectation: expectation } : {}) } ;
-	const exitCode: ProjectExitCode = syntax.status !== "valid" || result.summary.refused > 0 ? 2 : result.summary.misaligned > 0 ? 1 : 0                                                                     ;
+	const coverage = syntax.status !== "valid" ? "not-inspected"
+		: result.unsupported?.length ? "limited"
+		: result.groups.length ? "groups-detected" : "no-groups-detected";
+	const readiness                 = formatReadiness(parsed, root, result, syntax)                                                                                                                                     ;
+	const vocabulary                = parsed.language === "typescript" ? AXIS_NOTES : parsed.language === "python" ? PYTHON_AXIS_NOTES : undefined                                                                      ;
+	const known                     = vocabulary ? new Set(Object.keys(vocabulary).map(baseAxis)) : undefined                                                                                                           ;
+	const expectedGroups            = parsed.language === "python" ? result.groups.map(group => ({ ...group, axes: group.axes.map(normalizeAxis) })) : result.groups                                                    ;
+	const requestedAxes             = parsed.language === "python" ? parsed.expectAxes.map(normalizeAxis) : parsed.expectAxes                                                                                           ;
+	const expectation               = parsed.expectAxes.length ? axisExpectation(expectedGroups, requestedAxes, known) : undefined                                                                                      ;
+	const report                    = { schemaVersion: 1 as const, tool: "boxbox" as const, results: [result], syntax, coverage, formatReadiness: readiness, ...(expectation ? { axisExpectation: expectation } : {}) } ;
+	const exitCode: ProjectExitCode = syntax.status !== "valid" || result.summary.refused > 0 ? 2 : result.summary.misaligned > 0 ? 1 : 0                                                                               ;
 	return { report, exitCode };
 }
 
@@ -710,13 +738,34 @@ function printCheck(report: CheckReport): void {
 	const syntax      = report.syntax          ;
 	const readiness   = report.formatReadiness ;
 	const expectation = report.axisExpectation ;
-	console.log(`check file=${result.file} groups=${result.summary.groups} misaligned=${result.summary.misaligned} refused=${result.summary.refused} suggested=${result.summary.suggested} unsupported=${result.unsupported?.length ?? 0}`);
+	const outcome = syntax.status === "error" ? "tool-error"
+		: syntax.status === "invalid" ? "syntax-invalid"
+		: result.summary.refused ? "safety-refusal"
+		: result.summary.misaligned ? "alignment-needed"
+		: report.coverage === "limited" ? "limited-coverage"
+		: report.coverage === "no-groups-detected" ? "no-groups"
+		: result.summary.suggested ? "suggestions" : "detected-groups-aligned";
+	const approval = readiness.approvalFacts.some(fact => fact.status === "rejected" || fact.status === "conflict") ? "denied"
+		: readiness.approvalFacts.some(fact => !fact.proofComplete) ? "missing"
+		: readiness.approvalFacts.length ? "verified"
+		: result.groups.some(group => group.state === "PASS" || group.state === "FIXABLE") ? "unavailable" : "not-applicable";
+
+	console.log(`check file=${result.file} status=${outcome} coverage=${report.coverage} approval=${approval} groups=${result.summary.groups} misaligned=${result.summary.misaligned} refused=${result.summary.refused} suggested=${result.summary.suggested} unsupported=${result.unsupported?.length ?? 0}`);
 	for (const unsupported of result.unsupported ?? []) console.log(`unsupported line=${unsupported.line}: ${unsupported.reason}`);
 	for (const group of result.groups) if (group.semanticKind) console.log(`group ${group.semanticKind} kind=${group.kind} lines=${group.startLine}-${group.endLine} rows=${group.rows} state=${group.state}`);
 	console.log(`syntax status=${syntax.status} tool=${syntax.tool} diagnostics=${syntax.diagnostics.length}`);
 	for (const diagnostic of syntax.diagnostics) console.log(`syntax: ${diagnostic}`);
 	console.log(`format mode=${readiness.mode} approval-eligible=${readiness.approvalEligible} verification=${readiness.verification} fixable-groups=${readiness.fixableGroups} approved-fixable-groups=${readiness.approvedFixableGroups}`);
-	for (const reason of readiness.reasons) console.log(`format: ${reason}`);
+	const explained = new Set<string>();
+	for (const fact of readiness.approvalFacts) {
+		if (fact.proofComplete) continue;
+
+		const ranges    = fact.locations.slice(0, 3).map(range => `L${range.startLine}-${range.endLine} ${range.kind}`) ;
+		const remaining = fact.locations.length - ranges.length                                                         ;
+		console.log(`format: ${ranges.join(", ")}${remaining > 0 ? ` (+${remaining} groups)` : ""} ${fact.key}: ${fact.reasons.join(", ")}`);
+		for (const reason of fact.reasons) explained.add(reason);
+	}
+	for (const reason of readiness.reasons) if (!explained.has(reason)) console.log(`format: ${reason}`);
 	console.log(readiness.next);
 	if (expectation) {
 		console.log(`expect-axis requested=${expectation.requested.join(",")} covered=${expectation.covered.map(entry => `${entry.axis}x${entry.groups}`).join(",")} missing=${expectation.missing.join(",")} unknown=${expectation.unknown.join(",")}`);
@@ -787,6 +836,26 @@ async function guide(parsed: ParsedFileCommand, root: string): Promise<number> {
 		const context = approvalContext(root                                                                   ) ;
 		const advice  = authoringGuide (context.registry, parsed.file, parsed.language, context.resolveDocument) ;
 		if (approvalContext(root).fingerprint !== context.fingerprint) throw new Error("configuration or approval data changed while preparing guidance");
+		if (parsed.brief) {
+			const rules = advice.rules.map(({ id, key }) => ({ id, key }));
+			const columns = rules.map(({ key }) => {
+				const [, , , kind, axes] = key.split("|");
+
+				return { kind, columns: axes?.split(">") ?? [] };
+			});
+			const guidance = "Keep same-role rows together. Identify matching syntax boundaries and use minimum column widths.";
+			const output = {
+				schemaVersion: 1, tool: "boxbox", command: "guide", basis: "authoring", brief: true, ok: rules.length > 0,
+				file: parsed.file, language: parsed.language, rules, columns, guidance, verification: "not-run", writeAuthorized: false,
+			};
+			if (parsed.json) emitJson(output);
+			else {
+				console.log(guidance);
+				if (!rules.length) console.log("No approved authoring guidance applies.");
+				for (const [index, rule] of rules.entries()) console.log(`approved ${rule.id} (${columns[index]!.kind}) ${columns[index]!.columns.join(" | ")}`);
+			}
+			return output.ok ? 0 : 1;
+		}
 		const approvedKeys = advice.rules.map(rule => rule.key);
 		const sets = parsed.language === "typescript" ? columnSetGuide(KIND_AXES, AXIS_NOTES, approvedKeys)
 			: parsed.language === "python" ? pythonColumnSetGuide(approvedKeys)
@@ -876,12 +945,18 @@ async function format(parsed: ParsedFileCommand, root: string, alignmentOnly = f
 		if (parsed.json) emitJson(output);
 		else {
 			console.log(`${command} file=${result.file} mode=${result.formatMode} dry-run=${parsed.dryRun} written=${result.written} formatter-changed=${result.formatterChanged} boxbox-changed=${result.boxboxChanged} fixed-point=${result.fixedPoint} approvals=${result.approvals.join(",")}`);
+			if (result.skippedGroups?.length) {
+				const groups   = result.skippedGroups                                                                                                ;
+				const examples = groups.slice(0, 3).map(group => `L${group.startLine}-${group.endLine} ${group.kind} (${group.reasons.join(", ")})`) ;
+				console.log(`skipped ${groups.length} group(s). ${examples.join("; ")}`);
+			}
 			for (const edit of result.alignmentEdits ?? []) console.log(`line ${edit.line}\n- ${edit.before}\n+ ${edit.after}`);
 			for (const warning of warnings) console.log(`warning: ${warning}`);
 		}
 		return 0;
 	} catch (error) {
-		throw new CliError(errorCode, `${command} refused: ${messageOf(error)}`);
+		const skippedGroups = error instanceof AlignmentSelectionError ? error.skippedGroups : undefined;
+		throw new CliError(errorCode, `${command} refused: ${messageOf(error)}`, skippedGroups);
 	}
 }
 
@@ -900,23 +975,45 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 			console.log(CLI_VERSION);
 			return 0;
 		}
+		if ((tail.at(-1) === "--help" || tail.at(-1) === "-h") && !tail.includes("--")
+			&& (tail.length === 1 || command === "hooks" || command === "db")) {
+			const topic = [command, ...tail.slice(0, -1)].join(" ")                       ;
+			const usage = HELP.split("\n").filter(line => line.startsWith(`  ${topic} `)) ;
+			if (usage.length) {
+				for (const line of usage) console.log(`Usage: boxbox ${line.trim()}`);
+
+				return 0;
+			}
+		}
 		if (command === "run") return await guardedRun(tail, doctorReport, async (project, file) => {
 			const parsed = parseFileCommand(["--file", file], false, project);
 			if (!resolveConfig(project).effective.languages.includes(parsed.language)) throw new Error("LANGUAGE_DISABLED");
 			return inspectFile(parsed, project);
 		}, CLI_VERSION);
 		if (command === "hook"  ) return await lifecycleHook(tail, async (project, file) => {
-			const scope  = fileProjectScope(project, ["--file", file])     ;
-			const parsed = parseFileCommand(scope.args, false, scope.root) ;
-			const result = await inspectFile(parsed, scope.root)           ;
-			if (scope.root === project) return result;
+			const scope  = fileProjectScope(project, ["--file", file])                                              ;
+			const parsed = parseFileCommand(scope.args, false, scope.root)                                          ;
+			const syntax = await validateSyntax({ root: scope.root, file: parsed.file, language: parsed.language }) ;
+			const result = await inspectFile(parsed, scope.root, syntax)                                            ;
+			if (scope.root === project) return { result, syntax };
 			// Receipts name the file relative to the session root, in the separator style the inspector reported.
 			const original = parseFileCommand(["--file", file], false, project).file;
-			return { ...result, file: result.file === parsed.file ? original : original.split(sep).join("/") };
-		}, { version: CLI_VERSION, align: alignApprovedHook });
-		if (command === "hooks" ) return installHooks(tail);
-		if (command === "status") return guardStatus(tail);
-		if (command === "db"    ) return database(tail, json);
+			return { result: { ...result, file: result.file === parsed.file ? original : original.split(sep).join("/") }, syntax };
+		}, {
+			version  : CLI_VERSION       ,
+			align    : alignApprovedHook ,
+			cacheKey : (project, file) => {
+				const language = inferredLanguage(file);
+				if (language !== "json" && language !== "yaml") return undefined;
+
+				const scope = fileProjectScope(project, ["--file", file]);
+				return JSON.stringify([scope.root, resolveConfig(scope.root).fingerprint]);
+			},
+		});
+		if (command === "hooks" && tail[0] === "workflow") return runHookWorkflow(tail.slice(1), assertRoot(root));
+		if (command === "hooks"                          ) return installHooks(tail);
+		if (command === "status"                         ) return guardStatus(tail);
+		if (command === "db"                             ) return database(tail, json);
 		if (command === "mode" || command === "update" || command === "statusline") {
 			assertControlOptions(command, tail);
 			if (command === "mode") return runMode(tail, assertRoot(root));

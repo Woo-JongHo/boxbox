@@ -141,20 +141,22 @@ process.exitCode=await runCli(["hook","session"],process.cwd());
 		expect(JSON.parse(result.stdout.toString()).systemMessage).toBe(`fixture-version:${VERSION}`);
 	});
 
-	test("actual hook dispatch captures off baseline, inspects check/refactor and aligns only approved writes", () => {
+	test("actual hook dispatch skips Off, inspects check/refactor and aligns only approved writes", () => {
 		const value = fixture();
 		run(value, ["mode", "off"]);
-		expect(JSON.stringify(hook(value, "session"))).toContain("Mode off");
+		expect(JSON.stringify(hook(value, "session"))).toContain("Mode off") ;
+		expect(existsSync(sessionFolder(value))      ).toBe     (false     ) ;
+		expect(hook(value, "post")                   ).toEqual  ({}        ) ;
+		expect(existsSync(sessionFolder(value))      ).toBe     (false     ) ;
+		run(value, ["mode", "check"]);
+		hook(value, "session");
 		const baseline = readFileSync(join(sessionFolder(value), "baseline.json"), "utf8");
 		expect(JSON.parse(baseline).schemaVersion).toBe(2);
 		writeFileSync(join(value.root, "approved.py"), SOURCE);
-		expect(hook(value, "post")).toEqual({});
-		expect(receipts(value)).toHaveLength(0);
-		run(value, ["mode", "check"]);
 		expect(hook(value, "post", "controls-session", "Bash").decision).toBeUndefined();
 		expect(receipts(value).at(-1)).toMatchObject({ mode: "check", state: "FAIL", automaticFixPerformed: false });
 		run(value, ["mode", "refactor"]);
-		expect(hook(value, "post").decision).toBe("block");
+		expect(hook(value, "post").decision).toBeUndefined();
 		expect(readFileSync(join(value.root, "approved.py"), "utf8")).toBe(SOURCE);
 		run(value, ["mode", "align"]);
 		expect(hook(value, "post").decision).toBeUndefined();
@@ -168,8 +170,46 @@ process.exitCode=await runCli(["hook","session"],process.cwd());
 		expect(hook(value, "post", "controls-session", "Bash").decision).toBeUndefined();
 		expect(readFileSync(join(value.root, "denied.py"), "utf8")).toBe         (DENIED                                                      ) ;
 		expect(receipts(value).at(-1)                             ).toMatchObject({ state: "FAIL", automaticFixPerformed: false, aligned: [] }) ;
-		expect(hook(value, "stop").decision                       ).toBe         ("block"                                                     ) ;
+		expect(hook(value, "stop").decision                       ).toBeUndefined();
 		expect(hook(value, "stop").decision).toBeUndefined();
+	}, 60_000);
+
+	test("Auto scopes notes to current rows, keeps Quiet silent and never aligns in its Align workflow", () => {
+		const value    = fixture()                          ;
+		const existing = join   (value.root, "existing.py") ;
+		const invalid  = join   (value.root, "invalid.py" ) ;
+		writeFileSync(existing, `${SOURCE}\nprint(1)\n`);
+		writeFileSync(invalid, "def broken(:\n    pass\n\nvalue = 1\n");
+		for (const args of [["init", "-q"], ["add", "existing.py", "invalid.py"]]) {
+			expect(Bun.spawnSync(["git", ...args], { cwd: value.root }).exitCode).toBe(0);
+		}
+		expect(JSON.parse(run(value, ["mode", "--json"]).stdout)).toMatchObject({ mode: "auto" });
+		const session = hook(value, "session")                                                          ;
+		const key     = /hooks workflow (\S+)/u.exec(session.hookSpecificOutput.additionalContext)?.[1] ;
+		expect(key).toBeDefined();
+
+		const active = run(value, ["hooks", "workflow", key!, "author"], {}, { CLAUDE_PLUGIN_DATA: "" });
+		expect(active.status).toBe(0);
+		writeFileSync(existing, `${SOURCE}\nprint(2)\n`);
+		writeFileSync(invalid, "def broken(:\n    pass\n\nvalue = 2\n");
+		expect(hook(value, "post")).toEqual({});
+		expect(receipts(value).at(-1)).toMatchObject({ mode: "auto", state: "FAIL", automaticFixPerformed: false });
+
+		expect(run(value, ["hooks", "workflow", key!, "align"]).status).toBe(0);
+		const source = join(value.root, "new.py");
+		writeFileSync(source, SOURCE);
+		const note = hook(value, "post", "controls-session", "Bash");
+		expect(note.decision).toBeUndefined();
+		expect(note.hookSpecificOutput.additionalContext).toContain('"new.py" L1-3'  ) ;
+		expect(note.hookSpecificOutput.additionalContext).toContain("align --dry-run") ;
+		expect(readFileSync(source, "utf8")             ).toBe     (SOURCE           ) ;
+		expect(hook(value, "post")                      ).toEqual  ({}               ) ;
+
+		expect(run(value, ["hooks", "workflow", key!, "quiet"]).status).toBe(0);
+		writeFileSync(source, SOURCE.replace("22", "23"));
+		expect(hook(value, "post")   ).toEqual      ({}                                                                          ) ;
+		expect(hook(value, "stop")   ).toEqual      ({}                                                                          ) ;
+		expect(receipts(value).at(-1)).toMatchObject({ event: "Stop", mode: "auto", state: "FAIL", automaticFixPerformed: false }) ;
 	}, 60_000);
 
 	test("exported approved hook seam reports zero for no-op and preserves disabled or invalid source", () => {

@@ -456,6 +456,64 @@ export function measureTypeScriptGroups(source: SourceFile, minRows = 3): readon
 	return groups;
 }
 
+function groupRefusal(source: SourceFile, group: TableGroup, overlaps: ReadonlySet<TableGroup>): string | undefined {
+	if (group.conflict !== undefined                            ) return group.conflict;
+	if (overlaps.has(group)                                     ) return "alignment edits overlap another group";
+	if (group.edits.length > 0 && !groupPreserved(source, group)) return "the edit would change more than whitespace between tokens";
+	return undefined;
+}
+
+function resultGroup(group: TableGroup, reason?: string): ResultGroup {
+	return {
+		kind      : group.kind      ,
+		startLine : group.startLine ,
+		endLine   : group.endLine   ,
+		rows      : group.rowCount  ,
+		rowLines  : group.rowLines  ,
+
+		axes    : group.axes                                                                    ,
+		state   : reason !== undefined ? "REFUSE" : group.edits.length > 0 ? "FIXABLE" : "PASS" ,
+		edits   : group.edits.length                                                            ,
+		context : group.context                                                                 ,
+		depth   : group.depth                                                                   ,
+
+		...(reason === undefined ? {} : { reason }),
+	};
+}
+
+function structuralFindings(result: CollectResult): ResultGroup[] {
+	return [
+		...(result.unsupportedParameters ?? []),
+		...result.compressed.map(({ line, members }) => ({
+			kind      : "interface-members-compressed"                                         ,
+			startLine : line                                                                   ,
+			endLine   : line                                                                   ,
+			rows      : members                                                                ,
+			axes      : []                                                                     ,
+			state     : "SUGGEST" as const                                                     ,
+			edits     : 0                                                                      ,
+			reason    : "expanding compressed interface members requires structural authoring" ,
+		})),
+	];
+}
+
+export async function planTypeScriptAlignment(root: string, file: string) {
+	const { source } = await loadSourceFile(root, file);
+	const result: CollectResult = { groups: [], candidates: [], compressed: [], unsupportedParameters: [] };
+	collect(source, source, 3, new Set<Node>(), undefined, result);
+	collectCompressed(source, source, result);
+
+	const overlaps = overlapConflicts(result.groups);
+	return [
+		...result.groups.map(group => ({
+			group    : resultGroup(group, groupRefusal(source, group, overlaps)) ,
+			edits    : group.edits                                               ,
+			vertical : group.vertical > 0                                        ,
+		})),
+		...structuralFindings(result).map(group => ({ group, edits: [], vertical: false })),
+	].sort((left, right) => left.group.startLine - right.group.startLine);
+}
+
 interface Arguments {
 	readonly file        : string             ;
 	readonly write       : boolean            ;
@@ -561,9 +619,8 @@ export async function runTypeScriptAlign(args: readonly string[], options: TypeS
 
 	const overlaps = overlapConflicts(detected);
 
-	const refused = detected.filter(group =>
-		group.conflict !== undefined || overlaps.has(group) || (group.edits.length > 0 && !groupPreserved(source, group))
-	);
+	const refusals = new Map(detected.map(group => [group, groupRefusal(source, group, overlaps)])) ;
+	const refused  = detected.filter(group => refusals.get(group) !== undefined)                    ;
 
 	const groups = detected.filter(group => !refused.includes(group));
 
@@ -571,7 +628,7 @@ export async function runTypeScriptAlign(args: readonly string[], options: TypeS
 
 	const totalEdits = groups.reduce((count, group) => count + group.edits.length, 0);
 	say(`align-tables file=${relative} groups=${groups.length} misaligned=${groups.filter(group => group.edits.length > 0).length} edits=${totalEdits} compressed=${result.compressed.length} compressed-members=${compressedMembers} refused=${refused.length + result.unsupportedParameters!.length}${write ? " write=true" : ""}`);
-	for (const group of refused) say(`  ${String(group.startLine).padStart(4)}-${group.endLine}  ${group.kind} refused — ${group.conflict ?? (overlaps.has(group) ? "alignment edits overlap another group" : "the edit would change more than whitespace between tokens")}`);
+	for (const group of refused) say(`  ${String(group.startLine).padStart(4)}-${group.endLine}  ${group.kind} refused — ${refusals.get(group)}`);
 	for (const group of result.unsupportedParameters!) say(`  ${group.startLine}-${group.endLine}  ${group.kind} refused — ${group.reason}`);
 	for (const entry of result.compressed) say(`  compressed  interface-members  line=${entry.line} members=${entry.members} — expanding is a structural change, so it is not fixed automatically`);
 	for (const group of groups) {
@@ -602,51 +659,10 @@ export async function runTypeScriptAlign(args: readonly string[], options: TypeS
 	const report = (parse: ResultParse): void => {
 		if (!json) return;
 
-		const resultGroups: ResultGroup[] = [
-			...groups.map(group => ({
-				kind : group.kind,
-
-				startLine : group.startLine ,
-				endLine   : group.endLine   ,
-				rows      : group.rowCount  ,
-				rowLines  : group.rowLines  ,
-
-				axes  : group.axes         ,
-				state : group.edits.length > 0
-					? "FIXABLE" as const
-					: "PASS" as const,
-				edits : group.edits.length ,
-
-				context : group.context,
-				depth   : group.depth
-			})),
-			...refused.map(group => ({
-				kind : group.kind,
-
-				startLine : group.startLine ,
-				endLine   : group.endLine   ,
-				rows      : group.rowCount  ,
-				rowLines  : group.rowLines  ,
-
-				axes  : group.axes         ,
-				state : "REFUSE" as const  ,
-				edits : group.edits.length ,
-
-				context : group.context,
-				depth   : group.depth
-			})),
-			...result.unsupportedParameters!,
-			...result.compressed.map(entry => ({
-				kind : "interface-members-compressed",
-
-				startLine : entry.line    ,
-				endLine   : entry.line    ,
-				rows      : entry.members ,
-
-				axes  : []                 ,
-				state : "SUGGEST" as const ,
-				edits : 0
-			})),
+		const resultGroups = [
+			...groups.map(group => resultGroup(group)),
+			...refused.map(group => resultGroup(group, refusals.get(group))),
+			...structuralFindings(result),
 		].sort((left, right) => left.startLine - right.startLine);
 
 		emit(JSON.stringify(envelope([{ file: relative, language: "typescript", mode: write ? "write" : "check", summary: summarize(resultGroups), groups: resultGroups, parse }]), null, 2));

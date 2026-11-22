@@ -5,9 +5,13 @@ All notable changes to this project are documented here. The format follows
 installer `boxbox-plugin@0.2.8` was published on 2026-11-10. See the release
 documentation when preparing a GitHub release.
 
-## [Unreleased]
+## [0.2.9] - 2026-11-22
 
 ### Added
+
+- Automatic session mode is the default for unset preferences. The host can choose Write, Align or Quiet from the request. Explicit mode settings continue to work, including `boxbox mode off`.
+- `guide --authoring --brief` provides compact, scoped rule and column information before the file exists.
+- Source checks report inspection coverage and attach line ranges to approval findings.
 
 - YAML mappings keep an existing `key : value` house style instead of
   reporting every aligned run as FIXABLE; such runs report the
@@ -25,6 +29,10 @@ documentation when preparing a GitHub release.
 
 ### Changed
 
+- Session hook findings are advisory. Automatic edit feedback covers groups that intersect new or edited rows. Unchanged safe-to-reuse results avoid repeat inspection. Stop records a read-only completion receipt.
+- Explicit `align` applies independent groups with complete approval proof. Skipped groups report their ranges and reasons. The existing configured Format workflow retains its file-level approval checks.
+- Existing explicit `boxbox mode align` settings continue to opt into post-edit alignment. Inferred Align only provides feedback and leaves application to a requested Align command.
+
 - Python runs of the same shape inside one bracket (call arguments, literals,
   parameters) now share their columns when a multiline argument or an
   undecomposable row splits them, and a same-shape pair in that bracket widens
@@ -40,6 +48,10 @@ documentation when preparing a GitHub release.
   of shrinking to each run's own minimum width.
 
 ### Fixed
+
+- Subcommand help returns command-specific usage. The macOS system path aliases work for targets inside the project.
+- Format reports the TypeScript structural prerequisite and location when the writer declines a compressed interface.
+- Plugin documentation explains how to use the host launcher when the bare terminal command is unavailable.
 
 - A single-file `check`, `guide`, `align` or `format` run from a parent folder
   now reads the project layer of the nearest `.boxbox/` directory between the

@@ -133,18 +133,16 @@ function baseline(value: Fixture): string {
 	return readFileSync(join(value.data, "hooks", project, session, "baseline.json"), "utf8");
 }
 
-test("off captures the original baseline and stays silent until checks are enabled", () => {
+test("off skips session capture and remains silent across matched tools", () => {
 	const value = fixture();
 	expect(JSON.stringify(hook(value, "session", "off"))).toContain("Mode off");
-	const before = baseline(value);
+	expect(existsSync(join(value.data, "hooks"))).toBe(false);
 	writeFileSync(join(value.root, "sample.py"), SOURCE);
-	expect(hook(value, "post", "off")           ).toEqual      ({}                                                                                           ) ;
-	expect(hook(value, "stop", "off")           ).toEqual      ({}                                                                                           ) ;
-	expect(trace(value)                         ).toEqual      ([]                                                                                           ) ;
-	expect(records(value)                       ).toEqual      ([]                                                                                           ) ;
-	expect(hook(value, "post", "check").decision).toBe         ("block"                                                                                      ) ;
-	expect(latest(value)                        ).toMatchObject({ schemaVersion: 2, mode: "check", state: "FAIL", aligned: [], automaticFixPerformed: false }) ;
-	expect(baseline(value)                      ).toBe         (before                                                                                       ) ;
+
+	expect(hook(value, "post", "off")           ).toEqual({}   ) ;
+	expect(hook(value, "stop", "off")           ).toEqual({}   ) ;
+	expect(trace(value)                         ).toEqual([]   ) ;
+	expect(existsSync(join(value.data, "hooks"))).toBe   (false) ;
 }, 60_000);
 
 for (const mode of ["check", "refactor"]) test(`${mode} inspects without calling the writer and schema-1 evidence stays readable`, () => {
@@ -186,7 +184,7 @@ test("unapproved align callbacks preserve bytes and keep failed Bash feedback ad
 	expect(bash.decision).toBeUndefined();
 	expect(latest(value)                                          ).toMatchObject({ mode: "align", state: "FAIL", automaticFixPerformed: false, aligned: [] }) ;
 	expect(readFileSync(join(value.root, "sample.py"), "utf8")    ).toBe         (DENIED                                                                     ) ;
-	expect(hook(value, "post", "align", { tool: "Edit" }).decision).toBe         ("block"                                                                    ) ;
+	expect(hook(value, "post", "align", { tool: "Edit" }).decision).toBeUndefined();
 	expect(trace(value).filter(item => item.operation === "align")).toHaveLength (2                                                                          ) ;
 }, 60_000);
 
@@ -198,7 +196,7 @@ test("a completed approved file and a refused file retain their separate outcome
 	const output = hook  (value, "post", "align") ;
 	const record = latest(value                 ) ;
 
-	expect(output.decision                                                                      )    .toBe           ("block"                                                                                     ) ;
+	expect(output.decision                                                                      ).toBeUndefined();
 	expect(record                                                                               )    .toMatchObject  ({ state: "FAIL", automaticFixPerformed: true, aligned: [{ file: "approved.py", edits: 2 }] }) ;
 	expect(record.checked.find(item => item.file === "approved.py")?.result.summary.misaligned  )    .toBe           (0                                                                                           ) ;
 	expect(record.checked.find(item => item.file === "unapproved.py")?.result.summary.misaligned)    .toBeGreaterThan(0                                                                                           ) ;
@@ -207,11 +205,11 @@ test("a completed approved file and a refused file retain their separate outcome
 	expect(JSON.stringify(output)                                                               )    .toContain      ("Aligned approved.py (2 changed lines)"                                                     ) ;
 }, 60_000);
 
-test("align Stop never calls the writer and retains the one-continuation claim", () => {
+test("align Stop reports findings without calling the writer or blocking", () => {
 	const value = fixture();
 	hook(value, "session", "align");
 	writeFileSync(join(value.root, "sample.py"), SOURCE);
-	expect(hook(value, "stop", "align").decision).toBe("block");
+	expect(hook(value, "stop", "align").decision).toBeUndefined();
 	expect(hook(value, "stop", "align").decision).toBeUndefined();
 	expect(latest(value)                                          ).toMatchObject({ mode: "align", state: "FAIL", automaticFixPerformed: false, aligned: [] }) ;
 	expect(trace(value).filter(item => item.operation === "align")).toEqual      ([]                                                                         ) ;
@@ -222,7 +220,7 @@ test("align without a writer callback remains a read-only failing inspection", (
 	const value = fixture();
 	hook(value, "session", "align");
 	writeFileSync(join(value.root, "sample.py"), SOURCE);
-	expect(hook(value, "post", "align", { callback: false }).decision).toBe         ("block"                                                                    ) ;
+	expect(hook(value, "post", "align", { callback: false }).decision).toBeUndefined();
 	expect(latest(value)                                             ).toMatchObject({ mode: "align", state: "FAIL", automaticFixPerformed: false, aligned: [] }) ;
 	expect(readFileSync(join(value.root, "sample.py"), "utf8")       ).toBe         (SOURCE                                                                     ) ;
 }, 60_000);

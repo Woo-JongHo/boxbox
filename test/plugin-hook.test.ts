@@ -53,8 +53,8 @@ test("hooks.json commands run the configured local CLI through the shim and leav
 	run("SessionStart", { session_id: "plugin" });
 	writeFileSync(join(project, "sample.py"), "a = 1\nlonger = 22\nmid = 333\n");
 
-	expect(run("PostToolUse", { session_id: "plugin", tool_name: "Write" }).decision ).toBe("block")                ;
-	expect(run("Stop", { session_id: "plugin" }).decision                            ).toBe("block")                ;
+	expect(run("PostToolUse", { session_id: "plugin", tool_name: "Write" }).decision ).toBeUndefined();
+	expect(run("Stop", { session_id: "plugin" }).decision                            ).toBeUndefined();
 	expect(run("Stop", { session_id: "plugin" }).decision                            ).toBeUndefined()              ;
 	expect(existsSync(join(project, ".boxbox"))                                         ).toBe(false)                  ;
 	expect(readFileSync(log, "utf8").trim().split("\n")[0]                           ).toBe(ENTRY) ;

@@ -54,10 +54,27 @@ const LANGUAGES: Readonly<Record<string, PublicLanguage>> = {
 	".yml"  : "yaml"       ,
 };
 
+/** macOS exposes these fixed system aliases for the same physical directories. */
+function systemPath(path: string): string {
+	if (process.platform !== "darwin") return path;
+
+	const prefix = /^\/(?:var|tmp)(?:\/|$)/u.exec(path)?.[0]?.replace(/\/$/u, "");
+	if (!prefix || realpathSync(prefix) !== `/private${prefix}`) return path;
+
+	return `/private${path}`;
+}
+
+/** Keep lexical containment and symlink checks at the caller after normalizing system aliases. */
+export function projectPath(root: string, input: string): string {
+	const absolute = resolve(root, input);
+
+	return resolve(root, relative(systemPath(root), systemPath(absolute)));
+}
+
 /** Reject every symbolic component, even when it resolves to another location inside the project. */
 function checkedPath(root: string, input: string): string {
-	const absolute = resolve (root, input   ) ;
-	const display  = relative(root, absolute) ;
+	const absolute = projectPath(root, input   ) ;
+	const display  = relative   (root, absolute) ;
 	if (sep === "/" && display.includes("\\")) throw new Error(`POSIX paths containing literal backslashes are unsupported: ${input}`);
 	if (escapesRoot(display)) throw new Error(`project target escapes root: ${input}`);
 	let current = root;

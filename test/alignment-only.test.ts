@@ -103,6 +103,49 @@ for (const [language, source] of [
 	expect(readdirSync(options.root)                 ).toEqual([options.file]) ;
 }, 60_000);
 
+test("Align applies approved Python assignments while returning located skips", async () => {
+	const first = "a=1\nlonger=22\nmid=333\n"                                       ;
+	const tail  = "\nrecord = {\n    'x': 1,\n    'longer': 2,\n    'mid': 3,\n}\n" ;
+	const { target, options } = fixture("python", first + tail);
+
+	const preview = await runFormatPipeline({ ...options, dryRun: true });
+
+	expect(preview.skippedGroups).toEqual([{
+		kind      : "table"                                   ,
+		startLine : 6                                         ,
+		endLine   : 8                                         ,
+		key       : "v1|python|-|table|key>colon>value>comma" ,
+		category  : "approval"                                ,
+		reasons   : ["no matching convention"]                ,
+	}]);
+	expect(preview.alignmentEdits?.map(({ line }) => line)).toEqual([1, 2, 3]);
+	expect(readFileSync(target, "utf8")).toBe(first + tail);
+
+	const applied = await runFormatPipeline(options);
+
+	expect(applied                                   ).toMatchObject({ written: true, fixedPoint: true, skippedGroups: preview.skippedGroups }) ;
+	expect(readFileSync(target, "utf8")              ).toBe         ("a      = 1\nlonger = 22\nmid    = 333\n" + tail                         ) ;
+	expect((await runFormatPipeline(options)).written).toBe         (false                                                                    ) ;
+}, 60_000);
+
+test("Format locates compressed TypeScript interfaces and Align can write disjoint approved groups", async () => {
+	const first = "interface Shape { a: string; b: number; }\n\n"              ;
+	const tail  = "const a=fn(1);\nconst longer=fn(22);\nconst mid=fn(333);\n" ;
+	const { target, options } = fixture("typescript", first + tail);
+
+	await expect(runFormatPipeline({ ...options, alignmentOnly: false })).rejects.toThrow("L1-1 interface-members-compressed");
+	expect(readFileSync(target, "utf8")).toBe(first + tail);
+
+	const result = await runFormatPipeline(options);
+
+	expect(result).toMatchObject({
+		written: true,
+		skippedGroups: [{ startLine: 1, endLine: 1, kind: "interface-members-compressed" }],
+	});
+	expect(readFileSync(target, "utf8").startsWith(first)).toBe(true);
+	expect((await runFormatPipeline(options)).written).toBe(false);
+}, 60_000);
+
 test("Align rejects a supplied formatter before it can produce side effects", async () => {
 	const source = "a=1\nlonger=22\nmid=333\n";
 	const { target, options } = fixture("python", source);

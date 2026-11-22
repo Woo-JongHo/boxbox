@@ -55,13 +55,11 @@ Requirements: Node.js 22.22.3 or later, npm and the chosen host CLI (Codex or Cl
 ## What this plugin runs and writes
 
 - **Engine:** the standard launcher requires an explicit local `BOXBOX_CLI`. When it is missing, commands exit 2 with a setup message, and hooks exit 0 so they do not block the host; the session hook prints that message. It never resolves the occupied registry package. The npm installer installs its included engine tarball and downloads the pinned `typescript@7.0.2` dependency and its platform package from npm.
-- **Hooks:** `check` is the default mode; it and `refactor` inspect session changes without writing source. `off` skips
-  inspection. An explicit `boxbox mode align` enables approved horizontal-only alignment after matched tool calls and
-  a recheck. Stop remains read-only and can request at most one continuation. Project mode overrides the global
-  default; a valid `BOXBOX_MODE` overrides both. Receipts stay in host plugin data (`CLAUDE_PLUGIN_DATA`), separately
-  recording mode, coverage and successful writes; they never approve rules.
+- **Hooks** default to automatic workflow selection. Write and Align can receive advisory notes about edited rows.
+  Quiet and Stop record findings silently. `boxbox mode off` skips inspection. Only explicit `boxbox mode align`
+  opts into approved post-edit writes. Project mode overrides the global default.
 - **Engine fixes:** `align` and `format` replace each target atomically only after approval, re-parsing, preservation and
-  fixed-point checks pass. `align` limits changes to horizontal layout whitespace. `format` retains the optional
+  fixed-point checks pass. `align` limits changes to horizontal layout whitespace and reports skipped groups. `format` retains the optional
   external formatter pipeline, including during dry-run; it is a separate, broader operation. With a configured
   formatter, Check executes that pipeline on working copies and compares final canonical bytes without replacing the
   source; it keeps source findings separate from canonical verification.
