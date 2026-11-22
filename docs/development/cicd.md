@@ -90,7 +90,9 @@ requires the source checkout to stay clean, and stages three files from that com
 - `boxbox-plugin-<version>.tgz`: the exact outer installer archive.
 - `SHA256SUMS`: the archive SHA-256 and filename.
 - `candidate.json`: package identity, version, archive bytes/digest, source commit/ref/repository, dirty status,
-  build runtime, workflow run identity, and explicit limitations.
+  build runtime, workflow run identity, and explicit limitations. The nested engine also ships `provenance.json`,
+  which binds its installed `dist/cli.js` SHA-256 to the source commit/ref/repository and dirty state. The installer
+  repeats that fingerprint in each host payload and verifies the installed CLI bytes before reporting success.
 
 The staging tool checks the archive's actual package name/version against `product.json` and `package.json`.
 It does not rebuild the package. Local reproduction after a completed build is:

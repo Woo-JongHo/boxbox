@@ -317,7 +317,7 @@ function buildGroup(source: SourceFile, kindName: string, groupName: string, run
 export function groupPreserved(source: SourceFile, group: TableGroup): boolean {
 	if (group.conflict !== undefined) return false;
 	const after = applyEdits(source.text, group.edits);
-	return group.vertical > 0 ? preservesTokensWithBreaks(source.text, after) : preservesTokens(source.text, after);
+	return group.vertical > 0 ? preservesTokensWithBreaks(source.text, after, source) : preservesTokens(source.text, after, source);
 }
 
 /** Every detected table of a loaded file, including the ones whose edits fail the token gate (the corpus census). */
@@ -574,15 +574,16 @@ export async function writeDiagnosedOutput(working: string, beforeText: string, 
 }
 
 /** Applies one pass through the token gate and the re-parse gate to a temporary working file. */
-async function writeGroups(root: string, workingRelative: string, displayRelative: string, text: string, groups: readonly TableGroup[]): Promise<boolean> {
-	const edits = groups.flatMap(group => group.edits).sort((left, right) => left.start - right.start);
+async function writeGroups(root: string, workingRelative: string, displayRelative: string, source: SourceFile, groups: readonly TableGroup[]): Promise<boolean> {
+	const text  = source.text                                                                          ;
+	const edits = groups.flatMap(group => group.edits).sort((left, right) => left.start - right.start) ;
 	for (let index = 1; index < edits.length; index += 1) {
 		if (editsOverlap(edits[index - 1]!, edits[index]!)) throw new Error(`alignment edits overlap: ${displayRelative}`);
 	}
 	const output = applyEdits(text, edits);
 	if (output === text) return false;
 	// Vertical rows may insert line breaks; every other edit is whitespace-only between tokens on one line.
-	const preserved = groups.some(group => group.vertical > 0) ? preservesTokensWithBreaks(text, output) : preservesTokens(text, output);
+	const preserved = groups.some(group => group.vertical > 0) ? preservesTokensWithBreaks(text, output, source) : preservesTokens(text, output, source);
 	if (!preserved) throw new Error(`combined alignment edits change more than whitespace; nothing written: ${displayRelative}`);
 	// Compares before and after with a fresh server while keeping the working copy's original path effects (JSX extension, project settings).
 	const absolute = `${root}/${workingRelative}`                                ;
@@ -677,7 +678,7 @@ export async function runTypeScriptAlign(args: readonly string[], options: TypeS
 				apply: async () => {
 					const next    = await loadSourceFile(root, workingRelative)                              ;
 					const pending = safeGroups(next.source, minRows).filter(group => group.edits.length > 0) ;
-					return writeGroups(root, workingRelative, relative, next.source.text, pending);
+					return writeGroups(root, workingRelative, relative, next.source, pending);
 				},
 				verify: async () => {
 					const final = await loadSourceFile(root, workingRelative);

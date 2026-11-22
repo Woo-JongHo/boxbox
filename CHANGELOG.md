@@ -5,6 +5,19 @@ All notable changes to this project are documented here. The format follows
 installer `boxbox-plugin@0.2.8` was published on 2026-11-10. See the release
 documentation when preparing a GitHub release.
 
+## [0.2.10] - 2026-11-23
+
+### Added
+
+- Engine artifacts record the installed CLI SHA-256 and source commit provenance. The installer verifies that exact
+  CLI fingerprint after installation, distinguishing different runtime bundles that share a package version.
+
+### Fixed
+
+- TypeScript alignment uses the parser's slash and JSX boundaries when checking whitespace preservation, so an
+  unrelated regular expression inside JSX no longer refuses a safe interface alignment. Changed regex or JSX text,
+  stale parser snapshots and ambiguous slash contexts remain refused (#62).
+
 ## [0.2.9] - 2026-11-22
 
 ### Added

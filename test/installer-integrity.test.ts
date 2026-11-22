@@ -37,6 +37,12 @@ function digest(path: string): string {
 	return createHash("sha256").update(readFileSync(path)).digest("hex");
 }
 
+function digestCli(archive: string): string {
+	const extracted = spawnSync("tar", ["-xOf", archive, "package/dist/cli.js"]);
+	expectStatus(extracted, 0);
+	return createHash("sha256").update(extracted.stdout as Buffer).digest("hex");
+}
+
 function engineArchive(workspace: string, identity: string, version = VERSION): string {
 	const source = join(workspace, `${identity} engine` ) ;
 	const output = join(workspace, `${identity} archive`) ;
@@ -45,15 +51,17 @@ function engineArchive(workspace: string, identity: string, version = VERSION): 
 	writeFileSync(join(source, "package.json"), JSON.stringify({ name: "boxbox", version }, null, "\t") + "\n");
 	writeFileSync(join(source, "identity.txt"), identity + "\n");
 	writeFileSync(join(source, "dist/cli.js"), `if (process.argv.includes("--version")) console.log(${JSON.stringify(version)});\n`);
+	writeFileSync(join(source, "provenance.json"), JSON.stringify({ schemaVersion: 1, cliSha256: digest(join(source, "dist/cli.js")), source: { commit: "a".repeat(40), ref: "fixture", repository: null, dirty: false } }) + "\n");
 	const packed = run("npm", ["pack", source, "--pack-destination", output, "--json"]);
 	expectStatus(packed, 0);
 	return join(output, (JSON.parse(String(packed.stdout)) as Array<{ filename: string }>)[0]!.filename);
 }
 
-function preparedPayload(workspace: string, archive: string, engineSha256: unknown): string {
+function preparedPayload(workspace: string, archive: string, engineSha256: unknown, engineCliSha256: unknown = undefined): string {
 	const root                              = join(workspace, "payload")                                                         ;
 	const metadata: Record<string, unknown> = { name: "boxbox", version: VERSION, host: "codex", marketplace: "boxbox-plugins" } ;
 	if (engineSha256 !== undefined) metadata.engineSha256 = engineSha256;
+	if (engineCliSha256 !== undefined) metadata.engineCliSha256 = engineCliSha256;
 	mkdirSync(join(root, "packages"), { recursive: true });
 	for (const name of ["install.mjs", "platform.mjs", "install-state.mjs", "claude-registration.mjs", "codex-registration.mjs"]) cpSync(join(ROOT, "product/installer", name), join(root, name));
 	cpSync(archive, join(root, "packages", `boxbox-${VERSION}.tgz`));
@@ -84,16 +92,21 @@ afterAll(() => {
 test("a matching bundled engine installs locally and its CLI version remains enforced", () => {
 	const workspace = temporary      ()                                                                  ;
 	const matching  = engineArchive  (workspace, "matching"                                            ) ;
-	const payload   = preparedPayload(workspace, matching, digest(matching)                            ) ;
+	const payload   = preparedPayload(workspace, matching, digest(matching), digestCli(matching)       ) ;
 	const installed = run            (process.execPath, [join(payload, "install.mjs"), "--engine-only"]) ;
 	expectStatus(installed, 0);
 	expect(readFileSync(join(payload, "runtime/node_modules/boxbox/identity.txt"), "utf8")).toBe("matching\n");
 
-	const wrongVersion = engineArchive  (workspace, "wrong version", `${VERSION}-other`                        ) ;
-	const rejected     = preparedPayload(join(workspace, "version control"), wrongVersion, digest(wrongVersion)) ;
-	const result       = run            (process.execPath, [join(rejected, "install.mjs"), "--engine-only"]    ) ;
+	const wrongVersion = engineArchive  (workspace, "wrong version", `${VERSION}-other`                                                 ) ;
+	const rejected     = preparedPayload(join(workspace, "version control"), wrongVersion, digest(wrongVersion), digestCli(wrongVersion)) ;
+	const result       = run            (process.execPath, [join(rejected, "install.mjs"), "--engine-only"]                             ) ;
 	expectStatus(result, 1);
 	expect(`${result.stdout}\n${result.stderr}`).toContain(`Installed engine version mismatch: ${VERSION}-other`);
+
+	const wrongFingerprint  = preparedPayload(join(workspace, "fingerprint control"), matching, digest(matching), "0".repeat(64)) ;
+	const fingerprintResult = run            (process.execPath, [join(wrongFingerprint, "install.mjs"), "--engine-only"]        ) ;
+	expectStatus(fingerprintResult, 1);
+	expect(`${fingerprintResult.stdout}\n${fingerprintResult.stderr}`).toContain("Installed engine CLI fingerprint does not match this installer");
 });
 
 test("foreign bytes and invalid integrity metadata fail before npm or runtime writes", () => {

@@ -5,7 +5,7 @@ import      { spawnSync                                                  } from 
 import      { existsSync, lstatSync, readFileSync, realpathSync          } from "node:fs"                            ;
 import      { dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path"                          ;
 
-import      { documentResolver, evaluateDetected, loadApprovalRegistry   } from "@/common/18_approval-gate.ts"       ;
+import      { documentSnapshot, evaluateDetected, loadApprovalRegistry   } from "@/common/18_approval-gate.ts"       ;
 import type { ApprovalRegistry, DocumentResolver, RegistrySource         } from "@/common/18_approval-gate.ts"       ;
 import      { runAlignCli                                                } from "@/common/22_align-cli.ts"           ;
 import      {
@@ -19,7 +19,7 @@ import      { runFormatPipeline                                          } from 
 import type { FormatPipelineResult                                       } from "@/common/21_format-pipeline.ts"     ;
 import      { AlignmentSelectionError, prepareAlignmentProposal         } from "@/common/38_selective-align.ts"     ;
 import type { SkippedAlignmentGroup                                      } from "@/common/38_selective-align.ts"     ;
-import      { approvalDelivery, approvalRequest                          } from "@/common/39_approval-handoff.ts"    ;
+import      { approvalDelivery, approvalRequest                          } from "@/common/42_approval-handoff.ts"    ;
 import      { projectPath, runProjectCommand, selectProjectTargets                    } from "@/common/34_project-commands.ts"    ;
 import type { ProjectExitCode, ProjectPipelineContext                    } from "@/common/34_project-commands.ts"    ;
 import      { buildMonitorReport, writeMonitorReport                     } from "@/common/31_monitor.ts"             ;
@@ -45,11 +45,15 @@ import      { PYTHON_AXIS_NOTES                                          } from 
 import      { normalizeAxis                                              } from "@/common/02_signature.ts"           ;
 import      { analyzeStructured                                          } from "@/structured/00_index.ts"           ;
 import      { runTypeScriptAlign                                         } from "@/typescript/12_align.ts"           ;
+import      { withTypeScriptInspection                                   } from "@/typescript/15_load-source-file.ts" ;
 import      { AXIS_NOTES, KIND_AXES                                      } from "@/typescript/13_grid-kinds.ts"      ;
 
 import      { guardedRun, guardStatus                                    } from "@/common/25_guarded-run.ts"         ;
+import      { inspectionRuntimeIdentity                                  } from "@/common/41_inspection-context.ts"  ;
+import      { PipelineError                                               } from "@/common/39_recovery.ts"           ;
+import type { RecoveryReport                                              } from "@/common/39_recovery.ts"           ;
 
-export const CLI_VERSION = "0.2.9";
+export const CLI_VERSION = "0.2.10";
 
 const HELP = `Usage: boxbox <command> [options]
 
@@ -125,11 +129,11 @@ interface CliErrorEnvelope {
 	readonly tool          : "boxbox"                                                                                                       ;
 	readonly command       : string                                                                                                         ;
 	readonly ok            : false                                                                                                          ;
-	readonly error         : { readonly code: string; readonly message: string; readonly skippedGroups?: readonly SkippedAlignmentGroup[] } ;
+	readonly error         : { readonly code: string; readonly message: string; readonly skippedGroups?: readonly SkippedAlignmentGroup[]; readonly recovery?: RecoveryReport } ;
 }
 
 class CliError extends Error {
-	constructor(readonly code: string, message: string, readonly skippedGroups?: readonly SkippedAlignmentGroup[]) { super(message); }
+	constructor(readonly code: string, message: string, readonly skippedGroups?: readonly SkippedAlignmentGroup[], readonly recovery?: RecoveryReport) { super(message); }
 }
 
 const messageOf = (value: unknown): string => value instanceof Error ? value.message : String(value);
@@ -141,7 +145,7 @@ function emitJson(value: unknown): void {
 function fail(command: string, json: boolean, error: unknown): number {
 	const known = error instanceof CliError ? error : new CliError("INTERNAL_ERROR", messageOf(error));
 	if (json) {
-		const envelope: CliErrorEnvelope = { schemaVersion: 1, tool: "boxbox", command, ok: false, error: { code: known.code, message: known.message, ...(known.skippedGroups ? { skippedGroups: known.skippedGroups } : {}) } };
+		const envelope: CliErrorEnvelope = { schemaVersion: 1, tool: "boxbox", command, ok: false, error: { code: known.code, message: known.message, ...(known.skippedGroups ? { skippedGroups: known.skippedGroups } : {}), ...(known.recovery ? { recovery: known.recovery } : {}) } };
 		emitJson(envelope);
 	} else console.error(`boxbox ${command}: ${known.message}`);
 	return 2;
@@ -412,15 +416,19 @@ function approvalContext(root: string): ApprovalContext {
 	];
 	const roots           = { project: root, ...(userRoot && existsSync(userRoot) ? { user: userRoot } : {}), preset: presetRoot } ;
 	const registry        = loadApprovalRegistry(sources)                                                                          ;
-	const resolveDocument = documentResolver(roots)                                                                                ;
-	const documents = [...registry.decisions.values()].map(decision => {
-		const convention = registry.conventions.find(record => record.id === decision.id);
-		try {
-			const resolved = resolveDocument(decision.ref, convention?.layer);
-			return [decision.id, decision.ref, resolved.heading, resolved.document];
-		} catch (error) {
-			return [decision.id, decision.ref, "invalid", messageOf(error)];
-		}
+	const resolveDocument = documentSnapshot(roots)                                                                                ;
+	const documents = [...registry.decisions.values()].flatMap(decision => {
+		const layers = [...new Set(registry.conventions.filter(record => record.id === decision.id).map(record => record.layer))];
+
+		return (layers.length ? layers : [undefined]).map(layer => {
+			try {
+				const resolved = resolveDocument(decision.ref, layer);
+
+				return [decision.id, layer ?? null, decision.ref, resolved.heading, resolved.document];
+			} catch (error) {
+				return [decision.id, layer ?? null, decision.ref, "invalid", messageOf(error)];
+			}
+		});
 	});
 	const evidence = JSON.stringify({
 		config      : config.fingerprint                ,
@@ -445,6 +453,13 @@ export function preparedPipelineContext(root: string, expectedConfigFingerprint?
 			return current;
 		},
 	};
+}
+
+/** A missing dependency identity disables reuse; approval proof is reread at both hook boundaries. */
+function hookInspectionContext(root: string): string | null {
+	const runtime = inspectionRuntimeIdentity();
+	if (runtime === null) return null;
+	return createHash("sha256").update(runtime).update("\0").update(approvalContext(root).fingerprint).digest("hex");
 }
 
 /** Hook alignment uses the same approved horizontal-only pipeline as explicit Align, with no formatter or secondary stdout. */
@@ -697,7 +712,7 @@ function formatReadiness(parsed: ParsedFileCommand, root: string, result: FileRe
 	}
 }
 
-async function inspectCheck(parsed: ParsedFileCommand, root: string) {
+async function inspectCheckSnapshot(parsed: ParsedFileCommand, root: string) {
 	const config = resolveConfig(root).effective;
 	if (!config.languages.includes(parsed.language)) throw new CliError("LANGUAGE_DISABLED", `${parsed.language} is not enabled by the effective configuration`);
 	const syntax = await validateSyntax({ root, file: parsed.file, language: parsed.language });
@@ -716,6 +731,12 @@ async function inspectCheck(parsed: ParsedFileCommand, root: string) {
 	const report                    = { schemaVersion: 1 as const, tool: "boxbox" as const, results: [result], syntax, coverage, formatReadiness: readiness, ...(expectation ? { axisExpectation: expectation } : {}) } ;
 	const exitCode: ProjectExitCode = syntax.status !== "valid" || result.summary.refused > 0 ? 2 : result.summary.misaligned > 0 ? 1 : 0                                                                               ;
 	return { report, exitCode };
+}
+
+async function inspectCheck(parsed: ParsedFileCommand, root: string) {
+	const inspect = () => inspectCheckSnapshot(parsed, root);
+
+	return parsed.language === "typescript" ? withTypeScriptInspection(inspect) : inspect();
 }
 
 interface CanonicalCheck {
@@ -975,7 +996,7 @@ async function format(parsed: ParsedFileCommand, root: string, alignmentOnly = f
 		return 0;
 	} catch (error) {
 		const skippedGroups = error instanceof AlignmentSelectionError ? error.skippedGroups : undefined;
-		throw new CliError(errorCode, `${command} refused: ${messageOf(error)}`, skippedGroups);
+		throw new CliError(errorCode, `${command} refused: ${messageOf(error)}`, skippedGroups, error instanceof PipelineError ? error.recovery : undefined);
 	}
 }
 
@@ -1019,15 +1040,9 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 			const original = parseFileCommand(["--file", file], false, project).file;
 			return { result: { ...result, file: result.file === parsed.file ? original : original.split(sep).join("/") }, syntax };
 		}, {
-			version  : CLI_VERSION       ,
-			align    : alignApprovedHook ,
-			cacheKey : (project, file) => {
-				const language = inferredLanguage(file);
-				if (language !== "json" && language !== "yaml") return undefined;
-
-				const scope = fileProjectScope(project, ["--file", file]);
-				return JSON.stringify([scope.root, resolveConfig(scope.root).fingerprint]);
-			},
+			version           : CLI_VERSION          ,
+			align             : alignApprovedHook    ,
+			inspectionContext : hookInspectionContext,
 		});
 		if (command === "hooks" && tail[0] === "workflow") return runHookWorkflow(tail.slice(1), assertRoot(root));
 		if (command === "hooks"                          ) return installHooks(tail);

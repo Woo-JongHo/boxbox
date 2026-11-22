@@ -97,6 +97,9 @@ invoke(npm, ["install", "--ignore-scripts", "--no-audit", "--no-fund", "--save-e
 const node = realpathSync(process.execPath                                              ) ;
 const cli  = resolve     (runtimeDirectory, "node_modules", metadata.name, "dist/cli.js") ;
 if (!existsSync(cli)) fail("The local engine did not install correctly. Keep the npm error output and rerun the BoxBox installer.");
+if (typeof metadata.engineCliSha256 !== "string" || !/^[0-9a-f]{64}$/u.test(metadata.engineCliSha256)) fail("Installed engine provenance metadata is missing or invalid. Reinstall this BoxBox installer package, then rerun it.");
+const cliSha256 = createHash("sha256").update(readFileSync(cli)).digest("hex");
+if (cliSha256 !== metadata.engineCliSha256) fail("Installed engine CLI fingerprint does not match this installer. Reinstall this BoxBox installer package, then rerun it.");
 const version = run(node, [cli, "--version"], { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] }).stdout.trim();
 if (version !== metadata.version) fail(`Installed engine version mismatch: ${version}`);
 

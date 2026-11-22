@@ -18,6 +18,7 @@ import      { runAlignCli                                     } from "@/common/2
 import      { alignApproved                                  } from "@/common/38_selective-align.ts"     ;
 import type { SkippedAlignmentGroup                          } from "@/common/38_selective-align.ts"     ;
 import      { assertAlignmentOnly                             } from "@/common/10_alignment-only.ts"       ;
+import      { typeScriptWriteFailure                          } from "@/common/39_recovery.ts"             ;
 import      {
               analyzeStructured                             ,
               preservesStructured                           ,
@@ -85,7 +86,7 @@ function readStructuredUtf8(file: string): string {
 interface LanguageEngine {
 	readonly check : (root: string, file: string) => Promise<FileResult> ;
 	readonly parse : (root: string, file: string) => Promise<void>       ;
-	readonly write : (root: string, file: string) => Promise<void>       ;
+	readonly write : (root: string, file: string, display: string) => Promise<void> ;
 }
 
 const structuredEngine = (language: "json" | "yaml"): LanguageEngine => ({
@@ -94,7 +95,7 @@ const structuredEngine = (language: "json" | "yaml"): LanguageEngine => ({
 		const diagnostics = structuredDiagnostics(readStructuredUtf8(file), language);
 		if (diagnostics.length > 0) throw new Error(`formatter output does not parse: ${diagnostics.join(",")}`);
 	},
-	write : async (root, file) => {
+	write : async (root, file, display) => {
 		const before   = readStructuredUtf8(file                                           ) ;
 		const analyzed = analyzeStructured (before, language, file, structuredOptions(root)) ;
 		if (analyzed.result.summary.refused > 0) throw new Error(`BoxBox alignment failed: ${analyzed.refusals.map(refusal => refusal.reason).join(",")}`);
@@ -128,15 +129,10 @@ const typescriptEngine: LanguageEngine = {
 		const diagnostics = await syntacticDiagnostics(root, file, readFileSync(file, "utf8"));
 		if (diagnostics.length > 0) throw new Error(`formatter output does not parse: ${diagnostics.join(",")}`);
 	},
-	write : async (root, file) => {
+	write : async (root, file, display) => {
 		let report = ""                                                                                                            ;
 		const code = await runTypeScriptAlign(["--file", file, "--write", "--json"], { root, emit: value => { report = value; } }) ;
-		if (code !== 0) {
-			const groups = (JSON.parse(report) as ResultEnvelope).results[0]?.groups ?? [];
-			const findings = groups.filter(group => group.state === "SUGGEST" || group.state === "REFUSE")
-				.map(group => `L${group.startLine}-${group.endLine} ${group.kind}: ${group.reason ?? group.state}`);
-			throw new Error(`BoxBox alignment failed with exit code ${code}${findings.length ? ` (${findings.slice(0, 5).join("; ")})` : ""}`);
-		}
+		if (code !== 0) throw typeScriptWriteFailure(report, display, code);
 	},
 };
 
@@ -186,7 +182,7 @@ async function cycle(options: FormatPipelineOptions, working: string, display: s
 	await ENGINES[options.language].parse(options.root, working);
 	const checked   = await ENGINES[options.language].check(options.root, working)                ;
 	const approvals = approvedGroups(checked, options.registry, options.resolveDocument, display) ;
-	await ENGINES[options.language].write(options.root, working);
+	await ENGINES[options.language].write(options.root, working, display);
 	return {
 		formatter                                                        ,
 		formatterChanged : !beforeFormatter.equals(afterFormatter)       ,

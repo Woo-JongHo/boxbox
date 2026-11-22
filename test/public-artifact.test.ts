@@ -12,6 +12,7 @@ import      {
                                                 } from "node:fs"                      ;
 import      { join, resolve                     } from "node:path"                    ;
 import      { spawnSync                         } from "node:child_process"           ;
+import      { createHash                        } from "node:crypto"                  ;
 
 import      { APPROVAL_VERSIONS                 } from "@/common/18_approval-gate.ts" ;
 import      { contentHashOf, sectionHash        } from "@/common/17_examples.ts"      ;
@@ -63,6 +64,7 @@ describe("public CLI local package artifact", () => {
 			"THIRD_PARTY_NOTICES",
 			"dist/cli.js",
 			"package.json",
+			"provenance.json",
 			"rules/presets/recommended/conventions.jsonl",
 			"rules/presets/recommended/decisions.jsonl",
 			"rules/presets/recommended/docs/public/decisions/py-simple-assignments.md",
@@ -85,6 +87,9 @@ describe("public CLI local package artifact", () => {
 		expect(JSON.parse(readFileSync(join(installed, "package.json"), "utf8")).license).toBe   ("MIT"                                      ) ;
 		expect(manifest.bin                                                             ).toEqual({ boxbox: "dist/cli.js" }                  ) ;
 		expect(manifest.dependencies                                                    ).toEqual({ typescript: "7.0.2" }                    ) ;
+		const provenance = JSON.parse(readFileSync(join(installed, "provenance.json"), "utf8"));
+		expect(provenance).toMatchObject({ schemaVersion: 1, source: { commit: expect.stringMatching(/^[0-9a-f]{40}$/u), dirty: expect.any(Boolean) } });
+		expect(provenance.cliSha256).toBe(createHash("sha256").update(readFileSync(join(installed, "dist/cli.js"))).digest("hex"));
 		expect(manifest.exports     ).toBeUndefined()               ;
 		expect(existsSync(join(installed, "dist/internal-runner.js"))).toBe(false);
 		const yamlLicense = readFileSync(join(root, "node_modules/yaml/LICENSE"), "utf8");
