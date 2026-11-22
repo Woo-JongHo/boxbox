@@ -62,6 +62,11 @@ but does not automatically justify extraction, parameter changes or new wrappers
 
 ## Align an existing file
 
+Use `boxbox check --help`, `boxbox guide --help`, `boxbox align --help` or `boxbox format --help` to see that
+command's options without opening a project or source file. A plugin can be available inside its host even when a
+separate terminal cannot find the bare `boxbox` command. In that case, use the plugin's configured launcher from its
+skill instructions; installing a second global launcher is not required.
+
 ```bash
 boxbox check --source --file src/example.ts --json
 boxbox guide --file src/example.ts --json
@@ -73,6 +78,11 @@ boxbox check --source --file src/example.ts --json
 The `--source` flag keeps preflight and after-alignment checks on original source, even in a formatter project. It
 reads syntax, detected groups and approval facts without executing the formatter or staging a formatting working copy.
 The same flag works with repeated files or a directory selection; it does not approve writes.
+
+Plain-text Check starts with compact `status`, `coverage` and `approval` fields for every inspected file. Together
+they distinguish aligned detected groups, alignment needed, missing or denied approval, limited unsupported coverage,
+no detected groups, safety refusal, invalid syntax and parser/tool failure. Unsupported coverage can still exit `0`
+when the supported part is clean. Existing exit codes and structured JSON remain the automation contract.
 
 Align preserves physical line structure, indentation and non-layout content. It does not reorder statements, rename
 symbols, extract functions, wrap lines or execute an external formatter. If an engine proposal requires one of those
@@ -132,9 +142,11 @@ does not create the working copy or writer lock.
 
 Directory selection skips `.git`, `.boxbox`, `node_modules` and `dist`, uses bounded recursive traversal, and rejects
 symbolic links, duplicate targets and paths outside the root. It is path-based rather than a Git-ignore filter; select
-the intended source directories. Supplied POSIX paths containing a literal backslash are refused because they cannot be
-represented consistently by every approval and runtime adapter. Directory preselection validates entries before
-language filtering, so an unsupported non-source name can also stop the batch. A hook inspection error leaves that
+the intended source directories. On macOS, absolute paths through the system `/var` and `/tmp` aliases are normalized
+to their `/private` locations before containment checks. Paths and symbolic links that resolve outside the project
+remain refused. Supplied POSIX paths containing a literal backslash are refused because they cannot be represented
+consistently by every approval and runtime adapter. Directory preselection validates entries before language
+filtering, so an unsupported non-source name can also stop the batch. A hook inspection error leaves that
 event without a success receipt. Batch formats are atomic **per file**. Results retain successful earlier writes if
 another file fails. Format continues to require file-level approval for every selected file. A positive approved-group
 count in source Check does not guarantee that Align can safely isolate the group.

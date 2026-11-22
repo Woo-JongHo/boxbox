@@ -344,6 +344,24 @@ describe("public CLI", () => {
 		}
 	});
 
+	test("plain-text source checks distinguish clean, syntax and tool outcomes early", () => {
+		const root = workspace();
+		writeFileSync(join(root, "clean.ts"), "const one = 1 ;\nconst two = 2 ;\nconst six = 3 ;\n");
+		writeFileSync(join(root, "invalid.ts"), "const broken = ;\n");
+		writeFileSync(join(root, "tool.py"), "value = 1\n");
+
+		const clean   = invoke(root, ["check", "--source", "--file", "clean.ts"]                              ) ;
+		const invalid = invoke(root, ["check", "--source", "--file", "invalid.ts"]                            ) ;
+		const tool    = invoke(root, ["check", "--source", "--file", "tool.py"], { PATH: join(root, "empty") }) ;
+
+		expect(clean.status                   ).toBe     (0                                ) ;
+		expect(clean.stdout.split("\n")[0]   ).toContain("status=detected-groups-aligned") ;
+		expect(invalid.status                 ).toBe     (2                                ) ;
+		expect(invalid.stdout.split("\n")[0] ).toContain("status=syntax-invalid"           ) ;
+		expect(tool.status                    ).toBe     (2                                ) ;
+		expect(tool.stdout.split("\n")[0]    ).toContain("status=tool-error"                ) ;
+	});
+
 	test("source check locates missing approvals before users request a write", () => {
 		const root = workspace();
 		writeFileSync(join(root, "settings.json"), '{\n  "a": 1,\n  "long_key": 2,\n  "b": 3\n}\n');
