@@ -246,3 +246,21 @@ export function evaluateDetected(registry: ApprovalRegistry, detected: readonly 
 		return { query, result: evaluateApproval(registry, query, resolveDocument) };
 	});
 }
+
+/** One operation's proof snapshot. A write boundary must validate provenance with a fresh resolver. */
+export function documentSnapshot(roots: DocumentRoots): DocumentResolver {
+	const resolve  = documentResolver(roots)                         ;
+	const captured = new Map<string, ReturnType<DocumentResolver>>() ;
+
+	return (ref, layer) => {
+		const key      = JSON    .stringify([layer ?? null, ref]) ;
+		const previous = captured.get      (key                 ) ;
+		if (previous) return previous;
+
+		const current = resolve(ref, layer);
+
+		captured.set(key, current);
+
+		return current;
+	};
+}

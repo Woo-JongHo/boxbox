@@ -343,6 +343,30 @@ describe("parser-confirmed TypeScript slash roles", () => {
 			expect(preservesTokens(before, after, parsed)).toBe(false);
 		}
 	}, 30_000);
+
+	test("reuses one parser-bound original analysis while fully validating every candidate", async () => {
+		const before = 'const view = <div title="a  b">hello  world {`head  tail ${value}`} {!/a  b/.test(value)}</div>; // note  here' ;
+		const parsed = await parserSnapshot(before, "sample.tsx")                                                                       ;
+
+		expect(preservesTokens(before, before.replace("view =", "view  ="), parsed)).toBe(true);
+
+		Object.defineProperty(parsed, "forEachChild", {
+			value: () => { throw new Error("original parser tree was traversed twice"); },
+		});
+
+		expect(preservesTokens(before, before.replace("view =", "view   ="), parsed)).toBe(true);
+		for (const after of [
+			before.replace("a  b", "a b"),
+			before.replace("hello  world", "hello world"),
+			before.replace("head  tail", "head tail"),
+			before.replace("/a  b/", "/a b/"),
+			before.replace("note  here", "note here"),
+		]) expect(preservesTokens(before, after, parsed)).toBe(false);
+
+		const mutated = before.replace("view =", "view  =");
+		Object.defineProperty(parsed, "text", { value: mutated });
+		expect(preservesTokens(mutated, mutated.replace("view  =", "view   ="), parsed)).toBe(false);
+	}, 30_000);
 });
 
 

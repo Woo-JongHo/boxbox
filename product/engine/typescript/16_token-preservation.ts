@@ -127,6 +127,15 @@ interface ScanTrace {
 	readonly opaque  : readonly OpaqueToken[] ;
 }
 
+interface OriginalScan {
+	readonly text   : string            ;
+	readonly tokens : readonly string[] ;
+	readonly trace  : ScanTrace         ;
+}
+
+/** A parser snapshot owns one immutable original analysis; candidates are never cached. */
+const ORIGINAL_SCANS = new WeakMap<SourceFile, OriginalScan>();
+
 /** Parser positions distinguish division and JSX delimiters, and own the exact bytes of JSX text/attributes. */
 function parsedLexicalContext(source: SourceFile) {
 	const slashes = new Map<number, { readonly role: SlashRole; readonly end: number }>() ;
@@ -311,14 +320,29 @@ export function preservesTokensWithBreaks(before: string, after: string, parsed?
 
 function comparedTokens(before: string, after: string, parsed?: SourceFile): { readonly left: readonly string[]; readonly right: readonly string[] } {
 	if (!parsed) return { left: tokenStream(before), right: tokenStream(after) };
-	const left  : string[] = [] ;
-	const right : string[] = [] ;
 	const collect = (tokens: string[]) => (kind: SyntaxKind, value: string): void => {
 		if (kind !== SyntaxKind.WhitespaceTrivia) tokens.push(`${kind}:${value}`);
 	};
-	const roles = scan(before, collect(left), parsed);
+	if (parsed.text !== before) throw new TypeScriptSlashAmbiguityError();
+	const cached = ORIGINAL_SCANS.get(parsed);
+	if (cached && cached.text !== before) throw new TypeScriptSlashAmbiguityError();
+	const original = cached ?? (() => {
+		const tokens: string[] = []                                    ;
+		const trace            = scan(before, collect(tokens), parsed) ;
+		const value = {
+			text   : before                ,
+			tokens : Object.freeze(tokens) ,
+			trace  : Object.freeze({
+				slashes : Object.freeze([...trace.slashes]),
+				opaque  : Object.freeze(trace.opaque.map(token => Object.freeze({ ...token }))),
+			}),
+		};
+		ORIGINAL_SCANS.set(parsed, value);
+		return value;
+	})();
+	const right : string[] = [] ;
 	// Replaying parser-confirmed roles does not trust candidate offsets: exact token bytes and
 	// role count must still match, and the write pipeline independently reparses the final text.
-	scan(after, collect(right), undefined, roles);
-	return { left, right };
+	scan(after, collect(right), undefined, original.trace);
+	return { left: original.tokens, right };
 }
