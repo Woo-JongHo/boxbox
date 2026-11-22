@@ -244,7 +244,7 @@ describe("modes", () => {
 		const run = spawnSync(process.execPath, [CLI, "mode", "align", "--global", "--json"], { cwd: root, encoding: "utf8", env: process.env });
 
 		expect(run.status            ).toBe         (0                                                    ) ;
-		expect(JSON.parse(run.stdout)).toMatchObject({ scope: "global", previous: "check", mode: "align" }) ;
+		expect(JSON.parse(run.stdout)).toMatchObject({ scope: "global", previous: "auto", mode: "align" } ) ;
 		expect(resolveMode(root)     ).toBe         ("off"                                                ) ;
 		expect(resolveMode(undefined)).toBe         ("align"                                              ) ;
 	});
@@ -277,7 +277,7 @@ describe("status line", () => {
 		const script = join(workspace(), "hud.js");
 		writeFileSync(script, "console.log('ctx 42%'); console.log('second'); console.log('third');");
 		const run = spawnSync(process.execPath, [CLI, "statusline", "--no-color", "--wrap", `"${process.execPath}" "${script}"`], { input: "{}", encoding: "utf8", env: { ...process.env, COLUMNS: "" } });
-		expect(run.stdout).toBe("ctx 42% │ ▣ BB·CHECK");
+		expect(run.stdout).toBe("ctx 42% │ ▣ BB·AUTO");
 	});
 });
 
@@ -355,7 +355,7 @@ describe("regressions from PR 31 integration", () => {
 			input: "{}", encoding: "utf8", env: { ...process.env, BOXBOX_COLOR: "0" },
 		});
 		expect(run.status).toBe(0);
-		expect(run.stdout).toBe("▣ BB·CHECK");
+		expect(run.stdout).toBe("▣ BB·AUTO");
 	});
 
 	for (const host of ["claude", "codex"] as const) {

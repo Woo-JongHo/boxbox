@@ -316,7 +316,11 @@ test("real npx infers the boxbox bin from the public installer and installs both
 			expect(hooks.hooks.SessionStart[0].hooks[0].command).toBe(node);
 			expect(hooks.hooks.SessionStart[0].hooks[0].commandWindows).toBeUndefined();
 		}
-		expectStatus(hook("SessionStart"), 0);
+		const session = hook("SessionStart");
+		expectStatus(session, 0);
+		const workflowKey = /hooks workflow (\S+)/u.exec(JSON.parse(String(session.stdout)).hookSpecificOutput.additionalContext)?.[1];
+		expect(workflowKey).toBeDefined();
+		expectStatus(run(node, [launcher, "hooks", "workflow", workflowKey!, "author"], { cwd: targetProject, env }), 0);
 		const target  = join(targetProject, "sample.ts")                                         ;
 		const content = "const a = make(1);\nconst longer = make(22);\nconst mid = make(333);\n" ;
 		writeFileSync(target, content);
@@ -326,12 +330,13 @@ test("real npx infers the boxbox bin from the public installer and installs both
 		const preview = run(node, [launcher, "format", "--file", "sample.ts", "--dry-run", "--json"], { cwd: targetProject, env });
 		expectStatus(preview, 0);
 		expect(JSON.parse(String(preview.stdout))                     ).toMatchObject({ written: false, formatterExecuted: false, formatMode: "standalone" }) ;
-		expect(JSON.parse(String(hook("PostToolUse").stdout)).decision).toBe         ("block"                                                               ) ;
-		expect(JSON.parse(String(hook("Stop").stdout)).decision       ).toBe         ("block"                                                               ) ;
-		expect(JSON.parse(String(hook("Stop").stdout)).decision).toBeUndefined();
-		expect(readFileSync(target, "utf8")   ).toBe   (content      ) ;
-		expect(readdirSync(targetProject)     ).toEqual(["sample.ts"]) ;
-		expect(existsSync(join(data, "hooks"))).toBe   (true         ) ;
+		const post = JSON.parse(String(hook("PostToolUse").stdout));
+		expect(post.decision).toBeUndefined();
+		expect(post.hookSpecificOutput.additionalContext).toContain("FIXABLE"    ) ;
+		expect(JSON.parse(String(hook("Stop").stdout))  ).toEqual  ({}           ) ;
+		expect(readFileSync(target, "utf8")             ).toBe     (content      ) ;
+		expect(readdirSync(targetProject)               ).toEqual  (["sample.ts"]) ;
+		expect(existsSync(join(data, "hooks"))          ).toBe     (true         ) ;
 		const noData = run(node, [launcher, "hook", "session"], { cwd: targetProject, env, input: JSON.stringify({ session_id: "no-data", cwd: targetProject }) });
 		expectStatus(noData, 1);
 		expect(String(noData.stderr)).toContain("PLUGIN_DATA");

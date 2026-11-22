@@ -66,7 +66,7 @@ The public `format` command requires complete human-approval evidence. It runs a
 
 ## Write, Refactor, Align and Check
 
-BoxBox 0.2.8 separates agent workflows from engine changes:
+BoxBox separates agent workflows from engine changes.
 
 - **Write:** the agent implements requested behavior using approved authoring guidance.
 - **Refactor:** the agent improves existing structure and separately verifies behavior and relevant performance.
@@ -80,8 +80,9 @@ Preview leaves the target unchanged; the existing `format` pipeline remains a se
 Check and Format also accept repeated `--file` or bounded recursive `--directory` selections. With a configured
 formatter, Check verifies the final formatter-then-BoxBox bytes on working copies and keeps original-source findings
 separate from `canonical` verification. Batch formats are atomic per file and report completed writes if another file
-fails; per-group selective writes remain deferred. Session hooks default to read-only `check`; only an explicit
-`boxbox mode align` enables approved horizontal alignment after matched tool calls. Stop remains read-only.
+fails. Explicit Align applies approved independent groups and reports skipped ranges. Session hooks default to
+`auto` and provide advisory Write or Align feedback when the agent selects the workflow. Quiet records silently.
+Use `boxbox mode off` to disable inspection. Explicit `boxbox mode align` remains the opt-in post-edit write mode.
 See [workflow selection and verification limits](docs/user/modes.md).
 
 The CLI now checks TypeScript, Python, strict JSON and YAML 1.2, reporting syntax as valid, invalid or parser error.

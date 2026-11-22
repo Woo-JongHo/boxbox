@@ -15,6 +15,8 @@ import      { runTypeScriptAlign                              } from "@/typescri
 import      { syntacticDiagnostics                            } from "@/typescript/15_load-source-file.ts" ;
 import      { PYTHON_ALIGNER                                  } from "@/python/03_profile.ts"              ;
 import      { runAlignCli                                     } from "@/common/22_align-cli.ts"            ;
+import      { alignApproved                                  } from "@/common/38_selective-align.ts"     ;
+import type { SkippedAlignmentGroup                          } from "@/common/38_selective-align.ts"     ;
 import      { assertAlignmentOnly                             } from "@/common/10_alignment-only.ts"       ;
 import      {
               analyzeStructured                             ,
@@ -25,16 +27,17 @@ import      {
 export type { PipelineProcessResult } from "@/common/14_formatter-process.ts";
 
 export interface FormatPipelineResult {
-	readonly file              : string                       ;
-	readonly formatterChanged  : boolean                      ;
-	readonly boxboxChanged     : boolean                      ;
-	readonly canonicalChanged  : boolean                      ;
-	readonly fixedPoint        : true                         ;
-	readonly written           : boolean                      ;
-	readonly formatter         : PipelineProcessResult | null ;
-	readonly formatterExecuted : boolean                      ;
-	readonly formatMode        : "standalone" | "formatter"   ;
-	readonly approvals         : readonly string[]            ;
+	readonly file              : string                           ;
+	readonly formatterChanged  : boolean                          ;
+	readonly boxboxChanged     : boolean                          ;
+	readonly canonicalChanged  : boolean                          ;
+	readonly fixedPoint        : true                             ;
+	readonly written           : boolean                          ;
+	readonly formatter         : PipelineProcessResult | null     ;
+	readonly formatterExecuted : boolean                          ;
+	readonly formatMode        : "standalone" | "formatter"       ;
+	readonly approvals         : readonly string[]                ;
+	readonly skippedGroups?    : readonly SkippedAlignmentGroup[] ;
 	/** Exact changed physical lines, present only for alignment-only previews. Line numbers are 1-based. */
 	readonly alignmentEdits?   : readonly { readonly line: number; readonly before: string; readonly after: string }[];
 	readonly safety           : {
@@ -126,8 +129,14 @@ const typescriptEngine: LanguageEngine = {
 		if (diagnostics.length > 0) throw new Error(`formatter output does not parse: ${diagnostics.join(",")}`);
 	},
 	write : async (root, file) => {
-		const code = await runTypeScriptAlign(["--file", file, "--write", "--json"], { root, emit: () => {} });
-		if (code !== 0) throw new Error(`BoxBox alignment failed with exit code ${code}`);
+		let report = ""                                                                                                            ;
+		const code = await runTypeScriptAlign(["--file", file, "--write", "--json"], { root, emit: value => { report = value; } }) ;
+		if (code !== 0) {
+			const groups = (JSON.parse(report) as ResultEnvelope).results[0]?.groups ?? [];
+			const findings = groups.filter(group => group.state === "SUGGEST" || group.state === "REFUSE")
+				.map(group => `L${group.startLine}-${group.endLine} ${group.kind}: ${group.reason ?? group.state}`);
+			throw new Error(`BoxBox alignment failed with exit code ${code}${findings.length ? ` (${findings.slice(0, 5).join("; ")})` : ""}`);
+		}
 	},
 };
 
@@ -139,15 +148,26 @@ const ENGINES: Readonly<Record<PublicLanguage, LanguageEngine>> = {
 };
 
 function approvedGroups(result: FileResult, registry: ApprovalRegistry, resolveDocument: DocumentResolver, originalPath: string): readonly string[] {
-	const candidates = result.groups.filter(group => group.state === "PASS" || group.state === "FIXABLE");
-	if (result.groups.some(group => group.state === "REFUSE")) throw new Error("BoxBox safety refusal prevents formatting");
+	const candidates = result.groups.filter(group => group.state === "PASS" || group.state === "FIXABLE") ;
+	const refused    = result.groups.filter(group => group.state === "REFUSE")                            ;
+	if (refused.length) {
+		const findings = refused.slice(0, 5).map(group => `L${group.startLine}-${group.endLine} ${group.kind}: ${group.reason ?? "safety refusal"}`);
+		throw new Error(`BoxBox safety refusal prevents formatting (${findings.join("; ")})`);
+	}
 	if (candidates.length === 0) throw new Error("no verified approval rule applies to this file");
 	const approvals = candidates.map((group: ResultGroup) => evaluateApproval(registry, {
 		key  : lookupKeyOf(result.language, group.context, group.kind, group.axes) ,
 		file : originalPath                                                        ,
 	}, resolveDocument));
-	const denied = approvals.filter(approval => !approval.writable || approval.status !== "approved");
-	if (denied.length > 0) throw new Error(`approval denied: ${denied.flatMap(approval => approval.reasons).join("; ")}`);
+	const denied = approvals.flatMap((approval, index) => approval.writable && approval.status === "approved"
+		? []
+		: [{ group: candidates[index]!, reason: approval.reasons.join(", ") }]);
+
+	if (denied.length > 0) {
+		const findings  = denied.slice(0, 5).map(({ group, reason }) => `L${group.startLine}-${group.endLine} ${group.kind}: ${reason}`) ;
+		const remaining = denied.length - findings.length                                                                                ;
+		throw new Error(`approval denied: ${denied[0]!.reason} (${findings.join("; ")}${remaining ? `; +${remaining} groups` : ""})`);
+	}
 	return [...new Set(approvals.map(approval => approval.conventionId!))].sort();
 }
 
@@ -185,8 +205,9 @@ export async function runFormatPipeline(given: FormatPipelineOptions): Promise<F
 	const { absolute, display } = targetOf(options.root, options.file);
 	const initialProvenance     = options.provenance?.();
 	let first!: Awaited<ReturnType<typeof cycle>>;
-	let canonicalChanged = false;
-	let alignmentEdits: FormatPipelineResult["alignmentEdits"];
+	let canonicalChanged = false                                ;
+	let alignmentEdits : FormatPipelineResult["alignmentEdits"] ;
+	let skippedGroups  : FormatPipelineResult["skippedGroups"]  ;
 	const written = await updateFileAtomically(absolute, async ({ initial, working }) => {
 		if (options.language === "python") {
 			const source = initial.toString("utf8");
@@ -194,7 +215,11 @@ export async function runFormatPipeline(given: FormatPipelineOptions): Promise<F
 				throw new Error("Unsupported Python source encoding or line endings");
 			}
 		}
-		first = await cycle(options, working, display);
+		if (options.alignmentOnly) {
+			const aligned = await alignApproved(options, working, display);
+			skippedGroups = aligned.skippedGroups;
+			first = { formatter: null, formatterChanged: false, approvals: aligned.approvals, boxboxChanged: aligned.boxboxChanged };
+		} else first = await cycle(options, working, display);
 		const firstOutput = readFileSync(working);
 		canonicalChanged = !firstOutput.equals(initial);
 		if (options.alignmentOnly) assertAlignmentOnly(initial, firstOutput, options.language);
@@ -206,7 +231,8 @@ export async function runFormatPipeline(given: FormatPipelineOptions): Promise<F
 				? []
 				: [{ line: index + 1, before, after: candidateLines[index]! }]);
 		}
-		await cycle(options, working, display);
+		if (options.alignmentOnly) await alignApproved(options, working, display);
+		else await cycle(options, working, display);
 		if (!readFileSync(working).equals(firstOutput)) throw new Error("format pipeline did not reach a byte fixed point");
 		if (options.provenance && options.provenance() !== initialProvenance) throw new Error("configuration or approval provenance changed before commit");
 		if (options.dryRun) writeFileSync(working, initial);
@@ -228,6 +254,7 @@ export async function runFormatPipeline(given: FormatPipelineOptions): Promise<F
 		formatMode        : options.formatter ? "formatter" : "standalone" ,
 		approvals         : first.approvals                                ,
 		...(alignmentEdits === undefined ? {} : { alignmentEdits }),
+		...(skippedGroups === undefined ? {} : { skippedGroups }),
 		safety            : { atomic: true, approvalChecked: true, parserChecked: true, executableStable: options.formatter ? true : null },
 	};
 }

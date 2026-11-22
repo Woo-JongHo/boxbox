@@ -1,13 +1,14 @@
 # Per-group `align`: design and recommendation
 
-2026-11-03 · Phase 3 of [#35](https://github.com/Woo-JongHo/boxbox/issues/35). The selective writer remains a deferred
-design, not an implemented or prototyped operation. Measurements below describe the recorded 2026-11-03 source;
-the formatter section distinguishes the later whole-file implementation.
+2026-11-03 · Phase 3 of [#35](https://github.com/Woo-JongHo/boxbox/issues/35). The recommendation and measurements
+below describe the recorded 2026-11-03 source. [#66](https://github.com/Woo-JongHo/boxbox/issues/66) integrates the
+approved independent-group Align behavior. The [user workflow contract](../user/modes.md#align-an-existing-file)
+describes current behavior.
 
-## Recommendation
+## Historical recommendation
 
-**Per-group writes remain deferred.** The maintainer retained whole-file approval and prioritized the separate
-formatter workflow. Multiple-file execution does not change that approval boundary.
+The maintainer initially kept file-level approval and prioritized the separate formatter workflow.
+The following projections describe the original sample.
 
 - It adds at most 14 candidate files out of 179, on top of the 3 that write today. Real write success for those 14 is unverified.
 - 13 of the 14 are in `click`, `typer` and `requests`. All three run `ruff format` in pre-commit, and `ruff format` reverts this alignment, as does `black`.

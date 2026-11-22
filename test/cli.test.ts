@@ -6,10 +6,12 @@ import      {
               mkdirSync                       ,
               mkdtempSync                     ,
               readFileSync                    ,
+              realpathSync                    ,
               rmSync                          ,
               symlinkSync                     ,
               writeFileSync                   ,
                                                 } from "node:fs"                      ;
+import      { tmpdir                            } from "node:os"                      ;
 import      { join, resolve                     } from "node:path"                    ;
 
 import      { APPROVAL_VERSIONS                 } from "@/common/18_approval-gate.ts" ;
@@ -47,9 +49,9 @@ function invoke(root: string, args: readonly string[], environment: Record<strin
 	return { status: result.exitCode, stdout: result.stdout.toString(), stderr: result.stderr.toString() };
 }
 
-function invokeWithInput(root: string, args: readonly string[], input: unknown): Invocation {
-	const source = `import { runCli } from ${JSON.stringify(cli)}; process.exitCode = await runCli(JSON.parse(process.env.BOXBOX_TEST_ARGS!), process.cwd());`                                                                ;
-	const result = Bun.spawnSync([process.execPath, "-e", source], { cwd: root, env: { ...process.env, BOXBOX_TEST_ARGS: JSON.stringify(args) }, stdin: Buffer.from(JSON.stringify(input)), stdout: "pipe", stderr: "pipe" }) ;
+function invokeWithInput(root: string, args: readonly string[], input: unknown, environment: Record<string, string> = {}): Invocation {
+	const source = `import { runCli } from ${JSON.stringify(cli)}; process.exitCode = await runCli(JSON.parse(process.env.BOXBOX_TEST_ARGS!), process.cwd());`                                                                                ;
+	const result = Bun.spawnSync([process.execPath, "-e", source], { cwd: root, env: { ...process.env, ...environment, BOXBOX_TEST_ARGS: JSON.stringify(args) }, stdin: Buffer.from(JSON.stringify(input)), stdout: "pipe", stderr: "pipe" }) ;
 	return { status: result.exitCode, stdout: result.stdout.toString(), stderr: result.stderr.toString() };
 }
 
@@ -123,6 +125,55 @@ describe("public CLI", () => {
 		expect(version.stdout.trim()).toBe     (JSON.parse(readFileSync(join(repository, "package.json"), "utf8")).version) ;
 	});
 
+	test("file-command help works without a parser or a source file", () => {
+		const root = workspace();
+		for (const command of ["check", "guide", "align", "format"] as const) {
+			const help = invoke(root, [command, "--help"], { PATH: join(root, "absent-path") });
+
+			expect(help.status                                          ).toBe     (0                         ) ;
+			expect(help.stdout                                          ).toContain(`Usage: boxbox ${command}`) ;
+			expect(help.stderr                                          ).toBe     (""                        ) ;
+			expect(invoke(root, [command, "--invalid", "--help"]).status).toBe     (2                         ) ;
+		}
+	});
+
+	test("macOS system path aliases preserve nested project scope and batch selection", () => {
+		if (process.platform !== "darwin") return;
+		const root = mkdtempSync(join(realpathSync(tmpdir()), "boxbox-path-alias-"));
+		workspaces.push(root);
+		const alias = root.replace(/^\/private/u, "") ;
+		const child = join        (root, "project"  ) ;
+		mkdirSync(join(child, ".boxbox"), { recursive: true });
+		writeFileSync(join(child, ".boxbox", "config.json"), JSON.stringify({ schemaVersion: 2, languages: ["python"] }));
+		writeFileSync(join(child, "a.py"), "a = 1\n");
+		writeFileSync(join(child, "b.py"), "b = 1\n");
+		writeFileSync(join(child, "config.json"), "{}\n");
+		const disabled = invoke(root, ["check", "--source", "--file", join(alias, "project/config.json"), "--json"]);
+		expect(JSON.parse(disabled.stdout).error.code).toBe("LANGUAGE_DISABLED");
+
+		const batch = invoke(root, ["check", "--source", "--file", join(alias, "project/a.py"), "--file", join(alias, "project/b.py"), "--json"]);
+		expect(batch.status).toBe(0);
+		expect(JSON.parse(batch.stdout).results.map((item: { file: string }) => item.file)).toEqual(["project/a.py", "project/b.py"]);
+
+		const escaped = invoke(root, ["guide", "--authoring", "--file", join(alias, "../outside.py"), "--json"]);
+		expect(JSON.parse(escaped.stdout).error.code).toBe("PATH_ESCAPE");
+	});
+
+	test("brief authoring guidance lists approved columns without emitting full contracts", () => {
+		const root  = workspace()                                                ;
+		const args  = ["guide", "--file", "src/new.ts", "--authoring", "--json"] ;
+		const full  = invoke(root, args)                                         ;
+		const brief = invoke(root, [...args, "--brief"])                         ;
+
+		expect(brief.status).toBe(0);
+		expect(brief.stdout.length).toBeLessThan(full.stdout.length / 4);
+		expect(JSON.parse(brief.stdout)).toMatchObject({
+			brief: true, ok: true, verification: "not-run", writeAuthorized: false,
+			columns: expect.arrayContaining([expect.objectContaining({ columns: expect.arrayContaining(["equals"]) })]),
+		});
+		expect(invoke(root, ["guide", "--file", "src/new.ts", "--brief"]).status).toBe(2);
+	});
+
 	test("init preserves existing user files and never overwrites the config when rerun", () => {
 		const root = workspace();
 		mkdirSync(join(root, ".boxbox"));
@@ -187,6 +238,7 @@ describe("public CLI", () => {
 			expect(value.syntax, name).toMatchObject({ status, tool });
 			expect(value.syntax.diagnostics.length, name).toBe(status === "valid" ? 0 : 1);
 			expect(value.results[0].summary.groups, name).toBe(0);
+			expect(value.coverage, name).toBe(status === "valid" ? "no-groups-detected" : "not-inspected");
 			expect(value.formatReadiness, name).toMatchObject({ approvalEligible: false, verification: "not-run", approvalFacts: [] });
 			expect(readFileSync(path).equals(before), name).toBe(true);
 		}
@@ -261,9 +313,10 @@ describe("public CLI", () => {
 		const unsupported = invoke    (root, ["check", "--file", "anchor.yaml", "--json"]) ;
 		const value       = JSON.parse(unsupported.stdout                                ) ;
 
-		expect(unsupported.status                 ).toBe           (0      ) ;
-		expect(value.syntax.status                ).toBe           ("valid") ;
-		expect(value.results[0].unsupported.length).toBeGreaterThan(0      ) ;
+		expect(unsupported.status                 ).toBe           (0        ) ;
+		expect(value.syntax.status                ).toBe           ("valid"  ) ;
+		expect(value.coverage                     ).toBe           ("limited") ;
+		expect(value.results[0].unsupported.length).toBeGreaterThan(0        ) ;
 		for (const args of [
 			["check", "--file", "anchor.yaml", "--language", "json", "--json"],
 			["check", "--file", "plain.json", "--language", "yaml", "--json"],
@@ -285,9 +338,30 @@ describe("public CLI", () => {
 
 			expect(run.status, name).toBe(0);
 			expect(run.stdout, name).toMatch(/unsupported=[1-9]\d*/u);
+			expect(run.stdout.split("\n")[0], name).toContain("status=limited-coverage coverage=limited");
 			expect(run.stdout, name).toMatch(/unsupported line=\d+: /u);
 			expect(run.stdout, name).toContain("syntax status=valid");
 		}
+	});
+
+	test("source check locates missing approvals before users request a write", () => {
+		const root = workspace();
+		writeFileSync(join(root, "settings.json"), '{\n  "a": 1,\n  "long_key": 2,\n  "b": 3\n}\n');
+		const args  = ["check", "--source", "--file", "settings.json"] ;
+		const plain = invoke(root, args)                               ;
+		const json  = invoke(root, [...args, "--json"])                ;
+
+		expect(plain.status               ).toBe     (1                                                                  ) ;
+		expect(plain.stdout.split("\n")[0]).toContain("status=alignment-needed coverage=groups-detected approval=missing") ;
+		expect(plain.stdout               ).toContain("L2-4 mapping"                                                     ) ;
+		expect(JSON.parse(json.stdout).formatReadiness.approvalFacts).toMatchObject([
+			{ status: "unknown", locations: [{ kind: "mapping", startLine: 2, endLine: 4 }] },
+		]);
+		const refused = invoke(root, ["align", "--file", "settings.json", "--dry-run", "--json"]);
+		expect(refused.status).toBe(2);
+		expect(JSON.parse(refused.stdout).error.skippedGroups).toMatchObject([
+			{ kind: "mapping", startLine: 2, endLine: 4, reasons: ["no matching convention"] },
+		]);
 	});
 
 	test("check rejects invalid UTF-8 JSON and YAML without changing their bytes", () => {
@@ -308,7 +382,7 @@ describe("public CLI", () => {
 		}
 	});
 
-	test("guarded run and lifecycle post hook refuse invalid syntax with no layout groups", () => {
+	test("guarded run refuses invalid syntax and auto lifecycle reports it without blocking", () => {
 		const runRoot = workspace ()                                                                                                                                       ;
 		const guarded = invoke    (runRoot, ["run", "--root", runRoot, "--json", "--", process.execPath, "-e", "require('node:fs').writeFileSync('invalid.py','if:\\n')"]) ;
 		const receipt = JSON.parse(guarded.stdout                                                                                                                        ) ;
@@ -317,15 +391,20 @@ describe("public CLI", () => {
 		expect(receipt.state                            ).toBe("FAIL") ;
 		expect(receipt.checked[0].result.summary.refused).toBe(1     ) ;
 
-		const hookRoot = workspace();
-		expect(invokeWithInput(hookRoot, ["hook", "session", "--root", hookRoot], { session_id: "syntax-review" }).status).toBe(0);
-		writeFileSync(join(hookRoot, "invalid.ts"), "const = ;\n");
-		const post   = invokeWithInput(hookRoot, ["hook", "post", "--root", hookRoot], { session_id: "syntax-review", tool_name: "Write" }) ;
-		const output = JSON.parse     (post.stdout                                                                                        ) ;
+		const hookRoot = workspace()                                                                                              ;
+		const env      = { BOXBOX_MODE: "auto", CLAUDE_PLUGIN_DATA: "", PLUGIN_DATA: "", XDG_CONFIG_HOME: join(hookRoot, "xdg") } ;
+		const session  = invokeWithInput(hookRoot, ["hook", "session", "--root", hookRoot], { session_id: "syntax-review" }, env) ;
+		expect(session.status).toBe(0);
+		const key = /hooks workflow ([\w.-]+)/u.exec(session.stdout)?.[1];
+		expect(key).toBeDefined();
+		expect(invoke(hookRoot, ["hooks", "workflow", key!, "author"], env).status).toBe(0);
 
-		expect(post.status                                ).toBe     (0      ) ;
-		expect(output.decision                            ).toBe     ("block") ;
-		expect(output.hookSpecificOutput.additionalContext).toContain("FAIL" ) ;
+		writeFileSync(join(hookRoot, "invalid.ts"), "const = ;\n");
+		const post   = invokeWithInput(hookRoot, ["hook", "post", "--root", hookRoot], { session_id: "syntax-review", tool_name: "Write" }, env) ;
+		const output = JSON.parse     (post.stdout                                                                                             ) ;
+		expect(post.status).toBe(0);
+		expect(output.decision).toBeUndefined();
+		expect(output.hookSpecificOutput.additionalContext).toContain("syntax error");
 	}, 60_000);
 
 	test("a clean project previews and formats with the bundled approval and no formatter", () => {
@@ -552,6 +631,18 @@ describe("public CLI", () => {
 		expect(JSON.parse(disabled.stdout).error.code).toBe("LANGUAGE_DISABLED");
 	});
 
+	test("a nested project marker cannot move an explicit file outside the working root", () => {
+		const root    = workspace() ;
+		const outside = workspace() ;
+		mkdirSync(join(outside, "nested/.boxbox"), { recursive: true });
+		writeFileSync(join(outside, "nested/value.py"), "value = 1\n");
+		symlinkSync(outside, join(root, "linked"), "dir");
+		const escaped = invoke(root, ["check", "--source", "--file", "linked/nested/value.py", "--json"]);
+
+		expect(escaped.status).toBe(2);
+		expect(JSON.parse(escaped.stdout).error.code).toBe("PATH_ESCAPE");
+	});
+
 	test("fails when the explicit language differs from the extension and infers the language for TS files", () => {
 		const root = workspace();
 		writeFileSync(join(root, "a.ts"), "const a = 1;\n");
@@ -563,7 +654,7 @@ describe("public CLI", () => {
 		expect(JSON.parse(inferred.stdout).results[0].language).toBe("typescript");
 	});
 
-	test("dictionary calls and a missing final comma are detected without gaining write approval", () => {
+	test("selective alignment changes approved assignments and preserves dictionary rows without approval", () => {
 		const root        = workspace()                                                                                               ;
 		const source      = 'a=1\nlonger=2\nmid=3\n\ndata = {\n "a": len("x"),\n "longer": list((1, 2)),\n "mid": {"nested": 3}\n}\n' ;
 		const path        = join(root, "dictionary.py")                                                                               ;
@@ -579,11 +670,19 @@ describe("public CLI", () => {
 		]);
 		expect(value.formatReadiness.approvalEligible).toBe(false);
 		expect(value.formatReadiness.approvalFacts).toMatchObject([{ status: "approved" }, { status: "unknown" }]);
-		for (const flags of [["--dry-run"], []]) {
-			const denied = invoke(root, ["align", "--file", "dictionary.py", ...flags, "--json"], environment);
-			expect(denied.status                       ).toBe(2                   ) ;
-			expect(JSON.parse(denied.stdout).error.code).toBe("ALIGN_NOT_ELIGIBLE") ;
-			expect(readFileSync(path, "utf8")          ).toBe(source              ) ;
-		}
+		const args    = ["align", "--file", "dictionary.py", "--json"]    ;
+		const preview = invoke(root, [...args, "--dry-run"], environment) ;
+		expect(preview.status                          ).toBe         (0                                                                  ) ;
+		expect(JSON.parse(preview.stdout).skippedGroups).toMatchObject([{ startLine: 6, endLine: 8, reasons: ["no matching convention"] }]) ;
+		expect(readFileSync(path, "utf8")              ).toBe         (source                                                             ) ;
+
+		const applied = invoke(root, args, environment);
+		expect(applied.status                    ).toBe(0                                                                           ) ;
+		expect(JSON.parse(applied.stdout).written).toBe(true                                                                        ) ;
+		expect(readFileSync(path, "utf8")        ).toBe(source.replace("a=1\nlonger=2\nmid=3", "a      = 1\nlonger = 2\nmid    = 3")) ;
+
+		const rerun = invoke(root, args, environment);
+		expect(rerun.status).toBe(0);
+		expect(JSON.parse(rerun.stdout).written).toBe(false);
 	});
 });

@@ -11,7 +11,7 @@ unapproved. [FORMAT1](plan.md#planned-scope-expansion--format1-json-and-yaml) re
 | Item | Implementation baseline | Real support verdict |
 |---|---|---|
 | Languages | TypeScript, Python, JSON, YAML | all four enter Check, Guide, Align and Format through the shared CLI; installed public-artifact tests cover their current boundaries |
-| Default write approvals | TypeScript, Python | the recommended preset contains two approved rules and four examples; JSON/YAML writes require a complete separately supplied approval proof and otherwise refuse. Issue #26's additional TypeScript detection and authoring guidance does not add approved rules or widen automatic fixes |
+| Default write approvals | TypeScript, Python | the recommended preset contains five approved rules and ten examples; JSON/YAML writes require a complete separately supplied approval proof and otherwise refuse. Issue #26's additional TypeScript detection and authoring guidance does not add approved rules or widen automatic fixes |
 | Runtime | Node >=22.22.3 with npm | measured Node 22.22.3 on macOS/WSL and 24.12.0 on native Windows; Bun stays a development and build tool |
 | OS | macOS, native Windows and Linux/WSL candidate verification | clean CI `ebfe6a…` passed six host lifecycle cells; Linux/Windows hosted smoke passed and hosted macOS smoke is queued |
 | Hosts | Codex and Claude Code | `boxbox-plugin@0.2.8` has clean isolated published-registry installation for both hosts, native macOS and Windows engine journeys, and Windows Claude exec-form hook acceptance; authenticated Claude inference still has a separate evidence gate |
@@ -31,7 +31,7 @@ These results do not establish authenticated host UI/hook acceptance or a final 
 - `check`: a read-only check. It keeps the groups and parse status of the current Result schemaVersion 1.
   check's `parse=not-run` does not mean re-parse verification was completed.
 - `guide`: read-only guidance from the effective approval data; authoring guidance also identifies unsupported and unapproved shapes. The TypeScript authoring workflow may use detected layout shapes as writing vocabulary, but detection is not approval.
-- `align`: writes only approved horizontal-whitespace alignment, preserving physical lines and indentation, and never runs an external formatter; `--dry-run` preserves the original.
+- `align`: applies independently approved horizontal-whitespace groups. Physical lines, indentation and skipped ranges are preserved. `--dry-run` verifies the proposal without changing the target.
 - `format`: fixes only when token preservation, a runnable parser, human-approved rules and the optional formatter order are all connected.
   If any condition is not connected, it refuses explicitly. `--dry-run` preserves the original. Temporary bypass options used during implementation are never published.
 - `init`: creates a versioned project config without overwriting existing user files.
@@ -42,6 +42,21 @@ CLI arguments, exit codes and error JSON are pinned by implementation and tests 
 engine package separately. The [release notes template](release-notes-template.md) defines the reusable changelog
 structure; the release workflow extracts the matching version section. Changes to the Result/config schemas must
 come with a version change and a migration policy.
+
+## Prepare the next registry delivery
+
+The 0.2.9 candidate is tracked in [#66](https://github.com/Woo-JongHo/boxbox/issues/66). Generate notes from the
+matching changelog section and build the npm installer from the same source. Record the installer digest and verify
+the bundled engine in an isolated installation. Keep source CI, archive smoke and real host event evidence distinct.
+
+```bash
+bun development/tools/release-notes.ts 0.2.9
+bun run pack:installer
+npm publish ./dist/installer/boxbox-plugin-0.2.9.tgz --dry-run
+```
+
+The release-candidate workflow packages and tests one archive across macOS, Linux and Windows. A tag on main runs
+the GitHub draft workflow. Registry publication and publishing the GitHub draft are separate maintainer actions.
 
 ## Write surface inventory
 

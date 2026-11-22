@@ -14,6 +14,7 @@ import      { compareVersions, readUpdateCache  } from "@/common/37_update.ts"  
  */
 const COLORS: Record<Mode, string> = {
 	off      : "\x1b[90m" ,
+	auto     : "\x1b[36m" ,
 	check    : "\x1b[36m" ,
 	align    : "\x1b[32m" ,
 	refactor : "\x1b[35m" ,

@@ -14,11 +14,11 @@ import      { userDataRoot           } from "@/common/15_project-config.ts" ;
  * What the plugin hooks do in a project. Only `align` lets a hook write, and only engine-approved horizontal whitespace;
  * `refactor` is an agent workflow, so the hooks still only guide and report.
  */
-export const MODES = ["off", "check", "align", "refactor"] as const;
+export const MODES = ["off", "auto", "check", "align", "refactor"] as const;
 
 export type  Mode  = typeof MODES[number];
 
-export const DEFAULT_MODE: Mode = "check";
+export const DEFAULT_MODE: Mode = "auto";
 
 export const colorEnabled = (): boolean => process.env.NO_COLOR === undefined
 	&& !["0", "off", "false"].includes((process.env.BOXBOX_COLOR ?? "").toLowerCase());
@@ -87,7 +87,7 @@ export function setMode(mode: Mode, root: string | undefined): void {
 	writeJsonAtomically(modePath(), next);
 }
 
-/** `boxbox mode [off|check|align|refactor] [--global] [--json]`: prints or changes the mode of the current project. */
+/** `boxbox mode [off|auto|check|align|refactor] [--global] [--json]`: prints or changes the mode of the current project. */
 export function runMode(args: readonly string[], root: string): number {
 	const json   = args.includes("--json"                                           ) ;
 	const global = args.includes("--global"                                         ) ;

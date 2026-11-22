@@ -54,7 +54,7 @@ describe("public B-layout boundaries", () => {
 		expect(readFileSync(path.target, "utf8")).not.toBe   (source                             ) ;
 	}, 60_000);
 
-	test("denies documented DATA members beside approved declarations without writing", async () => {
+	test("skips unapproved documented DATA members while applying approved declarations", async () => {
 		const source = [
 			"const first=load(1);",
 			"const second=load(22);",
@@ -107,8 +107,16 @@ describe("public B-layout boundaries", () => {
 		expect(ordinaryKey).toBe("v1|typescript|InterfaceDeclaration|interface-members|colon>semicolon");
 		expect(dataKey).not.toBe(ordinaryKey);
 
-		await expect(runFormatPipeline({ ...path, language: "typescript", alignmentOnly: true, ...approvals })).rejects.toThrow("approval denied");
-		expect(readFileSync(path.target, "utf8")).toBe(source);
+		const result = await runFormatPipeline({ ...path, language: "typescript", alignmentOnly: true, ...approvals }) ;
+		const output = readFileSync(path.target, "utf8")                                                               ;
+
+		expect(result).toMatchObject({
+			written       : true                                                                      ,
+			approvals     : ["ts-sourcefile-call-declarations"]                                       ,
+			skippedGroups : [{ kind: "documented-data-members", category: "approval", key: dataKey }] ,
+		});
+		expect(output.split("\n\n")[0]).not.toBe(source.split("\n\n")[0]!);
+		expect(output.split("\n\n")[1]).toBe(source.split("\n\n")[1]!);
 	}, 60_000);
 
 	test("denies a newly detected kind without borrowing the legacy approval key", async () => {

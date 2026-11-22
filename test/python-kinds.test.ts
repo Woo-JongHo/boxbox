@@ -24,10 +24,15 @@ import      { comparePythonStructure     } from "@/common/08_parse-check.ts"    
 import      { changedLines               } from "@/common/09_preservation.ts"    ;
 import      { patternOf                  } from "@/common/03_surface.ts"         ;
 
-const fixture        = join(import.meta.dir, "fixtures/python/kinds.py")                                                                                                   ;
-const source         = readFileSync(fixture, "utf8")                                                                                                                       ;
-const align          = (input: string) => alignSource(input, PYTHON_ALIGNER, { minRows: 3, apply: true })                                                                  ;
-const withoutDisplay = (value: unknown): unknown => JSON.parse(JSON.stringify(value, (key, item) => key === "semanticKind" || key === "sourceContext" ? undefined : item)) ;
+import type { ResultEnvelope             } from "@/common/24_result-json.ts"     ;
+
+const fixture = join(import.meta.dir, "fixtures/python/kinds.py")                                  ;
+const source  = readFileSync(fixture, "utf8")                                                      ;
+const align   = (input: string) => alignSource(input, PYTHON_ALIGNER, { minRows: 3, apply: true }) ;
+function withoutDisplay(value: unknown, additionalKeys: readonly string[] = []): unknown {
+	const keys = new Set(["semanticKind", "sourceContext", ...additionalKeys]);
+	return JSON.parse(JSON.stringify(value, (key, item) => keys.has(key) ? undefined : item));
+}
 
 test.each(["\n", "\r\n"])("bounded from-import and return-guard tables preserve %j", ending => {
 	const input  = readFileSync(join(import.meta.dir, "fixtures/python/bounded-import-guards.py"), "utf8").replaceAll("\n", ending) ;
@@ -148,9 +153,14 @@ test("a malformed AST slot response cannot become a source profile", () => {
 });
 
 test("Python group names preserve the frozen legacy planner and JSON results", () => {
-	const expected = JSON.parse(readFileSync(join(import.meta.dir, "fixtures/python/kinds.legacy.json"), "utf8"));
-	expect(withoutDisplay(align(source))).toEqual(expected.alignment);
-	expect(withoutDisplay(JSON.parse(runAlignCli(PYTHON_ALIGNER, ["--file", fixture, "--json"]).report))).toEqual(expected.report);
+	const expected = JSON.parse(readFileSync(join(import.meta.dir, "fixtures/python/kinds.legacy.json"), "utf8"))    ;
+	const result   = align(source)                                                                                   ;
+	const report   = JSON.parse(runAlignCli(PYTHON_ALIGNER, ["--file", fixture, "--json"]).report) as ResultEnvelope ;
+
+	expect(withoutDisplay(result, ["rowLines"])                                                  ).toEqual(expected.alignment) ;
+	expect(withoutDisplay(report, ["rowLines"])                                                  ).toEqual(expected.report   ) ;
+	expect(result.details.filter(group => group.rowLines).map(group => group.rowLines)           ).toEqual([[18, 20, 22]]    ) ;
+	expect(report.results[0]!.groups.filter(group => group.rowLines).map(group => group.rowLines)).toEqual([[18, 20, 22]]    ) ;
 });
 
 test("Python semantic names follow actual module, class, function and expression owners", () => {

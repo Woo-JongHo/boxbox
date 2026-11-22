@@ -69,6 +69,26 @@ for (const scenario of [
 	expect(readdirSync(fixture.root).sort()          ).toEqual(["docs", fixture.file].sort()) ;
 });
 
+test("selective YAML alignment leaves the different comment-bearing rule and its bytes alone", async () => {
+	const main    = "a: 1\nlonger: 2\nx: 3\n"                                                                                                                                 ;
+	const nested  = "nested:\n  aa: 1 # one\n  big: 2 # two\n  c: 3 # three\n"                                                                                                ;
+	const fixture = workspace("yaml", main + nested)                                                                                                                          ;
+	const options = { ...fixture, language: "yaml" as const, registry: registry(fixture.root, "yaml"), resolveDocument: documentResolver(fixture.root), alignmentOnly: true } ;
+
+	const result = await runFormatPipeline(options);
+
+	expect(result.skippedGroups).toEqual([{
+		kind      : "mapping"                                           ,
+		startLine : 5                                                   ,
+		endLine   : 7                                                   ,
+		key       : "v1|yaml|block-map|mapping|key-colon>value>comment" ,
+		category  : "approval"                                          ,
+		reasons   : ["no matching convention"]                          ,
+	}]);
+	expect(readFileSync(fixture.target, "utf8")).toBe("a     : 1\nlonger: 2\nx     : 3\n" + nested);
+	expect((await runFormatPipeline(options)).written).toBe(false);
+});
+
 test("structured pipeline refuses missing approval without changing the source", async () => {
 	const source                   = "{\n  \"a\":1,\n  \"longer\":2,\n  \"x\":3\n}\n"               ;
 	const fixture                  = workspace("json", source)                                      ;

@@ -54,7 +54,7 @@ Every check and fix goes through the bundled launcher. The standard shim require
 "<PLUGIN_ROOT>/scripts/boxbox" doctor                      # runtime, parser, config and approval data status
 "<PLUGIN_ROOT>/scripts/boxbox" check --source --file <file> --json  # source syntax/readability; no formatter or working copy
 "<PLUGIN_ROOT>/scripts/boxbox" guide  --file <file> --json  # approved rules and examples that apply to this file
-"<PLUGIN_ROOT>/scripts/boxbox" guide  --file <file> --authoring --json
+"<PLUGIN_ROOT>/scripts/boxbox" guide  --file <file> --authoring --brief --json
 "<PLUGIN_ROOT>/scripts/boxbox" align  --file <file> --dry-run --json
 "<PLUGIN_ROOT>/scripts/boxbox" align  --file <file> --json
 "<PLUGIN_ROOT>/scripts/boxbox" format --file <file> --dry-run --json
@@ -82,9 +82,8 @@ Every check and fix goes through the bundled launcher. The standard shim require
 - `align` runs without an external formatter and changes horizontal layout only. It preserves non-whitespace tokens,
   comments, identifiers and order, leading indentation, physical lines and structural AST. If the engine needs wrapping,
   operator movement or another structural change, report the refusal; stay within the selected mode.
-- A newly detected shape or axis set has its own approval identity and suppresses an overlapping legacy group. Existing
-  approvals do not expand to it. A public whole-file write is denied when any candidate `PASS`/`FIXABLE` group lacks
-  approval, including an unchanged group. Per-group selective writes remain deferred.
+- Each shape and axis set needs exact approval. Align applies independent groups and reports the others with their
+  line ranges and reasons. Format retains file-level approval.
 - `format` retains the formatter pipeline for explicit requests to use it. If a formatter is configured for the language, it runs first.
   Canonical Check and `format --dry-run` also execute a configured formatter twice on working copies; inspect its command
   and arguments in the effective config before running them. Use existing authorization; ask only when executing that
@@ -95,7 +94,8 @@ Every check and fix goes through the bundled launcher. The standard shim require
 
 ## Write and Refactor
 
-1. Run `guide --authoring --json` for the intended file before composing a change. For TypeScript it also returns
+1. Run `guide --authoring --brief --json` before composing a change. Use `guide --authoring --json` when rule text or
+   examples are needed. For TypeScript the full response also returns
    `columnSets` (every registered kind with its ordered columns; `approved` marks kinds an approved rule covers; `{i}`
    is a per-position column) and `axisNotes` (what each column means). Python returns source-free representative variants
    with exact legacy approval axes; `semanticKind`/`sourceContext` are descriptive labels, not new approval identities.
@@ -155,7 +155,7 @@ conversation.
 2. Read `guide --json` for applicable approved rules. With no approved rule, report the candidate and missing evidence;
    do not align it by hand, auto-approve it or use a raw writer.
 3. For Check, report findings. For Align preview, run `align --dry-run --json`. For authorized application, inspect the
-   dry-run result and then run `align --json`; report refusal reasons without falling back to `format` or Refactor.
+   dry-run result and then run `align --json`. Summarize skipped groups and continue with any other authorized files.
 4. After application, rerun `check --source --json`, reconcile user-requested boundaries with the final returned axes, and report
    missing coverage alongside the remaining `misaligned` count. Zero detected groups
    or zero misalignment does not prove that unsupported code follows the requested style. Report only validations actually run.
@@ -171,19 +171,20 @@ Read the documents in this folder when a judgment is needed.
 
 ## Authoring hooks
 
-The plugin defaults to `check` mode: inspect session changes and report without writing source. `refactor` mode also
-keeps hooks read-only; the agent owns structural edits. `off` skips hook inspection. Only the user's explicit
-`boxbox mode align` choice enables PostToolUse alignment, through the approved horizontal-whitespace pipeline and
-after-write recheck. A refusal leaves that file unchanged. Stop always inspects without writing and can request at
-most one continuation. Project mode overrides the global default; a valid `BOXBOX_MODE` overrides both for the process.
-Do not select `align` mode merely because a user requested a Check or Refactor workflow.
+The default `auto` setting uses the current request to choose a session workflow. When SessionStart supplies a
+session key, run `hooks workflow <session-key> author` for new code, `hooks workflow <session-key> align` for an
+explicit alignment request, or `hooks workflow <session-key> quiet` for unrelated work. Use the configured launcher
+described above. Choose Quiet when the request is unrelated or the task changes. An explicit Check or Refactor
+request still selects its workflow. If the user asks to turn BoxBox off, run `boxbox mode off` through that launcher.
 
-The npm-installed launcher requires the host's plugin data folder and writes versioned receipts there. Direct CLI
-hooks installed with `hooks install` can fall back to `.boxbox/hooks` when the host provides no data folder. Receipts
-record observed mode, coverage and successful alignment; they never approve rules. A failing PostToolUse report names
-up to three affected files and suppresses duplicate matched-tool feedback until the observed source snapshot changes;
-Stop still performs its read-only completion check. Automatic hooks cover session changes; editor/pre-commit/CI
-canonical checks use the default variant in Running the engine.
+Write uses brief guidance before editing. Align previews and applies independently approved groups. Quiet records
+session findings without adding edit notes. Hook findings are advisory. Explicit `boxbox mode align` remains an
+opt-in post-edit write mode. Stop records results read-only. Project mode overrides the global default and
+`BOXBOX_MODE` overrides both for the process.
+
+The npm-installed launcher writes versioned receipts in the host's plugin data folder. Direct CLI hooks can fall
+back to `.boxbox/hooks`. Use explicit Check for whole-file findings and the project's canonical check for editor,
+pre-commit and CI validation.
 
 An update notice is informational. For a user-requested public update, relay `npx boxbox-plugin`; use
 `boxbox update --source <checkout>` only as an explicit development override. Its installed-version check must succeed

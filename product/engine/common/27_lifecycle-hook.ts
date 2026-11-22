@@ -1,4 +1,6 @@
 import      { captureLifecycleBaseline, baselineHashes              } from "@/common/32_lifecycle-baseline.ts" ;
+import      { spawnSync } from "node:child_process";
+import      { fileURLToPath } from "node:url";
 import      { createHash, randomUUID                                } from "node:crypto"                       ;
 import      {
               closeSync                                           ,
@@ -7,26 +9,36 @@ import      {
               mkdirSync                                           ,
               openSync                                            ,
               readFileSync                                        ,
+              renameSync                                          ,
               realpathSync                                        ,
               statSync                                            ,
+              unlinkSync                                            ,
               writeFileSync
                                                                     } from "node:fs"                           ;
-import      { dirname, extname, isAbsolute, join, relative, resolve } from "node:path"                         ;
+import      { dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path"                         ;
 import      { snapshot, changed, supported                          } from "@/common/25_guarded-run.ts"        ;
-import      { encodeLifecycleReceipt                                } from "@/common/29_lifecycle-receipt.ts"  ;
-import type { Inspection                                            } from "@/common/25_guarded-run.ts"        ;
+import      { readLifecycleReceipt, encodeLifecycleReceipt                                } from "@/common/29_lifecycle-receipt.ts"  ;
+import type { Snapshot } from "@/common/25_guarded-run.ts";
+import type { FileResult, ResultGroup } from "@/common/24_result-json.ts";
+import type { SyntaxValidation } from "@/common/11_syntax-validation.ts";
 import type { LifecycleEvent, LifecycleReceiptV2                    } from "@/common/29_lifecycle-receipt.ts"  ;
 import      { resolveMode                                           } from "@/common/35_mode.ts"               ;
 import type { Mode                                                  } from "@/common/35_mode.ts"               ;
 import      { updateNotice                                          } from "@/common/37_update.ts"             ;
 
+type Inspection = (root: string, file: string) => Promise<FileResult | { readonly result: FileResult; readonly syntax: SyntaxValidation }>;
+type Workflow = "author" | "align" | "quiet";
+
 export interface LifecycleHookOptions {
 	readonly version?: string;
+	/** Defines inspection dependencies for types whose parser ships in the executable. */
+	readonly cacheKey?: (root: string, file: string) => string | undefined;
 	readonly align?: (root: string, file: string) => Promise<{ readonly written: boolean; readonly edits: number }>;
 }
 
 const MODE_LINES: Readonly<Record<Mode, string>> = {
-	off      : "Mode off. The original session baseline is captured; automatic checks and alignment are disabled."                                                            ,
+	off      : "Mode off. Automatic checks and alignment are disabled."                                                                                                       ,
+	auto     : "Mode auto. Infer Write for new code, Align for an explicit layout request and Quiet for other work."                                                          ,
 	check    : "Mode check. Session changes are checked after matched file-edit and shell tools and again on completion."                                                     ,
 	align    : "Mode align. Matched tools are checked; approved horizontal whitespace may be aligned after tool completion. Session changes are checked again on completion." ,
 	refactor : "Mode refactor. Hooks only inspect and guide; structural refactoring remains explicit agent work."                                                             ,
@@ -38,7 +50,7 @@ const HOOK_EVENTS: readonly (readonly [event: string, mode: string])[] = [
 	["PostToolUse" , "post"   ],
 	["Stop"        , "stop"   ],
 ];
-const MUTATING_POST_TOOLS = new Set(["Write", "Edit", "MultiEdit", "apply_patch", "Bash"]);
+
 
 function rootOf(args: readonly string[]): string {
 	if (args.length !== 2 || args[0] !== "--root" || !isAbsolute(args[1] ?? "")) throw new Error("Expected --root <absolute-path>");
@@ -107,8 +119,7 @@ function ensurePluginDataRoot(path: string): void {
 }
 
 /** Where `stateDirectory` keeps a session baseline, computed without creating directories. */
-function baselinePath(root: string, id: string): string {
-	const data = process.env.CLAUDE_PLUGIN_DATA || process.env.PLUGIN_DATA;
+function baselinePath(root: string, id: string, data = pluginData()): string {
 	return data && isAbsolute(data)
 		? join(resolve(data), "hooks", createHash("sha256").update(root).digest("hex").slice(0, 16), id, "baseline.json")
 		: join(root, ".boxbox", "hooks", id, "baseline.json");
@@ -119,16 +130,15 @@ function baselinePath(root: string, id: string): string {
  * Keep using that session's baseline from the nearest ancestor instead of reporting it missing; a session that never
  * started still has no baseline anywhere and fails as before.
  */
-function sessionRoot(root: string, id: string): string {
+function sessionRoot(root: string, id: string, data = pluginData()): string {
 	for (let current = root; ; current = dirname(current)) {
-		if (existsSync(baselinePath(current, id))) return current;
+		if (existsSync(baselinePath(current, id, data))) return current;
 		if (dirname(current) === current) return root;
 	}
 }
 
-function stateDirectory(root: string, id: string): string {
+function stateDirectory(root: string, id: string, data = pluginData()): string {
 	if (!statSync(root).isDirectory()) throw new Error(`Project root must be a directory: ${root}`);
-	const data = process.env.CLAUDE_PLUGIN_DATA || process.env.PLUGIN_DATA ;
 	if (data && !isAbsolute(data)) throw new Error("Plugin data must be an absolute path");
 	const base = data ? resolve(data) : join(root, ".boxbox")              ;
 	if (data) ensurePluginDataRoot(base);
@@ -161,7 +171,7 @@ function claimMarker(marker: string): boolean {
 	return true;
 }
 
-const claimStopBlock = (directory: string): boolean => claimMarker(join(directory, "stop-blocked"));
+
 
 export function lifecyclePostFingerprint(setting: string, source: Record<string, string>): string {
 	const entries = Object.entries(source).sort(([left], [right]) => left < right ? -1 : left > right ? 1 : 0);
@@ -192,6 +202,189 @@ function currentFileHash(root: string, file: string): string {
 	return createHash("sha256").update(readFileSync(absolute)).digest("hex");
 }
 
+
+const pluginData = (): string => process.env.CLAUDE_PLUGIN_DATA || process.env.PLUGIN_DATA || ""        ;
+const digest     = (value: string | Buffer): string => createHash("sha256").update(value).digest("hex") ;
+
+function sessionKey(id: string): string {
+	const data = pluginData();
+	return data ? `${id}.${Buffer.from(resolve(data)).toString("base64url")}` : id;
+}
+
+export function runHookWorkflow(args: readonly string[], start: string): number {
+	const [key, workflow] = args;
+	const parts = /^([a-f0-9]{64})(?:\.([a-zA-Z0-9_-]+))?$/u.exec(key ?? "");
+	if (args.length !== 2 || !parts || (workflow !== "author" && workflow !== "align" && workflow !== "quiet")) {
+		throw new Error("Expected hooks workflow <session-key> author|align|quiet");
+	}
+	const id   = parts[1]!                                                           ;
+	const data = parts[2] ? Buffer.from(parts[2], "base64url").toString("utf8") : "" ;
+	if (data && !isAbsolute(data)) throw new Error("Invalid BoxBox session key");
+
+	const root = sessionRoot(realpathSync(start), id, data);
+	if (!existsSync(baselinePath(root, id, data))) throw new Error("No matching BoxBox session. Start a new host session.");
+	const directory = stateDirectory(root, id, data              ) ;
+	const baseline  = lstatSync     (baselinePath(root, id, data)) ;
+	if (!baseline.isFile() || baseline.isSymbolicLink()) throw new Error("Unsafe session baseline");
+	if (resolveMode(root) !== "auto") throw new Error("Session workflow requires BoxBox mode auto");
+
+	writePrivateFile(join(directory, "workflow"), workflow);
+	return 0;
+}
+
+function readWorkflow(directory: string): Workflow {
+	const path   = join     (directory, "workflow"          ) ;
+	const status = lstatSync(path, { throwIfNoEntry: false }) ;
+	if (!status?.isFile() || status.isSymbolicLink() || status.size > 6) return "quiet";
+	const value = readFileSync(path, "utf8");
+	return value === "author" || value === "align" ? value : "quiet";
+}
+
+function writePrivateFile(path: string, content: string): void {
+	const temporary = `${path}.${randomUUID()}.tmp`;
+	writeFileSync(temporary, content, { flag: "wx", mode: 0o600 });
+	try { renameSync(temporary, path); }
+	finally { if (existsSync(temporary)) unlinkSync(temporary); }
+}
+
+function captureSourceBaselines(root: string, directory: string, before: Snapshot): void {
+	const listed = spawnSync("git", ["ls-files", "--cached", "-z", "--", "."], {
+		cwd: root, encoding: "utf8", maxBuffer: 32 * 1024 * 1024, timeout: 5_000,
+	});
+	if (listed.status !== 0) return;
+	const tracked = new Set(listed.stdout.split("\0").map(file => file.replaceAll("/", sep)));
+	for (const file of tracked) {
+		const hash = before[file];
+		if (!hash || !/^[a-f0-9]{64}$/u.test(hash) || !supported.has(extname(file).toLowerCase())) continue;
+		try {
+			const path = join(root, file);
+			if (!lstatSync(path).isFile()) continue;
+			const bytes = readFileSync(path);
+			if (digest(bytes) !== hash) continue;
+			writeFileSync(join(directory, `source-${digest(file)}-${hash}`), bytes, { flag: "wx", mode: 0o600 });
+		} catch (error) {
+			// A missing or changed source has no trustworthy line baseline; still capture the session receipt baseline.
+			if (!missingPath(error) && !existingPath(error)) throw error;
+		}
+	}
+}
+
+interface Range {
+	readonly start: number;
+	readonly end: number;
+}
+
+function sessionRanges(root: string, directory: string, file: string, before: string | undefined): Range[] {
+	if (before === undefined)                                                                      return [{ start: 1, end: Number.MAX_SAFE_INTEGER }];
+	if (!/^[a-f0-9]{64}$/u.test(before))                                                           return [];
+
+	const original = join     (directory, `source-${digest(file)}-${before}`) ;
+	const status   = lstatSync(original, { throwIfNoEntry: false }          ) ;
+	if (!status?.isFile() || status.isSymbolicLink() || digest(readFileSync(original)) !== before) return [];
+
+	const diff = spawnSync("git", [
+		"diff", "--no-index", "--no-ext-diff", "--no-textconv", "--no-color", "--text", "--unified=0",
+		"--diff-algorithm=myers", "--no-indent-heuristic", "--", original, join(root, file),
+	], { cwd: root, encoding: "utf8", maxBuffer: 16 * 1024 * 1024, timeout: 5_000 });
+	if (diff.status !== 1)                                                                         return [];
+
+	const ranges: Range[] = [];
+	for (const match of diff.stdout.matchAll(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@(?: |$)/gmu)) {
+		const start = Number(match[1]       ) ;
+		const count = Number(match[2] ?? "1") ;
+		if (count > 0) ranges.push({ start, end: start + count - 1 });
+	}
+	return ranges;
+}
+
+function findingsOnRows(group: ResultGroup, ranges: readonly Range[]): boolean {
+	if (group.state === "PASS" || group.kind === "syntax") return false;
+	return ranges.some(({ start, end }) => group.rowLines
+		? group.rowLines.some(line => line >= start && line <= end)
+		: group.startLine <= end && group.endLine >= start);
+}
+
+function syntaxLabel(syntax: SyntaxValidation | undefined, isNew: boolean, ranges: readonly Range[], result: FileResult): string | undefined {
+	if (!syntax                  ) return isNew && result.groups.some(group => group.kind === "syntax") ? "syntax diagnostics" : undefined;
+	if (syntax.status === "valid") return undefined;
+	if (syntax.status === "error") return "parser error";
+	const lines   = syntax.diagnostics.map   (value => /^(\d+):/u.exec(value)?.[1] ?? /\bline\s+(\d+)\b/iu.exec(value)?.[1]                ) ;
+	const touched = lines             .filter(line => line && ranges.some(({ start, end }) => Number(line) >= start && Number(line) <= end)) ;
+	if (touched.length) return `syntax error L${[...new Set(touched)].slice(0, 3).join(", L")}`;
+	return isNew ? "syntax error" : undefined;
+}
+
+interface FindingNote {
+	readonly file    : string                 ;
+	readonly syntax? : string                 ;
+	readonly rows    : readonly ResultGroup[] ;
+}
+
+function sessionNotes(
+	root: string, directory: string, before: Snapshot, after: Snapshot, workflow: Exclude<Workflow, "quiet">,
+	checked: LifecycleReceiptV2["checked"], syntaxByFile: ReadonlyMap<string, SyntaxValidation>
+): string {
+	const notes: FindingNote[] = [];
+	for (const { file, result } of checked) {
+		if (!result.groups.some(group => group.state !== "PASS")) continue;
+		const ranges = sessionRanges(root, directory, file, before[file]);
+		if (ranges.length && currentFileHash(root, file) !== after[file]) continue;
+
+		const syntax = ranges.length ? syntaxLabel(syntaxByFile.get(file), before[file] === undefined, ranges, result) : undefined ;
+		const rows   = result.groups.filter(group => findingsOnRows(group, ranges))                                                ;
+		if (!syntax && !rows.length) continue;
+		const fingerprint = digest(JSON.stringify([workflow, file, after[file], syntax, rows]));
+		if (claimMarker(join(directory, `note-${fingerprint}`))) notes.push({ file, syntax, rows });
+	}
+	notes.sort((a, b) => Number(Boolean(b.syntax)) - Number(Boolean(a.syntax)));
+	if (notes.length === 0) return "";
+
+	const labels = notes.slice(0, 5).map(({ file, syntax, rows }) => {
+		const location = JSON.stringify(file);
+		if (syntax) return `${location} ${syntax}`;
+		const groups = rows.slice(0, 3).map(group => `L${group.startLine}-${group.endLine} (${group.state}, ${group.kind})`);
+		if (rows.length > groups.length) groups.push(`+${rows.length - groups.length} ranges`);
+		return `${location} ${groups.join(", ")}`;
+	});
+	if (notes.length > labels.length) labels.push(`+${notes.length - labels.length} files`);
+	const hint = notes.some(note => note.syntax) ? "Review syntax diagnostics first."
+		: workflow === "author" ? "Review the row shape on the changed lines." : "Use align --dry-run to preview approved changes.";
+	return `[boxbox] ${labels.join(". ")}. ${hint}`;
+}
+
+
+interface PostCache {
+	readonly fingerprint : string                 ;
+	readonly receipt     : string                 ;
+	readonly keys        : Record<string, string> ;
+}
+
+function packagedEngineFingerprint(): string | undefined {
+	const path = fileURLToPath(import.meta.url);
+	// Transitive source imports and injected modules do not have a verified parser fingerprint.
+	if (!/\.[cm]?js$/u.test(path) || process.execArgv.length || process.env.NODE_OPTIONS) return undefined;
+	const runtime = statSync(process.execPath);
+	return digest(JSON.stringify([digest(readFileSync(path)), process.version, process.platform, process.arch,
+		process.execPath, runtime.size, runtime.mtimeMs, runtime.ctimeMs, runtime.ino]));
+}
+
+function previousPost(directory: string, fingerprint: string): { readonly cache: PostCache; readonly receipt: LifecycleReceiptV2 } | undefined {
+	try {
+		const path   = join     (directory, "post-cache") ;
+		const status = lstatSync(path                   ) ;
+		if (!status.isFile() || status.isSymbolicLink() || status.size > 1024 * 1024) return undefined;
+		const cache = JSON.parse(readFileSync(path, "utf8")) as PostCache;
+		if (cache?.fingerprint !== fingerprint || !/^\d+-[a-f0-9-]+\.json$/u.test(cache.receipt)
+			|| !cache.keys || Array.isArray(cache.keys) || typeof cache.keys !== "object") return undefined;
+		const receipt = readLifecycleReceipt(join(directory, cache.receipt));
+		if (receipt.schemaVersion !== 2 || receipt.event !== "PostToolUse" || receipt.automaticFixPerformed) return undefined;
+		return { cache, receipt };
+	} catch {
+		// Unreadable or outdated cache cannot replace a complete inspection.
+		return undefined;
+	}
+}
+
 function alignmentMessage(aligned: LifecycleReceiptV2["aligned"]): string {
 	return aligned.length ? ` Aligned ${aligned.map(item => `${item.file} (${item.edits} changed lines)`).join(", ")}; re-read before editing.` : "";
 }
@@ -201,8 +394,10 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 	const event = HOOK_EVENTS.find(([, name]) => name === mode)?.[0] ;
 	if (event === undefined) throw new Error("Expected session|post|stop");
 
-	const given                                      = args.length > 1 ? rootOf(args.slice(1)) : undefined ;
-	const aligned: { file: string; edits: number }[] = []                                                  ;
+	const given                                       = args.length > 1 ? rootOf(args.slice(1)) : undefined ;
+	const aligned : { file: string; edits: number }[] = []                                                  ;
+	let setting   : Mode                              = "check"                                             ;
+	let workflow  : Workflow                          = "quiet"                                             ;
 
 	try {
 		const input = JSON.parse(readFileSync(0, "utf8"));
@@ -215,9 +410,11 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 		const started = realpathSync(resolve(suppliedRoot))                                 ;
 		const id      = createHash("sha256").update(String(input.session_id)).digest("hex") ;
 		const root    = mode === "session" ? started : sessionRoot(started, id)             ;
-		const setting = resolveMode(root)                                                   ;
-		if (mode !== "session" && setting === "off") {
-			console.log("{}");
+		setting = resolveMode(root);
+		if (setting === "off") {
+			console.log(JSON.stringify(mode === "session"
+				? { hookSpecificOutput: { hookEventName: event, additionalContext: `[boxbox] ${MODE_LINES.off}` } }
+				: {}));
 
 			return 0;
 		}
@@ -227,17 +424,20 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 
 		const baseline = join(directory, "baseline.json");
 		if (mode === "session") {
-			if (!existsSync(baseline)) writeFileSync(
-				baseline                                                                              ,
-				JSON.stringify(captureLifecycleBaseline(root, snapshot(root, "", {}, [], exclusions))),
-				{ flag: "wx", mode: 0o600 }
-			);
+			if (!existsSync(baseline)) {
+				const sources = snapshot(root, "", {}, [], exclusions);
+				if (setting === "auto") captureSourceBaselines(root, directory, sources);
+				const captured = JSON.stringify(captureLifecycleBaseline(root, sources));
+				try { writeFileSync(baseline, captured, { flag: "wx", mode: 0o600 }); }
+				catch (error) { if (!existingPath(error)) throw error; }
+			}
 			let update: ReturnType<typeof updateNotice> = undefined;
 			try { update = options.version ? updateNotice(options.version) : undefined; }
 			catch { /* Update advice never interrupts baseline capture or checking. */ }
 			const lines = [
 				`[boxbox] ${MODE_LINES[setting]}`,
-				...(setting === "off" ? [] : [`Results are recorded in ${directory}.`]),
+				`Results are recorded in ${directory}.`,
+				...(setting === "auto" ? [`Use the BoxBox launcher with hooks workflow ${sessionKey(id)} followed by author, align, or quiet. Start Write with guide --authoring --brief.`] : []),
 				...(update ? [update.context] : []),
 			];
 
@@ -252,16 +452,32 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 			return 0;
 		}
 
-		if (!existsSync(baseline)) throw new Error("Missing SessionStart baseline; start a session in this project");
+		if (!existsSync(baseline)) throw new Error("Missing SessionStart baseline. Start a new host session after enabling hooks.");
 
+		if (setting === "auto") workflow = readWorkflow(directory);
 		const before = baselineHashes(JSON.parse(readFileSync(baseline, "utf8"))) ;
 		const after  = snapshot      (root, "", {}, [], exclusions              ) ;
 
 		const files = changed(before, after);
+		const cacheable = mode === "post" && setting !== "align" && options.cacheKey
+			&& files.some(file => after[file] && /\.(?:json|ya?ml)$/iu.test(file));
+		const engine      = cacheable ? packagedEngineFingerprint() : undefined                      ;
+		const fingerprint = engine ? digest(JSON.stringify([setting, engine])) : undefined           ;
+		const previous    = fingerprint ? previousPost(directory, fingerprint) : undefined           ;
+		const cached      = new Map(previous?.receipt.checked.map(item => [item.file, item.result])) ;
 
-		const checked     = []                                 ;
-		const unsupported = []                                 ;
-		const deleted     = files.filter(file => !after[file]) ;
+		const checked     : { file: string; result: FileResult }[] = []                                  ;
+		const unsupported : string[]                               = []                                  ;
+		const deleted                                              = files.filter(file => !after[file])  ;
+		const keys        : Record<string, string>                 = Object.create(null)                 ;
+		const syntaxByFile                                         = new Map<string, SyntaxValidation>() ;
+
+		const inspectResult = async (file: string): Promise<FileResult> => {
+			const reported = await inspect(root, file);
+			if (!("result" in reported)) return reported;
+			syntaxByFile.set(file, reported.syntax);
+			return reported.result;
+		};
 
 		for (const file of files) {
 			if (!after[file]) continue;
@@ -273,7 +489,13 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 				continue;
 			}
 
-			checked.push({ file, result: await inspect(root, file) });
+			const context      = fingerprint ? options.cacheKey?.(root, file) : undefined                               ;
+			const key          = context === undefined ? undefined : digest(JSON.stringify([after[file], context]))     ;
+			const cachedResult = key !== undefined && previous?.cache.keys[file] === key ? cached.get(file) : undefined ;
+			const result       = cachedResult ?? await inspectResult(file)                                              ;
+			if (context !== undefined && options.cacheKey?.(root, file) !== context) throw new Error("Inspection context changed during check");
+			if (key !== undefined && !result.groups.some(group => group.kind === "syntax")) keys[file] = key;
+			checked.push({ file, result });
 		}
 
 		if (changed(after, snapshot(root, "", {}, [], exclusions)).length) throw new Error("Source changed during check");
@@ -297,7 +519,7 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 				aligned.push({ file: item.file, edits: outcome.edits });
 				// Accept only the file the approved callback wrote, never a whole fresh snapshot that could bless another writer.
 				after[item.file] = fingerprint;
-				item.result = await inspect(root, item.file);
+				item.result = await inspectResult(item.file);
 			}
 			if (changed(after, snapshot(root, "", {}, [], exclusions)).length) throw new Error("Source changed during alignment");
 		}
@@ -358,44 +580,38 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 		const names        = attention.length ? ` attention=${attention.slice(0, 3).join(",")}${attention.length > 3 ? `,+${attention.length - 3}` : ""};` : ""                                                      ;
 		const reason       = `[boxbox] ${event}: ${state}; checked=${checked.length}, groups=${groups}, filesWithGroups=${filesWithGroups}. ${receipt} mode=${setting};${names}${alignmentMessage(aligned)}${scope}` ;
 
-		// Unsupported files are only reported. Stop blocks at most once per session: this breaks endless continuation
-		// even on Codex, which has no Claude-style stop_hook_active.
-		let blocked = false;
-		if (mode === "post" && failed) {
-			const fingerprint = lifecyclePostFingerprint(setting, after)                               ;
-			const report      = join(directory, `post-reported-${fingerprint}`)                        ;
-			const mayBlock    = input.tool_name !== "Bash" && MUTATING_POST_TOOLS.has(input.tool_name) ;
-			if (mayBlock) {
-				blocked = claimMarker(join(directory, `post-blocked-${fingerprint}`));
-				if (blocked) claimMarker(report);
+		if (fingerprint && Object.keys(keys).length) {
+			try {
+				writePrivateFile(join(directory, "post-cache"), JSON.stringify({ fingerprint, receipt: receipt.split(sep).at(-1)!, keys }));
+			} catch {
+				// Receipts remain usable when an optional cache cannot be stored.
 			}
-			const reportFresh = mayBlock ? blocked : claimMarker(report);
-			if (!reportFresh) {
-				console.log("{}");
+		}
 
-				return 0;
-			}
-		} else if (mode === "stop" && failed)
-			blocked = input.stop_hook_active !== true && claimStopBlock(directory);
+		if (setting === "auto") {
+			workflow = readWorkflow(directory);
+			const detail = mode === "post" && workflow !== "quiet"
+				? sessionNotes(root, directory, before, after, workflow, checked, syntaxByFile) : "";
+			console.log(JSON.stringify(detail ? { hookSpecificOutput: { hookEventName: event, additionalContext: detail } } : {}));
+			return 0;
+		}
 
-		console.log(JSON.stringify(
-			mode === "stop"
-				? (blocked
-					? { decision: "block", reason }
-					: { systemMessage: reason })
-				: {
-					...(blocked ? { decision: "block", reason } : {}),
-					hookSpecificOutput: {
-						hookEventName     : event,
-						additionalContext : reason
-					}
-				}
-		));
+		// Explicit inspection modes keep their established receipts and scope messages.
+		if (mode === "post" && failed && aligned.length === 0
+			&& !claimMarker(join(directory, `post-reported-${lifecyclePostFingerprint(setting, after)}`))) {
+			console.log("{}");
+			return 0;
+		}
+
+		console.log(JSON.stringify(mode === "stop" ? { systemMessage: reason } : {
+			hookSpecificOutput: { hookEventName: event, additionalContext: reason },
+		}));
 	} catch (error) {
 		const reason = `[boxbox] hook error: ${error instanceof Error ? error.message : String(error)}${alignmentMessage(aligned)}`;
-		// Errors stay advisory; any completed approved alignments are reported rather than described as a no-write refusal.
+		// Explicit modes report infrastructure failures and any alignment completed before the error.
+		const silent = mode !== "session" && setting === "auto" && (workflow === "quiet" || mode === "stop");
 		console.log(JSON.stringify(
-			mode === "stop"
+			silent ? {} : mode === "stop"
 				? { systemMessage: reason }
 				: {
 					hookSpecificOutput: {

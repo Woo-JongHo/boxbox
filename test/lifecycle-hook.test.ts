@@ -103,16 +103,16 @@ test("changes to unsupported files do not block later PostToolUse or Stop", () =
 	expect(hook(root, "stop", { session_id: "one" }).decision                    ).toBeUndefined();
 }, 60_000);
 
-test("Stop does not block again with stop_hook_active even when an alignment failure remains", () => {
+test("Post and Stop retain FAIL receipts while reporting style findings without blocking", () => {
 	const root = project();
 	hook(root, "session", { session_id: "two" });
 	writeFileSync(join(root, "sample.py"), "a = 1\nlonger = 22\nmid = 333\n");
 
 	const firstPost = hook(root, "post", { session_id: "two", tool_name: "Write" });
-	expect(firstPost.decision                                          ).toBe     ("block"              ) ;
+	expect(firstPost.decision                                          ).toBeUndefined();
 	expect(JSON.stringify(firstPost)                                   ).toContain("attention=sample.py") ;
 	expect(hook(root, "post", { session_id: "two", tool_name: "Edit" })).toEqual  ({}                   ) ;
-	expect(hook(root, "stop", { session_id: "two" }).decision          ).toBe     ("block"              ) ;
+	expect(receiptOf(hook(root, "stop", { session_id: "two" })).state  ).toBe     ("FAIL"               ) ;
 	expect(hook(root, "stop", { session_id: "two", stop_hook_active: true }).decision ).toBeUndefined() ;
 	expect(hook(root, "stop", { session_id: "two" }).decision                         ).toBeUndefined() ;
 }, 60_000);
@@ -123,7 +123,7 @@ test("plugin hooks use the cwd input and write records to the plugin data folder
 	hook(root, "session", { session_id: "three" }, data);
 	writeFileSync(join(root, "sample.py"), "a = 1\nlonger = 22\nmid = 333\n");
 
-	expect(hook(root, "post", { session_id: "three", tool_name: "apply_patch" }, data).decision).toBe("block") ;
+	expect(hook(root, "post", { session_id: "three", tool_name: "apply_patch" }, data).decision).toBeUndefined();
 	expect(existsSync(join(root, ".boxbox"))                                                   ).toBe(false  ) ;
 	expect(readdirSync(join(data, "hooks")).length                                             ).toBe(1      ) ;
 }, 60_000);
@@ -407,13 +407,13 @@ test("real invalid syntax produces a refused FAIL receipt with a legal parse sta
 	const output  = hook     (root, "post", { session_id: "refused-result", tool_name: "Write" })                ;
 	const receipt = receiptOf(output                                                                          )  ;
 	const checked = receipt.checked as { result: { summary: { refused: number }; parse: { status: string } } }[] ;
-	expect(output.decision                        ).toBe     ("block"                        ) ;
+	expect(output.decision                        ).toBeUndefined();
 	expect(receipt.state                          ).toBe     ("FAIL"                         ) ;
 	expect(checked[0]?.result.summary.refused     ).toBe     (1                              ) ;
 	expect(["ok", "changed", "skipped", "not-run"]).toContain(checked[0]?.result.parse.status) ;
 }, 60_000);
 
-test("a failing Bash post stays advisory while an edit post still blocks", () => {
+test("Bash and Edit suppress repeated feedback for the same observed source", () => {
 	const root = project();
 	hook(root, "session", { session_id: "bash-advisory" });
 	writeFileSync(join(root, "invalid.ts"), "const = ;\n");
@@ -422,11 +422,11 @@ test("a failing Bash post stays advisory while an edit post still blocks", () =>
 	const receipt = receiptOf     (bash                                                            ) ;
 	const context = JSON.stringify(bash.hookSpecificOutput                                         ) ;
 	expect(bash.decision).toBeUndefined();
-	expect(receipt.state                                                                  ).toBe     ("FAIL"                                  ) ;
-	expect(context                                                                        ).toContain("PostToolUse: FAIL"                     ) ;
-	expect(context                                                                        ).toContain("checked=1, groups=1, filesWithGroups=1") ;
-	expect(hook(root, "post", { session_id: "bash-advisory", tool_name: "Bash" })         ).toEqual  ({}                                      ) ;
-	expect(hook(root, "post", { session_id: "bash-advisory", tool_name: "Edit" }).decision).toBe     ("block"                                 ) ;
+	expect(receipt.state                                                         ).toBe     ("FAIL"                                  ) ;
+	expect(context                                                               ).toContain("PostToolUse: FAIL"                     ) ;
+	expect(context                                                               ).toContain("checked=1, groups=1, filesWithGroups=1") ;
+	expect(hook(root, "post", { session_id: "bash-advisory", tool_name: "Bash" })).toEqual  ({}                                      ) ;
+	expect(hook(root, "post", { session_id: "bash-advisory", tool_name: "Edit" })).toEqual  ({}                                      ) ;
 }, 60_000);
 
 test("a dangling PostToolUse marker is a losing claim and never creates its external target", () => {
@@ -437,9 +437,9 @@ test("a dangling PostToolUse marker is a losing claim and never creates its exte
 	hook(root, "session", { session_id: session });
 	writeFileSync(join(root, "sample.py"), "a = 1\nlonger = 22\nmid = 333\n");
 
-	expect(hook(root, "post", { session_id: session, tool_name: "Write" }).decision).toBe("block");
-	const directory = stateDirectory(root, session)                                         ;
-	const marker    = readdirSync(directory).find(name => name.startsWith("post-blocked-")) ;
+	expect(hook(root, "post", { session_id: session, tool_name: "Write" }).hookSpecificOutput).toBeDefined();
+	const directory = stateDirectory(root, session)                                          ;
+	const marker    = readdirSync(directory).find(name => name.startsWith("post-reported-")) ;
 	expect(marker).toBeDefined();
 	unlinkSync(join(directory, marker!));
 	symlinkSync(external, join(directory, marker!));
@@ -449,53 +449,26 @@ test("a dangling PostToolUse marker is a losing claim and never creates its exte
 	expect(existsSync(external)                                          ).toBe   (false) ;
 }, 60_000);
 
-test("concurrent PostToolUse hooks atomically emit one block for an unchanged snapshot", async () => {
+test("concurrent PostToolUse hooks atomically emit one advisory for an unchanged snapshot", async () => {
 	const root = project();
 	hook(root, "session", { session_id: "concurrent-post" });
 	writeFileSync(join(root, "sample.py"), "a = 1\nlonger = 22\nmid = 333\n");
 
 	const outputs = await Promise.all(Array.from({ length: 8 }, () => concurrentHook(root, "post", { session_id: "concurrent-post", tool_name: "Write" })));
-	expect(outputs.filter(output => output.decision === "block")).toHaveLength(1);
+	expect(outputs.filter(output => output.hookSpecificOutput !== undefined)).toHaveLength(1);
 	expect(outputs.filter(output => Object.keys(output).length === 0)).toHaveLength(7);
 }, 60_000);
 
-test("an active-first Stop does not consume the later exclusive claim", () => {
-	const root    = project()                                           ;
-	const session = "active-first"                                      ;
-	const marker  = join(stateDirectory(root, session), "stop-blocked") ;
+test("concurrent Stop events record failure without claiming a blocking marker", async () => {
+	const root    = project()         ;
+	const session = "concurrent-stop" ;
 	hook(root, "session", { session_id: session });
 	writeFileSync(join(root, "sample.py"), "a = 1\nlonger = 22\nmid = 333\n");
 
-	expect(hook(root, "stop", { session_id: session, stop_hook_active: true }).decision).toBeUndefined();
-	expect(existsSync(marker)                                  ).toBe(false  ) ;
-	expect(hook(root, "stop", { session_id: session }).decision).toBe("block") ;
-	expect(lstatSync(marker).isFile()                          ).toBe(true   ) ;
-}, 60_000);
-
-test("a dangling Stop marker symlink is a losing claim and never creates its external target", () => {
-	const root     = project()                                           ;
-	const outside  = project()                                           ;
-	const session  = "dangling-marker"                                   ;
-	const marker   = join(stateDirectory(root, session), "stop-blocked") ;
-	const external = join(outside, "must-not-exist")                     ;
-	hook(root, "session", { session_id: session });
-	writeFileSync(join(root, "sample.py"), "a = 1\nlonger = 22\nmid = 333\n");
-	symlinkSync(external, marker);
-
-	expect(hook(root, "stop", { session_id: session }).decision).toBeUndefined();
-	expect(lstatSync(marker).isSymbolicLink()).toBe(true);
-	expect(existsSync(external)).toBe(false);
-}, 60_000);
-
-test("concurrent Stop hooks atomically emit at most one block for a session", async () => {
-	const root = project();
-	hook(root, "session", { session_id: "concurrent-stop" });
-	writeFileSync(join(root, "sample.py"), "a = 1\nlonger = 22\nmid = 333\n");
-
-	const outputs = await Promise.all(Array.from({ length: 8 }, () => concurrentHook(root, "stop", { session_id: "concurrent-stop" })));
-	expect(outputs.filter(output => output.decision === "block")                            ).toHaveLength(1   ) ;
-	expect(outputs.filter(output => output.decision === undefined)                          ).toHaveLength(7   ) ;
-	expect(lstatSync(join(stateDirectory(root, "concurrent-stop"), "stop-blocked")).isFile()).toBe        (true) ;
+	const outputs = await Promise.all(Array.from({ length: 8 }, () => concurrentHook(root, "stop", { session_id: session })));
+	expect(outputs.every(output => output.decision === undefined)         ).toBe   (true                 ) ;
+	expect(outputs.map(output => receiptOf(output).state)                 ).toEqual(Array(8).fill("FAIL")) ;
+	expect(existsSync(join(stateDirectory(root, session), "stop-blocked"))).toBe   (false                ) ;
 }, 60_000);
 
 test("an oversized receipt remains a fail-open infrastructure error", () => {

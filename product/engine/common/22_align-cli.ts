@@ -171,7 +171,7 @@ export function runAlignCli(aligner: LineProfiler, args: readonly string[], over
 	return { report: options.json ? JSON.stringify(envelope(results), null, 2) : reports.join("\n"), code: failed ? 1 : 0 };
 }
 
-function toTableGroup(table: DetectedTable, state: GroupState): ResultGroup {
+export function toTableGroup(table: DetectedTable, state: GroupState): ResultGroup {
 	return {
 		kind      : "table"                   ,
 		startLine : table.startLine           ,
@@ -182,6 +182,7 @@ function toTableGroup(table: DetectedTable, state: GroupState): ResultGroup {
 		edits     : table.edits.length        ,
 		depth     : indentDepth(table.indent) ,
 		...(table.refusal ? { reason: table.refusal } : {}),
+		...(table.rowLines === undefined ? {} : { rowLines: table.rowLines }),
 		...(table.semanticKind === undefined ? {} : { semanticKind: table.semanticKind }),
 		...(table.sourceContext === undefined ? {} : { sourceContext: table.sourceContext }),
 	};
