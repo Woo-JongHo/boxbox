@@ -354,12 +354,12 @@ describe("public CLI", () => {
 		const invalid = invoke(root, ["check", "--source", "--file", "invalid.ts"]                            ) ;
 		const tool    = invoke(root, ["check", "--source", "--file", "tool.py"], { PATH: join(root, "empty") }) ;
 
-		expect(clean.status                   ).toBe     (0                                ) ;
-		expect(clean.stdout.split("\n")[0]   ).toContain("status=detected-groups-aligned") ;
-		expect(invalid.status                 ).toBe     (2                                ) ;
-		expect(invalid.stdout.split("\n")[0] ).toContain("status=syntax-invalid"           ) ;
-		expect(tool.status                    ).toBe     (2                                ) ;
-		expect(tool.stdout.split("\n")[0]    ).toContain("status=tool-error"                ) ;
+		expect(clean.status                 ).toBe     (0                                  ) ;
+		expect(clean.stdout.split("\n")[0]  ).toContain("status=detected-groups-aligned"   ) ;
+		expect(invalid.status               ).toBe     (2                                  ) ;
+		expect(invalid.stdout.split("\n")[0]).toContain("status=syntax-invalid"            ) ;
+		expect(tool.status                  ).toBe     (2                                  ) ;
+		expect(tool.stdout.split("\n")[0]   ).toContain("status=tool-error"                ) ;
 	});
 
 	test("source check locates missing approvals before users request a write", () => {
