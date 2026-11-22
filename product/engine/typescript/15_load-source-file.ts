@@ -3,6 +3,7 @@ import      { existsSync, readFileSync, realpathSync, statSync } from "node:fs" 
 import      { relative, resolve                                 } from "node:path"                 ;
 
 import      { API                                } from "typescript/unstable/async" ;
+import      { inspectionFileSystem               } from "@/common/40_lifecycle-cache.ts" ;
 import type { SourceFile                         } from "typescript/unstable/ast"   ;
 
 export interface LoadedSource {
@@ -75,7 +76,7 @@ export async function loadSourceFile(root: string, value: string): Promise<Loade
 	const target = repositoryFile  (root, value          ) ;
 	const cached = reusableSnapshot(root, target.absolute) ;
 	if (cached) return { source: cached.source, relative: target.relative };
-	const api = new API({ cwd: root });
+	const api = new API({ cwd: root, fs: inspectionFileSystem(root) });
 	// The returned AST is plain client data, so the server closes right away — one unclosed server per call
 	// leaks gigabytes across a test run or a corpus scan.
 	try {
@@ -95,7 +96,7 @@ export async function loadSourceFile(root: string, value: string): Promise<Loade
  * server. Columns are left out because alignment moves columns but never lines.
  */
 export async function syntacticDiagnostics(root: string, absolute: string, text: string): Promise<readonly string[]> {
-	const api = new API({ cwd: root });
+	const api = new API({ cwd: root, fs: inspectionFileSystem(root) });
 
 	let source      : SourceFile | undefined        ;
 	let diagnostics : readonly string[] | undefined ;

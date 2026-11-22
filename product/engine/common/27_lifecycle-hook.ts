@@ -1,6 +1,5 @@
 import      { captureLifecycleBaseline, baselineHashes              } from "@/common/32_lifecycle-baseline.ts" ;
 import      { spawnSync } from "node:child_process";
-import      { fileURLToPath } from "node:url";
 import      { createHash, randomUUID                                } from "node:crypto"                       ;
 import      {
               closeSync                                           ,
@@ -17,7 +16,7 @@ import      {
                                                                     } from "node:fs"                           ;
 import      { dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path"                         ;
 import      { snapshot, changed, supported                          } from "@/common/25_guarded-run.ts"        ;
-import      { readLifecycleReceipt, encodeLifecycleReceipt                                } from "@/common/29_lifecycle-receipt.ts"  ;
+import      { encodeLifecycleReceipt                                } from "@/common/29_lifecycle-receipt.ts"  ;
 import type { Snapshot } from "@/common/25_guarded-run.ts";
 import type { FileResult, ResultGroup } from "@/common/24_result-json.ts";
 import type { SyntaxValidation } from "@/common/11_syntax-validation.ts";
@@ -25,14 +24,17 @@ import type { LifecycleEvent, LifecycleReceiptV2                    } from "@/co
 import      { resolveMode                                           } from "@/common/35_mode.ts"               ;
 import type { Mode                                                  } from "@/common/35_mode.ts"               ;
 import      { updateNotice                                          } from "@/common/37_update.ts"             ;
+import      { mergeRecovery, renderRecovery, resultRecovery         } from "@/common/39_recovery.ts"           ;
+import      { inspectionCacheKey, inspectionDependenciesCurrent, observeInspection, readInspectionCache, writeInspectionCache } from "@/common/40_lifecycle-cache.ts" ;
+import type { ObservedInspection } from "@/common/40_lifecycle-cache.ts" ;
 
 type Inspection = (root: string, file: string) => Promise<FileResult | { readonly result: FileResult; readonly syntax: SyntaxValidation }>;
 type Workflow = "author" | "align" | "quiet";
 
 export interface LifecycleHookOptions {
 	readonly version?: string;
-	/** Defines inspection dependencies for types whose parser ships in the executable. */
-	readonly cacheKey?: (root: string, file: string) => string | undefined;
+	/** Complete engine/runtime/parser/config/proof identity; null or absence disables reuse. */
+	readonly inspectionContext?: (root: string) => string | null | Promise<string | null>;
 	readonly align?: (root: string, file: string) => Promise<{ readonly written: boolean; readonly edits: number }>;
 }
 
@@ -353,38 +355,6 @@ function sessionNotes(
 }
 
 
-interface PostCache {
-	readonly fingerprint : string                 ;
-	readonly receipt     : string                 ;
-	readonly keys        : Record<string, string> ;
-}
-
-function packagedEngineFingerprint(): string | undefined {
-	const path = fileURLToPath(import.meta.url);
-	// Transitive source imports and injected modules do not have a verified parser fingerprint.
-	if (!/\.[cm]?js$/u.test(path) || process.execArgv.length || process.env.NODE_OPTIONS) return undefined;
-	const runtime = statSync(process.execPath);
-	return digest(JSON.stringify([digest(readFileSync(path)), process.version, process.platform, process.arch,
-		process.execPath, runtime.size, runtime.mtimeMs, runtime.ctimeMs, runtime.ino]));
-}
-
-function previousPost(directory: string, fingerprint: string): { readonly cache: PostCache; readonly receipt: LifecycleReceiptV2 } | undefined {
-	try {
-		const path   = join     (directory, "post-cache") ;
-		const status = lstatSync(path                   ) ;
-		if (!status.isFile() || status.isSymbolicLink() || status.size > 1024 * 1024) return undefined;
-		const cache = JSON.parse(readFileSync(path, "utf8")) as PostCache;
-		if (cache?.fingerprint !== fingerprint || !/^\d+-[a-f0-9-]+\.json$/u.test(cache.receipt)
-			|| !cache.keys || Array.isArray(cache.keys) || typeof cache.keys !== "object") return undefined;
-		const receipt = readLifecycleReceipt(join(directory, cache.receipt));
-		if (receipt.schemaVersion !== 2 || receipt.event !== "PostToolUse" || receipt.automaticFixPerformed) return undefined;
-		return { cache, receipt };
-	} catch {
-		// Unreadable or outdated cache cannot replace a complete inspection.
-		return undefined;
-	}
-}
-
 function alignmentMessage(aligned: LifecycleReceiptV2["aligned"]): string {
 	return aligned.length ? ` Aligned ${aligned.map(item => `${item.file} (${item.edits} changed lines)`).join(", ")}; re-read before editing.` : "";
 }
@@ -458,25 +428,43 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 		const before = baselineHashes(JSON.parse(readFileSync(baseline, "utf8"))) ;
 		const after  = snapshot      (root, "", {}, [], exclusions              ) ;
 
-		const files = changed(before, after);
-		const cacheable = mode === "post" && setting !== "align" && options.cacheKey
-			&& files.some(file => after[file] && /\.(?:json|ya?ml)$/iu.test(file));
-		const engine      = cacheable ? packagedEngineFingerprint() : undefined                      ;
-		const fingerprint = engine ? digest(JSON.stringify([setting, engine])) : undefined           ;
-		const previous    = fingerprint ? previousPost(directory, fingerprint) : undefined           ;
-		const cached      = new Map(previous?.receipt.checked.map(item => [item.file, item.result])) ;
-
-		const checked     : { file: string; result: FileResult }[] = []                                  ;
-		const unsupported : string[]                               = []                                  ;
-		const deleted                                              = files.filter(file => !after[file])  ;
-		const keys        : Record<string, string>                 = Object.create(null)                 ;
-		const syntaxByFile                                         = new Map<string, SyntaxValidation>() ;
+		const files                                                = changed(before, after)                                                      ;
+		const checked     : { file: string; result: FileResult }[] = []                                                                          ;
+		const unsupported : string[]                               = []                                                                          ;
+		const deleted                                              = files.filter(file => !after[file])                                          ;
+		const syntaxByFile                                         = new Map<string, SyntaxValidation>()                                         ;
+		const observations                                         = new Map<string, { context: string | null; observed: ObservedInspection }>() ;
+		const inspectionStarted                                    = performance.now()                                                           ;
+		let inspected                                              = 0                                                                           ;
+		let reused                                                 = 0                                                                           ;
+		let cacheMisses                                            = 0                                                                           ;
+		const contextOf = async (): Promise<string | null> => {
+			try {
+				const identity = await options.inspectionContext?.(root);
+				return typeof identity === "string" && identity.length > 0 ? identity : null;
+			} catch { return null; }
+		};
+		const cacheable      = (file: string): boolean => /\.(?:[cm]?tsx?|json|ya?ml)$/iu.test(file)                            ;
+		const initialContext = mode === "post" && files.some(file => after[file] && cacheable(file)) ? await contextOf() : null ;
 
 		const inspectResult = async (file: string): Promise<FileResult> => {
+			inspected++;
 			const reported = await inspect(root, file);
 			if (!("result" in reported)) return reported;
 			syntaxByFile.set(file, reported.syntax);
 			return reported.result;
+		};
+		const inspectCurrent = async (file: string, allowCache: boolean): Promise<FileResult> => {
+			const context = cacheable(file) ? initialContext : null                                                  ;
+			const key     = context === null ? null : inspectionCacheKey(root, file, setting, after[file]!, context) ;
+			const cached  = allowCache && key ? readInspectionCache(directory, file, key) : null                     ;
+			if (allowCache && key && !cached) cacheMisses++;
+			if (cached) reused++;
+			const observed = cached ?? (context === null
+				? { result: await inspectResult(file), dependencies: [], stable: false }
+				: await observeInspection(() => inspectResult(file)));
+			observations.set(file, { context, observed });
+			return observed.result;
 		};
 
 		for (const file of files) {
@@ -489,13 +477,7 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 				continue;
 			}
 
-			const context      = fingerprint ? options.cacheKey?.(root, file) : undefined                               ;
-			const key          = context === undefined ? undefined : digest(JSON.stringify([after[file], context]))     ;
-			const cachedResult = key !== undefined && previous?.cache.keys[file] === key ? cached.get(file) : undefined ;
-			const result       = cachedResult ?? await inspectResult(file)                                              ;
-			if (context !== undefined && options.cacheKey?.(root, file) !== context) throw new Error("Inspection context changed during check");
-			if (key !== undefined && !result.groups.some(group => group.kind === "syntax")) keys[file] = key;
-			checked.push({ file, result });
+			checked.push({ file, result: await inspectCurrent(file, mode === "post") });
 		}
 
 		if (changed(after, snapshot(root, "", {}, [], exclusions)).length) throw new Error("Source changed during check");
@@ -519,10 +501,31 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 				aligned.push({ file: item.file, edits: outcome.edits });
 				// Accept only the file the approved callback wrote, never a whole fresh snapshot that could bless another writer.
 				after[item.file] = fingerprint;
-				item.result = await inspectResult(item.file);
+				item.result = await inspectCurrent(item.file, false);
 			}
 			if (changed(after, snapshot(root, "", {}, [], exclusions)).length) throw new Error("Source changed during alignment");
 		}
+
+		const ownedAlignmentPaths = new Set(aligned.map(item => realpathSync(resolve(root, item.file))));
+		const invalidated = [...observations.values()].flatMap(item => item.observed.dependencies)
+			.filter(dependency => !inspectionDependenciesCurrent([dependency]));
+		if (aligned.length > 0 && invalidated.length > 0 && invalidated.every(dependency =>
+			dependency.operation === "readFile" && ownedAlignmentPaths.has(realpathSync(dependency.path)))) {
+			for (const item of checked) item.result = await inspectCurrent(item.file, false);
+			if (changed(after, snapshot(root, "", {}, [], exclusions)).length) throw new Error("Source changed during alignment recheck");
+		}
+
+		for (const item of observations.values()) {
+			if (!inspectionDependenciesCurrent(item.observed.dependencies)) throw new Error("Inspection dependencies changed during check");
+		}
+		if (initialContext !== null && await contextOf() !== initialContext) throw new Error("Inspection context changed during check");
+		if (mode === "post") for (const [file, item] of observations) {
+			if (item.context !== null && currentFileHash(root, file) === after[file]) {
+				const key = inspectionCacheKey(root, file, setting, after[file]!, item.context);
+				writeInspectionCache(directory, file, key, item.observed);
+			}
+		}
+		if (changed(after, snapshot(root, "", {}, [], exclusions)).length) throw new Error("Source changed during check");
 
 		const failed = checked.some(item => item.result.summary.misaligned || item.result.summary.refused);
 
@@ -567,31 +570,29 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 		const receipt = join(directory, `${Date.now()}-${randomUUID()}.json`);
 
 		writeFileSync(receipt, encodeLifecycleReceipt(record), { flag: "wx", mode: 0o600 });
+		try {
+			writeFileSync(`${receipt}.inspection`, JSON.stringify({ schemaVersion: 1, event, cacheHits: reused, cacheMisses, inspections: inspected, elapsedMs: performance.now() - inspectionStarted }), { flag: "wx", mode: 0o600 });
+		} catch { /* Optional performance evidence never changes hook behavior. */ }
 
 		const edited   = input.tool_input?.file_path                                               ;
 		const editBase = typeof input.cwd === "string" && isAbsolute(input.cwd) ? input.cwd : root ;
 		let editPath   = typeof edited === "string" ? resolve(editBase, edited) : root             ;
 		try { editPath = realpathSync(editPath); }
 		catch { /* Deleted or unavailable edit targets retain their lexical scope; inspection is unchanged. */ }
-		const editRelative = relative(root, editPath)                                                                                                                                                                ;
-		const outside      = editRelative === ".." || editRelative.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`) || isAbsolute(editRelative)                                                          ;
-		const scope        = outside ? " Edited file is outside the session project; only session changes were checked." : ""                                                                                        ;
-		const attention    = checked.filter(item => item.result.summary.misaligned || item.result.summary.refused).map(item => item.file)                                                                            ;
-		const names        = attention.length ? ` attention=${attention.slice(0, 3).join(",")}${attention.length > 3 ? `,+${attention.length - 3}` : ""};` : ""                                                      ;
-		const reason       = `[boxbox] ${event}: ${state}; checked=${checked.length}, groups=${groups}, filesWithGroups=${filesWithGroups}. ${receipt} mode=${setting};${names}${alignmentMessage(aligned)}${scope}` ;
-
-		if (fingerprint && Object.keys(keys).length) {
-			try {
-				writePrivateFile(join(directory, "post-cache"), JSON.stringify({ fingerprint, receipt: receipt.split(sep).at(-1)!, keys }));
-			} catch {
-				// Receipts remain usable when an optional cache cannot be stored.
-			}
-		}
+		const editRelative = relative(root, editPath)                                                                                                                                                                                                                         ;
+		const outside      = editRelative === ".." || editRelative.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`) || isAbsolute(editRelative)                                                                                                                   ;
+		const scope        = outside ? " Edited file is outside the session project; only session changes were checked." : ""                                                                                                                                                 ;
+		const attention    = checked.filter(item => item.result.summary.misaligned || item.result.summary.refused).map(item => item.file)                                                                                                                                     ;
+		const names        = attention.length ? ` attention=${attention.slice(0, 3).join(",")}${attention.length > 3 ? `,+${attention.length - 3}` : ""};` : ""                                                                                                               ;
+		const recovery     = mergeRecovery(checked.map(item => resultRecovery(item.result, item.file)))                                                                                                                                                                       ;
+		const recoveryText = recovery.issues.length ? ` Recovery:\n${renderRecovery(recovery)}` : ""                                                                                                                                                                          ;
+		const reason       = `[boxbox] ${event}: ${state}; checked=${checked.length}, inspected=${inspected}, reused=${reused}, groups=${groups}, filesWithGroups=${filesWithGroups}. ${receipt} mode=${setting};${names}${alignmentMessage(aligned)}${scope}${recoveryText}` ;
 
 		if (setting === "auto") {
 			workflow = readWorkflow(directory);
-			const detail = mode === "post" && workflow !== "quiet"
+			const note = mode === "post" && workflow !== "quiet"
 				? sessionNotes(root, directory, before, after, workflow, checked, syntaxByFile) : "";
+			const detail = note && recoveryText ? `${note}${recoveryText}` : note;
 			console.log(JSON.stringify(detail ? { hookSpecificOutput: { hookEventName: event, additionalContext: detail } } : {}));
 			return 0;
 		}

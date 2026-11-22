@@ -8,6 +8,7 @@ import type { ApprovalRegistry                                           } from 
 import      { contentHashOf, sectionHash                                 } from "@/common/17_examples.ts"        ;
 import type { Example                                                    } from "@/common/17_examples.ts"        ;
 import      { runFormatPipeline                                          } from "@/common/21_format-pipeline.ts" ;
+import      { PipelineError                                               } from "@/common/39_recovery.ts"        ;
 
 const workspaces: string[] = [];
 
@@ -58,6 +59,22 @@ afterEach(() => {
 
 const TS_KEY = "v1|typescript|SourceFile|declaration-equals|equals>call-open-paren>call-close-paren>semicolon" ;
 const PY_KEY = "v1|python|-|table|name>equal>value"                                                            ;
+
+test("approved TypeScript formatting preserves compressed-interface recovery without writing", async () => {
+	const root   = workspace()                                                                                                          ;
+	const target = join(root, "src/compressed.ts")                                                                                      ;
+	const source = "const a=fn(1);\nconst longer=fn(22);\nconst mid=fn(333);\ninterface Compact { a: string; b: number; c: boolean }\n" ;
+	writeFileSync(target, source);
+	try {
+		await runFormatPipeline({ root, file: "src/compressed.ts", language: "typescript", registry: registry(root, "typescript", TS_KEY), resolveDocument: documentResolver(root) });
+		throw new Error("expected formatting refusal");
+	} catch (error) {
+		expect(error                                      ).toBeInstanceOf(PipelineError                                                                                                                         ) ;
+		expect((error as PipelineError).recovery          ).toMatchObject ({ issues: [{ file: "src/compressed.ts", startLine: 4, endLine: 4, category: "structural-prerequisite", owner: "agent" }], omitted: 0 }) ;
+		expect(error instanceof Error ? error.message : "").toContain     ("Write/Refactor"                                                                                                                      ) ;
+	}
+	expect(readFileSync(target, "utf8")).toBe(source);
+}, 60_000);
 
 test("canonicalChanged compares the complete output even when both formatting stages change it", async () => {
 	const root   = workspace()                      ;
