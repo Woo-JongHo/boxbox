@@ -77,6 +77,18 @@ The same flag works with repeated files or a directory selection; it does not ap
 Check distinguishes a missing convention from a verified approval of the exact rule for a different file scope.
 Align skips that group until an applicable approval is available for the current file.
 
+For a fixable exact key, an agent may generate a file-scoped `approval-preview` with the target and current source hash,
+rule key, affected groups,
+fixed and preservation examples, a proposal digest and a one-time prompt correlation ID. `Approve` and `Keep preview`
+are the only choices. The correlation is discarded after one response. Host tool
+acceptance alone does not establish that a native card was visible; when visible delivery cannot be observed, the agent
+must repeat the same identified choices in the conversation and disclose that limitation. A missing, rejected, stale,
+replayed or digest-mismatched response cannot authorize a write. Approval still runs the existing rule-proof, Align
+dry-run, parser, preservation and fixed-point checks before application, which reports applied and skipped groups.
+The digest is correlation metadata, not human-approval proof or evidence of who authored a response. The CLI never
+accepts the response or authorizes application. The agent regenerates the preview from current bytes after the reply;
+a changed digest is stale, and only the existing human proof plus Align gates can authorize the write.
+
 Align preserves physical line structure, indentation and non-layout content. It does not reorder statements, rename
 symbols, extract functions, wrap lines or execute an external formatter. If an engine proposal requires one of those
 changes, that group is skipped. Independently applicable groups with complete approval can still be aligned. The

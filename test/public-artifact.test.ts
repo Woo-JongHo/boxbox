@@ -15,6 +15,7 @@ import      { spawnSync                         } from "node:child_process"     
 
 import      { APPROVAL_VERSIONS                 } from "@/common/18_approval-gate.ts" ;
 import      { contentHashOf, sectionHash        } from "@/common/17_examples.ts"      ;
+import      { lookupKeyOf                       } from "@/common/02_signature.ts"     ;
 
 const root                  = resolve(import.meta.dir, "..") ;
 const workspaces : string[] = []                             ;
@@ -165,6 +166,17 @@ describe("public CLI local package artifact", () => {
 		const jsonCheck = run(executable, ["check", "--file", "sample.json", "--json"], { cwd: project, env: runtimeEnv });
 		expectStatus(jsonCheck, 1);
 		expect(JSON.parse(jsonCheck.stdout)).toMatchObject({ syntax: { status: "valid", tool: "JSON.parse" }, formatReadiness: { approvalEligible: false }, results: [{ language: "json", summary: { misaligned: 1 } }] });
+		const jsonGroup           = JSON.parse(jsonCheck.stdout).results[0].groups[0]                                                                             ;
+		const jsonKey             = lookupKeyOf("json", jsonGroup.context, jsonGroup.kind, jsonGroup.axes)                                                        ;
+		const jsonApprovalPreview = run(executable, ["approval-preview", "--file", "sample.json", "--key", jsonKey, "--json"], { cwd: project, env: runtimeEnv }) ;
+		expectStatus(jsonApprovalPreview, 0);
+		const firstRequest = JSON.parse(jsonApprovalPreview.stdout).delivery.request;
+		expect(JSON.parse(jsonApprovalPreview.stdout)).toMatchObject({ authorization: false, delivery: { channel: "conversation", request: { projectRelativeFile: "sample.json", ruleKey: jsonKey } } });
+		writeFileSync(jsonTarget, jsonSource.replace('"a":1', '"aa":1'));
+		const stalePreview = run(executable, ["approval-preview", "--file", "sample.json", "--key", jsonKey, "--json"], { cwd: project, env: runtimeEnv });
+		expectStatus(stalePreview, 0);
+		expect(JSON.parse(stalePreview.stdout).delivery.request.digest).not.toBe(firstRequest.digest);
+		writeFileSync(jsonTarget, jsonSource);
 		const jsonAlign = run(executable, ["align", "--file", "sample.json", "--dry-run", "--json"], { cwd: project, env: runtimeEnv });
 		expectStatus(jsonAlign, 2);
 		expect(JSON.parse(jsonAlign.stdout)).toMatchObject({ ok: false, error: { code: "ALIGN_NOT_ELIGIBLE" } });
@@ -199,6 +211,9 @@ describe("public CLI local package artifact", () => {
 		expect(JSON.parse(alignment.stdout)                      ).toMatchObject  ({ command: "align", horizontalWhitespaceOnly: true, formatterExecuted: false, written: false }) ;
 		expect(JSON.parse(alignment.stdout).alignmentEdits.length).toBeGreaterThan(0                                                                                             ) ;
 		expect(readFileSync(target).equals(original)             ).toBe           (true                                                                                          ) ;
+		const approvedKey     = lookupKeyOf("typescript", "SourceFile", "declaration-equals", ["equals", "call-open-paren", "call-close-paren", "semicolon"]          ) ;
+		const approvedPreview = run        (executable, ["approval-preview", "--file", "sample.ts", "--key", approvedKey, "--json"], { cwd: project, env: runtimeEnv }) ;
+		expectStatus(approvedPreview, 2);
 		const textPreview = run(executable, ["align", "--file", "sample.ts", "--dry-run"], { cwd: project, env: runtimeEnv });
 		expectStatus(textPreview, 0);
 		expect(textPreview.stdout).toContain("line 1\n- const a = make(1);\n+ const a");

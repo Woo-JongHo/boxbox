@@ -17,8 +17,9 @@ import      {
 import      { resolveFormatterExecutable                                 } from "@/common/14_formatter-process.ts"   ;
 import      { runFormatPipeline                                          } from "@/common/21_format-pipeline.ts"     ;
 import type { FormatPipelineResult                                       } from "@/common/21_format-pipeline.ts"     ;
-import      { AlignmentSelectionError                                   } from "@/common/38_selective-align.ts"     ;
+import      { AlignmentSelectionError, prepareAlignmentProposal         } from "@/common/38_selective-align.ts"     ;
 import type { SkippedAlignmentGroup                                      } from "@/common/38_selective-align.ts"     ;
+import      { approvalDelivery, approvalRequest                          } from "@/common/39_approval-handoff.ts"    ;
 import      { projectPath, runProjectCommand, selectProjectTargets                    } from "@/common/34_project-commands.ts"    ;
 import type { ProjectExitCode, ProjectPipelineContext                    } from "@/common/34_project-commands.ts"    ;
 import      { buildMonitorReport, writeMonitorReport                     } from "@/common/31_monitor.ts"             ;
@@ -57,6 +58,7 @@ Commands:
   align   --file <path> [--language typescript|python|json|yaml] [--dry-run] [--json]
   format  (--file <path> | --directory <path>)... [--language typescript|python|json|yaml] [--dry-run] [--json]
   guide   --file <path> [--language typescript|python|json|yaml] [--authoring [--brief]] [--json]
+  approval-preview --file <path> --key <exact-rule-key> [--language typescript|python|json|yaml] [--json]
   init    [--json]
   doctor  [--json]
   mode [auto|off|check|align|refactor] [--global] [--json]
@@ -89,6 +91,23 @@ the registered column sets and what each axis means, as row-design vocabulary, n
 check --expect-axis reports which requested axes the detected groups cover, miss, or do not recognize; it never changes the exit code.
 monitor always writes one local HTML page inside absolute CLAUDE_PLUGIN_DATA or PLUGIN_DATA, including with --json.
 Write and Refactor are agent skill workflows, not automatic CLI rewrites.`;
+
+async function approvalPreview(args: readonly string[], root: string): Promise<number> {
+	const keyAt = args.indexOf("--key");
+	if (keyAt < 0 || !args[keyAt + 1] || args[keyAt + 1]!.startsWith("--")) throw new CliError("APPROVAL_REQUEST_INVALID", "approval-preview requires --key <exact-rule-key>");
+	const key      = args[keyAt + 1]!                                      ;
+	const fileArgs = args.filter((_argument, index) => index !== keyAt && index !== keyAt + 1) ;
+
+	const parsed   = parseFileCommand(fileArgs, false, root)                ;
+	const context  = preparedPipelineContext(root)                          ;
+
+	const proposal = await prepareAlignmentProposal({ ...context, root, file: parsed.file, language: parsed.language, alignmentOnly: true, dryRun: true }, resolve(root, parsed.file), parsed.file.split(sep).join("/"), key) ;
+
+	const request  = approvalRequest({ projectRelativeFile: parsed.file.split(sep).join("/"), targetSha256: proposal.sourceHash, ruleKey: proposal.key, fileScope: parsed.file.split(sep).join("/"), groups: proposal.groups, examples: proposal.examples }) ;
+	const delivery = approvalDelivery(request, { interactiveControls: false, requestAccepted: false, visibleConfirmed: false }) ;
+	emitJson({ schemaVersion: 1, tool: "boxbox", command: "approval-preview", ok: true, delivery, authorization: false, limitation: "Preview only: the CLI cannot observe native live-prompt visibility or accept approval. After a user reply, regenerate from current bytes and require the same digest plus existing human proof before Align." });
+	return 0;
+}
 
 interface ParsedFileCommand {
 	readonly file       : string            ;
@@ -1050,6 +1069,7 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 			assertSimpleFlags(tail, ["--json"]);
 			return doctor(project, json);
 		}
+		if (command === "approval-preview") return await approvalPreview(tail, assertRoot(root));
 		const { root: project, args: options } = fileProjectScope(assertRoot(root), tail);
 		if (command === "check" || command === "format") {
 			const parsed = parseProjectCommand(options, command, project);
