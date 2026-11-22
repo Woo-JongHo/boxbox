@@ -428,16 +428,16 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 		const before = baselineHashes(JSON.parse(readFileSync(baseline, "utf8"))) ;
 		const after  = snapshot      (root, "", {}, [], exclusions              ) ;
 
-		const files = changed(before, after);
-		const checked     : { file: string; result: FileResult }[] = []                                  ;
-		const unsupported : string[]                               = []                                  ;
-		const deleted                                              = files.filter(file => !after[file])  ;
-		const syntaxByFile                                         = new Map<string, SyntaxValidation>() ;
-		const observations = new Map<string, { context: string | null; observed: ObservedInspection }>() ;
-		const inspectionStarted = performance.now()                                                        ;
-		let inspected      = 0                                                                              ;
-		let reused         = 0                                                                              ;
-		let cacheMisses    = 0                                                                              ;
+		const files                                                = changed(before, after)                                                      ;
+		const checked     : { file: string; result: FileResult }[] = []                                                                          ;
+		const unsupported : string[]                               = []                                                                          ;
+		const deleted                                              = files.filter(file => !after[file])                                          ;
+		const syntaxByFile                                         = new Map<string, SyntaxValidation>()                                         ;
+		const observations                                         = new Map<string, { context: string | null; observed: ObservedInspection }>() ;
+		const inspectionStarted                                    = performance.now()                                                           ;
+		let inspected                                              = 0                                                                           ;
+		let reused                                                 = 0                                                                           ;
+		let cacheMisses                                            = 0                                                                           ;
 		const contextOf = async (): Promise<string | null> => {
 			try {
 				const identity = await options.inspectionContext?.(root);
@@ -579,13 +579,13 @@ export async function lifecycleHook(args: readonly string[], inspect: Inspection
 		let editPath   = typeof edited === "string" ? resolve(editBase, edited) : root             ;
 		try { editPath = realpathSync(editPath); }
 		catch { /* Deleted or unavailable edit targets retain their lexical scope; inspection is unchanged. */ }
-		const editRelative = relative(root, editPath)                                                                                                                                                                ;
-		const outside      = editRelative === ".." || editRelative.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`) || isAbsolute(editRelative)                                                          ;
-		const scope        = outside ? " Edited file is outside the session project; only session changes were checked." : ""                                                                                        ;
-		const attention    = checked.filter(item => item.result.summary.misaligned || item.result.summary.refused).map(item => item.file)                                                                            ;
-		const names        = attention.length ? ` attention=${attention.slice(0, 3).join(",")}${attention.length > 3 ? `,+${attention.length - 3}` : ""};` : ""                                                      ;
-		const recovery     = mergeRecovery(checked.map(item => resultRecovery(item.result, item.file)))                                                                              ;
-		const recoveryText = recovery.issues.length ? ` Recovery:\n${renderRecovery(recovery)}` : ""                                                                               ;
+		const editRelative = relative(root, editPath)                                                                                                                                                                                                                         ;
+		const outside      = editRelative === ".." || editRelative.startsWith(`..${process.platform === "win32" ? "\\" : "/"}`) || isAbsolute(editRelative)                                                                                                                   ;
+		const scope        = outside ? " Edited file is outside the session project; only session changes were checked." : ""                                                                                                                                                 ;
+		const attention    = checked.filter(item => item.result.summary.misaligned || item.result.summary.refused).map(item => item.file)                                                                                                                                     ;
+		const names        = attention.length ? ` attention=${attention.slice(0, 3).join(",")}${attention.length > 3 ? `,+${attention.length - 3}` : ""};` : ""                                                                                                               ;
+		const recovery     = mergeRecovery(checked.map(item => resultRecovery(item.result, item.file)))                                                                                                                                                                       ;
+		const recoveryText = recovery.issues.length ? ` Recovery:\n${renderRecovery(recovery)}` : ""                                                                                                                                                                          ;
 		const reason       = `[boxbox] ${event}: ${state}; checked=${checked.length}, inspected=${inspected}, reused=${reused}, groups=${groups}, filesWithGroups=${filesWithGroups}. ${receipt} mode=${setting};${names}${alignmentMessage(aligned)}${scope}${recoveryText}` ;
 
 		if (setting === "auto") {

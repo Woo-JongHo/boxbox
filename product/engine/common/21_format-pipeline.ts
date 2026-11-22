@@ -84,8 +84,8 @@ function readStructuredUtf8(file: string): string {
 
 /** What the pipeline needs from each language: its current groups, a parse gate for formatter output, and the engine's own write. */
 interface LanguageEngine {
-	readonly check : (root: string, file: string) => Promise<FileResult> ;
-	readonly parse : (root: string, file: string) => Promise<void>       ;
+	readonly check : (root: string, file: string) => Promise<FileResult>            ;
+	readonly parse : (root: string, file: string) => Promise<void>                  ;
 	readonly write : (root: string, file: string, display: string) => Promise<void> ;
 }
 

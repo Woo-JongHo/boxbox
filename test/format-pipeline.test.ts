@@ -61,17 +61,17 @@ const TS_KEY = "v1|typescript|SourceFile|declaration-equals|equals>call-open-par
 const PY_KEY = "v1|python|-|table|name>equal>value"                                                            ;
 
 test("approved TypeScript formatting preserves compressed-interface recovery without writing", async () => {
-	const root   = workspace()                      ;
-	const target = join(root, "src/compressed.ts") ;
-	const source = "const a=fn(1);\nconst longer=fn(22);\nconst mid=fn(333);\ninterface Compact { a: string; b: number; c: boolean }\n";
+	const root   = workspace()                                                                                                          ;
+	const target = join(root, "src/compressed.ts")                                                                                      ;
+	const source = "const a=fn(1);\nconst longer=fn(22);\nconst mid=fn(333);\ninterface Compact { a: string; b: number; c: boolean }\n" ;
 	writeFileSync(target, source);
 	try {
 		await runFormatPipeline({ root, file: "src/compressed.ts", language: "typescript", registry: registry(root, "typescript", TS_KEY), resolveDocument: documentResolver(root) });
 		throw new Error("expected formatting refusal");
 	} catch (error) {
-		expect(error).toBeInstanceOf(PipelineError);
-		expect((error as PipelineError).recovery).toMatchObject({ issues: [{ file: "src/compressed.ts", startLine: 4, endLine: 4, category: "structural-prerequisite", owner: "agent" }], omitted: 0 });
-		expect(error instanceof Error ? error.message : "").toContain("Write/Refactor");
+		expect(error                                      ).toBeInstanceOf(PipelineError                                                                                                                         ) ;
+		expect((error as PipelineError).recovery          ).toMatchObject ({ issues: [{ file: "src/compressed.ts", startLine: 4, endLine: 4, category: "structural-prerequisite", owner: "agent" }], omitted: 0 }) ;
+		expect(error instanceof Error ? error.message : "").toContain     ("Write/Refactor"                                                                                                                      ) ;
 	}
 	expect(readFileSync(target, "utf8")).toBe(source);
 }, 60_000);
