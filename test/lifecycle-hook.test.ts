@@ -363,6 +363,30 @@ test("hooks inspect all four supported language boundaries without changing sour
 	for (const [file, source] of sources) expect(readFileSync(join(root, file), "utf8")).toBe(source);
 }, 60_000);
 
+test("unchanged structured posts reuse inspection, corrupt cache recovers, and Stop remains fresh", () => {
+	const root    = project()                    ;
+	const session = "structured-cache-recovery" ;
+	hook(root, "session", { session_id: session });
+	writeFileSync(join(root, "sample.json"), "{\n  \"a\": 1,\n  \"longer\": 22,\n  \"mid\": 333\n}\n");
+
+	const first = hook(root, "post", { session_id: session, tool_name: "Write" });
+	expect(JSON.stringify(first)).toContain("inspected=1, reused=0");
+	const directory = stateDirectory(root, session);
+	for (const name of readdirSync(directory).filter(name => name.startsWith("post-reported-"))) unlinkSync(join(directory, name));
+
+	const reused = hook(root, "post", { session_id: session, tool_name: "Edit" });
+	expect(JSON.stringify(reused)).toContain("inspected=0, reused=1");
+	const cache = readdirSync(directory).find(name => name.endsWith(".cache"));
+	expect(cache).toBeDefined();
+	writeFileSync(join(directory, cache!), "corrupt");
+	for (const name of readdirSync(directory).filter(name => name.startsWith("post-reported-"))) unlinkSync(join(directory, name));
+
+	const recovered = hook(root, "post", { session_id: session, tool_name: "Edit" });
+	expect(JSON.stringify(recovered)).toContain("inspected=1, reused=0");
+	const stopped = hook(root, "stop", { session_id: session });
+	expect(JSON.stringify(stopped)).toContain("inspected=1, reused=0");
+}, 60_000);
+
 test("real two-row suggestions stay nonblocking while an aligned three-row table passes", () => {
 	const suggestedRoot   = project()             ;
 	const suggestedSource = "a = 1\nlonger = 2\n" ;
@@ -424,7 +448,7 @@ test("Bash and Edit suppress repeated feedback for the same observed source", ()
 	expect(bash.decision).toBeUndefined();
 	expect(receipt.state                                                         ).toBe     ("FAIL"                                  ) ;
 	expect(context                                                               ).toContain("PostToolUse: FAIL"                     ) ;
-	expect(context                                                               ).toContain("checked=1, groups=1, filesWithGroups=1") ;
+	expect(context                                                               ).toContain("checked=1, inspected=1, reused=0, groups=1, filesWithGroups=1") ;
 	expect(hook(root, "post", { session_id: "bash-advisory", tool_name: "Bash" })).toEqual  ({}                                      ) ;
 	expect(hook(root, "post", { session_id: "bash-advisory", tool_name: "Edit" })).toEqual  ({}                                      ) ;
 }, 60_000);

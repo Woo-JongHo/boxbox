@@ -61,6 +61,23 @@ function pythonFixture(root: string): string {
 	return path;
 }
 
+test("format reports compressed-interface recovery while selective Align preserves the skipped structure", () => {
+	const root   = workspace()             ;
+	const target = join(root, "sample.ts") ;
+	const source = "const a=fn(1);\nconst longer=fn(22);\nconst mid=fn(333);\ninterface Compact { a: string; b: number; c: boolean }\n";
+	writeFileSync(target, source);
+	const formatted = invoke(root, ["format", "--file", "sample.ts", "--json"]);
+	const failure   = JSON.parse(formatted.stdout);
+	expect(formatted.status).toBe(2);
+	expect(failure.error.recovery).toMatchObject({ issues: [{ file: "sample.ts", startLine: 4, endLine: 4, category: "structural-prerequisite", owner: "agent" }], omitted: 0 });
+	expect(failure.error.message).toContain("Write/Refactor");
+	expect(readFileSync(target, "utf8")).toBe(source);
+	const aligned = invoke(root, ["align", "--file", "sample.ts", "--json"]);
+	expect(aligned.status).toBe(0);
+	expect(JSON.parse(aligned.stdout).skippedGroups).toMatchObject([{ kind: "interface-members-compressed", startLine: 4, endLine: 4 }]);
+	expect(readFileSync(target, "utf8")).toEndWith("interface Compact { a: string; b: number; c: boolean }\n");
+}, 60_000);
+
 test("public Python alignment handles warning literals during preview, write and recheck", () => {
 	const root   = workspace()                                           ;
 	const target = join(root, "warning.py")                              ;

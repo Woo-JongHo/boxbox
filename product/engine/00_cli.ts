@@ -47,6 +47,9 @@ import      { runTypeScriptAlign                                         } from 
 import      { AXIS_NOTES, KIND_AXES                                      } from "@/typescript/13_grid-kinds.ts"      ;
 
 import      { guardedRun, guardStatus                                    } from "@/common/25_guarded-run.ts"         ;
+import      { inspectionRuntimeIdentity                                  } from "@/common/41_inspection-context.ts"  ;
+import      { PipelineError                                               } from "@/common/39_recovery.ts"           ;
+import type { RecoveryReport                                              } from "@/common/39_recovery.ts"           ;
 
 export const CLI_VERSION = "0.2.9";
 
@@ -106,11 +109,11 @@ interface CliErrorEnvelope {
 	readonly tool          : "boxbox"                                                                                                       ;
 	readonly command       : string                                                                                                         ;
 	readonly ok            : false                                                                                                          ;
-	readonly error         : { readonly code: string; readonly message: string; readonly skippedGroups?: readonly SkippedAlignmentGroup[] } ;
+	readonly error         : { readonly code: string; readonly message: string; readonly skippedGroups?: readonly SkippedAlignmentGroup[]; readonly recovery?: RecoveryReport } ;
 }
 
 class CliError extends Error {
-	constructor(readonly code: string, message: string, readonly skippedGroups?: readonly SkippedAlignmentGroup[]) { super(message); }
+	constructor(readonly code: string, message: string, readonly skippedGroups?: readonly SkippedAlignmentGroup[], readonly recovery?: RecoveryReport) { super(message); }
 }
 
 const messageOf = (value: unknown): string => value instanceof Error ? value.message : String(value);
@@ -122,7 +125,7 @@ function emitJson(value: unknown): void {
 function fail(command: string, json: boolean, error: unknown): number {
 	const known = error instanceof CliError ? error : new CliError("INTERNAL_ERROR", messageOf(error));
 	if (json) {
-		const envelope: CliErrorEnvelope = { schemaVersion: 1, tool: "boxbox", command, ok: false, error: { code: known.code, message: known.message, ...(known.skippedGroups ? { skippedGroups: known.skippedGroups } : {}) } };
+		const envelope: CliErrorEnvelope = { schemaVersion: 1, tool: "boxbox", command, ok: false, error: { code: known.code, message: known.message, ...(known.skippedGroups ? { skippedGroups: known.skippedGroups } : {}), ...(known.recovery ? { recovery: known.recovery } : {}) } };
 		emitJson(envelope);
 	} else console.error(`boxbox ${command}: ${known.message}`);
 	return 2;
@@ -426,6 +429,13 @@ export function preparedPipelineContext(root: string, expectedConfigFingerprint?
 			return current;
 		},
 	};
+}
+
+/** A missing dependency identity disables reuse; approval proof is reread at both hook boundaries. */
+function hookInspectionContext(root: string): string | null {
+	const runtime = inspectionRuntimeIdentity();
+	if (runtime === null) return null;
+	return createHash("sha256").update(runtime).update("\0").update(approvalContext(root).fingerprint).digest("hex");
 }
 
 /** Hook alignment uses the same approved horizontal-only pipeline as explicit Align, with no formatter or secondary stdout. */
@@ -956,7 +966,7 @@ async function format(parsed: ParsedFileCommand, root: string, alignmentOnly = f
 		return 0;
 	} catch (error) {
 		const skippedGroups = error instanceof AlignmentSelectionError ? error.skippedGroups : undefined;
-		throw new CliError(errorCode, `${command} refused: ${messageOf(error)}`, skippedGroups);
+		throw new CliError(errorCode, `${command} refused: ${messageOf(error)}`, skippedGroups, error instanceof PipelineError ? error.recovery : undefined);
 	}
 }
 
@@ -1000,15 +1010,9 @@ export async function runCli(args: readonly string[], root = process.cwd()): Pro
 			const original = parseFileCommand(["--file", file], false, project).file;
 			return { result: { ...result, file: result.file === parsed.file ? original : original.split(sep).join("/") }, syntax };
 		}, {
-			version  : CLI_VERSION       ,
-			align    : alignApprovedHook ,
-			cacheKey : (project, file) => {
-				const language = inferredLanguage(file);
-				if (language !== "json" && language !== "yaml") return undefined;
-
-				const scope = fileProjectScope(project, ["--file", file]);
-				return JSON.stringify([scope.root, resolveConfig(scope.root).fingerprint]);
-			},
+			version           : CLI_VERSION          ,
+			align             : alignApprovedHook    ,
+			inspectionContext : hookInspectionContext,
 		});
 		if (command === "hooks" && tail[0] === "workflow") return runHookWorkflow(tail.slice(1), assertRoot(root));
 		if (command === "hooks"                          ) return installHooks(tail);
