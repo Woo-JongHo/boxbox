@@ -8,8 +8,8 @@ const ROOT = resolve(import.meta.dir, "..")                                     
 const read = (path: string): string => readFileSync(resolve(ROOT, path), "utf8") ;
 
 const GOOD: ModelConfig = {
-	schemaVersion : 1,
-	capabilities  : { sonnet: ["low", "medium"], "no-effort-model": [], "codex-model": ["low", "high"] },
+	schemaVersion : 1                                                                                    ,
+	capabilities  : { sonnet: ["low", "medium"], "no-effort-model": [], "codex-model": ["low", "high"] } ,
 	roles         : {
 		inspector: {
 			claude : { model: "sonnet"     , effort: "medium", selectedBy: "unevaluated-default" },
@@ -52,6 +52,22 @@ describe("model and effort assignment source", () => {
 		expect(modelConfigProblems(config).join("\n")).toContain("roles.inspector.gemini: unknown host");
 		expect(modelConfigProblems({ schemaVersion: 2 })).toEqual(["schemaVersion must be 1"]);
 	});
+
+	test("requires the inspector assignment and both host assignments", () => {
+		expect(modelConfigProblems({ ...GOOD, roles: {} }).join("\n")                                                                                            ).toContain("roles.inspector: assignment is required"  ) ;
+		expect(modelConfigProblems({ ...GOOD, roles: { inspector: { claude: GOOD.roles.inspector.claude } } }).join("\n")                                        ).toContain("roles.inspector.codex: model is required" ) ;
+		expect(modelConfigProblems({ ...GOOD, roles: Object.create({ inspector: GOOD.roles.inspector }) as ModelConfig["roles"] }).join("\n")                    ).toContain("roles.inspector: assignment is required"  ) ;
+		expect(modelConfigProblems({ ...GOOD, roles: { inspector: Object.create({ ...GOOD.roles.inspector }) as ModelConfig["roles"]["inspector"] } }).join("\n")).toContain("roles.inspector.claude: model is required") ;
+	});
+
+	test("reports malformed containers and duplicate capability values without throwing", () => {
+		expect(modelConfigProblems({ schemaVersion: 1, capabilities: null, roles: {} })                                                    ).toEqual  (["capabilities must be an object"]      ) ;
+		expect(modelConfigProblems({ schemaVersion: 1, capabilities: {}, roles: null })                                                    ).toEqual  (["roles must be an object"]             ) ;
+		expect(modelConfigProblems({ ...GOOD, capabilities: { sonnet: ["medium", "medium"] } }).join("\n")                                 ).toContain("list each supported effort once"       ) ;
+		expect(modelConfigProblems({ ...GOOD, roles: { inspector: null } }).join("\n")                                                     ).toContain("host assignments must be an object"    ) ;
+		expect(modelConfigProblems({ ...GOOD, capabilities: { sonnet: "medium", "codex-model": ["low", "high"] } }).join("\n")             ).toContain("capabilities.sonnet"                   ) ;
+		expect(modelConfigProblems({ ...GOOD, capabilities: Object.create({ sonnet: ["medium"] }) as Record<string, string[]> }).join("\n")).toContain("model sonnet has no capabilities entry") ;
+	});
 });
 
 describe("stamping the host agent definitions", () => {
@@ -83,12 +99,17 @@ describe("generated outputs follow the source", () => {
 	const inspector = readModelConfig(ROOT).roles.inspector;
 
 	test("plugin and development agents carry exactly the source assignment", () => {
+		const expectedFields = [`model: ${inspector.claude.model}`, ...(inspector.claude.effort === undefined ? [] : [`effort: ${inspector.claude.effort}`])];
 		for (const path of ["plugin/agents/readability-inspector.md", "development/agents/readability-inspector.md"]) {
-			expect(read(path)).toContain(`\nmodel: ${inspector.claude.model}\neffort: ${inspector.claude.effort}\n`);
+			const frontmatter = /^---\n([\s\S]*?)\n---\n/u.exec(read(path))?.[1] ?? ""                 ;
+			const fields      = frontmatter.split("\n").filter(line => /^(model|effort):/u.test(line)) ;
+			expect(fields).toEqual(expectedFields);
 		}
-		const toml = read("development/codex/readability-inspector.toml");
-		expect(toml).toContain(`\nmodel = "${inspector.codex.model}"\n`);
-		expect(toml).toContain(`\nmodel_reasoning_effort = "${inspector.codex.effort}"\n`);
+		const codex   = read("development/codex/readability-inspector.toml")                                                     ;
+		const neutral = codex.replace(/^model = .*$/mu, 'model = "unassigned"').replace(/^model_reasoning_effort = .*\n?/mu, "") ;
+		expect(codex.match(/^model = .*$/gmu)                  ?? []).toHaveLength(1                                           ) ;
+		expect(codex.match(/^model_reasoning_effort = .*$/gmu) ?? []).toHaveLength(inspector.codex.effort === undefined ? 0 : 1) ;
+		expect(codex                                                ).toBe        (stampCodexAgent(neutral, inspector.codex)   ) ;
 	});
 
 	test("the product template holds no model or effort of its own", () => {
