@@ -95,10 +95,12 @@ export async function loadSourceFile(root: string, value: string): Promise<Loade
  * server. Columns are left out because alignment moves columns but never lines.
  */
 export async function syntacticDiagnostics(root: string, absolute: string, text: string): Promise<readonly string[]> {
-	const api             = new API({ cwd: root })                              ;
-	let source      : SourceFile | undefined                                    ;
-	let diagnostics : readonly string[] | undefined                             ;
-	const scope           = inspectionScope()                                   ;
+	const api = new API({ cwd: root });
+
+	let source      : SourceFile | undefined        ;
+	let diagnostics : readonly string[] | undefined ;
+
+	const scope           = inspectionScope()                                    ;
 	const initialIdentity = scope ? snapshotIdentity(root, absolute) : undefined ;
 	try {
 		const state   = await api.updateSnapshot({ openFiles: [absolute] }) ;
