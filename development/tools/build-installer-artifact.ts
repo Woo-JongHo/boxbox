@@ -39,7 +39,12 @@ export function buildInstallerArtifact(): string {
 	const output      = join(ROOT, "dist/installer-package")                                                                                                                                                                                             ;
 	const payload     = join(output, "payload")                                                                                                                                                                                                          ;
 	const enginePath  = join(ROOT, "dist", `${manifest.name}-${manifest.version}.tgz`)                                                                                                                                                                   ;
-	const metadata    = { name: manifest.name, npmName: product.npmName, version: manifest.version, displayName: product.displayName, marketplace: marketplace.name, engineSha256: createHash("sha256").update(readFileSync(enginePath)).digest("hex") } ;
+
+	const provenance  = JSON.parse(readFileSync(join(ROOT, "dist/cli/provenance.json"), "utf8")) as { schemaVersion: number; cliSha256: string; source: { commit: string; ref: string; repository: string | null; dirty: boolean } }                             ;
+	const cliSha256   = createHash("sha256").update(readFileSync(join(ROOT, "dist/cli/dist/cli.js"))).digest("hex")                                                                                                                                      ;
+	if (provenance.schemaVersion !== 1 || provenance.cliSha256 !== cliSha256 || !/^[0-9a-f]{40}$/u.test(provenance.source.commit)) throw new Error("CLI provenance does not match the freshly built engine.");
+
+	const metadata = { name: manifest.name, npmName: product.npmName, version: manifest.version, displayName: product.displayName, marketplace: marketplace.name, engineSha256: createHash("sha256").update(readFileSync(enginePath)).digest("hex"), engineCliSha256: cliSha256, source: provenance.source } ;
 	if (!product.npmName) throw new Error("product.json must declare the public installer npmName.");
 	rmSync(output, { recursive: true, force: true });
 	mkdirSync(join(output, "bin"), { recursive: true });

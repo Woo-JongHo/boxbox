@@ -5,7 +5,7 @@ import      { spawnSync                                                  } from 
 import      { existsSync, lstatSync, readFileSync, realpathSync          } from "node:fs"                            ;
 import      { dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path"                          ;
 
-import      { documentResolver, evaluateDetected, loadApprovalRegistry   } from "@/common/18_approval-gate.ts"       ;
+import      { documentSnapshot, evaluateDetected, loadApprovalRegistry   } from "@/common/18_approval-gate.ts"       ;
 import type { ApprovalRegistry, DocumentResolver, RegistrySource         } from "@/common/18_approval-gate.ts"       ;
 import      { runAlignCli                                                } from "@/common/22_align-cli.ts"           ;
 import      {
@@ -44,6 +44,7 @@ import      { PYTHON_AXIS_NOTES                                          } from 
 import      { normalizeAxis                                              } from "@/common/02_signature.ts"           ;
 import      { analyzeStructured                                          } from "@/structured/00_index.ts"           ;
 import      { runTypeScriptAlign                                         } from "@/typescript/12_align.ts"           ;
+import      { withTypeScriptInspection                                   } from "@/typescript/15_load-source-file.ts" ;
 import      { AXIS_NOTES, KIND_AXES                                      } from "@/typescript/13_grid-kinds.ts"      ;
 
 import      { guardedRun, guardStatus                                    } from "@/common/25_guarded-run.ts"         ;
@@ -51,7 +52,7 @@ import      { inspectionRuntimeIdentity                                  } from 
 import      { PipelineError                                               } from "@/common/39_recovery.ts"           ;
 import type { RecoveryReport                                              } from "@/common/39_recovery.ts"           ;
 
-export const CLI_VERSION = "0.2.9";
+export const CLI_VERSION = "0.2.10";
 
 const HELP = `Usage: boxbox <command> [options]
 
@@ -396,15 +397,19 @@ function approvalContext(root: string): ApprovalContext {
 	];
 	const roots           = { project: root, ...(userRoot && existsSync(userRoot) ? { user: userRoot } : {}), preset: presetRoot } ;
 	const registry        = loadApprovalRegistry(sources)                                                                          ;
-	const resolveDocument = documentResolver(roots)                                                                                ;
-	const documents = [...registry.decisions.values()].map(decision => {
-		const convention = registry.conventions.find(record => record.id === decision.id);
-		try {
-			const resolved = resolveDocument(decision.ref, convention?.layer);
-			return [decision.id, decision.ref, resolved.heading, resolved.document];
-		} catch (error) {
-			return [decision.id, decision.ref, "invalid", messageOf(error)];
-		}
+	const resolveDocument = documentSnapshot(roots)                                                                                ;
+	const documents = [...registry.decisions.values()].flatMap(decision => {
+		const layers = [...new Set(registry.conventions.filter(record => record.id === decision.id).map(record => record.layer))];
+
+		return (layers.length ? layers : [undefined]).map(layer => {
+			try {
+				const resolved = resolveDocument(decision.ref, layer);
+
+				return [decision.id, layer ?? null, decision.ref, resolved.heading, resolved.document];
+			} catch (error) {
+				return [decision.id, layer ?? null, decision.ref, "invalid", messageOf(error)];
+			}
+		});
 	});
 	const evidence = JSON.stringify({
 		config      : config.fingerprint                ,
@@ -688,7 +693,7 @@ function formatReadiness(parsed: ParsedFileCommand, root: string, result: FileRe
 	}
 }
 
-async function inspectCheck(parsed: ParsedFileCommand, root: string) {
+async function inspectCheckSnapshot(parsed: ParsedFileCommand, root: string) {
 	const config = resolveConfig(root).effective;
 	if (!config.languages.includes(parsed.language)) throw new CliError("LANGUAGE_DISABLED", `${parsed.language} is not enabled by the effective configuration`);
 	const syntax = await validateSyntax({ root, file: parsed.file, language: parsed.language });
@@ -707,6 +712,12 @@ async function inspectCheck(parsed: ParsedFileCommand, root: string) {
 	const report                    = { schemaVersion: 1 as const, tool: "boxbox" as const, results: [result], syntax, coverage, formatReadiness: readiness, ...(expectation ? { axisExpectation: expectation } : {}) } ;
 	const exitCode: ProjectExitCode = syntax.status !== "valid" || result.summary.refused > 0 ? 2 : result.summary.misaligned > 0 ? 1 : 0                                                                               ;
 	return { report, exitCode };
+}
+
+async function inspectCheck(parsed: ParsedFileCommand, root: string) {
+	const inspect = () => inspectCheckSnapshot(parsed, root);
+
+	return parsed.language === "typescript" ? withTypeScriptInspection(inspect) : inspect();
 }
 
 interface CanonicalCheck {

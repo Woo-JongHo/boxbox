@@ -10,6 +10,7 @@
 	},
 	"files": [
 		"dist/cli.js",
+		"provenance.json",
 		"rules/presets/recommended/conventions.jsonl",
 		"rules/presets/recommended/examples.jsonl",
 		"rules/presets/recommended/decisions.jsonl",

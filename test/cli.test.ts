@@ -301,6 +301,69 @@ describe("public CLI", () => {
 		});
 	});
 
+	test("source Check explains a verified exact approval scoped to a different TypeScript file", () => {
+		const root        = workspace()                                                                                                                  ;
+		const directory   = join(root, ".boxbox")                                                                                                        ;
+		const environment = { XDG_CONFIG_HOME: join(root, "user-config") }                                                                               ;
+		const source      = 'interface Snapshot {\n\tkey: string;\n\tregion: string | null;\n\telapsedMs: number;\n\tsource: "local" | "remote";\n}\n'   ;
+		const key         = lookupKeyOf("typescript", "InterfaceDeclaration", "interface-members", ["colon", "semicolon"])                               ;
+		const reason      = "exact convention is approved for a different file scope"                                                                    ;
+		const check       = (file: string, json = true) => invoke(root, ["check", "--source", "--file", file, ...(json ? ["--json"] : [])], environment) ;
+
+		writeFileSync(join(root, "approved.ts"), source);
+		writeFileSync(join(root, "pilot.ts"   ), source);
+		const withoutApproval = check("pilot.ts");
+		expect(withoutApproval.status).toBe(1);
+		expect(JSON.parse(withoutApproval.stdout).formatReadiness.approvalFacts).toMatchObject([
+			{ key, status: "unknown", proofComplete: false, reasons: ["no matching convention"] },
+		]);
+
+		mkdirSync(directory);
+		const document = "# Scoped rule\n\nAlign interface fields in the approved file.\n"                       ;
+		const aligned  = source.replace("\tkey:", "\tkey      :")                                                ;
+		const evidence = [["positive", source, aligned, "after-better"], ["counter", "a", " a", "bad"]] as const ;
+		const examples     = evidence.map(([id, before, after, verdict]) => ({
+			schemaVersion: 1, id, status: "approved", versions: APPROVAL_VERSIONS, language: "typescript", regime: "table",
+			patterns: ["DEFINE"], rules: ["scoped-interface"], before, after, contentHash: contentHashOf(before, after), verdict,
+			asserts: { after: {} }, source: { kind: "synthetic", license: "test" }, approvedBy: "test-approver", date: "2026-11-22",
+		}));
+		const exampleIds = examples.map(row => row.id);
+		const convention = {
+			schemaVersion: 1, id: "scoped-interface", key, pattern: "DEFINE", status: "approved", scope: "approved.ts",
+			examples: exampleIds, versions: APPROVAL_VERSIONS, approvedBy: "test-approver", date: "2026-11-22",
+		};
+		const decision = {
+			schemaVersion: 1, id: convention.id, kind: "rule", layer: "convention", ref: ".boxbox/rules.md#Scoped rule",
+			docHash: sectionHash(document, "Scoped rule"), examples: exampleIds, approvedBy: "test-approver", date: "2026-11-22",
+		};
+		writeFileSync(join(directory, "rules.md"         ), document                                     );
+		writeFileSync(join(directory, "examples.jsonl"   ), examples.map(row => JSON.stringify(row)).join("\n") + "\n");
+		writeFileSync(join(directory, "decisions.jsonl"  ), JSON.stringify(decision)   + "\n"             );
+		writeFileSync(join(directory, "conventions.jsonl"), JSON.stringify(convention) + "\n"             );
+
+		const outside = check("pilot.ts");
+		expect(outside.status).toBe(1);
+		expect(JSON.parse(outside.stdout).formatReadiness).toMatchObject({
+			approvalEligible: false, approvalFacts: [{ key, status: "unknown", proofComplete: false, reasons: [reason] }],
+		});
+		expect(check("pilot.ts", false).stdout).toContain(reason);
+
+		const refused = invoke(root, ["align", "--file", "pilot.ts", "--json"], environment);
+		expect(refused.status                                ).toBe         (2                                                 ) ;
+		expect(JSON.parse(refused.stdout).error.skippedGroups).toMatchObject([{ key, category: "approval", reasons: [reason] }]) ;
+		expect(readFileSync(join(root, "pilot.ts"), "utf8")  ).toBe         (source                                            ) ;
+
+		const inside = invoke(root, ["align", "--file", "approved.ts", "--json"], environment);
+		expect(inside.status                                  )    .toBe         (0                                                                                          ) ;
+		expect(JSON.parse(inside.stdout)                      )    .toMatchObject({ written: true, fixedPoint: true, safety: { parserChecked: true, approvalChecked: true } }) ;
+		expect(readFileSync(join(root, "approved.ts"), "utf8")).not.toBe         (source                                                                                     ) ;
+
+		writeFileSync(join(directory, "rules.md"), document + "A stale proof.\n");
+		expect(JSON.parse(check("pilot.ts").stdout).formatReadiness.approvalFacts).toMatchObject([
+			{ key, status: "unknown", proofComplete: false, reasons: ["no matching convention"] },
+		]);
+	});
+
 	test("check admits strict JSON and YAML syntax without inheriting existing approvals", () => {
 		for (const [name, source, language, status] of [
 			["data.json", "{\n  \"a\": 1\n}\n", "json", "valid"],
