@@ -20,26 +20,32 @@ export const HOSTS: readonly Host[] = ["claude", "codex"];
 /** Roles the plugin owns. `author` is the user's session and is never assignable. */
 export const ASSIGNABLE_ROLES: readonly string[] = ["inspector"];
 
-const isText = (value: unknown): value is string => typeof value === "string" && value.trim() === value && value.length > 0;
+const isText   = (value: unknown): value is string => typeof value === "string" && value.trim() === value && value.length > 0               ;
+const isRecord = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === "object" && !Array.isArray(value) ;
 
 /** Every problem found, so one run reports all of them. An empty list means the assignments are usable. */
 export function modelConfigProblems(config: unknown): string[] {
 	const problems: string[] = []                                    ;
 	const root               = config as Partial<ModelConfig> | null ;
 	if (!root || typeof root !== "object" || root.schemaVersion !== 1) return ["schemaVersion must be 1"];
-	const capabilities = root.capabilities ?? {};
+	if (!isRecord(root.capabilities)                                 ) return ["capabilities must be an object"];
+	if (!isRecord(root.roles)                                        ) return ["roles must be an object"];
+	const capabilities = root.capabilities;
 	for (const [model, efforts] of Object.entries(capabilities)) {
-		if (!Array.isArray(efforts) || !efforts.every(isText)) problems.push(`capabilities.${model}: list the supported efforts (empty when the model has no effort control)`);
+		if (!isText(model) || !Array.isArray(efforts) || !efforts.every(isText) || new Set(efforts).size !== efforts.length) problems.push(`capabilities.${model}: list each supported effort once (empty when the model has no effort control)`);
 	}
-	for (const [role, hosts] of Object.entries(root.roles ?? {})) {
+	for (const role of ASSIGNABLE_ROLES) if (!Object.hasOwn(root.roles, role)) problems.push(`roles.${role}: assignment is required`);
+	for (const [role, hosts] of Object.entries(root.roles)) {
 		if (!ASSIGNABLE_ROLES.includes(role)) problems.push(`roles.${role}: not an assignable role (${ASSIGNABLE_ROLES.join(", ")})`);
+		if (!isRecord(hosts)) { problems.push(`roles.${role}: host assignments must be an object`); continue; }
 		for (const host of HOSTS) {
-			const assignment = (hosts as Partial<Record<Host, Assignment>>)[host] ;
-			const where      = `roles.${role}.${host}`                            ;
-			if (!assignment || !isText(assignment.model)) { problems.push(`${where}: model is required`); continue; }
+			const assignment = hosts[host] as Partial<Assignment> | undefined ;
+			const where      = `roles.${role}.${host}`                        ;
+			if (!Object.hasOwn(hosts, host) || !isRecord(assignment) || !isText(assignment.model)) { problems.push(`${where}: model is required`); continue; }
 			if (!isText(assignment.selectedBy)) problems.push(`${where}: selectedBy must be "unevaluated-default" or an evaluation record`);
+			if (!Object.hasOwn(capabilities, assignment.model)) { problems.push(`${where}: model ${assignment.model} has no capabilities entry`); continue; }
 			const supported = capabilities[assignment.model];
-			if (!supported) { problems.push(`${where}: model ${assignment.model} has no capabilities entry`); continue; }
+			if (!Array.isArray(supported) || !supported.every(isText) || new Set(supported).size !== supported.length) continue;
 			if (assignment.effort === undefined && supported.length) problems.push(`${where}: ${assignment.model} supports effort (${supported.join(", ")}); set one`);
 			if (assignment.effort !== undefined && !supported.includes(assignment.effort)) problems.push(`${where}: effort ${assignment.effort} is not supported by ${assignment.model}`);
 		}

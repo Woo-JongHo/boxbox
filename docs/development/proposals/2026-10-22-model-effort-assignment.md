@@ -1,8 +1,8 @@
 # Model and effort assignment per host
 
-Status: proposal (2026-10-22), tracked by [issue 020](../issue-library/records/BBX-20261022-020-model-effort-assignment.json).
-Nothing here is implemented; every model name below is a hypothesis until the evaluation in
-[Choosing the values](#choosing-the-values) selects it.
+Status: generation and deterministic engine outputs implemented (2026-10-22); model selection remains unevaluated,
+tracked by [issue 020](../issue-library/records/BBX-20261022-020-model-effort-assignment.json). Every model name below
+remains an `unevaluated-default` until the evaluation in [Choosing the values](#choosing-the-values) selects it.
 
 ## Gap and scope
 
