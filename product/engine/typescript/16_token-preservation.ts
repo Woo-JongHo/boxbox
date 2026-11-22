@@ -2,10 +2,17 @@
  * Whitespace-only edit check for TypeScript, based on the TypeScript 7 scanner. Two texts are equivalent when their
  * token streams — every token, comment and line break, with its exact text — are identical; only horizontal
  * whitespace trivia is ignored. Ambiguous slash contexts are unavailable without parser disambiguation; changed
- * comparisons refuse them and expose no editable gaps. Unambiguous templates and regular expressions are re-scanned.
+ * comparisons refuse them and expose no editable gaps. A matching parser snapshot supplies exact slash roles;
+ * candidate roles are replayed only while comparing exact token bytes. Final writes still reparse both layouts.
  */
-import      { SyntaxKind    } from "typescript/unstable/ast"         ;
-import      { createScanner } from "typescript/unstable/ast/scanner" ;
+import      {
+              isBinaryExpression,
+              isJsxClosingElement,
+              isJsxSelfClosingElement,
+              SyntaxKind,
+            } from "typescript/unstable/ast";
+import type { Node, SourceFile               } from "typescript/unstable/ast"         ;
+import      { createScanner                  } from "typescript/unstable/ast/scanner" ;
 
 /** Ordinary same-line expression endings; parentheses, braces and intervening line breaks remain ambiguous. */
 const DIVISION_AFTER = new Set<SyntaxKind>([
@@ -100,28 +107,120 @@ export class TypeScriptSlashAmbiguityError extends Error {
 	}
 }
 
-function scan(text: string, visit: (kind: SyntaxKind, text: string, start: number, end: number) => void): void {
-	const scanner                           = createScanner(false, undefined, text) ;
-	const braces : ("block" | "template")[] = []                                    ;
-	let previous                            = SyntaxKind.Unknown                    ;
-	let prior                               = SyntaxKind.Unknown                    ;
-	let separatedByBreak                    = false                                 ;
-	let lastEnd                             = 0                                     ;
+type SlashRole = "regex" | "division" | "jsx";
 
+interface ParsedToken {
+	readonly kind         : SyntaxKind ;
+	readonly end          : number     ;
+	readonly allowCodeGap : boolean    ;
+}
+
+interface OpaqueToken {
+	readonly index        : number     ;
+	readonly kind         : SyntaxKind ;
+	readonly text         : string     ;
+	readonly allowCodeGap : boolean    ;
+}
+
+interface ScanTrace {
+	readonly slashes : readonly SlashRole[]   ;
+	readonly opaque  : readonly OpaqueToken[] ;
+}
+
+/** Parser positions distinguish division and JSX delimiters, and own the exact bytes of JSX text/attributes. */
+function parsedLexicalContext(source: SourceFile) {
+	const slashes = new Map<number, { readonly role: SlashRole; readonly end: number }>() ;
+	const opaque  = new Map<number, ParsedToken>()                                        ;
+	const visit = (node: Node): void => {
+		const jsxText = node.kind === SyntaxKind.JsxText || node.kind === SyntaxKind.JsxTextAllWhiteSpaces;
+		if (jsxText || node.kind === SyntaxKind.RegularExpressionLiteral || node.kind === SyntaxKind.StringLiteral && node.parent.kind === SyntaxKind.JsxAttribute) {
+			// getStart() strips leading JSX whitespace, which is literal content rather than a code gap.
+			const start = jsxText ? node.pos : node.getStart(source);
+			if (node.getEnd() > start) opaque.set(start, { kind: node.kind, end: node.getEnd(), allowCodeGap: !jsxText });
+		}
+
+		// Arithmetic operators and JSX delimiters carry different parser-owned roles.
+		if (isBinaryExpression(node) && (node.operatorToken.kind === SyntaxKind.SlashToken || node.operatorToken.kind === SyntaxKind.SlashEqualsToken)) {
+			slashes.set(node.operatorToken.getStart(source), { role: "division", end: node.operatorToken.getEnd() });
+		}
+
+		if (isJsxClosingElement(node)                  ) {
+			const start = node        .getStart(  source  ) ;
+			const name  = node.tagName.getStart(  source  ) ;
+			const slash = source.text .indexOf ("/", start) ;
+			if (slash < name && /^<\s*\/\s*$/u.test(source.text.slice(start, name))) slashes.set(slash, { role: "jsx", end: slash + 1 });
+		}
+		if (node.kind === SyntaxKind.JsxClosingFragment) {
+			const start = node       .getStart(  source  ) ;
+			const slash = source.text.indexOf ("/", start) ;
+			if (/^<\s*\/\s*>$/u.test(source.text.slice(start, node.getEnd()))) slashes.set(slash, { role: "jsx", end: slash + 1 });
+		}
+		if (isJsxSelfClosingElement(node)              ) {
+			const slash = source.text.lastIndexOf("/", node.getEnd() - 1);
+			if (slash >= node.attributes.getEnd() && /^\/\s*>$/u.test(source.text.slice(slash, node.getEnd()))) slashes.set(slash, { role: "jsx", end: slash + 1 });
+		}
+		node.forEachChild(child => { visit(child); return undefined; });
+	};
+	visit(source);
+	return { slashes, opaque };
+}
+
+function scan(
+	text    : string                                                               ,
+	visit   : (kind: SyntaxKind, text: string, start: number, end: number) => void ,
+	parsed? : SourceFile                                                           ,
+	replay? : ScanTrace                                                            ,
+): ScanTrace {
+	if (parsed && parsed.text !== text) throw new TypeScriptSlashAmbiguityError();
+	const context                                 = parsed ? parsedLexicalContext(parsed) : undefined ;
+	const slashRoles   : SlashRole[]              = []                                                ;
+	const opaqueTokens : OpaqueToken[]            = []                                                ;
+	const scanner                                 = createScanner(false, undefined, text)             ;
+	const braces       : ("block" | "template")[] = []                                                ;
+	let previous                                  = SyntaxKind.Unknown                                ;
+	let prior                                     = SyntaxKind.Unknown                                ;
+	let separatedByBreak                          = false                                             ;
+	let lastEnd                                   = 0                                                 ;
+	let tokenIndex                                = 0                                                 ;
+	const emit = (kind: SyntaxKind, value: string, start: number, end: number): void => {
+		visit(kind, value, start, end);
+		if (kind !== SyntaxKind.WhitespaceTrivia && kind !== SyntaxKind.NewLineTrivia) tokenIndex += 1;
+	};
 	// LS/PS are skipped between scanner tokens; token-internal separators remain in that token's exact text.
 	const skippedLineBreaks = (end: number): void => {
 		for (let start = lastEnd; start < end; start += 1) {
 			const value = text[start]!;
-			if (value === "\u2028" || value === "\u2029") visit(SyntaxKind.NewLineTrivia, value, start, start + 1);
+			if (value === "\u2028" || value === "\u2029") emit(SyntaxKind.NewLineTrivia, value, start, start + 1);
 		}
 	};
 
-	for (let kind = scanner.scan(); kind !== SyntaxKind.EndOfFile; kind = scanner.scan()) {
+	for (;;) {
+		const cursor   = scanner.getTokenEnd()               ;
+		const literal  = context?.opaque.get(cursor)         ;
+		const expected = replay?.opaque[opaqueTokens.length] ;
+
+		const replayLiteral = expected?.index === tokenIndex
+			&& !(expected.allowCodeGap && /^[\s\uFEFF]$/u.test(text[cursor] ?? ""))
+			? expected : undefined;
+		if (literal || replayLiteral) {
+			const kind  = literal?.kind ?? replayLiteral!.kind                ;
+			const end   = literal?.end ?? cursor + replayLiteral!.text.length ;
+			const value = text.slice(cursor, end)                             ;
+			opaqueTokens.push({ index: tokenIndex, kind, text: value, allowCodeGap: literal?.allowCodeGap ?? replayLiteral!.allowCodeGap });
+			emit(kind, value, cursor, end);
+			scanner.resetTokenState(end);
+			lastEnd          = end      ;
+			prior            = previous ;
+			previous         = kind     ;
+			separatedByBreak = false    ;
+			continue;
+		}
+		let kind = scanner.scan();
+		if (kind === SyntaxKind.EndOfFile) break;
 		skippedLineBreaks(scanner.getTokenStart());
-		// The scanner skips Unicode LS/PS tokens but carries their line break on the next token, including trivia.
 		separatedByBreak ||= scanner.hasPrecedingLineBreak();
 		if (kind === SyntaxKind.WhitespaceTrivia) {
-			visit(kind, scanner.getTokenText(), scanner.getTokenStart(), scanner.getTokenEnd());
+			emit(kind, scanner.getTokenText(), scanner.getTokenStart(), scanner.getTokenEnd());
 			lastEnd = scanner.getTokenEnd();
 			continue;
 		}
@@ -131,15 +230,22 @@ function scan(text: string, visit: (kind: SyntaxKind, text: string, start: numbe
 			kind = scanner.reScanTemplateToken(false);
 			if (kind === SyntaxKind.TemplateMiddle) braces.push("template");
 		} else if (kind === SyntaxKind.SlashToken || kind === SyntaxKind.SlashEqualsToken) {
-			if (previous === SyntaxKind.CloseParenToken || previous === SyntaxKind.CloseBraceToken || separatedByBreak && DIVISION_AFTER.has(previous)) {
-				throw new TypeScriptSlashAmbiguityError();
+			const parsedRole = context?.slashes.get(scanner.getTokenStart())          ;
+			const role       = parsedRole?.role ?? replay?.slashes[slashRoles.length] ;
+			if (context || replay) {
+				if (role === undefined) throw new TypeScriptSlashAmbiguityError();
+				if (role === "regex") kind = scanner.reScanSlashToken();
+			} else {
+				if (previous === SyntaxKind.CloseParenToken || previous === SyntaxKind.CloseBraceToken || separatedByBreak && DIVISION_AFTER.has(previous)) throw new TypeScriptSlashAmbiguityError();
+				if (!DIVISION_AFTER.has(previous)) {
+					if (!REGEX_AFTER.has(previous) || prior === SyntaxKind.DotToken || prior === SyntaxKind.QuestionDotToken) throw new TypeScriptSlashAmbiguityError();
+					kind = scanner.reScanSlashToken();
+				}
 			}
-			if (!DIVISION_AFTER.has(previous)) {
-				if (!REGEX_AFTER.has(previous) || prior === SyntaxKind.DotToken || prior === SyntaxKind.QuestionDotToken) throw new TypeScriptSlashAmbiguityError();
-				kind = scanner.reScanSlashToken();
-			}
+			if (parsedRole && scanner.getTokenEnd() !== parsedRole.end) throw new TypeScriptSlashAmbiguityError();
+			slashRoles.push(role ?? (kind === SyntaxKind.RegularExpressionLiteral ? "regex" : "division"));
 		}
-		visit(kind, scanner.getTokenText(), scanner.getTokenStart(), scanner.getTokenEnd());
+		emit(kind, scanner.getTokenText(), scanner.getTokenStart(), scanner.getTokenEnd());
 		lastEnd = scanner.getTokenEnd();
 		if (!TRIVIA.has(kind)) {
 			prior            = previous ;
@@ -148,20 +254,23 @@ function scan(text: string, visit: (kind: SyntaxKind, text: string, start: numbe
 		}
 	}
 	skippedLineBreaks(text.length);
+	if (context && (slashRoles.length !== context.slashes.size || opaqueTokens.length !== context.opaque.size)
+		|| replay && (slashRoles.length !== replay.slashes.length || opaqueTokens.length !== replay.opaque.length)) throw new TypeScriptSlashAmbiguityError();
+	return { slashes: slashRoles, opaque: opaqueTokens };
 }
 
-/** Token stream of `text` without horizontal whitespace: `kind:text` per token, comment and line break. */
-export function tokenStream(text: string): readonly string[] {
+/** Token stream without horizontal whitespace. An optional parser snapshot must describe this exact text. */
+export function tokenStream(text: string, parsed?: SourceFile): readonly string[] {
 	const tokens: string[] = [];
-	scan(text, (kind, value) => { if (kind !== SyntaxKind.WhitespaceTrivia) tokens.push(`${kind}:${value}`); });
+	scan(text, (kind, value) => { if (kind !== SyntaxKind.WhitespaceTrivia) tokens.push(`${kind}:${value}`); }, parsed);
 	return tokens;
 }
 
-/** Scanner-confirmed horizontal whitespace spans, in UTF-16 offsets. */
-export function horizontalWhitespaceRanges(text: string): readonly { readonly start: number; readonly end: number }[] {
+/** Scanner-confirmed horizontal gaps, in UTF-16 offsets; an exact parser snapshot resolves otherwise ambiguous slashes. */
+export function horizontalWhitespaceRanges(text: string, parsed?: SourceFile): readonly { readonly start: number; readonly end: number }[] {
 	const ranges: { start: number; end: number }[] = [];
 	try {
-		scan(text, (kind, _value, start, end) => { if (kind === SyntaxKind.WhitespaceTrivia) ranges.push({ start, end }); });
+		scan(text, (kind, _value, start, end) => { if (kind === SyntaxKind.WhitespaceTrivia) ranges.push({ start, end }); }, parsed);
 		return ranges;
 	} catch (error) {
 		if (error instanceof TypeScriptSlashAmbiguityError) return [];
@@ -169,12 +278,11 @@ export function horizontalWhitespaceRanges(text: string): readonly { readonly st
 	}
 }
 
-/** True when `after` differs from `before` only in horizontal whitespace between tokens. */
-export function preservesTokens(before: string, after: string): boolean {
+/** True for horizontal gaps only. Optional `parsed` is the parser snapshot of `before`, never a candidate supplied by a formatter. */
+export function preservesTokens(before: string, after: string, parsed?: SourceFile): boolean {
 	if (before === after) return true;
 	try {
-		const left  = tokenStream(before) ;
-		const right = tokenStream(after ) ;
+		const { left, right } = comparedTokens(before, after, parsed);
 		return left.length === right.length && left.every((token, index) => token === right[index]);
 	} catch (error) {
 		if (error instanceof TypeScriptSlashAmbiguityError) return false;
@@ -187,15 +295,30 @@ export function preservesTokens(before: string, after: string): boolean {
  * remains identical. Callers use a parser or a narrower edit contract to prove that the changed line structure is
  * safe for their operation.
  */
-export function preservesTokensWithBreaks(before: string, after: string): boolean {
+export function preservesTokensWithBreaks(before: string, after: string, parsed?: SourceFile): boolean {
 	if (before === after) return true;
 	try {
 		const dropBreaks = (tokens: readonly string[]): readonly string[] => tokens.filter(token => !token.startsWith(`${String(SyntaxKind.NewLineTrivia)}:`)) ;
-		const left       = dropBreaks(tokenStream(before))                                                                                                     ;
-		const right      = dropBreaks(tokenStream(after ))                                                                                                     ;
+		const tokens     = comparedTokens(before, after, parsed)                                                                                               ;
+		const left       = dropBreaks(tokens.left)                                                                                                             ;
+		const right      = dropBreaks(tokens.right)                                                                                                            ;
 		return left.length === right.length && left.every((token, index) => token === right[index]);
 	} catch (error) {
 		if (error instanceof TypeScriptSlashAmbiguityError) return false;
 		throw error;
 	}
+}
+
+function comparedTokens(before: string, after: string, parsed?: SourceFile): { readonly left: readonly string[]; readonly right: readonly string[] } {
+	if (!parsed) return { left: tokenStream(before), right: tokenStream(after) };
+	const left  : string[] = [] ;
+	const right : string[] = [] ;
+	const collect = (tokens: string[]) => (kind: SyntaxKind, value: string): void => {
+		if (kind !== SyntaxKind.WhitespaceTrivia) tokens.push(`${kind}:${value}`);
+	};
+	const roles = scan(before, collect(left), parsed);
+	// Replaying parser-confirmed roles does not trust candidate offsets: exact token bytes and
+	// role count must still match, and the write pipeline independently reparses the final text.
+	scan(after, collect(right), undefined, roles);
+	return { left, right };
 }

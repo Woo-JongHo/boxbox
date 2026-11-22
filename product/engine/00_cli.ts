@@ -48,7 +48,7 @@ import      { AXIS_NOTES, KIND_AXES                                      } from 
 
 import      { guardedRun, guardStatus                                    } from "@/common/25_guarded-run.ts"         ;
 
-export const CLI_VERSION = "0.2.9";
+export const CLI_VERSION = "0.2.10";
 
 const HELP = `Usage: boxbox <command> [options]
 

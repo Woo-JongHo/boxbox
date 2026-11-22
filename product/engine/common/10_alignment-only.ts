@@ -3,9 +3,10 @@ import      { PYTHON_SYNTAX       } from "@/python/03_profile.ts"               
 import      { changedLines        } from "@/common/09_preservation.ts"           ;
 import type { PublicLanguage      } from "@/common/15_project-config.ts"         ;
 import      { preservesStructured } from "@/structured/00_index.ts"              ;
+import type { SourceFile          } from "typescript/unstable/ast"                ;
 
 /** Align changes only spaces and tabs between existing tokens, never the file's physical layout. */
-export function assertAlignmentOnly(before: Buffer, after: Buffer, language: PublicLanguage): void {
+export function assertAlignmentOnly(before: Buffer, after: Buffer, language: PublicLanguage, parsed?: SourceFile): void {
 	const original  = before.toString("utf8")                                                                                                       ;
 	const candidate = after.toString("utf8")                                                                                                        ;
 	const refuse    = (): never => { throw new Error("alignment-only refusal: candidate changes more than horizontal whitespace between tokens"); } ;
@@ -29,7 +30,7 @@ export function assertAlignmentOnly(before: Buffer, after: Buffer, language: Pub
 	}
 	// The layout check cannot distinguish code gaps from spaces inside strings, regexes or comments.
 	const preservedBy = {
-		typescript : () => preservesTokens(original, candidate)                          ,
+		typescript : () => preservesTokens(original, candidate, parsed)                  ,
 		python     : () => changedLines(original, candidate, PYTHON_SYNTAX).length === 0 ,
 		json       : () => preservesStructured(original, candidate, "json")              ,
 		yaml       : () => preservesStructured(original, candidate, "yaml")              ,
