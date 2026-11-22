@@ -31,7 +31,7 @@ describe("TypeScript layout preservation", () => {
 		expect(readdirSync(path.root).sort()).toEqual(["sample.ts"]);
 	}, 30_000);
 
-	test("rejects changed token or comment bytes before parsing", async () => {
+	test("rejects changed token or comment bytes", async () => {
 		const path = target();
 
 		expect((await compareTypeScriptLayout(path.root, path.file, "const value = 1;\n", "const value = 2;\n")).status).toBe("tokens-changed");
@@ -45,3 +45,23 @@ describe("TypeScript layout preservation", () => {
 		expect((await compareTypeScriptLayout(path.root, path.file, before, after)).status).toBe("structure-changed");
 	}, 30_000);
 });
+
+
+test("parser-backed layout checks accept slash contexts without changing literals", async () => {
+	const path = target();
+
+	const before = 'const ratio = Number(3) / 1e6; const valid = !/a  b/.test("a  b");\n' ;
+	const after  = before.replace("ratio =", "ratio  =")                                  ;
+
+	expect((await compareTypeScriptLayout(path.root, path.file, before, after)).status).toBe("preserved");
+	expect((await compareTypeScriptLayout(path.root, path.file, before, after.replace("/a  b/", "/a b/"))).status).toBe("tokens-changed");
+}, 30_000);
+
+test("parser-backed tokens do not waive ASI structure checks around division", async () => {
+	const path = target();
+
+	const before = "function value() { return Number(3) / 1e6; }\n"  ;
+	const after  = before.replace("return Number", "return\nNumber") ;
+
+	expect((await compareTypeScriptLayout(path.root, path.file, before, after)).status).toBe("structure-changed");
+}, 30_000);

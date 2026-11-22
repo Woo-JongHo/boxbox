@@ -135,15 +135,15 @@ test("invalid CLI provenance metadata fails before npm or runtime writes", () =>
 	const workspace = temporary    ()                      ;
 	const archive   = engineArchive(workspace, "matching") ;
 	for (const [label, value] of [["missing CLI fingerprint", undefined], ["malformed CLI fingerprint", "A".repeat(64)]] as const) {
-		const payload    = preparedPayload(join(workspace, label), archive, digest(archive), value)                                  ;
-		const npmMarker  = join           (workspace, `${label} npm was called`)                                                     ;
-		const hostMarker = join           (workspace, `${label} host was called`)                                                    ;
+		const payload    = preparedPayload(join(workspace, label), archive, digest(archive), value                                                                     ) ;
+		const npmMarker  = join           (workspace, `${label} npm was called`                                                                                        ) ;
+		const hostMarker = join           (workspace, `${label} host was called`                                                                                       ) ;
 		const result     = run            (process.execPath, [join(payload, "install.mjs")], { env: guardedEnvironment(join(workspace, label), npmMarker, hostMarker) }) ;
 
 		expectStatus(result, 1);
-		expect(`${result.stdout}\n${result.stderr}`).toContain("Installed engine provenance metadata is missing or invalid");
-		expect(existsSync(npmMarker)                 ).toBe(false) ;
-		expect(existsSync(hostMarker)                ).toBe(false) ;
-		expect(existsSync(join(payload, "runtime")) ).toBe(false) ;
+		expect(`${result.stdout}\n${result.stderr}`).toContain("Installed engine provenance metadata is missing or invalid") ;
+		expect(existsSync(npmMarker)               ).toBe     (false                                                       ) ;
+		expect(existsSync(hostMarker)              ).toBe     (false                                                       ) ;
+		expect(existsSync(join(payload, "runtime"))).toBe     (false                                                       ) ;
 	}
 });
