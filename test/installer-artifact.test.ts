@@ -208,8 +208,10 @@ test("npm installer name differs from private engine and both host payloads have
 	expect(readFileSync(join(ROOT, "LICENSE"), "utf8")).toMatch(/^MIT License/u);
 	expect(manifest.dependencies).toBeUndefined();
 	const metadata = JSON.parse(readFileSync(join(payload, "bundle.json"), "utf8"));
-	expect(metadata).toMatchObject({ name: "boxbox", npmName: NPM_NAME });
-	expect(metadata.engineSha256).toMatch(/^[0-9a-f]{64}$/u);
+	expect(metadata                ).toMatchObject({ name: "boxbox", npmName: NPM_NAME }                                           ) ;
+	expect(metadata.engineSha256   ).toMatch      (/^[0-9a-f]{64}$/u                                                               ) ;
+	expect(metadata.engineCliSha256).toMatch      (/^[0-9a-f]{64}$/u                                                               ) ;
+	expect(metadata.source         ).toMatchObject({ commit: expect.stringMatching(/^[0-9a-f]{40}$/u), dirty: expect.any(Boolean) }) ;
 	const expected = ["LICENSE", "README.md", "bin/boxbox.mjs", "package.json", "payload/bundle.json", "payload/platform.mjs", "payload/install-state.mjs", "payload/claude-registration.mjs", "payload/codex-registration.mjs"];
 	for (const host of ["codex", "claude"]) {
 		const root            = join(payload, host)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ;
@@ -223,6 +225,7 @@ test("npm installer name differs from private engine and both host payloads have
 		const source = JSON.parse(readFileSync(join(root, marketplacePath), "utf8")).plugins[0].source;
 		expect(source                                                                                                  ).toEqual(host === "codex" ? { source: "local", path: "./plugin" } : "./plugin") ;
 		expect(JSON.parse(readFileSync(join(root, "bundle.json"), "utf8")).engineSha256                                ).toBe   (metadata.engineSha256                                                ) ;
+		expect(JSON.parse(readFileSync(join(root, "bundle.json"), "utf8")).engineCliSha256                             ).toBe   (metadata.engineCliSha256                                             ) ;
 		expect(createHash("sha256").update(readFileSync(join(root, "packages", `boxbox-${VERSION}.tgz`))).digest("hex")).toBe   (metadata.engineSha256                                                ) ;
 	}
 	const packed = JSON.parse(readFileSync(join(ROOT, "dist/installer/pack-result.json"), "utf8"));
@@ -238,7 +241,7 @@ test("npm installer name differs from private engine and both host payloads have
 	expectStatus(listing, 0);
 	const nestedFiles = String(listing.stdout).trim().split("\n").filter(path => !path.endsWith("/"));
 	expect(nestedFiles.sort()).toEqual([
-		"package/LICENSE", "package/README.md", "package/THIRD_PARTY_NOTICES", "package/dist/cli.js", "package/package.json",
+		"package/LICENSE", "package/README.md", "package/THIRD_PARTY_NOTICES", "package/dist/cli.js", "package/package.json", "package/provenance.json",
 		"package/rules/presets/recommended/conventions.jsonl",
 		"package/rules/presets/recommended/decisions.jsonl",
 		"package/rules/presets/recommended/docs/public/decisions/py-simple-assignments.md",
@@ -247,6 +250,8 @@ test("npm installer name differs from private engine and both host payloads have
 	].sort());
 	for (const path of nestedFiles) expect(readFileSync(join(nested, path), "utf8")).not.toContain(ROOT);
 	expect(JSON.parse(readFileSync(join(nested, "package/package.json"), "utf8"))).toMatchObject({ name: "boxbox", private: true });
+	const provenance = JSON.parse(readFileSync(join(nested, "package/provenance.json"), "utf8"));
+	expect(provenance).toMatchObject({ cliSha256: metadata.engineCliSha256, source: metadata.source });
 });
 
 test("real npx infers the boxbox bin from the public installer and installs both hosts independently of cache and origin", () => {
