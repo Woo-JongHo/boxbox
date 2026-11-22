@@ -67,6 +67,11 @@ command's options without opening a project or source file. A plugin can be avai
 separate terminal cannot find the bare `boxbox` command. In that case, use the plugin's configured launcher from its
 skill instructions; installing a second global launcher is not required.
 
+Plain-text Check starts with compact `status`, `coverage` and `approval` fields for every inspected file. Together
+they distinguish aligned detected groups, alignment needed, missing or denied approval, limited unsupported coverage,
+no detected groups, safety refusal, invalid syntax and parser/tool failure. Unsupported coverage can still exit `0`
+when the supported part is clean. Existing exit codes and structured JSON remain the automation contract.
+
 ```bash
 boxbox check --source --file src/example.ts --json
 boxbox guide --file src/example.ts --json
@@ -78,11 +83,6 @@ boxbox check --source --file src/example.ts --json
 The `--source` flag keeps preflight and after-alignment checks on original source, even in a formatter project. It
 reads syntax, detected groups and approval facts without executing the formatter or staging a formatting working copy.
 The same flag works with repeated files or a directory selection; it does not approve writes.
-
-Plain-text Check starts with compact `status`, `coverage` and `approval` fields for every inspected file. Together
-they distinguish aligned detected groups, alignment needed, missing or denied approval, limited unsupported coverage,
-no detected groups, safety refusal, invalid syntax and parser/tool failure. Unsupported coverage can still exit `0`
-when the supported part is clean. Existing exit codes and structured JSON remain the automation contract.
 
 Align preserves physical line structure, indentation and non-layout content. It does not reorder statements, rename
 symbols, extract functions, wrap lines or execute an external formatter. If an engine proposal requires one of those
