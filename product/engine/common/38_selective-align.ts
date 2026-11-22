@@ -194,13 +194,13 @@ export async function alignApproved(options: FormatPipelineOptions, working: str
 
 		throw new AlignmentSelectionError(`${message}: ${first.reasons.join(", ")}. ${visible.join("; ")}${rest ? `; +${rest} groups` : ""}`, skippedGroups);
 	}
+	const parsed = options.language === "typescript" ? (await loadSourceFile(options.root, working)).source : undefined;
 
 	let current    = text                    ;
 	const original = [...selection.values()] ;
 	const selected = [...original]           ;
 	for (let pass = 0; pass < 5 && selected.some(plan => plan.edits.length > 0); pass += 1) {
 		const candidate = applyPlans(current, selected)                                                                        ;
-		const parsed    = options.language === "typescript" ? (await loadSourceFile(options.root, working)).source : undefined ;
 		assertAlignmentOnly(source, Buffer.from(candidate), options.language, parsed);
 		verifyOwnedLines(text, candidate, options.language, original);
 
